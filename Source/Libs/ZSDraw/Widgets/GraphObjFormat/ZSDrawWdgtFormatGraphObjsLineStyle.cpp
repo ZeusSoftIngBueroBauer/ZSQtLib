@@ -699,19 +699,19 @@ bool CWdgtFormatGraphObjsLineStyle::hasChanges() const
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndBaseLineType(ELinePoint::Start) != m_drawSettings.getLineEndBaseLineType(ELinePoint::Start) )
+            else if( m_pGraphObj->getArrowHeadBaseLineType(ELinePoint::Start) != m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndFillStyle(ELinePoint::Start) != m_drawSettings.getLineEndFillStyle(ELinePoint::Start) )
+            else if( m_pGraphObj->getArrowHeadFillStyle(ELinePoint::Start) != m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndWidth(ELinePoint::Start) != m_drawSettings.getLineEndWidth(ELinePoint::Start) )
+            else if( m_pGraphObj->getArrowHeadWidth(ELinePoint::Start) != m_drawSettings.getArrowHeadWidth(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndLength(ELinePoint::Start) != m_drawSettings.getLineEndLength(ELinePoint::Start) )
+            else if( m_pGraphObj->getArrowHeadLength(ELinePoint::Start) != m_drawSettings.getArrowHeadLength(ELinePoint::Start) )
             {
                 bHasChanges = true;
             }
@@ -719,19 +719,19 @@ bool CWdgtFormatGraphObjsLineStyle::hasChanges() const
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndBaseLineType(ELinePoint::End) != m_drawSettings.getLineEndBaseLineType(ELinePoint::End) )
+            else if( m_pGraphObj->getArrowHeadBaseLineType(ELinePoint::End) != m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndFillStyle(ELinePoint::End) != m_drawSettings.getLineEndFillStyle(ELinePoint::End) )
+            else if( m_pGraphObj->getArrowHeadFillStyle(ELinePoint::End) != m_drawSettings.getArrowHeadFillStyle(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndWidth(ELinePoint::End) != m_drawSettings.getLineEndWidth(ELinePoint::End) )
+            else if( m_pGraphObj->getArrowHeadWidth(ELinePoint::End) != m_drawSettings.getArrowHeadWidth(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
-            else if( m_pGraphObj->getLineEndLength(ELinePoint::End) != m_drawSettings.getLineEndLength(ELinePoint::End) )
+            else if( m_pGraphObj->getArrowHeadLength(ELinePoint::End) != m_drawSettings.getArrowHeadLength(ELinePoint::End) )
             {
                 bHasChanges = true;
             }
@@ -756,19 +756,19 @@ bool CWdgtFormatGraphObjsLineStyle::hasChanges() const
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndBaseLineType(ELinePoint::Start) != m_drawSettings.getLineEndBaseLineType(ELinePoint::Start) )
+        else if( m_pDrawingScene->getArrowHeadBaseLineType(ELinePoint::Start) != m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndFillStyle(ELinePoint::Start) != m_drawSettings.getLineEndFillStyle(ELinePoint::Start) )
+        else if( m_pDrawingScene->getArrowHeadFillStyle(ELinePoint::Start) != m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndWidth(ELinePoint::Start) != m_drawSettings.getLineEndWidth(ELinePoint::Start) )
+        else if( m_pDrawingScene->getArrowHeadWidth(ELinePoint::Start) != m_drawSettings.getArrowHeadWidth(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndLength(ELinePoint::Start) != m_drawSettings.getLineEndLength(ELinePoint::Start) )
+        else if( m_pDrawingScene->getArrowHeadLength(ELinePoint::Start) != m_drawSettings.getArrowHeadLength(ELinePoint::Start) )
         {
             bHasChanges = true;
         }
@@ -776,19 +776,19 @@ bool CWdgtFormatGraphObjsLineStyle::hasChanges() const
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndBaseLineType(ELinePoint::End) != m_drawSettings.getLineEndBaseLineType(ELinePoint::End) )
+        else if( m_pDrawingScene->getArrowHeadBaseLineType(ELinePoint::End) != m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndFillStyle(ELinePoint::End) != m_drawSettings.getLineEndFillStyle(ELinePoint::End) )
+        else if( m_pDrawingScene->getArrowHeadFillStyle(ELinePoint::End) != m_drawSettings.getArrowHeadFillStyle(ELinePoint::End) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndWidth(ELinePoint::End) != m_drawSettings.getLineEndWidth(ELinePoint::End) )
+        else if( m_pDrawingScene->getArrowHeadWidth(ELinePoint::End) != m_drawSettings.getArrowHeadWidth(ELinePoint::End) )
         {
             bHasChanges = true;
         }
-        else if( m_pDrawingScene->getLineEndLength(ELinePoint::End) != m_drawSettings.getLineEndLength(ELinePoint::End) )
+        else if( m_pDrawingScene->getArrowHeadLength(ELinePoint::End) != m_drawSettings.getArrowHeadLength(ELinePoint::End) )
         {
             bHasChanges = true;
         }
@@ -1165,16 +1165,16 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndSizesModel( ELinePoint i_linePoin
     CEnumArrowHeadLength lineEndLength;
 
     drawSettings.setLineEndStyle(i_linePoint,ELineEndStyle::ArrowHead);
-    drawSettings.setLineEndBaseLineType(i_linePoint,EArrowHeadBaseLineType::Normal);
-    drawSettings.setLineEndFillStyle(i_linePoint,EArrowHeadFillStyle::SolidPattern);
+    drawSettings.setArrowHeadBaseLineType(i_linePoint,EArrowHeadBaseLineType::Normal);
+    drawSettings.setArrowHeadFillStyle(i_linePoint,EArrowHeadFillStyle::SolidPattern);
 
     for( lineEndWidth = 0; lineEndWidth < CEnumArrowHeadWidth::count(); lineEndWidth++ )
     {
-        drawSettings.setLineEndWidth(i_linePoint,lineEndWidth.enumerator());
+        drawSettings.setArrowHeadWidth(i_linePoint,lineEndWidth.enumerator());
 
         for( lineEndLength = 0; lineEndLength < CEnumArrowHeadLength::count(); lineEndLength++ )
         {
-            drawSettings.setLineEndLength(i_linePoint,lineEndLength.enumerator());
+            drawSettings.setArrowHeadLength(i_linePoint,lineEndLength.enumerator());
 
             getLineEndPolygons(
                 /* line          */ s_arlineLineEndSizes[static_cast<int>(i_linePoint)],
@@ -1501,11 +1501,11 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineStartClicked( const Q
         }
         if( lineEndBaseLineType >= 0 && lineEndBaseLineType < CEnumArrowHeadBaseLineType::count() )
         {
-            m_drawSettings.setLineEndBaseLineType(ELinePoint::Start,lineEndBaseLineType.enumerator());
+            m_drawSettings.setArrowHeadBaseLineType(ELinePoint::Start,lineEndBaseLineType.enumerator());
         }
         if( lineEndFillStyle >= 0 && lineEndFillStyle < CEnumArrowHeadFillStyle::count() )
         {
-            m_drawSettings.setLineEndFillStyle(ELinePoint::Start,lineEndFillStyle.enumerator());
+            m_drawSettings.setArrowHeadFillStyle(ELinePoint::Start,lineEndFillStyle.enumerator());
         }
 
         setLineEndStyle( ELinePoint::Start, m_drawSettings );
@@ -1619,11 +1619,11 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineEndClicked( const QMo
         }
         if( lineEndBaseLineType >= 0 && lineEndBaseLineType < CEnumArrowHeadBaseLineType::count() )
         {
-            m_drawSettings.setLineEndBaseLineType(ELinePoint::End,lineEndBaseLineType.enumerator());
+            m_drawSettings.setArrowHeadBaseLineType(ELinePoint::End,lineEndBaseLineType.enumerator());
         }
         if( lineEndFillStyle >= 0 && lineEndFillStyle < CEnumArrowHeadFillStyle::count() )
         {
-            m_drawSettings.setLineEndFillStyle(ELinePoint::End,lineEndFillStyle.enumerator());
+            m_drawSettings.setArrowHeadFillStyle(ELinePoint::End,lineEndFillStyle.enumerator());
         }
 
         setLineEndStyle( ELinePoint::End, m_drawSettings );
@@ -1736,11 +1736,11 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineStartClicked( const QM
 
         if( lineEndWidth >= 0 && lineEndWidth < CEnumArrowHeadWidth::count() )
         {
-            m_drawSettings.setLineEndWidth(ELinePoint::Start,lineEndWidth.enumerator());
+            m_drawSettings.setArrowHeadWidth(ELinePoint::Start,lineEndWidth.enumerator());
         }
         if( lineEndLength >= 0 && lineEndLength < CEnumArrowHeadLength::count() )
         {
-            m_drawSettings.setLineEndLength(ELinePoint::Start,lineEndLength.enumerator());
+            m_drawSettings.setArrowHeadLength(ELinePoint::Start,lineEndLength.enumerator());
         }
 
         setLineEndSize( ELinePoint::Start, m_drawSettings );
@@ -1849,11 +1849,11 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineEndClicked( const QMod
 
         if( lineEndWidth >= 0 && lineEndWidth < CEnumArrowHeadWidth::count() )
         {
-            m_drawSettings.setLineEndWidth(ELinePoint::End,lineEndWidth.enumerator());
+            m_drawSettings.setArrowHeadWidth(ELinePoint::End,lineEndWidth.enumerator());
         }
         if( lineEndLength >= 0 && lineEndLength < CEnumArrowHeadLength::count() )
         {
-            m_drawSettings.setLineEndLength(ELinePoint::End,lineEndLength.enumerator());
+            m_drawSettings.setArrowHeadLength(ELinePoint::End,lineEndLength.enumerator());
         }
 
         setLineEndSize( ELinePoint::End, m_drawSettings );
@@ -1969,8 +1969,8 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
         /* strAddInfo   */ strAddTrcInfo );
 
     CEnumLineEndStyle          lineEndStyle        = i_drawSettings.getLineEndStyle(i_linePoint);
-    CEnumArrowHeadBaseLineType lineEndBaseLineType = i_drawSettings.getLineEndBaseLineType(i_linePoint);
-    CEnumArrowHeadFillStyle    lineEndFillStyle    = i_drawSettings.getLineEndFillStyle(i_linePoint);
+    CEnumArrowHeadBaseLineType lineEndBaseLineType = i_drawSettings.getArrowHeadBaseLineType(i_linePoint);
+    CEnumArrowHeadFillStyle    lineEndFillStyle    = i_drawSettings.getArrowHeadFillStyle(i_linePoint);
 
     QPixmap  pxmLineEnd(24,24);
     QPainter painter;
@@ -2109,8 +2109,8 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndSize( ELinePoint i_linePoint, cons
         /* strMethod    */ "setLineEndSize",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CEnumArrowHeadWidth  lineEndWidth  = i_drawSettings.getLineEndWidth(i_linePoint);
-    CEnumArrowHeadLength lineEndLength = i_drawSettings.getLineEndLength(i_linePoint);
+    CEnumArrowHeadWidth  lineEndWidth  = i_drawSettings.getArrowHeadWidth(i_linePoint);
+    CEnumArrowHeadLength lineEndLength = i_drawSettings.getArrowHeadLength(i_linePoint);
 
     QPolygonF plgArrowHead;
 
@@ -2124,8 +2124,8 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndSize( ELinePoint i_linePoint, cons
         QBrush        brsh;
 
         drawSettings.setLineEndStyle(i_linePoint,ELineEndStyle::ArrowHead);
-        drawSettings.setLineEndBaseLineType(i_linePoint,EArrowHeadBaseLineType::Normal);
-        drawSettings.setLineEndFillStyle(i_linePoint,EArrowHeadFillStyle::SolidPattern);
+        drawSettings.setArrowHeadBaseLineType(i_linePoint,EArrowHeadBaseLineType::Normal);
+        drawSettings.setArrowHeadFillStyle(i_linePoint,EArrowHeadFillStyle::SolidPattern);
 
         getLineEndPolygons(
             /* line          */ s_arlineLineEndSizes[static_cast<int>(i_linePoint)],

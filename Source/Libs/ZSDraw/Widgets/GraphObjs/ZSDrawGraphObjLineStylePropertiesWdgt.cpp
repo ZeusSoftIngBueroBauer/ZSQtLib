@@ -89,7 +89,21 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
         i_strNameSpace, i_strGraphObjType,
         ClassName(), i_strObjName, i_pWdgtParent),
     // Caching values
-    m_drawSettings(),
+    m_penColor(),
+    m_iPenWidth(1),
+    m_lineStyle(ELineStyle::SolidLine),
+    m_lineRecordType(ELineRecordType::Normal),
+    m_iLineExtent(1),
+    m_lineEndStyleP1(ELineEndStyle::Normal),
+    m_arrowHeadBaseLineTypeP1(EArrowHeadBaseLineType::NoLine),
+    m_arrowHeadFillStyleP1(EArrowHeadFillStyle::NoFill),
+    m_arrowHeadWidthP1(EArrowHeadWidth::Medium),
+    m_arrowHeadLengthP1(EArrowHeadLength::Medium),
+    m_lineEndStyleP2(ELineEndStyle::Normal),
+    m_arrowHeadBaseLineTypeP2(EArrowHeadBaseLineType::NoLine),
+    m_arrowHeadFillStyleP2(EArrowHeadFillStyle::NoFill),
+    m_arrowHeadWidthP2(EArrowHeadWidth::Medium),
+    m_arrowHeadLengthP2(EArrowHeadLength::Medium),
     // Edit Controls
     m_pWdgtHeadline(nullptr),
     m_pLytWdgtHeadline(nullptr),
@@ -381,7 +395,21 @@ CWdgtGraphObjLineStyleProperties::~CWdgtGraphObjLineStyleProperties()
     catch(...) {
     }
 
-    //m_drawSettings;
+    m_penColor;
+    m_iPenWidth = 0;
+    m_lineStyle = static_cast<ELineStyle>(0);
+    m_lineRecordType = static_cast<ELineRecordType>(0);
+    m_iLineExtent = 0;
+    m_lineEndStyleP1 = static_cast<ELineEndStyle>(0);
+    m_arrowHeadBaseLineTypeP1 = static_cast<EArrowHeadBaseLineType>(0);
+    m_arrowHeadFillStyleP1 = static_cast<EArrowHeadFillStyle>(0);
+    m_arrowHeadWidthP1 = static_cast<EArrowHeadWidth>(0);
+    m_arrowHeadLengthP1 = static_cast<EArrowHeadLength>(0);
+    m_lineEndStyleP2 = static_cast<ELineEndStyle>(0);
+    m_arrowHeadBaseLineTypeP2 = static_cast<EArrowHeadBaseLineType>(0);
+    m_arrowHeadFillStyleP2 = static_cast<EArrowHeadFillStyle>(0);
+    m_arrowHeadWidthP2 = static_cast<EArrowHeadWidth>(0);
+    m_arrowHeadLengthP2 = static_cast<EArrowHeadLength>(0);
     m_pWdgtHeadline = nullptr;
     m_pLytWdgtHeadline = nullptr;
     //m_pxmBtnDown;
@@ -467,18 +495,146 @@ bool CWdgtGraphObjLineStyleProperties::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
+
+    CDrawSettings drawSettings;
     if (m_pGraphObj == nullptr) {
-        CDrawSettings drawSettings = m_pDrawingScene->drawSettings();
-        bHasChanges = (m_drawSettings != drawSettings);
+        drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        CDrawSettings drawSettings = m_pGraphObj->getDrawSettings();
-        bHasChanges = (m_drawSettings != drawSettings);
+        drawSettings = m_pGraphObj->getDrawSettings();
     }
+
+    if (m_penColor != drawSettings.getPenColor()) {
+        bHasChanges = true;
+    }
+    else if (m_iPenWidth != drawSettings.getPenWidth()) {
+        bHasChanges = true;
+    }
+    else if (m_lineStyle != drawSettings.getLineStyle()) {
+        bHasChanges = true;
+    }
+    else if (m_lineRecordType != drawSettings.getLineRecordType()) {
+        bHasChanges = true;
+    }
+    else if (m_iLineExtent != drawSettings.getLineExtent()) {
+        bHasChanges = true;
+    }
+    else if (m_lineEndStyleP1 != drawSettings.getLineEndStyle(ELinePoint::Start)) {
+        bHasChanges = true;
+    }
+    else if (m_arrowHeadBaseLineTypeP1 != drawSettings.getArrowHeadBaseLineType(ELinePoint::Start)) {
+        bHasChanges = true;
+    }
+    else if (m_arrowHeadFillStyleP1 != drawSettings.getArrowHeadFillStyle(ELinePoint::Start)) {
+        bHasChanges = true;
+    }
+    else if (m_arrowHeadWidthP1 != drawSettings.getArrowHeadWidth(ELinePoint::Start)) {
+        bHasChanges = true;
+    }
+    else if (m_arrowHeadLengthP1 != drawSettings.getArrowHeadLength(ELinePoint::Start)) {
+        bHasChanges = true;
+    }
+    else if (m_lineEndStyleP2 != drawSettings.getLineEndStyle(ELinePoint::End)) {
+        bHasChanges = true;
+    }
+    else if (m_arrowHeadBaseLineTypeP2 != drawSettings.getArrowHeadBaseLineType(ELinePoint::End)) {
+        bHasChanges = true;
+    }
+    else if (m_arrowHeadFillStyleP2 != drawSettings.getArrowHeadFillStyle(ELinePoint::End)) {
+        bHasChanges = true;
+    }
+    else if (m_arrowHeadWidthP2 != drawSettings.getArrowHeadWidth(ELinePoint::End)) {
+        bHasChanges = true;
+    }
+    else if (m_arrowHeadLengthP2 != drawSettings.getArrowHeadLength(ELinePoint::End)) {
+        bHasChanges = true;
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
     }
     return bHasChanges;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Applies the changed settings at either the graphics scene or the
+           graphical object.
+
+    The widget is used to modify only part of the draw settings and is very
+    likely a child of a widget used to modify also other draw setting attributes.
+    The parent widget is responsibly for updating all the draw settings at
+    the drawing scene or the graphical object. For this the parent widget
+    will set the flag i_bImmediatelyApplySettings to false and will update the
+    changed settings after all child widgets have forwarded the changes to
+    either the graphics scene or the graphical object.
+
+    @param [in] i_bImmediatelyApplySetting (default: true)
+        Set this flag to false if further set<DrawAttribute> will follow and
+        all changes have to be updated at once later on.
+*/
+void CWdgtGraphObjLineStyleProperties::applySettings(bool i_bImmediatelyApplySettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ImmediatelyApply: " + bool2Str(i_bImmediatelyApplySettings);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "applySettings",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
+
+    if (!hasErrors() && hasChanges()) {
+        if (m_pGraphObj == nullptr) {
+            m_pDrawingScene->setPenColor(m_penColor, false);
+            m_pDrawingScene->setPenWidth(m_iPenWidth, false);
+            m_pDrawingScene->setLineStyle(m_lineStyle, false);
+            m_pDrawingScene->setLineRecordType(m_lineRecordType, false);
+            m_pDrawingScene->setLineExtent(m_iLineExtent, false);
+            m_pDrawingScene->setLineEndStyle(ELinePoint::Start, m_lineEndStyleP1, false);
+            m_pDrawingScene->setArrowHeadBaseLineType(ELinePoint::Start, m_arrowHeadBaseLineTypeP1, false);
+            m_pDrawingScene->setArrowHeadFillStyle(ELinePoint::Start, m_arrowHeadFillStyleP1, false);
+            m_pDrawingScene->setArrowHeadWidth(ELinePoint::Start, m_arrowHeadWidthP1, false);
+            m_pDrawingScene->setArrowHeadLength(ELinePoint::Start, m_arrowHeadLengthP1, false);
+            m_pDrawingScene->setLineEndStyle(ELinePoint::End, m_lineEndStyleP2, false);
+            m_pDrawingScene->setArrowHeadBaseLineType(ELinePoint::End, m_arrowHeadBaseLineTypeP2, false);
+            m_pDrawingScene->setArrowHeadFillStyle(ELinePoint::End, m_arrowHeadFillStyleP2, false);
+            m_pDrawingScene->setArrowHeadWidth(ELinePoint::End, m_arrowHeadWidthP2, false);
+            m_pDrawingScene->setArrowHeadLength(ELinePoint::End, m_arrowHeadLengthP2, false);
+            if (i_bImmediatelyApplySettings) {
+                m_pDrawingScene->updateDrawSettings();
+            }
+        }
+        else {
+            m_pGraphObj->setPenColor(m_penColor, false);
+            m_pGraphObj->setPenWidth(m_iPenWidth, false);
+            m_pGraphObj->setLineStyle(m_lineStyle, false);
+            m_pGraphObj->setLineRecordType(m_lineRecordType, false);
+            m_pGraphObj->setLineExtent(m_iLineExtent, false);
+            m_pGraphObj->setLineEndStyle(ELinePoint::Start, m_lineEndStyleP1, false);
+            m_pGraphObj->setArrowHeadBaseLineType(ELinePoint::Start, m_arrowHeadBaseLineTypeP1, false);
+            m_pGraphObj->setArrowHeadFillStyle(ELinePoint::Start, m_arrowHeadFillStyleP1, false);
+            m_pGraphObj->setArrowHeadWidth(ELinePoint::Start, m_arrowHeadWidthP1, false);
+            m_pGraphObj->setArrowHeadLength(ELinePoint::Start, m_arrowHeadLengthP1, false);
+            m_pGraphObj->setLineEndStyle(ELinePoint::End, m_lineEndStyleP2, false);
+            m_pGraphObj->setArrowHeadBaseLineType(ELinePoint::End, m_arrowHeadBaseLineTypeP2, false);
+            m_pGraphObj->setArrowHeadFillStyle(ELinePoint::End, m_arrowHeadFillStyleP2, false);
+            m_pGraphObj->setArrowHeadWidth(ELinePoint::End, m_arrowHeadWidthP2, false);
+            m_pGraphObj->setArrowHeadLength(ELinePoint::End, m_arrowHeadLengthP2, false);
+            if (i_bImmediatelyApplySettings) {
+                m_pGraphObj->updateDrawSettings();
+            }
+        }
+    }
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Leave);
+    }
 }
 
 /*==============================================================================
@@ -495,75 +651,47 @@ void CWdgtGraphObjLineStyleProperties::fillEditControls()
         /* strMethod    */ "fillEditControls",
         /* strAddInfo   */ "" );
 
+    CDrawSettings drawSettings;
     if (m_pGraphObj == nullptr) {
-        m_drawSettings = m_pDrawingScene->drawSettings();
+        drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        m_drawSettings = m_pGraphObj->getDrawSettings();
+        drawSettings = m_pGraphObj->getDrawSettings();
     }
+
+    m_penColor = drawSettings.getPenColor();
+    m_iPenWidth = drawSettings.getPenWidth();
+    m_lineStyle = drawSettings.getLineStyle();
+    m_lineRecordType = drawSettings.getLineRecordType();
+    m_iLineExtent = drawSettings.getLineExtent();
+    m_lineEndStyleP1 = drawSettings.getLineEndStyle(ELinePoint::Start);
+    m_arrowHeadBaseLineTypeP1 = drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
+    m_arrowHeadFillStyleP1 = drawSettings.getArrowHeadFillStyle(ELinePoint::Start);
+    m_arrowHeadWidthP1 = drawSettings.getArrowHeadWidth(ELinePoint::Start);
+    m_arrowHeadLengthP1 = drawSettings.getArrowHeadLength(ELinePoint::Start);
+    m_lineEndStyleP2 = drawSettings.getLineEndStyle(ELinePoint::End);
+    m_arrowHeadBaseLineTypeP2 = drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
+    m_arrowHeadFillStyleP2 = drawSettings.getArrowHeadFillStyle(ELinePoint::End);
+    m_arrowHeadWidthP2 = drawSettings.getArrowHeadWidth(ELinePoint::End);
+    m_arrowHeadLengthP2 = drawSettings.getArrowHeadLength(ELinePoint::End);
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    updateCmbLineStyle(m_drawSettings.getLineStyle());
-    m_pEdtLineWidth->setValue(m_drawSettings.getPenWidth());
-    updateBtnPenColor(m_drawSettings.getPenColor());
+    updateCmbLineStyle(m_lineStyle);
+    m_pEdtLineWidth->setValue(m_iPenWidth);
+    updateBtnPenColor(m_penColor);
 
     ELinePoint linePoint = ELinePoint::Start;
-    updateCmbLineEndStyle(
-        linePoint,
-        m_drawSettings.getLineEndStyle(linePoint),
-        m_drawSettings.getLineEndFillStyle(linePoint),
-        m_drawSettings.getLineEndBaseLineType(linePoint));
-    updateCmbArrowHeadWidth(
-        linePoint,
-        m_drawSettings.getLineEndWidth(linePoint));
-    updateCmbArrowHeadLength(
-        linePoint,
-        m_drawSettings.getLineEndLength(linePoint));
+    updateCmbLineEndStyle(linePoint, m_lineEndStyleP1, m_arrowHeadFillStyleP1, m_arrowHeadBaseLineTypeP1);
+    updateCmbArrowHeadWidth(linePoint, m_arrowHeadWidthP1);
+    updateCmbArrowHeadLength(linePoint, m_arrowHeadLengthP1);
 
     linePoint = ELinePoint::End;
-    updateCmbLineEndStyle(
-        linePoint,
-        m_drawSettings.getLineEndStyle(linePoint),
-        m_drawSettings.getLineEndFillStyle(linePoint),
-        m_drawSettings.getLineEndBaseLineType(linePoint));
-    updateCmbArrowHeadWidth(
-        linePoint,
-        m_drawSettings.getLineEndWidth(linePoint));
-    updateCmbArrowHeadLength(
-        linePoint,
-        m_drawSettings.getLineEndLength(linePoint));
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Leave);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineStyleProperties::applySettings()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "applySettings",
-        /* strAddInfo   */ "" );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Enter);
-    }
-
-    #pragma message(__TODO__"Cache and set only text style settings")
-    if (!hasErrors() && hasChanges()) {
-        if (m_pGraphObj == nullptr) {
-            m_pDrawingScene->setDrawSettings(m_drawSettings);
-        }
-        else {
-            m_pGraphObj->setDrawSettings(m_drawSettings);
-        }
-    }
+    updateCmbLineEndStyle(linePoint, m_lineEndStyleP2, m_arrowHeadFillStyleP2, m_arrowHeadBaseLineTypeP2);
+    updateCmbArrowHeadWidth(linePoint, m_arrowHeadWidthP2);
+    updateCmbArrowHeadLength(linePoint, m_arrowHeadLengthP2);
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -597,10 +725,8 @@ void CWdgtGraphObjLineStyleProperties::onDrawingSceneDrawSettingsChanged(const C
         // the ContentChangedSignalBlockedCounter is incremented to avoid that
         // "onDrawingSceneDrawSettingsChanged" overwrites settings in edit controls which
         // haven't been applied yet.
-        if (m_drawSettings != i_drawSettings && m_iContentChangedSignalBlockedCounter == 0)
+        if (m_iContentChangedSignalBlockedCounter == 0)
         {
-            m_drawSettings = i_drawSettings;
-
             {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
                 // Here the derived class should apply the properties from the graphical
@@ -659,17 +785,16 @@ void CWdgtGraphObjLineStyleProperties::onCmbLineStyleCurrentIndexChanged(int i_i
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbLineStyleCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     if (m_iContentChangedSignalBlockedCounter > 0) {
         m_bContentChanged = true;
     }
     else {
         QVariant varData = m_pCmbLineStyle->itemData(i_idx, Qt::UserRole);
-        ELineStyle lineStyle = static_cast<ELineStyle>(varData.toInt());
-        m_drawSettings.setLineStyle(lineStyle);
+        m_lineStyle = static_cast<ELineStyle>(varData.toInt());
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -698,7 +823,7 @@ void CWdgtGraphObjLineStyleProperties::onEdtLineWidthValueChanged(int i_iVal)
         m_bContentChanged = true;
     }
     else {
-        m_drawSettings.setPenWidth(i_iVal);
+        m_iPenWidth = i_iVal;
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -717,7 +842,7 @@ void CWdgtGraphObjLineStyleProperties::onBtnPenColorClicked(bool /*i_bChecked*/)
         /* strAddInfo   */ "" );
 
     QColor clr = QColorDialog::getColor(
-        /* clrInitial  */ m_drawSettings.getPenColor(),
+        /* clrInitial  */ m_penColor,
         /* pWdgtParent */ m_pBtnLineColor,
         /* strTitle    */ "Colors",
         /* options     */ QColorDialog::ShowAlphaChannel );
@@ -726,14 +851,14 @@ void CWdgtGraphObjLineStyleProperties::onBtnPenColorClicked(bool /*i_bChecked*/)
         traceValues(mthTracer, EMethodDir::Enter);
     }
     if (clr.isValid()) {
-        if (m_drawSettings.getPenColor() != clr) {
+        if (m_penColor != clr) {
             updateBtnPenColor(clr);
             if (m_iContentChangedSignalBlockedCounter > 0) {
-                m_bContentChanged = (m_drawSettings.getPenColor() != clr);
-                m_drawSettings.setPenColor(clr);
+                m_bContentChanged = true;
+                m_penColor = clr;
             }
             else {
-                m_drawSettings.setPenColor(clr);
+                m_penColor = clr;
                 emit_contentChanged();
             }
         }
@@ -764,15 +889,12 @@ void CWdgtGraphObjLineStyleProperties::onCmbP1LineEndStyleCurrentIndexChanged(in
         m_bContentChanged = true;
     }
     else {
-        CEnumLineEndStyle lineEndStyle = m_pCmbP1LineEndStyle->itemData(
-            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::LineEndStyle)).toInt();
-        CEnumArrowHeadFillStyle arrowHeadFillStyle = m_pCmbP1LineEndStyle->itemData(
-            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::ArrowHeadFillStyle)).toInt();
-        CEnumArrowHeadBaseLineType arrowHeadBaseLineType = m_pCmbP1LineEndStyle->itemData(
-            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::ArrowHeadBaseLineType)).toInt();
-        m_drawSettings.setLineEndStyle(ELinePoint::Start, lineEndStyle.enumerator());
-        m_drawSettings.setLineEndFillStyle(ELinePoint::Start, arrowHeadFillStyle.enumerator());
-        m_drawSettings.setLineEndBaseLineType(ELinePoint::Start, arrowHeadBaseLineType.enumerator());
+        m_lineEndStyleP1 = static_cast<ELineEndStyle>(m_pCmbP1LineEndStyle->itemData(
+            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::LineEndStyle)).toInt());
+        m_arrowHeadFillStyleP1 = static_cast<EArrowHeadFillStyle>(m_pCmbP1LineEndStyle->itemData(
+            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::ArrowHeadFillStyle)).toInt());
+        m_arrowHeadBaseLineTypeP1 = static_cast<EArrowHeadBaseLineType>(m_pCmbP1LineEndStyle->itemData(
+            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::ArrowHeadBaseLineType)).toInt());
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -801,9 +923,8 @@ void CWdgtGraphObjLineStyleProperties::onCmbP1ArrowHeadWidthClicked(int i_idx)
         m_bContentChanged = true;
     }
     else {
-        CEnumArrowHeadWidth arrowHeadWidth =
+        m_arrowHeadWidthP1 =
             m_pCmbP1ArrowHeadWidth->itemData(i_idx, Qt::DisplayRole).toString();
-        m_drawSettings.setLineEndWidth(ELinePoint::Start, arrowHeadWidth.enumerator());
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -832,9 +953,8 @@ void CWdgtGraphObjLineStyleProperties::onCmbP1ArrowHeadLengthClicked(int i_idx)
         m_bContentChanged = true;
     }
     else {
-        CEnumArrowHeadLength arrowHeadLength =
+        m_arrowHeadLengthP1 =
             m_pCmbP1ArrowHeadLength->itemData(i_idx, Qt::DisplayRole).toString();
-        m_drawSettings.setLineEndLength(ELinePoint::Start, arrowHeadLength.enumerator());
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -863,15 +983,12 @@ void CWdgtGraphObjLineStyleProperties::onCmbP2LineEndStyleCurrentIndexChanged(in
         m_bContentChanged = true;
     }
     else {
-        CEnumLineEndStyle lineEndStyle = m_pCmbP2LineEndStyle->itemData(
-            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::LineEndStyle)).toInt();
-        CEnumArrowHeadFillStyle arrowHeadFillStyle = m_pCmbP2LineEndStyle->itemData(
-            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::ArrowHeadFillStyle)).toInt();
-        CEnumArrowHeadBaseLineType arrowHeadBaseLineType = m_pCmbP2LineEndStyle->itemData(
-            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::ArrowHeadBaseLineType)).toInt();
-        m_drawSettings.setLineEndStyle(ELinePoint::End, lineEndStyle.enumerator());
-        m_drawSettings.setLineEndFillStyle(ELinePoint::End, arrowHeadFillStyle.enumerator());
-        m_drawSettings.setLineEndBaseLineType(ELinePoint::End, arrowHeadBaseLineType.enumerator());
+        m_lineEndStyleP2 = static_cast<ELineEndStyle>(m_pCmbP2LineEndStyle->itemData(
+            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::LineEndStyle)).toInt());
+        m_arrowHeadFillStyleP2 = static_cast<EArrowHeadFillStyle>(m_pCmbP2LineEndStyle->itemData(
+            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::ArrowHeadFillStyle)).toInt());
+        m_arrowHeadBaseLineTypeP2 = static_cast<EArrowHeadBaseLineType>(m_pCmbP2LineEndStyle->itemData(
+            i_idx, static_cast<int>(EItemDataRoleModelLineEndStyle::ArrowHeadBaseLineType)).toInt());
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -900,9 +1017,8 @@ void CWdgtGraphObjLineStyleProperties::onCmbP2ArrowHeadWidthClicked(int i_idx)
         m_bContentChanged = true;
     }
     else {
-        CEnumArrowHeadWidth arrowHeadWidth =
+        m_arrowHeadWidthP2 =
             m_pCmbP2ArrowHeadWidth->itemData(i_idx, Qt::DisplayRole).toString();
-        m_drawSettings.setLineEndWidth(ELinePoint::End, arrowHeadWidth.enumerator());
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -931,9 +1047,8 @@ void CWdgtGraphObjLineStyleProperties::onCmbP2ArrowHeadLengthClicked(int i_idx)
         m_bContentChanged = true;
     }
     else {
-        CEnumArrowHeadLength arrowHeadLength =
+        m_arrowHeadLengthP2 =
             m_pCmbP2ArrowHeadLength->itemData(i_idx, Qt::DisplayRole).toString();
-        m_drawSettings.setLineEndLength(ELinePoint::End, arrowHeadLength.enumerator());
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -1483,10 +1598,34 @@ void CWdgtGraphObjLineStyleProperties::traceValues(CMethodTracer& mthTracer, EMe
     QString strLineEndStyleP2 = m_pCmbP2LineEndStyle->itemData(m_pCmbP2LineEndStyle->currentIndex(), static_cast<int>(EItemDataRoleModelLineEndStyle::Id)).toString();
     QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
         + "ContentChanged {" + bool2Str(m_bContentChanged)
-            + ", SignalBlockCounter: " + QString::number(m_iContentChangedSignalBlockedCounter) + "}";
+        + ", SignalBlockCounter: " + QString::number(m_iContentChangedSignalBlockedCounter) + "}";
     mthTracer.trace(strMthLog);
     strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        + "DrawSettings {" + m_drawSettings.toString() + "}";
+        + "DrawSettings {"
+        + "Pen {"
+            + "Color: " + m_penColor.name()
+            + ", Width: " + QString::number(m_iPenWidth)
+        + "}, Line {"
+            + "Style: " + m_lineStyle.toString()
+            + ", RecordType: " + m_lineRecordType.toString()
+            + ", Extent: " + QString::number(m_iLineExtent)
+        + "}, P1 {"
+            + "EndStyle: " + m_lineEndStyleP1.toString()
+            + ", ArrowHead {"
+                + "BaseLine: " + m_arrowHeadBaseLineTypeP1.toString()
+                + ", FillStyle: " + m_arrowHeadFillStyleP1.toString()
+                + ", Width: " + m_arrowHeadWidthP1.toString()
+                + ", Length: " + m_arrowHeadLengthP1.toString()
+            + "}"
+         + "}, P2 {"
+            + "EndStyle: " + m_lineEndStyleP2.toString()
+            + ", ArrowHead {" +
+                + "BaseLine: " + m_arrowHeadBaseLineTypeP2.toString()
+                + ", FillStyle: " + m_arrowHeadFillStyleP2.toString()
+                + ", Width: " + m_arrowHeadWidthP2.toString()
+                + ", Length: " + m_arrowHeadLengthP2.toString()
+            + "}"
+        + "}";
     mthTracer.trace(strMthLog);
     strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
         + "EditControls {"
@@ -1495,10 +1634,12 @@ void CWdgtGraphObjLineStyleProperties::traceValues(CMethodTracer& mthTracer, EMe
             + ", P1 {" +
                 + "Style: " + strLineEndStyleP1
                 + ", Width: " + m_pCmbP1ArrowHeadWidth->currentText()
-                + ", Length: " + m_pCmbP1ArrowHeadLength->currentText() + "}"
-            + ", P2 {"
+                + ", Length: " + m_pCmbP1ArrowHeadLength->currentText()
+            + "}, P2 {"
                 + "Style: " + strLineEndStyleP2
                 + ", Width: " + m_pCmbP1ArrowHeadWidth->currentText()
-                + ", Length: " + m_pCmbP1ArrowHeadLength->currentText() + "}}";
+                + ", Length: " + m_pCmbP1ArrowHeadLength->currentText()
+            + "}"
+        + "}";
     mthTracer.trace(strMthLog);
 }

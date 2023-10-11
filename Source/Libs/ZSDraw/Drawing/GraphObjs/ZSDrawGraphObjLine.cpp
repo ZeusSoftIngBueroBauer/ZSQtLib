@@ -976,14 +976,14 @@ void CGraphObjLine::paint(
     CEnumLineEndStyle lineEndStyleP1 = m_drawSettings.getLineEndStyle(ELinePoint::Start);
     CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.getLineEndStyle(ELinePoint::End);
     if (lineEndStyleP1 != ELineEndStyle::Normal || lineEndStyleP2 != ELineEndStyle::Normal) {
-        CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
-        CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
+        CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
+        CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
         i_pPainter->setPen(pn);
         QBrush brsh(pn.color());
         if (lineEndStyleP1 != ELineEndStyle::Normal) {
-            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::Start)));
+            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start)));
             i_pPainter->setBrush(brsh);
             if (baseLineTypeP1 == EArrowHeadBaseLineType::NoLine) {
                 i_pPainter->drawPolyline(m_plgP1ArrowHead);
@@ -993,7 +993,7 @@ void CGraphObjLine::paint(
             }
         }
         if (lineEndStyleP2 != ELineEndStyle::Normal) {
-            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::End)));
+            brsh.setStyle(arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::End)));
             i_pPainter->setBrush(brsh);
             if (baseLineTypeP2 == EArrowHeadBaseLineType::NoLine) {
                 i_pPainter->drawPolyline(m_plgP2ArrowHead);
@@ -1671,13 +1671,13 @@ bool CGraphObjLine::lineEndArrowHeadPolygonsNeedUpdate(
     else if (i_drawSettingsOld.getLineEndStyle(i_linePoint) != m_drawSettings.getLineEndStyle(i_linePoint)) {
         bNeedUpdate = true;
     }
-    else if (i_drawSettingsOld.getLineEndBaseLineType(i_linePoint) != m_drawSettings.getLineEndBaseLineType(i_linePoint)) {
+    else if (i_drawSettingsOld.getArrowHeadBaseLineType(i_linePoint) != m_drawSettings.getArrowHeadBaseLineType(i_linePoint)) {
         bNeedUpdate = true;
     }
-    else if (i_drawSettingsOld.getLineEndWidth(i_linePoint) != m_drawSettings.getLineEndWidth(i_linePoint)) {
+    else if (i_drawSettingsOld.getArrowHeadWidth(i_linePoint) != m_drawSettings.getArrowHeadWidth(i_linePoint)) {
         bNeedUpdate = true;
     }
-    else if (i_drawSettingsOld.getLineEndLength(i_linePoint) != m_drawSettings.getLineEndLength(i_linePoint)) {
+    else if (i_drawSettingsOld.getArrowHeadLength(i_linePoint) != m_drawSettings.getArrowHeadLength(i_linePoint)) {
         bNeedUpdate = true;
     }
     return bNeedUpdate;

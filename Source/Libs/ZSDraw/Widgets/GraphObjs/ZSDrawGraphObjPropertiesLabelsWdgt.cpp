@@ -320,6 +320,47 @@ bool CWdgtGraphObjPropertiesLabels::hasChanges() const
     return bHasChanges;
 }
 
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::applySettings(bool i_bImmediatelyApplySettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ImmediatelyApply: " + bool2Str(i_bImmediatelyApplySettings);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "applySettings",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_pGraphObj != nullptr && !hasErrors() && hasChanges())
+    {
+        m_pGraphObj->rename(m_pEdtName->text());
+
+        if (m_pChkNameLabelVisible->checkState() == Qt::Checked) {
+            int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
+            if (idxCmb < 0) {
+                idxCmb = 0; // Set to most commonly used anchor point.
+                m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb);
+            }
+            CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
+            m_pGraphObj->showNameLabel(eSelPtCmb.enumerator());
+
+            if (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked) {
+                m_pGraphObj->showNameLabelAnchorLine();
+            }
+            else {
+                m_pGraphObj->hideNameLabelAnchorLine();
+            }
+        }
+        else {
+            m_pGraphObj->hideNameLabel();
+            m_pGraphObj->hideNameLabelAnchorLine();
+        }
+    }
+}
+
 /*==============================================================================
 protected slots:
 ==============================================================================*/
@@ -487,43 +528,6 @@ void CWdgtGraphObjPropertiesLabels::fillEditControls()
         m_pChkNameLabelAnchorLineVisible->setEnabled(true);
         m_pChkNameLabelAnchorLineVisible->setCheckState(
             m_pGraphObj->isNameLabelAnchorLineVisible() ? Qt::Checked : Qt::Unchecked);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::applySettings()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "applySettings",
-        /* strAddInfo   */ "" );
-
-    if (m_pGraphObj != nullptr && !hasErrors() && hasChanges())
-    {
-        m_pGraphObj->rename(m_pEdtName->text());
-
-        if (m_pChkNameLabelVisible->checkState() == Qt::Checked) {
-            int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
-            if (idxCmb < 0) {
-                idxCmb = 0; // Set to most commonly used anchor point.
-                m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb);
-            }
-            CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
-            m_pGraphObj->showNameLabel(eSelPtCmb.enumerator());
-
-            if (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked) {
-                m_pGraphObj->showNameLabelAnchorLine();
-            }
-            else {
-                m_pGraphObj->hideNameLabelAnchorLine();
-            }
-        }
-        else {
-            m_pGraphObj->hideNameLabel();
-            m_pGraphObj->hideNameLabelAnchorLine();
-        }
     }
 }
 

@@ -251,9 +251,9 @@ void CWdgtGraphObjLineProperties::acceptChanges()
                 // This is not a problem as the method does nothing. But the method is not
                 // expected to be called so we avoid it for the sake of clarification
                 // (and to have a clear method trace output where the unexpected call is not listed).
-                m_pWdgtLabels->acceptChanges();
-                m_pWdgtGeometry->acceptChanges();
-                m_pWdgtLineStyle->acceptChanges();
+                m_pWdgtLabels->applySettings();
+                m_pWdgtGeometry->applySettings();
+                m_pWdgtLineStyle->applySettings();
             }
 
             // After the changes have been applied the enabled state of the Apply and

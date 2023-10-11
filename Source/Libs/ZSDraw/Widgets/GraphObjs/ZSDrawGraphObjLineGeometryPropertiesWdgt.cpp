@@ -880,14 +880,18 @@ void CWdgtGraphObjLineGeometryProperties::fillEditControls()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::applySettings()
+void CWdgtGraphObjLineGeometryProperties::applySettings(bool i_bImmediatelyApplySettings)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ImmediatelyApply: " + bool2Str(i_bImmediatelyApplySettings);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "applySettings",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLine* pGraphObjLine = nullptr;
     if (m_pGraphObj != nullptr) {

@@ -57,9 +57,9 @@ public: // instance methods
     void expand(bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
+    void applySettings(bool i_bImmediatelyApplySettings = true) override;
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
-    void applySettings() override;
 protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawingSettings) override;
 protected slots:
@@ -84,7 +84,11 @@ protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
     /*!< Cached draw settings of the graphical object. */
-    CDrawSettings m_drawSettings;
+    QColor m_textColor;
+    QFont m_font;
+    ETextSize m_textSize;
+    CEnumTextStyle m_textStyle;
+    CEnumTextEffect m_textEffect;
     /*!< Edit controls. */
     QWidget* m_pWdgtHeadline;
     QHBoxLayout* m_pLytWdgtHeadline;

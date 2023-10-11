@@ -262,45 +262,46 @@ public: // instance methods
 public: // instance methods
     void setDrawSettings( const CDrawSettings& i_settings );
     const CDrawSettings& drawSettings() const { return m_drawSettings; }
+    bool updateDrawSettings();
 public: // instance methods
-    void setPenColor( const QColor& i_clr );
+    void setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
     QColor getPenColor() const { return m_drawSettings.getPenColor(); }
-    void setPenWidth( int i_iPenWidth );
+    void setPenWidth( int i_iPenWidth, bool i_bImmediatelyApplySetting = true );
     int getPenWidth() const { return m_drawSettings.getPenWidth(); }
 public: // instance methods
-    void setLineStyle( const CEnumLineStyle& i_lineStyle );
+    void setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImmediatelyApplySetting = true );
     CEnumLineStyle getLineStyle() const { return m_drawSettings.getLineStyle(); }
 public: // instance methods
-    void setFillColor( const QColor& i_clr );
+    void setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
     QColor getFillColor() const { return m_drawSettings.getFillColor(); }
-    void setFillStyle( const CEnumFillStyle& i_fillStyle );
+    void setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
     CEnumFillStyle getFillStyle() const { return m_drawSettings.getFillStyle(); }
 public: // instance methods
-    void setLineRecordType( const CEnumLineRecordType& i_recordType );
+    void setLineRecordType( const CEnumLineRecordType& i_recordType, bool i_bImmediatelyApplySetting = true );
     CEnumLineRecordType getLineRecordType() const { return m_drawSettings.getLineRecordType(); }
-    void setLineExtent( int i_iExtent );
+    void setLineExtent( int i_iExtent, bool i_bImmediatelyApplySetting = true );
     int  getLineExtent() const { return m_drawSettings.getLineExtent(); }
 public: // instance methods
-    void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle );
+    void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle, bool i_bImmediatelyApplySetting = true );
     CEnumLineEndStyle getLineEndStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndStyle(i_linePoint); }
-    void setLineEndBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType );
-    CEnumArrowHeadBaseLineType getLineEndBaseLineType( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndBaseLineType(i_linePoint); }
-    void setLineEndFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle );
-    CEnumArrowHeadFillStyle getLineEndFillStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndFillStyle(i_linePoint); }
-    void setLineEndWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_arrowWidth );
-    CEnumArrowHeadWidth getLineEndWidth( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndWidth(i_linePoint); }
-    void setLineEndLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_arrowLength );
-    CEnumArrowHeadLength getLineEndLength( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getLineEndLength(i_linePoint); }
+    void setArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType, bool i_bImmediatelyApplySetting = true );
+    CEnumArrowHeadBaseLineType getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getArrowHeadBaseLineType(i_linePoint); }
+    void setArrowHeadFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
+    CEnumArrowHeadFillStyle getArrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getArrowHeadFillStyle(i_linePoint); }
+    void setArrowHeadWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_arrowWidth, bool i_bImmediatelyApplySetting = true );
+    CEnumArrowHeadWidth getArrowHeadWidth( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getArrowHeadWidth(i_linePoint); }
+    void setArrowHeadLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_arrowLength, bool i_bImmediatelyApplySetting = true );
+    CEnumArrowHeadLength getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const { return m_drawSettings.getArrowHeadLength(i_linePoint); }
 public: // instance methods
-    void setTextColor( const QColor& i_clr );
+    void setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
     QColor getTextColor() const { return m_drawSettings.getTextColor(); }
-    void setTextFont( const QFont& i_fnt );
+    void setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting = true );
     QFont getTextFont() const { return m_drawSettings.getTextFont(); }
-    void setTextSize( const ETextSize i_textSize );
+    void setTextSize( const ETextSize i_textSize, bool i_bImmediatelyApplySetting = true );
     ETextSize getTextSize() const { return m_drawSettings.getTextSize(); }
-    void setTextStyle( const CEnumTextStyle& i_textStyle );
+    void setTextStyle( const CEnumTextStyle& i_textStyle, bool i_bImmediatelyApplySetting = true );
     CEnumTextStyle getTextStyle() const { return m_drawSettings.getTextStyle(); }
-    void setTextEffect( const CEnumTextEffect& i_textEffect );
+    void setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImmediatelyApplySetting = true );
     CEnumTextEffect getTextEffect() const { return m_drawSettings.getTextEffect(); }
 public: // overridables of base class QGraphicsScene
     virtual void dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv );
@@ -369,6 +370,17 @@ protected: // instance members
     ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsX;
     ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
     CDrawSettings m_drawSettings;
+    /*!< Several draw setting attributes may be modified one after another.
+         To avoid that for each single change the drawSettingsChanged signal is emitted,
+         it is possible first to modify each attribute one after another and afterwards
+         emit the changed signal just once after all attributes have been set. For this the
+         flag "i_bImmediatelyApplySetting" has be set to false when setting a new draw attribute.
+         If this flag is false the changed property is temporarily stored in "m_drawSettingsTmp".
+         After all settings have been changed the method "updateDrawSettings" takes over the
+         settings from the temporary buffer.
+         For the first change to be cached the temporary buffer will be allocated.
+         After updating the changes the temporary buffer will be deleted. */
+    CDrawSettings* m_pDrawSettingsTmp;
     ZS::System::CEnumMode m_mode;
     CEnumEditTool m_editTool;
     CEnumEditMode m_editMode;

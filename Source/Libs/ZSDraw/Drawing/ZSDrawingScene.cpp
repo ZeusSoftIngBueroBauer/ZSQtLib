@@ -173,6 +173,7 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_divLinesMetricsX("DrawingScene", EScaleAxis::X),
     m_divLinesMetricsY("DrawingScene", EScaleAxis::Y),
     m_drawSettings(),
+    m_pDrawSettingsTmp(nullptr),
     m_mode(EMode::Undefined),
     m_editTool(EEditTool::None),
     m_editMode(EEditMode::None),
@@ -279,20 +280,17 @@ CDrawingScene::~CDrawingScene()
     // accesses the drawing scene to remove the object name from the hash.
     clear();
 
-    try
-    {
+    try {
+        delete m_pDrawSettingsTmp;
+    } catch (...) {
+    }
+    try {
         delete m_pGraphObjsIdxTreeClipboard;
+    } catch(...) {
     }
-    catch(...)
-    {
-    }
-
-    try
-    {
+    try {
         delete m_pGraphObjsIdxTree;
-    }
-    catch(...)
-    {
+    } catch(...) {
     }
 
     mthTracer.onAdminObjAboutToBeReleased();
@@ -306,6 +304,7 @@ CDrawingScene::~CDrawingScene()
     //m_divLinesMetricsX;
     //m_divLinesMetricsY;
     //m_drawSettings;
+    m_pDrawSettingsTmp = nullptr;
     m_mode = static_cast<ZS::System::EMode>(0);
     m_editTool = static_cast<EEditTool>(0);
     m_editMode = static_cast<EEditMode>(0);
@@ -699,15 +698,34 @@ void CDrawingScene::setGridSettings( const CDrawGridSettings& i_gridSettings)
     {
         m_gridSettings = i_gridSettings;
 
+        QFont font = m_gridSettings.labelsFont();
+        CEnumTextStyle textStyle = m_gridSettings.labelsTextStyle();
+        CEnumTextEffect textEffect = m_gridSettings.labelsTextEffect();
+        ETextSize textSize = m_gridSettings.labelsTextSize();
+
+        if (isTextStyleBold(textStyle)) {
+            font.setBold(true);
+        }
+        if (isTextStyleItalic(textStyle)) {
+            font.setItalic(true);
+        }
+        if (isTextEffectUnderline(textEffect)) {
+            font.setUnderline(true);
+        }
+        if (isTextEffectStrikeout(textEffect)) {
+            font.setStrikeOut(true);
+        }
+        font.setPixelSize(textSize2SizeInPixels(textSize));
+
         m_divLinesMetricsX.setDivLinesDistMinInPix(EDivLineLayer::Main, m_gridSettings.linesDistMin());
-        m_divLinesMetricsX.setFont(m_gridSettings.labelsFont());
+        m_divLinesMetricsX.setFont(font);
         //m_divLinesMetricsX.setDigitsCountMax(0);
         //m_divLinesMetricsX.setUseEngineeringFormat(false);
         //m_divLinesMetricsX.setDivLineLabelsMinTextExtent(QSize(0, 0));
         m_divLinesMetricsX.update();
 
         m_divLinesMetricsY.setDivLinesDistMinInPix(EDivLineLayer::Main, m_gridSettings.linesDistMin());
-        m_divLinesMetricsY.setFont(m_gridSettings.labelsFont());
+        m_divLinesMetricsY.setFont(font);
         //m_divLinesMetricsY.setDigitsCountMax(0);
         //m_divLinesMetricsY.setUseEngineeringFormat(false);
         //m_divLinesMetricsY.setDivLineLabelsMinTextExtent(QSize(0, 0));
@@ -3055,10 +3073,63 @@ void CDrawingScene::setDrawSettings( const CDrawSettings& i_settings )
         /* strMethod    */ "setDrawSettings",
         /* strAddInfo   */ strMthInArgs );
 
+    // When emitting the drawSettingsChanged signal new settings may be applied
+    // as reentries by the signal receivers. Those new settings may have to be
+    // temporarily stored and a new temporary buffer has to be allocated.
+    // The current buffer pointer will be locally saved and freed after emitting
+    // the signals. If new settings got to be saved a new buffer is allocated.
+    CDrawSettings* pDrawSettingsTmp = m_pDrawSettingsTmp;
+    m_pDrawSettingsTmp = nullptr;
+
     if (i_settings != m_drawSettings) {
         m_drawSettings = i_settings;
         emit_drawSettingsChanged(m_drawSettings);
     }
+    delete pDrawSettingsTmp;
+    pDrawSettingsTmp = nullptr;
+
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Emits the drawSettingsChanged signal.
+
+    If there are temporary stored changes those changes will first be taken
+    over before the signal is emitted.
+
+    The temporary cache is used if several draw setting attributes got to be
+    modified one after another. For this the flag i_bImmediatelyApplySetting
+    has been passed with false to the "set<DrawSettingProperty>" methods.
+    After modifying all attributes "updateDrawSettings" must be called to take
+    over the modified settings and to emit the drawSettingsChanged signal.
+
+    @return true, if there were changes, false otherwise.
+*/
+bool CDrawingScene::updateDrawSettings()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateDrawSettings",
+        /* strAddInfo   */ "" );
+
+    bool bChanged = false;
+    if (m_pDrawSettingsTmp != nullptr) {
+        if (*m_pDrawSettingsTmp != m_drawSettings) {
+            bChanged = true;
+            // setDrawSettings will delete the temporary buffer.
+            setDrawSettings(*m_pDrawSettingsTmp);
+        }
+        else {
+            delete m_pDrawSettingsTmp;
+            m_pDrawSettingsTmp = nullptr;
+        }
+    }
+
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bChanged);
+    }
+    return bChanged;
 }
 
 /*==============================================================================
@@ -3066,12 +3137,30 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setPenColor( const QColor& i_clr )
+/*! @brief Sets the pen color to be used when creating new graphical objects.
+
+    If several draw setting attributes got to modified one after another
+    the flag i_bImmediatelyApplySetting should be set to false.
+    In this case the modified draw setting attribute will be stored in a
+    temporary cache and the signal "drawSettingsChanged" is not emitted.
+
+    After setting all draw attributes the method updateDrawSettings must be
+    called to take over the modified draw attributes from the temporary cache
+    to the current draw settings. The updateDrawSettings method will emit the
+    drawSettingsChanged signal.
+
+    @param [in] i_clr
+        New pen color to be used.
+    @param [in] i_bImmediatelyApplySetting (default: true)
+        Set this flag to false if further set<DrawAttribute> will follow and you
+        want to update all changes at once later on.
+*/
+void CDrawingScene::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_clr.name();
+        strMthInArgs = i_clr.name() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3079,14 +3168,22 @@ void CDrawingScene::setPenColor( const QColor& i_clr )
         /* strMethod    */ "setPenColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_clr != m_drawSettings.getPenColor()) {
-        m_drawSettings.setPenColor(i_clr);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_clr != m_drawSettings.getPenColor()) {
+            m_drawSettings.setPenColor(i_clr);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setPenColor(i_clr);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setPenWidth( int i_iPenWidth )
+void CDrawingScene::setPenWidth( int i_iPenWidth, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3099,9 +3196,17 @@ void CDrawingScene::setPenWidth( int i_iPenWidth )
         /* strMethod    */ "setPenWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_iPenWidth != m_drawSettings.getPenWidth()) {
-        m_drawSettings.setPenWidth(i_iPenWidth);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_iPenWidth != m_drawSettings.getPenWidth()) {
+            m_drawSettings.setPenWidth(i_iPenWidth);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setPenWidth(i_iPenWidth);
     }
 }
 
@@ -3110,12 +3215,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineStyle( const CEnumLineStyle& i_lineStyle )
+void CDrawingScene::setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_lineStyle.toString();
+        strMthInArgs = i_lineStyle.toString() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3123,9 +3228,17 @@ void CDrawingScene::setLineStyle( const CEnumLineStyle& i_lineStyle )
         /* strMethod    */ "setLineStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_lineStyle != m_drawSettings.getLineStyle()) {
-        m_drawSettings.setLineStyle(i_lineStyle);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_lineStyle != m_drawSettings.getLineStyle()) {
+            m_drawSettings.setLineStyle(i_lineStyle);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setLineStyle(i_lineStyle);
     }
 }
 
@@ -3134,12 +3247,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setFillColor( const QColor& i_clr )
+void CDrawingScene::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_clr.name();
+        strMthInArgs = i_clr.name() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3147,19 +3260,27 @@ void CDrawingScene::setFillColor( const QColor& i_clr )
         /* strMethod    */ "setFillColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_clr != m_drawSettings.getFillColor()) {
-        m_drawSettings.setFillColor(i_clr);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_clr != m_drawSettings.getFillColor()) {
+            m_drawSettings.setFillColor(i_clr);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setFillColor(i_clr);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setFillStyle( const CEnumFillStyle& i_fillStyle )
+void CDrawingScene::setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_fillStyle.toString();
+        strMthInArgs = i_fillStyle.toString() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3167,9 +3288,17 @@ void CDrawingScene::setFillStyle( const CEnumFillStyle& i_fillStyle )
         /* strMethod    */ "setFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_fillStyle != m_drawSettings.getFillStyle()) {
-        m_drawSettings.setFillStyle(i_fillStyle);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_fillStyle != m_drawSettings.getFillStyle()) {
+            m_drawSettings.setFillStyle(i_fillStyle);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setFillStyle(i_fillStyle);
     }
 }
 
@@ -3178,12 +3307,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineRecordType( const CEnumLineRecordType& i_recordType )
+void CDrawingScene::setLineRecordType( const CEnumLineRecordType& i_recordType, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_recordType.toString();
+        strMthInArgs = i_recordType.toString() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3191,19 +3320,27 @@ void CDrawingScene::setLineRecordType( const CEnumLineRecordType& i_recordType )
         /* strMethod    */ "setLineRecordType",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_recordType != m_drawSettings.getLineRecordType()) {
-        m_drawSettings.setLineRecordType(i_recordType);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_recordType != m_drawSettings.getLineRecordType()) {
+            m_drawSettings.setLineRecordType(i_recordType);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setLineRecordType(i_recordType);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineExtent( int i_iLineExtent )
+void CDrawingScene::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_iLineExtent);
+        strMthInArgs = QString::number(i_iLineExtent) + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3211,9 +3348,17 @@ void CDrawingScene::setLineExtent( int i_iLineExtent )
         /* strMethod    */ "setLineExtent",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_iLineExtent != m_drawSettings.getLineExtent()) {
-        m_drawSettings.setLineExtent(i_iLineExtent);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_iLineExtent != m_drawSettings.getLineExtent()) {
+            m_drawSettings.setLineExtent(i_iLineExtent);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setLineExtent(i_iLineExtent);
     }
 }
 
@@ -3223,12 +3368,14 @@ public: // instance methods
 
 //------------------------------------------------------------------------------
 void CDrawingScene::setLineEndStyle(
-    const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle )
+    const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle,
+    bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_linePoint.toString() + ", " + i_endStyle.toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_endStyle.toString()
+            + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3236,57 +3383,86 @@ void CDrawingScene::setLineEndStyle(
         /* strMethod    */ "setLineEndStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_endStyle != m_drawSettings.getLineEndStyle(i_linePoint)) {
-        m_drawSettings.setLineEndStyle(i_linePoint,i_endStyle);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_endStyle != m_drawSettings.getLineEndStyle(i_linePoint)) {
+            m_drawSettings.setLineEndStyle(i_linePoint, i_endStyle);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setLineEndStyle(i_linePoint, i_endStyle);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndBaseLineType(
-    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType )
+void CDrawingScene::setArrowHeadBaseLineType(
+    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType,
+    bool i_bImmediatelyApplySetting)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_linePoint.toString() + ", " + i_baseLineType.toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_baseLineType.toString()
+            + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setLineEndBaseLineType",
+        /* strMethod    */ "setArrowHeadBaseLineType",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_baseLineType != m_drawSettings.getLineEndBaseLineType(i_linePoint)) {
-        m_drawSettings.setLineEndBaseLineType(i_linePoint,i_baseLineType);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_baseLineType != m_drawSettings.getArrowHeadBaseLineType(i_linePoint)) {
+            m_drawSettings.setArrowHeadBaseLineType(i_linePoint, i_baseLineType);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setArrowHeadBaseLineType(i_linePoint, i_baseLineType);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndFillStyle(
-    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle )
+void CDrawingScene::setArrowHeadFillStyle(
+    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle,
+    bool i_bImmediatelyApplySetting)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_linePoint.toString() + ", " + i_fillStyle.toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_fillStyle.toString()
+            + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setLineEndFillStyle",
+        /* strMethod    */ "setArrowHeadFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_fillStyle != m_drawSettings.getLineEndFillStyle(i_linePoint)) {
-        m_drawSettings.setLineEndFillStyle(i_linePoint,i_fillStyle);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_fillStyle != m_drawSettings.getArrowHeadFillStyle(i_linePoint)) {
+            m_drawSettings.setArrowHeadFillStyle(i_linePoint, i_fillStyle);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setArrowHeadFillStyle(i_linePoint, i_fillStyle);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndWidth(
-    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width )
+void CDrawingScene::setArrowHeadWidth(
+    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width,
+    bool i_bImmediatelyApplySetting)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3296,33 +3472,51 @@ void CDrawingScene::setLineEndWidth(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setLineEndWidth",
+        /* strMethod    */ "setArrowHeadWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_width != m_drawSettings.getLineEndWidth(i_linePoint)) {
-        m_drawSettings.setLineEndWidth(i_linePoint,i_width);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_width != m_drawSettings.getArrowHeadWidth(i_linePoint)) {
+            m_drawSettings.setArrowHeadWidth(i_linePoint, i_width);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setArrowHeadWidth(i_linePoint, i_width);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setLineEndLength(
-    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length )
+void CDrawingScene::setArrowHeadLength(
+    const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length,
+    bool i_bImmediatelyApplySetting)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_linePoint.toString() + ", " + i_length.toString();
+        strMthInArgs = i_linePoint.toString() + ", " + i_length.toString()
+            + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setLineEndLength",
+        /* strMethod    */ "setArrowHeadLength",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_length != m_drawSettings.getLineEndLength(i_linePoint)) {
-        m_drawSettings.setLineEndLength(i_linePoint,i_length);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_length != m_drawSettings.getArrowHeadLength(i_linePoint)) {
+            m_drawSettings.setArrowHeadLength(i_linePoint, i_length);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setArrowHeadLength(i_linePoint, i_length);
     }
 }
 
@@ -3331,12 +3525,12 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setTextColor( const QColor& i_clr )
+void CDrawingScene::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_clr.name();
+        strMthInArgs = i_clr.name() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3344,19 +3538,27 @@ void CDrawingScene::setTextColor( const QColor& i_clr )
         /* strMethod    */ "setTextColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_clr != m_drawSettings.getTextColor()) {
-        m_drawSettings.setTextColor(i_clr);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_clr != m_drawSettings.getTextColor()) {
+            m_drawSettings.setTextColor(i_clr);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextColor(i_clr);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setTextFont( const QFont& i_fnt )
+void CDrawingScene::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_fnt.family();
+        strMthInArgs = i_fnt.family() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3364,19 +3566,27 @@ void CDrawingScene::setTextFont( const QFont& i_fnt )
         /* strMethod    */ "setTextFont",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_fnt != m_drawSettings.getTextFont()) {
-        m_drawSettings.setTextFont(i_fnt);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_fnt != m_drawSettings.getTextFont()) {
+            m_drawSettings.setTextFont(i_fnt);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextFont(i_fnt);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setTextSize( ETextSize i_size )
+void CDrawingScene::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = textSize2Str(i_size);
+        strMthInArgs = textSize2Str(i_size) + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3384,19 +3594,27 @@ void CDrawingScene::setTextSize( ETextSize i_size )
         /* strMethod    */ "setTextSize",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_size != m_drawSettings.getTextSize()) {
-        m_drawSettings.setTextSize(i_size);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_size != m_drawSettings.getTextSize()) {
+            m_drawSettings.setTextSize(i_size);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextSize(i_size);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setTextStyle( const CEnumTextStyle& i_textStyle )
+void CDrawingScene::setTextStyle( const CEnumTextStyle& i_textStyle, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_textStyle.toString();
+        strMthInArgs = i_textStyle.toString() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3404,19 +3622,27 @@ void CDrawingScene::setTextStyle( const CEnumTextStyle& i_textStyle )
         /* strMethod    */ "setTextStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_textStyle != m_drawSettings.getTextStyle()) {
-        m_drawSettings.setTextStyle(i_textStyle);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_textStyle != m_drawSettings.getTextStyle()) {
+            m_drawSettings.setTextStyle(i_textStyle);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextStyle(i_textStyle);
     }
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::setTextEffect( const CEnumTextEffect& i_textEffect )
+void CDrawingScene::setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_textEffect.toString();
+        strMthInArgs = i_textEffect.toString() + ", ImmediateApply: " + bool2Str(i_bImmediatelyApplySetting);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3424,9 +3650,17 @@ void CDrawingScene::setTextEffect( const CEnumTextEffect& i_textEffect )
         /* strMethod    */ "setTextEffect",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_textEffect != m_drawSettings.getTextEffect()) {
-        m_drawSettings.setTextEffect(i_textEffect);
-        emit_drawSettingsChanged(m_drawSettings);
+    if (i_bImmediatelyApplySetting) {
+        if (i_textEffect != m_drawSettings.getTextEffect()) {
+            m_drawSettings.setTextEffect(i_textEffect);
+            emit_drawSettingsChanged(m_drawSettings);
+        }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextEffect(i_textEffect);
     }
 }
 

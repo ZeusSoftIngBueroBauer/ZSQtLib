@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -481,6 +482,45 @@ void CWdgtGraphObjPropertiesAbstract::rejectChanges()
     }
 }
 
+//------------------------------------------------------------------------------
+/*! @brief This method is called by acceptChanges to apply the settings from
+           the edit controls at the graphical object.
+
+    Derived classes should overwrite this method.
+
+    The ContentChangedSignalBlocked counter has been incrememented by the
+    acceptChanges method as on changing properties of the graphical object
+    the on<Properties>Changed slots are called as reentries when applying the
+    changes at the graphical object. The on<Properties>Changed slots should
+    not call fillEditControls when applying the changes at the graphical object
+    as that would overwrite current settings with old setting.
+
+    The widget may be used to modify only part of the settings and may be
+    a child of a widget used to modify also other settings.
+    In this case the parent widget is responsibly for updating all settings at
+    the drawing scene or the graphical object. For this the parent widget
+    will set the flag i_bImmediatelyApplySettings to false and will update the
+    changed settings after all child widgets have forwarded the changes to
+    either the graphics scene or the graphical object.
+
+    @param [in] i_bImmediatelyApplySetting (default: true)
+        Set this flag to false if further set<DrawAttribute> will follow and
+        all changes have to be updated at once later on.
+*/
+void CWdgtGraphObjPropertiesAbstract::applySettings(bool i_bImmediatelyApplySettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ImmediatelyApply: " + bool2Str(i_bImmediatelyApplySettings);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::applySettings",
+        /* strAddInfo   */ strMthInArgs );
+}
+
 /*==============================================================================
 protected slots: // overridables
 ==============================================================================*/
@@ -577,29 +617,6 @@ void CWdgtGraphObjPropertiesAbstract::updateButtonsEnabled()
             m_pBtnReset->setEnabled(bEnabled);
         }
     }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief This method is called by acceptChanges to apply the settings from
-           the edit controls at the graphical object.
-
-    Derived classes should overwrite this method.
-
-    The ContentChangedSignalBlocked counter has been incrememented by the
-    acceptChanges method as on changing properties of the graphical object
-    the on<Properties>Changed slots are called as reentries when applying the
-    changes at the graphical object. The on<Properties>Changed slots should
-    not call fillEditControls when applying the changes at the graphical object
-    as that would overwrite current settings with old setting.
-*/
-void CWdgtGraphObjPropertiesAbstract::applySettings()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::applySettings",
-        /* strAddInfo   */ "" );
 }
 
 /*==============================================================================

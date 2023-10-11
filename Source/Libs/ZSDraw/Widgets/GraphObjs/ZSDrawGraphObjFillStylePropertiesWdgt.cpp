@@ -89,7 +89,8 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
         i_strNameSpace, i_strGraphObjType,
         ClassName(), i_strObjName, i_pWdgtParent),
     // Caching values
-    m_drawSettings(),
+    m_fillColor(Qt::white),
+    m_fillStyle(EFillStyle::NoFill),
     // Edit Controls
     m_pWdgtHeadline(nullptr),
     m_pLytWdgtHeadline(nullptr),
@@ -247,7 +248,8 @@ CWdgtGraphObjFillStyleProperties::~CWdgtGraphObjFillStyleProperties()
     catch(...) {
     }
 
-    //m_drawSettings;
+    //m_fillColor;
+    m_fillStyle = static_cast<EFillStyle>(0);
     m_pWdgtHeadline = nullptr;
     m_pLytWdgtHeadline = nullptr;
     //m_pxmBtnDown;
@@ -314,18 +316,81 @@ bool CWdgtGraphObjFillStyleProperties::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
+
+    CDrawSettings drawSettings;
     if (m_pGraphObj == nullptr) {
-        CDrawSettings drawSettings = m_pDrawingScene->drawSettings();
-        bHasChanges = (m_drawSettings != drawSettings);
+        drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        CDrawSettings drawSettings = m_pGraphObj->getDrawSettings();
-        bHasChanges = (m_drawSettings != drawSettings);
+        drawSettings = m_pGraphObj->getDrawSettings();
     }
+
+    if (m_fillColor != drawSettings.getFillColor()) {
+        bHasChanges = true;
+    }
+    else if (m_fillStyle != drawSettings.getFillStyle()) {
+        bHasChanges = true;
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
     }
     return bHasChanges;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Applies the changed settings at either the graphics scene or the
+           graphical object.
+
+    The widget is used to modify only part of the draw settings and is very
+    likely a child of a widget used to modify also other draw setting attributes.
+    The parent widget is responsibly for updating all the draw settings at
+    the drawing scene or the graphical object. For this the parent widget
+    will set the flag i_bImmediatelyApplySettings to false and will update the
+    changed settings after all child widgets have forwarded the changes to
+    either the graphics scene or the graphical object.
+
+    @param [in] i_bImmediatelyApplySetting (default: true)
+        Set this flag to false if further set<DrawAttribute> will follow and
+        all changes have to be updated at once later on.
+*/
+void CWdgtGraphObjFillStyleProperties::applySettings(bool i_bImmediatelyApplySettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ImmediatelyApply: " + bool2Str(i_bImmediatelyApplySettings);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "applySettings",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
+
+    if (!hasErrors() && hasChanges()) {
+        if (m_pGraphObj == nullptr) {
+            m_pDrawingScene->setFillColor(m_fillColor);
+            m_pDrawingScene->setFillStyle(m_fillStyle);
+            if (i_bImmediatelyApplySettings) {
+                m_pDrawingScene->updateDrawSettings();
+            }
+        }
+        else {
+            m_pGraphObj->setFillColor(m_fillColor);
+            m_pGraphObj->setFillStyle(m_fillStyle);
+            if (i_bImmediatelyApplySettings) {
+                m_pGraphObj->updateDrawSettings();
+            }
+        }
+    }
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Leave);
+    }
 }
 
 /*==============================================================================
@@ -342,48 +407,23 @@ void CWdgtGraphObjFillStyleProperties::fillEditControls()
         /* strMethod    */ "fillEditControls",
         /* strAddInfo   */ "" );
 
+    CDrawSettings drawSettings;
     if (m_pGraphObj == nullptr) {
-        m_drawSettings = m_pDrawingScene->drawSettings();
+        drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        m_drawSettings = m_pGraphObj->getDrawSettings();
+        drawSettings = m_pGraphObj->getDrawSettings();
     }
+
+    m_fillColor = drawSettings.getFillColor();
+    m_fillStyle = drawSettings.getFillStyle();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    updateCmbFillStyle(m_drawSettings.getFillStyle());
-    updateBtnFillColor(m_drawSettings.getFillColor());
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Leave);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjFillStyleProperties::applySettings()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "applySettings",
-        /* strAddInfo   */ "" );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Enter);
-    }
-
-    #pragma message(__TODO__"Cache and set only text style settings")
-    if (!hasErrors() && hasChanges()) {
-        if (m_pGraphObj == nullptr) {
-            m_pDrawingScene->setDrawSettings(m_drawSettings);
-        }
-        else {
-            m_pGraphObj->setDrawSettings(m_drawSettings);
-        }
-    }
+    updateCmbFillStyle(m_fillStyle);
+    updateBtnFillColor(m_fillColor);
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -417,10 +457,8 @@ void CWdgtGraphObjFillStyleProperties::onDrawingSceneDrawSettingsChanged(const C
         // the ContentChangedSignalBlockedCounter is incremented to avoid that
         // "onDrawingSceneDrawSettingsChanged" overwrites settings in edit controls which
         // haven't been applied yet.
-        if (m_drawSettings != i_drawSettings && m_iContentChangedSignalBlockedCounter == 0)
+        if (m_iContentChangedSignalBlockedCounter == 0)
         {
-            m_drawSettings = i_drawSettings;
-
             {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
                 // Here the derived class should apply the properties from the graphical
@@ -479,17 +517,16 @@ void CWdgtGraphObjFillStyleProperties::onCmbFillStyleCurrentIndexChanged(int i_i
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbFillStyleCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     if (m_iContentChangedSignalBlockedCounter > 0) {
         m_bContentChanged = true;
     }
     else {
         QVariant varData = m_pCmbFillStyle->itemData(i_idx, Qt::UserRole);
-        EFillStyle fillStyle = static_cast<EFillStyle>(varData.toInt());
-        m_drawSettings.setFillStyle(fillStyle);
+        m_fillStyle = static_cast<EFillStyle>(varData.toInt());
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -506,25 +543,25 @@ void CWdgtGraphObjFillStyleProperties::onBtnFillColorClicked(bool /*i_bChecked*/
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnFillColorClicked",
         /* strAddInfo   */ "" );
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
 
     QColor clr = QColorDialog::getColor(
-        /* clrInitial  */ m_drawSettings.getPenColor(),
+        /* clrInitial  */ m_fillColor,
         /* pWdgtParent */ m_pBtnFillColor,
         /* strTitle    */ "Colors",
         /* options     */ QColorDialog::ShowAlphaChannel );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Enter);
-    }
     if (clr.isValid()) {
-        if (m_drawSettings.getFillColor() != clr) {
+        if (m_fillColor != clr) {
             updateBtnFillColor(clr);
             if (m_iContentChangedSignalBlockedCounter > 0) {
-                m_bContentChanged = (m_drawSettings.getFillColor() != clr);
-                m_drawSettings.setFillColor(clr);
+                m_bContentChanged = true;
+                m_fillColor = clr;
             }
             else {
-                m_drawSettings.setFillColor(clr);
+                m_fillColor = clr;
                 emit_contentChanged();
             }
         }
@@ -533,6 +570,10 @@ void CWdgtGraphObjFillStyleProperties::onBtnFillColorClicked(bool /*i_bChecked*/
         traceValues(mthTracer, EMethodDir::Leave);
     }
 }
+
+/*==============================================================================
+private: // auxiliary instance methods
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 QSize CWdgtGraphObjFillStyleProperties::fillFillStylesModel()
@@ -642,6 +683,11 @@ void CWdgtGraphObjFillStyleProperties::traceValues(CMethodTracer& mthTracer, EMe
             + ", SignalBlockCounter: " + QString::number(m_iContentChangedSignalBlockedCounter) + "}";
     mthTracer.trace(strMthLog);
     strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        + "DrawSettings {" + m_drawSettings.toString() + "}";
+        + "DrawSettings {"
+            "Fill {"
+                + "Color: " + m_fillColor.name()
+                + ", Style: " + m_fillStyle.toString()
+            + "}"
+        + "}";
     mthTracer.trace(strMthLog);
 }

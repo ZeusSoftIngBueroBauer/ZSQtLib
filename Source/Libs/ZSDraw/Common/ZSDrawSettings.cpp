@@ -1560,7 +1560,7 @@ CEnumLineEndStyle CDrawSettings::getLineEndStyle( const CEnumLinePoint& i_linePo
 }
 
 //------------------------------------------------------------------------------
-void CDrawSettings::setLineEndBaseLineType(
+void CDrawSettings::setArrowHeadBaseLineType(
     const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType )
 //------------------------------------------------------------------------------
 {
@@ -1572,7 +1572,7 @@ void CDrawSettings::setLineEndBaseLineType(
 }
 
 //------------------------------------------------------------------------------
-CEnumArrowHeadBaseLineType CDrawSettings::getLineEndBaseLineType( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadBaseLineType CDrawSettings::getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1ArrowHeadBaseLineType;
@@ -1583,7 +1583,7 @@ CEnumArrowHeadBaseLineType CDrawSettings::getLineEndBaseLineType( const CEnumLin
 }
 
 //------------------------------------------------------------------------------
-void CDrawSettings::setLineEndFillStyle(
+void CDrawSettings::setArrowHeadFillStyle(
     const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle )
 //------------------------------------------------------------------------------
 {
@@ -1595,7 +1595,7 @@ void CDrawSettings::setLineEndFillStyle(
 }
 
 //------------------------------------------------------------------------------
-CEnumArrowHeadFillStyle CDrawSettings::getLineEndFillStyle( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadFillStyle CDrawSettings::getArrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1ArrowHeadFillStyle;
@@ -1606,7 +1606,7 @@ CEnumArrowHeadFillStyle CDrawSettings::getLineEndFillStyle( const CEnumLinePoint
 }
 
 //------------------------------------------------------------------------------
-void CDrawSettings::setLineEndWidth(
+void CDrawSettings::setArrowHeadWidth(
     const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width )
 //------------------------------------------------------------------------------
 {
@@ -1618,7 +1618,7 @@ void CDrawSettings::setLineEndWidth(
 }
 
 //------------------------------------------------------------------------------
-CEnumArrowHeadWidth CDrawSettings::getLineEndWidth( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadWidth CDrawSettings::getArrowHeadWidth( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1ArrowHeadWidth;
@@ -1629,7 +1629,7 @@ CEnumArrowHeadWidth CDrawSettings::getLineEndWidth( const CEnumLinePoint& i_line
 }
 
 //------------------------------------------------------------------------------
-void CDrawSettings::setLineEndLength(
+void CDrawSettings::setArrowHeadLength(
     const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length )
 //------------------------------------------------------------------------------
 {
@@ -1641,7 +1641,7 @@ void CDrawSettings::setLineEndLength(
 }
 
 //------------------------------------------------------------------------------
-CEnumArrowHeadLength CDrawSettings::getLineEndLength( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadLength CDrawSettings::getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
     EDrawAttribute attr = EDrawAttributeLineP1ArrowHeadLength;

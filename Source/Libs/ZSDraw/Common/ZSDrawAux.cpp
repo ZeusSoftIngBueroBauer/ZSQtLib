@@ -566,9 +566,9 @@ void ZS::Draw::getLineEndPolygons(
         #endif
 
         for (CEnumLinePoint linePoint = 0; linePoint < CEnumLinePoint::count(); linePoint++) {
-            CEnumArrowHeadWidth width = i_drawSettings.getLineEndWidth(linePoint);
-            CEnumArrowHeadLength length = i_drawSettings.getLineEndLength(linePoint);
-            CEnumArrowHeadBaseLineType baseLineType = i_drawSettings.getLineEndBaseLineType(linePoint);
+            CEnumArrowHeadWidth width = i_drawSettings.getArrowHeadWidth(linePoint);
+            CEnumArrowHeadLength length = i_drawSettings.getArrowHeadLength(linePoint);
+            CEnumArrowHeadBaseLineType baseLineType = i_drawSettings.getArrowHeadBaseLineType(linePoint);
             QPointF pt;
 
             if ((linePoint == ELinePoint::Start) && (i_pplgLineStart != nullptr)) {

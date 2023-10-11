@@ -239,10 +239,10 @@ CGraphObjTransistor::CGraphObjTransistor(
     if( m_dopingType == EDopingTypePNP )
     {
         drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
-        drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
-        drawSettingsLineBaseUp.setLineEndFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
-        drawSettingsLineBaseUp.setLineEndWidth(ELinePoint::End,EArrowHeadWidth::Thin);
-        drawSettingsLineBaseUp.setLineEndLength(ELinePoint::End,EArrowHeadLength::Short);
+        drawSettingsLineBaseUp.setArrowHeadBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
+        drawSettingsLineBaseUp.setArrowHeadFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
+        drawSettingsLineBaseUp.setArrowHeadWidth(ELinePoint::End,EArrowHeadWidth::Thin);
+        drawSettingsLineBaseUp.setArrowHeadLength(ELinePoint::End,EArrowHeadLength::Short);
     }
 
     CDrawSettings drawSettingsLineBaseDn = drawSettingsLine;
@@ -255,10 +255,10 @@ CGraphObjTransistor::CGraphObjTransistor(
     if( m_dopingType == EDopingTypeNPN )
     {
         drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
-        drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
-        drawSettingsLineBaseDn.setLineEndFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
-        drawSettingsLineBaseDn.setLineEndWidth(ELinePoint::End,EArrowHeadWidth::Thin);
-        drawSettingsLineBaseDn.setLineEndLength(ELinePoint::End,EArrowHeadLength::Short);
+        drawSettingsLineBaseDn.setArrowHeadBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
+        drawSettingsLineBaseDn.setArrowHeadFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
+        drawSettingsLineBaseDn.setArrowHeadWidth(ELinePoint::End,EArrowHeadWidth::Thin);
+        drawSettingsLineBaseDn.setArrowHeadLength(ELinePoint::End,EArrowHeadLength::Short);
     }
 
     CDrawSettings drawSettingsCnctPt(EGraphObjTypeConnectionPoint);
@@ -557,19 +557,19 @@ void CGraphObjTransistor::setDopingType( EDopingType i_type )
             drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::Normal);
 
             drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
-            drawSettingsLineBaseDn.setLineEndBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
-            drawSettingsLineBaseDn.setLineEndFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
-            drawSettingsLineBaseDn.setLineEndWidth(ELinePoint::End,EArrowHeadWidth::Thin);
-            drawSettingsLineBaseDn.setLineEndLength(ELinePoint::End,EArrowHeadLength::Short);
+            drawSettingsLineBaseDn.setArrowHeadBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
+            drawSettingsLineBaseDn.setArrowHeadFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
+            drawSettingsLineBaseDn.setArrowHeadWidth(ELinePoint::End,EArrowHeadWidth::Thin);
+            drawSettingsLineBaseDn.setArrowHeadLength(ELinePoint::End,EArrowHeadLength::Short);
         }
 
         else // if( m_dopingType == ETypePNP )
         {
             drawSettingsLineBaseUp.setLineEndStyle(ELinePoint::End,ELineEndStyle::ArrowHead);
-            drawSettingsLineBaseUp.setLineEndBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
-            drawSettingsLineBaseUp.setLineEndFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
-            drawSettingsLineBaseUp.setLineEndWidth(ELinePoint::End,EArrowHeadWidth::Thin);
-            drawSettingsLineBaseUp.setLineEndLength(ELinePoint::End,EArrowHeadLength::Short);
+            drawSettingsLineBaseUp.setArrowHeadBaseLineType(ELinePoint::End,EArrowHeadBaseLineType::Normal);
+            drawSettingsLineBaseUp.setArrowHeadFillStyle(ELinePoint::End,EArrowHeadFillStyle::SolidPattern);
+            drawSettingsLineBaseUp.setArrowHeadWidth(ELinePoint::End,EArrowHeadWidth::Thin);
+            drawSettingsLineBaseUp.setArrowHeadLength(ELinePoint::End,EArrowHeadLength::Short);
 
             drawSettingsLineBaseDn.setLineEndStyle(ELinePoint::End,ELineEndStyle::Normal);
         }

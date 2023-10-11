@@ -102,13 +102,13 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     virtual bool hasChanges() const;
     virtual void acceptChanges();
     virtual void rejectChanges();
+    virtual void applySettings(bool i_bImmediatelyApplySettings = true);
 protected slots: // overridables
     virtual void onBtnApplyClicked(bool i_bChecked = false);
     virtual void onBtnResetClicked(bool i_bChecked = false);
 protected: // overridables
     virtual void fillEditControls();
     virtual void updateButtonsEnabled();
-    virtual void applySettings();
 protected slots: // overridables
     virtual void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     virtual void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawSettings);

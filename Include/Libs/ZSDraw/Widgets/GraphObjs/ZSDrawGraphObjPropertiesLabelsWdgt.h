@@ -54,6 +54,7 @@ public: // ctors and dtor
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasErrors() const override;
     bool hasChanges() const override;
+    void applySettings(bool i_bImmediatelyApplySettings = true) override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
 protected slots:
@@ -63,7 +64,6 @@ protected slots:
     void onChkNameLabelAnchorLineVisibleStateChanged(int i_iState);
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
-    void applySettings() override;
 private: // auxiliary instance methods
     bool changedNameIsUnique() const;
     void fillComboNameLabelAnchorSelPt();

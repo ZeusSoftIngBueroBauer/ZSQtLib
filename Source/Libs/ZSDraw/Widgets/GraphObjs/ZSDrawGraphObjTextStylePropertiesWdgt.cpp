@@ -91,7 +91,11 @@ CWdgtGraphObjTextStyleProperties::CWdgtGraphObjTextStyleProperties(
         i_strNameSpace, i_strGraphObjType,
         ClassName(), i_strObjName, i_pWdgtParent),
     // Caching values
-    m_drawSettings(),
+    m_textColor(Qt::black),
+    m_font(),
+    m_textSize(ETextSize11),
+    m_textStyle(ETextStyle::Normal),
+    m_textEffect(ETextEffect::None),
     // Edit Controls
     m_pWdgtHeadline(nullptr),
     m_pLytWdgtHeadline(nullptr),
@@ -316,7 +320,11 @@ CWdgtGraphObjTextStyleProperties::~CWdgtGraphObjTextStyleProperties()
     catch(...) {
     }
 
-    //m_drawSettings;
+    //m_textColor;
+    //m_font;
+    m_textSize = static_cast<ETextSize>(0);
+    m_textStyle = static_cast<ETextStyle>(0);
+    m_textEffect = static_cast<ETextEffect>(0);
     m_pWdgtHeadline = nullptr;
     m_pLytWdgtHeadline = nullptr;
     //m_pxmBtnDown;
@@ -388,18 +396,96 @@ bool CWdgtGraphObjTextStyleProperties::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
+
+    CDrawSettings drawSettings;
     if (m_pGraphObj == nullptr) {
-        CDrawSettings drawSettings = m_pDrawingScene->drawSettings();
-        bHasChanges = (m_drawSettings != drawSettings);
+        drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        CDrawSettings drawSettings = m_pGraphObj->getDrawSettings();
-        bHasChanges = (m_drawSettings != drawSettings);
+        drawSettings = m_pGraphObj->getDrawSettings();
     }
+
+    if (m_textColor != drawSettings.getTextColor()) {
+        bHasChanges = true;
+    }
+    else if (m_font != drawSettings.getTextFont()) {
+        bHasChanges = true;
+    }
+    else if (m_textStyle != drawSettings.getTextStyle()) {
+        bHasChanges = true;
+    }
+    else if (m_textSize != drawSettings.getTextSize()) {
+        bHasChanges = true;
+    }
+    else if (m_textEffect != drawSettings.getTextEffect()) {
+        bHasChanges = true;
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
     }
     return bHasChanges;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Applies the changed settings at either the graphics scene or the
+           graphical object.
+
+    The widget is used to modify only part of the draw settings and is very
+    likely a child of a widget used to modify also other draw setting attributes.
+    The parent widget is responsibly for updating all the draw settings at
+    the drawing scene or the graphical object. For this the parent widget
+    will set the flag i_bImmediatelyApplySettings to false and will update the
+    changed settings after all child widgets have forwarded the changes to
+    either the graphics scene or the graphical object.
+
+    @param [in] i_bImmediatelyApplySetting (default: true)
+        Set this flag to false if further set<DrawAttribute> will follow and
+        all changes have to be updated at once later on.
+*/
+void CWdgtGraphObjTextStyleProperties::applySettings(bool i_bImmediatelyApplySettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ImmediatelyApply: " + bool2Str(i_bImmediatelyApplySettings);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "applySettings",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
+
+    if (!hasErrors() && hasChanges()) {
+        if (m_pGraphObj == nullptr) {
+            m_pDrawingScene->setTextColor(m_textColor, false);
+            m_pDrawingScene->setTextFont(m_font, false);
+            m_pDrawingScene->setTextSize(m_textSize, false);
+            m_pDrawingScene->setTextStyle(m_textStyle, false);
+            m_pDrawingScene->setTextEffect(m_textEffect, false);
+            if (i_bImmediatelyApplySettings) {
+                m_pDrawingScene->updateDrawSettings();
+            }
+        }
+        else {
+            m_pGraphObj->setTextColor(m_textColor, false);
+            m_pGraphObj->setTextFont(m_font, false);
+            m_pGraphObj->setTextSize(m_textSize, false);
+            m_pGraphObj->setTextStyle(m_textStyle, false);
+            m_pGraphObj->setTextEffect(m_textEffect, false);
+            if (i_bImmediatelyApplySettings) {
+                m_pGraphObj->updateDrawSettings();
+            }
+        }
+    }
+
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Leave);
+    }
 }
 
 /*==============================================================================
@@ -416,53 +502,31 @@ void CWdgtGraphObjTextStyleProperties::fillEditControls()
         /* strMethod    */ "fillEditControls",
         /* strAddInfo   */ "" );
 
+    CDrawSettings drawSettings;
     if (m_pGraphObj == nullptr) {
-        m_drawSettings = m_pDrawingScene->drawSettings();
+        drawSettings = m_pDrawingScene->drawSettings();
     }
     else {
-        m_drawSettings = m_pGraphObj->getDrawSettings();
+        drawSettings = m_pGraphObj->getDrawSettings();
     }
+
+    m_textColor = drawSettings.getTextColor();
+    m_font = drawSettings.getTextFont();
+    m_textSize = drawSettings.getTextSize();
+    m_textStyle = drawSettings.getTextStyle();
+    m_textEffect = drawSettings.getTextEffect();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    updateCmbFont(m_drawSettings.getTextFont());
-    updateCmbTextSize(m_drawSettings.getTextSize());
-    updateBtnTextColor(m_drawSettings.getTextColor());
-    updateBtnFontStyleBold(m_drawSettings.getTextStyle());
-    updateBtnFontStyleItalic(m_drawSettings.getTextStyle());
-    updateBtnTextEffectUnderline(m_drawSettings.getTextEffect());
-    updateBtnTextEffectStrikeout(m_drawSettings.getTextEffect());
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Leave);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjTextStyleProperties::applySettings()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "applySettings",
-        /* strAddInfo   */ "" );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Enter);
-    }
-
-    #pragma message(__TODO__"Cache and set only text style settings")
-    if (!hasErrors() && hasChanges()) {
-        if (m_pGraphObj == nullptr) {
-            m_pDrawingScene->setDrawSettings(m_drawSettings);
-        }
-        else {
-            m_pGraphObj->setDrawSettings(m_drawSettings);
-        }
-    }
+    updateCmbFont(m_font);
+    updateCmbTextSize(m_textSize);
+    updateBtnTextColor(m_textColor);
+    updateBtnFontStyleBold(m_textStyle);
+    updateBtnFontStyleItalic(m_textStyle);
+    updateBtnTextEffectUnderline(m_textEffect);
+    updateBtnTextEffectStrikeout(m_textEffect);
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -496,10 +560,8 @@ void CWdgtGraphObjTextStyleProperties::onDrawingSceneDrawSettingsChanged(const C
         // the ContentChangedSignalBlockedCounter is incremented to avoid that
         // "onDrawingSceneDrawSettingsChanged" overwrites settings in edit controls which
         // haven't been applied yet.
-        if (m_drawSettings != i_drawSettings && m_iContentChangedSignalBlockedCounter == 0)
+        if (m_iContentChangedSignalBlockedCounter == 0)
         {
-            m_drawSettings = i_drawSettings;
-
             {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
                 // Here the derived class should apply the properties from the graphical
@@ -558,15 +620,15 @@ void CWdgtGraphObjTextStyleProperties::onCmbFontCurrentFontChanged(const QFont& 
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbFontCurrentFontChanged",
         /* strAddInfo   */ strMthInArgs );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     if (m_iContentChangedSignalBlockedCounter > 0) {
         m_bContentChanged = true;
     }
     else {
-        m_drawSettings.setTextFont(i_font);
+        m_font = i_font;
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -587,15 +649,15 @@ void CWdgtGraphObjTextStyleProperties::onCmbFontSizeCurrentIndexChanged(int i_id
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbFontSizeCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     if (m_iContentChangedSignalBlockedCounter > 0) {
         m_bContentChanged = true;
     }
     else {
-        m_drawSettings.setTextSize(static_cast<ETextSize>(i_idx));
+        m_textSize = (static_cast<ETextSize>(i_idx));
         emit_contentChanged();
     }
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
@@ -614,23 +676,23 @@ void CWdgtGraphObjTextStyleProperties::onBtnTextColorClicked(bool /*i_bChecked*/
         /* strAddInfo   */ "" );
 
     QColor clr = QColorDialog::getColor(
-        /* clrInitial  */ m_drawSettings.getPenColor(),
+        /* clrInitial  */ m_textColor,
         /* pWdgtParent */ m_pBtnTextColor,
         /* strTitle    */ "Colors",
         /* options     */ QColorDialog::ShowAlphaChannel );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     if (clr.isValid()) {
-        if (m_drawSettings.getTextColor() != clr) {
+        if (m_textColor != clr) {
             updateBtnTextColor(clr);
             if (m_iContentChangedSignalBlockedCounter > 0) {
                 m_bContentChanged = true;
-                m_drawSettings.setTextColor(clr);
+                m_textColor = clr;
             }
             else {
-                m_drawSettings.setTextColor(clr);
+                m_textColor = clr;
                 emit_contentChanged();
             }
         }
@@ -653,10 +715,10 @@ void CWdgtGraphObjTextStyleProperties::onBtnFontStyleBoldToggled(bool i_bChecked
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnFontStyleBoldToggled",
         /* strAddInfo   */ strMthInArgs );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     CEnumTextStyle textStyle = ETextStyle::Normal;
     if (m_pBtnFontStyleItalic->isChecked() && m_pBtnFontStyleBold->isChecked()) {
         textStyle = ETextStyle::BoldItalic;
@@ -667,14 +729,14 @@ void CWdgtGraphObjTextStyleProperties::onBtnFontStyleBoldToggled(bool i_bChecked
     else if (m_pBtnFontStyleBold->isChecked()) {
         textStyle = ETextStyle::Bold;
     }
-    if (m_drawSettings.getTextStyle() != textStyle) {
+    if (m_textStyle != textStyle) {
         updateBtnFontStyleBold(textStyle);
         if (m_iContentChangedSignalBlockedCounter > 0) {
             m_bContentChanged = true;
-            m_drawSettings.setTextStyle(textStyle);
+            m_textStyle = textStyle;
         }
         else {
-            m_drawSettings.setTextStyle(textStyle);
+            m_textStyle = textStyle;
             emit_contentChanged();
         }
     }
@@ -696,10 +758,10 @@ void CWdgtGraphObjTextStyleProperties::onBtnFontStyleItalicToggled(bool i_bCheck
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnFontStyleItalicToggled",
         /* strAddInfo   */ strMthInArgs );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     CEnumTextStyle textStyle = ETextStyle::Normal;
     if (m_pBtnFontStyleItalic->isChecked() && m_pBtnFontStyleBold->isChecked()) {
         textStyle = ETextStyle::BoldItalic;
@@ -710,14 +772,14 @@ void CWdgtGraphObjTextStyleProperties::onBtnFontStyleItalicToggled(bool i_bCheck
     else if (m_pBtnFontStyleBold->isChecked()) {
         textStyle = ETextStyle::Bold;
     }
-    if (m_drawSettings.getTextStyle() != textStyle) {
+    if (m_textStyle != textStyle) {
         updateBtnFontStyleItalic(textStyle);
         if (m_iContentChangedSignalBlockedCounter > 0) {
             m_bContentChanged = true;
-            m_drawSettings.setTextStyle(textStyle);
+            m_textStyle = textStyle;
         }
         else {
-            m_drawSettings.setTextStyle(textStyle);
+            m_textStyle = textStyle;
             emit_contentChanged();
         }
     }
@@ -739,10 +801,10 @@ void CWdgtGraphObjTextStyleProperties::onBtnTextEffectUnderlineToggled(bool i_bC
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnTextEffectUnderlineToggled",
         /* strAddInfo   */ strMthInArgs );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     CEnumTextEffect textEffect = ETextEffect::None;
     if (m_pBtnTextEffectUnderline->isChecked() && m_pBtnTextEffectStrikeout->isChecked()) {
         textEffect = ETextEffect::StrikeoutUnderline;
@@ -753,14 +815,14 @@ void CWdgtGraphObjTextStyleProperties::onBtnTextEffectUnderlineToggled(bool i_bC
     else if (m_pBtnTextEffectStrikeout->isChecked()) {
         textEffect = ETextEffect::Strikeout;
     }
-    if (m_drawSettings.getTextEffect() != textEffect) {
+    if (m_textEffect != textEffect) {
         updateBtnTextEffectUnderline(textEffect);
         if (m_iContentChangedSignalBlockedCounter > 0) {
             m_bContentChanged = true;
-            m_drawSettings.setTextEffect(textEffect);
+            m_textEffect = textEffect;
         }
         else {
-            m_drawSettings.setTextEffect(textEffect);
+            m_textEffect = textEffect;
             emit_contentChanged();
         }
     }
@@ -782,10 +844,10 @@ void CWdgtGraphObjTextStyleProperties::onBtnTextEffectStrikeoutToggled(bool i_bC
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnTextEffectStrikeoutToggled",
         /* strAddInfo   */ strMthInArgs );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+
     CEnumTextEffect textEffect = ETextEffect::None;
     if (m_pBtnTextEffectUnderline->isChecked() && m_pBtnTextEffectStrikeout->isChecked()) {
         textEffect = ETextEffect::StrikeoutUnderline;
@@ -796,14 +858,14 @@ void CWdgtGraphObjTextStyleProperties::onBtnTextEffectStrikeoutToggled(bool i_bC
     else if (m_pBtnTextEffectStrikeout->isChecked()) {
         textEffect = ETextEffect::Strikeout;
     }
-    if (m_drawSettings.getTextEffect() != textEffect) {
+    if (m_textEffect != textEffect) {
         updateBtnTextEffectStrikeout(textEffect);
         if (m_iContentChangedSignalBlockedCounter > 0) {
             m_bContentChanged = true;
-            m_drawSettings.setTextEffect(textEffect);
+            m_textEffect = textEffect;
         }
         else {
-            m_drawSettings.setTextEffect(textEffect);
+            m_textEffect = textEffect;
             emit_contentChanged();
         }
     }
@@ -830,7 +892,7 @@ void CWdgtGraphObjTextStyleProperties::updateCmbFont(const QFont& i_font)
         /* strMethod    */ "updateCmbFont",
         /* strAddInfo   */ strMthInArgs );
 
-    m_pCmbFont->setCurrentFont(m_drawSettings.getTextFont());
+    m_pCmbFont->setCurrentFont(i_font);
 }
 
 //------------------------------------------------------------------------------
@@ -847,7 +909,7 @@ void CWdgtGraphObjTextStyleProperties::updateCmbTextSize(ETextSize i_textSize)
         /* strMethod    */ "updateCmbTextSize",
         /* strAddInfo   */ strMthInArgs );
 
-    m_pCmbFontSize->setCurrentIndex(m_drawSettings.getTextSize());
+    m_pCmbFontSize->setCurrentIndex(i_textSize);
 }
 
 //------------------------------------------------------------------------------
@@ -986,6 +1048,14 @@ void CWdgtGraphObjTextStyleProperties::traceValues(CMethodTracer& mthTracer, EMe
             + ", SignalBlockCounter: " + QString::number(m_iContentChangedSignalBlockedCounter) + "}";
     mthTracer.trace(strMthLog);
     strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        + "DrawSettings {" + m_drawSettings.toString() + "}";
+        + "DrawSettings {"
+            "Text {"
+                + "Color: " + m_textColor.name()
+                + ", Font: " + m_font.family()
+                + ", Size: " + textSize2Str(m_textSize)
+                + ", Style: " + m_textStyle.toString()
+                + ", Effect: " + m_textEffect.toString()
+            + "}"
+        + "}";
     mthTracer.trace(strMthLog);
 }

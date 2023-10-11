@@ -64,9 +64,9 @@ public: // ctors and dtor
     virtual ~CWdgtGraphObjLineGeometryProperties();
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
+    void applySettings(bool i_bImmediatelyApplySettings = true) override;
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
-    void applySettings() override;
 protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
 protected slots:

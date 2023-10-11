@@ -320,15 +320,6 @@ void CWdgtGridLabels::paintGridLabels(QPainter* i_pPainter)
 
     int iZoomFactor_perCent = m_pDrawingView->zoomFactorInPerCent();
 
-    // Workaround for bug in Qt? When zooming out and adjusting the maximum size
-    // of the drawing view the viewport size is greater than the drawing scene size.
-    //if (rectDrawingViewportMapped.width() > (iZoomFactor_perCent*sizeDrawingScene.width())/100) {
-    //    rectDrawingViewportMapped.setWidth((iZoomFactor_perCent*sizeDrawingScene.width())/100);
-    //}
-    //if (rectDrawingViewportMapped.height() > (iZoomFactor_perCent*sizeDrawingScene.height())/100) {
-    //    rectDrawingViewportMapped.setHeight((iZoomFactor_perCent*sizeDrawingScene.height())/100);
-    //}
-
     const CDrawingSize& drawingSize = m_pDrawingView->drawingSize();
     const CDrawGridSettings& gridSettings = m_pDrawingView->gridSettings();
 

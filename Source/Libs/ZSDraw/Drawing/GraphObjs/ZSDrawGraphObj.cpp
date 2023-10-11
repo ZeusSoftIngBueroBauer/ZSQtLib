@@ -346,6 +346,7 @@ CGraphObj::CGraphObj(
     m_strType(i_strType),
     //m_strDescription(),
     m_drawSettings(i_type),
+    m_pDrawSettingsTmp(nullptr),
     m_physValSizeMinimum(),
     m_physValSizeMaximum(),
     m_physValSizeFixed(),
@@ -424,6 +425,11 @@ CGraphObj::~CGraphObj()
         /* strAddInfo   */ "" );
 
     m_bDtorInProgress = true;
+
+    try {
+        delete m_pDrawSettingsTmp;
+    } catch (...) {
+    }
 
     if (m_arpSelPtsBoundingRect.size() > 0) {
         for (int idxSelPt = m_arpSelPtsBoundingRect.size()-1; idxSelPt >= 0; idxSelPt--) {
@@ -521,6 +527,7 @@ CGraphObj::~CGraphObj()
     //m_strType;
     //m_strDescription;
     //m_drawSettings;
+    m_pDrawSettingsTmp = nullptr;
     //m_physValSizeMinimum;
     //m_physValSizeMaximum;
     //m_physValSizeFixed;
@@ -1086,7 +1093,7 @@ void CGraphObj::onCreateAndExecDlgFormatGraphObjs()
         /* strMethod    */ "CGraphObj::onCreateAndExecDlgFormatGraphObjs",
         /* strAddInfo   */ "" );
 
-    CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene,this);
+    CDlgFormatGraphObjs* pDlgFormatGraphObjs = new CDlgFormatGraphObjs(m_pDrawingScene, this);
     pDlgFormatGraphObjs->setCurrentWidget(CDlgFormatGraphObjs::c_strWdgtLineStyle);
     pDlgFormatGraphObjs->exec();
     delete pDlgFormatGraphObjs;
@@ -1151,6 +1158,14 @@ void CGraphObj::setDrawSettings( const CDrawSettings& i_drawSettings )
         /* strMethod    */ "CGraphObj::setDrawSettings",
         /* strAddInfo   */ strMthInArgs );
 
+    // When emitting the drawSettingsChanged signal new settings may be applied
+    // as reentries by the signal receivers. Those new settings may have to be
+    // temporarily stored and a new temporary buffer has to be allocated.
+    // The current buffer pointer will be locally saved and freed after emitting
+    // the signals. If new settings got to be saved a new buffer is allocated.
+    CDrawSettings* pDrawSettingsTmp = m_pDrawSettingsTmp;
+    m_pDrawSettingsTmp = nullptr;
+
     if (m_drawSettings != i_drawSettings) {
         CDrawSettings drawSettingsOld = m_drawSettings;
         m_drawSettings = i_drawSettings;
@@ -1159,6 +1174,8 @@ void CGraphObj::setDrawSettings( const CDrawSettings& i_drawSettings )
         }
         onDrawSettingsChanged(drawSettingsOld);
     }
+    delete pDrawSettingsTmp;
+    pDrawSettingsTmp = nullptr;
 }
 
 //------------------------------------------------------------------------------
@@ -1169,6 +1186,50 @@ CDrawSettings CGraphObj::getDrawSettings() const
 //------------------------------------------------------------------------------
 {
     return m_drawSettings;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Emits the drawSettingsChanged signal.
+
+    If there are temporary stored changes those changes will first be taken
+    over before the signal is emitted.
+
+    The temporary cache is used if several draw setting attributes got to be
+    modified one after another. For this the flag i_bImmediatelyApplySetting
+    has been passed with false to the "set<DrawSettingProperty>" methods.
+    After modifying all attributes "updateDrawSettings" must be called to take
+    over the modified settings, to repaint the graphics item with the modified
+    attributes and to emit the drawSettingsChanged signal.
+
+    @return true, if there were changes, false otherwise.
+*/
+bool CGraphObj::updateDrawSettings()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::updateDrawSettings",
+        /* strAddInfo   */ "" );
+
+    bool bChanged = false;
+    if (m_pDrawSettingsTmp != nullptr) {
+        if (*m_pDrawSettingsTmp != m_drawSettings) {
+            bChanged = true;
+            // setDrawSettings will delete the temporary buffer.
+            setDrawSettings(*m_pDrawSettingsTmp);
+        }
+        else {
+            delete m_pDrawSettingsTmp;
+            m_pDrawSettingsTmp = nullptr;
+        }
+    }
+
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bChanged);
+    }
+    return bChanged;
 }
 
 /*==============================================================================
@@ -1213,8 +1274,22 @@ public: // overridables (you must call those methods (instead of e.g. "QGrahicsL
 //------------------------------------------------------------------------------
 /*! @brief Sets the pen color used to paint the object.
 
-    If further set specific draw settings call will follow the flag
-    i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
+    If several draw setting attributes got to modified one after another
+    the flag i_bImmediatelyApplySetting should be set to false.
+    In this case the modified draw setting attribute will be stored in a
+    temporary cache, the signal "drawSettingsChanged" is not emitted and
+    the object is not forced to be repainted.
+
+    After setting all draw attributes the method updateDrawSettings must be
+    called to take over the modified draw attributes from the temporary cache
+    to the current draw settings. The updateDrawSettings method will update
+    (repaint) the graphics item and emits the drawSettingsChanged signal.
+
+    @param [in] i_clr
+        New pen color to be used.
+    @param [in] i_bImmediatelyApplySetting (default: true)
+        Set this flag to false if further set<DrawAttribute> will follow and you
+        want to update all changes at once later on.
 */
 void CGraphObj::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
@@ -1230,15 +1305,21 @@ void CGraphObj::setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySettin
         /* strMethod    */ "CGraphObj::setPenColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getPenColor() != i_clr) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setPenColor(i_clr);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getPenColor() != i_clr) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setPenColor(i_clr);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setPenColor(i_clr);
     }
 }
 
@@ -1271,15 +1352,21 @@ void CGraphObj::setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting )
         /* strMethod    */ "CGraphObj::setPenWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getPenWidth() != i_iLineWidth) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setPenWidth(i_iLineWidth);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getPenWidth() != i_iLineWidth) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setPenWidth(i_iLineWidth);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setPenWidth(i_iLineWidth);
     }
 }
 
@@ -1316,15 +1403,21 @@ void CGraphObj::setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImmedia
         /* strMethod    */ "CGraphObj::setLineStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getLineStyle() != i_lineStyle) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setLineStyle(i_lineStyle);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getLineStyle() != i_lineStyle) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setLineStyle(i_lineStyle);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setLineStyle(i_lineStyle);
     }
 } // setLineStyle
 
@@ -1361,15 +1454,21 @@ void CGraphObj::setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
         /* strMethod    */ "CGraphObj::setFillColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getFillColor() != i_clr) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setFillColor(i_clr);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getFillColor() != i_clr) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setFillColor(i_clr);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setFillColor(i_clr);
     }
 } // setFillColor
 
@@ -1402,15 +1501,21 @@ void CGraphObj::setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImmedia
         /* strMethod    */ "CGraphObj::setFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getFillStyle() != i_fillStyle) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setFillStyle(i_fillStyle);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getFillStyle() != i_fillStyle) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setFillStyle(i_fillStyle);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setFillStyle(i_fillStyle);
     }
 } // setFillStyle
 
@@ -1447,15 +1552,21 @@ void CGraphObj::setLineRecordType( const CEnumLineRecordType& i_recordType, bool
         /* strMethod    */ "CGraphObj::setLineRecordType",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getLineRecordType() != i_recordType) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setLineRecordType(i_recordType);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getLineRecordType() != i_recordType) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setLineRecordType(i_recordType);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setLineRecordType(i_recordType);
     }
 } // setLineRecordType
 
@@ -1488,15 +1599,21 @@ void CGraphObj::setLineExtent( int i_iLineExtent, bool i_bImmediatelyApplySettin
         /* strMethod    */ "CGraphObj::setLineExtent",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getLineExtent() != i_iLineExtent) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setLineExtent(i_iLineExtent);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getLineExtent() != i_iLineExtent) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setLineExtent(i_iLineExtent);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setLineExtent(i_iLineExtent);
     }
 } // setLineExtent
 
@@ -1534,15 +1651,21 @@ void CGraphObj::setLineEndStyle(
         /* strMethod    */ "CGraphObj::setLineEndStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getLineEndStyle(i_linePoint) != i_endStyle) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setLineEndStyle(i_linePoint, i_endStyle);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getLineEndStyle(i_linePoint) != i_endStyle) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setLineEndStyle(i_linePoint, i_endStyle);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setLineEndStyle(i_linePoint, i_endStyle);
     }
 } // setLineEndStyle
 
@@ -1561,7 +1684,7 @@ CEnumLineEndStyle CGraphObj::getLineEndStyle(const CEnumLinePoint& i_linePoint) 
     If further set specific draw settings call will follow the flag
     i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
 */
-void CGraphObj::setLineEndBaseLineType(
+void CGraphObj::setArrowHeadBaseLineType(
     const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1573,28 +1696,34 @@ void CGraphObj::setLineEndBaseLineType(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setLineEndBaseLineType",
+        /* strMethod    */ "CGraphObj::setArrowHeadBaseLineType",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getLineEndBaseLineType(i_linePoint) != i_baseLineType) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setLineEndBaseLineType(i_linePoint, i_baseLineType);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getArrowHeadBaseLineType(i_linePoint) != i_baseLineType) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setArrowHeadBaseLineType(i_linePoint, i_baseLineType);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
     }
-} // setLineEndBaseLineType
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setArrowHeadBaseLineType(i_linePoint, i_baseLineType);
+    }
+} // setArrowHeadBaseLineType
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumArrowHeadBaseLineType CGraphObj::getLineEndBaseLineType( const CEnumLinePoint& i_linePoint) const
+CEnumArrowHeadBaseLineType CGraphObj::getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getLineEndBaseLineType(i_linePoint);
+    return m_drawSettings.getArrowHeadBaseLineType(i_linePoint);
 }
 
 //------------------------------------------------------------------------------
@@ -1603,7 +1732,7 @@ CEnumArrowHeadBaseLineType CGraphObj::getLineEndBaseLineType( const CEnumLinePoi
     If further set specific draw settings call will follow the flag
     i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
 */
-void CGraphObj::setLineEndFillStyle(
+void CGraphObj::setArrowHeadFillStyle(
     const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1615,29 +1744,35 @@ void CGraphObj::setLineEndFillStyle(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setLineEndFillStyle",
+        /* strMethod    */ "CGraphObj::setArrowHeadFillStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getLineEndFillStyle(i_linePoint) != i_fillStyle) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setLineEndFillStyle(i_linePoint,i_fillStyle);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getArrowHeadFillStyle(i_linePoint) != i_fillStyle) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setArrowHeadFillStyle(i_linePoint, i_fillStyle);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
     }
-} // setLineEndFillStyle
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setArrowHeadFillStyle(i_linePoint, i_fillStyle);
+    }
+} // setArrowHeadFillStyle
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumArrowHeadFillStyle CGraphObj::getLineEndFillStyle(
+CEnumArrowHeadFillStyle CGraphObj::getArrowHeadFillStyle(
     const CEnumLinePoint& i_linePoint) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getLineEndFillStyle(i_linePoint);
+    return m_drawSettings.getArrowHeadFillStyle(i_linePoint);
 }
 
 //------------------------------------------------------------------------------
@@ -1646,7 +1781,7 @@ CEnumArrowHeadFillStyle CGraphObj::getLineEndFillStyle(
     If further set specific draw settings call will follow the flag
     i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
 */
-void CGraphObj::setLineEndWidth(
+void CGraphObj::setArrowHeadWidth(
     const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1658,28 +1793,34 @@ void CGraphObj::setLineEndWidth(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setLineEndWidth",
+        /* strMethod    */ "CGraphObj::setArrowHeadWidth",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getLineEndWidth(i_linePoint) != i_width) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setLineEndWidth(i_linePoint,i_width);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getArrowHeadWidth(i_linePoint) != i_width) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setArrowHeadWidth(i_linePoint, i_width);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
     }
-} // setLineEndWidth
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setArrowHeadWidth(i_linePoint, i_width);
+    }
+} // setArrowHeadWidth
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumArrowHeadWidth CGraphObj::getLineEndWidth(const CEnumLinePoint& i_linePoint) const
+CEnumArrowHeadWidth CGraphObj::getArrowHeadWidth(const CEnumLinePoint& i_linePoint) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getLineEndWidth(i_linePoint);
+    return m_drawSettings.getArrowHeadWidth(i_linePoint);
 }
 
 //------------------------------------------------------------------------------
@@ -1688,7 +1829,7 @@ CEnumArrowHeadWidth CGraphObj::getLineEndWidth(const CEnumLinePoint& i_linePoint
     If further set specific draw settings call will follow the flag
     i_bImmediatelyApplySetting may be set to false to avoid unnecessary paint events.
 */
-void CGraphObj::setLineEndLength(
+void CGraphObj::setArrowHeadLength(
     const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length, bool i_bImmediatelyApplySetting )
 //------------------------------------------------------------------------------
 {
@@ -1700,28 +1841,34 @@ void CGraphObj::setLineEndLength(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setLineEndLength",
+        /* strMethod    */ "CGraphObj::setArrowHeadLength",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getLineEndLength(i_linePoint) != i_length) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setLineEndLength(i_linePoint, i_length);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getArrowHeadLength(i_linePoint) != i_length) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setArrowHeadLength(i_linePoint, i_length);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
     }
-} // setLineEndLength
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setArrowHeadLength(i_linePoint, i_length);
+    }
+} // setArrowHeadLength
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-CEnumArrowHeadLength CGraphObj::getLineEndLength( const CEnumLinePoint& i_linePoint ) const
+CEnumArrowHeadLength CGraphObj::getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const
 //------------------------------------------------------------------------------
 {
-    return m_drawSettings.getLineEndLength(i_linePoint);
+    return m_drawSettings.getArrowHeadLength(i_linePoint);
 }
 
 /*==============================================================================
@@ -1748,15 +1895,21 @@ void CGraphObj::setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetti
         /* strMethod    */ "CGraphObj::setTextColor",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getTextColor() != i_clr) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setTextColor(i_clr);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getTextColor() != i_clr) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setTextColor(i_clr);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextColor(i_clr);
     }
 } // setTextColor
 
@@ -1789,15 +1942,21 @@ void CGraphObj::setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting
         /* strMethod    */ "CGraphObj::setTextFont",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getTextFont() != i_fnt) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setTextFont(i_fnt);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getTextFont() != i_fnt) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setTextFont(i_fnt);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextFont(i_fnt);
     }
 } // setTextFont
 
@@ -1830,15 +1989,21 @@ void CGraphObj::setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting )
         /* strMethod    */ "CGraphObj::setTextSize",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getTextSize() != i_size) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setTextSize(i_size);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getTextSize() != i_size) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setTextSize(i_size);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextSize(i_size);
     }
 } // setTextSize
 
@@ -1871,15 +2036,21 @@ void CGraphObj::setTextStyle( const CEnumTextStyle& i_textStyle, bool i_bImmedia
         /* strMethod    */ "CGraphObj::setTextStyle",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getTextStyle() != i_textStyle) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setTextStyle(i_textStyle);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getTextStyle() != i_textStyle) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setTextStyle(i_textStyle);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextStyle(i_textStyle);
     }
 } // setTextStyle
 
@@ -1912,15 +2083,21 @@ void CGraphObj::setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImme
         /* strMethod    */ "CGraphObj::setTextEffect",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_drawSettings.getTextEffect() != i_textEffect) {
-        CDrawSettings drawSettingsOld = m_drawSettings;
-        m_drawSettings.setTextEffect(i_textEffect);
-        if (i_bImmediatelyApplySetting) {
+    if (i_bImmediatelyApplySetting) {
+        if (m_drawSettings.getTextEffect() != i_textEffect) {
+            CDrawSettings drawSettingsOld = m_drawSettings;
+            m_drawSettings.setTextEffect(i_textEffect);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
             onDrawSettingsChanged(drawSettingsOld);
         }
+    }
+    else {
+        if (m_pDrawSettingsTmp == nullptr) {
+            m_pDrawSettingsTmp = new CDrawSettings(m_drawSettings);
+        }
+        m_pDrawSettingsTmp->setTextEffect(i_textEffect);
     }
 } // setTextEffect
 

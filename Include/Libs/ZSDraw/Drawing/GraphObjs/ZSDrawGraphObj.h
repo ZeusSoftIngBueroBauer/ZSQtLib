@@ -328,6 +328,7 @@ public: // overridables
 public: // overridables
     virtual void setDrawSettings(const CDrawSettings& i_drawSettings);
     virtual CDrawSettings getDrawSettings() const;
+    virtual bool updateDrawSettings();
 protected: // overridables
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld);
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
@@ -351,14 +352,14 @@ public: // overridables (you must call those methods (instead of e.g. "QGrahicsL
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle, bool i_bImmediatelyApplySetting = true );
     virtual CEnumLineEndStyle getLineEndStyle( const CEnumLinePoint& i_linePoint ) const;
-    virtual void setLineEndBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumArrowHeadBaseLineType getLineEndBaseLineType( const CEnumLinePoint& i_linePoint ) const;
-    virtual void setLineEndFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumArrowHeadFillStyle getLineEndFillStyle( const CEnumLinePoint& i_linePoint ) const;
-    virtual void setLineEndWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumArrowHeadWidth getLineEndWidth( const CEnumLinePoint& i_linePoint ) const;
-    virtual void setLineEndLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumArrowHeadLength getLineEndLength( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumArrowHeadBaseLineType getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setArrowHeadFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumArrowHeadFillStyle getArrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setArrowHeadWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumArrowHeadWidth getArrowHeadWidth( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setArrowHeadLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length, bool i_bImmediatelyApplySetting = true );
+    virtual CEnumArrowHeadLength getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
     virtual void setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
     virtual QColor getTextColor() const;
@@ -551,12 +552,23 @@ protected: // instance members
     EGraphObjType m_type;
     /*!< Type of the graphical object. */
     QString m_strType;
-    //QString m_strDescription;
     /*!< Draw settings like pen and brush used to draw the graphical object.
          Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc..
          Call "updateSettings" before accessing settings to keep this struct up to date with graphics
          item settings. */
     CDrawSettings m_drawSettings;
+    /*!< Several draw setting attributes may be modified one after another.
+         To avoid that for each single change a repaint follows and that the drawSettingsChanged
+         signal is emitted just once after all attributes have been set, it is possible first to
+         modify each attribute one after another and afterwards force a repaint and emit the
+         changes signal just once after all attributes have been set. For this the flag
+         "i_bImmediatelyApplySetting" has to be set to false when setting a new draw attribute.
+         If this flag is false the changed property is temporarily stored in "m_drawSettingsTmp".
+         After all settings have been changed the method "updateDrawSettings" takes over the
+         settings from the temporary buffer.
+         For the first change to be cached the temporary buffer will be allocated.
+         After updating the changes the temporary buffer will be deleted. */
+    CDrawSettings* m_pDrawSettingsTmp;
     /*!< If valid defines the minimum size of the graphical object. */
     CPhysValSize m_physValSizeMinimum;
     /*!< If valid defines the maximum size of the graphical object. */

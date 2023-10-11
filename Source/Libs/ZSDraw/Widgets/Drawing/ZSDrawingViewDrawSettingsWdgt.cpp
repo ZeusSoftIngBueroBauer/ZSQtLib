@@ -288,9 +288,12 @@ void CWdgtDrawingViewDrawSettings::acceptChanges()
             // This is not a problem as the method does nothing. But the method is not
             // expected to be called so we avoid it for the sake of clarification
             // (and to have a clear method trace output where the unexpected call is not listed).
-            m_pWdgtLineStyle->acceptChanges();
-            m_pWdgtFillStyle->acceptChanges();
-            m_pWdgtTextStyle->acceptChanges();
+
+            // The first calls should only temporarily store the changes.
+            // Only the last applySettings call should update the settings.
+            m_pWdgtLineStyle->applySettings(false);
+            m_pWdgtFillStyle->applySettings(false);
+            m_pWdgtTextStyle->applySettings(true);
         }
     }
 }

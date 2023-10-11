@@ -961,8 +961,8 @@ void CGraphObjPolyline::paint(
 
     if( lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal )
     {
-        CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
-        CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
+        CEnumArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
+        CEnumArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
 
         QBrush brsh;
 
@@ -975,7 +975,7 @@ void CGraphObjPolyline::paint(
 
         if( lineEndStyleLineStart != ELineEndStyle::Normal )
         {
-            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::Start)) );
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start)) );
 
             i_pPainter->setBrush(brsh);
 
@@ -991,7 +991,7 @@ void CGraphObjPolyline::paint(
 
         if( lineEndStyleLineEnd != ELineEndStyle::Normal )
         {
-            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getLineEndFillStyle(ELinePoint::End)) );
+            brsh.setStyle( arrowHeadFillStyle2QtBrushStyle(m_drawSettings.getArrowHeadFillStyle(ELinePoint::End)) );
 
             i_pPainter->setBrush(brsh);
 
@@ -2437,8 +2437,8 @@ void CGraphObjPolyline::updateLineEndPolygonCoors()
         {
             if( lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal )
             {
-                //EArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getLineEndBaseLineType(ELinePoint::Start);
-                //EArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getLineEndBaseLineType(ELinePoint::End);
+                //EArrowHeadBaseLineType baseLineTypeLineStart = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
+                //EArrowHeadBaseLineType baseLineTypeLineEnd   = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
 
                 QLineF linFirst( m_plgCurr[0], m_plgCurr[1] );
                 QLineF linLast( m_plgCurr[m_plgCurr.size()-2], m_plgCurr[m_plgCurr.size()-1] );
