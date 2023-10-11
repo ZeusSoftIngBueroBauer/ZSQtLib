@@ -29,8 +29,9 @@ may result in using the software modules.
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
-#include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -60,12 +61,36 @@ class CWdgtGraphObjLineProperties : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
 
 /*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString CWdgtGraphObjLineProperties::widgetName(EWidget i_widget)
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_widget == EWidget::Labels) {
+        str = "Labels";
+    }
+    else if (i_widget == EWidget::Geometry) {
+        str = "Geometry";
+    }
+    else if (i_widget == EWidget::LineStyle) {
+        str = "LineStyle";
+    }
+    return str;
+}
+
+/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
-    CDrawingScene* i_pDrawingScene, const QString& i_strObjName, QWidget* i_pWdgtParent) :
+    CDrawingScene* i_pDrawingScene,
+    const QString& i_strObjName,
+    bool i_bAddApplyResetButtons,
+    QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     CWdgtGraphObjPropertiesAbstract(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs", "StandardShapes::Line",
@@ -74,11 +99,18 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
     m_pWdgtGeometry(nullptr),
     m_pWdgtLineStyle(nullptr)
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs =
+            "DrawingScene: " + QString(i_pDrawingScene == nullptr ? "null" : i_pDrawingScene->objectName()) +
+            ", ObjName: " + i_strObjName +
+            ", AddButtons: " + bool2Str(i_bAddApplyResetButtons);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     m_pWdgtLabels = new CWdgtGraphObjPropertiesLabels(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
@@ -106,9 +138,11 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
     // <Buttons>
     //==========
 
-    m_pLyt->addSpacing(10);
-    createButtonsLineWidget();
-    m_pLyt->addWidget(m_pWdgtButtons);
+    if (i_bAddApplyResetButtons) {
+        m_pLyt->addSpacing(10);
+        createButtonsLineWidget();
+        m_pLyt->addWidget(m_pWdgtButtons);
+    }
     m_pLyt->addStretch();
 
 } // ctor
@@ -126,6 +160,35 @@ CWdgtGraphObjLineProperties::~CWdgtGraphObjLineProperties()
     m_pWdgtLabels = nullptr;
     m_pWdgtGeometry = nullptr;
     m_pWdgtLineStyle = nullptr;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLineProperties::expand(EWidget i_widget, bool i_bExpand)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = widgetName(i_widget) + ", " + bool2Str(i_bExpand);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "expand",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_widget == EWidget::Labels) {
+        m_pWdgtLabels->expand(i_bExpand);
+    }
+    else if (i_widget == EWidget::Geometry) {
+        m_pWdgtGeometry->expand(i_bExpand);
+    }
+    else if (i_widget == EWidget::LineStyle) {
+        m_pWdgtLineStyle->expand(i_bExpand);
+    }
 }
 
 /*==============================================================================
@@ -295,6 +358,7 @@ void CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged()
         /* strAddInfo   */ "" );
 
     updateButtonsEnabled();
+    emit_contentChanged();
 }
 
 //------------------------------------------------------------------------------
@@ -308,6 +372,7 @@ void CWdgtGraphObjLineProperties::onWdgtGeometryContentChanged()
         /* strAddInfo   */ "" );
 
     updateButtonsEnabled();
+    emit_contentChanged();
 }
 
 //------------------------------------------------------------------------------
@@ -321,4 +386,5 @@ void CWdgtGraphObjLineProperties::onWdgtLineStyleContentChanged()
         /* strAddInfo   */ "" );
 
     updateButtonsEnabled();
+    emit_contentChanged();
 }

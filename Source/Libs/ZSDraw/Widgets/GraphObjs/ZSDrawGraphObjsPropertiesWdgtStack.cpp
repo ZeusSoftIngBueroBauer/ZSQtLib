@@ -268,7 +268,7 @@ CWdgtGraphObjPropertiesAbstract* CWdgtStackGraphObjsProperties::createGraphObjPr
         EGraphObjType eGraphObjType = str2GraphObjType(i_strGraphObjType);
         if (eGraphObjType == EGraphObjTypeLine) {
             pWidget = new CWdgtGraphObjLineProperties(
-                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties");
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
         }
         else {
             pWidget = new CWdgtGraphObjPropertiesAbstract(

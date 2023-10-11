@@ -47,12 +47,21 @@ class ZSDRAWDLL_API CWdgtGraphObjLineProperties : public CWdgtGraphObjProperties
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CWdgtGraphObjLineProperties"; }
+    enum class EWidget {
+        Labels,
+        Geometry,
+        LineStyle
+    };
+    static QString widgetName(EWidget i_widget);
 public: // ctors and dtor
     CWdgtGraphObjLineProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strObjName,
+        bool i_bAddApplyResetButtons,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjLineProperties();
+public: // instance methods
+    void expand(EWidget i_widget, bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     virtual bool setKeyInTree(const QString& i_strKeyInTree) override;
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract

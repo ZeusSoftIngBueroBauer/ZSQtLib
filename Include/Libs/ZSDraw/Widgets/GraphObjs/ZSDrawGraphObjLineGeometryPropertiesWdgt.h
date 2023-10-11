@@ -62,6 +62,8 @@ public: // ctors and dtor
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtGraphObjLineGeometryProperties();
+public: // instance methods
+    void expand(bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
     void applySettings(bool i_bImmediatelyApplySettings = true) override;

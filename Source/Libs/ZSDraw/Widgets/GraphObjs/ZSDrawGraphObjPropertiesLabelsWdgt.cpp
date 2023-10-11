@@ -256,6 +256,39 @@ CWdgtGraphObjPropertiesLabels::~CWdgtGraphObjPropertiesLabels()
 }
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::expand(bool i_bExpand)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bExpand);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "expand",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_bExpand && m_pWdgtLabels->isHidden()) {
+        m_pBtnCollapse->setIcon(m_pxmBtnUp);
+        m_pWdgtLabels->show();
+        s_bWdgtLabelsVisible = true;
+    }
+    else if (!i_bExpand && !m_pWdgtLabels->isHidden()) {
+        m_pBtnCollapse->setIcon(m_pxmBtnDown);
+        m_pWdgtLabels->hide();
+        s_bWdgtLabelsVisible = false;
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtLabelsVisible));
+    }
+}
+
+/*==============================================================================
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
@@ -376,14 +409,10 @@ void CWdgtGraphObjPropertiesLabels::onBtnCollapseClicked(bool /*i_bChecked*/)
         /* strAddInfo   */ "" );
 
     if (m_pWdgtLabels->isHidden()) {
-        m_pBtnCollapse->setIcon(m_pxmBtnUp);
-        m_pWdgtLabels->show();
-        s_bWdgtLabelsVisible = true;
+        expand(true);
     }
     else {
-        m_pBtnCollapse->setIcon(m_pxmBtnDown);
-        m_pWdgtLabels->hide();
-        s_bWdgtLabelsVisible = false;
+        expand(false);
     }
 }
 

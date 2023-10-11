@@ -109,6 +109,7 @@ list(APPEND _HeadersWidgetsGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h
@@ -218,6 +219,7 @@ list(APPEND _SourcesWidgetsGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.cpp

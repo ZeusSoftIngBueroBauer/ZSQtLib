@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
 #include "ZSSys/ZSSysException.h"
@@ -282,6 +283,43 @@ QString CGraphObjLine::getScenePolygonShapePointsString() const
     plgScene.append(mapToScene(lineF.p1()));
     plgScene.append(mapToScene(lineF.p2()));
     return polygon2Str(plgScene);
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/* @brief
+
+    Must be overridden to create a user defined dialog.
+*/
+void CGraphObjLine::onCreateAndExecDlgFormatGraphObjs()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onCreateAndExecDlgFormatGraphObjs",
+        /* strAddInfo   */ "" );
+
+    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Format Line";
+    CDlgGraphObjLineProperties* pDlg = CDlgGraphObjLineProperties::GetInstance(this);
+    if( pDlg == nullptr ) {
+        pDlg = CDlgGraphObjLineProperties::CreateInstance(strDlgTitle, this);
+        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+        pDlg->adjustSize();
+        pDlg->setModal(false);
+        pDlg->show();
+    }
+    else {
+        if( pDlg->isHidden() ) {
+            pDlg->show();
+        }
+        pDlg->raise();
+        pDlg->activateWindow();
+    }
 }
 
 /*==============================================================================

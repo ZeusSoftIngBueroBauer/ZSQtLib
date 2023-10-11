@@ -24,10 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawingViewDrawSettingsDlg_h
-#define ZSDraw_DrawingViewDrawSettingsDlg_h
+#ifndef ZSDraw_DrawGraphObjLinePropertiesDlg_h
+#define ZSDraw_DrawGraphObjLinePropertiesDlg_h
 
-#include "ZSDraw/Widgets/Drawing/ZSDrawingViewDrawSettingsWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h"
 #include "ZSSysGUI/ZSSysDialog.h"
 
 class QPushButton;
@@ -42,7 +42,7 @@ namespace Draw
 class CDrawingView;
 
 //******************************************************************************
-class ZSDRAWDLL_API CDlgDrawingViewDrawSettings : public ZS::System::GUI::CDialog
+class ZSDRAWDLL_API CDlgGraphObjLineProperties : public ZS::System::GUI::CDialog
 //******************************************************************************
 {
     Q_OBJECT
@@ -50,37 +50,37 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CDlgDrawingViewDrawSettings"; }
+    static QString ClassName() { return "CDlgGraphObjLineProperties"; }
 public: // class methods
-    static CDlgDrawingViewDrawSettings* CreateInstance(
+    static CDlgGraphObjLineProperties* CreateInstance(
         const QString&  i_strDlgTitle,
-        CDrawingView*   i_pDrawingView,
+        CGraphObjLine*  i_pGraphObjLine,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wflags = Qt::WindowFlags());
-    static CDlgDrawingViewDrawSettings* GetInstance( CDrawingView* i_pDrawingView );
+    static CDlgGraphObjLineProperties* GetInstance(CGraphObjLine* i_pGraphObjLine);
 protected: // ctor
-    CDlgDrawingViewDrawSettings(
+    CDlgGraphObjLineProperties(
         const QString& i_strDlgTitle,
-        CDrawingView*  i_pDrawingView,
+        CGraphObjLine*  i_pGraphObjLine,
         QWidget*        i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
-    virtual ~CDlgDrawingViewDrawSettings();
+    virtual ~CDlgGraphObjLineProperties();
 public: // instance methods
-    void setCurrentWidget(CWdgtDrawingViewDrawSettings::EWidget i_widget);
+    void setCurrentWidget(CWdgtGraphObjLineProperties::EWidget i_widget);
 protected slots: // instance methods
     void onBtnOkClicked(bool i_bChecked = false);
     void onBtnApplyClicked(bool i_bChecked = false);
     void onBtnResetClicked(bool i_bChecked = false);
     void onBtnCancelClicked(bool i_bChecked = false);
 protected slots:
-    void onWdgtDrawSettingsContentChanged();
-    void onDrawingViewDestroyed();
+    void onWdgtLineSettingsContentChanged();
+    void onGraphObjDestroyed(QObject*);
 private: // instance members
-    CDrawingView* m_pDrawingView;
+    CGraphObjLine* m_pGraphObjLine;
     QVBoxLayout* m_pLyt;
     QScrollArea* m_pScrollArea;
-    CWdgtDrawingViewDrawSettings* m_pWdgtDrawSettings;
+    CWdgtGraphObjLineProperties* m_pWdgtLineSettings;
     // Buttons
     QHBoxLayout* m_pLytLineBtns;
     QPushButton* m_pBtnOk;
@@ -88,10 +88,10 @@ private: // instance members
     QPushButton* m_pBtnReset;
     QPushButton* m_pBtnCancel;
 
-}; // class CDlgDrawingViewDrawSettings
+}; // class CDlgGraphObjLineProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawingViewDrawSettingsDlg_h
+#endif // #ifndef ZSDraw_DrawGraphObjLinePropertiesDlg_h

@@ -74,6 +74,8 @@ public: // must overridables of base class CGraphObj
 public: // overridables of base class CGraphObj (for subsystem test)
     virtual QString getScenePolygonShapePointsString() const override;
 public: // overridables of base class CGraphObj
+    virtual void onCreateAndExecDlgFormatGraphObjs() override;
+public: // overridables of base class CGraphObj
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods

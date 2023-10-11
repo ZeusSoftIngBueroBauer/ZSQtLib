@@ -818,6 +818,39 @@ CWdgtGraphObjLineGeometryProperties::~CWdgtGraphObjLineGeometryProperties()
 }
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLineGeometryProperties::expand(bool i_bExpand)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bExpand);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "expand",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_bExpand && m_pWdgtGeometry->isHidden()) {
+        m_pBtnCollapse->setIcon(m_pxmBtnUp);
+        m_pWdgtGeometry->show();
+        s_bWdgtGeometryVisible = true;
+    }
+    else if (!i_bExpand && !m_pWdgtGeometry->isHidden()) {
+        m_pBtnCollapse->setIcon(m_pxmBtnDown);
+        m_pWdgtGeometry->hide();
+        s_bWdgtGeometryVisible = false;
+    }
+    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+        mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtFillStyleVisible));
+    }
+}
+
+/*==============================================================================
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
@@ -1022,14 +1055,10 @@ void CWdgtGraphObjLineGeometryProperties::onBtnCollapseClicked(bool /*i_bChecked
         /* strAddInfo   */ "" );
 
     if (m_pWdgtGeometry->isHidden()) {
-        m_pBtnCollapse->setIcon(m_pxmBtnUp);
-        m_pWdgtGeometry->show();
-        s_bWdgtGeometryVisible = true;
+        expand(true);
     }
     else {
-        m_pBtnCollapse->setIcon(m_pxmBtnDown);
-        m_pWdgtGeometry->hide();
-        s_bWdgtGeometryVisible = false;
+        expand(false);
     }
 }
 
