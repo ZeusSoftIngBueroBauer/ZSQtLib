@@ -112,7 +112,7 @@ protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
     virtual void updateSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
 public: // overridables of base class CGraphObj
-    virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints() const override;
+    virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;

@@ -188,10 +188,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    if( m_pGraphObjSelected != nullptr )
-    {
-        m_pGraphObjSelected->onSelectionPointDestroying(this);
-    }
+    emit_aboutToBeDestroyed();
 
     m_pGraphObjSelected = nullptr;
 
@@ -206,22 +203,16 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
     // derived from QGraphicsItem.
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        if( m_pDrawingScene != nullptr )
-        {
-            if( !m_strKeyInTree.isEmpty() )
-            {
-                try
-                {
+    if (pGraphicsItem != nullptr) {
+        if (m_pDrawingScene != nullptr) {
+            if (!m_strKeyInTree.isEmpty()) {
+                try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
                     // of class "QGraphicsItem" may have already been processed and
                     // models and Views may still try to access the graphical object.
                     m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
                 }
-                catch(...)
-                {
+                catch(...) {
                 }
             }
 
@@ -238,10 +229,8 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
             // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
             // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
             m_pDrawingScene->removeGraphObj(this);
-
-        } // if( m_pDrawingScene != nullptr )
-    } // if( pGraphicsItem != nullptr )
-
+        }
+    }
 } // dtor
 
 /*==============================================================================

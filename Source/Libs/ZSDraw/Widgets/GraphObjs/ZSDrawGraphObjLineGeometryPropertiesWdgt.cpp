@@ -121,29 +121,24 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytSepLineMetricGeometry(nullptr),
     m_pLblSepLineMetricGeometry(nullptr),
     m_pSepLineMetricGeometry(nullptr),
-    m_pLytLineMetricPt1(nullptr),
     m_pLblMetricPt1(nullptr),
     m_pLblMetricPt1X(nullptr),
     m_pEdtMetricPt1X(nullptr),
     m_pLblMetricPt1Y(nullptr),
     m_pEdtMetricPt1Y(nullptr),
-    m_pLytLineMetricPt2(nullptr),
     m_pLblMetricPt2(nullptr),
     m_pLblMetricPt2X(nullptr),
     m_pEdtMetricPt2X(nullptr),
     m_pLblMetricPt2Y(nullptr),
     m_pEdtMetricPt2Y(nullptr),
-    m_pLytLineMetricSize(nullptr),
     m_pLblMetricWidth(nullptr),
     m_pEdtMetricWidth(nullptr),
     m_pLblMetricHeight(nullptr),
     m_pEdtMetricHeight(nullptr),
-    m_pLytLineMetricLengthAngle(nullptr),
     m_pLblMetricLength(nullptr),
     m_pEdtMetricLength(nullptr),
     m_pLblMetricAngle(nullptr),
     m_pEdtMetricAngle(nullptr),
-    m_pLytLineMetricPtCenter(nullptr),
     m_pLblMetricPtCenter(nullptr),
     m_pLblMetricPtCenterX(nullptr),
     m_pEdtMetricPtCenterX(nullptr),
@@ -156,29 +151,24 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytSepLinePixelsGeometry(nullptr),
     m_pLblSepLinePixelsGeometry(nullptr),
     m_pSepLinePixelsGeometry(nullptr),
-    m_pLytLinePixelsPt1(nullptr),
     m_pLblPixelsPt1(nullptr),
     m_pLblPixelsPt1X(nullptr),
     m_pEdtPixelsPt1X(nullptr),
     m_pLblPixelsPt1Y(nullptr),
     m_pEdtPixelsPt1Y(nullptr),
-    m_pLytLinePixelsPt2(nullptr),
     m_pLblPixelsPt2(nullptr),
     m_pLblPixelsPt2X(nullptr),
     m_pEdtPixelsPt2X(nullptr),
     m_pLblPixelsPt2Y(nullptr),
     m_pEdtPixelsPt2Y(nullptr),
-    m_pLytLinePixelsSize(nullptr),
     m_pLblPixelsWidth(nullptr),
     m_pEdtPixelsWidth(nullptr),
     m_pLblPixelsHeight(nullptr),
     m_pEdtPixelsHeight(nullptr),
-    m_pLytLinePixelsLengthAngle(nullptr),
     m_pLblPixelsLength(nullptr),
     m_pEdtPixelsLength(nullptr),
     m_pLblPixelsAngle(nullptr),
     m_pEdtPixelsAngle(nullptr),
-    m_pLytLinePixelsPtCenter(nullptr),
     m_pLblPixelsPtCenter(nullptr),
     m_pLblPixelsPtCenterX(nullptr),
     m_pEdtPixelsPtCenterX(nullptr),
@@ -197,18 +187,6 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // We need to fill the edit controls if the graphical object emits the geometryChanged signal.
     // The flag is checked if "setKeyInTree" is called.
     m_bContentUpdateOnGeometryChanged = true;
-
-    const QVector<int> ariClmWidths = {
-         40,  // Point1
-         20,  // X:
-         120, // <X-Value>
-         30,  // Y:, Angle:
-         120  // <Y-Value>
-    };
-    int cxClmSpacing = 30;
-    int idxClm = 0;
-
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
     // <Widget> Headline
     //==================
@@ -236,16 +214,13 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLblHeadlineIcon = new QLabel();
     m_pLblHeadlineIcon->setPixmap(pxmHeadline);
     m_pLytWdgtHeadline->addWidget(m_pLblHeadlineIcon);
-
     m_pLblHeadline = new QLabel("Geometry");
     QFont fntHeadline = m_pLblHeadline->font();
     fntHeadline.setPointSize(fntHeadline.pointSize() + 2);
     m_pLblHeadline->setFont(fntHeadline);
     m_pLytWdgtHeadline->addWidget(m_pLblHeadline);
-
     m_pSepHeadline = new CSepLine();
     m_pLytWdgtHeadline->addWidget(m_pSepHeadline, 1);
-
     m_pLytWdgtHeadline->addStretch();
 
     const QString strMetric = CEnumScaleDimensionUnit(EScaleDimensionUnit::Metric).toString();
@@ -263,57 +238,74 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Section> Geometry in Metric System
     //====================================
 
+    int iRow = 0;
+
     m_pWdgtMetric = new QWidget();
-    m_pLytWdgtMetric = new QVBoxLayout();
+    m_pLytWdgtMetric = new QGridLayout();
     m_pLytWdgtMetric->setContentsMargins(0, 0, 0, 0);
     m_pWdgtMetric->setLayout(m_pLytWdgtMetric);
     m_pLytWdgtGeometry->addWidget(m_pWdgtMetric);
     m_pWdgtMetric->hide();
 
+    /* Grid Layout
+         |     0    |1| 2 |3|  4  |5| 6      |7| 8    | 
+       --+----------+-+---+-+-----+-+--------+-+------+----
+       0 |Metric                                      |<-->
+       1 |Point 1   | |X: | |Value| |Y:      | |Value |<-->
+       2 |Point 2   | |X: | |Value| |Y:      | |Value |<-->
+       3 |Width:    | |   | |Value| |Height: | |Value |<-->
+       4 |Length:   | |   | |Value| |Angle:  | |Value |<-->
+       5 |Center    | |X: | |Value| |Y:      | |Value |<-->
+    */
+    int iClmCount = 9;
+    for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
+        m_pLytWdgtMetric->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
+    }
+    m_pLytWdgtMetric->setColumnStretch(iClmCount, 1);
+
     m_pWdgtSepLineMetricGeometry = new QWidget();
     m_pLytSepLineMetricGeometry = new QHBoxLayout();
-    m_pLytSepLineMetricGeometry->setContentsMargins(0, 0, 0, 0);
+    m_pLytSepLineMetricGeometry->setContentsMargins(0, 5, 0, 0);
     m_pWdgtSepLineMetricGeometry->setLayout(m_pLytSepLineMetricGeometry);
-    m_pLytWdgtMetric->addWidget(m_pWdgtSepLineMetricGeometry);
     m_pLblSepLineMetricGeometry = new QLabel("Metric Values");
+    QFont font = m_pLblSepLineMetricGeometry->font();
+    font.setBold(true);
+    font.setUnderline(true);
+    m_pLblSepLineMetricGeometry->setFont(font);
     m_pLytSepLineMetricGeometry->addWidget(m_pLblSepLineMetricGeometry);
-    m_pSepLineMetricGeometry = new CSepLine(10);
-    m_pLytSepLineMetricGeometry->addWidget(m_pSepLineMetricGeometry, 1);
+    //m_pSepLineMetricGeometry = new CSepLine(10);
+    //m_pLytSepLineMetricGeometry->addWidget(m_pSepLineMetricGeometry, 1);
+    m_pLytWdgtMetric->addWidget(m_pWdgtSepLineMetricGeometry, iRow, 0, 1, m_ariClmWidths.size());
 
     // <Line> Metric Point 1
     //----------------------
 
-    idxClm = 0;
-
-    m_pLytLineMetricPt1 = new QHBoxLayout();
-    m_pLytWdgtMetric->addLayout(m_pLytLineMetricPt1);
+    ++iRow;
 
     m_pLblMetricPt1 = new QLabel(c_strCoorPoint1);
-    m_pLblMetricPt1->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPt1->addWidget(m_pLblMetricPt1);
+    //m_pLblMetricPt1->setFixedWidth(m_ariClmWidths[0]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPt1, iRow, 0);
 
     m_pLblMetricPt1X = new QLabel(c_strCoorX + ": ");
-    m_pLblMetricPt1X->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPt1->addWidget(m_pLblMetricPt1X);
+    //m_pLblMetricPt1X->setFixedWidth(m_ariClmWidths[2]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPt1X, iRow, 2, Qt::AlignRight);
     m_pEdtMetricPt1X = new CWdgtEditPhysVal(strMetric + "." + c_strCoorPoint1 + "." + c_strCoorX);
-    m_pEdtMetricPt1X->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricPt1X->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtMetricPt1X->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPt1X);
-    m_pLytLineMetricPt1->addWidget(m_pEdtMetricPt1X);
-    m_pLytLineMetricPt1->addSpacing(cxClmSpacing);
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricPt1X, iRow, 4);
     QObject::connect(
         m_pEdtMetricPt1X, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricPt1XValueChanged);
 
     m_pLblMetricPt1Y = new QLabel(c_strCoorY + ": ");
-    m_pLblMetricPt1Y->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPt1->addWidget(m_pLblMetricPt1Y);
+    //m_pLblMetricPt1Y->setFixedWidth(m_ariClmWidths[6]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPt1Y, iRow, 6);
     m_pEdtMetricPt1Y = new CWdgtEditPhysVal(strMetric + "." + c_strCoorPoint1 + "." + c_strCoorY);
-    m_pEdtMetricPt1Y->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricPt1Y->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtMetricPt1Y->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPt1Y);
-    m_pLytLineMetricPt1->addWidget(m_pEdtMetricPt1Y);
-    m_pLytLineMetricPt1->addStretch();
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricPt1Y, iRow, 8);
     QObject::connect(
         m_pEdtMetricPt1Y, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricPt1YValueChanged);
@@ -321,37 +313,34 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Line> Metric Point 2
     //----------------------
 
-    idxClm = 0;
-
-    m_pLytLineMetricPt2 = new QHBoxLayout();
-    m_pLytWdgtMetric->addLayout(m_pLytLineMetricPt2);
+    iRow++;
 
     m_pLblMetricPt2 = new QLabel(c_strCoorPoint2);
-    m_pLblMetricPt2->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPt2->addWidget(m_pLblMetricPt2);
+    //m_pLblMetricPt2->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPt2, iRow, 0);
 
-    m_pLblMetricPt2X = new QLabel("X: ");
-    m_pLblMetricPt2X->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPt2->addWidget(m_pLblMetricPt2X);
+    m_pLblMetricPt2X = new QLabel(c_strCoorX + ": ");
+    //m_pLblMetricPt2X->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPt2X, iRow, 2, Qt::AlignRight);
     m_pEdtMetricPt2X = new CWdgtEditPhysVal(strMetric + "." + c_strCoorPoint2 + "." + c_strCoorX);
-    m_pEdtMetricPt2X->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricPt2X->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtMetricPt2X->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPt2X);
-    m_pLytLineMetricPt2->addWidget(m_pEdtMetricPt2X);
-    m_pLytLineMetricPt2->addSpacing(cxClmSpacing);
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricPt2X, iRow, 4);
+    //m_pLytWdgtMetric->addSpacing(m_cxSpacing);
     QObject::connect(
         m_pEdtMetricPt2X, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricPt2XValueChanged);
 
     m_pLblMetricPt2Y = new QLabel(c_strCoorY + ": ");
-    m_pLblMetricPt2Y->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPt2->addWidget(m_pLblMetricPt2Y);
+    //m_pLblMetricPt2Y->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPt2Y, iRow, 6);
     m_pEdtMetricPt2Y = new CWdgtEditPhysVal(strMetric + "." + c_strCoorPoint2 + "." + c_strCoorY);
-    m_pEdtMetricPt2Y->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricPt2Y->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtMetricPt2Y->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPt2Y);
-    m_pLytLineMetricPt2->addWidget(m_pEdtMetricPt2Y);
-    m_pLytLineMetricPt2->addStretch();
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricPt2Y, iRow, 8);
+    //m_pLytWdgtMetric->addStretch();
     QObject::connect(
         m_pEdtMetricPt2Y, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricPt2YValueChanged);
@@ -359,35 +348,32 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Line> Size
     //------------
 
-    idxClm = 0;
-
-    m_pLytLineMetricSize = new QHBoxLayout();
-    m_pLytWdgtMetric->addLayout(m_pLytLineMetricSize);
+    iRow++;
 
     m_pLblMetricWidth = new QLabel(c_strCoorWidth + ": ");
-    m_pLblMetricWidth->setFixedWidth(
-        ariClmWidths[idxClm++] + ariClmWidths[idxClm++]
-      + m_pLytLineMetricSize->contentsMargins().left()
-      + m_pLytLineMetricSize->contentsMargins().right()
-      + m_pLytLineMetricSize->spacing());
-    m_pLytLineMetricSize->addWidget(m_pLblMetricWidth);
+    //m_pLblMetricWidth->setFixedWidth(
+    //    m_ariClmWidths[idxClm++] + m_ariClmWidths[idxClm++]
+    //  + m_pLytWdgtMetric->contentsMargins().left()
+    //  + m_pLytWdgtMetric->contentsMargins().right()
+    //  + m_pLytWdgtMetric->spacing());
+    m_pLytWdgtMetric->addWidget(m_pLblMetricWidth, iRow, 0);
     m_pEdtMetricWidth = new CWdgtEditPhysVal(strMetric + "." + c_strCoorWidth);
-    m_pEdtMetricWidth->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricWidth->setFixedWidth(m_ariClmWidths[idxClm++]);
     registerEditPropertyDialog(m_pEdtMetricWidth);
-    m_pLytLineMetricSize->addWidget(m_pEdtMetricWidth);
-    m_pLytLineMetricSize->addSpacing(cxClmSpacing);
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricWidth, iRow, 4);
+    //m_pLytWdgtMetric->addSpacing(m_cxSpacing);
     QObject::connect(
         m_pEdtMetricWidth, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricWidthValueChanged);
 
     m_pLblMetricHeight = new QLabel(c_strCoorHeight + ": ");
-    m_pLblMetricHeight->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricSize->addWidget(m_pLblMetricHeight);
+    //m_pLblMetricHeight->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricHeight, iRow, 6);
     m_pEdtMetricHeight = new CWdgtEditPhysVal(strMetric + "." + c_strCoorHeight);
-    m_pEdtMetricHeight->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricHeight->setFixedWidth(m_ariClmWidths[idxClm++]);
     registerEditPropertyDialog(m_pEdtMetricHeight);
-    m_pLytLineMetricSize->addWidget(m_pEdtMetricHeight);
-    m_pLytLineMetricSize->addStretch();
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricHeight, iRow, 8);
+    //m_pLytWdgtMetric->addStretch();
     QObject::connect(
         m_pEdtMetricHeight, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricHeightValueChanged);
@@ -395,40 +381,37 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Line> Width and Angle
     //------------------------
 
-    idxClm = 0;
-
-    m_pLytLineMetricLengthAngle = new QHBoxLayout();
-    m_pLytWdgtMetric->addLayout(m_pLytLineMetricLengthAngle);
+    iRow++;
 
     m_pLblMetricLength = new QLabel(c_strCoorLength + ": ");
-    m_pLblMetricLength->setFixedWidth(
-        ariClmWidths[idxClm++] + ariClmWidths[idxClm++]
-      + m_pLytLineMetricLengthAngle->contentsMargins().left()
-      + m_pLytLineMetricLengthAngle->contentsMargins().right()
-      + m_pLytLineMetricLengthAngle->spacing());
-    m_pLytLineMetricLengthAngle->addWidget(m_pLblMetricLength);
+    //m_pLblMetricLength->setFixedWidth(
+    //    m_ariClmWidths[idxClm++] + m_ariClmWidths[idxClm++]
+    //  + m_pLytWdgtMetric->contentsMargins().left()
+    //  + m_pLytWdgtMetric->contentsMargins().right()
+    //  + m_pLytWdgtMetric->spacing());
+    m_pLytWdgtMetric->addWidget(m_pLblMetricLength, iRow, 0);
     m_pEdtMetricLength = new CWdgtEditPhysVal(strMetric + "." + c_strCoorLength);
-    m_pEdtMetricLength->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricLength->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtMetricLength->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricLength);
-    m_pLytLineMetricLengthAngle->addWidget(m_pEdtMetricLength);
-    m_pLytLineMetricLengthAngle->addSpacing(cxClmSpacing);
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricLength, iRow, 4);
+    //m_pLytWdgtMetric->addSpacing(m_cxSpacing);
     QObject::connect(
         m_pEdtMetricLength, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricLengthValueChanged);
 
     m_pLblMetricAngle = new QLabel(c_strCoorAngle + ": ");
-    m_pLblMetricAngle->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricLengthAngle->addWidget(m_pLblMetricAngle);
+    //m_pLblMetricAngle->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricAngle, iRow, 6);
     m_pEdtMetricAngle = new CWdgtEditPhysVal(strMetric + "." + c_strCoorAngle);
-    m_pEdtMetricAngle->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricAngle->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtMetricAngle->setUnit(Units.Angle.Degree);
     m_pEdtMetricAngle->setResolution(0.1);
     m_pEdtMetricAngle->setMinimum(-360.0);
     m_pEdtMetricAngle->setMaximum(360.0);
     registerEditPropertyDialog(m_pEdtMetricAngle);
-    m_pLytLineMetricLengthAngle->addWidget(m_pEdtMetricAngle);
-    m_pLytLineMetricLengthAngle->addStretch();
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricAngle, iRow, 8);
+    //m_pLytWdgtMetric->addStretch();
     QObject::connect(
         m_pEdtMetricAngle, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricAngleValueChanged);
@@ -436,39 +419,36 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Line> Center Position
     //-----------------------
 
-    idxClm = 0;
-
-    m_pLytLineMetricPtCenter = new QHBoxLayout();
-    m_pLytWdgtMetric->addLayout(m_pLytLineMetricPtCenter);
+    iRow++;
 
     m_pLblMetricPtCenter = new QLabel(c_strCoorCenter);
-    m_pLblMetricPtCenter->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPtCenter->addWidget(m_pLblMetricPtCenter);
+    //m_pLblMetricPtCenter->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPtCenter, iRow, 0);
 
     m_pLblMetricPtCenterX = new QLabel(c_strCoorX + ": ");
-    m_pLblMetricPtCenterX->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPtCenter->addWidget(m_pLblMetricPtCenterX);
+    //m_pLblMetricPtCenterX->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPtCenterX, iRow, 2, Qt::AlignRight);
     m_pEdtMetricPtCenterX = new CWdgtEditPhysVal(strMetric + "." + c_strCoorCenter + "." + c_strCoorX);
-    m_pEdtMetricPtCenterX->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricPtCenterX->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtMetricPtCenterX->setResolution(0.1);
     m_pEdtMetricPtCenterX->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPtCenterX);
-    m_pLytLineMetricPtCenter->addWidget(m_pEdtMetricPtCenterX);
-    m_pLytLineMetricPtCenter->addSpacing(cxClmSpacing);
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricPtCenterX, iRow, 4);
+    //m_pLytWdgtMetric->addSpacing(m_cxSpacing);
     QObject::connect(
         m_pEdtMetricPtCenterX, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricPtCenterXValueChanged);
 
     m_pLblMetricPtCenterY = new QLabel(c_strCoorY + ": ");
-    m_pLblMetricPtCenterY->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLineMetricPtCenter->addWidget(m_pLblMetricPtCenterY);
+    //m_pLblMetricPtCenterY->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtMetric->addWidget(m_pLblMetricPtCenterY, iRow, 6);
     m_pEdtMetricPtCenterY = new CWdgtEditPhysVal(strMetric + "." + c_strCoorCenter + "." + c_strCoorY);
-    m_pEdtMetricPtCenterY->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtMetricPtCenterY->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtMetricPtCenterY->setResolution(0.1);
     m_pEdtMetricPtCenterY->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPtCenterY);
-    m_pLytLineMetricPtCenter->addWidget(m_pEdtMetricPtCenterY);
-    m_pLytLineMetricPtCenter->addStretch();
+    m_pLytWdgtMetric->addWidget(m_pEdtMetricPtCenterY, iRow, 8);
+    //m_pLytWdgtMetric->addStretch();
     QObject::connect(
         m_pEdtMetricPtCenterY, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtMetricPtCenterYValueChanged);
@@ -476,61 +456,77 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Section> Geometry in Pixels
     //=============================
 
+    iRow = 0;
+
     m_pWdgtPixels = new QWidget();
-    m_pLytWdgtPixels = new QVBoxLayout();
+    m_pLytWdgtPixels = new QGridLayout();
     m_pLytWdgtPixels->setContentsMargins(0, 0, 0, 0);
     m_pWdgtPixels->setLayout(m_pLytWdgtPixels);
     m_pLytWdgtGeometry->addWidget(m_pWdgtPixels);
     m_pWdgtMetric->hide();
 
+    /* Grid Layout
+         |     0    |1| 2 |3|  4  |5| 6      |7| 8    | 
+       --+----------+-+---+-+-----+-+--------+-+------+----
+       0 |Pixels                                      |<-->
+       1 |Point 1   | |X: | |Value| |Y:      | |Value |<-->
+       2 |Point 2   | |X: | |Value| |Y:      | |Value |<-->
+       3 |Width:    | |   | |Value| |Height: | |Value |<-->
+       4 |Length:   | |   | |Value| |Angle:  | |Value |<-->
+       5 |Center    | |X: | |Value| |Y:      | |Value |<-->
+    */
+    for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
+        m_pLytWdgtPixels->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
+    }
+    m_pLytWdgtPixels->setColumnStretch(iClmCount, 1);
+
     m_pWdgtSepLinePixelsGeometry = new QWidget();
     m_pLytSepLinePixelsGeometry = new QHBoxLayout();
-    m_pLytSepLinePixelsGeometry->setContentsMargins(0, 0, 0, 0);
+    m_pLytSepLinePixelsGeometry->setContentsMargins(0, 5, 0, 0);
     m_pWdgtSepLinePixelsGeometry->setLayout(m_pLytSepLinePixelsGeometry);
-    m_pLytWdgtPixels->addWidget(m_pWdgtSepLinePixelsGeometry);
     m_pLblSepLinePixelsGeometry = new QLabel("Pixel Values");
+    font = m_pLblSepLinePixelsGeometry->font();
+    font.setBold(true);
+    font.setUnderline(true);
+    m_pLblSepLinePixelsGeometry->setFont(font);
     m_pLytSepLinePixelsGeometry->addWidget(m_pLblSepLinePixelsGeometry);
-    m_pSepLineMetricGeometry = new CSepLine(10);
-    m_pLytSepLinePixelsGeometry->addWidget(m_pSepLineMetricGeometry, 1);
+    //m_pSepLineMetricGeometry = new CSepLine(10);
+    //m_pLytSepLinePixelsGeometry->addWidget(m_pSepLineMetricGeometry, 1);
+    m_pLytWdgtPixels->addWidget(m_pWdgtSepLinePixelsGeometry, iRow, 0, 1, m_ariClmWidths.size());
 
     // <Line> Pixels Point 1
     //----------------------
 
-    idxClm = 0;
-
-    m_pLytLinePixelsPt1 = new QHBoxLayout();
-    m_pLytWdgtPixels->addLayout(m_pLytLinePixelsPt1);
+    ++iRow;
 
     m_pLblPixelsPt1 = new QLabel(c_strCoorPoint1);
-    m_pLblPixelsPt1->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPt1->addWidget(m_pLblPixelsPt1);
+    //m_pLblPixelsPt1->setFixedWidth(m_ariClmWidths[0]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPt1, iRow, 0);
 
     m_pLblPixelsPt1X = new QLabel(c_strCoorX + ": ");
-    m_pLblPixelsPt1X->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPt1->addWidget(m_pLblPixelsPt1X);
+    //m_pLblPixelsPt1X->setFixedWidth(m_ariClmWidths[2]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPt1X, iRow, 2, Qt::AlignRight);
     m_pEdtPixelsPt1X = new CWdgtEditPhysVal(strPixels + "." + c_strCoorPoint1 + "." + c_strCoorX);
-    m_pEdtPixelsPt1X->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsPt1X->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtPixelsPt1X->setUnit(Units.Length.px);
     m_pEdtPixelsPt1X->setResolution(1.0);
     m_pEdtPixelsPt1X->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtPixelsPt1X);
-    m_pLytLinePixelsPt1->addWidget(m_pEdtPixelsPt1X);
-    m_pLytLinePixelsPt1->addSpacing(cxClmSpacing);
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsPt1X, iRow, 4);
     QObject::connect(
         m_pEdtPixelsPt1X, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsPt1XValueChanged);
 
     m_pLblPixelsPt1Y = new QLabel(c_strCoorY + ": ");
-    m_pLblPixelsPt1Y->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPt1->addWidget(m_pLblPixelsPt1Y);
+    //m_pLblPixelsPt1Y->setFixedWidth(m_ariClmWidths[6]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPt1Y, iRow, 6);
     m_pEdtPixelsPt1Y = new CWdgtEditPhysVal(strPixels + "." + c_strCoorPoint1 + "." + c_strCoorY);
-    m_pEdtPixelsPt1Y->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsPt1Y->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtPixelsPt1Y->setUnit(Units.Length.px);
     m_pEdtPixelsPt1Y->setResolution(1.0);
     m_pEdtPixelsPt1Y->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtPixelsPt1Y);
-    m_pLytLinePixelsPt1->addWidget(m_pEdtPixelsPt1Y);
-    m_pLytLinePixelsPt1->addStretch();
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsPt1Y, iRow, 8);
     QObject::connect(
         m_pEdtPixelsPt1Y, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsPt1YValueChanged);
@@ -538,41 +534,38 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Line> Pixels Point 2
     //----------------------
 
-    idxClm = 0;
-
-    m_pLytLinePixelsPt2 = new QHBoxLayout();
-    m_pLytWdgtPixels->addLayout(m_pLytLinePixelsPt2);
+    iRow++;
 
     m_pLblPixelsPt2 = new QLabel(c_strCoorPoint2);
-    m_pLblPixelsPt2->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPt2->addWidget(m_pLblPixelsPt2);
+    //m_pLblPixelsPt2->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPt2, iRow, 0);
 
     m_pLblPixelsPt2X = new QLabel(c_strCoorX + ": ");
-    m_pLblPixelsPt2X->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPt2->addWidget(m_pLblPixelsPt2X);
+    //m_pLblPixelsPt2X->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPt2X, iRow, 2, Qt::AlignRight);
     m_pEdtPixelsPt2X = new CWdgtEditPhysVal(strPixels + "." + c_strCoorPoint2 + "." + c_strCoorX);
-    m_pEdtPixelsPt2X->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsPt2X->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtPixelsPt2X->setUnit(Units.Length.px);
     m_pEdtPixelsPt2X->setResolution(1.0);
     m_pEdtPixelsPt2X->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtPixelsPt2X);
-    m_pLytLinePixelsPt2->addWidget(m_pEdtPixelsPt2X);
-    m_pLytLinePixelsPt2->addSpacing(cxClmSpacing);
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsPt2X, iRow, 4);
+    //m_pLytWdgtPixels->addSpacing(m_cxSpacing);
     QObject::connect(
         m_pEdtPixelsPt2X, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsPt2XValueChanged);
 
     m_pLblPixelsPt2Y = new QLabel(c_strCoorY + ": ");
-    m_pLblPixelsPt2Y->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPt2->addWidget(m_pLblPixelsPt2Y);
+    //m_pLblPixelsPt2Y->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPt2Y, iRow, 6);
     m_pEdtPixelsPt2Y = new CWdgtEditPhysVal(strPixels + "." + c_strCoorPoint2 + "." + c_strCoorY);
-    m_pEdtPixelsPt2Y->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsPt2Y->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtPixelsPt2Y->setUnit(Units.Length.px);
     m_pEdtPixelsPt2Y->setResolution(1.0);
     m_pEdtPixelsPt2Y->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtPixelsPt2Y);
-    m_pLytLinePixelsPt2->addWidget(m_pEdtPixelsPt2Y);
-    m_pLytLinePixelsPt2->addStretch();
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsPt2Y, iRow, 8);
+    //m_pLytWdgtPixels->addStretch();
     QObject::connect(
         m_pEdtPixelsPt2Y, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsPt2YValueChanged);
@@ -580,39 +573,36 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Line> Size
     //------------
 
-    idxClm = 0;
-
-    m_pLytLinePixelsSize = new QHBoxLayout();
-    m_pLytWdgtPixels->addLayout(m_pLytLinePixelsSize);
+    iRow++;
 
     m_pLblPixelsWidth = new QLabel(c_strCoorWidth + ": ");
-    m_pLblPixelsWidth->setFixedWidth(
-        ariClmWidths[idxClm++] + ariClmWidths[idxClm++]
-      + m_pLytLinePixelsSize->contentsMargins().left()
-      + m_pLytLinePixelsSize->contentsMargins().right()
-      + m_pLytLinePixelsSize->spacing());
-    m_pLytLinePixelsSize->addWidget(m_pLblPixelsWidth);
+    //m_pLblPixelsWidth->setFixedWidth(
+    //    m_ariClmWidths[idxClm++] + m_ariClmWidths[idxClm++]
+    //  + m_pLytWdgtPixels->contentsMargins().left()
+    //  + m_pLytWdgtPixels->contentsMargins().right()
+    //  + m_pLytWdgtPixels->spacing());
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsWidth, iRow, 0);
     m_pEdtPixelsWidth = new CWdgtEditPhysVal(strPixels + "." + c_strCoorWidth);
-    m_pEdtPixelsWidth->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsWidth->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtPixelsWidth->setUnit(Units.Length.px);
     m_pEdtPixelsWidth->setResolution(1.0);
     registerEditPropertyDialog(m_pEdtPixelsWidth);
-    m_pLytLinePixelsSize->addWidget(m_pEdtPixelsWidth);
-    m_pLytLinePixelsSize->addSpacing(cxClmSpacing);
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsWidth, iRow, 4);
+    //m_pLytWdgtPixels->addSpacing(m_cxSpacing);
     QObject::connect(
         m_pEdtPixelsWidth, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsWidthValueChanged);
 
     m_pLblPixelsHeight = new QLabel(c_strCoorHeight + ": ");
-    m_pLblPixelsHeight->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsSize->addWidget(m_pLblPixelsHeight);
+    //m_pLblPixelsHeight->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsHeight, iRow, 6);
     m_pEdtPixelsHeight = new CWdgtEditPhysVal(strPixels + "." + c_strCoorHeight);
-    m_pEdtPixelsHeight->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsHeight->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtPixelsHeight->setUnit(Units.Length.px);
     m_pEdtPixelsHeight->setResolution(1.0);
     registerEditPropertyDialog(m_pEdtPixelsHeight);
-    m_pLytLinePixelsSize->addWidget(m_pEdtPixelsHeight);
-    m_pLytLinePixelsSize->addStretch();
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsHeight, iRow, 8);
+    //m_pLytWdgtPixels->addStretch();
     QObject::connect(
         m_pEdtPixelsHeight, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsHeightValueChanged);
@@ -620,42 +610,39 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Line> Length and Angle
     //------------------------
 
-    idxClm = 0;
-
-    m_pLytLinePixelsLengthAngle = new QHBoxLayout();
-    m_pLytWdgtPixels->addLayout(m_pLytLinePixelsLengthAngle);
+    iRow++;
 
     m_pLblPixelsLength = new QLabel(c_strCoorLength + ": ");
-    m_pLblPixelsLength->setFixedWidth(
-        ariClmWidths[idxClm++] + ariClmWidths[idxClm++]
-      + m_pLytLinePixelsLengthAngle->contentsMargins().left()
-      + m_pLytLinePixelsLengthAngle->contentsMargins().right()
-      + m_pLytLinePixelsLengthAngle->spacing());
-    m_pLytLinePixelsLengthAngle->addWidget(m_pLblPixelsLength);
+    //m_pLblPixelsLength->setFixedWidth(
+    //    m_ariClmWidths[idxClm++] + m_ariClmWidths[idxClm++]
+    //  + m_pLytWdgtPixels->contentsMargins().left()
+    //  + m_pLytWdgtPixels->contentsMargins().right()
+    //  + m_pLytWdgtPixels->spacing());
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsLength, iRow, 0);
     m_pEdtPixelsLength = new CWdgtEditPhysVal(strPixels + "." + c_strCoorLength);
-    m_pEdtPixelsLength->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsLength->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtPixelsLength->setReadOnly(true);
     m_pEdtPixelsLength->setUnit(Units.Length.px);
     m_pEdtPixelsLength->setResolution(0.1);
     m_pEdtPixelsLength->setMinimum(0.0);
-    m_pLytLinePixelsLengthAngle->addWidget(m_pEdtPixelsLength);
-    m_pLytLinePixelsLengthAngle->addSpacing(cxClmSpacing);
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsLength, iRow, 4);
+    //m_pLytWdgtPixels->addSpacing(m_cxSpacing);
     QObject::connect(
         m_pEdtPixelsLength, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsLengthValueChanged);
 
     m_pLblPixelsAngle = new QLabel(c_strCoorAngle + ": ");
-    m_pLblPixelsAngle->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsLengthAngle->addWidget(m_pLblPixelsAngle);
+    //m_pLblPixelsAngle->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsAngle, iRow, 6);
     m_pEdtPixelsAngle = new CWdgtEditPhysVal(strPixels + "." + c_strCoorAngle);
-    m_pEdtPixelsAngle->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsAngle->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtPixelsAngle->setReadOnly(true);
     m_pEdtPixelsAngle->setUnit(Units.Angle.Degree);
     m_pEdtPixelsAngle->setResolution(0.1);
     m_pEdtPixelsAngle->setMinimum(-360.0);
     m_pEdtPixelsAngle->setMaximum(360.0);
-    m_pLytLinePixelsLengthAngle->addWidget(m_pEdtPixelsAngle);
-    m_pLytLinePixelsLengthAngle->addStretch();
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsAngle, iRow, 8);
+    //m_pLytWdgtPixels->addStretch();
     QObject::connect(
         m_pEdtPixelsAngle, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsAngleValueChanged);
@@ -663,41 +650,38 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // <Line> Center Position
     //-----------------------
 
-    idxClm = 0;
-
-    m_pLytLinePixelsPtCenter = new QHBoxLayout();
-    m_pLytWdgtPixels->addLayout(m_pLytLinePixelsPtCenter);
+    iRow++;
 
     m_pLblPixelsPtCenter = new QLabel(c_strCoorCenter);
-    m_pLblPixelsPtCenter->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPtCenter->addWidget(m_pLblPixelsPtCenter);
+    //m_pLblPixelsPtCenter->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPtCenter, iRow, 0);
 
     m_pLblPixelsPtCenterX = new QLabel(c_strCoorX + ": ");
-    m_pLblPixelsPtCenterX->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPtCenter->addWidget(m_pLblPixelsPtCenterX);
+    //m_pLblPixelsPtCenterX->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPtCenterX, iRow, 2, Qt::AlignRight);
     m_pEdtPixelsPtCenterX = new CWdgtEditPhysVal(strPixels + "." + c_strCoorCenter + "." + c_strCoorX);
-    m_pEdtPixelsPtCenterX->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsPtCenterX->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtPixelsPtCenterX->setReadOnly(true);
     m_pEdtPixelsPtCenterX->setUnit(Units.Length.px);
     m_pEdtPixelsPtCenterX->setResolution(0.1);
     m_pEdtPixelsPtCenterX->setMinimum(0.0);
-    m_pLytLinePixelsPtCenter->addWidget(m_pEdtPixelsPtCenterX);
-    m_pLytLinePixelsPtCenter->addSpacing(cxClmSpacing);
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsPtCenterX, iRow, 4);
+    //m_pLytWdgtPixels->addSpacing(m_cxSpacing);
     QObject::connect(
         m_pEdtPixelsPtCenterX, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsPtCenterXValueChanged);
 
     m_pLblPixelsPtCenterY = new QLabel(c_strCoorY + ": ");
-    m_pLblPixelsPtCenterY->setFixedWidth(ariClmWidths[idxClm++]);
-    m_pLytLinePixelsPtCenter->addWidget(m_pLblPixelsPtCenterY);
+    //m_pLblPixelsPtCenterY->setFixedWidth(m_ariClmWidths[idxClm++]);
+    m_pLytWdgtPixels->addWidget(m_pLblPixelsPtCenterY, iRow, 6);
     m_pEdtPixelsPtCenterY = new CWdgtEditPhysVal(strPixels + "." + c_strCoorCenter + "." + c_strCoorY);
-    m_pEdtPixelsPtCenterY->setFixedWidth(ariClmWidths[idxClm++]);
+    //m_pEdtPixelsPtCenterY->setFixedWidth(m_ariClmWidths[idxClm++]);
     m_pEdtPixelsPtCenterY->setReadOnly(true);
     m_pEdtPixelsPtCenterY->setUnit(Units.Length.px);
     m_pEdtPixelsPtCenterY->setResolution(0.1);
     m_pEdtPixelsPtCenterY->setMinimum(0.0);
-    m_pLytLinePixelsPtCenter->addWidget(m_pEdtPixelsPtCenterY);
-    m_pLytLinePixelsPtCenter->addStretch();
+    m_pLytWdgtPixels->addWidget(m_pEdtPixelsPtCenterY, iRow, 8);
+    //m_pLytWdgtPixels->addStretch();
     QObject::connect(
         m_pEdtPixelsPtCenterY, &CWdgtEditPhysVal::valueChanged,
         this, &CWdgtGraphObjLineGeometryProperties::onEdtPixelsPtCenterYValueChanged);
@@ -705,6 +689,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     // Update controls depending on drawing size (dimension unit etc.)
     //================================================================
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     onDrawingSceneDrawingSizeChanged(drawingSize);
 
     if (!s_bWdgtGeometryVisible) {
@@ -750,29 +735,24 @@ CWdgtGraphObjLineGeometryProperties::~CWdgtGraphObjLineGeometryProperties()
     m_pLytSepLineMetricGeometry = nullptr;
     m_pLblSepLineMetricGeometry = nullptr;
     m_pSepLineMetricGeometry = nullptr;
-    m_pLytLineMetricPt1 = nullptr;
     m_pLblMetricPt1 = nullptr;
     m_pLblMetricPt1X = nullptr;
     m_pEdtMetricPt1X = nullptr;
     m_pLblMetricPt1Y = nullptr;
     m_pEdtMetricPt1Y = nullptr;
-    m_pLytLineMetricPt2 = nullptr;
     m_pLblMetricPt2 = nullptr;
     m_pLblMetricPt2X = nullptr;
     m_pEdtMetricPt2X = nullptr;
     m_pLblMetricPt2Y = nullptr;
     m_pEdtMetricPt2Y = nullptr;
-    m_pLytLineMetricSize = nullptr;
     m_pLblMetricWidth = nullptr;
     m_pEdtMetricWidth = nullptr;
     m_pLblMetricHeight = nullptr;
     m_pEdtMetricHeight = nullptr;
-    m_pLytLineMetricLengthAngle = nullptr;
     m_pLblMetricLength = nullptr;
     m_pEdtMetricLength = nullptr;
     m_pLblMetricAngle = nullptr;
     m_pEdtMetricAngle = nullptr;
-    m_pLytLineMetricPtCenter = nullptr;
     m_pLblMetricPtCenter = nullptr;
     m_pLblMetricPtCenterX = nullptr;
     m_pEdtMetricPtCenterX = nullptr;
@@ -785,29 +765,24 @@ CWdgtGraphObjLineGeometryProperties::~CWdgtGraphObjLineGeometryProperties()
     m_pLytSepLinePixelsGeometry = nullptr;
     m_pLblSepLinePixelsGeometry = nullptr;
     m_pSepLinePixelsGeometry = nullptr;
-    m_pLytLinePixelsPt1 = nullptr;
     m_pLblPixelsPt1 = nullptr;
     m_pLblPixelsPt1X = nullptr;
     m_pEdtPixelsPt1X = nullptr;
     m_pLblPixelsPt1Y = nullptr;
     m_pEdtPixelsPt1Y = nullptr;
-    m_pLytLinePixelsPt2 = nullptr;
     m_pLblPixelsPt2 = nullptr;
     m_pLblPixelsPt2X = nullptr;
     m_pEdtPixelsPt2X = nullptr;
     m_pLblPixelsPt2Y = nullptr;
     m_pEdtPixelsPt2Y = nullptr;
-    m_pLytLinePixelsSize = nullptr;
     m_pLblPixelsWidth = nullptr;
     m_pEdtPixelsWidth = nullptr;
     m_pLblPixelsHeight = nullptr;
     m_pEdtPixelsHeight = nullptr;
-    m_pLytLinePixelsLengthAngle = nullptr;
     m_pLblPixelsLength = nullptr;
     m_pEdtPixelsLength = nullptr;
     m_pLblPixelsAngle = nullptr;
     m_pEdtPixelsAngle = nullptr;
-    m_pLytLinePixelsPtCenter = nullptr;
     m_pLblPixelsPtCenter = nullptr;
     m_pLblPixelsPtCenterX = nullptr;
     m_pEdtPixelsPtCenterX = nullptr;

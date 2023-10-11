@@ -199,6 +199,8 @@ public: // instance methods
     void clear();
     void addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent = nullptr );
     void removeGraphObj( CGraphObj* i_pGraphObj );
+    QGraphicsItem* findGraphicsItem( const QString& i_strKeyInTree );
+    CGraphObj* findGraphObj( const QString& i_strKeyInTree );
 protected: // instance methods
     void addItem( QGraphicsItem* i_pGraphicsItem, QGraphicsItem* i_pGraphicsItemParent = nullptr );
     void removeItem( QGraphicsItem* i_pGraphicsItem );
@@ -246,9 +248,6 @@ public: // to be called by graphical objects (as graphical objects are not deriv
     //    const QString& i_strKeyInTree,
     //    const QString& i_strObjNameOld,     // !!! NOT including name of parents !!!
     //    const QString& i_strObjNameNew );   // !!! NOT including name of parents !!!
-public: // instance methods
-    QGraphicsItem* findGraphicsItem( const QString& i_strKeyInTree );
-    CGraphObj* findGraphObj( const QString& i_strKeyInTree );
 public: // instance methods
     QString findUniqueGraphObjName( CGraphObj* i_pGraphObj );
 public: // instance methods

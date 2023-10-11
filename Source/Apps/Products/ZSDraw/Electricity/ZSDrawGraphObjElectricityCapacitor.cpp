@@ -355,6 +355,8 @@ CGraphObjCapacitor::~CGraphObjCapacitor()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pLinCnct = nullptr;
     m_pRctDielectric = nullptr;
     m_pLinPlate1 = nullptr;

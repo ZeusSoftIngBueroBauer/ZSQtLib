@@ -143,9 +143,7 @@ CGraphObjLabel::~CGraphObjLabel()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObjParent != nullptr) {
-        m_pGraphObjParent->onLabelAboutToBeDestroyed(this);
-    }
+    emit_aboutToBeDestroyed();
 
     // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
     // dtor of QGraphicsItem has already been executed. The order the dtors

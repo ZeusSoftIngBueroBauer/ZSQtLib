@@ -173,21 +173,11 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
        --+----------+-+---+-+-----+-+-----+----
        0 |Brush:    | |   | |Style| |Color|<-->
     */
-    const int cxSpacing = 5;
-    const QVector<int> ariClmWidths = {
-         /*  0 */ 60,
-         /*  1 */ cxSpacing,
-         /*  2 */ 30,
-         /*  3 */ cxSpacing,
-         /*  4 */ 60,
-         /*  5 */ cxSpacing,
-         /*  6 */ 60
-    };
-
-    for (int idxClm = 0; idxClm < ariClmWidths.size(); ++idxClm) {
-        m_pLytWdgtFillStyleSettings->setColumnMinimumWidth(idxClm, ariClmWidths[idxClm]);
+    int iClmCount = 7;
+    for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
+        m_pLytWdgtFillStyleSettings->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
     }
-    m_pLytWdgtFillStyleSettings->setColumnStretch(ariClmWidths.size(), 1);
+    m_pLytWdgtFillStyleSettings->setColumnStretch(iClmCount, 1);
 
     // <Row 0> Fill Style
     //-------------------

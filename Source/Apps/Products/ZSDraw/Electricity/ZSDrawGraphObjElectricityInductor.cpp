@@ -282,6 +282,8 @@ CGraphObjInductor::~CGraphObjInductor()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pLinBody = nullptr;
     m_pCnctPt1 = nullptr;
     m_pCnctPt2 = nullptr;

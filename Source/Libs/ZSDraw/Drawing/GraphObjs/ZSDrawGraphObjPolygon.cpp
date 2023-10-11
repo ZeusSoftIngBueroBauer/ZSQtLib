@@ -133,6 +133,8 @@ CGraphObjPolygon::~CGraphObjPolygon()
 {
     m_bDtorInProgress = true;
 
+    emit_aboutToBeDestroyed();
+
 } // dtor
 
 /*==============================================================================

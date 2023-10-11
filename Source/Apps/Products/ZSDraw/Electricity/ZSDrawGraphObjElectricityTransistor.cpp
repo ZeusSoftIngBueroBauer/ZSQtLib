@@ -510,6 +510,8 @@ CGraphObjTransistor::~CGraphObjTransistor()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pEllBody = nullptr;
     m_pLinBase = nullptr;
     m_pLinBaseUp = nullptr;

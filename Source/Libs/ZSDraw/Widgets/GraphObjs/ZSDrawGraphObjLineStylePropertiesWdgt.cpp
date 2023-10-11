@@ -200,30 +200,18 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
     m_pWdgtLineStyleSettings->setLayout(m_pLytWdgtLineStyleSettings);
     m_pLyt->addWidget(m_pWdgtLineStyleSettings);
 
-    /* Grid Layout (alternative 2)
+    /* Grid Layout
          |     0    |1| 2 |3|  4  |5| 6   |7| 8    | 
        --+----------+-+---+-+-----+-+-----+-+------+----
        0 |Line:     | |   | |Style| |Width| |Color |<-->
        1 |End Points| |P1:| |Style| |Width| |Length|<-->
        2 |          | |P2:| |Style| |Width| |Length|<-->
     */
-    const int cxSpacing = 5;
-    const QVector<int> ariClmWidths = {
-         /*  0 */ 60,
-         /*  1 */ cxSpacing,
-         /*  2 */ 30,
-         /*  3 */ cxSpacing,
-         /*  4 */ 60,
-         /*  5 */ cxSpacing,
-         /*  6 */ 60,
-         /*  7 */ cxSpacing,
-         /*  8 */ 60
-    };
-
-    for (int idxClm = 0; idxClm < ariClmWidths.size(); ++idxClm) {
-        m_pLytWdgtLineStyleSettings->setColumnMinimumWidth(idxClm, ariClmWidths[idxClm]);
+    int iClmCount = 9;
+    for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
+        m_pLytWdgtLineStyleSettings->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
     }
-    m_pLytWdgtLineStyleSettings->setColumnStretch(ariClmWidths.size(), 1);
+    m_pLytWdgtLineStyleSettings->setColumnStretch(iClmCount, 1);
 
     // <Row 0> Line Style
     //-------------------
@@ -231,6 +219,7 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
     int iRow = 0;
 
     m_pLblLineStyle = new QLabel("Line:");
+    //m_pLblLineStyle->setFixedWidth(m_ariClmWidths[0]);
     m_pLytWdgtLineStyleSettings->addWidget(m_pLblLineStyle, iRow, 0);
 
     m_pModelLineStyles = new QStandardItemModel();
@@ -266,9 +255,11 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
     iRow = 1;
 
     m_pLblLineEndStyles = new QLabel("End Points");
+    //m_pLblLineEndStyles->setFixedWidth(m_ariClmWidths[0]);
     m_pLytWdgtLineStyleSettings->addWidget(m_pLblLineEndStyles, iRow, 0);
 
     m_pLblP1LineEndStyles = new QLabel("P1:");
+    //m_pLblP1LineEndStyles->setFixedWidth(m_ariClmWidths[2]);
     m_pLytWdgtLineStyleSettings->addWidget(m_pLblP1LineEndStyles, iRow, 2, Qt::AlignRight);
 
     m_pModelP1LineEndStyles = new QStandardItemModel();
@@ -305,6 +296,7 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
     iRow = 2;
 
     m_pLblP2LineEndStyles = new QLabel("P2:");
+    //m_pLblP2LineEndStyles->setFixedWidth(m_ariClmWidths[2]);
     m_pLytWdgtLineStyleSettings->addWidget(m_pLblP2LineEndStyles, iRow, 2, Qt::AlignRight);
 
     m_pModelP2LineEndStyles = new QStandardItemModel();

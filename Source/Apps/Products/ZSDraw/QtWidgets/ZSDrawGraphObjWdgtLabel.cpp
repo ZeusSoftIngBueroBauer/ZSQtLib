@@ -172,6 +172,8 @@ CGraphObjWdgtLabel::~CGraphObjWdgtLabel()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pLabel = nullptr;
 
 } // dtor

@@ -258,7 +258,6 @@ public: // struct members
 class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
-//friend class CGraphObjLabel;
     Q_OBJECT
 public: // class methods
     /*! Returns the namespace the class belongs to. */
@@ -277,8 +276,16 @@ protected: // ctor
 public: // dtor
     virtual ~CGraphObj();
 signals:
+    /*!< This signal is emitted if the object is going to be destroyed.
+         Only the top most class in the hierachy of class inheritance should emit the signal.
+         For this the signal may not be emitted "directly" by the derived classes but the class
+         must call "emit_aboutToBeDestroyed" in their destructors. */
+    void aboutToBeDestroyed(CGraphObj*);
+    /*!< This signal is emitted if the selected state of the object has been changed. */
     void selectedChanged();
+    /*!< This signal is emitted if the geometry of the object has been changed. */
     void geometryChanged();
+    /*!< This signal is emitted if the drawing settings (pen style, etc.) of the object has been changed. */
     void drawSettingsChanged();
 protected: // instance methods (trace admin objects for method tracing)
     void createTraceAdminObjs(const QString& i_strClassName);
@@ -457,45 +464,65 @@ protected: // overridables
     virtual void updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
     virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );
     virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
-public: // overridables
-    virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints() const;
-public: // overridables
-    virtual void showNameLabel(ESelectionPoint i_selPt = ESelectionPoint::TopCenter);
-    virtual void hideNameLabel();
-    virtual bool isNameLabelVisible() const;
-    virtual ESelectionPoint nameLabelAnchorPoint() const;
-    virtual void showNameLabelAnchorLine();
-    virtual void hideNameLabelAnchorLine();
-    virtual bool isNameLabelAnchorLineVisible() const;
-public: // overridables
-    virtual int showLabel(const QString& i_strLabel, ESelectionPoint i_selPt = ESelectionPoint::TopCenter);
-    virtual void hideLabel(int i_idxLabel);
-    virtual bool isLabelVisible(int i_idxLabel) const;
-    virtual ESelectionPoint labelAnchorPoint(int i_idxLabel) const;
-    virtual void showLabelAnchorLine(int i_idxLabel);
-    virtual void hideLabelAnchorLine(int i_idxLabel);
-    virtual bool isLabelAnchorLineVisible(int i_idxLabel) const;
-public: // overridables (KeyLabel = "Position<SelPt>")
-    virtual void showPositionLabel(ESelectionPoint i_selPt = ESelectionPoint::TopLeft);
-    virtual void hidePositionLabel(ESelectionPoint i_selPt = ESelectionPoint::TopLeft);
-    virtual bool isPositionLabelVisible(ESelectionPoint i_selPt = ESelectionPoint::TopLeft) const;
-    virtual void showPositionLabelAnchorLine(ESelectionPoint i_selPt = ESelectionPoint::TopLeft);
-    virtual void hidePositionLabelAnchorLine(ESelectionPoint i_selPt = ESelectionPoint::TopLeft);
-    virtual bool isPositionLabelAnchorLineVisible(ESelectionPoint i_selPt = ESelectionPoint::TopLeft) const;
+public: // overridables (text labels)
+    virtual QStringList getPredefinedLabelNames() const;
+    virtual bool isPredefinedLabelName(const QString& i_strName) const;
+    virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
+    virtual bool isLabelAdded(const QString& i_strName) const;
+    virtual bool addLabel(const QString& i_strName);
+    virtual void removeLabel(const QString& i_strName);
+    virtual void setLabelText(const QString& i_strName, const QString& i_strText);
+    virtual QString labelText(const QString& i_strName) const;
+    virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
+    virtual ESelectionPoint labelAnchorPoint(const QString& i_strName) const;
+    virtual void showLabel(const QString& i_strName);
+    virtual void hideLabel(const QString& i_strName);
+    virtual bool isLabelVisible(const QString& i_strName) const;
+    virtual void showLabelAnchorLine(const QString& i_strName);
+    virtual void hideLabelAnchorLine(const QString& i_strName);
+    virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;
+    QStringList getLabelNames() const;
+public: // overridables (position labels)
+    //virtual QStringList getPredefinedPositionLabelNames() const;
+    //virtual QList<ESelectionPoint> getPossiblePositionLabelAnchorPoints(const QString& i_strName) const;
+    //virtual bool isPositionLabelAdded(const QString& i_strName) const;
+    //virtual int addPositionLabel(const QString& i_strName);
+    //virtual void removePositionLabel(const QString& i_strName);
+    //virtual void setPositionLabelText(const QString& i_strName, const QString& i_strText);
+    //virtual QString positionLabelText(const QString& i_strName);
+    //virtual void setPositionLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
+    //virtual ESelectionPoint positionLabelAnchorPoint(const QString& i_strName) const;
+    //virtual void showPositionLabel(const QString& i_strName);
+    //virtual void hidePositionLabel(const QString& i_strName);
+    //virtual bool isPositionLabelVisible(const QString& i_strName) const;
+    //virtual void showPositionLabelAnchorLine(const QString& i_strName);
+    //virtual void hidePositionLabelAnchorLine(const QString& i_strName);
+    //virtual bool isPositionLabelAnchorLineVisible(const QString& i_strName) const;
+    //virtual QStringList getPositionLabelNames() const;
+public: // overridables (dimension line labels)
+    //virtual QStringList getPredefinedDimLineLabelNames() const;
+    //virtual QList<ESelectionPoint> getPossibleDimLineLabelAnchorPoints(const QString& i_strName) const;
+    //virtual bool isDimLineLabelAdded(const QString& i_strName) const;
+    //virtual int addDimLineLabel(const QString& i_strName);
+    //virtual void removeDimLineLabel(const QString& i_strName);
+    //virtual void setDimLineLabelText(const QString& i_strName, const QString& i_strText);
+    //virtual QString dimLineLabelText(const QString& i_strName);
+    //virtual void setDimLineLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
+    //virtual ESelectionPoint dimLineLabelAnchorPoint(const QString& i_strName) const;
+    //virtual void showDimLineLabel(const QString& i_strName);
+    //virtual void hideDimLineLabel(const QString& i_strName);
+    //virtual bool isDimLineLabelVisible(const QString& i_strName) const;
+    //virtual void showDimLineLabelAnchorLine(const QString& i_strName);
+    //virtual void hideDimLineLabelAnchorLine(const QString& i_strName);
+    //virtual bool isDimLineLabelAnchorLineVisible(const QString& i_strName) const;
+    //virtual QStringList getDimLineLabelNames() const;
 protected: // overridables
     virtual void updateLabelDistance(CGraphObjLabel* i_pGraphObjLabel);
-//public: // overridables
-//    virtual void showLabels(); // also creates the labels if not yet created
-//    virtual void hideLabels(); // not just hides but also destroys the labels
-//public: // instance methods
-//    QStringList getLabelsKeys() const;
-//    CGraphObjLabel* getLabel( const QString& i_strKey ) const;
-//    QHash<QString, CGraphObjLabel*> getLabels() { return m_arpLabels; }
-//    void addLabels( QHash<QString, CGraphObjLabel*> i_arpLabels );
 public: // overridables
-    virtual void onParentItemCoorsHasChanged( CGraphObj* /*i_pGraphObjParent*/ );
-    virtual void onSelectionPointDestroying( CGraphObjSelectionPoint* i_pSelectionPoint );
-    virtual void onLabelAboutToBeDestroyed( CGraphObjLabel* i_pLabel );
+    virtual void onParentItemCoorsHasChanged(CGraphObj* i_pGraphObjParent);
+protected slots: // overridables
+    virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
+    virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
 public: // instance methods (simulation methods)
     void addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
     void removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
@@ -519,9 +546,11 @@ protected: // overridables
     virtual void updateLabelPositions(QHash<QString, CGraphObjLabel*>& i_arpLabels);
     virtual void updatePositionLabelsContent();
 protected: // auxiliary instance methods
-    void showLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt);
-    void hideLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey);
-    void destroyLabels();
+    //void showLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt);
+    //void hideLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey);
+    //void destroyLabels();
+protected: // auxiliary instance methods
+    void emit_aboutToBeDestroyed();
 protected: // auxiliary instance methods (method tracing)
     void emit_selectedChanged();
     void emit_geometryChanged();
@@ -535,6 +564,10 @@ protected: // overridable auxiliary instance methods (method tracing)
 protected: // instance members
     /*!< Flag to indicate that the destructor has been called. */
     bool m_bDtorInProgress;
+    /*!< Flag to indicate that the signal aboutToDestroyed has been emitted.
+         This flag should ensure that the signal is emitted just once by
+         the top most class in the hierachy of class inheritance. */
+    bool m_bAboutToBeDestroyedEmitted;
     /*!< When changing the drawing size in metric unit dimension
          (e.g. on changing the Y Scale Orientation) the scene coordinates
          must be newly calculated even if the original values stored in
@@ -601,18 +634,26 @@ protected: // instance members
     CEnumSelectionPoint m_selPtSelectedBoundingRect;
     /*!< List of selection points at the bounding rectangle. */
     QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
-    /*!< The name label is created if the name got to be shown in the drawing view. */
-    CGraphObjLabel* m_pNameLabel;
-    /*!< List of additional labels which may be assigned to the graphical object.
-         Please note that the key assigned to the label is the index of the label in the
-         list of labels. */
-    QList<CGraphObjLabel*> m_arpLabels;
-    /*!< Hash with position labels which may be indicated. As positions may be indicated for
-         each possible selection point the key into the hash is the name of the selection point. */
-    QHash<QString, CGraphObjLabel*> m_arpPosLabels;
-    /*!< Hash with dimension line labels which may be indicated. As dimension lines are drawn between
-         selection points the key into the hash is the name of one of the selection points. */
-    QHash<QString, CGraphObjLabel*> m_arpDimLineLabels;
+    /*!< List with predefined (reserved) label names. */
+    QStringList m_strlstPredefinedLabelNames;
+    /*!< Labels which may be assigned to and indicated by the graphical object.
+         For each label a unique name has to be assigned.
+         Some names are reserved for internal use. E.g. "Name" is used to indicate
+         the name of the object. The value of the "Name" label is not editable but is
+         used to indicate the name of the object.
+         Derived graphical object classes may further on reserve names. E.g. the Line object
+         uses "P1" and "P2" to address the line end points. The names for "P1" and "P2" is
+         editable but are defaulting to "P1" and "P2".
+         In addition to those predefined labels additional labels may be added by defining a
+         unique name and assigning a text. Both the name and the text are stored in the Label object. */
+    QHash<QString, CGraphObjLabel*> m_hshpLabels;
+    /*!< Hash with position coordinates which may be indicated. The number of position labels depend on
+         the object type. E.g. for the Line object the positions "P1", "P2" and "Center" may be shown. */
+    QHash<QString, CGraphObjLabel*> m_hshpPosLabels;
+    /*!< Hash with dimension line labels which may be indicated. The number and type of dimension labels
+         depend on the object type.  E.g. for the Line object the dimensions "Length", "Angle", "Width"
+         and "Height" may be shown. */
+    QHash<QString, CGraphObjLabel*> m_hshpDimLineLabels;
     /*!< The tool tip contains various interesting information about the graphical object like the name,
          the position and the dimension. But also other information which depends on the type of the object. */
     QString m_strToolTip;

@@ -89,6 +89,8 @@ CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
     m_bDrawingSceneDrawSettingsChangedSignalConnected(false),
     // Edit Controls
     m_pLyt(nullptr),
+    m_cxSpacing(5),
+    m_ariClmWidths(),
     // Button Line
     m_pWdgtButtons(nullptr),
     m_pLytWdgtButtons(nullptr),
@@ -110,6 +112,36 @@ CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
 
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
+
+    /*  Grid Layout with 11 columns. The last column is a stretch.
+        To apply the layout to the grid layout use the following code in the constructor
+        of the derived classes:
+
+        for (int idxClm = 0; idxClm < m_ariClmWidths.size(); ++idxClm) {
+            m_pGridLayout->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
+        }
+        m_pGridLayout->setColumnStretch(m_ariClmWidths.size(), 1);
+
+        Example of the grid Layout used by the TextStyle widget:
+
+           |     0    |1| 2 |3|  4  |5| 6    |7| 8    |9|  10   | 
+         --+----------+-+---+-+-----+-+------+-+------+-+-------+----
+         0 |Font:     | |   | |Font          | |Size  | |Color  |<-->
+         1 |Effects:  | |   | |Bold | |Kursiv| |UnderL| |StrikeT|<-->
+    */
+    m_ariClmWidths = {
+         /*  0 */ 50,
+         /*  1 */ m_cxSpacing,
+         /*  2 */ 20,
+         /*  3 */ m_cxSpacing,
+         /*  4 */ 60,
+         /*  5 */ m_cxSpacing,
+         /*  6 */ 60,
+         /*  7 */ m_cxSpacing,
+         /*  8 */ 60,
+         /*  9 */ m_cxSpacing,
+         /* 10 */ 60
+    };
 
 } // ctor
 
@@ -140,6 +172,8 @@ CWdgtGraphObjPropertiesAbstract::~CWdgtGraphObjPropertiesAbstract()
     m_bDrawingSceneDrawSettingsChangedSignalConnected = false;
     // Edit Controls
     m_pLyt = nullptr;
+    m_cxSpacing = 0;
+    //m_ariClmWidths;
     // Button Line
     m_pWdgtButtons = nullptr;
     m_pLytWdgtButtons = nullptr;

@@ -309,6 +309,8 @@ CGraphObjResistor::~CGraphObjResistor()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pLinCnct = nullptr;
     m_pRctBody = nullptr;
     m_pCnctPt1 = nullptr;

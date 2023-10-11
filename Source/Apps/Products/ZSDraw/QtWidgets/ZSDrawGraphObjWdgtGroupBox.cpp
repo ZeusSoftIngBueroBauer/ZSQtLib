@@ -171,6 +171,8 @@ CGraphObjWdgtGroupBox::~CGraphObjWdgtGroupBox()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pGroupBox = nullptr;
 
 } // dtor

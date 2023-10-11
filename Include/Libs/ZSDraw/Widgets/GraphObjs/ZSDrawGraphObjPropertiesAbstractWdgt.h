@@ -195,8 +195,33 @@ protected: // instance members
     /*!< Flag to indicate whether the widget is connected to the drawSettingsChanged signal of
          the drawing scene to avoid multiple connections or disconnections if not connected. */
     bool m_bDrawingSceneDrawSettingsChangedSignalConnected;
-    // Edit Controls
+    /*!< Main Layout for the Edit Controls. */
     QVBoxLayout* m_pLyt;
+    /*!<  As several property widgets may be combined in a parent widget (the GraphObjLine
+          property widget contains property widgets to modify Labels, Geometry and LineStyle)
+          those widgets should be organized in a grid layout with equal column widths.
+          The columns should have the same spacing which is defined here. */
+    int m_cxSpacing;
+    /*!<  As several property widgets may be combined in a parent widget (the GraphObjLine
+          property widget contains property widgets to modify Labels, Geometry and LineStyle)
+          those widgets should be organized in a grid layout with equal column widths.
+          The columns should have the same size or at least the columns should be aligned.
+          For this the following member contains a list with predefined column widths which
+          may be used by the derived property widgets.
+          To apply the layout to the grid layout use the following code in the constructor
+          of the derived classes:
+
+            for (int idxClm = 0; idxClm < m_ariClmWidths.size(); ++idxClm) {
+                m_pGridLayout->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
+            }
+            m_pGridLayout->setColumnStretch(m_ariClmWidths.size(), 1);
+
+          Example of the grid Layout used by the TextStyle widget:
+             |     0    |1| 2 |3|  4  |5| 6    |7| 8    |9|  10   | 
+           --+----------+-+---+-+-----+-+------+-+------+-+-------+----
+           0 |Font:     | |   | |Font          | |Size  | |Color  |<-->
+           1 |Effects:  | |   | |Bold | |Kursiv| |UnderL| |StrikeT|<--> */
+    QVector<int> m_ariClmWidths;
     // Button Line
     QWidget* m_pWdgtButtons;
     QHBoxLayout* m_pLytWdgtButtons;

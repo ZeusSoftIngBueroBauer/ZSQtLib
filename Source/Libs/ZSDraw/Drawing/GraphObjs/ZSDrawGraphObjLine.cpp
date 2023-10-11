@@ -119,6 +119,9 @@ CGraphObjLine::CGraphObjLine(
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
+    m_strlstPredefinedLabelNames.append("P1");
+    m_strlstPredefinedLabelNames.append("P2");
+
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
@@ -197,6 +200,8 @@ CGraphObjLine::~CGraphObjLine()
         /* strObjName   */ m_strName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
+
+    emit_aboutToBeDestroyed();
 
     // Please see comments at destructor of base class CGraphObj why the labels
     // cannot be destroyed and the graphics scene item cannot be removed from the
@@ -847,13 +852,15 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the list of the possible anchor points for labels.
+/*! @brief Returns the list of the possible anchor points for the given label name.
 
-    For a line the labels may be anchored to the start and end point of the line
-    but also to the center of the line.
-    As there is no StartLine or EndLine definition available in the enumeration
-    of selection points, TopLeft is used to specify the StartPoint of the line and
-    BottomRight is used to specify the EndPoint of the line.
+    For the predefined labels "Name", "P1" and "P2" the following applies:
+
+    - The "Name" label may be anchored to the center point of the line.
+    - "P1" may be anchored to the start of the line (SelectionPoint = TopLeft).
+    - "P2" may be anchored to the end of the line (SelectionPoint = BottomRight).
+
+    User defined labels may be anchored to either Center, Start or End of the line.
 
     Please note that the most common used selection points should be at the
     beginning of the list so that combo boxes to select the selection point
@@ -861,15 +868,23 @@ public: // overridables of base class CGraphObj
 
     @return List of possbile selection points.
 */
-QList<ESelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints() const
+QList<ESelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    QList<ESelectionPoint> arSelPts = {
+    static const QHash<QString, QList<ESelectionPoint>> s_hshSelPtsPredefinedNames = {
+        { "Name", {ESelectionPoint::Center} },
+        { "P1", {ESelectionPoint::TopLeft} },       // Start point of the line
+        { "P2", {ESelectionPoint::BottomRight} }    // End point of the line
+    };
+    static const QList<ESelectionPoint> s_arSelPtsUserDefined = {
         ESelectionPoint::Center,
         ESelectionPoint::TopLeft,       // Start point of the line
         ESelectionPoint::BottomRight    // End point of the line
     };
-    return arSelPts;
+    if (s_hshSelPtsPredefinedNames.contains(i_strName)) {
+        return s_hshSelPtsPredefinedNames[i_strName];
+    }
+    return s_arSelPtsUserDefined;
 }
 
 /*==============================================================================

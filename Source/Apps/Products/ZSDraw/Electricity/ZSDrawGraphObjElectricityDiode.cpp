@@ -330,6 +330,8 @@ CGraphObjDiode::~CGraphObjDiode()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pLinCnct = nullptr;
     m_pPlgBody = nullptr;
     m_pLinBody = nullptr;

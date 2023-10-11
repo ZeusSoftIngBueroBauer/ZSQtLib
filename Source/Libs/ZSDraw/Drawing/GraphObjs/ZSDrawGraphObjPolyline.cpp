@@ -177,6 +177,8 @@ CGraphObjPolyline::~CGraphObjPolyline()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
     // dtor of QGraphicsItem has already been executed. The order the dtors
     // of inherited classes are called depends on the order the classes
@@ -188,22 +190,16 @@ CGraphObjPolyline::~CGraphObjPolyline()
     // derived from QGraphicsItem.
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        if( m_pDrawingScene != nullptr )
-        {
-            if( !m_strKeyInTree.isEmpty() )
-            {
-                try
-                {
+    if (pGraphicsItem != nullptr) {
+        if (m_pDrawingScene != nullptr) {
+            if (!m_strKeyInTree.isEmpty()) {
+                try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
                     // of class "QGraphicsItem" may have already been processed and
                     // models and Views may still try to access the graphical object.
                     m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
                 }
-                catch(...)
-                {
+                catch(...) {
                 }
             }
 
@@ -220,10 +216,8 @@ CGraphObjPolyline::~CGraphObjPolyline()
             // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
             // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
             m_pDrawingScene->removeGraphObj(this);
-
-        } // if( m_pDrawingScene != nullptr )
-    } // if( pGraphicsItem != nullptr )
-
+        }
+    }
 } // dtor
 
 /*==============================================================================

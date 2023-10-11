@@ -327,6 +327,8 @@ CGraphObjSwitch::~CGraphObjSwitch()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pCnctPt1 = nullptr;
     m_pCnctPt2 = nullptr;
     m_pLinSwitch = nullptr;

@@ -178,31 +178,17 @@ CWdgtGraphObjTextStyleProperties::CWdgtGraphObjTextStyleProperties(
     m_pWdgtTextStyleSettings->setLayout(m_pLytWdgtTextStyleSettings);
     m_pLyt->addWidget(m_pWdgtTextStyleSettings);
 
-    /* Grid Layout (alternative 2)
-         |     0    |1| 2 |3|  4  |5| 6    |7| 8    |9|  10   | 
-       --+----------+-+---+-+-----+-+------+-+------+-+-------+----
-       0 |Font:     | |   | |Font          | |Size  | |Color  |<-->
-       1 |Effects:  | |   | |Bold | |Kursiv| |UnderL| |StrikeT|<-->
+    /* Grid Layout
+           |     0    |1| 2 |3|  4  |5| 6    |7| 8    |9|  10   | 
+         --+----------+-+---+-+-----+-+------+-+------+-+-------+----
+         0 |Font:     | |   | |Font          | |Size  | |Color  |<-->
+         1 |Effects:  | |   | |Bold | |Kursiv| |UnderL| |StrikeT|<-->
     */
-    const int cxSpacing = 5;
-    const QVector<int> ariClmWidths = {
-         /*  0 */ 60,
-         /*  1 */ cxSpacing,
-         /*  2 */ 30,
-         /*  3 */ cxSpacing,
-         /*  4 */ 60,
-         /*  5 */ cxSpacing,
-         /*  6 */ 60,
-         /*  7 */ cxSpacing,
-         /*  8 */ 60,
-         /*  9 */ cxSpacing,
-         /* 10 */ 60
-    };
-
-    for (int idxClm = 0; idxClm < ariClmWidths.size(); ++idxClm) {
-        m_pLytWdgtTextStyleSettings->setColumnMinimumWidth(idxClm, ariClmWidths[idxClm]);
+    int iClmCount = min(11, m_ariClmWidths.size());
+    for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
+        m_pLytWdgtTextStyleSettings->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
     }
-    m_pLytWdgtTextStyleSettings->setColumnStretch(ariClmWidths.size(), 1);
+    m_pLytWdgtTextStyleSettings->setColumnStretch(iClmCount, 1);
 
     // <Row 0> Font
     //-------------

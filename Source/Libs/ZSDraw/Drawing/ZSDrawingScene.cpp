@@ -1317,6 +1317,32 @@ void CDrawingScene::removeGraphObj( CGraphObj* i_pGraphObj )
     }
 } // removeGraphObj
 
+//------------------------------------------------------------------------------
+QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strKeyInTree )
+//------------------------------------------------------------------------------
+{
+    QGraphicsItem* pGraphicsItem = nullptr;
+    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strKeyInTree);
+    if( pTreeEntry != nullptr )
+    {
+        pGraphicsItem = dynamic_cast<QGraphicsItem*>(pTreeEntry);
+    }
+    return pGraphicsItem;
+}
+
+//------------------------------------------------------------------------------
+CGraphObj* CDrawingScene::findGraphObj( const QString& i_strKeyInTree )
+//------------------------------------------------------------------------------
+{
+    CGraphObj* pGraphObj = nullptr;
+    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strKeyInTree);
+    if( pTreeEntry != nullptr )
+    {
+        pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+    }
+    return pGraphObj;
+}
+
 /*==============================================================================
 protected: // instance methods
 ==============================================================================*/
@@ -2559,36 +2585,6 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree 
 //    //emit_graphObjNameChanged(i_strKeyInTree, i_strObjNameOld, i_strObjNameNew);
 //
 //} // onGraphObjNameChanged
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QGraphicsItem* CDrawingScene::findGraphicsItem( const QString& i_strKeyInTree )
-//------------------------------------------------------------------------------
-{
-    QGraphicsItem* pGraphicsItem = nullptr;
-    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strKeyInTree);
-    if( pTreeEntry != nullptr )
-    {
-        pGraphicsItem = dynamic_cast<QGraphicsItem*>(pTreeEntry);
-    }
-    return pGraphicsItem;
-}
-
-//------------------------------------------------------------------------------
-CGraphObj* CDrawingScene::findGraphObj( const QString& i_strKeyInTree )
-//------------------------------------------------------------------------------
-{
-    CGraphObj* pGraphObj = nullptr;
-    CIdxTreeEntry* pTreeEntry = m_pGraphObjsIdxTree->findEntry(i_strKeyInTree);
-    if( pTreeEntry != nullptr )
-    {
-        pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
-    }
-    return pGraphObj;
-}
 
 /*==============================================================================
 public: // instance methods

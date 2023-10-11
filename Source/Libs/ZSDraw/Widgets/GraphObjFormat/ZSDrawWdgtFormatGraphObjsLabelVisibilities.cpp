@@ -813,23 +813,23 @@ void CWdgtFormatGraphObjsLabelVisibilities::applyChanges()
 
         if (bConverted) {
             if (m_pChkNameLabelVisible->isChecked()) {
-                if (!m_pGraphObj->isNameLabelVisible()) {
-                    m_pGraphObj->showNameLabel(eSelPt.enumerator());
+                if (!m_pGraphObj->isLabelVisible("Name")) {
+                    m_pGraphObj->showLabel("Name");
                 }
             }
             else {
-                if (m_pGraphObj->isNameLabelVisible()) {
-                    m_pGraphObj->hideNameLabel();
+                if (m_pGraphObj->isLabelVisible("Name")) {
+                    m_pGraphObj->hideLabel("Name");
                 }
             }
             if (m_pChkNameLabelAnchorLineVisible->isChecked()) {
-                if (!m_pGraphObj->isNameLabelAnchorLineVisible()) {
-                    m_pGraphObj->showNameLabelAnchorLine();
+                if (!m_pGraphObj->isLabelAnchorLineVisible("Name")) {
+                    m_pGraphObj->showLabelAnchorLine("Name");
                 }
             }
             else {
-                if (m_pGraphObj->isNameLabelAnchorLineVisible()) {
-                    m_pGraphObj->hideNameLabelAnchorLine();
+                if (m_pGraphObj->isLabelAnchorLineVisible("Name")) {
+                    m_pGraphObj->hideLabelAnchorLine("Name");
                 }
             }
         }
@@ -838,47 +838,47 @@ void CWdgtFormatGraphObjsLabelVisibilities::applyChanges()
     // Dimension Label Visibilities
     //=============================
 
-    if( m_pCmbDimensionPosLabelAnchorSelPt != nullptr && m_pChkDimensionPosLabelVisible != nullptr && m_pChkDimensionPosLabelAnchorLineVisible != nullptr )
-    {
-        QString strAnchorSelPt = m_pCmbDimensionPosLabelAnchorSelPt->currentText();
-        bool bConverted = false;
-        CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+    //if( m_pCmbDimensionPosLabelAnchorSelPt != nullptr && m_pChkDimensionPosLabelVisible != nullptr && m_pChkDimensionPosLabelAnchorLineVisible != nullptr )
+    //{
+    //    QString strAnchorSelPt = m_pCmbDimensionPosLabelAnchorSelPt->currentText();
+    //    bool bConverted = false;
+    //    CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
 
-        if (bConverted)
-        {
-            Qt::CheckState checkStatePosLabelVisible = m_pChkDimensionPosLabelVisible->checkState();
-            Qt::CheckState checkStatePosLabelAnchorLineVisible = m_pChkDimensionPosLabelAnchorLineVisible->checkState();
+    //    if (bConverted)
+    //    {
+    //        Qt::CheckState checkStatePosLabelVisible = m_pChkDimensionPosLabelVisible->checkState();
+    //        Qt::CheckState checkStatePosLabelAnchorLineVisible = m_pChkDimensionPosLabelAnchorLineVisible->checkState();
 
-            if (checkStatePosLabelVisible == Qt::Checked)
-            {
-                if (!m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator()))
-                {
-                    m_pGraphObj->showPositionLabel(eSelPt.enumerator());
-                }
-            }
-            else if( checkStatePosLabelVisible == Qt::Unchecked )
-            {
-                if( m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator()) )
-                {
-                    m_pGraphObj->hidePositionLabel(eSelPt.enumerator());
-                }
-            }
-            if( checkStatePosLabelAnchorLineVisible == Qt::Checked )
-            {
-                if( !m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator()) )
-                {
-                    m_pGraphObj->showPositionLabelAnchorLine(eSelPt.enumerator());
-                }
-            }
-            else if( checkStatePosLabelAnchorLineVisible == Qt::Unchecked )
-            {
-                if( m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator()) )
-                {
-                    m_pGraphObj->hidePositionLabelAnchorLine(eSelPt.enumerator());
-                }
-            }
-        }
-    }
+    //        if (checkStatePosLabelVisible == Qt::Checked)
+    //        {
+    //            if (!m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator()))
+    //            {
+    //                m_pGraphObj->showPositionLabel(eSelPt.enumerator());
+    //            }
+    //        }
+    //        else if( checkStatePosLabelVisible == Qt::Unchecked )
+    //        {
+    //            if( m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator()) )
+    //            {
+    //                m_pGraphObj->hidePositionLabel(eSelPt.enumerator());
+    //            }
+    //        }
+    //        if( checkStatePosLabelAnchorLineVisible == Qt::Checked )
+    //        {
+    //            if( !m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator()) )
+    //            {
+    //                m_pGraphObj->showPositionLabelAnchorLine(eSelPt.enumerator());
+    //            }
+    //        }
+    //        else if( checkStatePosLabelAnchorLineVisible == Qt::Unchecked )
+    //        {
+    //            if( m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator()) )
+    //            {
+    //                m_pGraphObj->hidePositionLabelAnchorLine(eSelPt.enumerator());
+    //            }
+    //        }
+    //    }
+    //}
 
     // Dimension Line Visibilities
     //============================
@@ -945,52 +945,52 @@ bool CWdgtFormatGraphObjsLabelVisibilities::hasChanges() const
             bool bConverted = false;
             CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
 
-            bHasChanges = (m_pGraphObj->isNameLabelVisible() != m_pChkNameLabelVisible->isChecked());
+            bHasChanges = (m_pGraphObj->isLabelVisible("Name") != m_pChkNameLabelVisible->isChecked());
 
             if( !bHasChanges )
             {
-                bHasChanges = (m_pGraphObj->isNameLabelAnchorLineVisible() != m_pChkNameLabelAnchorLineVisible->isChecked());
+                bHasChanges = (m_pGraphObj->isLabelAnchorLineVisible("Name") != m_pChkNameLabelAnchorLineVisible->isChecked());
             }
         }
 
-        // Dimension Label Visibilities
+        // Position Label Visibilities
         //=============================
 
-        if( !bHasChanges && m_pCmbDimensionPosLabelAnchorSelPt != nullptr && m_pChkDimensionPosLabelVisible != nullptr && m_pChkDimensionPosLabelAnchorLineVisible != nullptr )
-        {
-            QString strAnchorSelPt = m_pCmbDimensionPosLabelAnchorSelPt->currentText();
-            bool bConverted = false;
-            CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
+        //if( !bHasChanges && m_pCmbDimensionPosLabelAnchorSelPt != nullptr && m_pChkDimensionPosLabelVisible != nullptr && m_pChkDimensionPosLabelAnchorLineVisible != nullptr )
+        //{
+        //    QString strAnchorSelPt = m_pCmbDimensionPosLabelAnchorSelPt->currentText();
+        //    bool bConverted = false;
+        //    CEnumSelectionPoint eSelPt = CEnumSelectionPoint::fromString(strAnchorSelPt, &bConverted);
 
-            if( bConverted )
-            {
-                Qt::CheckState checkStatePosLabelVisible = m_pChkDimensionPosLabelVisible->checkState();
-                Qt::CheckState checkStatePosLabelAnchorLineVisible = m_pChkDimensionPosLabelAnchorLineVisible->checkState();
+        //    if( bConverted )
+        //    {
+        //        Qt::CheckState checkStatePosLabelVisible = m_pChkDimensionPosLabelVisible->checkState();
+        //        Qt::CheckState checkStatePosLabelAnchorLineVisible = m_pChkDimensionPosLabelAnchorLineVisible->checkState();
 
-                if( checkStatePosLabelVisible == Qt::Checked )
-                {
-                    bHasChanges = !m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
-                }
-                else if( checkStatePosLabelVisible == Qt::Unchecked )
-                {
-                    bHasChanges = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
-                }
-                if( !bHasChanges )
-                {
-                    if( checkStatePosLabelAnchorLineVisible == Qt::Checked )
-                    {
-                        bHasChanges = !m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
-                    }
-                    else if( checkStatePosLabelAnchorLineVisible == Qt::Unchecked )
-                    {
-                        bHasChanges = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
-                    }
-                }
-            }
-        }
+        //        if( checkStatePosLabelVisible == Qt::Checked )
+        //        {
+        //            bHasChanges = !m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
+        //        }
+        //        else if( checkStatePosLabelVisible == Qt::Unchecked )
+        //        {
+        //            bHasChanges = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
+        //        }
+        //        if( !bHasChanges )
+        //        {
+        //            if( checkStatePosLabelAnchorLineVisible == Qt::Checked )
+        //            {
+        //                bHasChanges = !m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+        //            }
+        //            else if( checkStatePosLabelAnchorLineVisible == Qt::Unchecked )
+        //            {
+        //                bHasChanges = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+        //            }
+        //        }
+        //    }
+        //}
 
-        // Dimension Line Visibilities
-        //=============================
+        // Dimension Line Label Visibilities
+        //==================================
 
     }
 
@@ -1158,27 +1158,27 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionPosLabelVisibleStateCh
 
     if( bConverted )
     {
-        if( eSelPt == ESelectionPoint::All )
-        {
-            bool bAllPosLabelsAnchorLinesAreVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::All);
-            bool bAnyPosLabelsAnchorLineIsVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::Any);
+        //if( eSelPt == ESelectionPoint::All )
+        //{
+        //    bool bAllPosLabelsAnchorLinesAreVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::All);
+        //    bool bAnyPosLabelsAnchorLineIsVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::Any);
 
-            Qt::CheckState checkStatePosLabelAnchorLineVisible = bAllPosLabelsAnchorLinesAreVisible ? Qt::Checked : bAnyPosLabelsAnchorLineIsVisible ? Qt::PartiallyChecked : Qt::Unchecked;
+        //    Qt::CheckState checkStatePosLabelAnchorLineVisible = bAllPosLabelsAnchorLinesAreVisible ? Qt::Checked : bAnyPosLabelsAnchorLineIsVisible ? Qt::PartiallyChecked : Qt::Unchecked;
 
-            m_pChkDimensionPosLabelAnchorLineVisible->setCheckState(checkStatePosLabelAnchorLineVisible);
-        }
-        else
-        {
-            if( i_iCheckState == Qt::Checked )
-            {
-                bool bIsPosLabelAnchorLineVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
-                m_pChkDimensionPosLabelAnchorLineVisible->setCheckState(bIsPosLabelAnchorLineVisible ? Qt::Checked : Qt::Unchecked);
-            }
-            else if( i_iCheckState == Qt::Unchecked )
-            {
-                m_pChkDimensionPosLabelAnchorLineVisible->setCheckState(Qt::Unchecked);
-            }
-        }
+        //    m_pChkDimensionPosLabelAnchorLineVisible->setCheckState(checkStatePosLabelAnchorLineVisible);
+        //}
+        //else
+        //{
+        //    if( i_iCheckState == Qt::Checked )
+        //    {
+        //        bool bIsPosLabelAnchorLineVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+        //        m_pChkDimensionPosLabelAnchorLineVisible->setCheckState(bIsPosLabelAnchorLineVisible ? Qt::Checked : Qt::Unchecked);
+        //    }
+        //    else if( i_iCheckState == Qt::Unchecked )
+        //    {
+        //        m_pChkDimensionPosLabelAnchorLineVisible->setCheckState(Qt::Unchecked);
+        //    }
+        //}
     }
 } // onChkDimensionPosLabelVisibleStateChanged
 
@@ -1536,17 +1536,17 @@ void CWdgtFormatGraphObjsLabelVisibilities::updateVisibilityCheckStates(
 
         if (i_pCmbSelPt->objectName() == "Name")
         {
-            bAllLabelsAreVisible = m_pGraphObj->isNameLabelVisible();
+            bAllLabelsAreVisible = m_pGraphObj->isLabelVisible("Name");
             bAnyLabelsIsVisible = bAllLabelsAreVisible;
-            bAllLabelsAnchorLinesAreVisible = m_pGraphObj->isNameLabelAnchorLineVisible();
-            bAnyLabelsAnchorLineIsVisible = m_pGraphObj->isNameLabelAnchorLineVisible();
+            bAllLabelsAnchorLinesAreVisible = m_pGraphObj->isLabelAnchorLineVisible("Name");
+            bAnyLabelsAnchorLineIsVisible = m_pGraphObj->isLabelAnchorLineVisible("Name");
         }
         else if( i_pCmbSelPt->objectName() == "DimensionPos" )
         {
-            bAllLabelsAreVisible = m_pGraphObj->isPositionLabelVisible(ESelectionPoint::All);
-            bAnyLabelsIsVisible = m_pGraphObj->isPositionLabelVisible(ESelectionPoint::Any);
-            bAllLabelsAnchorLinesAreVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::All);
-            bAnyLabelsAnchorLineIsVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::Any);
+            //bAllLabelsAreVisible = m_pGraphObj->isPositionLabelVisible(ESelectionPoint::All);
+            //bAnyLabelsIsVisible = m_pGraphObj->isPositionLabelVisible(ESelectionPoint::Any);
+            //bAllLabelsAnchorLinesAreVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::All);
+            //bAnyLabelsAnchorLineIsVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(ESelectionPoint::Any);
         }
         else if( i_pCmbSelPt->objectName() == "DimensionWidth" )
         {
@@ -1583,13 +1583,13 @@ void CWdgtFormatGraphObjsLabelVisibilities::updateVisibilityCheckStates(
 
         if( i_pCmbSelPt->objectName() == "Name" )
         {
-            bIsLabelVisible = m_pGraphObj->isNameLabelVisible();
-            bIsLabelAnchorLineVisible = m_pGraphObj->isNameLabelAnchorLineVisible();
+            bIsLabelVisible = m_pGraphObj->isLabelVisible("Name");
+            bIsLabelAnchorLineVisible = m_pGraphObj->isLabelAnchorLineVisible("Name");
         }
         else if (i_pCmbSelPt->objectName() == "DimensionPos")
         {
-            bIsLabelVisible = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
-            bIsLabelAnchorLineVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
+            //bIsLabelVisible = m_pGraphObj->isPositionLabelVisible(eSelPt.enumerator());
+            //bIsLabelAnchorLineVisible = m_pGraphObj->isPositionLabelAnchorLineVisible(eSelPt.enumerator());
         }
         else if( i_pCmbSelPt->objectName() == "DimensionWidth" )
         {

@@ -357,6 +357,8 @@ CGraphObjVoltageSource::~CGraphObjVoltageSource()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pLinCnct = nullptr;
     m_pEllBody = nullptr;
     m_pLinSignMinus = nullptr;

@@ -149,22 +149,16 @@ CGraphObjConnectionPoint::~CGraphObjConnectionPoint()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    if( m_lstConnectionLines.size() > 0 )
-    {
-        CGraphObjConnectionLine* pGraphObjCnctLine;
-        int                      idxLine;
+    emit_aboutToBeDestroyed();
 
-        for( idxLine = m_lstConnectionLines.count()-1; idxLine >= 0; idxLine-- )
-        {
-            pGraphObjCnctLine = m_lstConnectionLines[idxLine];
+    if (m_lstConnectionLines.size() > 0) {
+        for (int idxLine = m_lstConnectionLines.count()-1; idxLine >= 0; idxLine--) {
+            CGraphObjConnectionLine* pGraphObjCnctLine = m_lstConnectionLines[idxLine];
             m_lstConnectionLines[idxLine] = nullptr;
-
-            try
-            {
+            try {
                 delete pGraphObjCnctLine; // as a reentry dtor of connection line calls "removeConnectionLine"
             }
-            catch(...)
-            {
+            catch(...) {
             }
             pGraphObjCnctLine = nullptr;
         }
@@ -181,22 +175,16 @@ CGraphObjConnectionPoint::~CGraphObjConnectionPoint()
     // derived from QGraphicsItem.
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        if( m_pDrawingScene != nullptr )
-        {
-            if( !m_strKeyInTree.isEmpty() )
-            {
-                try
-                {
+    if (pGraphicsItem != nullptr) {
+        if (m_pDrawingScene != nullptr) {
+            if (!m_strKeyInTree.isEmpty()) {
+                try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
                     // of class "QGraphicsItem" may have already been processed and
                     // models and Views may still try to access the graphical object.
                     m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
                 }
-                catch(...)
-                {
+                catch(...) {
                 }
             }
 
@@ -213,10 +201,8 @@ CGraphObjConnectionPoint::~CGraphObjConnectionPoint()
             // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
             // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
             m_pDrawingScene->removeGraphObj(this);
-
-        } // if( m_pDrawingScene != nullptr )
-    } // if( pGraphicsItem != nullptr )
-
+        }
+    }
 } // dtor
 
 /*==============================================================================

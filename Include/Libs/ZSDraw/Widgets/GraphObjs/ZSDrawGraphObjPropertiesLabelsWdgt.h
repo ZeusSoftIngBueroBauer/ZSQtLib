@@ -29,10 +29,14 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
+class QTableView;
+
 namespace ZS
 {
 namespace Draw
 {
+class CModelGraphObjLabels;
+
 //******************************************************************************
 class ZSDRAWDLL_API CWdgtGraphObjPropertiesLabels : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
@@ -70,6 +74,7 @@ private: // auxiliary instance methods
     bool changedNameIsUnique() const;
     void fillComboNameLabelAnchorSelPt();
 private: // instance members
+    /*!< Edit controls. */
     QWidget* m_pWdgtHeadline;
     QHBoxLayout* m_pLytWdgtHeadline;
     QPixmap m_pxmBtnDown;
@@ -91,6 +96,9 @@ private: // instance members
     QComboBox* m_pCmbNameLabelAnchorSelPt;
     QLabel* m_pLblNameLabelAnchorLineVisible;
     QCheckBox* m_pChkNameLabelAnchorLineVisible;
+    QVBoxLayout* m_pLytListView;
+    QTableView* m_pTableView;
+    CModelGraphObjLabels* m_pModel;
 
 }; // class CWdgtGraphObjPropertiesLabels
 

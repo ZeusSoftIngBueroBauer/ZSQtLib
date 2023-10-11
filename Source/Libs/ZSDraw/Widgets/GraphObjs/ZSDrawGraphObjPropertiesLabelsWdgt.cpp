@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsModel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
@@ -35,12 +36,15 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
+#include <QtGui/qstandarditemmodel.h>
+
 #if QT_VERSION < 0x050000
 #include <QtGui/qcheckbox.h>
 #include <QtGui/qcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
+#include <QtGui/qtableview.h>
 #include <QtGui/qpushbutton.h>
 #else
 #include <QtWidgets/qcheckbox.h>
@@ -48,6 +52,7 @@ may result in using the software modules.
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
+#include <QtWidgets/qtableview.h>
 #include <QtWidgets/qpushbutton.h>
 #endif
 
@@ -99,7 +104,10 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pLblNameLabelAnchorSelPt(nullptr),
     m_pCmbNameLabelAnchorSelPt(nullptr),
     m_pLblNameLabelAnchorLineVisible(nullptr),
-    m_pChkNameLabelAnchorLineVisible(nullptr)
+    m_pChkNameLabelAnchorLineVisible(nullptr),
+    m_pLytListView(nullptr),
+    m_pTableView(nullptr),
+    m_pModel(nullptr)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -216,6 +224,20 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
         m_pChkNameLabelAnchorLineVisible, &QCheckBox::stateChanged,
         this, &CWdgtGraphObjPropertiesLabels::onChkNameLabelAnchorLineVisibleStateChanged);
 
+    // <Line> List View
+    //-----------------
+
+    m_pLytListView = new QVBoxLayout();
+    m_pLytWdgtLabels->addLayout(m_pLytListView);
+
+    m_pModel = new CModelGraphObjLabels(m_pDrawingScene, this);
+    m_pTableView = new QTableView();
+    m_pTableView->setModel(m_pModel);
+    m_pLytListView->addWidget(m_pTableView);
+
+    // Restore visibility
+    //-------------------
+
     if (!s_bWdgtLabelsVisible) {
         m_pWdgtLabels->hide();
     }
@@ -253,6 +275,9 @@ CWdgtGraphObjPropertiesLabels::~CWdgtGraphObjPropertiesLabels()
     m_pCmbNameLabelAnchorSelPt = nullptr;
     m_pLblNameLabelAnchorLineVisible = nullptr;
     m_pChkNameLabelAnchorLineVisible = nullptr;
+    m_pLytListView = nullptr;
+    m_pTableView = nullptr;
+    m_pModel = nullptr;
 }
 
 /*==============================================================================
@@ -328,24 +353,24 @@ bool CWdgtGraphObjPropertiesLabels::hasChanges() const
         if (m_pGraphObj->name() != m_pEdtName->text()) {
             bHasChanges = true;
         }
-        if (!bHasChanges) {
-            if (m_pGraphObj->isNameLabelVisible() != (m_pChkNameLabelVisible->checkState() == Qt::Checked)) {
-                bHasChanges = true;
-            }
-        }
-        if (!bHasChanges && m_pChkNameLabelVisible->checkState() == Qt::Checked) {
-            CEnumSelectionPoint eSelPtGraphObj = CEnumSelectionPoint(m_pGraphObj->nameLabelAnchorPoint());
-            int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
-            CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
-            if (eSelPtGraphObj != eSelPtCmb) {
-                bHasChanges = true;
-            }
-            if (!bHasChanges) {
-                if (m_pGraphObj->isNameLabelAnchorLineVisible() != (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked)) {
-                    bHasChanges = true;
-                }
-            }
-        }
+        //if (!bHasChanges) {
+        //    if (m_pGraphObj->isLabelVisible("Name") != (m_pChkNameLabelVisible->checkState() == Qt::Checked)) {
+        //        bHasChanges = true;
+        //    }
+        //}
+        //if (!bHasChanges && m_pChkNameLabelVisible->checkState() == Qt::Checked) {
+        //    CEnumSelectionPoint eSelPtGraphObj = CEnumSelectionPoint(m_pGraphObj->labelAnchorPoint("Name"));
+        //    int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
+        //    CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
+        //    if (eSelPtGraphObj != eSelPtCmb) {
+        //        bHasChanges = true;
+        //    }
+        //    if (!bHasChanges) {
+        //        if (m_pGraphObj->isLabelAnchorLineVisible("Name") != (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked)) {
+        //            bHasChanges = true;
+        //        }
+        //    }
+        //}
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
@@ -371,26 +396,26 @@ void CWdgtGraphObjPropertiesLabels::applySettings(bool i_bImmediatelyApplySettin
     {
         m_pGraphObj->rename(m_pEdtName->text());
 
-        if (m_pChkNameLabelVisible->checkState() == Qt::Checked) {
-            int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
-            if (idxCmb < 0) {
-                idxCmb = 0; // Set to most commonly used anchor point.
-                m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb);
-            }
-            CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
-            m_pGraphObj->showNameLabel(eSelPtCmb.enumerator());
+        //if (m_pChkNameLabelVisible->checkState() == Qt::Checked) {
+        //    int idxCmb = m_pCmbNameLabelAnchorSelPt->currentIndex();
+        //    if (idxCmb < 0) {
+        //        idxCmb = 0; // Set to most commonly used anchor point.
+        //        m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb);
+        //    }
+        //    CEnumSelectionPoint eSelPtCmb = CEnumSelectionPoint(m_pCmbNameLabelAnchorSelPt->itemData(idxCmb).toInt());
+        //    m_pGraphObj->showLabel("Name");
 
-            if (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked) {
-                m_pGraphObj->showNameLabelAnchorLine();
-            }
-            else {
-                m_pGraphObj->hideNameLabelAnchorLine();
-            }
-        }
-        else {
-            m_pGraphObj->hideNameLabel();
-            m_pGraphObj->hideNameLabelAnchorLine();
-        }
+        //    if (m_pChkNameLabelAnchorLineVisible->checkState() == Qt::Checked) {
+        //        m_pGraphObj->showLabelAnchorLine("Name");
+        //    }
+        //    else {
+        //        m_pGraphObj->hideLabelAnchorLine("Name");
+        //    }
+        //}
+        //else {
+        //    m_pGraphObj->hideLabel("Name");
+        //    m_pGraphObj->hideLabelAnchorLine("Name");
+        //}
     }
 }
 
@@ -542,21 +567,20 @@ void CWdgtGraphObjPropertiesLabels::fillEditControls()
     }
     else
     {
-        // Depending on the type of graphical object, fill the combo box
-        // with possible anchor points.
         m_pEdtName->setText(m_pGraphObj->name());
         m_pEdtName->setEnabled(true);
         m_pChkNameLabelVisible->setEnabled(true);
-        m_pChkNameLabelVisible->setCheckState(
-            m_pGraphObj->isNameLabelVisible() ? Qt::Checked : Qt::Unchecked);
-        fillComboNameLabelAnchorSelPt();
-        m_pCmbNameLabelAnchorSelPt->setEnabled(true);
-        CEnumSelectionPoint selPt = m_pGraphObj->nameLabelAnchorPoint();
-        int idxCmb = m_pCmbNameLabelAnchorSelPt->findData(selPt.enumeratorAsInt());
-        m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb); // -1 is ok showing an empty string (None)
-        m_pChkNameLabelAnchorLineVisible->setEnabled(true);
-        m_pChkNameLabelAnchorLineVisible->setCheckState(
-            m_pGraphObj->isNameLabelAnchorLineVisible() ? Qt::Checked : Qt::Unchecked);
+
+        //m_pChkNameLabelVisible->setCheckState(
+        //    m_pGraphObj->isLabelVisible("Name") ? Qt::Checked : Qt::Unchecked);
+        //fillComboNameLabelAnchorSelPt();
+        //m_pCmbNameLabelAnchorSelPt->setEnabled(true);
+        //CEnumSelectionPoint selPt = m_pGraphObj->labelAnchorPoint("Name");
+        //int idxCmb = m_pCmbNameLabelAnchorSelPt->findData(selPt.enumeratorAsInt());
+        //m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb); // -1 is ok showing an empty string (None)
+        //m_pChkNameLabelAnchorLineVisible->setEnabled(true);
+        //m_pChkNameLabelAnchorLineVisible->setCheckState(
+        //    m_pGraphObj->isLabelAnchorLineVisible("Name") ? Qt::Checked : Qt::Unchecked);
     }
 }
 
@@ -592,6 +616,10 @@ bool CWdgtGraphObjPropertiesLabels::changedNameIsUnique() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    @TODO: Depending on the type of graphical object, fill the combo box with possible anchor points.
+*/
 void CWdgtGraphObjPropertiesLabels::fillComboNameLabelAnchorSelPt()
 //------------------------------------------------------------------------------
 {
@@ -604,13 +632,13 @@ void CWdgtGraphObjPropertiesLabels::fillComboNameLabelAnchorSelPt()
     if (m_graphObjTypeCurr != m_graphObjTypePrev) {
         m_pCmbNameLabelAnchorSelPt->clear();
         if (m_pGraphObj != nullptr) {
-            for (ESelectionPoint selPt : m_pGraphObj->getPossibleLabelAnchorPoints()) {
+            for (ESelectionPoint selPt : m_pGraphObj->getPossibleLabelAnchorPoints("Name")) {
                 if (m_pGraphObj->type() == EGraphObjTypeLine) {
                     if (selPt == ESelectionPoint::TopLeft) {
-                        m_pCmbNameLabelAnchorSelPt->addItem("Line Start", static_cast<int>(selPt));
+                        m_pCmbNameLabelAnchorSelPt->addItem("P1", static_cast<int>(selPt));
                     }
                     else if (selPt == ESelectionPoint::BottomRight) {
-                        m_pCmbNameLabelAnchorSelPt->addItem("Line End", static_cast<int>(selPt));
+                        m_pCmbNameLabelAnchorSelPt->addItem("P2", static_cast<int>(selPt));
                     }
                     else {
                         m_pCmbNameLabelAnchorSelPt->addItem(CEnumSelectionPoint(selPt).toString(), static_cast<int>(selPt));

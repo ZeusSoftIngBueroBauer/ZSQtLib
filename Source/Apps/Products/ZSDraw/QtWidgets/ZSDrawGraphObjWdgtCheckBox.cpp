@@ -172,6 +172,8 @@ CGraphObjWdgtCheckBox::~CGraphObjWdgtCheckBox()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pCheckBox = nullptr;
 
 } // dtor

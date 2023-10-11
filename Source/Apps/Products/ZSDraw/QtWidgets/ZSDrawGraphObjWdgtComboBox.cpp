@@ -171,6 +171,8 @@ CGraphObjWdgtComboBox::~CGraphObjWdgtComboBox()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pComboBox = nullptr;
 
 } // dtor

@@ -172,6 +172,8 @@ CGraphObjWdgtPushButton::~CGraphObjWdgtPushButton()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pPushButton = nullptr;
 
 } // dtor

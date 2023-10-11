@@ -172,6 +172,8 @@ CGraphObjWdgtLineEdit::~CGraphObjWdgtLineEdit()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    emit_aboutToBeDestroyed();
+
     m_pLineEdit = nullptr;
 
 } // dtor

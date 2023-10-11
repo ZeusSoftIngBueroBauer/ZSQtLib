@@ -143,15 +143,11 @@ CGraphObjConnectionLine::~CGraphObjConnectionLine()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    CGraphObjConnectionPoint* pGraphObjCnctPt;
-    int                       idxLinePt;
+    emit_aboutToBeDestroyed();
 
-    for( idxLinePt = 0; idxLinePt < m_arpCnctPts.size(); idxLinePt++ )
-    {
-        pGraphObjCnctPt = m_arpCnctPts[idxLinePt];
-
-        if( pGraphObjCnctPt != nullptr )
-        {
+    for (int idxLinePt = 0; idxLinePt < m_arpCnctPts.size(); idxLinePt++) {
+        CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[idxLinePt];
+        if (pGraphObjCnctPt != nullptr) {
             pGraphObjCnctPt->removeConnectionLine(this);
         }
         m_arpCnctPts[idxLinePt] = nullptr;
@@ -168,22 +164,16 @@ CGraphObjConnectionLine::~CGraphObjConnectionLine()
     // derived from QGraphicsItem.
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        if( m_pDrawingScene != nullptr )
-        {
-            if( !m_strKeyInTree.isEmpty() )
-            {
-                try
-                {
+    if (pGraphicsItem != nullptr) {
+        if (m_pDrawingScene != nullptr) {
+            if (!m_strKeyInTree.isEmpty()) {
+                try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
                     // of class "QGraphicsItem" may have already been processed and
                     // models and Views may still try to access the graphical object.
                     m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
                 }
-                catch(...)
-                {
+                catch(...) {
                 }
             }
 
@@ -200,10 +190,8 @@ CGraphObjConnectionLine::~CGraphObjConnectionLine()
             // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
             // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
             m_pDrawingScene->removeGraphObj(this);
-
-        } // if( m_pDrawingScene != nullptr )
-    } // if( pGraphicsItem != nullptr )
-
+        }
+    }
 } // dtor
 
 /*==============================================================================
@@ -1532,6 +1520,9 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 /* pGraphObjSelected */ this,
                 /* idxPt             */ plg.size()-1 );
             m_arpSelPtsPolygon.append(pGraphObjSelPt);
+            QObject::connect(
+                pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
 
             m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
@@ -1578,6 +1569,9 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 /* pGraphObjSelected */ this,
                 /* idxPt             */ m_idxSelPtSelectedPolygon );
             m_arpSelPtsPolygon.append(pGraphObjSelPt);
+            QObject::connect(
+                pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
 
             m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
@@ -1907,6 +1901,9 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
                             /* pGraphObjSelected */ this,
                             /* idxPt             */ m_idxSelPtSelectedPolygon );
                         m_arpSelPtsPolygon.insert(0,pGraphObjSelPt);
+                        QObject::connect(
+                            pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                            this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
                     }
                     else // if( m_idxSelPtSelectedPolygon == plg.size()-1 )
                     {
@@ -1918,6 +1915,9 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
                             /* pGraphObjSelected */ this,
                             /* idxPt             */ m_idxSelPtSelectedPolygon );
                         m_arpSelPtsPolygon.append(pGraphObjSelPt);
+                        QObject::connect(
+                            pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                            this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
                     }
 
                     m_pDrawingScene->addGraphObj(pGraphObjSelPt);
@@ -2203,7 +2203,10 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                                 /* pDrawingScene     */ m_pDrawingScene,
                                 /* pGraphObjSelected */ this,
                                 /* idxPt             */ idxSelPtSelectedPolygon );
-                            m_arpSelPtsPolygon.insert(0,pGraphObjSelPt);
+                            m_arpSelPtsPolygon.insert(0, pGraphObjSelPt);
+                            QObject::connect(
+                                pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                                this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
 
                             m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
@@ -2221,7 +2224,10 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                                 /* pDrawingScene     */ m_pDrawingScene,
                                 /* pGraphObjSelected */ this,
                                 /* idxPt             */ idxSelPtSelectedPolygon );
-                            m_arpSelPtsPolygon.insert(0,pGraphObjSelPt);
+                            m_arpSelPtsPolygon.insert(0, pGraphObjSelPt);
+                            QObject::connect(
+                                pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                                this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
 
                             m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
@@ -2247,6 +2253,9 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                                 /* pGraphObjSelected */ this,
                                 /* idxPt             */ idxSelPtSelectedPolygon );
                             m_arpSelPtsPolygon.append(pGraphObjSelPt);
+                            QObject::connect(
+                                pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                                this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
 
                             m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
@@ -2266,6 +2275,9 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                                 /* pGraphObjSelected */ this,
                                 /* idxPt             */ idxSelPtSelectedPolygon );
                             m_arpSelPtsPolygon.append(pGraphObjSelPt);
+                            QObject::connect(
+                                pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                                this, &CGraphObjConnectionLine::onSelectionPointAboutToBeDestroyed);
 
                             m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
