@@ -66,14 +66,26 @@ public: // type definitions and constants
 public: // ctors and dtor
     CModelGraphObjLabels(CDrawingScene* i_pDrawingScene, QObject* i_pObjParent = nullptr);
     virtual ~CModelGraphObjLabels();
+public: // instance methods
+    void setGraphObj(CGraphObj* i_pGraphObj);
 public: // overridables of base class QAbstractItemModel
     virtual int rowCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
     virtual QVariant data(const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole) const override;
 public: // overridables of base class QAbstractItemModel
     virtual QVariant headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
+protected: // instance methods
+    void clear();
+    void fill();
+protected slots:
+    void onGraphObjLabelAdded(const QString& i_strName);
+    void onGraphObjLabelRemoved(const QString& i_strName);
+    void onGraphObjLabelChanged(const QString& i_strName);
 protected: // instance members
     CDrawingScene* m_pDrawingScene;
+    CGraphObj* m_pGraphObj;
+    QHash<QString, int> m_hshName2RowIdx;
+    QList<QString> m_ariRowIdx2Name;
 
 }; // class CModelGraphObjLabels
 

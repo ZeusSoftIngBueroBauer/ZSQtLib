@@ -287,6 +287,12 @@ signals:
     void geometryChanged();
     /*!< This signal is emitted if the drawing settings (pen style, etc.) of the object has been changed. */
     void drawSettingsChanged();
+    /*!< This signal is emitted if a new text label has been added. */
+    void labelAdded(const QString& i_strName);
+    /*!< This signal is emitted if a text label has been removed. */
+    void labelRemoved(const QString& i_strName);
+    /*!< This signal is emitted if a text label has been changed. */
+    void labelChanged(const QString& i_strName);
 protected: // instance methods (trace admin objects for method tracing)
     void createTraceAdminObjs(const QString& i_strClassName);
     void releaseTraceAdminObjs();
@@ -466,6 +472,7 @@ protected: // overridables
     virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
 public: // overridables (text labels)
     virtual QStringList getPredefinedLabelNames() const;
+    QStringList getLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
     virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
@@ -481,9 +488,9 @@ public: // overridables (text labels)
     virtual void showLabelAnchorLine(const QString& i_strName);
     virtual void hideLabelAnchorLine(const QString& i_strName);
     virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;
-    QStringList getLabelNames() const;
 public: // overridables (position labels)
     //virtual QStringList getPredefinedPositionLabelNames() const;
+    //virtual QStringList getPositionLabelNames() const;
     //virtual QList<ESelectionPoint> getPossiblePositionLabelAnchorPoints(const QString& i_strName) const;
     //virtual bool isPositionLabelAdded(const QString& i_strName) const;
     //virtual int addPositionLabel(const QString& i_strName);
@@ -498,9 +505,9 @@ public: // overridables (position labels)
     //virtual void showPositionLabelAnchorLine(const QString& i_strName);
     //virtual void hidePositionLabelAnchorLine(const QString& i_strName);
     //virtual bool isPositionLabelAnchorLineVisible(const QString& i_strName) const;
-    //virtual QStringList getPositionLabelNames() const;
 public: // overridables (dimension line labels)
     //virtual QStringList getPredefinedDimLineLabelNames() const;
+    //virtual QStringList getDimLineLabelNames() const;
     //virtual QList<ESelectionPoint> getPossibleDimLineLabelAnchorPoints(const QString& i_strName) const;
     //virtual bool isDimLineLabelAdded(const QString& i_strName) const;
     //virtual int addDimLineLabel(const QString& i_strName);
@@ -515,7 +522,6 @@ public: // overridables (dimension line labels)
     //virtual void showDimLineLabelAnchorLine(const QString& i_strName);
     //virtual void hideDimLineLabelAnchorLine(const QString& i_strName);
     //virtual bool isDimLineLabelAnchorLineVisible(const QString& i_strName) const;
-    //virtual QStringList getDimLineLabelNames() const;
 protected: // overridables
     virtual void updateLabelDistance(CGraphObjLabel* i_pGraphObjLabel);
 public: // overridables
@@ -555,6 +561,9 @@ protected: // auxiliary instance methods (method tracing)
     void emit_selectedChanged();
     void emit_geometryChanged();
     void emit_drawSettingsChanged();
+    void emit_labelAdded(const QString& i_strName);
+    void emit_labelRemoved(const QString& i_strName);
+    void emit_labelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
     virtual void traceInternalStates(

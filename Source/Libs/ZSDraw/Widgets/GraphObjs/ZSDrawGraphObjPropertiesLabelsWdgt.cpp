@@ -571,16 +571,7 @@ void CWdgtGraphObjPropertiesLabels::fillEditControls()
         m_pEdtName->setEnabled(true);
         m_pChkNameLabelVisible->setEnabled(true);
 
-        //m_pChkNameLabelVisible->setCheckState(
-        //    m_pGraphObj->isLabelVisible("Name") ? Qt::Checked : Qt::Unchecked);
-        //fillComboNameLabelAnchorSelPt();
-        //m_pCmbNameLabelAnchorSelPt->setEnabled(true);
-        //CEnumSelectionPoint selPt = m_pGraphObj->labelAnchorPoint("Name");
-        //int idxCmb = m_pCmbNameLabelAnchorSelPt->findData(selPt.enumeratorAsInt());
-        //m_pCmbNameLabelAnchorSelPt->setCurrentIndex(idxCmb); // -1 is ok showing an empty string (None)
-        //m_pChkNameLabelAnchorLineVisible->setEnabled(true);
-        //m_pChkNameLabelAnchorLineVisible->setCheckState(
-        //    m_pGraphObj->isLabelAnchorLineVisible("Name") ? Qt::Checked : Qt::Unchecked);
+        updateModel();
     }
 }
 
@@ -620,34 +611,14 @@ bool CWdgtGraphObjPropertiesLabels::changedNameIsUnique() const
 
     @TODO: Depending on the type of graphical object, fill the combo box with possible anchor points.
 */
-void CWdgtGraphObjPropertiesLabels::fillComboNameLabelAnchorSelPt()
+void CWdgtGraphObjPropertiesLabels::updateModel()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "fillComboNameLabelAnchorSelPt",
+        /* strMethod    */ "updateModel",
         /* strAddInfo   */ "" );
 
-    if (m_graphObjTypeCurr != m_graphObjTypePrev) {
-        m_pCmbNameLabelAnchorSelPt->clear();
-        if (m_pGraphObj != nullptr) {
-            for (ESelectionPoint selPt : m_pGraphObj->getPossibleLabelAnchorPoints("Name")) {
-                if (m_pGraphObj->type() == EGraphObjTypeLine) {
-                    if (selPt == ESelectionPoint::TopLeft) {
-                        m_pCmbNameLabelAnchorSelPt->addItem("P1", static_cast<int>(selPt));
-                    }
-                    else if (selPt == ESelectionPoint::BottomRight) {
-                        m_pCmbNameLabelAnchorSelPt->addItem("P2", static_cast<int>(selPt));
-                    }
-                    else {
-                        m_pCmbNameLabelAnchorSelPt->addItem(CEnumSelectionPoint(selPt).toString(), static_cast<int>(selPt));
-                    }
-                }
-                else {
-                    m_pCmbNameLabelAnchorSelPt->addItem(CEnumSelectionPoint(selPt).toString(), static_cast<int>(selPt));
-                }
-            }
-        }
-    }
+    m_pModel->setGraphObj(m_pGraphObj);
 }

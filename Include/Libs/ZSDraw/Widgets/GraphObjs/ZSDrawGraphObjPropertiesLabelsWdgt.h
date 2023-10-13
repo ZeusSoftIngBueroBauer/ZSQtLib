@@ -72,7 +72,7 @@ protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
 private: // auxiliary instance methods
     bool changedNameIsUnique() const;
-    void fillComboNameLabelAnchorSelPt();
+    void updateModel();
 private: // instance members
     /*!< Edit controls. */
     QWidget* m_pWdgtHeadline;

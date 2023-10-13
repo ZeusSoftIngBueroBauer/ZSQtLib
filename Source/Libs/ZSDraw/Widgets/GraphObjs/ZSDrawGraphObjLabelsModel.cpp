@@ -42,7 +42,10 @@ CModelGraphObjLabels::CModelGraphObjLabels(
     QObject*       i_pObjParent ) :
 //------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),
-    m_pDrawingScene(i_pDrawingScene)
+    m_pDrawingScene(i_pDrawingScene),
+    m_pGraphObj(nullptr),
+    m_hshName2RowIdx(),
+    m_ariRowIdx2Name()
 {
 } // ctor
 
@@ -51,8 +54,29 @@ CModelGraphObjLabels::~CModelGraphObjLabels()
 //------------------------------------------------------------------------------
 {
     m_pDrawingScene = nullptr;
+    m_pGraphObj = nullptr;
+    //m_hshName2RowIdx;
+    //m_ariRowIdx2Name;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CModelGraphObjLabels::setGraphObj(CGraphObj* i_pGraphObj)
+//------------------------------------------------------------------------------
+{
+    if (m_pGraphObj != i_pGraphObj) {
+        clear();
+    }
+    m_pGraphObj = i_pGraphObj;
+
+    if (m_pGraphObj != nullptr) {
+        fill();
+    }
+}
 
 /*==============================================================================
 public: // must overridables of base class QAbstractItemModel
@@ -62,8 +86,7 @@ public: // must overridables of base class QAbstractItemModel
 int CModelGraphObjLabels::rowCount(const QModelIndex& i_modelIdxParent) const
 //------------------------------------------------------------------------------
 {
-    int iRowCount = 1;
-    return iRowCount;
+    return m_ariRowIdx2Name.size();
 }
 
 //------------------------------------------------------------------------------
@@ -163,5 +186,79 @@ QVariant CModelGraphObjLabels::headerData(int i_iSection, Qt::Orientation i_orie
         }
     }
     return varData;
+}
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CModelGraphObjLabels::clear()
+//------------------------------------------------------------------------------
+{
+    if (m_ariRowIdx2Name.size() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_ariRowIdx2Name.size()-1);
+        m_hshName2RowIdx.clear();
+        m_ariRowIdx2Name.clear();
+        endRemoveRows();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjLabels::fill()
+//------------------------------------------------------------------------------
+{
+    if (m_pGraphObj != nullptr) {
+        QStringList strlstLabelNames = m_pGraphObj->getLabelNames();
+        if (strlstLabelNames.size() > 0) {
+            beginInsertRows(QModelIndex(), 0, strlstLabelNames.size()-1);
+            // The predefined labels should be at the beginning of the table.
+            // Insert those first if the corresponding label has been added.
+            QStringList strlstPredefinedLabelNames = m_pGraphObj->getPredefinedLabelNames();
+            int iRow = 0;
+            for (const QString& strName : strlstPredefinedLabelNames) {
+                if (m_pGraphObj->isLabelAdded(strName)) {
+                    m_hshName2RowIdx.insert(strName, iRow);
+                    m_ariRowIdx2Name.append(strName);
+                    ++iRow;
+                }
+            }
+            // The user defined labels should follow the predefined labels.
+            // Add those after the predefined labels.
+            for (const QString& strName : strlstLabelNames) {
+                if (m_pGraphObj->isLabelAdded(strName)) {
+                    // If label has not already been added as a predefined label ...
+                    if (!m_hshName2RowIdx.contains(strName)) {
+                        m_hshName2RowIdx.insert(strName, iRow);
+                        m_ariRowIdx2Name.append(strName);
+                        ++iRow;
+                    }
+                }
+            }
+            endInsertRows();
+        }
+    }
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CModelGraphObjLabels::onGraphObjLabelAdded(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjLabels::onGraphObjLabelRemoved(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjLabels::onGraphObjLabelChanged(const QString& i_strName)
+//------------------------------------------------------------------------------
+{
 }
 
