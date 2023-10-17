@@ -75,12 +75,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjGroup::CGraphObjGroup(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeGroup,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
@@ -127,15 +124,13 @@ protected: // ctor (used by derived classes)
 
 //------------------------------------------------------------------------------
 CGraphObjGroup::CGraphObjGroup(
-    CDrawingScene*       i_pDrawingScene,
-    const QString&       i_strFactoryGroupName,
-    EGraphObjType        i_type,
-    const QString&       i_strType,
-    const QString&       i_strObjName,
+    const QString& i_strFactoryGroupName,
+    EGraphObjType i_type,
+    const QString& i_strType,
+    const QString& i_strObjName,
     const CDrawSettings& i_drawSettings ) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ i_strFactoryGroupName,
         /* type                */ i_type,
         /* strType             */ i_strType,
@@ -174,9 +169,9 @@ CGraphObjGroup::~CGraphObjGroup()
     // called. And this is only always the case in the dtor of the class
     // derived from QGraphicsItem.
 
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        if (m_pDrawingScene != nullptr) {
+    if (m_pDrawingScene != nullptr) {
+        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
             if (!m_strKeyInTree.isEmpty()) {
                 try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
@@ -226,7 +221,7 @@ CGraphObj* CGraphObjGroup::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(m_pDrawingScene,m_drawSettings);
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(m_drawSettings);
 
     pGraphObj->setName(m_strName);
 

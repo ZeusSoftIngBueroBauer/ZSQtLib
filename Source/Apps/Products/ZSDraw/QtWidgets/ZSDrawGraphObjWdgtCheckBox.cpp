@@ -77,12 +77,10 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjWdgtCheckBox::CGraphObjWdgtCheckBox(
-    CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
     const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjWdgt(
-        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "CheckBox",
         /* strObjName    */ i_strObjName.isEmpty() ? "CheckBox" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),

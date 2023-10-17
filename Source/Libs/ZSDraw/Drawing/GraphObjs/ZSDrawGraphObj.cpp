@@ -308,8 +308,12 @@ protected: // ctor
     The ctor does neither add the instance as a graphic item to Qt's grapics scene
     nor to the index tree of the drawing scene.
 
-    @param i_pDrawingScene [in]
-        Pointer to drawing scene the object will be added.
+    Please also note that the constructor of the base class does not add the
+    predefined label "Name". Othwerwise labels would also be added to labels which
+    again would have labels and so on (stack overflow). Also selection points should
+    not get a label. For this, and to be flexible, the "Name" label usually invisible
+    as default should be added in the constructor of the derived class - if desired.
+
     @param i_strFactoryGroupName [in]
         The group name of the object factory used to create the graphical objects
         of the given type (e.g. "Draw::Standard Shapes", "Draw::Widgets", "Draw::Electricity").
@@ -329,7 +333,6 @@ protected: // ctor
         will be set to Leave.
 */
 CGraphObj::CGraphObj(
-    CDrawingScene* i_pDrawingScene,
     const QString& i_strFactoryGroupName,
     EGraphObjType i_type,
     const QString& i_strType,
@@ -341,7 +344,7 @@ CGraphObj::CGraphObj(
     m_bDtorInProgress(false),
     m_bAboutToBeDestroyedEmitted(false),
     m_bForceConversionToSceneCoors(false),
-    m_pDrawingScene(i_pDrawingScene),
+    m_pDrawingScene(nullptr),
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
     m_strType(i_strType),
@@ -410,6 +413,7 @@ CGraphObj::CGraphObj(
             m_drawSettings.setAttribute(idxAttr, i_settings.getAttribute(idxAttr));
         }
     }
+
 } // ctor
 
 /*==============================================================================
@@ -417,6 +421,15 @@ public: // dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Destroys the graphical object.
+
+    All selection points and labels will be destroyed together with the object.
+    The destructor of the CIdxTreeEntry will remove the item from the index tree.
+
+    But please note that destructor of the CGraphObj base class does not remove
+    the graphical object from the drawing scene. This is the task of the destructor
+    of the derived class. Why see comment in the method body below.
+*/
 CGraphObj::~CGraphObj()
 //------------------------------------------------------------------------------
 {
@@ -854,6 +867,33 @@ bool CGraphObj::isLabel() const
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the drawing scene the object belongs to.
+
+    This method must be overridden by derived classes to calculate the
+    position in pixel values and forward the position to the graphics item.
+*/
+void CGraphObj::setDrawingScene(CDrawingScene* i_pDrawingScene)
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"Pure virtual")
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pDrawingScene == nullptr ? "null" : i_pDrawingScene->objectName());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::rename",
+        /* strAddInfo   */ strMthInArgs);
+
+    if (m_pDrawingScene != nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+    }
+    m_pDrawingScene = i_pDrawingScene;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the drawing scene the object belongs to.
@@ -2206,6 +2246,9 @@ bool CGraphObj::hasMinimumWidth() const
 CPhysVal CGraphObj::getMinimumWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.width() > 0.0) {
@@ -2262,6 +2305,9 @@ bool CGraphObj::hasMinimumHeight() const
 CPhysVal CGraphObj::getMinimumHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.height() > 0.0) {
@@ -2323,6 +2369,9 @@ bool CGraphObj::hasMinimumSize() const
 CPhysValSize CGraphObj::getMinimumSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     CPhysValSize physValSize;
     if (m_physValSizeFixed.isValid()) {
         physValSize = m_physValSizeFixed;
@@ -2378,6 +2427,9 @@ bool CGraphObj::hasMaximumWidth() const
 CPhysVal CGraphObj::getMaximumWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.width() > 0.0) {
@@ -2434,6 +2486,9 @@ bool CGraphObj::hasMaximumHeight() const
 CPhysVal CGraphObj::getMaximumHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.height() > 0.0) {
@@ -2496,6 +2551,9 @@ bool CGraphObj::hasMaximumSize() const
 CPhysValSize CGraphObj::getMaximumSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     CPhysValSize physValSize;
     if (m_physValSizeFixed.isValid()) {
         physValSize = m_physValSizeFixed;
@@ -2552,6 +2610,9 @@ bool CGraphObj::hasFixedWidth() const
 CPhysVal CGraphObj::getFixedWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.width() > 0.0) {
@@ -2610,6 +2671,9 @@ bool CGraphObj::hasFixedHeight() const
 CPhysVal CGraphObj::getFixedHeight(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()));
     if (m_physValSizeFixed.height() > 0.0) {
@@ -2676,6 +2740,9 @@ bool CGraphObj::hasFixedSize() const
 CPhysValSize CGraphObj::getFixedSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
     CPhysValSize physValSize;
     if (m_physValSizeFixed.isValid()) {
         physValSize = m_physValSizeFixed;
@@ -2931,6 +2998,9 @@ public: // overridables
 CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
 #pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValPoint physValPoint(drawingSize.unit());
@@ -2952,6 +3022,9 @@ CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_vers
 CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
 #pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()).getVal());
@@ -2973,6 +3046,9 @@ CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version
 CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
 #pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()).getVal());
@@ -2994,6 +3070,9 @@ CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_versio
 CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
 {
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
 #pragma message(__TODO__"Pure virtual")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValSize physValSize(drawingSize.unit());
@@ -3263,8 +3342,11 @@ double CGraphObj::bringToFront()
         /* strMethod    */ "CGraphObj::bringToFront",
         /* strAddInfo   */ "" );
 
-    double fZValue = m_fZValue;
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
 
+    double fZValue = m_fZValue;
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
         QRectF rctBounding = pGraphicsItem->boundingRect();
@@ -3588,6 +3670,10 @@ void CGraphObj::bringSelectionPointsToFront( ESelectionPoints i_selPts )
         /* strMethod    */ "CGraphObj::bringSelectionPointsToFront",
         /* strAddInfo   */ strMthInArgs );
 
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
+
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
     if (pGraphicsItem != nullptr)
@@ -3666,6 +3752,10 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
         /* strMethod    */ "CGraphObj::showSelectionPointsOfBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
+
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr)
@@ -3699,10 +3789,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
             if (bShowSelPt) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
                 if (pGraphObjSelPt == nullptr) {
-                    pGraphObjSelPt = new CGraphObjSelectionPoint(
-                        /* pDrawingScene     */ m_pDrawingScene,
-                        /* pGraphObjSelected */ this,
-                        /* selectionPoint    */ selPt );
+                    pGraphObjSelPt = new CGraphObjSelectionPoint(this, selPt);
                     m_arpSelPtsBoundingRect[idxSelPt] = pGraphObjSelPt;
                     QObject::connect(
                         pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -3835,6 +3922,10 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
         /* strMethod    */ "CGraphObj::showSelectionPointsOfPolygon",
         /* strAddInfo   */ strMthInArgs );
 
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
+
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr)
@@ -3869,10 +3960,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 
             if (pGraphObjSelPt == nullptr)
             {
-                pGraphObjSelPt = new CGraphObjSelectionPoint(
-                    /* pDrawingScene     */ m_pDrawingScene,
-                    /* pGraphObjSelected */ this,
-                    /* idxPt             */ idxSelPt );
+                pGraphObjSelPt = new CGraphObjSelectionPoint(this, idxSelPt);
                 m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;
                 QObject::connect(
                     pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -4046,7 +4134,8 @@ bool CGraphObj::addLabel(const QString& i_strName)
     bool bCanAdd = !m_hshpLabels.contains(i_strName);
     if (bCanAdd) {
         CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(
-                m_pDrawingScene, this, i_strName, "", ESelectionPoint::Center);
+            this, i_strName, "", ESelectionPoint::Center);
+        m_hshpLabels.insert("Name", pGraphObjLabel);
         if (i_strName == "Name") {
             pGraphObjLabel->setText(m_strName);
         }
@@ -4083,7 +4172,7 @@ void CGraphObj::removeLabel(const QString& i_strName)
         /* strMethod    */ "CGraphObj::removeLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    // the dtor of the label removes itself from the drawing scene
+    // the dtor of the label removes itself from the drawing scene - if it was added.
     //m_pDrawingScene->removeGraphObj(m_pNameLabel);
 
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
@@ -4228,6 +4317,10 @@ void CGraphObj::showLabel(const QString& i_strName)
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::showLabel",
         /* strAddInfo   */ strMthInArgs );
+
+    if (m_pDrawingScene == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+    }
 
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel == nullptr) {
@@ -5378,9 +5471,6 @@ void CGraphObj::updateToolTip()
 
     if (pGraphicsItem != nullptr)
     {
-        QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
-        QPointF ptPos;
-
         m_strToolTip = "ObjPath:\t\t" + path();
 
         // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
@@ -5390,13 +5480,12 @@ void CGraphObj::updateToolTip()
         // around the rotation origin point. In contrary it looks like "pos"
         // always returns the top left corner before rotating the object.
 
-        if( pGraphicsItem->parentItem() != nullptr )
-        {
+        QPointF ptPos;
+        if (pGraphicsItem->parentItem() != nullptr) {
             ptPos = pGraphicsItem->pos();
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
-        else
-        {
+        else {
             ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
@@ -5578,7 +5667,7 @@ protected: // overridables
 //    }
 //
 //    CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(
-//        m_pDrawingScene, this, i_strKey, i_strText, i_selPt);
+//        this, i_strKey, i_strText, i_selPt);
 //    m_pDrawingScene->addGraphObj(pGraphObjLabel, this);
 //
 //    i_arpLabels.insert(i_strKey, pGraphObjLabel);

@@ -88,12 +88,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjVoltageSource::CGraphObjVoltageSource(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
-        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "VoltageSource",
         /* strObjName    */ i_strObjName.isEmpty() ? "V" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),
@@ -546,7 +543,7 @@ void CGraphObjVoltageSource::updateToolTip()
 
     if( pGraphicsItem != nullptr )
     {
-        QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
+        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
         m_strToolTip  = "ObjName:\t" + name();

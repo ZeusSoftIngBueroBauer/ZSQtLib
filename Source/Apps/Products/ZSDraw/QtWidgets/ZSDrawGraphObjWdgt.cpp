@@ -71,13 +71,11 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CGraphObjWdgt::CGraphObjWdgt(
-    CDrawingScene*       i_pDrawingScene,
     const QString&       i_strType,
     const QString&       i_strObjName,
     const CDrawSettings& i_drawSettings ) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ c_strFactoryGroupName,
         /* type                */ EGraphObjTypeUserDefined,
         /* strType             */ i_strType,

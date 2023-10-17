@@ -224,8 +224,8 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
         m_pChkNameLabelAnchorLineVisible, &QCheckBox::stateChanged,
         this, &CWdgtGraphObjPropertiesLabels::onChkNameLabelAnchorLineVisibleStateChanged);
 
-    // <Line> List View
-    //-----------------
+    // <Line> Table View
+    //------------------
 
     m_pLytListView = new QVBoxLayout();
     m_pLytWdgtLabels->addLayout(m_pLytListView);

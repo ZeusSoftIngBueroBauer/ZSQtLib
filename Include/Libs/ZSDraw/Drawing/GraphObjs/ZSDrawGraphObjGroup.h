@@ -60,18 +60,14 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjGroup"; }
 public: // ctor
-    CGraphObjGroup(
-        CDrawingScene*       i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+    CGraphObjGroup(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
 protected: // ctor (used by derived classes)
     CGraphObjGroup(
-        CDrawingScene*       i_pDrawingScene,
-        const QString&       i_strFactoryGroupName,
-        EGraphObjType        i_type,
-        const QString&       i_strType,
-        const QString&       i_strObjName,
-        const CDrawSettings& i_drawSettings );
+        const QString& i_strFactoryGroupName,
+        EGraphObjType i_type,
+        const QString& i_strType,
+        const QString& i_strObjName,
+        const CDrawSettings& i_drawSettings);
 public: // dtor
     virtual ~CGraphObjGroup();
 public: // overridables of base class QGraphicsItem

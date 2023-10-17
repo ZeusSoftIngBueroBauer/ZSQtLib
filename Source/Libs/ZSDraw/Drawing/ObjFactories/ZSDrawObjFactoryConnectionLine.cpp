@@ -81,9 +81,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryConnectionLine::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -99,7 +97,7 @@ CGraphObj* CObjFactoryConnectionLine::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeConnectionLine);
-    CGraphObjConnectionLine* pGraphObj = new CGraphObjConnectionLine(i_pDrawingScene, drawSettings);
+    CGraphObjConnectionLine* pGraphObj = new CGraphObjConnectionLine(drawSettings);
 
 #if 0
     QPolygonF plg;
@@ -340,15 +338,12 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
 
     if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
     {
-        pGraphObj = new CGraphObjConnectionLine(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
+        pGraphObj = new CGraphObjConnectionLine(drawSettings, i_strObjName);
 
         i_pDrawingScene->addGraphObj(pGraphObj);
 
-        pGraphObj->setConnectionPoint( ELinePoint::Start, pCnctPtStart );
-        pGraphObj->setConnectionPoint( ELinePoint::End, pCnctPtEnd );
+        pGraphObj->setConnectionPoint(ELinePoint::Start, pCnctPtStart);
+        pGraphObj->setConnectionPoint(ELinePoint::End, pCnctPtEnd);
 
         plg = pGraphObj->mapFromScene(plg);
 

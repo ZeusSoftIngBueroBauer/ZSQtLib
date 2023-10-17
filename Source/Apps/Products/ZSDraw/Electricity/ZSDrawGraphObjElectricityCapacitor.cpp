@@ -87,12 +87,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjCapacitor::CGraphObjCapacitor(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
-        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "Capacitor",
         /* strObjName    */ i_strObjName.isEmpty() ? "C" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),
@@ -542,7 +539,7 @@ void CGraphObjCapacitor::updateToolTip()
 
     if( pGraphicsItem != nullptr )
     {
-        QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
+        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
         m_strToolTip  = "ObjName:\t" + name();

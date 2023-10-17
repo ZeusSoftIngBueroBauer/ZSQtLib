@@ -60,9 +60,8 @@ public: // class members
     static const QString c_strFactoryGroupName; // = "Electricity"
 protected: // ctor
     CGraphObjElectricity(
-        CDrawingScene*       i_pDrawingScene,
-        const QString&       i_strType,
-        const QString&       i_strObjName,
+        const QString& i_strType,
+        const QString& i_strObjName,
         const CDrawSettings& i_drawSettings );
 public: // dtor
     virtual ~CGraphObjElectricity();

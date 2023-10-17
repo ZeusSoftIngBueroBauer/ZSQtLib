@@ -54,10 +54,7 @@ class CGraphObjWdgtLabel : public CGraphObjWdgt
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgtLabel"; }
 public: // ctors and dtor
-    CGraphObjWdgtLabel(
-        CDrawingScene*       i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+    CGraphObjWdgtLabel(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
     virtual ~CGraphObjWdgtLabel();
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();

@@ -75,10 +75,9 @@ public: // type definitions and constants
     static EDopingType Str2DopingType( const QString& i_str );
 public: // ctors and dtor
     CGraphObjTransistor(
-        CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        EDopingType          i_dopingType = EDopingTypeNPN,
-        const QString&       i_strObjName = "" );
+        EDopingType i_dopingType = EDopingTypeNPN,
+        const QString& i_strObjName = "");
     virtual ~CGraphObjTransistor();
 public: // instance methods
     EDopingType getDopingType() const { return m_dopingType; }

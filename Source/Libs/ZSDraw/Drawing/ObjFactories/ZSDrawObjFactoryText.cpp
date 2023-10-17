@@ -80,9 +80,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryText::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -98,7 +96,7 @@ CGraphObj* CObjFactoryText::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeText);
-    CGraphObj* pGraphObj = new CGraphObjText(i_pDrawingScene, drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjText(drawSettings);
 
     return pGraphObj;
 
@@ -302,10 +300,7 @@ CGraphObj* CObjFactoryText::loadGraphObj(
 
     if( !strText.isEmpty() && bPosValid )
     {
-        pGraphObj = new CGraphObjText(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
+        pGraphObj = new CGraphObjText(drawSettings, i_strObjName);
 
         pGraphObj->setPlainText(strText);
 

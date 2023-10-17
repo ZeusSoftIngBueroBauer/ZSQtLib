@@ -65,12 +65,9 @@ public: // class methods
 public: // class methods
     static double GetDefaultRadiusInPx() { return s_fRadius_px; }
 public: // ctors and dtor
-    CGraphObjSelectionPoint( // for (bounding) rectangles
-        CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjSelected,
-        ESelectionPoint i_selectionPoint );
-    CGraphObjSelectionPoint( // for polygon shape points
-        CDrawingScene* i_pDrawingScene,
+    CGraphObjSelectionPoint(
+        CGraphObj* i_pGraphObjSelected, ESelectionPoint i_selectionPoint );
+    CGraphObjSelectionPoint(
         CGraphObj* i_pGraphObjSelected,
         int i_idxPt );
     virtual ~CGraphObjSelectionPoint();

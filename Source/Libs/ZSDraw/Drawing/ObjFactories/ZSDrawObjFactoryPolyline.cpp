@@ -80,9 +80,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryPolyline::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -98,7 +96,7 @@ CGraphObj* CObjFactoryPolyline::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypePolyline);
-    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(i_pDrawingScene, drawSettings);
+    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(drawSettings);
 
 #if 0
     QPolygonF plg;
@@ -333,10 +331,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
     if( bPosValid && plg.size() > 1 )
     {
-        pGraphObj = new CGraphObjPolyline(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
+        pGraphObj = new CGraphObjPolyline(drawSettings, i_strObjName);
 
         pGraphObj->setPolygon(plg);
 

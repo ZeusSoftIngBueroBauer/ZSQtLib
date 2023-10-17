@@ -54,10 +54,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjPolygon"; }
 public: // ctors and dtor
-    CGraphObjPolygon(
-        CDrawingScene*       i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+    CGraphObjPolygon(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
     virtual ~CGraphObjPolygon();
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;

@@ -112,6 +112,7 @@ public: // type definitions and constants
     static const QString c_strXmlAttrGraphObjType;
     static const QString c_strXmlAttrGraphObjName;
 public: // class methods
+    static QString getGraphObjNameNodeSeparator() { return s_strGraphObjNameSeparator; }
     //static QString FindUniqueGraphObjId(
     //    const QMap<QString,CGraphObj*>& i_dctpGraphObjs,
     //    const QString&                  i_strKeyInTreeCurr );
@@ -251,8 +252,6 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 public: // instance methods
     QString findUniqueGraphObjName( CGraphObj* i_pGraphObj );
 public: // instance methods
-    QString getGraphObjNameNodeSeparator() const { return m_strGraphObjNameSeparator; }
-public: // instance methods
     int groupGraphObjsSelected();
     int ungroupGraphObjsSelected();
 public: // instance methods
@@ -363,6 +362,8 @@ protected: // auxiliary instance methods (trace emitting signals)
     void emit_graphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 protected: // auxiliary instance methods (method tracing)
     void traceInternalStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
+protected: // class members
+    static const QString s_strGraphObjNameSeparator;
 protected: // instance members
     CDrawingSize m_drawingSize;
     CDrawGridSettings m_gridSettings;
@@ -395,7 +396,6 @@ protected: // instance members
     QGraphicsItem* m_pGraphicsItemAddingShapePoints;
     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
     CGraphObj* m_pGraphObjAddingShapePoints;
-    QString m_strGraphObjNameSeparator;
     ZS::System::CIdxTree* m_pGraphObjsIdxTree;
     ZS::System::CIdxTree* m_pGraphObjsIdxTreeClipboard;
     QList<QGraphicsItem*> m_arpGraphicsItemsAcceptingHoverEvents;

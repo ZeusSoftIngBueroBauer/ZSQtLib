@@ -80,9 +80,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -107,7 +105,7 @@ CGraphObj* CObjFactoryConnectionPoint::createGraphObj(
     drawSettings.setFillStyle(EFillStyle::SolidPattern);
     drawSettings.setFillColor(Qt::black);
 
-    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(i_pDrawingScene, drawSettings);
+    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(drawSettings);
 
 #if 0
     pGraphObj->setPos(i_ptItemPos);
@@ -296,10 +294,7 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
 
     if( bPosValid )
     {
-        pGraphObj = new CGraphObjConnectionPoint(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
+        pGraphObj = new CGraphObjConnectionPoint(drawSettings, i_strObjName);
 
         i_pDrawingScene->addGraphObj(pGraphObj);
 

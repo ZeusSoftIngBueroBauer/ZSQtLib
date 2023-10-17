@@ -56,10 +56,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjConnectionLine"; }
 public: // ctors and dtor
-    CGraphObjConnectionLine(
-        CDrawingScene*       i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "");
+    CGraphObjConnectionLine(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
     virtual ~CGraphObjConnectionLine();
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return static_cast<int>(EGraphObjTypeConnectionLine); }

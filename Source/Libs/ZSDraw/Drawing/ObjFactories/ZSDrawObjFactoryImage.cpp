@@ -80,9 +80,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryImage::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -103,7 +101,7 @@ CGraphObj* CObjFactoryImage::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeImage);
-    CGraphObjImage* pGraphObj = new CGraphObjImage(i_pDrawingScene, drawSettings);
+    CGraphObjImage* pGraphObj = new CGraphObjImage(drawSettings);
 
     pGraphObj->setImageFilePath(strFilePath);
 

@@ -80,9 +80,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryEllipse::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -101,7 +99,7 @@ CGraphObj* CObjFactoryEllipse::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeEllipse);
-    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene, drawSettings);
+    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(drawSettings);
 
 #if 0
     QPointF ptStart = i_ptItemPos;
@@ -321,10 +319,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
     if( bPosValid && bSizeValid )
     {
-        pGraphObj = new CGraphObjEllipse(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
+        pGraphObj = new CGraphObjEllipse(drawSettings, i_strObjName);
 
         pGraphObj->setRect( QRectF( QPointF(0.0,0.0), siz ) );
 

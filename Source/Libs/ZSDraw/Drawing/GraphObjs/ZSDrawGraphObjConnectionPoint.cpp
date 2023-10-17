@@ -80,12 +80,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjConnectionPoint::CGraphObjConnectionPoint(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const CDrawSettings& i_drawSettings, const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
@@ -174,9 +171,9 @@ CGraphObjConnectionPoint::~CGraphObjConnectionPoint()
     // called. And this is only always the case in the dtor of the class
     // derived from QGraphicsItem.
 
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        if (m_pDrawingScene != nullptr) {
+    if (m_pDrawingScene != nullptr) {
+        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
             if (!m_strKeyInTree.isEmpty()) {
                 try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
@@ -226,7 +223,7 @@ CGraphObj* CGraphObjConnectionPoint::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(m_pDrawingScene,m_drawSettings);
+    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(m_drawSettings);
 
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     pGraphObj->setName(m_strName);

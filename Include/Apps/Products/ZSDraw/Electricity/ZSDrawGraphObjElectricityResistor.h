@@ -58,10 +58,7 @@ public: // class methods
 public: // type definitions and constants
     static const QSize c_sizInitial;
 public: // ctors and dtor
-    CGraphObjResistor(
-        CDrawingScene*       i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+    CGraphObjResistor(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
     virtual ~CGraphObjResistor();
 public: // instance methods
     double getResistance() const { return m_fResistance_Ohm; }

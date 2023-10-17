@@ -61,7 +61,6 @@ public: // class methods
     static QString ClassName() { return "CGraphObjLine"; }
 public: // ctors and dtor
     CGraphObjLine(
-        CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
         const QString& i_strObjName,
         const CPhysValPoint& i_physValP1,
@@ -71,6 +70,7 @@ public: // overridables of base class QGraphicsItem
     virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
+    virtual void setDrawingScene(CDrawingScene* i_pDrawingScene) override;
 public: // overridables of base class CGraphObj (for subsystem test)
     virtual QString getScenePolygonShapePointsString() const override;
 public: // overridables of base class CGraphObj

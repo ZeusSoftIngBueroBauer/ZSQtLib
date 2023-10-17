@@ -87,7 +87,6 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryWdgtComboBox::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
@@ -108,7 +107,7 @@ CGraphObj* CObjFactoryWdgtComboBox::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjWdgtComboBox(i_pDrawingScene, drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjWdgtComboBox(drawSettings);
     return pGraphObj;
 
 } // createGraphObj

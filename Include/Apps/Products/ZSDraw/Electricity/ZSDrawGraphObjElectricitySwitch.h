@@ -65,10 +65,9 @@ public: // type definitions and constants
     static EState Str2State( const QString& i_str );
 public: // ctors and dtor
     CGraphObjSwitch(
-        CDrawingScene*       i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        EState               i_state = EStateOpened,
-        const QString&       i_strObjName = "" );
+        EState i_state = EStateOpened,
+        const QString& i_strObjName = "");
     virtual ~CGraphObjSwitch();
 public: // instance methods
     EState getState() const { return m_state; }

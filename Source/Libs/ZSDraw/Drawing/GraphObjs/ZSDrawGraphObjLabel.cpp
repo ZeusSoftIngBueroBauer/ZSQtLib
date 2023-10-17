@@ -73,14 +73,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjLabel::CGraphObjLabel(
-    CDrawingScene*  i_pDrawingScene,
-    CGraphObj*      i_pGraphObjParent,
-    const QString&  i_strKey,
-    const QString&  i_strText,
+    CGraphObj* i_pGraphObjParent,
+    const QString& i_strKey,
+    const QString& i_strText,
     ESelectionPoint i_selPt ) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeLabel,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),
@@ -996,22 +994,6 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
 
     if( i_change == ItemSelectedHasChanged )
     {
-        QRectF    rctUpd      = boundingRect();
-        QPolygonF plgLabel    = mapToScene(rctUpd);
-        QRectF    rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF());
-        QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
-
-        rctUpd      = plgLabel.boundingRect();
-        rctGraphObj = plgGraphObj.boundingRect();
-        rctUpd     |= rctGraphObj;
-
-        m_pDrawingScene->update(rctUpd);
-
-        updateEditInfo();
-        updateToolTip();
-
-        bTreeEntryChanged = true;
-
     } // if( i_change == ItemSelectedHasChanged )
 
     else if( i_change == ItemToolTipChange || i_change == ItemToolTipHasChanged
@@ -1063,11 +1045,8 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
 
         QPointF ptThis = scenePos();
 
-        m_sizeLinkedSelPtDist.setWidth( ptThis.x() - ptSelPt.x() );
-        m_sizeLinkedSelPtDist.setHeight( ptThis.y() - ptSelPt.y() );
-
-        updateEditInfo();
-        updateToolTip();
+        m_sizeLinkedSelPtDist.setWidth(ptThis.x() - ptSelPt.x());
+        m_sizeLinkedSelPtDist.setHeight(ptThis.y() - ptSelPt.y());
     }
 
     else // if( i_change == ItemSceneHasChanged

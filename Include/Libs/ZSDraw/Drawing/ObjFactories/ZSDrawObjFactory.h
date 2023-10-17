@@ -101,7 +101,6 @@ public: // dtor
     virtual ~CObjFactory();
 public: // interface methods
     virtual CGraphObj* createGraphObj(
-        CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings ) = 0;
     virtual ZS::System::SErrResultInfo saveGraphObj(

@@ -266,7 +266,6 @@ public: // class methods
     static QString ClassName() { return "CGraphObj"; }
 protected: // ctor
     CGraphObj(
-        CDrawingScene* i_pDrawingScene,
         const QString& i_strFactoryGroupName,
         EGraphObjType i_type,
         const QString& i_strType,
@@ -315,6 +314,7 @@ public: // instance methods
     bool isSelectionPoint() const;
     bool isLabel() const;
 public: // instance methods
+    virtual void setDrawingScene(CDrawingScene* i_pDrawingScene);
     CDrawingScene* getDrawingScene();
 public: // overridables
     virtual void rename( const QString& i_strNameNew );
@@ -584,7 +584,8 @@ protected: // instance members
          the drawing scene will call "onDrawingSizeChanged" of the graphical
          object and the method sets this flag to true. */
     bool m_bForceConversionToSceneCoors;
-    /*!< Pointer to drawing scene the graphical object belongs to. */
+    /*!< Pointer to drawing scene the graphical object belongs to.
+         Is set if the graphical object is added to the scene. */
     CDrawingScene* m_pDrawingScene;
     /*!< Graphical objects are called via factories which must be registered at the drawing scene.
          Using registered factories allows to also create user defined graphical objects.

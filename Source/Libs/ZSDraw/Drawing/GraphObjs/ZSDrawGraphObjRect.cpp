@@ -76,12 +76,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjRect::CGraphObjRect(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeRect,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeRect),
@@ -152,9 +149,9 @@ CGraphObjRect::~CGraphObjRect()
     // called. And this is only always the case in the dtor of the class
     // derived from QGraphicsItem.
 
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        if (m_pDrawingScene != nullptr) {
+    if (m_pDrawingScene != nullptr) {
+        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
             if (!m_strKeyInTree.isEmpty()) {
                 try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
@@ -204,7 +201,7 @@ CGraphObj* CGraphObjRect::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjRect* pGraphObj = new CGraphObjRect(m_pDrawingScene,m_drawSettings);
+    CGraphObjRect* pGraphObj = new CGraphObjRect(m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setPos( pos() );

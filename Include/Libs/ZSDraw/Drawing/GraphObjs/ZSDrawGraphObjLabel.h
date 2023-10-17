@@ -66,8 +66,7 @@ public: // class methods
     static QString ClassName() { return "CGraphObjLabel"; }
 public: // ctors and dtor
     CGraphObjLabel( // for (bounding) rectangles
-        CDrawingScene*  i_pDrawingScene,
-        CGraphObj*      i_pGraphObjParent,
+        CGraphObj* i_pGraphObjParent,
         const QString&  i_strKey,
         const QString&  i_strText,
         ESelectionPoint i_selPt );

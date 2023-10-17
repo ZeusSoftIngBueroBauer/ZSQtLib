@@ -80,9 +80,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryRect::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
-    const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -98,7 +96,7 @@ CGraphObj* CObjFactoryRect::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeRect);
-    CGraphObjRect* pGraphObj = new CGraphObjRect(i_pDrawingScene, drawSettings);
+    CGraphObjRect* pGraphObj = new CGraphObjRect(drawSettings);
 
     // We need to create an object with at least one pixel size so that the
     // drawing scene can "find" the object and can dispatch events to it.
@@ -314,10 +312,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
 
     if( bPosValid && bSizeValid )
     {
-        pGraphObj = new CGraphObjRect(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
+        pGraphObj = new CGraphObjRect(drawSettings, i_strObjName);
 
         pGraphObj->setRect( QRectF( QPointF(0.0,0.0), siz ) );
 

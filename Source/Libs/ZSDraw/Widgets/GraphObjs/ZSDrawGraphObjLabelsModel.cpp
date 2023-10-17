@@ -102,40 +102,45 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
 {
     QVariant varData;
 
-    if (i_modelIdx.isValid()) {
-        switch (i_modelIdx.column()) {
-            case EColumnName: {
-                if (i_iRole == Qt::DisplayRole) {
-                    varData = QString::number(i_modelIdx.row()) + ", " + QString::number(i_modelIdx.column());
+    if (m_pGraphObj != nullptr && i_modelIdx.isValid()) {
+        int iRow = i_modelIdx.row();
+        int iClm = i_modelIdx.column();
+        if ((iRow >= 0) && (iRow < m_ariRowIdx2Name.size())) {
+            QString strName = m_ariRowIdx2Name[iRow];
+            switch (iClm) {
+                case EColumnName: {
+                    if (i_iRole == Qt::DisplayRole) {
+                        varData = strName;
+                    }
+                    break;
                 }
-                break;
-            }
-            case EColumnText: {
-                if (i_iRole == Qt::DisplayRole) {
-                    varData = QString::number(i_modelIdx.row()) + ", " + QString::number(i_modelIdx.column());
+                case EColumnText: {
+                    if (i_iRole == Qt::DisplayRole) {
+                        varData = m_pGraphObj->labelText(strName);
+                    }
+                    break;
                 }
-                break;
-            }
-            case EColumnVisible: {
-                if (i_iRole == Qt::DisplayRole) {
-                    varData = QString::number(i_modelIdx.row()) + ", " + QString::number(i_modelIdx.column());
+                case EColumnVisible: {
+                    if (i_iRole == Qt::DisplayRole) {
+                        varData = m_pGraphObj->isLabelVisible(strName);
+                    }
+                    break;
                 }
-                break;
-            }
-            case EColumnAnchor: {
-                if (i_iRole == Qt::DisplayRole) {
-                    varData = QString::number(i_modelIdx.row()) + ", " + QString::number(i_modelIdx.column());
+                case EColumnAnchor: {
+                    if (i_iRole == Qt::DisplayRole) {
+                        varData = CEnumSelectionPoint(m_pGraphObj->labelAnchorPoint(strName)).toString();
+                    }
+                    break;
                 }
-                break;
-            }
-            case EColumnAnchorLineVisible: {
-                if (i_iRole == Qt::DisplayRole) {
-                    varData = QString::number(i_modelIdx.row()) + ", " + QString::number(i_modelIdx.column());
+                case EColumnAnchorLineVisible: {
+                    if (i_iRole == Qt::DisplayRole) {
+                        varData = m_pGraphObj->isLabelAnchorLineVisible(strName);
+                    }
+                    break;
                 }
-                break;
-            }
-            default: {
-                break;
+                default: {
+                    break;
+                }
             }
         }
     }
@@ -152,7 +157,7 @@ QVariant CModelGraphObjLabels::headerData(int i_iSection, Qt::Orientation i_orie
         switch (i_iSection) {
             case EColumnName: {
                 if (i_iRole == Qt::DisplayRole) {
-                    varData = "Name";
+                    varData = "Key";
                 }
                 break;
             }
@@ -170,13 +175,13 @@ QVariant CModelGraphObjLabels::headerData(int i_iSection, Qt::Orientation i_orie
             }
             case EColumnAnchor: {
                 if (i_iRole == Qt::DisplayRole) {
-                    varData = "Anchor";
+                    varData = "Anchored To";
                 }
                 break;
             }
             case EColumnAnchorLineVisible: {
                 if (i_iRole == Qt::DisplayRole) {
-                    varData = "AnchorLineVisible";
+                    varData = "Line";
                 }
                 break;
             }

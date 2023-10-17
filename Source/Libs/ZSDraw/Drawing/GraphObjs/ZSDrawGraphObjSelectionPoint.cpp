@@ -74,13 +74,12 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Constructor for selection points at (bounding) rectangles.
+*/
 CGraphObjSelectionPoint::CGraphObjSelectionPoint(
-    CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjSelected,
-    ESelectionPoint i_selectionPoint ) :
+    CGraphObj* i_pGraphObjSelected, ESelectionPoint i_selectionPoint) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeSelectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
@@ -125,13 +124,12 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 } // ctor
 
 //------------------------------------------------------------------------------
+/*! @brief Constructor for polygon shape points.
+*/
 CGraphObjSelectionPoint::CGraphObjSelectionPoint(
-    CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjSelected,
-    int i_idxPt ) :
+    CGraphObj* i_pGraphObjSelected, int i_idxPt) :
 //------------------------------------------------------------------------------
     CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeSelectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),

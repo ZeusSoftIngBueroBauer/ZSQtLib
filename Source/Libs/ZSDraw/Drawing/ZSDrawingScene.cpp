@@ -115,6 +115,8 @@ const QString CDrawingScene::c_strXmlAttrGraphObjFactoryGroupName = "FactoryGrou
 const QString CDrawingScene::c_strXmlAttrGraphObjType = "ObjectType";
 const QString CDrawingScene::c_strXmlAttrGraphObjName = "ObjectName";
 
+const QString CDrawingScene::s_strGraphObjNameSeparator = "/";
+
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
@@ -184,7 +186,6 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_pGraphObjCreating(nullptr),
     m_pGraphicsItemAddingShapePoints(nullptr),
     m_pGraphObjAddingShapePoints(nullptr),
-    m_strGraphObjNameSeparator("/"),
     m_pGraphObjsIdxTree(nullptr),
     m_pGraphObjsIdxTreeClipboard(nullptr),
     m_arpGraphicsItemsAcceptingHoverEvents(),
@@ -198,11 +199,6 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_pTrcAdminObjPaintEvent(nullptr)
 {
     setObjectName(i_strName);
-
-    //if (m_strGraphObjNameSeparator.isEmpty())
-    //{
-    //    m_strGraphObjNameSeparator = "/";
-    //}
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Drawing", ClassName(), objectName());
@@ -1291,8 +1287,12 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
         }
     }
 
+    // setDrawingScene must be called before adding the graphics item to the grahics scene
+    // as "itemChange" is called with "SceneHasChanged" whereupon the graphical object tries
+    // to recalculate the position in pixel coordinates and needs to access the drawing scene
+    // for this.
+    i_pGraphObj->setDrawingScene(this);
     addItem(pGraphicsItem, pGraphicsItemParent);
-
     m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
 
 } // addGraphObj
@@ -2633,7 +2633,7 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
     }
     else
     {
-        strObjName = strObjNameParent + m_strGraphObjNameSeparator + strObjBaseName + strObjNr;
+        strObjName = strObjNameParent + s_strGraphObjNameSeparator + strObjBaseName + strObjNr;
     }
 
     QList<QGraphicsItem*> arpGraphicsItems = items();
@@ -2673,7 +2673,7 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
             }
             else
             {
-                strObjName = strObjNameParent + m_strGraphObjNameSeparator + strObjBaseName + strObjNr;
+                strObjName = strObjNameParent + s_strGraphObjNameSeparator + strObjBaseName + strObjNr;
             }
         }
 
@@ -2726,9 +2726,8 @@ int CDrawingScene::groupGraphObjsSelected()
             m_editTool = EEditTool::CreateObjects;
 
             m_pGraphObjCreating = pObjFactoryGroup->createGraphObj(
-                /* pDrawingScene */ this,
-                /* ptItemPos     */ CPhysValPoint(QPointF(0.0, 0.0), m_drawingSize.unit()),
-                /* drawSettings  */ m_drawSettings );
+                /* ptItemPos    */ CPhysValPoint(QPointF(0.0, 0.0), m_drawingSize.unit()),
+                /* drawSettings */ m_drawSettings );
 
             m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
 
@@ -3897,9 +3896,8 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                             if( pObjFactory != nullptr )
                             {
                                 pGraphObj = pObjFactory->createGraphObj(
-                                    /* pDrawingScene */ this,
-                                    /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
-                                    /* drawSettings  */ m_drawSettings );
+                                    /* ptItemPos    */ toPhysValPoint(i_pEv->scenePos()),
+                                    /* drawSettings */ m_drawSettings );
 
                                 pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
 
@@ -3945,7 +3943,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                 strFilePath = url.toLocalFile();
 
-                pGraphObjImage = new CGraphObjImage(this,m_drawSettings);
+                pGraphObjImage = new CGraphObjImage(m_drawSettings);
 
                 pGraphObjImage->setImageFilePath(strFilePath);
 
@@ -4096,9 +4094,8 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         // Otherwise mapping coordinates to group coordinates does not work correctly.
                         // In special this applies to connection points and circles.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
-                            /* pDrawingScene */ this,
-                            /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
-                            /* drawSettings  */ m_drawSettings );
+                            /* ptItemPos    */ toPhysValPoint(i_pEv->scenePos()),
+                            /* drawSettings */ m_drawSettings );
 
                         if (m_pGraphObjCreating != nullptr)
                         {
@@ -4512,9 +4509,8 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                     {
                         // .. we are going to create further points at the current mouse position.
                         m_pGraphObjCreating = m_pObjFactory->createGraphObj(
-                            /* pDrawingScene */ this,
-                            /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
-                            /* drawSettings  */ m_drawSettings );
+                            /* ptItemPos    */ toPhysValPoint(i_pEv->scenePos()),
+                            /* drawSettings */ m_drawSettings );
 
                         m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
 

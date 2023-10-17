@@ -88,12 +88,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjDiode::CGraphObjDiode(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
-        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "Diode",
         /* strObjName    */ i_strObjName.isEmpty() ? "D" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),
@@ -513,7 +510,7 @@ void CGraphObjDiode::updateToolTip()
 
     if( pGraphicsItem != nullptr )
     {
-        QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
+        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
         m_strToolTip  = "ObjName:\t" + name();

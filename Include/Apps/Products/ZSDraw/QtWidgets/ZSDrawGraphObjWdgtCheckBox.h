@@ -50,10 +50,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgtCheckBox"; }
 public: // ctors and dtor
-    CGraphObjWdgtCheckBox(
-        CDrawingScene*       i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+    CGraphObjWdgtCheckBox(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
     virtual ~CGraphObjWdgtCheckBox();
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();
