@@ -109,32 +109,44 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
             QString strName = m_ariRowIdx2Name[iRow];
             switch (iClm) {
                 case EColumnName: {
-                    if (i_iRole == Qt::DisplayRole) {
+                    if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = strName;
                     }
                     break;
                 }
                 case EColumnText: {
-                    if (i_iRole == Qt::DisplayRole) {
+                    if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = m_pGraphObj->labelText(strName);
                     }
                     break;
                 }
                 case EColumnVisible: {
-                    if (i_iRole == Qt::DisplayRole) {
+                    if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = m_pGraphObj->isLabelVisible(strName);
+                    }
+                    else if (i_iRole == Qt::CheckStateRole) {
+                        varData = m_pGraphObj->isLabelVisible(strName) ? Qt::Checked : Qt::Unchecked;
+                    }
+                    else if (i_iRole == Qt::TextAlignmentRole) {
+                        varData = static_cast<int>(Qt::AlignHCenter | Qt::AlignVCenter);
                     }
                     break;
                 }
                 case EColumnAnchor: {
-                    if (i_iRole == Qt::DisplayRole) {
+                    if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = CEnumSelectionPoint(m_pGraphObj->labelAnchorPoint(strName)).toString();
                     }
                     break;
                 }
                 case EColumnAnchorLineVisible: {
-                    if (i_iRole == Qt::DisplayRole) {
+                    if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = m_pGraphObj->isLabelAnchorLineVisible(strName);
+                    }
+                    else if (i_iRole == Qt::CheckStateRole) {
+                        varData = m_pGraphObj->isLabelAnchorLineVisible(strName) ? Qt::Checked : Qt::Unchecked;
+                    }
+                    else if (i_iRole == Qt::TextAlignmentRole) {
+                        varData = static_cast<int>(Qt::AlignHCenter | Qt::AlignVCenter);
                     }
                     break;
                 }
@@ -145,6 +157,69 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
         }
     }
     return varData;
+}
+
+//------------------------------------------------------------------------------
+bool CModelGraphObjLabels::setData(
+    const QModelIndex& i_modelIdx, const QVariant& i_varData, int i_iRole)
+//------------------------------------------------------------------------------
+{
+    bool bOk = false;
+
+    if (m_pGraphObj != nullptr && i_modelIdx.isValid()) {
+        int iRow = i_modelIdx.row();
+        int iClm = i_modelIdx.column();
+        if ((iRow >= 0) && (iRow < m_ariRowIdx2Name.size())) {
+            QString strName = m_ariRowIdx2Name[iRow];
+            switch (iClm) {
+                case EColumnName: {
+                    if (i_iRole == Qt::EditRole) {
+                        m_pGraphObj->renameLabel(strName, i_varData.toString());
+                    }
+                    break;
+                }
+                case EColumnText: {
+                    if (i_iRole == Qt::EditRole) {
+                        m_pGraphObj->setLabelText(strName, i_varData.toString());
+                    }
+                    break;
+                }
+                case EColumnVisible: {
+                    if (i_iRole == Qt::EditRole) {
+                        if (i_varData.toBool()) {
+                            m_pGraphObj->showLabel(strName);
+                        }
+                        else {
+                            m_pGraphObj->hideLabel(strName);
+                        }
+                    }
+                    break;
+                }
+                case EColumnAnchor: {
+                    if (i_iRole == Qt::EditRole) {
+                        ESelectionPoint selPt = static_cast<ESelectionPoint>(i_varData.toInt());
+                        m_pGraphObj->setLabelAnchorPoint(strName, selPt);
+                    }
+                    break;
+                }
+                case EColumnAnchorLineVisible: {
+                    if (i_iRole == Qt::EditRole) {
+                        if (i_varData.toBool()) {
+                            m_pGraphObj->showLabelAnchorLine(strName);
+                        }
+                        else {
+                            m_pGraphObj->hideLabelAnchorLine(strName);
+                        }
+                    }
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+    }
+    return bOk;
 }
 
 //------------------------------------------------------------------------------
@@ -191,6 +266,40 @@ QVariant CModelGraphObjLabels::headerData(int i_iSection, Qt::Orientation i_orie
         }
     }
     return varData;
+}
+
+//------------------------------------------------------------------------------
+Qt::ItemFlags CModelGraphObjLabels::flags(const QModelIndex& i_modelIdx) const
+//------------------------------------------------------------------------------
+{
+    // The base class implementation returns a combination of flags that enables
+    // the item (ItemIsEnabled) and allows it to be selected (ItemIsSelectable).
+    Qt::ItemFlags uFlags = uFlags = QAbstractItemModel::flags(i_modelIdx);
+    if (i_modelIdx.isValid()) {
+        switch (i_modelIdx.column()) {
+            case EColumnName: {
+                break;
+            }
+            case EColumnText: {
+                break;
+            }
+            case EColumnVisible: {
+                uFlags = uFlags | Qt::ItemIsUserCheckable;
+                break;
+            }
+            case EColumnAnchor: {
+                break;
+            }
+            case EColumnAnchorLineVisible: {
+                uFlags = uFlags | Qt::ItemIsUserCheckable;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+    }
+    return uFlags;
 }
 
 /*==============================================================================

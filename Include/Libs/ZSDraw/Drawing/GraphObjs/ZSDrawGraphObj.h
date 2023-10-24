@@ -290,6 +290,8 @@ signals:
     void labelAdded(const QString& i_strName);
     /*!< This signal is emitted if a text label has been removed. */
     void labelRemoved(const QString& i_strName);
+    /*!< This signal is emitted if a text label has been renamed. */
+    void labelRenamed(const QString& i_strName, const QString& i_strNameNew);
     /*!< This signal is emitted if a text label has been changed. */
     void labelChanged(const QString& i_strName);
 protected: // instance methods (trace admin objects for method tracing)
@@ -314,7 +316,6 @@ public: // instance methods
     bool isSelectionPoint() const;
     bool isLabel() const;
 public: // instance methods
-    virtual void setDrawingScene(CDrawingScene* i_pDrawingScene);
     CDrawingScene* getDrawingScene();
 public: // overridables
     virtual void rename( const QString& i_strNameNew );
@@ -478,6 +479,7 @@ public: // overridables (text labels)
     virtual bool isLabelAdded(const QString& i_strName) const;
     virtual bool addLabel(const QString& i_strName);
     virtual void removeLabel(const QString& i_strName);
+    virtual bool renameLabel(const QString& i_strName, const QString& i_strNameNew);
     virtual void setLabelText(const QString& i_strName, const QString& i_strText);
     virtual QString labelText(const QString& i_strName) const;
     virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
@@ -563,6 +565,7 @@ protected: // auxiliary instance methods (method tracing)
     void emit_drawSettingsChanged();
     void emit_labelAdded(const QString& i_strName);
     void emit_labelRemoved(const QString& i_strName);
+    void emit_labelRenamed(const QString& i_strName, const QString& i_strNameNew);
     void emit_labelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);

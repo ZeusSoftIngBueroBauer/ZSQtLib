@@ -34,6 +34,8 @@ set(_QmlPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Qml/Libs)
 
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysCheckBoxItemDelegate.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysComboBoxItemDelegate.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysDialog.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.h
@@ -79,6 +81,8 @@ list(APPEND _Headers
 )
 
 list(APPEND _Sources
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysCheckBoxItemDelegate.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysComboBoxItemDelegate.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysDialog.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.cpp

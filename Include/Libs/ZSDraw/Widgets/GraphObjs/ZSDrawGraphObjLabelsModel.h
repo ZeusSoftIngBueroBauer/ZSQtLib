@@ -69,11 +69,12 @@ public: // ctors and dtor
 public: // instance methods
     void setGraphObj(CGraphObj* i_pGraphObj);
 public: // overridables of base class QAbstractItemModel
-    virtual int rowCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
-    virtual int columnCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
-    virtual QVariant data(const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole) const override;
-public: // overridables of base class QAbstractItemModel
-    virtual QVariant headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
+    int rowCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
+    int columnCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
+    QVariant data(const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole) const override;
+    bool setData(const QModelIndex& i_modelIdx, const QVariant& i_varData, int i_iRole) override;
+    QVariant headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
+    Qt::ItemFlags flags(const QModelIndex& i_modelIdx) const override;
 protected: // instance methods
     void clear();
     void fill();

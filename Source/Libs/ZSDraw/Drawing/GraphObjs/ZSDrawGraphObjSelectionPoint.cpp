@@ -186,9 +186,9 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    emit_aboutToBeDestroyed();
-
     m_pGraphObjSelected = nullptr;
+
+    emit_aboutToBeDestroyed();
 
     // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
     // dtor of QGraphicsItem has already been executed. The order the dtors
@@ -1096,53 +1096,53 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
 
     bool bTreeEntryChanged = false;
 
-    if( i_change == ItemSelectedHasChanged )
+    if (i_change == ItemSceneHasChanged)
     {
-    } // if( i_change == ItemSelectedHasChanged )
-
-    else if( i_change == ItemToolTipChange || i_change == ItemToolTipHasChanged
-          || i_change == ItemFlagsChange || i_change == ItemFlagsHaveChanged
-          || i_change == ItemPositionChange
-          || i_change == ItemVisibleChange
-          || i_change == ItemEnabledChange
-          || i_change == ItemSelectedChange
-          || i_change == ItemParentChange
-          || i_change == ItemTransformChange
-          || i_change == ItemSceneChange
-          || i_change == ItemCursorChange
-          || i_change == ItemZValueChange
-          #if QT_VERSION >= 0x040700
-          || i_change == ItemOpacityChange
-          || i_change == ItemRotationChange
-          || i_change == ItemScaleChange
-          || i_change == ItemTransformOriginPointChange )
-          #else
-          || i_change == ItemOpacityChange )
-          #endif
+        m_pDrawingScene = dynamic_cast<CDrawingScene*>(scene());
+    }
+    else if( i_change == ItemSelectedHasChanged )
     {
     }
-
-    else if( i_change == ItemChildAddedChange
-          || i_change == ItemChildRemovedChange
-          || i_change == ItemVisibleHasChanged
-          || i_change == ItemEnabledHasChanged
-          || i_change == ItemCursorHasChanged
-          || i_change == ItemOpacityHasChanged )
+    else if (i_change == ItemPositionHasChanged
+        || i_change == ItemTransformHasChanged
+        || i_change == ItemParentHasChanged
+        || i_change == ItemScenePositionHasChanged
+        || i_change == ItemRotationHasChanged
+        || i_change == ItemScaleHasChanged
+        || i_change == ItemTransformOriginPointHasChanged)
     {
     }
-
-    else // if( i_change == ItemMatrixChange
-         //  || i_change == ItemPositionHasChanged
-         //  || i_change == ItemTransformHasChanged
-         //  || i_change == ItemParentHasChanged
-         //  || i_change == ItemSceneHasChanged
-         //  || i_change == ItemZValueHasChanged
-         //  || i_change == ItemScenePositionHasChanged
-         //  || i_change == ItemRotationHasChanged
-         //  || i_change == ItemScaleHasChanged
-         //  || i_change == ItemTransformOriginPointHasChanged )
-    {
+    else if (i_change == ItemZValueHasChanged) {
     }
+    // Ignored HasChanged event
+    //else if (i_change == ItemVisibleHasChanged
+    //      || i_change == ItemEnabledHasChanged
+    //      || i_change == ItemCursorHasChanged
+    //      || i_change == ItemToolTipHasChanged
+    //      || i_change == ItemFlagsHaveChanged
+    //      || i_change == ItemOpacityHasChanged)
+    //{
+    //}
+    // Ignore all "AboutToChange" events
+    //else if( i_change == ItemPositionChange
+    //      || i_change == ItemVisibleChange
+    //      || i_change == ItemEnabledChange
+    //      || i_change == ItemSelectedChange
+    //      || i_change == ItemParentChange
+    //      || i_change == ItemChildAddedChange
+    //      || i_change == ItemChildRemovedChange
+    //      || i_change == ItemTransformChange
+    //      || i_change == ItemSceneChange
+    //      || i_change == ItemCursorChange
+    //      || i_change == ItemToolTipChange
+    //      || i_change == ItemFlagsChange
+    //      || i_change == ItemZValueChange
+    //      || i_change == ItemOpacityChange
+    //      || i_change == ItemRotationChange
+    //      || i_change == ItemScaleChange
+    //      || i_change == ItemTransformOriginPointChange)
+    //{
+    //}
 
     if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
@@ -1160,6 +1160,10 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
     }
     return valChanged;
 }
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::traceInternalStates(

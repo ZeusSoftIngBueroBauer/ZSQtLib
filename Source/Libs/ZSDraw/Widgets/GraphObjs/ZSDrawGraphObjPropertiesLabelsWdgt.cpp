@@ -28,7 +28,7 @@ may result in using the software modules.
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsModel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
@@ -233,6 +233,10 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pModel = new CModelGraphObjLabels(m_pDrawingScene, this);
     m_pTableView = new QTableView();
     m_pTableView->setModel(m_pModel);
+    m_pTableView->setItemDelegateForColumn(
+        CModelGraphObjLabels::EColumnVisible, new CCheckBoxItemDelegate(m_pTableView));
+    m_pTableView->setItemDelegateForColumn(
+        CModelGraphObjLabels::EColumnAnchorLineVisible, new CCheckBoxItemDelegate(m_pTableView));
     m_pLytListView->addWidget(m_pTableView);
 
     // Restore visibility

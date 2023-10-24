@@ -171,19 +171,16 @@ CGraphObjLine::~CGraphObjLine()
 
     emit_aboutToBeDestroyed();
 
-    // Please see comments at destructor of base class CGraphObj why the labels
-    // cannot be destroyed and the graphics scene item cannot be removed from the
-    // graphics scene by the base class but must be destroyed by the derived
-    // class which is derived both from CGraphObj and QGraphicsItem.
-
     if (m_pDrawingScene != nullptr) {
         QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
         if (pGraphicsItem != nullptr) {
             if (!m_strKeyInTree.isEmpty()) {
                 try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
-                    // of class "QGraphicsItem" may have already been processed and
-                    // models and Views may still try to access the graphical object.
+                    // of class "QGraphicsItem" may have already been processed if the
+                    // dtor of the base class is executed. If the drawing scene emits
+                    // graphObjAboutToBeDestroyed signal the models and Views may still
+                    // try to access the graphical object.
                     m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
                 }
                 catch(...) {
@@ -240,64 +237,6 @@ CGraphObj* CGraphObjLine::clone()
         m_drawSettings, m_strName,
         getP1(drawingSize.unit()), getP2(drawingSize.unit()) );
     return pGraphObj;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the drawing scene the object belongs to.
-
-    This method must be overridden by derived classes to calculate the
-    position in pixel values and forward the position to the graphics item.
-*/
-void CGraphObjLine::setDrawingScene(CDrawingScene* i_pDrawingScene)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString(i_pDrawingScene == nullptr ? "null" : i_pDrawingScene->objectName());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setDrawingScene",
-        /* strAddInfo   */ strMthInArgs);
-
-    if (m_pDrawingScene != nullptr) {
-        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
-    }
-    m_pDrawingScene = i_pDrawingScene;
-
-    // The line coordinates are passed relative to the parent item
-    // (usually the scene coordinates or a group item).
-    // But the graphics item expects the coordinates based on the
-    // local coordinate system of the graphics item.
-    // Items live in their own local coordinate system.
-    // Their coordinates are usually centered around its center point (0, 0).
-    // As the item is not yet added to a parent we got to adjust
-    // the coordinates coorespondingly.
-    QLineF lineF = m_physValLine.toQLineF();
-    if (m_physValLine.unit() != Units.Length.px) {
-        lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
-    }
-
-    // Center position in parent coordinates.
-    QPointF ptPos = lineF.center();
-
-    // Move the points into the item's local coordinate system.
-    QPointF p1 = lineF.p1() - ptPos;
-    QPointF p2 = lineF.p2() - ptPos;
-
-    // Set the line in local coordinate system.
-    QGraphicsLineItem_setLine(QLineF(p1, p2));
-
-    // GraphicsLineItem::setLine does not update the position.
-    // Must be done "manually" afterwards.
-    // Move the object to the parent position.
-    QGraphicsItem_setPos(ptPos);
-
-    addLabel("Name");
-    setLabelText("Name", m_strName);
-    setLabelAnchorPoint("Name", ESelectionPoint::Center);
 }
 
 /*==============================================================================
@@ -1583,7 +1522,45 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     bool bSelectedChanged = false;
     bool bTreeEntryChanged = false;
 
-    if (i_change == ItemSelectedHasChanged)
+    if (i_change == ItemSceneHasChanged)
+    {
+        m_pDrawingScene = dynamic_cast<CDrawingScene*>(scene());
+        if (m_pDrawingScene != nullptr)
+        {
+            // The line coordinates are passed relative to the parent item
+            // (usually the scene coordinates or a group item).
+            // But the graphics item expects the coordinates based on the
+            // local coordinate system of the graphics item.
+            // Items live in their own local coordinate system.
+            // Their coordinates are usually centered around its center point (0, 0).
+            // As the item is not yet added to a parent we got to adjust
+            // the coordinates coorespondingly.
+            QLineF lineF = m_physValLine.toQLineF();
+            if (m_physValLine.unit() != Units.Length.px) {
+                lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
+            }
+
+            // Center position in parent coordinates.
+            QPointF ptPos = lineF.center();
+
+            // Move the points into the item's local coordinate system.
+            QPointF p1 = lineF.p1() - ptPos;
+            QPointF p2 = lineF.p2() - ptPos;
+
+            // Set the line in local coordinate system.
+            QGraphicsLineItem_setLine(QLineF(p1, p2));
+
+            // GraphicsLineItem::setLine does not update the position.
+            // Must be done "manually" afterwards.
+            // Move the object to the parent position.
+            QGraphicsItem_setPos(ptPos);
+
+            addLabel("Name");
+            setLabelText("Name", m_strName);
+            setLabelAnchorPoint("Name", ESelectionPoint::Center);
+        }
+    }
+    else if (i_change == ItemSelectedHasChanged)
     {
         prepareGeometryChange();
 
@@ -1616,11 +1593,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         bSelectedChanged = true;
         bTreeEntryChanged = true;
     }
-
     else if (i_change == ItemPositionHasChanged
           || i_change == ItemTransformHasChanged
           || i_change == ItemParentHasChanged
-          || i_change == ItemSceneHasChanged
           || i_change == ItemScenePositionHasChanged
           || i_change == ItemRotationHasChanged
           || i_change == ItemScaleHasChanged
@@ -1650,7 +1625,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
-
     else if (i_change == ItemZValueHasChanged) {
         for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
             ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
@@ -1677,8 +1651,16 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         //bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
-
-    // Ignored changes:
+    // Ignored HasChanged events
+    //else if (i_change == ItemVisibleHasChanged
+    //      || i_change == ItemEnabledHasChanged
+    //      || i_change == ItemCursorHasChanged
+    //      || i_change == ItemToolTipHasChanged
+    //      || i_change == ItemFlagsHaveChanged
+    //      || i_change == ItemOpacityHasChanged)
+    //{
+    //}
+    // Ignore all "AboutToChange" events
     //else if( i_change == ItemPositionChange
     //      || i_change == ItemVisibleChange
     //      || i_change == ItemEnabledChange
@@ -1696,14 +1678,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     //      || i_change == ItemRotationChange
     //      || i_change == ItemScaleChange
     //      || i_change == ItemTransformOriginPointChange)
-    //{
-    //}
-    //else if (i_change == ItemVisibleHasChanged
-    //      || i_change == ItemEnabledHasChanged
-    //      || i_change == ItemCursorHasChanged
-    //      || i_change == ItemToolTipHasChanged
-    //      || i_change == ItemFlagsHaveChanged
-    //      || i_change == ItemOpacityHasChanged)
     //{
     //}
 

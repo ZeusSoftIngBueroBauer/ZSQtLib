@@ -1276,7 +1276,6 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
     // Otherwise the "boundingRect" call of groups (which implicitly calls childrenBoundingRect) does
     // not work as the childs bounding rectangles would be included. But the selection points and
     // labels should appear as childs in the index tree of the drawing scene.
-
     QGraphicsItem* pGraphicsItemParent = nullptr;
     if (!i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel()) {
         if (i_pGraphObjParent != nullptr) {
@@ -1287,14 +1286,15 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
         }
     }
 
-    // setDrawingScene must be called before adding the graphics item to the grahics scene
-    // as "itemChange" is called with "SceneHasChanged" whereupon the graphical object tries
-    // to recalculate the position in pixel coordinates and needs to access the drawing scene
-    // for this.
-    i_pGraphObj->setDrawingScene(this);
+    // On adding the item to the graphics scene the itemChange method of the graphics
+    // item is called with "SceneHasChanged". On initially setting the drawing scene
+    // graphical object has to recalculate the position in pixel coordinates.
     addItem(pGraphicsItem, pGraphicsItemParent);
-    m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
 
+    // Selection points and labels should not be indicated in the index tree.
+    if (!i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel()) {
+        m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
+    }
 } // addGraphObj
 
 //------------------------------------------------------------------------------

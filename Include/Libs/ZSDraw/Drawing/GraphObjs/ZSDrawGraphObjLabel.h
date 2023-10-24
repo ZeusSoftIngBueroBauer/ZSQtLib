@@ -76,7 +76,8 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables
-    virtual QString getKey() const { return m_strKey; }
+    void setKey(const QString& i_strKey);
+    QString getKey() const { return m_strKey; }
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText( const QString& i_strText );
     QString getText() const;
