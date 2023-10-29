@@ -42,6 +42,32 @@ namespace System
 namespace GUI
 {
 //******************************************************************************
+struct SComboBoxItem
+//******************************************************************************
+{
+    SComboBoxItem() {}
+    SComboBoxItem(const QString& i_strText, const QVariant& i_userData = QVariant()) :
+        m_strText(i_strText), m_icon(), m_userData(i_userData)
+    {}
+    SComboBoxItem(const QIcon& i_icon, const QString& i_strText, const QVariant& i_userData = QVariant()) :
+        m_strText(i_strText), m_icon(i_icon), m_userData(i_userData)
+    {}
+    QString m_strText;
+    QIcon m_icon;
+    QVariant m_userData;
+};
+
+Q_DECLARE_METATYPE(SComboBoxItem);
+Q_DECLARE_METATYPE(QList<SComboBoxItem>);
+
+//******************************************************************************
+/*! @brief Delegate for a combo box in an item view.
+
+    To use this delegate the model assigned to the item view must return the
+    combo box items via the data method. The item data role for which the list
+    items has to be returned must be set by invoking the "setItemDataRole".
+    As default the combo box delegate will use Qt::AccessibleTextRole".
+*/
 class ZSSYSGUIDLL_API CComboBoxItemDelegate : public QStyledItemDelegate
 //******************************************************************************
 {
@@ -49,10 +75,17 @@ class ZSSYSGUIDLL_API CComboBoxItemDelegate : public QStyledItemDelegate
 public: // ctors and dtor
     CComboBoxItemDelegate( QWidget* i_pWdgtParent = nullptr );
     virtual ~CComboBoxItemDelegate();
+public: // instance methods
+    void setItemDataRole(int i_iRole);
+    int itemDataRole() const;
 public: // overridables of base class QStyledItemDelegate
     void paint(QPainter* i_pPainter, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
-protected: // overridables of base class QStyledItemDelegate
-    bool editorEvent(QEvent* i_pEv, QAbstractItemModel* i_pModel, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx);
+    QWidget* createEditor(QWidget* i_pWdgtParent, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
+    void setEditorData(QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx) const override;
+    void setModelData(QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx) const override;
+    void updateEditorGeometry(QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
+protected: // instance members
+    int m_iItemDataRole;
 
 }; // class ComboBoxItemDelegate
 

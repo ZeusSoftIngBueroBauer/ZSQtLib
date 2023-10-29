@@ -16,6 +16,7 @@ Content: This file is part of the ZSQtLib.
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsModel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -25,6 +26,7 @@ Content: This file is part of the ZSQtLib.
 
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::Draw;
 
 
@@ -136,6 +138,14 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = CEnumSelectionPoint(m_pGraphObj->labelAnchorPoint(strName)).toString();
                     }
+                    else if (i_iRole == Qt::AccessibleTextRole) {
+                        QList<ESelectionPoint> arSelPts = m_pGraphObj->getPossibleLabelAnchorPoints(strName);
+                        QList<SComboBoxItem> arItems;
+                        for (const ESelectionPoint& selPt : arSelPts) {
+                            arItems.append(SComboBoxItem(CEnumSelectionPoint(selPt).toString()));
+                        }
+                        varData.setValue(arItems);
+                    }
                     break;
                 }
                 case EColumnAnchorLineVisible: {
@@ -197,7 +207,7 @@ bool CModelGraphObjLabels::setData(
                 }
                 case EColumnAnchor: {
                     if (i_iRole == Qt::EditRole) {
-                        ESelectionPoint selPt = static_cast<ESelectionPoint>(i_varData.toInt());
+                        ESelectionPoint selPt = CEnumSelectionPoint(i_varData.toString()).enumerator();
                         m_pGraphObj->setLabelAnchorPoint(strName, selPt);
                     }
                     break;
@@ -288,6 +298,7 @@ Qt::ItemFlags CModelGraphObjLabels::flags(const QModelIndex& i_modelIdx) const
                 break;
             }
             case EColumnAnchor: {
+                uFlags = uFlags | Qt::ItemIsEditable;
                 break;
             }
             case EColumnAnchorLineVisible: {

@@ -77,18 +77,18 @@ public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables
     void setKey(const QString& i_strKey);
-    QString getKey() const { return m_strKey; }
+    QString getKey() const;
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText( const QString& i_strText );
     QString getText() const;
 public: // overridables
     virtual void setLinkedSelectionPoint(ESelectionPoint i_selPt);
-    virtual ESelectionPoint getLinkedSelectionPoint() const { return m_selPtLinked; }
-    QSizeF getLinkedSelectionPointDistance() const { return m_sizeLinkedSelPtDist; }
+    virtual ESelectionPoint getLinkedSelectionPoint() const;
+    QSizeF getLinkedSelectionPointDistance() const;
 public: // overridables
     virtual void showAnchorLine();
     virtual void hideAnchorLine();
-    virtual bool isAnchorLineVisible() const { return m_bShowAnchorLine; }
+    virtual bool isAnchorLineVisible() const;
 public: // overridables
     //virtual void saveGraphObjDistance();
     //virtual QSizeF getGraphObjDistance() const { return m_sizGraphObjDist; }

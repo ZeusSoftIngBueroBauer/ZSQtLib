@@ -212,7 +212,7 @@ CGraphObj* CGraphObjLabel::clone()
 }
 
 /*==============================================================================
-public: // replacing methods of QGraphicsSimpleTextItem
+public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -237,6 +237,17 @@ void CGraphObjLabel::setKey(const QString& i_strKey)
         }
     }
 }
+
+//------------------------------------------------------------------------------
+QString CGraphObjLabel::getKey() const
+//------------------------------------------------------------------------------
+{
+    return m_strKey;
+}
+
+/*==============================================================================
+public: // replacing methods of QGraphicsSimpleTextItem
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CGraphObjLabel::setText( const QString& i_strText )
@@ -272,7 +283,7 @@ QString CGraphObjLabel::getText() const
 }
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
+public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -292,33 +303,50 @@ void CGraphObjLabel::setLinkedSelectionPoint(ESelectionPoint i_selPt)
 
     if (m_selPtLinked != i_selPt)
     {
-        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
         m_selPtLinked = i_selPt;
 
-        QPointF ptSelPt = m_pGraphObjParent->getSelectionPointCoors(i_selPt);
-        ptSelPt = m_pGraphicsItemParent->mapToScene(ptSelPt);
+        //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+        //QPointF ptSelPt = m_pGraphObjParent->getSelectionPointCoors(i_selPt);
+        //ptSelPt = m_pGraphicsItemParent->mapToScene(ptSelPt);
 
-        QPointF ptLabelTmp = ptSelPt;
-        if (i_selPt != ESelectionPoint::BottomRight &&
-            i_selPt != ESelectionPoint::BottomLeft &&
-            i_selPt != ESelectionPoint::BottomCenter)
-        {
-            ptLabelTmp.setY(ptLabelTmp.y() - getHeight(Units.Length.px).getVal());
-        }
+        //QPointF ptLabelTmp = ptSelPt;
+        //if (i_selPt != ESelectionPoint::BottomRight &&
+        //    i_selPt != ESelectionPoint::BottomLeft &&
+        //    i_selPt != ESelectionPoint::BottomCenter)
+        //{
+        //    ptLabelTmp.setY(ptLabelTmp.y() - getHeight(Units.Length.px).getVal());
+        //}
 
-        QSize sizeDist(ptLabelTmp.x() - ptSelPt.x(), ptLabelTmp.y() - ptSelPt.y());
+        //QSize sizeDist(ptLabelTmp.x() - ptSelPt.x(), ptLabelTmp.y() - ptSelPt.y());
 
-        QPointF ptLabel(ptSelPt.x() + sizeDist.width(), ptSelPt.y() + sizeDist.height());
+        //QPointF ptLabel(ptSelPt.x() + sizeDist.width(), ptSelPt.y() + sizeDist.height());
 
-        setPos(ptLabel);
-        setZValue(pGraphicsItem->zValue() + 0.02);
+        //setPos(ptLabel);
+        //setZValue(pGraphicsItem->zValue() + 0.02);
 
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
     }
 }
+
+//------------------------------------------------------------------------------
+ESelectionPoint CGraphObjLabel::getLinkedSelectionPoint() const
+//------------------------------------------------------------------------------
+{
+    return m_selPtLinked;
+}
+
+//------------------------------------------------------------------------------
+QSizeF CGraphObjLabel::getLinkedSelectionPointDistance() const
+//------------------------------------------------------------------------------
+{
+    return m_sizeLinkedSelPtDist;
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CGraphObjLabel::showAnchorLine()
@@ -356,6 +384,13 @@ void CGraphObjLabel::hideAnchorLine()
             m_pTree->onTreeEntryChanged(this);
         }
     }
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObjLabel::isAnchorLineVisible() const
+//------------------------------------------------------------------------------
+{
+    return m_bShowAnchorLine;
 }
 
 /*==============================================================================

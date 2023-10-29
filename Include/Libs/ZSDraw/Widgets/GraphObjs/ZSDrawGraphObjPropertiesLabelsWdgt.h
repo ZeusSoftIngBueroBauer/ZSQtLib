@@ -64,15 +64,14 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
 protected slots:
-    void onEdtNameTextChanged(const QString& i_strText);
-    void onChkNameLabelVisibleStateChanged(int i_iState);
-    void onCmbNameLabelAnchorSelPtCurrentIndexChanged(int i_idx);
-    void onChkNameLabelAnchorLineVisibleStateChanged(int i_iState);
+    //void onEdtNameTextChanged(const QString& i_strText);
+    //void onChkNameLabelVisibleStateChanged(int i_iState);
+    //void onCmbNameLabelAnchorSelPtCurrentIndexChanged(int i_idx);
+    //void onChkNameLabelAnchorLineVisibleStateChanged(int i_iState);
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
 private: // auxiliary instance methods
-    bool changedNameIsUnique() const;
-    void updateModel();
+    //bool changedNameIsUnique() const;
 private: // instance members
     /*!< Edit controls. */
     QWidget* m_pWdgtHeadline;
@@ -85,17 +84,17 @@ private: // instance members
     ZS::System::GUI::CSepLine* m_pSepHeadline;
     QWidget* m_pWdgtLabels;
     QVBoxLayout* m_pLytWdgtLabels;
-    QHBoxLayout* m_pLytLineName;
-    QLabel* m_pLblName;
-    QLineEdit* m_pEdtName;
-    QLabel* m_pLblNameError;
-    QHBoxLayout* m_pLytLineNameVisibilities;
-    QLabel* m_pLblNameVisible;
-    QCheckBox* m_pChkNameLabelVisible;
-    QLabel* m_pLblNameLabelAnchorSelPt;
-    QComboBox* m_pCmbNameLabelAnchorSelPt;
-    QLabel* m_pLblNameLabelAnchorLineVisible;
-    QCheckBox* m_pChkNameLabelAnchorLineVisible;
+    //QHBoxLayout* m_pLytLineName;
+    //QLabel* m_pLblName;
+    //QLineEdit* m_pEdtName;
+    //QLabel* m_pLblNameError;
+    //QHBoxLayout* m_pLytLineNameVisibilities;
+    //QLabel* m_pLblNameVisible;
+    //QCheckBox* m_pChkNameLabelVisible;
+    //QLabel* m_pLblNameLabelAnchorSelPt;
+    //QComboBox* m_pCmbNameLabelAnchorSelPt;
+    //QLabel* m_pLblNameLabelAnchorLineVisible;
+    //QCheckBox* m_pChkNameLabelAnchorLineVisible;
     QVBoxLayout* m_pLytListView;
     QTableView* m_pTableView;
     CModelGraphObjLabels* m_pModel;

@@ -26,8 +26,15 @@ may result in using the software modules.
 
 #include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
 
+#include <QtWidgets/qapplication.h>
 #include <QtGui/qevent.h>
 #include <QtGui/qpainter.h>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/qcombobox.h>
+#else
+#include <QtWidgets/qcombobox.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -46,7 +53,8 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CComboBoxItemDelegate::CComboBoxItemDelegate( QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    QStyledItemDelegate(i_pWdgtParent)
+    QStyledItemDelegate(i_pWdgtParent),
+    m_iItemDataRole(Qt::AccessibleTextRole)
 {
 } // ctor
 
@@ -54,7 +62,27 @@ CComboBoxItemDelegate::CComboBoxItemDelegate( QWidget* i_pWdgtParent ) :
 CComboBoxItemDelegate::~CComboBoxItemDelegate()
 //------------------------------------------------------------------------------
 {
+    m_iItemDataRole = 0;
+
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CComboBoxItemDelegate::setItemDataRole(int i_iRole)
+//------------------------------------------------------------------------------
+{
+    m_iItemDataRole = i_iRole;
+}
+
+//------------------------------------------------------------------------------
+int CComboBoxItemDelegate::itemDataRole() const
+//------------------------------------------------------------------------------
+{
+    return m_iItemDataRole;
+}
 
 /*==============================================================================
 public: // overridables of base class QStyledItemDelegate
@@ -65,21 +93,52 @@ void CComboBoxItemDelegate::paint(
     QPainter* i_pPainter, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
-
+    QStyleOptionViewItem option = i_option;
+    option.text = i_modelIdx.data(Qt::DisplayRole).toString();
+    QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &option, i_pPainter);
 }
 
-/*==============================================================================
-protected: // overridables of base class QStyledItemDelegate
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-bool CComboBoxItemDelegate::editorEvent(
-    QEvent* i_pEv, QAbstractItemModel* i_pModel, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx)
+QWidget* CComboBoxItemDelegate::createEditor(
+    QWidget* i_pWdgtParent, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
-    if (i_pEv->type() == QEvent::MouseButtonRelease) {
-        i_pModel->setData(i_modelIdx, !i_pModel->data(i_modelIdx).toBool());
-        i_pEv->accept();
+    QComboBox* pCmb = new QComboBox(i_pWdgtParent);
+    QList<SComboBoxItem> arItems = i_modelIdx.data(m_iItemDataRole).value<QList<SComboBoxItem>>();
+    for(const SComboBoxItem& item : arItems) {
+        if (!item.m_icon.isNull()) {
+            pCmb->addItem(item.m_icon, item.m_strText, item.m_userData);
+        }
+        else {
+            pCmb->addItem(item.m_strText, item.m_userData);
+        }
     }
-    return QStyledItemDelegate::editorEvent(i_pEv, i_pModel, i_option, i_modelIdx);
+    return pCmb;
+}
+
+//------------------------------------------------------------------------------
+void CComboBoxItemDelegate::setEditorData(
+    QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx) const
+//------------------------------------------------------------------------------
+{
+    QComboBox* pCmb = static_cast<QComboBox*>(i_pWdgtEditor);
+    int idxCmb = i_modelIdx.model()->data(i_modelIdx, Qt::EditRole).toInt();
+    pCmb->setCurrentIndex(idxCmb);
+}
+
+//------------------------------------------------------------------------------
+void CComboBoxItemDelegate::setModelData(
+    QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx) const
+//------------------------------------------------------------------------------
+{
+    QComboBox* pCmb = static_cast<QComboBox*>(i_pWdgtEditor);
+    i_pModel->setData(i_modelIdx, pCmb->currentText(), Qt::EditRole);
+}
+
+//------------------------------------------------------------------------------
+void CComboBoxItemDelegate::updateEditorGeometry(
+    QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const
+//------------------------------------------------------------------------------
+{
+    i_pWdgtEditor->setGeometry(i_option.rect);
 }
