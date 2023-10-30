@@ -39,6 +39,8 @@ namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
 //******************************************************************************
@@ -46,6 +48,9 @@ class ZSSYSGUIDLL_API CCheckBoxItemDelegate : public QStyledItemDelegate
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::System::GUI"; }
+    static QString ClassName() { return "CCheckBoxItemDelegate"; }
 public: // ctors and dtor
     CCheckBoxItemDelegate(QWidget* i_pWdgtParent = nullptr);
     virtual ~CCheckBoxItemDelegate();
@@ -53,6 +58,9 @@ public: // overridables of base class QStyledItemDelegate
     void paint(QPainter* i_pPainter, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
 protected: // overridables of base class QStyledItemDelegate
     bool editorEvent(QEvent* i_pEv, QAbstractItemModel* i_pModel, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx);
+protected: // instance members
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
 }; // class CCheckBoxItemDelegate
 

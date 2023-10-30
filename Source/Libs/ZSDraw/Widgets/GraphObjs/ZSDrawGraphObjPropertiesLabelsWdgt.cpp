@@ -231,7 +231,8 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pLytListView = new QVBoxLayout();
     m_pLytWdgtLabels->addLayout(m_pLytListView);
 
-    m_pModel = new CModelGraphObjLabels(m_pDrawingScene, this);
+    m_pModel = new CModelGraphObjLabels(
+        m_pDrawingScene, i_strNameSpace, i_strGraphObjType, i_strObjName, this);
     m_pTableView = new QTableView();
     m_pTableView->setModel(m_pModel);
     m_pTableView->setItemDelegateForColumn(

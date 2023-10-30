@@ -25,6 +25,9 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtWidgets/qapplication.h>
 #include <QtGui/qevent.h>
@@ -47,14 +50,45 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CCheckBoxItemDelegate::CCheckBoxItemDelegate( QWidget* i_pWdgtParent ) :
 //------------------------------------------------------------------------------
-    QStyledItemDelegate(i_pWdgtParent)
+    QStyledItemDelegate(i_pWdgtParent),
+    m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjNoisyMethods(nullptr)
 {
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName());
+    m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::NoisyMethods");
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "ctor",
+        /* strMethodInArgs    */ "" );
+
 } // ctor
 
 //------------------------------------------------------------------------------
 CCheckBoxItemDelegate::~CCheckBoxItemDelegate()
 //------------------------------------------------------------------------------
 {
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "dtor",
+        /* strMethodInArgs    */ "" );
+
+    if( m_pTrcAdminObj != nullptr ) {
+        mthTracer.onAdminObjAboutToBeReleased();
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    }
+    if( m_pTrcAdminObjNoisyMethods != nullptr ) {
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
+    }
+
+    m_pTrcAdminObj = nullptr;
+    m_pTrcAdminObjNoisyMethods = nullptr;
+
 } // dtor
 
 /*==============================================================================
@@ -66,6 +100,17 @@ void CCheckBoxItemDelegate::paint(
     QPainter* i_pPainter, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "paint",
+        /* strMethodInArgs    */ strMthInArgs );
+
     QStyleOptionButton cbOpt;
 
     // Centered as default. If this should be changed a call to i_modelIdx.data
@@ -93,14 +138,32 @@ protected: // overridables of base class QStyledItemDelegate
 
 //------------------------------------------------------------------------------
 bool CCheckBoxItemDelegate::editorEvent(
-    QEvent* i_pEv, QAbstractItemModel* i_pModel, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx)
+    QEvent* i_pEv, QAbstractItemModel* i_pModel,
+    const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Event {" + qEvent2Str(i_pEv) + "}, ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "editorEvent",
+        /* strMethodInArgs    */ strMthInArgs );
+
     bool bDataSet = false;
     if (i_pEv->type() == QEvent::MouseButtonRelease) {
         bool bVal = i_modelIdx.data(Qt::DisplayRole).toBool();
         // invert checkbox state
         bDataSet = i_pModel->setData(i_modelIdx, !bVal, Qt::EditRole);
+    }
+    else {
+        bDataSet = QStyledItemDelegate::editorEvent(i_pEv, i_pModel, i_option, i_modelIdx);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bDataSet);
     }
     return bDataSet;
 }

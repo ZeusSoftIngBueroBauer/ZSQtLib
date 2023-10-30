@@ -4171,12 +4171,18 @@ void CGraphObj::removeLabel(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
-/*! Removes the label with the given name.
+/*! Renames the label with the given name.
 
-    The label is destryoed and also removed from the graphics scene and becomes invisible.
+    If a label with passed new name already exists, the label is not renamed and
+    the method returns false.
 
     @param [in] i_strName
-        Name of the label. If no label with the name exists an exception is thrown.
+        Current name of the label. If no label with the name exists an exception is thrown.
+    @param [in] i_strNameNew
+        New name of the label. If a label with the new name already exists, the
+        label will not be renamed.
+
+    @return true, if the label has been renamed, false otherwise.
 */
 bool CGraphObj::renameLabel(const QString& i_strName, const QString& i_strNameNew)
 //------------------------------------------------------------------------------
