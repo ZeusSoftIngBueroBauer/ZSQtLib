@@ -88,6 +88,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryTransistor::createGraphObj(
+    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
@@ -108,7 +109,7 @@ CGraphObj* CObjFactoryTransistor::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjTransistor(drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjTransistor(i_pDrawingScene, drawSettings);
     return pGraphObj;
 
 } // createGraphObj

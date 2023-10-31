@@ -24,14 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryLine.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
@@ -41,6 +33,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -80,7 +78,9 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryLine::createGraphObj(
-    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
+    const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -100,7 +100,7 @@ CGraphObj* CObjFactoryLine::createGraphObj(
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeLine);
     CGraphObjLine* pGraphObj = new CGraphObjLine(
-        drawSettings, "", i_physValPoint, i_physValPoint);
+        i_pDrawingScene, drawSettings, "", i_physValPoint, i_physValPoint);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
@@ -321,7 +321,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     }
     else {
         pGraphObj = new CGraphObjLine(
-            drawSettings, i_strObjName, physValPoint1, physValPoint2);
+            i_pDrawingScene, drawSettings, i_strObjName, physValPoint1, physValPoint2);
         //QLineF lin(pt1, pt2);
         //lin.translate(-pt1.x(), -pt1.y());
         //pGraphObj->setLine(lin);

@@ -56,7 +56,7 @@ public: // ctors and dtor
         const QString&       i_strGraphObjId );
     ~CGraphObjModelEntry();
 public: // instance methods
-    CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
+    CDrawingScene* drawingScene() { return m_pDrawingScene; }
 public: // instance methods
     void setParentEntry( CGraphObjModelEntry* i_pEntry );
     CGraphObjModelEntry* getParentEntry() { return m_pParent; }

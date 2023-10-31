@@ -24,14 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryGroup.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
@@ -40,6 +32,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -79,7 +77,9 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryGroup::createGraphObj(
-    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
+    const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -98,7 +98,7 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(drawSettings);
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene, drawSettings);
 
     return pGraphObj;
 

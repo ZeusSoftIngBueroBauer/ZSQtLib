@@ -58,7 +58,10 @@ public: // class methods
 public: // type definitions and constants
     static const QSize c_sizInitial;
 public: // ctors and dtor
-    CGraphObjDiode(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
+    CGraphObjDiode(
+        CDrawingScene* i_pDrawingScene,
+        const CDrawSettings& i_drawSettings,
+        const QString& i_strObjName = "");
     virtual ~CGraphObjDiode();
 public: // instance methods
     double getCutOffVoltage() const { return m_fCutOffVoltage_V; }

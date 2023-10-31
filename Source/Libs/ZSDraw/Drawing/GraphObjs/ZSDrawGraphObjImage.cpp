@@ -76,9 +76,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjImage::CGraphObjImage(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeImage,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeImage),
@@ -207,7 +210,7 @@ CGraphObj* CGraphObjImage::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjImage* pGraphObj = new CGraphObjImage(m_drawSettings);
+    CGraphObjImage* pGraphObj = new CGraphObjImage(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setImageFilePath(m_strImgFilePath);

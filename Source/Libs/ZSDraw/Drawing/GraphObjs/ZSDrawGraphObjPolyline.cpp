@@ -77,9 +77,12 @@ public: // ctors
 
 //------------------------------------------------------------------------------
 CGraphObjPolyline::CGraphObjPolyline(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePolyline,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePolyline),
@@ -133,6 +136,7 @@ protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
 
 //------------------------------------------------------------------------------
 CGraphObjPolyline::CGraphObjPolyline(
+    CDrawingScene* i_pDrawingScene,
     const QString& i_strFactoryGroupName,
     EGraphObjType i_type,
     const QString& i_strType,
@@ -140,6 +144,7 @@ CGraphObjPolyline::CGraphObjPolyline(
     const CDrawSettings& i_drawSettings ) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ i_strFactoryGroupName,
         /* type                */ i_type,
         /* strType             */ i_strType,
@@ -230,7 +235,7 @@ CGraphObj* CGraphObjPolyline::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
-    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(m_drawSettings);
+    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setPolygon( polygon() );

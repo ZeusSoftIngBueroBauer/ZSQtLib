@@ -54,7 +54,10 @@ class CGraphObjWdgtLineEdit : public CGraphObjWdgt
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgtLineEdit"; }
 public: // ctors and dtor
-    CGraphObjWdgtLineEdit(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
+    CGraphObjWdgtLineEdit(
+        CDrawingScene* i_pDrawingScene,
+        const CDrawSettings& i_drawSettings,
+        const QString& i_strObjName = "");
     virtual ~CGraphObjWdgtLineEdit();
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();

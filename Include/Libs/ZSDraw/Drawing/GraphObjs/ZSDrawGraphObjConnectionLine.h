@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjConnectionLine_h
 #define ZSDraw_GraphObjConnectionLine_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsPolygonItem>
 #else
 #include <QtWidgets/QGraphicsPolygonItem>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -56,7 +53,10 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjConnectionLine"; }
 public: // ctors and dtor
-    CGraphObjConnectionLine(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
+    CGraphObjConnectionLine(
+        CDrawingScene* i_pDrawingScene,
+        const CDrawSettings& i_drawSettings,
+        const QString& i_strObjName = "");
     virtual ~CGraphObjConnectionLine();
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return static_cast<int>(EGraphObjTypeConnectionLine); }

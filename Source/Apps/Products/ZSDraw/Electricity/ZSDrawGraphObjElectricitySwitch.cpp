@@ -120,11 +120,13 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjSwitch::CGraphObjSwitch(
+    CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
     EState               i_state,
     const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
+        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "Switch",
         /* strObjName    */ i_strObjName.isEmpty() ? "S" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),

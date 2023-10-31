@@ -77,10 +77,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjWdgtComboBox::CGraphObjWdgtComboBox(
+    CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
     const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjWdgt(
+        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "ComboBox",
         /* strObjName    */ i_strObjName.isEmpty() ? "ComboBox" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),

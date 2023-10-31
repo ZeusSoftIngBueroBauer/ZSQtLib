@@ -88,9 +88,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjDiode::CGraphObjDiode(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
+        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "Diode",
         /* strObjName    */ i_strObjName.isEmpty() ? "D" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),

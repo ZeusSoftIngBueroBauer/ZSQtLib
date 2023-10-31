@@ -24,9 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtGui/qevent.h>
-#include <QtGui/QPainter>
-
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPoint.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
@@ -42,6 +39,9 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtGui/qevent.h>
+#include <QtGui/QPainter>
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsSceneEvent>
@@ -75,9 +75,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjPoint::CGraphObjPoint(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePoint),
@@ -204,7 +207,7 @@ CGraphObj* CGraphObjPoint::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjPoint* pGraphObj = new CGraphObjPoint(m_drawSettings);
+    CGraphObjPoint* pGraphObj = new CGraphObjPoint(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setPos( pos() );

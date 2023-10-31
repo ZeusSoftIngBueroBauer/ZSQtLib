@@ -66,8 +66,9 @@ public: // class members
     static const QString c_strFactoryGroupName; // = "Widgets"
 protected: // ctor
     CGraphObjWdgt(
-        const QString&       i_strType,
-        const QString&       i_strObjName,
+        CDrawingScene* i_pDrawingScene,
+        const QString& i_strType,
+        const QString& i_strObjName,
         const CDrawSettings& i_drawSettings );
 public: // dtor
     virtual ~CGraphObjWdgt();

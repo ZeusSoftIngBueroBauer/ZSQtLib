@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjGroup_h
 #define ZSDraw_GraphObjGroup_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsItemGroup>
 #else
 #include <QtWidgets/QGraphicsItemGroup>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -60,9 +57,13 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjGroup"; }
 public: // ctor
-    CGraphObjGroup(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
+    CGraphObjGroup(
+        CDrawingScene* i_pDrawingScene,
+        const CDrawSettings& i_drawSettings,
+        const QString& i_strObjName = "");
 protected: // ctor (used by derived classes)
     CGraphObjGroup(
+        CDrawingScene* i_pDrawingScene,
         const QString& i_strFactoryGroupName,
         EGraphObjType i_type,
         const QString& i_strType,

@@ -87,6 +87,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryWdgtGroupBox::createGraphObj(
+    CDrawingScene*       i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
@@ -107,7 +108,7 @@ CGraphObj* CObjFactoryWdgtGroupBox::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjWdgtGroupBox(drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjWdgtGroupBox(i_pDrawingScene, drawSettings);
     return pGraphObj;
 
 } // createGraphObj

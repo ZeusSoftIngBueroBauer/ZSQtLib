@@ -24,14 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPolygon.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
@@ -41,6 +33,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -80,7 +78,9 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryPolygon::createGraphObj(
-    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
+    const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -96,7 +96,7 @@ CGraphObj* CObjFactoryPolygon::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypePolygon);
-    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(drawSettings);
+    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(i_pDrawingScene, drawSettings);
 
 #if 0
     QPointF   ptStart = i_ptItemPos;
@@ -334,7 +334,7 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
 
     if( bPosValid && plg.size() > 1 )
     {
-        pGraphObj = new CGraphObjPolygon(drawSettings, i_strObjName);
+        pGraphObj = new CGraphObjPolygon(i_pDrawingScene, drawSettings, i_strObjName);
 
         pGraphObj->setPolygon(plg);
 

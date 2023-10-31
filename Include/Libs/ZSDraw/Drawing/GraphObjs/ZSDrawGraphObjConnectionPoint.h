@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjConnectionPoint_h
 #define ZSDraw_GraphObjConnectionPoint_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsEllipseItem>
 #else
 #include <QtWidgets/QGraphicsEllipseItem>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -64,7 +61,10 @@ public: // class methods
     static double GetDefaultOuterCircleRadiusInPx() { return s_fOuterCircleRadius_px; }
     static double GetDefaultInnerCircleRadiusInPx() { return s_fInnerCircleRadius_px; }
 public: // ctors and dtor
-    CGraphObjConnectionPoint(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
+    CGraphObjConnectionPoint(
+        CDrawingScene* i_pDrawingScene,
+        const CDrawSettings& i_drawSettings,
+        const QString& i_strObjName = "");
     virtual ~CGraphObjConnectionPoint();
 public: // overridables of base class QGraphicsItem
     virtual int type() const override { return static_cast<int>(EGraphObjTypeConnectionPoint); }

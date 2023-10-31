@@ -6713,7 +6713,7 @@ void fctGroup1MouseReleaseEvent( void* i_pvThis, void* /*i_pvData*/, CGraphObj* 
 {
     CTest*          pThis = reinterpret_cast<CTest*>(i_pvThis);
     CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(i_pGraphObj);
-    CDrawingScene*  pDrawingScene = pGraphObjGroup->getDrawingScene();
+    CDrawingScene*  pDrawingScene = pGraphObjGroup->drawingScene();
 
     if( pThis != nullptr && pGraphObjGroup != nullptr && pDrawingScene != nullptr )
     {

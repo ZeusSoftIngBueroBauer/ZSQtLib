@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjSelectionPoint_h
 #define ZSDraw_GraphObjSelectionPoint_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsLineItem>
 #else
 #include <QtWidgets/QGraphicsLineItem>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -66,8 +63,11 @@ public: // class methods
     static double GetDefaultRadiusInPx() { return s_fRadius_px; }
 public: // ctors and dtor
     CGraphObjSelectionPoint(
-        CGraphObj* i_pGraphObjSelected, ESelectionPoint i_selectionPoint );
+        CDrawingScene* i_pDrawingScene,
+        CGraphObj* i_pGraphObjSelected,
+        ESelectionPoint i_selectionPoint );
     CGraphObjSelectionPoint(
+        CDrawingScene* i_pDrawingScene,
         CGraphObj* i_pGraphObjSelected,
         int i_idxPt );
     virtual ~CGraphObjSelectionPoint();

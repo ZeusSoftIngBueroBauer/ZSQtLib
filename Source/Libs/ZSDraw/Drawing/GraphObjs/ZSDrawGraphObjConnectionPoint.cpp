@@ -24,18 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtGui/QBitmap>
-#include <QtGui/qevent.h>
-#include <QtGui/QPainter>
-
-#if QT_VERSION < 0x050000
-#include <QtGui/QGraphicsSceneEvent>
-#include <QtGui/QStyleOption>
-#else
-#include <QtWidgets/QGraphicsSceneEvent>
-#include <QtWidgets/QStyleOption>
-#endif
-
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
@@ -52,6 +40,18 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
+
+#include <QtGui/QBitmap>
+#include <QtGui/qevent.h>
+#include <QtGui/QPainter>
+
+#if QT_VERSION < 0x050000
+#include <QtGui/QGraphicsSceneEvent>
+#include <QtGui/QStyleOption>
+#else
+#include <QtWidgets/QGraphicsSceneEvent>
+#include <QtWidgets/QStyleOption>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -80,9 +80,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjConnectionPoint::CGraphObjConnectionPoint(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName ) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
@@ -223,7 +226,7 @@ CGraphObj* CGraphObjConnectionPoint::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(m_drawSettings);
+    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(m_pDrawingScene, m_drawSettings);
 
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     pGraphObj->setName(m_strName);

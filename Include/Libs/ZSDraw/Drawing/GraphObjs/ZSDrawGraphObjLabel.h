@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjLabel_h
 #define ZSDraw_GraphObjLabel_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsSimpleTextItem>
 #else
 #include <QtWidgets/QGraphicsSimpleTextItem>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -65,10 +62,11 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjLabel"; }
 public: // ctors and dtor
-    CGraphObjLabel( // for (bounding) rectangles
+    CGraphObjLabel(
+        CDrawingScene* i_pDrawingScene,
         CGraphObj* i_pGraphObjParent,
-        const QString&  i_strKey,
-        const QString&  i_strText,
+        const QString& i_strKey,
+        const QString& i_strText,
         ESelectionPoint i_selPt );
     virtual ~CGraphObjLabel();
 public: // overridables of base class QGraphicsItem

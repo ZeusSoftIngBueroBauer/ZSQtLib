@@ -86,9 +86,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjInductor::CGraphObjInductor(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
+        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "Inductor",
         /* strObjName    */ i_strObjName.isEmpty() ? "L" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),

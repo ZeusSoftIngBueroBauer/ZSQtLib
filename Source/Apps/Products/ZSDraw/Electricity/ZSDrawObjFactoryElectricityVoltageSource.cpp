@@ -88,6 +88,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryVoltageSource::createGraphObj(
+    CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
@@ -108,7 +109,7 @@ CGraphObj* CObjFactoryVoltageSource::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjVoltageSource(drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjVoltageSource(i_pDrawingScene, drawSettings);
     return pGraphObj;
 
 } // createGraphObj

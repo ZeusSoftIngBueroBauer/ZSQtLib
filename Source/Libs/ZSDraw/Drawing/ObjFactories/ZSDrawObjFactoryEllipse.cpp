@@ -24,14 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryEllipse.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEllipse.h"
@@ -41,6 +33,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -80,7 +78,9 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryEllipse::createGraphObj(
-    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
+    const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -99,7 +99,7 @@ CGraphObj* CObjFactoryEllipse::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeEllipse);
-    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(drawSettings);
+    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene, drawSettings);
 
 #if 0
     QPointF ptStart = i_ptItemPos;
@@ -319,7 +319,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
     if( bPosValid && bSizeValid )
     {
-        pGraphObj = new CGraphObjEllipse(drawSettings, i_strObjName);
+        pGraphObj = new CGraphObjEllipse(i_pDrawingScene, drawSettings, i_strObjName);
 
         pGraphObj->setRect( QRectF( QPointF(0.0,0.0), siz ) );
 

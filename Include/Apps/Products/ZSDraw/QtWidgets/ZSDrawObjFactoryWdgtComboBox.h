@@ -49,6 +49,7 @@ public: // ctors and dtor
     virtual ~CObjFactoryWdgtComboBox();
 public: // interface methods of base class CObjFactory
     virtual CGraphObj* createGraphObj(
+        CDrawingScene* i_pDrawingScene,
         const CPhysValPoint& i_physValPoint,
         const CDrawSettings& i_drawSettings ) override;
     virtual ZS::System::SErrResultInfo saveGraphObj(

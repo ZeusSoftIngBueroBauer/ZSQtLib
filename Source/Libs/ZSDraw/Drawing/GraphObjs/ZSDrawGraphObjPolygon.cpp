@@ -74,9 +74,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjPolygon::CGraphObjPolygon(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjPolyline(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePolygon,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePolygon),
@@ -155,7 +158,7 @@ CGraphObj* CGraphObjPolygon::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(m_drawSettings);
+    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setPolygon( polygon() );

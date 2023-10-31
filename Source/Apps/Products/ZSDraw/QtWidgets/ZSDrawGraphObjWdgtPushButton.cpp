@@ -78,10 +78,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjWdgtPushButton::CGraphObjWdgtPushButton(
+    CDrawingScene*       i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
     const QString&       i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjWdgt(
+        /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "PushButton",
         /* strObjName    */ i_strObjName.isEmpty() ? "PushButton" + QString::number(s_iInstCount) : i_strObjName,
         /* drawSettings  */ i_drawSettings ),

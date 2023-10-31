@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjEllipse_h
 #define ZSDraw_GraphObjEllipse_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsEllipseItem>
 #else
 #include <QtWidgets/QGraphicsEllipseItem>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -60,7 +57,10 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjEllipse"; }
 public: // ctors and dtor
-    CGraphObjEllipse(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
+    CGraphObjEllipse(
+        CDrawingScene* i_pDrawingScene,
+        const CDrawSettings& i_drawSettings,
+        const QString& i_strObjName = "");
     virtual ~CGraphObjEllipse();
 public: // overridables of base class QGraphicsItem
     virtual int type() const { return EGraphObjTypeEllipse; }

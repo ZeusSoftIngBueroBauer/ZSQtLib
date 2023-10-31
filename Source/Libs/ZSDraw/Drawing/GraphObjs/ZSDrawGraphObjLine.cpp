@@ -99,12 +99,14 @@ public: // ctors and dtor
         is added to the scene).
 */
 CGraphObjLine::CGraphObjLine(
+    CDrawingScene* i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
     const QString& i_strObjName,
     const CPhysValPoint& i_physValPoint1,
     const CPhysValPoint& i_physValPoint2 ) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeLine,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
@@ -234,7 +236,7 @@ CGraphObj* CGraphObjLine::clone()
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CGraphObjLine* pGraphObj = new CGraphObjLine(
-        m_drawSettings, m_strName,
+        m_pDrawingScene, m_drawSettings, m_strName,
         getP1(drawingSize.unit()), getP2(drawingSize.unit()) );
     return pGraphObj;
 }
@@ -1524,41 +1526,40 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 
     if (i_change == ItemSceneHasChanged)
     {
-        m_pDrawingScene = dynamic_cast<CDrawingScene*>(scene());
-        if (m_pDrawingScene != nullptr)
-        {
-            // The line coordinates are passed relative to the parent item
-            // (usually the scene coordinates or a group item).
-            // But the graphics item expects the coordinates based on the
-            // local coordinate system of the graphics item.
-            // Items live in their own local coordinate system.
-            // Their coordinates are usually centered around its center point (0, 0).
-            // As the item is not yet added to a parent we got to adjust
-            // the coordinates coorespondingly.
-            QLineF lineF = m_physValLine.toQLineF();
-            if (m_physValLine.unit() != Units.Length.px) {
-                lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
-            }
-
-            // Center position in parent coordinates.
-            QPointF ptPos = lineF.center();
-
-            // Move the points into the item's local coordinate system.
-            QPointF p1 = lineF.p1() - ptPos;
-            QPointF p2 = lineF.p2() - ptPos;
-
-            // Set the line in local coordinate system.
-            QGraphicsLineItem_setLine(QLineF(p1, p2));
-
-            // GraphicsLineItem::setLine does not update the position.
-            // Must be done "manually" afterwards.
-            // Move the object to the parent position.
-            QGraphicsItem_setPos(ptPos);
-
-            addLabel("Name");
-            setLabelText("Name", m_strName);
-            setLabelAnchorPoint("Name", ESelectionPoint::Center);
+        if( m_pDrawingScene != dynamic_cast<CDrawingScene*>(scene())) {
+            throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
         }
+        // The line coordinates are passed relative to the parent item
+        // (usually the scene coordinates or a group item).
+        // But the graphics item expects the coordinates based on the
+        // local coordinate system of the graphics item.
+        // Items live in their own local coordinate system.
+        // Their coordinates are usually centered around its center point (0, 0).
+        // As the item is not yet added to a parent we got to adjust
+        // the coordinates coorespondingly.
+        QLineF lineF = m_physValLine.toQLineF();
+        if (m_physValLine.unit() != Units.Length.px) {
+            lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
+        }
+
+        // Center position in parent coordinates.
+        QPointF ptPos = lineF.center();
+
+        // Move the points into the item's local coordinate system.
+        QPointF p1 = lineF.p1() - ptPos;
+        QPointF p2 = lineF.p2() - ptPos;
+
+        // Set the line in local coordinate system.
+        QGraphicsLineItem_setLine(QLineF(p1, p2));
+
+        // GraphicsLineItem::setLine does not update the position.
+        // Must be done "manually" afterwards.
+        // Move the object to the parent position.
+        QGraphicsItem_setPos(ptPos);
+
+        addLabel("Name");
+        setLabelText("Name", m_strName);
+        setLabelAnchorPoint("Name", ESelectionPoint::Center);
     }
     else if (i_change == ItemSelectedHasChanged)
     {

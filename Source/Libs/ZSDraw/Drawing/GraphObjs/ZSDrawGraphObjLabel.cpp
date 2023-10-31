@@ -73,12 +73,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjLabel::CGraphObjLabel(
+    CDrawingScene* i_pDrawingScene,
     CGraphObj* i_pGraphObjParent,
     const QString& i_strKey,
     const QString& i_strText,
     ESelectionPoint i_selPt ) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeLabel,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),

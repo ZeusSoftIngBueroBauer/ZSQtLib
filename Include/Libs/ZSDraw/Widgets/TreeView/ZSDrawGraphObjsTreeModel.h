@@ -55,7 +55,7 @@ public: // ctors and dtor
     CModelIdxTreeGraphObjs( CDrawingScene* i_pDrawingScene, QObject* i_pObjParent = nullptr );
     virtual ~CModelIdxTreeGraphObjs();
 public:
-    CDrawingScene* getDrawingScene() { return m_pDrawingScene; }
+    CDrawingScene* drawingScene() { return m_pDrawingScene; }
 public: // overridables of base class QAbstractItemModel
     virtual QVariant data( const QModelIndex& i_modelIdx, int i_iRole = Qt::DisplayRole ) const;
 protected: // instance members

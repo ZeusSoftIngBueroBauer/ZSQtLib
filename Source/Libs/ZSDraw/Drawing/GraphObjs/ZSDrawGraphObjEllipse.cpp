@@ -76,9 +76,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjEllipse::CGraphObjEllipse(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName ) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeEllipse,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeEllipse),
@@ -204,7 +207,7 @@ CGraphObj* CGraphObjEllipse::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(m_drawSettings);
+    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setRect( rect() );

@@ -77,9 +77,12 @@ public: // ctors and dtor
 /*! @brief Constructor for selection points at (bounding) rectangles.
 */
 CGraphObjSelectionPoint::CGraphObjSelectionPoint(
-    CGraphObj* i_pGraphObjSelected, ESelectionPoint i_selectionPoint) :
+    CDrawingScene* i_pDrawingScene,
+    CGraphObj* i_pGraphObjSelected,
+    ESelectionPoint i_selectionPoint) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeSelectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
@@ -127,9 +130,12 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 /*! @brief Constructor for polygon shape points.
 */
 CGraphObjSelectionPoint::CGraphObjSelectionPoint(
-    CGraphObj* i_pGraphObjSelected, int i_idxPt) :
+    CDrawingScene* i_pDrawingScene,
+    CGraphObj* i_pGraphObjSelected,
+    int i_idxPt) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeSelectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
@@ -1098,7 +1104,7 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
 
     if (i_change == ItemSceneHasChanged)
     {
-        m_pDrawingScene = dynamic_cast<CDrawingScene*>(scene());
+        //m_pDrawingScene = dynamic_cast<CDrawingScene*>(scene());
     }
     else if( i_change == ItemSelectedHasChanged )
     {

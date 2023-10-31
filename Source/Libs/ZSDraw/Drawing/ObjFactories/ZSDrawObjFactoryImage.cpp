@@ -24,14 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryImage.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
@@ -41,6 +33,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -80,7 +78,9 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryImage::createGraphObj(
-    const CPhysValPoint& i_physValPoint, const CDrawSettings& i_drawSettings)
+    CDrawingScene* i_pDrawingScene,
+    const CPhysValPoint& i_physValPoint,
+    const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -101,7 +101,7 @@ CGraphObj* CObjFactoryImage::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeImage);
-    CGraphObjImage* pGraphObj = new CGraphObjImage(drawSettings);
+    CGraphObjImage* pGraphObj = new CGraphObjImage(i_pDrawingScene, drawSettings);
 
     pGraphObj->setImageFilePath(strFilePath);
 
@@ -160,7 +160,7 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
     // Geometry
     //-------------
 
-    const CDrawingSize& drawingSize = i_pGraphObj->getDrawingScene()->drawingSize();
+    const CDrawingSize& drawingSize = i_pGraphObj->drawingScene()->drawingSize();
 
     // "pos" returns the position of the item in parent coordinates.
     // If the item has no parent, its position is given in scene coordinates.

@@ -58,7 +58,10 @@ public: // class methods
 public: // type definitions and constants
     static const QSize c_sizInitial;
 public: // ctors and dtor
-    CGraphObjCapacitor(const CDrawSettings& i_drawSettings, const QString& i_strObjName = "");
+    CGraphObjCapacitor(
+        CDrawingScene* i_pDrawingScene,
+        const CDrawSettings& i_drawSettings,
+        const QString& i_strObjName = "");
     virtual ~CGraphObjCapacitor();
 public: // instance methods
     double getCapacitance() const { return m_fCapacitance_F; }

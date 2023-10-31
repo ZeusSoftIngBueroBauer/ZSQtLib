@@ -75,9 +75,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjGroup::CGraphObjGroup(
-    const CDrawSettings& i_drawSettings, const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene,
+    const CDrawSettings& i_drawSettings,
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeGroup,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
@@ -124,6 +127,7 @@ protected: // ctor (used by derived classes)
 
 //------------------------------------------------------------------------------
 CGraphObjGroup::CGraphObjGroup(
+    CDrawingScene* i_pDrawingScene,
     const QString& i_strFactoryGroupName,
     EGraphObjType i_type,
     const QString& i_strType,
@@ -131,6 +135,7 @@ CGraphObjGroup::CGraphObjGroup(
     const CDrawSettings& i_drawSettings ) :
 //------------------------------------------------------------------------------
     CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ i_strFactoryGroupName,
         /* type                */ i_type,
         /* strType             */ i_strType,
@@ -221,7 +226,7 @@ CGraphObj* CGraphObjGroup::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(m_drawSettings);
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
 

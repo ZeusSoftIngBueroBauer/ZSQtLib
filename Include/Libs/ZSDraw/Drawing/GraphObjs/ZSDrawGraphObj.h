@@ -266,6 +266,7 @@ public: // class methods
     static QString ClassName() { return "CGraphObj"; }
 protected: // ctor
     CGraphObj(
+        CDrawingScene* i_pDrawingScene,
         const QString& i_strFactoryGroupName,
         EGraphObjType i_type,
         const QString& i_strType,
@@ -316,7 +317,7 @@ public: // instance methods
     bool isSelectionPoint() const;
     bool isLabel() const;
 public: // instance methods
-    CDrawingScene* getDrawingScene();
+    CDrawingScene* drawingScene();
 public: // overridables
     virtual void rename( const QString& i_strNameNew );
 protected: // overridables of base class CIdxTreeEntry
