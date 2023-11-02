@@ -134,14 +134,14 @@ list(APPEND _Resources
 
 list(APPEND _AppImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Checkmark.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit32x32.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView32x32.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon32x32.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeEdit32x32.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ModeView32x32.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/RSIcon32x32.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_32x32.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_48x48.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_64x64.png
@@ -149,46 +149,46 @@ list(APPEND _AppImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusSoft_280x170.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ZeusWithMountain_1100x204.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer32x32.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/Thermometer32x32.png
 )
 
 list(APPEND _ButtonImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonArrowDown.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonArrowUp.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonClose16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonClose24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdPause16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStart16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStepForward16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStop16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStepBackward16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonDelete16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonDelete24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileNew16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileOpen16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileSave16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileSaveAs16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveUp16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveUp24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveDown16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveDown24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveRight16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveRight24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveLeft16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveLeft24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonRedo16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonRedo24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonTableView16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonUndo16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonUndo24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomIn16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomIn24x24.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomOut16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomOut24x24.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonAdd24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonClose16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonClose24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdPause16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStart16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStepForward16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStop16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonCmdStepBackward16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonDelete16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonDelete24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileNew16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileOpen16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileSave16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonFileSaveAs16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveUp16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveUp24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveDown16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveDown24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveRight16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveRight24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveLeft16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveLeft24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonRedo16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonRedo24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonTableView16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonUndo16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonUndo24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomIn16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomIn24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomOut16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonZoomOut24x24.png
 )
 
 list(APPEND _CnctStateImages
@@ -200,8 +200,8 @@ list(APPEND _CnctStateImages
 )
 
 list(APPEND _MenuImages
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileAdd16x16.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileEdit16x16.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileAdd16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileEdit16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileNew16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileOpen16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/MenuFileSave16x16.png
@@ -224,35 +224,35 @@ list(APPEND _TreeViewImages
 )
 
 list(APPEND _TreeViewFileExplorerImages
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryNormalOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryNormalOn.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryDisabledOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryDisabledOn.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryActiveOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryActiveOn.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntrySelectedOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntrySelectedOn.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryNormalOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryNormalOn.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryDisabledOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryDisabledOn.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryActiveOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntryActiveOn.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntrySelectedOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewFileExplorerBranchEntrySelectedOn.png
 )
 
 list(APPEND _TreeViewRequestsImages
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsBranchEntryNormalOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsBranchEntrySelectedOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsLeaveEntryNormalOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsLeaveEntrySelectedOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsBranchEntryNormalOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsBranchEntrySelectedOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsLeaveEntryNormalOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewRequestsLeaveEntrySelectedOff.png
 )
 
 list(APPEND _TreeViewTrcAdminObjsImages
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsBranchEntryNormalOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsBranchEntrySelectedOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsLeaveEntryNormalOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsLeaveEntrySelectedOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsBranchEntryNormalOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsBranchEntrySelectedOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsLeaveEntryNormalOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewTrcAdminObjsLeaveEntrySelectedOff.png
 )
 
 list(APPEND _TreeViewLoggersImages
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersBranchEntryNormalOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersBranchEntrySelectedOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersLeaveEntryNormalOff.bmp
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersLeaveEntrySelectedOff.bmp
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersBranchEntryNormalOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersBranchEntrySelectedOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersLeaveEntryNormalOff.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/TreeViewLoggersLeaveEntrySelectedOff.png
 )
 
 list(APPEND _ResultImages

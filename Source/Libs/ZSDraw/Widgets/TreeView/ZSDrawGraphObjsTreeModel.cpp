@@ -61,28 +61,28 @@ CModelIdxTreeGraphObjs::CModelIdxTreeGraphObjs(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ "" );
 
-    QPixmap pxmRootEntryNormalOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryNormalOff.bmp");
+    QPixmap pxmRootEntryNormalOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryNormalOff.png");
     pxmRootEntryNormalOff.setMask(pxmRootEntryNormalOff.createHeuristicMask());
 
-    QPixmap pxmRootEntryNormalOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryNormalOn.bmp");
+    QPixmap pxmRootEntryNormalOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryNormalOn.png");
     pxmRootEntryNormalOn.setMask(pxmRootEntryNormalOn.createHeuristicMask());
 
-    QPixmap pxmRootEntryDisabledOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryDisabledOff.bmp");
+    QPixmap pxmRootEntryDisabledOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryDisabledOff.png");
     pxmRootEntryDisabledOff.setMask(pxmRootEntryDisabledOff.createHeuristicMask());
 
-    QPixmap pxmRootEntryDisabledOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryDisabledOn.bmp");
+    QPixmap pxmRootEntryDisabledOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryDisabledOn.png");
     pxmRootEntryDisabledOn.setMask(pxmRootEntryDisabledOn.createHeuristicMask());
 
-    QPixmap pxmRootEntryActiveOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryActiveOff.bmp");
+    QPixmap pxmRootEntryActiveOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryActiveOff.png");
     pxmRootEntryActiveOff.setMask(pxmRootEntryActiveOff.createHeuristicMask());
 
-    QPixmap pxmRootEntryActiveOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryActiveOn.bmp");
+    QPixmap pxmRootEntryActiveOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntryActiveOn.png");
     pxmRootEntryActiveOn.setMask(pxmRootEntryActiveOn.createHeuristicMask());
 
-    QPixmap pxmRootEntrySelectedOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntrySelectedOff.bmp");
+    QPixmap pxmRootEntrySelectedOff(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntrySelectedOff.png");
     pxmRootEntrySelectedOff.setMask(pxmRootEntrySelectedOff.createHeuristicMask());
 
-    QPixmap pxmRootEntrySelectedOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntrySelectedOn.bmp");
+    QPixmap pxmRootEntrySelectedOn(":/ZS/TreeView/FileExplorer/TreeViewFileExplorerBranchEntrySelectedOn.png");
     pxmRootEntrySelectedOn.setMask(pxmRootEntrySelectedOn.createHeuristicMask());
 
     m_iconRootEntry.addPixmap(pxmRootEntryNormalOff, QIcon::Normal, QIcon::Off);
@@ -106,19 +106,19 @@ CModelIdxTreeGraphObjs::CModelIdxTreeGraphObjs(
     m_iconLabelEntry.addPixmap(pxmLabelNormalOff, QIcon::Normal, QIcon::Off);
     m_iconLabelEntry.addPixmap(pxmLabelEntrySelectedOff, QIcon::Selected, QIcon::Off);
 
-    QPixmap pxmBranchNormalOff(":/ZS/TreeView/TreeViewBranchEntry.bmp");
+    QPixmap pxmBranchNormalOff(":/ZS/TreeView/TreeViewBranchEntry.png");
     pxmBranchNormalOff.setMask(pxmBranchNormalOff.createHeuristicMask());
 
-    QPixmap pxmBranchEntrySelectedOff(":/ZS/TreeView/TreeViewBranchEntry.bmp");
+    QPixmap pxmBranchEntrySelectedOff(":/ZS/TreeView/TreeViewBranchEntry.png");
     pxmBranchEntrySelectedOff.setMask(pxmBranchEntrySelectedOff.createHeuristicMask());
 
     m_iconBranchEntry.addPixmap(pxmBranchNormalOff, QIcon::Normal, QIcon::Off);
     m_iconBranchEntry.addPixmap(pxmBranchEntrySelectedOff, QIcon::Selected, QIcon::Off);
 
-    QPixmap pxmLeaveNormalOff(":/ZS/TreeView/TreeViewLeaveEntry.bmp");
+    QPixmap pxmLeaveNormalOff(":/ZS/TreeView/TreeViewLeaveEntry.png");
     pxmLeaveNormalOff.setMask(pxmLeaveNormalOff.createHeuristicMask());
 
-    QPixmap pxmLeaveEntrySelectedOff(":/ZS/TreeView/TreeViewLeaveEntry.bmp");
+    QPixmap pxmLeaveEntrySelectedOff(":/ZS/TreeView/TreeViewLeaveEntry.png");
     pxmLeaveEntrySelectedOff.setMask(pxmLeaveEntrySelectedOff.createHeuristicMask());
 
     m_iconLeaveEntry.addPixmap(pxmLeaveNormalOff, QIcon::Normal, QIcon::Off);

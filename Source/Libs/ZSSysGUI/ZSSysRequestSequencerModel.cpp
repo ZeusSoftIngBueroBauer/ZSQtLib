@@ -101,16 +101,16 @@ QIcon CModelRequestSequencer::GetIcon( ERequestEntryType i_entryType )
         s_pIconTypeGroupNode = new QIcon();
         s_pIconTypeActiveNode = new QIcon();
 
-        s_pPxmTypeGroupNodeNormalOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsBranchEntryNormalOff.bmp");
+        s_pPxmTypeGroupNodeNormalOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsBranchEntryNormalOff.png");
         s_pPxmTypeGroupNodeNormalOff->setMask(s_pPxmTypeGroupNodeNormalOff->createHeuristicMask());
 
-        s_pPxmTypeGroupNodeSelectedOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsBranchEntrySelectedOff.bmp");
+        s_pPxmTypeGroupNodeSelectedOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsBranchEntrySelectedOff.png");
         s_pPxmTypeGroupNodeSelectedOff->setMask(s_pPxmTypeGroupNodeSelectedOff->createHeuristicMask());
 
-        s_pPxmTypeActiveNodeNormalOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsLeaveEntryNormalOff.bmp");
+        s_pPxmTypeActiveNodeNormalOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsLeaveEntryNormalOff.png");
         s_pPxmTypeActiveNodeNormalOff->setMask(s_pPxmTypeActiveNodeNormalOff->createHeuristicMask());
 
-        s_pPxmTypeActiveNodeSelectedOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsLeaveEntrySelectedOff.bmp");
+        s_pPxmTypeActiveNodeSelectedOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsLeaveEntrySelectedOff.png");
         s_pPxmTypeActiveNodeSelectedOff->setMask(s_pPxmTypeActiveNodeSelectedOff->createHeuristicMask());
 
         sizePxm = s_pPxmTypeGroupNodeNormalOff->size();

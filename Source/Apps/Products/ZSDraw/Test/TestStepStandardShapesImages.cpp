@@ -346,7 +346,7 @@ void CTest::doTestStepStandardShapesImages( ZS::Test::CTestStepGroup* i_pTestSte
 
                 if( pObjFactory != nullptr )
                 {
-                    pObjFactory->setFileName(":/ZS/App/Zeus32x32.bmp");
+                    pObjFactory->setFileName(":/ZS/App/Zeus32x32.png");
                 }
 
                 m_pDrawingScene->setCurrentDrawingTool(pObjFactory);
@@ -392,7 +392,7 @@ void CTest::doTestStepStandardShapesImages( ZS::Test::CTestStepGroup* i_pTestSte
             ptMousePosGlobal.setX(ptMousePosGlobal.x()+1); // Maybe graphics view or graphics scene bug on calculating the screen position.
             ptMousePosGlobal.setY(ptMousePosGlobal.y()+1); // Without adding 1 pixel the newly created object will not be selected by the scene.
 
-            s_rctImage1 = QRectF( QPoint(0.0,0.0), QPixmap(":/ZS/App/Zeus32x32.bmp").size() );
+            s_rctImage1 = QRectF( QPoint(0.0,0.0), QPixmap(":/ZS/App/Zeus32x32.png").size() );
 
             strlstDesiredValues.append( "ImageSize: " + size2Str(s_rctImage1.size()) );
 

@@ -47,7 +47,10 @@ namespace Draw
 class CDrawSettings;
 
 //******************************************************************************
-/*!
+/*! @brief Labels are used to indicate a descriptive text or coordinates of
+           the object they are linked to.
+
+
     @note Labels should not belong as child to the graphics items for which the
           selection points are created. Otherwise the "boundingRect" call of groups
           (which implicitly calls childrenBoundingRect) does not work as the
@@ -82,14 +85,10 @@ public: // replacing methods of QGraphicsSimpleTextItem
 public: // overridables
     virtual void setLinkedSelectionPoint(ESelectionPoint i_selPt);
     virtual ESelectionPoint getLinkedSelectionPoint() const;
-    QSizeF getLinkedSelectionPointDistance() const;
 public: // overridables
     virtual void showAnchorLine();
     virtual void hideAnchorLine();
     virtual bool isAnchorLineVisible() const;
-public: // overridables
-    //virtual void saveGraphObjDistance();
-    //virtual QSizeF getGraphObjDistance() const { return m_sizGraphObjDist; }
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
@@ -111,8 +110,8 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
-    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
+    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {};
+    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {};
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
@@ -125,8 +124,19 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+protected slots:
+    void onGraphObjParentGeometryChanged();
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+protected: // auxiliary instance methods
+    void updatePosition();
+    void updateDistanceToLinkedSelPt();
+    void updateAnchorLine();
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void traceInternalStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;
@@ -140,16 +150,22 @@ protected: // instance members
     QGraphicsItem* m_pGraphicsItemParent;
     /*!< Selection point of parent item the label is linked and aligned to. */
     ESelectionPoint m_selPtLinked;
-    /*!< Distance to the selection point the label is aligned to.
-         Calculated as:
-         - width = this.x - LinkedSelPt.x
-         - height = this.y - LinkedSelPt.y
+    /*!< Distance to the selection point the label is aligned to. Calculated as follows:
+         - width = this.center.x - LinkedSelPt.x
+         - height = this.center.y - LinkedSelPt.y
          This means if the label is right of the parent items selection point the width is positive.
          If the label is above of the parent items selection point the height is positive. */
-    QSizeF m_sizeLinkedSelPtDist;
-    /*! Flag to indicate whether the anchor line (line from label to parent's selection point the
-        label is linked to) should always be visible. */
+    QSizeF m_distanceToLinkedSelPt;
+    /*!< Flag to indicate whether the anchor line (line from label to parent's selection point the
+         label is linked to) should always be visible. */
     bool m_bShowAnchorLine;
+    /*!< Coordindates of the anchor line in local coordinates drawn from the label to the
+         selection point of the parent. The start point of the line at the label depend on
+         the position of the label relative to the selection point of the parent
+         (see "updatePosition" for more details). */
+    QLineF m_anchorLine;
+    // Flag used to avoid recursive calls of "updatePosition". *&
+    bool m_bUpdatePositionInProgress;
 
 }; // class CGraphObjLabel
 

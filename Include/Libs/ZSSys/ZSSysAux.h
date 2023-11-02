@@ -54,7 +54,12 @@ global type definitions and constants
 class QEvent;
 class QMimeData;
 class QModelIndex;
+class QLine;
+class QLineF;
 class QPoint;
+class QPointF;
+class QRect;
+class QRectF;
 class QStringList;
 class QVariant;
 
@@ -183,10 +188,12 @@ ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns );
 ZSSYSDLL_API QString qPenStyle2Str( const Qt::PenStyle& i_penStyle );
 ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt );
 ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt );
-ZSSYSDLL_API QString qRect2Str( const QRect& i_rct );
-ZSSYSDLL_API QString qRect2Str( const QRectF& i_rct );
 ZSSYSDLL_API QString qSize2Str( const QSize& i_size );
 ZSSYSDLL_API QString qSize2Str( const QSizeF& i_size );
+ZSSYSDLL_API QString qLine2Str( const QLine& i_line );
+ZSSYSDLL_API QString qLine2Str( const QLineF& i_line );
+ZSSYSDLL_API QString qRect2Str( const QRect& i_rct );
+ZSSYSDLL_API QString qRect2Str( const QRectF& i_rct );
 ZSSYSDLL_API QString qVariantType2Str( int i_iVal );
 
 

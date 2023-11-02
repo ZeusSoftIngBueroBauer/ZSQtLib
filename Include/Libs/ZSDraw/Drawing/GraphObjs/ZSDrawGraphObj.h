@@ -116,6 +116,9 @@ public: // struct members
 //******************************************************************************
 /*! @brief Abstract base class for all graphical objects within ZS::Draw.
 
+    Class hierarchy
+    ---------------
+
     Please note that this class is not derived from QGraphicsItem to avoid double
     inheritance from QGraphicsItem as the specialized classes like CGraphObjLine
     are derived from specialized QGraphicsItem classes like QQGraphicsLineItem
@@ -140,6 +143,35 @@ public: // struct members
     As CGraphObj is derived from CIdxTreeEntry each graphical object can be added
     to an index tree and can be shown and accessed through a tree view.
 
+    The following pure virtual methods must be overriden by derived classes:
+
+    - CGraphObj* clone();
+
+    - void setWidth(const CPhysVal& i_physValWidth);
+
+    - void setHeight(const CPhysVal& i_physValHeight);
+
+    - void setSize(const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight);
+
+    - void setSize(const CPhysValSizeF& i_physValSize);
+
+    - bool hasBoundingRect() const;
+
+    - bool hasLineShapePoints() const;
+
+    - bool hasRotationSelectionPoints() const;
+
+    - void setIsHit(bool i_bHit);
+      To indicate that object is hit by mouse cursor by either showing selection points
+      or a dotted bounding rectangle or ...
+
+    - void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
+      Also creates the selection points if not yet created.
+
+    - void updateSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
+
+    Pixel and world coordinates
+    ---------------------------
 
     In a 1:1 "wysiwyg" scenario with a screen resolution of 4 px/mm
 
@@ -204,56 +236,59 @@ public: // struct members
 
       Ypx = ImageHeight/px - P1y/px
 
-    Several labels may be assigned to a graphical object. The labels may be shown
-    within the drawing view. The labels may be anchored to different points of
-    the graphical labels and may be shown within the drawing view. To which points
-    the labels can be anchored depend on the type of the graphical object. For lines
-    for example the labels may be anchored to the start and end point or to the center
-    point of the line. Anchor lines drawn between the labels and the anchor points may
-    also be shown for each label separately. The name of the graphical object is treated
-    as a special label as - in contrary to the other labels - each graphical object
-    must contain a unique name. All other labels are optional.
+    Labels
+    ------
+
+    Several labels may be assigned to a graphical object:
+
+    - Text labels
+    - Position labels
+    - Dimension labels
+
+    Text Labels
+    -----------
+
+    There are two different text label types:
+
+    - Predefined labels are created together with the graphical object in their constructors.
+      The number and name of predefined labels depend on the graphical object type. For example
+      the line object adds the predefined labels "P1" and "P2". Predefined labels cannot be removed.
+      Only their visibility can be changed.
+      A unique name is assigned to each predefined label which is stored in the list of predefined
+      label names. The names of the predefined labels cannot be changed during runtime.
+      But the text indicated by the predefined labels can be changed during runtime.
+      The "Name" label is a special case and is used to indicate the name of the graphical object.
+    - Any number of user defined labels can be added to the graphical object. The name of those
+      labels can be changed during runtime. But their names must be unique for all labels as the
+      name is used to uniquely identify the label for each graphical object they are linked to.
+
+    A visible label is added to the graphics scene. A hidden label is removed from the grahics scene.
+    The text the labels are indicating can be changed during runtime. Only for "Name" labels the
+    text always indicates the name of the object.
+    Labels are anchored to a selection point of the graphical objects they belong to.
+    An "anchor line" between the label and the graphical object of the label may also be shown.
+
+    Labels can be moved. After initially creating or moving a label the labels stores the distance
+    to the anchor point of the graphical object. When moving the graphical object the labels will
+    also be moved keeping the stored distance.
 
     Example for CGraphObjLine:
 
-    - Name label "Horizontal Line" anchored to the center point.
-    - Optionally added label "Start" anchored to the start point.
-    - Optionally added label "Stop" anchored to the stop point.
+    - Label "Name" with text "Horizontal Line" anchored to the center point.
+    - Label "P1" with text "Start" anchored to P1.
+    - Label "P2" with text "Stop" anchored to P2.
 
-      Start      Horizontal Line    Stop
-        |             |              |
-        ------------------------------
+      Texts:           "Start"     "Hello World"    "Stop"
+                          |             |              |
+                          +-------------+--------------+
+      Selection Points:  P1           Center           P2
+
+    Position and Dimension Labels
+    -----------------------------
 
     It is also possible to show the geometry information for the graphical objects
     within the drawing view.
 
-
-    The following pure virtual methods must be overriden by derived classes:
-
-    - CGraphObj* clone();
-
-    - void setWidth(const CPhysVal& i_physValWidth);
-
-    - void setHeight(const CPhysVal& i_physValHeight);
-
-    - void setSize(const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight);
-
-    - void setSize(const CPhysValSizeF& i_physValSize);
-
-    - bool hasBoundingRect() const;
-
-    - bool hasLineShapePoints() const;
-
-    - bool hasRotationSelectionPoints() const;
-
-    - void setIsHit(bool i_bHit);
-      To indicate that object is hit by mouse cursor by either showing selection points
-      or a dotted bounding rectangle or ...
-
-    - void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
-      Also creates the selection points if not yet created.
-
-    - void updateSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
 */
 class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
@@ -280,7 +315,7 @@ signals:
          Only the top most class in the hierachy of class inheritance should emit the signal.
          For this the signal may not be emitted "directly" by the derived classes but the class
          must call "emit_aboutToBeDestroyed" in their destructors. */
-    void aboutToBeDestroyed(CGraphObj*);
+    void aboutToBeDestroyed(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the selected state of the object has been changed. */
     void selectedChanged();
     /*!< This signal is emitted if the geometry of the object has been changed. */
@@ -473,13 +508,14 @@ protected: // overridables
     virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );
     virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
 public: // overridables (text labels)
-    virtual QStringList getPredefinedLabelNames() const;
+    QString findUniqueLabelName(const QString& i_strPrefix = "") const;
     QStringList getLabelNames() const;
+    virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
     virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
-    virtual bool addLabel(const QString& i_strName);
-    virtual void removeLabel(const QString& i_strName);
+    virtual bool addLabel(const QString& i_strName, const QString& i_strText = "", ESelectionPoint i_selPt = ESelectionPoint::Center);
+    virtual bool removeLabel(const QString& i_strName);
     virtual bool renameLabel(const QString& i_strName, const QString& i_strNameNew);
     virtual void setLabelText(const QString& i_strName, const QString& i_strText);
     virtual QString labelText(const QString& i_strName) const;
@@ -525,8 +561,6 @@ public: // overridables (dimension line labels)
     //virtual void showDimLineLabelAnchorLine(const QString& i_strName);
     //virtual void hideDimLineLabelAnchorLine(const QString& i_strName);
     //virtual bool isDimLineLabelAnchorLineVisible(const QString& i_strName) const;
-protected: // overridables
-    virtual void updateLabelDistance(CGraphObjLabel* i_pGraphObjLabel);
 public: // overridables
     virtual void onParentItemCoorsHasChanged(CGraphObj* i_pGraphObjParent);
 protected slots: // overridables
@@ -549,11 +583,11 @@ protected: // overridables
     virtual void updateTransform();
     virtual void updateToolTip();
     virtual void updateEditInfo();
-    virtual void updateLabelPositionsAndContents();
+    //virtual void updateLabelPositionsAndContents();
 protected: // overridables
-    virtual void updateLabelPositions(QList<CGraphObjLabel*>& i_arpLabels);
-    virtual void updateLabelPositions(QHash<QString, CGraphObjLabel*>& i_arpLabels);
-    virtual void updatePositionLabelsContent();
+    //virtual void updateLabelPositions(QList<CGraphObjLabel*>& i_arpLabels);
+    //virtual void updateLabelPositions(QHash<QString, CGraphObjLabel*>& i_arpLabels);
+    //virtual void updatePositionLabelsContent();
 protected: // auxiliary instance methods
     //void showLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt);
     //void hideLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey);
@@ -648,7 +682,12 @@ protected: // instance members
     CEnumSelectionPoint m_selPtSelectedBoundingRect;
     /*!< List of selection points at the bounding rectangle. */
     QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
-    /*!< List with predefined (reserved) label names. */
+    /*!< List with predefined (reserved) label names.
+         For all object types "Name" is reserved to indicate the name of the object.
+         The predefined label names (including "Name") got to be added in the constructors
+         of the derived classes. E.g. the "Line" adds the predefined label names "Name",
+         "P1" and "P2" in its constructor. If user defined labels got to be added the reserved
+         names may not be used. */
     QStringList m_strlstPredefinedLabelNames;
     /*!< Labels which may be assigned to and indicated by the graphical object.
          For each label a unique name has to be assigned.

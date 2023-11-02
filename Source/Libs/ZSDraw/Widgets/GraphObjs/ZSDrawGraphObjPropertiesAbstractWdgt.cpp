@@ -261,6 +261,11 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
     {
         bObjectChanged = true;
 
+        if (m_pGraphObj != nullptr) {
+            QObject::disconnect(
+                m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+                this, &CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed);
+        }
         if (m_bContentUpdateOnSelectedChanged) {
             if (m_pGraphObj != nullptr) {
                 QObject::disconnect(
@@ -310,6 +315,11 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
             m_graphObjTypeCurr = m_pGraphObj->type();
         }
 
+        if (m_pGraphObj != nullptr) {
+            QObject::connect(
+                m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+                this, &CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed);
+        }
         if (m_bContentUpdateOnSelectedChanged) {
             if (m_pGraphObj != nullptr) {
                 QObject::connect(
@@ -937,13 +947,13 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToDestroyed()
+void CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed(CGraphObj*)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToDestroyed",
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjAboutToBeDestroyed",
         /* strAddInfo   */ "" );
 
     m_pGraphObj = nullptr;

@@ -208,9 +208,7 @@ bool CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setKeyInTree",
         /* strAddInfo   */ strMthInArgs );
-
     bool bObjectChanged = false;
-
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
         CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
@@ -218,7 +216,6 @@ bool CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
         m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
         m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
     }
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bObjectChanged);
     }
@@ -266,7 +263,7 @@ bool CWdgtGraphObjLineProperties::hasChanges() const
     // If the graphical object is about to be destroyed, "onGraphObjChanged" is called
     // to update the content of the widget. But the child property widgets may not
     // have been informed yet that the graphical object is about to be destroyed as
-    // here we are in the call stack of the "onGraphObjAboutToDestroyed" of this widget.
+    // here we are in the call stack of the "onGraphObjAboutToBeDestroyed" of this widget.
     // The child widgets slot may be called sometimes afterwards.
 
     bool bHasChanges = false;

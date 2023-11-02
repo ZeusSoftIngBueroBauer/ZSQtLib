@@ -66,8 +66,14 @@ CWdgtFormatGraphObjs::CWdgtFormatGraphObjs(
     if( m_pGraphObj != nullptr )
     {
         QObject::connect(
-            /* pObjSender   */ m_pDrawingScene, &CDrawingScene::graphObjChanged,
-            /* pObjReceiver */ this, &CWdgtFormatGraphObjs::onDrawingSceneGraphObjChanged );
+            m_pGraphObj, &CGraphObj::selectedChanged,
+            this, &CWdgtFormatGraphObjs::onGraphObjChanged );
+        QObject::connect(
+            m_pGraphObj, &CGraphObj::geometryChanged,
+            this, &CWdgtFormatGraphObjs::onGraphObjChanged );
+        QObject::connect(
+            m_pGraphObj, &CGraphObj::drawSettingsChanged,
+            this, &CWdgtFormatGraphObjs::onGraphObjChanged );
 
         m_pGraphicsItem = dynamic_cast<QGraphicsItem*>(m_pGraphObj);
 

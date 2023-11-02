@@ -117,8 +117,23 @@ CGraphObjLine::CGraphObjLine(
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
+    m_strlstPredefinedLabelNames.append("Name");
     m_strlstPredefinedLabelNames.append("P1");
     m_strlstPredefinedLabelNames.append("P2");
+
+    for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
+        if (!m_hshpLabels.contains(strLabelName)) {
+            if (strLabelName == "P1") {
+                addLabel(strLabelName, strLabelName, ESelectionPoint::TopLeft);
+            }
+            else if (strLabelName == "P2") {
+                addLabel(strLabelName, strLabelName, ESelectionPoint::BottomRight);
+            }
+            else {
+                addLabel(strLabelName, strLabelName, ESelectionPoint::Center);
+            }
+        }
+    }
 
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -152,6 +167,34 @@ CGraphObjLine::CGraphObjLine(
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
            | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
 
+    // The line coordinates are passed relative to the parent item
+    // (usually the scene coordinates or a group item).
+    // But the graphics item expects the coordinates based on the
+    // local coordinate system of the graphics item.
+    // Items live in their own local coordinate system.
+    // Their coordinates are usually centered around its center point (0, 0).
+    // As the item is not yet added to a parent we got to adjust
+    // the coordinates coorespondingly.
+    QLineF lineF = m_physValLine.toQLineF();
+    if (m_physValLine.unit() != Units.Length.px) {
+        lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
+    }
+
+    // Center position in parent coordinates.
+    QPointF ptPos = lineF.center();
+
+    // Move the points into the item's local coordinate system.
+    QPointF p1 = lineF.p1() - ptPos;
+    QPointF p2 = lineF.p2() - ptPos;
+
+    // Set the line in local coordinate system.
+    QGraphicsLineItem_setLine(QLineF(p1, p2));
+
+    // GraphicsLineItem::setLine does not update the position.
+    // Must be done "manually" afterwards.
+    // Move the object to the parent position.
+    QGraphicsItem_setPos(ptPos);
+
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Undefined,
             m_pTrcAdminObjCtorsAndDtor->getRuntimeInfoTraceDetailLevel());
@@ -173,37 +216,6 @@ CGraphObjLine::~CGraphObjLine()
 
     emit_aboutToBeDestroyed();
 
-    if (m_pDrawingScene != nullptr) {
-        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-        if (pGraphicsItem != nullptr) {
-            if (!m_strKeyInTree.isEmpty()) {
-                try {
-                    // Cannot be called from within dtor of "CGraphObj" as the dtor
-                    // of class "QGraphicsItem" may have already been processed if the
-                    // dtor of the base class is executed. If the drawing scene emits
-                    // graphObjAboutToBeDestroyed signal the models and Views may still
-                    // try to access the graphical object.
-                    m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
-                }
-                catch(...) {
-                }
-            }
-
-            // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
-            // dtor of QGraphicsItem has already been executed. The order the dtors
-            // of inherited classes are called depends on the order the classes
-            // appear in the list of the inherited classes on defining the
-            // class implementation. So we can't call "removeItem" from within the
-            // dtor of the base class CGraphObj but must remove the graphics item from
-            // the drawing scene's item list before the dtor of class QGraphicsItem is
-            // called. And this is only always the case in the dtor of the class
-            // derived from QGraphicsItem.
-            // Moreover on removing (deleting) a group the group's children have already
-            // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
-            // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
-            m_pDrawingScene->removeGraphObj(this);
-        }
-    }
 } // dtor
 
 /*==============================================================================
@@ -855,7 +867,7 @@ QList<ESelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const QString
 }
 
 /*==============================================================================
-public: // overridables of base class QGraphicsPolygonItem
+public: // must overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1529,68 +1541,31 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         if( m_pDrawingScene != dynamic_cast<CDrawingScene*>(scene())) {
             throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
         }
-        // The line coordinates are passed relative to the parent item
-        // (usually the scene coordinates or a group item).
-        // But the graphics item expects the coordinates based on the
-        // local coordinate system of the graphics item.
-        // Items live in their own local coordinate system.
-        // Their coordinates are usually centered around its center point (0, 0).
-        // As the item is not yet added to a parent we got to adjust
-        // the coordinates coorespondingly.
-        QLineF lineF = m_physValLine.toQLineF();
-        if (m_physValLine.unit() != Units.Length.px) {
-            lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
-        }
-
-        // Center position in parent coordinates.
-        QPointF ptPos = lineF.center();
-
-        // Move the points into the item's local coordinate system.
-        QPointF p1 = lineF.p1() - ptPos;
-        QPointF p2 = lineF.p2() - ptPos;
-
-        // Set the line in local coordinate system.
-        QGraphicsLineItem_setLine(QLineF(p1, p2));
-
-        // GraphicsLineItem::setLine does not update the position.
-        // Must be done "manually" afterwards.
-        // Move the object to the parent position.
-        QGraphicsItem_setPos(ptPos);
-
-        addLabel("Name");
-        setLabelText("Name", m_strName);
-        setLabelAnchorPoint("Name", ESelectionPoint::Center);
+        bGeometryChanged = true;
     }
-    else if (i_change == ItemSelectedHasChanged)
-    {
+    else if (i_change == ItemSelectedHasChanged) {
         prepareGeometryChange();
-
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             // Does not set "m_fZValue" as it is used to restore
             // the stacking order on deselecting the object.
             bringToFront(); 
             showSelectionPoints();
-
-            // Not necessary as item has been brought to front and "showSelectionPoints"
-            // sets zValue of selection points above item.
+            // Not necessary to bring selection points to front as item has been already brought
+            // to front and "showSelectionPoints" sets zValue of selection points above item.
             //bringSelectionPointsToFront();
-
             setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
         else {
             setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
             setZValue(m_fZValue); // restore ZValue as before selecting the object
-
             m_editMode = EEditMode::None;
             m_editResizeMode = EEditResizeMode::None;
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-
         updateEditInfo();
         updateToolTip();
-
         bSelectedChanged = true;
         bTreeEntryChanged = true;
     }
@@ -1618,7 +1593,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         plg.append(lineF.p1());
         plg.append(lineF.p2());
         updateSelectionPointsOfPolygon(plg);
-        updateLabelPositionsAndContents();
         updateLineEndArrowHeadPolygons();
         updateEditInfo();
         updateToolTip();
@@ -1648,39 +1622,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         //        pGraphObjLabel->m_pGraphObjLabel->setZValue(zValue() + 0.02);
         //    }
         //}
-
         //bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
-    // Ignored HasChanged events
-    //else if (i_change == ItemVisibleHasChanged
-    //      || i_change == ItemEnabledHasChanged
-    //      || i_change == ItemCursorHasChanged
-    //      || i_change == ItemToolTipHasChanged
-    //      || i_change == ItemFlagsHaveChanged
-    //      || i_change == ItemOpacityHasChanged)
-    //{
-    //}
-    // Ignore all "AboutToChange" events
-    //else if( i_change == ItemPositionChange
-    //      || i_change == ItemVisibleChange
-    //      || i_change == ItemEnabledChange
-    //      || i_change == ItemSelectedChange
-    //      || i_change == ItemParentChange
-    //      || i_change == ItemChildAddedChange
-    //      || i_change == ItemChildRemovedChange
-    //      || i_change == ItemTransformChange
-    //      || i_change == ItemSceneChange
-    //      || i_change == ItemCursorChange
-    //      || i_change == ItemToolTipChange
-    //      || i_change == ItemFlagsChange
-    //      || i_change == ItemZValueChange
-    //      || i_change == ItemOpacityChange
-    //      || i_change == ItemRotationChange
-    //      || i_change == ItemScaleChange
-    //      || i_change == ItemTransformOriginPointChange)
-    //{
-    //}
 
     if (bSelectedChanged) {
         emit_selectedChanged();
@@ -1829,7 +1773,7 @@ void CGraphObjLine::updateToolTip()
 } // updateToolTip
 
 /*==============================================================================
-protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1885,6 +1829,10 @@ void CGraphObjLine::QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double
 
     QGraphicsLineItem::setLine(i_fX1, i_fY1, i_fX2, i_fY2);
 }
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::traceInternalStates(

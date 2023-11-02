@@ -98,9 +98,9 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
 //------------------------------------------------------------------------------
     CDialog(
         /* strDlgTitle  */ i_strDlgTitle,
-        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs",
+        /* strNameSpace */ NameSpace() + "::Widgets::GraphObjs::StandardShapes::Line",
         /* strClassName */ ClassName(),
-        /* strObjName   */ i_pGraphObjLine->keyInTree(),
+        /* strObjName   */ "theInst",
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
     m_pGraphObjLine(i_pGraphObjLine),
@@ -122,6 +122,7 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -141,7 +142,7 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
     m_pScrollArea->setWidgetResizable(true);
     m_pLyt->addWidget(m_pScrollArea, 1);
 
-    m_pWdgtLineSettings = new CWdgtGraphObjLineProperties(pDrawingScene, objectName(), false);
+    m_pWdgtLineSettings = new CWdgtGraphObjLineProperties(pDrawingScene, "DlgGraphObjLineProperties", false);
     m_pWdgtLineSettings->setKeyInTree(m_pGraphObjLine->keyInTree());
     m_pScrollArea->setWidget(m_pWdgtLineSettings);
     QObject::connect(
@@ -199,6 +200,7 @@ CDlgGraphObjLineProperties::~CDlgGraphObjLineProperties()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -230,6 +232,7 @@ void CDlgGraphObjLineProperties::setCurrentWidget(CWdgtGraphObjLineProperties::E
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "setCurrentWidget",
         /* strAddInfo   */ strMthInArgs );
 
@@ -247,6 +250,7 @@ void CDlgGraphObjLineProperties::onBtnOkClicked(bool /*i_bChecked*/)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "onBtnOkClicked",
         /* strAddInfo   */ "" );
 
@@ -261,6 +265,7 @@ void CDlgGraphObjLineProperties::onBtnApplyClicked(bool /*i_bChecked*/)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "onBtnApplyClicked",
         /* strAddInfo   */ "" );
 
@@ -280,6 +285,7 @@ void CDlgGraphObjLineProperties::onBtnResetClicked(bool /*i_bChecked*/)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "onBtnResetClicked",
         /* strAddInfo   */ "" );
 
@@ -299,6 +305,7 @@ void CDlgGraphObjLineProperties::onBtnCancelClicked(bool /*i_bChecked*/)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "onBtnCancelClicked",
         /* strAddInfo   */ "" );
 
@@ -317,6 +324,7 @@ void CDlgGraphObjLineProperties::onWdgtLineSettingsContentChanged()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "onWdgtLineSettingsContentChanged",
         /* strAddInfo   */ "" );
 
@@ -332,6 +340,7 @@ void CDlgGraphObjLineProperties::onGraphObjDestroyed(QObject*)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strObjName,
         /* strMethod    */ "onGraphObjDestroyed",
         /* strAddInfo   */ "" );
 

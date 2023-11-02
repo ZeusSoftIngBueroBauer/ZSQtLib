@@ -86,7 +86,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CComboBoxItemDelegate"; }
 public: // ctors and dtor
-    CComboBoxItemDelegate( QWidget* i_pWdgtParent = nullptr );
+    CComboBoxItemDelegate(QAbstractItemModel* i_pModel, QWidget* i_pWdgtParent = nullptr);
     virtual ~CComboBoxItemDelegate();
 public: // instance methods
     void setItemDataRole(int i_iRole);
@@ -99,9 +99,19 @@ public: // overridables of base class QStyledItemDelegate
     void setEditorData(QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx) const override;
     void setModelData(QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx) const override;
     void updateEditorGeometry(QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
+protected slots:
+    void onCmbCurrentTextChanged(const QString& i_strText);
 protected: // instance members
+    /*!< Pointer to the model the delegate is assigned to. Passed by the constructor. */
+    QAbstractItemModel* m_pModel;
+    /*!< Item data role to query the list of available combo box items from the model. */
     int m_iItemDataRole;
+    /*!< Model index at which the editor was created. Needed to set the model data
+         if the current text of the combo box is changed. */
+    mutable QModelIndex m_modelIdxEditorCreated;
+    /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object for noisy methods like "paint". */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
 }; // class ComboBoxItemDelegate

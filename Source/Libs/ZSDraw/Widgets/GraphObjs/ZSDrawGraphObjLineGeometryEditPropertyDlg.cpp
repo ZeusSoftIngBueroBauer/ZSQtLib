@@ -373,14 +373,14 @@ void CDlgGraphObjLineGeometryEditProperty::onDrawingSceneDrawingSizeChanged(
 }
 
 //------------------------------------------------------------------------------
-void CDlgGraphObjLineGeometryEditProperty::onGraphObjAboutToDestroyed()
+void CDlgGraphObjLineGeometryEditProperty::onGraphObjAboutToBeDestroyed(CGraphObj*)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ s_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ objectName(),
-        /* strMethod    */ "onGraphObjAboutToDestroyed",
+        /* strMethod    */ "onGraphObjAboutToBeDestroyed",
         /* strInArgs    */ "" );
 
     setCoordinate(nullptr, "");

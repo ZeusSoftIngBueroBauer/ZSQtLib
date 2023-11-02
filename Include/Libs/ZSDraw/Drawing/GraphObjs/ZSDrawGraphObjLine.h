@@ -132,10 +132,11 @@ protected: // instance methods
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip() override;
-protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+protected: // auxiliary instance methods (method tracing)
     void setPhysValLine(const CPhysValLine& i_physValLine);
     void QGraphicsLineItem_setLine(const QLineF& i_line);
     void QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,

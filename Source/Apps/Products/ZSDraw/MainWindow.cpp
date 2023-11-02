@@ -5391,7 +5391,6 @@ void CMainWindow::updateErrorsStatus()
             }
             else if (iErrorsCount > 0) {
                 int iErrorsCountTmp = 0;
-                int iRowIdxTmp;
                 if (iErrorsCount == 1) {
                     strToolTip = "There is ";
                 }

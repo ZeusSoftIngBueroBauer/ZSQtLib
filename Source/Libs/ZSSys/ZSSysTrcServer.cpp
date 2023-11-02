@@ -1429,6 +1429,10 @@ void CTrcServer::traceMethodEnter(
 
     if( areMethodCallsActive(i_pTrcAdminObj) )
     {
+        QString strObjName = i_strObjName;
+        if (i_strObjName.isEmpty()) {
+            strObjName = i_pTrcAdminObj->getObjectName();
+        }
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1436,7 +1440,7 @@ void CTrcServer::traceMethodEnter(
             /* mthDir        */ EMethodDir::Enter,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
-            /* strObjName    */ i_strObjName,
+            /* strObjName    */ strObjName,
             /* strMethod     */ i_strMethod,
             /* strAddInfo    */ i_strMethodInArgs );
     }
@@ -1478,6 +1482,10 @@ void CTrcServer::traceMethod(
 
     if( isRuntimeInfoActive(i_pTrcAdminObj) )
     {
+        QString strObjName = i_strObjName;
+        if (i_strObjName.isEmpty()) {
+            strObjName = i_pTrcAdminObj->getObjectName();
+        }
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1485,7 +1493,7 @@ void CTrcServer::traceMethod(
             /* mthDir        */ EMethodDir::None,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
-            /* strObjName    */ i_strObjName,
+            /* strObjName    */ strObjName,
             /* strMethod     */ i_strMethod,
             /* strAddInfo    */ i_strAddInfo );
     }
@@ -1544,6 +1552,10 @@ void CTrcServer::traceMethodLeave(
 
     if( areMethodCallsActive(i_pTrcAdminObj) )
     {
+        QString strObjName = i_strObjName;
+        if (i_strObjName.isEmpty()) {
+            strObjName = i_pTrcAdminObj->getObjectName();
+        }
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1551,7 +1563,7 @@ void CTrcServer::traceMethodLeave(
             /* mthDir        */ EMethodDir::Leave,
             /* strNameSpace  */ i_pTrcAdminObj->getNameSpace(),
             /* strClassName  */ i_pTrcAdminObj->getClassName(),
-            /* strObjName    */ i_strObjName,
+            /* strObjName    */ strObjName,
             /* strMethod     */ i_strMethod,
             /* strAddInfo    */ i_strMethodReturn,
             /* strMthOutArgs */ i_strMethodOutArgs );

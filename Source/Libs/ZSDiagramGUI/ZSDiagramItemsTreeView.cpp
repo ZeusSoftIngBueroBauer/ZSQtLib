@@ -376,7 +376,7 @@ CTreeViewDiagramItems::CTreeViewDiagramItems(CWdgtDiagram* i_pDiagram, QWidget* 
 
     m_pMenuDiagramObjContext->addSeparator();
 
-    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.bmp");
+    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
     pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
     //pxmExpandAll = pxmExpandAll.scaled(16,16);
     m_pActionDiagramObjExpand = new QAction(pxmExpandAll, "Expand", this);
@@ -386,7 +386,7 @@ CTreeViewDiagramItems::CTreeViewDiagramItems(CWdgtDiagram* i_pDiagram, QWidget* 
         m_pActionDiagramObjExpand, &QAction::triggered,
         this, &CTreeViewDiagramItems::onActionDiagramObjExpandTriggered );
 
-    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
+    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pActionDiagramObjCollapse = new QAction(pxmCollapseAll, "Collapse", this);

@@ -164,45 +164,6 @@ CGraphObjGroup::~CGraphObjGroup()
 
     emit_aboutToBeDestroyed();
 
-    // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
-    // dtor of QGraphicsItem has already been executed. The order the dtors
-    // of inherited classes are called depends on the order the classes
-    // appear in the list of the inherited classes on defining the
-    // class implementation. So we can't call "removeItem" from within the
-    // dtor of the base class CGraphObj but must remove the graphics item from
-    // the drawing scene's item list before the dtor of class QGraphicsItem is
-    // called. And this is only always the case in the dtor of the class
-    // derived from QGraphicsItem.
-
-    if (m_pDrawingScene != nullptr) {
-        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-        if (pGraphicsItem != nullptr) {
-            if (!m_strKeyInTree.isEmpty()) {
-                try {
-                    // Cannot be called from within dtor of "CGraphObj" as the dtor
-                    // of class "QGraphicsItem" may have already been processed and
-                    // models and Views may still try to access the graphical object.
-                    m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
-                }
-                catch(...) {
-                }
-            }
-
-            // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
-            // dtor of QGraphicsItem has already been executed. The order the dtors
-            // of inherited classes are called depends on the order the classes
-            // appear in the list of the inherited classes on defining the
-            // class implementation. So we can't call "removeItem" from within the
-            // dtor of the base class CGraphObj but must remove the graphics item from
-            // the drawing scene's item list before the dtor of class QGraphicsItem is
-            // called. And this is only always the case in the dtor of the class
-            // derived from QGraphicsItem.
-            // Moreover on removing (deleting) a group the group's children have already
-            // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
-            // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
-            m_pDrawingScene->removeGraphObj(this);
-        }
-    }
 } // dtor
 
 /*==============================================================================
@@ -3482,8 +3443,6 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
 
-            updateLabelPositionsAndContents();
-
             updateEditInfo();
             updateToolTip();
 
@@ -3654,8 +3613,6 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
-
-            updateLabelPositionsAndContents();
 
             // Not for group items. Otherwise the layout information would get lost.
             //acceptCurrentAsOriginalCoors();
@@ -4120,8 +4077,6 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
-
-        updateLabelPositionsAndContents();
 
         updateEditInfo();
         updateToolTip();

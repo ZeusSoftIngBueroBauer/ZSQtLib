@@ -38,6 +38,7 @@ may result in using the software modules.
 #include <QtCore/qcoreevent.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdir.h>
+#include <QtCore/qline.h>
 #include <QtCore/qmimedata.h>
 #include <QtCore/qpoint.h>
 #include <QtCore/qsettings.h>
@@ -3348,54 +3349,62 @@ QString ZS::System::qPenStyle2Str( const Qt::PenStyle& i_penStyle )
 QString ZS::System::qPoint2Str( const QPoint& i_pt )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(i_pt.x()) + ", " + QString::number(i_pt.y());
-    return str;
+    return QString::number(i_pt.x()) + ", " + QString::number(i_pt.y());
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::qPoint2Str( const QPointF& i_pt )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(i_pt.x(),'f',1) + ", " + QString::number(i_pt.y(),'f',1);
-    return str;
-}
-
-//------------------------------------------------------------------------------
-QString ZS::System::qRect2Str( const QRect& i_rct )
-//------------------------------------------------------------------------------
-{
-    QString str = QString::number(i_rct.x())
-        + ", " + QString::number(i_rct.y())
-        + ", " + QString::number(i_rct.width())
-        + ", " + QString::number(i_rct.height());
-    return str;
-}
-
-//------------------------------------------------------------------------------
-QString ZS::System::qRect2Str( const QRectF& i_rct )
-//------------------------------------------------------------------------------
-{
-    QString str = QString::number(i_rct.x(),'f',1)
-        + ", " + QString::number(i_rct.y(),'f',1)
-        + ", " + QString::number(i_rct.width(),'f',1)
-        + ", " + QString::number(i_rct.height(),'f',1);
-    return str;
+    return QString::number(i_pt.x(),'f',1) + ", " + QString::number(i_pt.y(),'f',1);
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::qSize2Str( const QSize& i_size )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(i_size.width()) + ", " + QString::number(i_size.height());
-    return str;
+    return QString::number(i_size.width()) + ", " + QString::number(i_size.height());
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::qSize2Str( const QSizeF& i_size )
 //------------------------------------------------------------------------------
 {
-    QString str = QString::number(i_size.width(),'f',1) + ", " + QString::number(i_size.height(),'f',1);
-    return str;
+    return QString::number(i_size.width(),'f',1) + ", " + QString::number(i_size.height(),'f',1);
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qLine2Str( const QLine& i_line )
+//------------------------------------------------------------------------------
+{
+    return "P1 {" + qPoint2Str(i_line.p1()) + "}, P2 {" + qPoint2Str(i_line.p2()) + "}";
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qLine2Str( const QLineF& i_line )
+//------------------------------------------------------------------------------
+{
+    return "P1 {" + qPoint2Str(i_line.p1()) + "}, P2 {" + qPoint2Str(i_line.p2()) + "}";
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qRect2Str( const QRect& i_rct )
+//------------------------------------------------------------------------------
+{
+    return QString::number(i_rct.x())
+        + ", " + QString::number(i_rct.y())
+        + ", " + QString::number(i_rct.width())
+        + ", " + QString::number(i_rct.height());
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qRect2Str( const QRectF& i_rct )
+//------------------------------------------------------------------------------
+{
+    return QString::number(i_rct.x(),'f',1)
+        + ", " + QString::number(i_rct.y(),'f',1)
+        + ", " + QString::number(i_rct.width(),'f',1)
+        + ", " + QString::number(i_rct.height(),'f',1);
 }
 
 /*==============================================================================

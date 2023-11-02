@@ -206,7 +206,7 @@ CMainWindow::CMainWindow(
 
     QIcon iconDebugErrorLog;
 
-    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
+    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.png");
 
     pxmDebugErrorLog16x16.setMask(pxmDebugErrorLog16x16.createHeuristicMask());
 

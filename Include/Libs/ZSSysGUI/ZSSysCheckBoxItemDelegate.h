@@ -52,14 +52,18 @@ public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
     static QString ClassName() { return "CCheckBoxItemDelegate"; }
 public: // ctors and dtor
-    CCheckBoxItemDelegate(QWidget* i_pWdgtParent = nullptr);
+    CCheckBoxItemDelegate(QAbstractItemModel* i_pModel, QWidget* i_pWdgtParent = nullptr);
     virtual ~CCheckBoxItemDelegate();
 public: // overridables of base class QStyledItemDelegate
     void paint(QPainter* i_pPainter, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
 protected: // overridables of base class QStyledItemDelegate
     bool editorEvent(QEvent* i_pEv, QAbstractItemModel* i_pModel, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx);
 protected: // instance members
+    /*!< Pointer to the model the delegate is assigned to. Passed by the constructor. */
+    QAbstractItemModel* m_pModel;
+    /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object for noisy methods like "paint". */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
 }; // class CCheckBoxItemDelegate

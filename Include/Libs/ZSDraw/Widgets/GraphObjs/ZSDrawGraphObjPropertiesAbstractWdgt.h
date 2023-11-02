@@ -118,7 +118,7 @@ protected slots: // overridables
     virtual void onGraphObjDrawSettingsChanged();
     //virtual void onGraphObjMoved();
     //virtual void onGraphObjRenamed();
-    virtual void onGraphObjAboutToDestroyed();
+    virtual void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 private slots:
     //void onDrawingSceneGraphObjChanged(const QString& i_strKeyInTree);
     //void onDrawingSceneGraphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
@@ -222,10 +222,13 @@ protected: // instance members
            0 |Font:     | |   | |Font          | |Size  | |Color  |<-->
            1 |Effects:  | |   | |Bold | |Kursiv| |UnderL| |StrikeT|<--> */
     QVector<int> m_ariClmWidths;
-    // Button Line
+    /*!< Widget containing the buttons. */
     QWidget* m_pWdgtButtons;
+    /*!< Layout for the widget containing the buttons. */
     QHBoxLayout* m_pLytWdgtButtons;
+    /*!< Apply button. */
     QPushButton* m_pBtnApply;
+    /*!< Reset button. */
     QPushButton* m_pBtnReset;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;

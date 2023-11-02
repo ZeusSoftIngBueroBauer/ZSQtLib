@@ -212,7 +212,7 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
 
     m_pLytLineServerObjName->addStretch();
 
-    QPixmap pxmProtocolTypeImg(":/ZS/App/Zeus32x32.bmp");
+    QPixmap pxmProtocolTypeImg(":/ZS/App/Zeus32x32.png");
 
     pxmProtocolTypeImg.setMask(pxmProtocolTypeImg.createHeuristicMask());
 

@@ -92,8 +92,10 @@ CGraphObjLabel::CGraphObjLabel(
     m_pGraphObjParent(i_pGraphObjParent),
     m_pGraphicsItemParent(nullptr),
     m_selPtLinked(i_selPt),
-    m_sizeLinkedSelPtDist(0.0, 0.0),
-    m_bShowAnchorLine(false)
+    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_bShowAnchorLine(false),
+    m_anchorLine(),
+    m_bUpdatePositionInProgress(false)
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -114,18 +116,16 @@ CGraphObjLabel::CGraphObjLabel(
         /* strAddInfo   */ strMthInArgs );
 
     m_pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent);
-
     if (m_pGraphicsItemParent == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "m_pGraphicsItemParent == nullptr" );
     }
+    setParentItem(m_pGraphicsItemParent);
 
-    setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    //setAcceptHoverEvents(true);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_rctCurr = QGraphicsSimpleTextItem::boundingRect();
-#endif
+    QObject::connect(
+        m_pGraphObjParent, &CGraphObj::geometryChanged,
+        this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
 
 } // ctor
 
@@ -147,50 +147,12 @@ CGraphObjLabel::~CGraphObjLabel()
 
     emit_aboutToBeDestroyed();
 
-    // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
-    // dtor of QGraphicsItem has already been executed. The order the dtors
-    // of inherited classes are called depends on the order the classes
-    // appear in the list of the inherited classes on defining the
-    // class implementation. So we can't call "removeItem" from within the
-    // dtor of the base class CGraphObj but must remove the graphics item from
-    // the drawing scene's item list before the dtor of class QGraphicsItem is
-    // called. And this is only always the case in the dtor of the class
-    // derived from QGraphicsItem.
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        if (m_pDrawingScene != nullptr) {
-            if (!m_strKeyInTree.isEmpty()) {
-                try {
-                    // Cannot be called from within dtor of "CGraphObj" as the dtor
-                    // of class "QGraphicsItem" may have already been processed and
-                    // models and Views may still try to access the graphical object.
-                    m_pDrawingScene->onGraphObjAboutToBeDestroyed(m_strKeyInTree);
-                }
-                catch(...) {
-                }
-            }
-
-            // Please note that the dynamic cast to QGraphicsItem returns nullptr if the
-            // dtor of QGraphicsItem has already been executed. The order the dtors
-            // of inherited classes are called depends on the order the classes
-            // appear in the list of the inherited classes on defining the
-            // class implementation. So we can't call "removeItem" from within the
-            // dtor of the base class CGraphObj but must remove the graphics item from
-            // the drawing scene's item list before the dtor of class QGraphicsItem is
-            // called. And this is only always the case in the dtor of the class
-            // derived from QGraphicsItem.
-            // Moreover on removing (deleting) a group the group's children have already
-            // been removed from the drawing scene by the dtor of class QGraphicsItemGroup
-            // (which is inherited by CGraphObjGroup) and "scene()" may return nullptr.
-            m_pDrawingScene->removeGraphObj(this);
-        }
-    }
-
     //m_strKey;
     m_selPtLinked = static_cast<ESelectionPoint>(0);
-    //m_sizeLinkedSelPtDist;
+    //m_distanceToLinkedSelPt;
     m_bShowAnchorLine = false;
+    //m_anchorLine;
+    m_bUpdatePositionInProgress = false;
 
 } // dtor
 
@@ -268,9 +230,6 @@ void CGraphObjLabel::setText( const QString& i_strText )
 
     if (QGraphicsSimpleTextItem::text() != i_strText) {
         QGraphicsSimpleTextItem::setText(i_strText);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        m_rctCurr = QGraphicsSimpleTextItem::boundingRect();
-#endif
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -306,26 +265,7 @@ void CGraphObjLabel::setLinkedSelectionPoint(ESelectionPoint i_selPt)
     if (m_selPtLinked != i_selPt)
     {
         m_selPtLinked = i_selPt;
-
-        //QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-        //QPointF ptSelPt = m_pGraphObjParent->getSelectionPointCoors(i_selPt);
-        //ptSelPt = m_pGraphicsItemParent->mapToScene(ptSelPt);
-
-        //QPointF ptLabelTmp = ptSelPt;
-        //if (i_selPt != ESelectionPoint::BottomRight &&
-        //    i_selPt != ESelectionPoint::BottomLeft &&
-        //    i_selPt != ESelectionPoint::BottomCenter)
-        //{
-        //    ptLabelTmp.setY(ptLabelTmp.y() - getHeight(Units.Length.px).getVal());
-        //}
-
-        //QSize sizeDist(ptLabelTmp.x() - ptSelPt.x(), ptLabelTmp.y() - ptSelPt.y());
-
-        //QPointF ptLabel(ptSelPt.x() + sizeDist.width(), ptSelPt.y() + sizeDist.height());
-
-        //setPos(ptLabel);
-        //setZValue(pGraphicsItem->zValue() + 0.02);
-
+        updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -337,13 +277,6 @@ ESelectionPoint CGraphObjLabel::getLinkedSelectionPoint() const
 //------------------------------------------------------------------------------
 {
     return m_selPtLinked;
-}
-
-//------------------------------------------------------------------------------
-QSizeF CGraphObjLabel::getLinkedSelectionPointDistance() const
-//------------------------------------------------------------------------------
-{
-    return m_sizeLinkedSelPtDist;
 }
 
 /*==============================================================================
@@ -363,6 +296,11 @@ void CGraphObjLabel::showAnchorLine()
 
     if (!m_bShowAnchorLine) {
         m_bShowAnchorLine = true;
+        if (scene() != nullptr) {
+            QRectF rctBounding = boundingRect();
+            rctBounding = mapToScene(rctBounding).boundingRect();
+            scene()->update(rctBounding);
+        }
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -381,7 +319,15 @@ void CGraphObjLabel::hideAnchorLine()
         /* strAddInfo   */ "" );
 
     if (m_bShowAnchorLine) {
-        m_bShowAnchorLine = false;
+        if (scene() != nullptr) {
+            QRectF rctBounding = boundingRect();
+            rctBounding = mapToScene(rctBounding).boundingRect();
+            m_bShowAnchorLine = false;
+            scene()->update(rctBounding);
+        }
+        else {
+            m_bShowAnchorLine = false;
+        }
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -503,7 +449,7 @@ void CGraphObjLabel::setIsHit( bool i_bHit )
 
         update();
 
-        QRectF rctUpd = boundingRect();
+        QRectF rctUpd = QGraphicsSimpleTextItem::boundingRect();
         QPolygonF plgLabel = mapToScene(rctUpd);
         QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF());
         QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
@@ -601,47 +547,11 @@ void CGraphObjLabel::setCursor( const QCursor& i_cursor )
 }
 
 /*==============================================================================
-public: // must overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjLabel::showSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strAddTrcInfo = selectionPoints2Str(i_selPts);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "showSelectionPoints",
-        /* strAddInfo   */ strAddTrcInfo );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjLabel::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strAddTrcInfo = selectionPoints2Str(i_selPts);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strAddTrcInfo );
-}
-
-/*==============================================================================
 public: // must overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Returns the bounding recangle for the label.
+/*! Returns the bounding rectangle for the label.
 
     This method is called by the graphics scene to detect the area to be updated
     and for some other reasons (dispatching mouse events, ...).
@@ -649,10 +559,6 @@ public: // must overridables of base class QGraphicsItem
     If the label is hit, selected or if the anchor line to the linked grapical
     object is visible the area to be updated on changing the items graphical
     representation also includes the anchor line.
-
-    When painting the selection frame around the label this method cannot be
-    used as that would return a wrong area if the label is selected, hit or
-    has a visible anchor line.
 
     To get the rectangle around the labels text the base implementation of
     QGraphicsSimpleTextItem need to be called directly.
@@ -669,24 +575,12 @@ QRectF CGraphObjLabel::boundingRect() const
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
-    // If parent items are hit or selected they are calling this boundingRect method
-    // in order to update the drawing scene region including the line from the parent
-    // item to the label. The labels boundingRect method itself calls the boundingRect
-    // method of its parent item if the label is selected or has been hit. This would
-    // lead to an endless recursion. For this an additional boundingRect method of the
-    // label is provided with a different signature to indicate that the caller is
-    // only interested in the bounding rect of the simple text item.
-
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
 
     // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (m_pGraphicsItemParent != nullptr) {
-        if (m_bIsHit || isSelected() || m_bShowAnchorLine) {
-            QRectF rctGraphObj = m_pGraphicsItemParent->boundingRect();
-            QPolygonF plgGraphObj = m_pGraphicsItemParent->mapToScene(rctGraphObj);
-            QPolygonF plg = mapFromScene(plgGraphObj);
-            rctBounding |= plg.boundingRect();
-        }
+    if (m_bIsHit || isSelected() || m_bShowAnchorLine) {
+        QRectF rctBoundingAnchorLine(m_anchorLine.p1(), m_anchorLine.p2());
+        rctBounding |= rctBoundingAnchorLine;
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -700,9 +594,9 @@ QRectF CGraphObjLabel::boundingRect() const
 
 //------------------------------------------------------------------------------
 void CGraphObjLabel::paint(
-    QPainter*                       i_pPainter,
+    QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* i_pStyleOption,
-    QWidget*                        i_pWdgt )
+    QWidget* i_pWdgt )
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -743,96 +637,24 @@ void CGraphObjLabel::paint(
     // If the anchor line is set to be visible draw the anchor line in solid style.
     if (m_pGraphicsItemParent != nullptr) {
         if (m_bIsHit || isSelected() || m_bShowAnchorLine) {
-            /*  The anchor line will be drawn to one of the center points at
-                the bounding rectangle. Which line of the labels bounding rectangle
-                should be used depends on the relative position of the label to the
-                selection point of the graph object the label is linked to.
-
-                "QLineF::angle" is used to calculate the angle of the line between the two
-                anchor points.
-
-                From Qts documentation:
-                -----------------------
-                The return value will be in the range of values from 0.0 up
-                to but not including 360.0. The angles are measured counter-clockwise from
-                a point on the x-axis to the right of the origin (x > 0).
-                The following diagram should also clarify whats been returned by "QLineF::angle":
-
-                                90°
-                    135°    16     1     2    45°
-                        15        |        3
-                    14      +---+---+      4
-                180° 13-------| Label |-------5   0°  (360°)
-                    12      +---+---+      6
-                        11        |        7
-                    225°    10     9     8   315°
-                                270°
-
-                Selection Point Position | clockwise | Selectoin Point
-                of "Parent Item"         |           | of Label
-                -------------------------+-----------+-----------------
-                16, 1, 2                 | 135°-45°  | TopCenter
-                3, 4, 5, 6, 7            |  45°-315° | RightCenter
-                8, 9, 10                 | 315°-225° | BottomCenter
-                11, 12, 13, 14, 15       | 225°-135° | LeftCenter
-
-                If the angle is calculated the distance between the linked selection point
-                of the parent item to the anchor line will also be taken into account.
-                E.g. if the label is very close to the parent item it is better not to draw
-                the anchor line.
-            */
-
-            QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
-            QPointF ptThis = rctBoundingThis.center();
-
-            QPointF ptSelPt = m_pGraphObjParent->getSelectionPointCoors(m_selPtLinked);
-            ptSelPt = m_pGraphicsItemParent->mapToScene(ptSelPt);
-            ptSelPt = pGraphicsItem->mapFromScene(ptSelPt);
-
-            QLineF lineAnchor(ptThis, ptSelPt);
-            double fAngle = lineAnchor.angle();
-
-            bool bDrawAnchorLine = true;
-
-            if (fAngle >= 45.0 && fAngle <= 135.0) {
-                ptThis = ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::TopCenter);
-                lineAnchor.setP1(ptThis);
-                if (fabs(lineAnchor.dy()) < 5.0) {
-                    bDrawAnchorLine = false;
+            // P1 of the anchor line is on one of the center points of the
+            // bounding rectangle of this label.
+            // P2 is on the selection point of the linked parent item.
+            // If P2 is within the bounding rectangle or very close to the label
+            // (length of line < 5.0 pixels) the anchor line will not be drawn.
+            QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+            if (!rctBounding.contains(m_anchorLine.p2())) {
+                if ((fabs(m_anchorLine.dx()) >= 5.0) || (fabs(m_anchorLine.dy() >= 5.0))) {
+                    if (m_bIsHit || isSelected()) {
+                        pn.setColor(Qt::blue);
+                    }
+                    else {
+                        pn.setColor(Qt::gray);
+                    }
+                    pn.setStyle(Qt::DotLine);
+                    i_pPainter->setPen(pn);
+                    i_pPainter->drawLine(m_anchorLine);
                 }
-            }
-            else if (fAngle >= 225.0 && fAngle <= 315.0) {
-                ptThis = ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::BottomCenter);
-                lineAnchor.setP1(ptThis);
-                if (fabs(lineAnchor.dy()) < 5.0) {
-                    bDrawAnchorLine = false;
-                }
-            }
-            else if (fAngle > 135.0 && fAngle < 225.0) {
-                ptThis = ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::LeftCenter);
-                lineAnchor.setP1(ptThis);
-                if (fabs(lineAnchor.dy()) < 5.0) {
-                    bDrawAnchorLine = false;
-                }
-            }
-            else if ((fAngle > 315.0 && fAngle <= 360.0) || (fAngle >= 0.0 && fAngle < 45.0)) {
-                ptThis = ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::RightCenter);
-                lineAnchor.setP1(ptThis);
-                if (fabs(lineAnchor.dy()) < 5.0) {
-                    bDrawAnchorLine = false;
-                }
-            }
-
-            if (bDrawAnchorLine) {
-                if (m_bIsHit || isSelected()) {
-                    pn.setColor(Qt::blue);
-                }
-                else {
-                    pn.setColor(Qt::gray);
-                }
-                pn.setStyle(Qt::DotLine);
-                i_pPainter->setPen(pn);
-                i_pPainter->drawLine(ptThis, ptSelPt);
             }
         }
     }
@@ -841,10 +663,6 @@ void CGraphObjLabel::paint(
 
     QStyleOptionGraphicsItem styleOption = *i_pStyleOption;
 
-    // "QGraphicsSimpleTextItem::paint" calls "CGraphObjLabel::boundingRect" to draw the
-    // highlighted focus rectangle around the item. "CGraphObjLabel::boundingRect"
-    // returns the rectangle including the parent item. So we don't let
-    // the base implementation paint the selection rectangle around the item.
     styleOption.state &= ~QStyle::State_Selected;
     styleOption.state &= ~QStyle::State_HasFocus;
 
@@ -1024,6 +842,24 @@ void CGraphObjLabel::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 } // mouseDoubleClickEvent
 
 /*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::onGraphObjParentGeometryChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onGraphObjParentGeometryChanged",
+        /* strAddInfo   */ "" );
+
+    updatePosition();
+}
+
+/*==============================================================================
 protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
@@ -1057,60 +893,16 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    if (i_change == ItemSceneHasChanged)
-    {
-        m_pDrawingScene = dynamic_cast<CDrawingScene*>(scene());
-    }
-    else if( i_change == ItemSelectedHasChanged )
-    {
-    }
-    else if( i_change == ItemPositionHasChanged
-          || i_change == ItemTransformHasChanged
-          || i_change == ItemParentHasChanged
-          || i_change == ItemScenePositionHasChanged
-          || i_change == ItemRotationHasChanged
-          || i_change == ItemScaleHasChanged
-          || i_change == ItemTransformOriginPointHasChanged)
-    {
-        if (m_pGraphicsItemParent != nullptr) {
-            QPointF ptSelPt = m_pGraphObjParent->getSelectionPointCoors(m_selPtLinked);
-            ptSelPt = m_pGraphicsItemParent->mapToScene(ptSelPt);
-            QPointF ptThis = scenePos();
-            m_sizeLinkedSelPtDist.setWidth(ptThis.x() - ptSelPt.x());
-            m_sizeLinkedSelPtDist.setHeight(ptThis.y() - ptSelPt.y());
+    if (i_change == ItemSceneHasChanged) {
+        if( m_pDrawingScene != dynamic_cast<CDrawingScene*>(scene())) {
+            throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
         }
+        updatePosition();
     }
-    else if (i_change == ItemZValueHasChanged) {
+    else if (i_change == ItemPositionHasChanged) {
+        updateDistanceToLinkedSelPt();
+        updateAnchorLine();
     }
-    // Ignored HasChanged events
-    //else if (i_change == ItemVisibleHasChanged
-    //      || i_change == ItemEnabledHasChanged
-    //      || i_change == ItemCursorHasChanged
-    //      || i_change == ItemToolTipHasChanged
-    //      || i_change == ItemFlagsHaveChanged
-    //      || i_change == ItemOpacityHasChanged)
-    //{
-    //}
-    // Ignore all "AboutToChange" events
-    //else if( i_change == ItemPositionChange
-    //      || i_change == ItemVisibleChange
-    //      || i_change == ItemEnabledChange
-    //      || i_change == ItemSelectedChange
-    //      || i_change == ItemParentChange
-    //      || i_change == ItemChildAddedChange
-    //      || i_change == ItemChildRemovedChange
-    //      || i_change == ItemTransformChange
-    //      || i_change == ItemSceneChange
-    //      || i_change == ItemCursorChange
-    //      || i_change == ItemToolTipChange
-    //      || i_change == ItemFlagsChange
-    //      || i_change == ItemZValueChange
-    //      || i_change == ItemOpacityChange
-    //      || i_change == ItemRotationChange
-    //      || i_change == ItemScaleChange
-    //      || i_change == ItemTransformOriginPointChange)
-    //{
-    //}
 
     if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
@@ -1127,4 +919,206 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the position of the label and the
+           coordinates (start and end point) of the anchor line.
+
+    On moving the label the current distance to the parent item is stored.
+    If the geometry of the parent item changes (position moved or size changed or
+    any other geometry change) the label must be moved so that the distance remains
+    the same.
+*/
+void CGraphObjLabel::updatePosition()
+//------------------------------------------------------------------------------
+{
+    // "setPos" leads to a "itemChange" call with ItemPositionChange(d) whereupon
+    // "updatePosition" would be called again. This reentry is not desired.
+    if (m_bUpdatePositionInProgress) {
+        return;
+    }
+    m_bUpdatePositionInProgress = true;
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updatePosition",
+        /* strAddInfo   */ "" );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter,
+            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
+    }
+
+    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelScenePosParent = m_pGraphicsItemParent->mapToScene(ptSelPosParent);
+    QPointF ptScenePosThis = ptSelScenePosParent;
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QPointF ptCenterThis = rctBoundingThis.center();
+
+    // As default the labels center point is on the parent items selection point.
+    // The position of the text item on the scene is the top left corner. So we
+    // got to move the item correspondingly.
+    ptScenePosThis.setX(ptScenePosThis.x() - rctBoundingThis.width()/2.0);
+    ptScenePosThis.setY(ptScenePosThis.y() - rctBoundingThis.height()/2.0);
+
+    // Move the label keeping the distance.
+    ptScenePosThis.setX(ptScenePosThis.x() + m_distanceToLinkedSelPt.width());
+    ptScenePosThis.setY(ptScenePosThis.y() + m_distanceToLinkedSelPt.height());
+
+    setPos(ptScenePosThis);
+    //setZValue(pGraphicsItem->zValue() + 0.02);
+
+    // Update coordinates of the anchor line.
+    updateAnchorLine();
+
+    m_bUpdatePositionInProgress = false;
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave,
+            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the distance between the labels center
+           point and the selection point of the parent item the label is linked to.
+
+    On moving the label the current distance to the parent item is stored.
+    If the geometry of the parent item changes (position moved or size changed or
+    any other geometry change) the label must be moved so that the distance remains
+    the same.
+*/
+void CGraphObjLabel::updateDistanceToLinkedSelPt()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updateDistanceToLinkedSelPt",
+        /* strAddInfo   */ "" );
+
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+
+    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelScenePosParent = m_pGraphicsItemParent->mapToScene(ptSelPosParent);
+
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QPointF ptCenterThis = rctBoundingThis.center();
+    QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
+
+    m_distanceToLinkedSelPt.setWidth(ptScenePosCenterThis.x() - ptSelScenePosParent.x());
+    m_distanceToLinkedSelPt.setHeight(ptScenePosCenterThis.y() - ptSelScenePosParent.y());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the coordinates (start and end point)
+           of the anchor line.
+
+    The anchor line will be drawn to one of the center points at the bounding rectangle.
+    Which line of the labels bounding rectangle should be used depends on the relative
+    position of the label to the selection point of the graph object the label is linked to.
+
+    "QLineF::angle" is used to calculate the angle of the line between the two anchor points.
+
+    From Qts documentation:
+    -----------------------
+    The return value will be in the range of values from 0.0 up
+    to but not including 360.0. The angles are measured counter-clockwise from
+    a point on the x-axis to the right of the origin (x > 0).
+    The following diagram should also clarify whats been returned by "QLineF::angle":
+
+                     90°
+       135°    16     1     2    45°
+            15        |        3
+          14      +---+---+      4
+    180° 13-------| Label |-------5   0°  (360°)
+          12      +---+---+      6
+            11        |        7
+       225°    10     9     8   315°
+                     270°
+
+    Selection Point Position | clockwise | Selectoin Point
+    of "Parent Item"         |           | of Label
+    -------------------------+-----------+-----------------
+    16, 1, 2                 | 135°-45°  | TopCenter
+    3, 4, 5, 6, 7            |  45°-315° | RightCenter
+    8, 9, 10                 | 315°-225° | BottomCenter
+    11, 12, 13, 14, 15       | 225°-135° | LeftCenter
+
+    If the angle is calculated the distance between the linked selection point
+    of the parent item to the anchor line will also be taken into account.
+    E.g. if the label is very close to the parent item it is better not to draw
+    the anchor line.
+*/
+//------------------------------------------------------------------------------
+void CGraphObjLabel::updateAnchorLine()
+{
+    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelScenePosParent = m_pGraphicsItemParent->mapToScene(ptSelPosParent);
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QPointF ptCenterThis = rctBoundingThis.center();
+
+    m_anchorLine.setP1(mapToScene(ptCenterThis));
+    m_anchorLine.setP2(ptSelScenePosParent);
+    double fAngle = m_anchorLine.angle();
+
+    // Map anchor line to local coordinates.
+    if (fAngle >= 45.0 && fAngle <= 135.0) {
+        m_anchorLine.setP1(
+            ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::TopCenter));
+    }
+    else if (fAngle >= 225.0 && fAngle <= 315.0) {
+        m_anchorLine.setP1(
+            ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::BottomCenter));
+    }
+    else if (fAngle > 135.0 && fAngle < 225.0) {
+        m_anchorLine.setP1(
+            ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::LeftCenter));
+    }
+    else if ((fAngle > 315.0 && fAngle <= 360.0) || (fAngle >= 0.0 && fAngle < 45.0)) {
+        m_anchorLine.setP1(
+            ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::RightCenter));
+    }
+    m_anchorLine.setP2(mapFromScene(ptSelScenePosParent));
+}
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::traceInternalStates(
+    CMethodTracer& i_mthTracer,
+    EMethodDir i_mthDir,
+    ELogDetailLevel i_detailLevel) const
+//------------------------------------------------------------------------------
+{
+    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+        QString strTrcInfo;
+        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+        else strTrcInfo = "";
+        strTrcInfo +=
+            "Key: " + m_strKey + ", Parent: " + m_pGraphObjParent->path() +
+            ", LinkedTo: " + CEnumSelectionPoint(m_selPtLinked).toString() +
+            ", Visible: " + QString(isVisible() ? "true" : "false") +
+            ", ShowAnchorLine: " + QString(m_bShowAnchorLine ? "true" : "false");
+        i_mthTracer.trace(strTrcInfo);
+        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+        else strTrcInfo = "";
+        strTrcInfo +=
+            "DistanceToParent {" + qSize2Str(m_distanceToLinkedSelPt) + "}" +
+            ", AnchorLine {" + qLine2Str(m_anchorLine) + "}";
+        i_mthTracer.trace(strTrcInfo);
+        i_mthTracer.trace(strTrcInfo);
+        CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
+    }
 }

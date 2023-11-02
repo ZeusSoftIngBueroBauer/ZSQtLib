@@ -245,7 +245,7 @@ bool CWdgtDrawingViewDrawSettings::hasChanges() const
     // If the graphical object is about to be destroyed, "onGraphObjChanged" is called
     // to update the content of the widget. But the child property widgets may not
     // have been informed yet that the graphical object is about to be destroyed as
-    // here we are in the call stack of the "onGraphObjAboutToDestroyed" of this widget.
+    // here we are in the call stack of the "onGraphObjAboutToBeDestroyed" of this widget.
     // The child widgets slot may be called sometimes afterwards.
 
     bool bHasChanges = m_pWdgtLineStyle->hasChanges();

@@ -61,11 +61,11 @@ namespace System
 */
 enum EResultSeverity {
 //==============================================================================
-    EResultSeveritySuccess  = 0,    /*!< ![Success](Libs\ZSSys\ResultSeveritySuccess.bmp) Used e.g. to indicate no error condition. */
-    EResultSeverityInfo     = 1,    /*!< ![Info](Libs\ZSSys\ResultSeverityInfo.bmp) The result code has informative character. */
-    EResultSeverityWarning  = 2,    /*!< ![Warning](Libs\ZSSys\ResultSeverityWarning.bmp) The result code is used to create a warning. */
-    EResultSeverityError    = 3,    /*!< ![Error](Libs\ZSSys\ResultSeverityError.bmp) The result code indicates an error. */
-    EResultSeverityCritical = 4,    /*!< ![Criticial](Libs\ZSSys\ResultSeverityCritical.bmp) The result code indicates a critical error. */
+    EResultSeveritySuccess  = 0,    /*!< ![Success](Libs\ZSSys\ResultSeveritySuccess.png) Used e.g. to indicate no error condition. */
+    EResultSeverityInfo     = 1,    /*!< ![Info](Libs\ZSSys\ResultSeverityInfo.png) The result code has informative character. */
+    EResultSeverityWarning  = 2,    /*!< ![Warning](Libs\ZSSys\ResultSeverityWarning.png) The result code is used to create a warning. */
+    EResultSeverityError    = 3,    /*!< ![Error](Libs\ZSSys\ResultSeverityError.png) The result code indicates an error. */
+    EResultSeverityCritical = 4,    /*!< ![Criticial](Libs\ZSSys\ResultSeverityCritical.png) The result code indicates a critical error. */
     EResultSeverityCount,           /*!< Number of valid result severities. */
     EResultSeverityUndefined        /*!< Used to indicate an unitialized severity value. */
 };

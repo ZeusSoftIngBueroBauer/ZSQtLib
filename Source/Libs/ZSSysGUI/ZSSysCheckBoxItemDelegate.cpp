@@ -48,9 +48,10 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CCheckBoxItemDelegate::CCheckBoxItemDelegate( QWidget* i_pWdgtParent ) :
+CCheckBoxItemDelegate::CCheckBoxItemDelegate(QAbstractItemModel* i_pModel, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QStyledItemDelegate(i_pWdgtParent),
+    m_pModel(i_pModel),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjNoisyMethods(nullptr)
 {
@@ -86,6 +87,7 @@ CCheckBoxItemDelegate::~CCheckBoxItemDelegate()
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
     }
 
+    m_pModel = nullptr;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjNoisyMethods = nullptr;
 
@@ -153,6 +155,9 @@ bool CCheckBoxItemDelegate::editorEvent(
         /* strMethod          */ "editorEvent",
         /* strMethodInArgs    */ strMthInArgs );
 
+    if (i_pModel != m_pModel) {
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    }
     bool bDataSet = false;
     if (i_pEv->type() == QEvent::MouseButtonRelease) {
         bool bVal = i_modelIdx.data(Qt::DisplayRole).toBool();

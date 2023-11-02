@@ -139,50 +139,14 @@ signals:
     /*! Signal emitted if the draw set has been changed.
         @param i_drawSettings [in] Contains the new draw settings (pen style, line color, font, etc.). */
     void drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
-    /*! Signal emitted if an object has been added.
-        @param i_strKeyInTree [in] Unique key of the graphical object. */
-    void graphObjAdded(const QString& i_strKeyInTree);
-    /*! Signal emitted if a property (labels, geometry, drawing settings, etc.) of a
-        graphical object has been changed.
-        Please note that this signal is not emitted if the object is renamed or moved to another parent.
-        @param i_strKeyInTree [in] Unique key of the graphical object. */
-    void graphObjChanged(const QString& i_strKeyInTree);
-    /*! Signal emitted if a graphical object has been renamed.
-        @param i_strNewKeyInTree [in] Unique key after moving the object.
-        @param i_strOrigKeyInTree [in] Unique key before moving the object.
-        @param i_strKeyInTreeOfTargetBranch [in]
-            Name of the object in the new target branch after moving the object.
-            Provided for convenience as this is the last section of i_strNewKeyInTree. */
-    void graphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
-    /*! Signal emitted if a graphical object has been renamed.
-        @param i_strNewKeyInTree [in] Unique key after renaming the object.
-        @param i_strOrigKeyInTree [in] Unique key before renaming the object.
-        @param i_strOrigName [in]
-            Name before renaming the object.
-            Provided for convenience as this is the last section of i_strOrigKeyInTree. */
-    void graphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
-    /*! Signal emitted if an object has been destroyed.
-        Please note that if the signal is emitted you can no longer access the properties of the
-        object and dynamic casts to CGraphObj or to QGraphicsItem cannot be used anymore.
-        @param i_strKeyInTree [in] Unique key of the graphical object. */
-    void graphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 public: // instance methods
     void setDrawingSize( const CDrawingSize& i_drawingSize);
     const CDrawingSize& drawingSize() const;
 public: // instance methods
-    //ZS::PhysVal::CPhysVal toPhysValXCoor(double i_fXCoor_px) const;
-    //ZS::PhysVal::CPhysVal toPhysValYCoor(double i_fYCoor_px) const;
     CPhysValPoint toPhysValPoint(const QPointF& i_pt_px) const;
-    //CPhysValSize toPhysValSize(const QSizeF& i_size) const;
     CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //double toPixelXCoor(const ZS::PhysVal::CPhysVal& i_physValXCoor) const;
-    //double toPixelYCoor(const ZS::PhysVal::CPhysVal& i_physValYCoor) const;
-    //CPhysValPoint toPixelCoor(const CPhysValPoint& i_physValPoint) const;
-    //CPhysValSize toPixelCoor(const CPhysValSize& i_physValSize) const;
-    //CPhysValLine toPixelCoor(const CPhysValLine& i_physValLine) const;
-    //CPhysValRect toPixelCoor(const CPhysValRect& i_physValRect) const;
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;
@@ -199,7 +163,7 @@ protected: // instance methods
 public: // instance methods
     void clear();
     void addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent = nullptr );
-    void removeGraphObj( CGraphObj* i_pGraphObj );
+    //void removeGraphObj( CGraphObj* i_pGraphObj );
     QGraphicsItem* findGraphicsItem( const QString& i_strKeyInTree );
     CGraphObj* findGraphObj( const QString& i_strKeyInTree );
 protected: // instance methods
@@ -225,8 +189,8 @@ public: // instance methods
     void setCurrentDrawingTool( const QString& i_strFactoryGrpName, const QString& i_strGraphObjType );
     CObjFactory* getCurrentDrawingTool() const { return m_pObjFactory; }
     int getCurrentDrawingToolGraphObjType() const;
-    QGraphicsItem* getGraphicsItemCreating() const { return m_pGraphicsItemCreating; }  // same object as GraphObjCreating (just a different name for the same thing)
-    CGraphObj* getGraphObjCreating() const { return m_pGraphObjCreating; }              // same object as GraphicsItemCreating (just a different name for the same thing)
+    QGraphicsItem* getGraphicsItemCreating() const { return m_pGraphicsItemCreating; }
+    CGraphObj* getGraphObjCreating() const { return m_pGraphObjCreating; }
 public: // instance methods
     CGraphObjConnectionPoint* getConnectionPoint( const QPointF& i_ptScenePos );
 public: // instance methods
@@ -237,18 +201,10 @@ public: // instance methods
 public: // instance methods
     double bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<QGraphicsItem*>& i_arpGraphicsItems = QList<QGraphicsItem*>() ); // usually list of items under mouse cursor, if list is empty all scene's items will be checked
     double sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QGraphicsItem*>& i_arpGraphicsItems = QList<QGraphicsItem*>() );   // usually list of items under mouse cursor, if list is empty all scene's items will be checked
-public: // to be called by graphical objects (as graphical objects are not derived from QObject and cannot emit signals)
+public: // to be called by graphical objects
     void onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj );
     void onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj );
-public: // to be called by graphical objects (as graphical objects are not derived from QObject and cannot emit signals)
     void onGraphObjCreationFinished( CGraphObj* i_pGraphObj );
-    void onGraphObjAboutToBeDestroyed( const QString& i_strKeyInTree );
-    //void onGraphObjDestroyed( const QString& i_strKeyInTree );
-    //void onGraphObjIdChanged( const QString& i_strKeyInTreeOld, const QString& i_strKeyInTreeNew );
-    //void onGraphObjNameChanged(
-    //    const QString& i_strKeyInTree,
-    //    const QString& i_strObjNameOld,     // !!! NOT including name of parents !!!
-    //    const QString& i_strObjNameNew );   // !!! NOT including name of parents !!!
 public: // instance methods
     QString findUniqueGraphObjName( CGraphObj* i_pGraphObj );
 public: // instance methods
@@ -323,11 +279,7 @@ protected slots:
     void onDrawUnitsScaleFactorChanged();
 protected slots:
     void onGraphObjFactoryDestroyed( QObject* i_pObjFactory );
-protected slots:
-    void onGraphObjsIdxTreeEntryAdded( const QString& i_strKeyInTree );
-    void onGraphObjsIdxTreeEntryChanged( const QString& i_strKeyInTree );
-    void onGraphObjsIdxTreeEntryMoved( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch );
-    void onGraphObjsIdxTreeEntryRenamed( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName );
+    void onGraphObjAboutToBeDestroyed( CGraphObj* i_pGraphObj );
 protected: // auxiliary instance methods
     void paintGridLines(QPainter* i_pPainter);
 protected: // auxiliary instance methods
@@ -355,11 +307,6 @@ protected: // auxiliary instance methods (trace emitting signals)
     void emit_mousePosChanged( const QPointF& i_ptMousePos );
     void emit_modeChanged();
     void emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
-    void emit_graphObjAdded(const QString& i_strKeyInTree);
-    void emit_graphObjChanged(const QString& i_strKeyInTree);
-    void emit_graphObjMoved(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strKeyInTreeOfTargetBranch);
-    void emit_graphObjRenamed(const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree, const QString& i_strOrigName);
-    void emit_graphObjAboutToBeDestroyed(const QString& i_strKeyInTree);
 protected: // auxiliary instance methods (method tracing)
     void traceInternalStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
 protected: // class members

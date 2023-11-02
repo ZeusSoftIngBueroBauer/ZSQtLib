@@ -83,7 +83,7 @@ public: // instance methods
 protected slots:
     void onEdtCoorValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
     void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
-    void onGraphObjAboutToDestroyed();
+    void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // auxiliary methods
     void update();
 protected: // class members

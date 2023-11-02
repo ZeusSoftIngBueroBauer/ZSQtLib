@@ -58,20 +58,20 @@ public: // ctors and dtor
 public: // instance methods
     void expand(bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    virtual bool setKeyInTree(const QString& i_strKeyInTree) override;
+public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasErrors() const override;
     bool hasChanges() const override;
     void applySettings(bool i_bImmediatelyApplySettings = true) override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
+    void onBtnResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
+    void onBtnAddLabelClicked(bool i_bChecked = false);
+    void onBtnRemoveLabelClicked(bool i_bChecked = false);
 protected slots:
-    //void onEdtNameTextChanged(const QString& i_strText);
-    //void onChkNameLabelVisibleStateChanged(int i_iState);
-    //void onCmbNameLabelAnchorSelPtCurrentIndexChanged(int i_idx);
-    //void onChkNameLabelAnchorLineVisibleStateChanged(int i_iState);
+    void onModelLabelsContentChanged();
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
-private: // auxiliary instance methods
-    //bool changedNameIsUnique() const;
 private: // instance members
     /*!< Edit controls. */
     QWidget* m_pWdgtHeadline;
@@ -84,17 +84,10 @@ private: // instance members
     ZS::System::GUI::CSepLine* m_pSepHeadline;
     QWidget* m_pWdgtLabels;
     QVBoxLayout* m_pLytWdgtLabels;
-    //QHBoxLayout* m_pLytLineName;
-    //QLabel* m_pLblName;
-    //QLineEdit* m_pEdtName;
-    //QLabel* m_pLblNameError;
-    //QHBoxLayout* m_pLytLineNameVisibilities;
-    //QLabel* m_pLblNameVisible;
-    //QCheckBox* m_pChkNameLabelVisible;
-    //QLabel* m_pLblNameLabelAnchorSelPt;
-    //QComboBox* m_pCmbNameLabelAnchorSelPt;
-    //QLabel* m_pLblNameLabelAnchorLineVisible;
-    //QCheckBox* m_pChkNameLabelAnchorLineVisible;
+    QHBoxLayout* m_pLytLineEditButtons;
+    QPushButton* m_pBtnResizeRowsAndColumnsToContents;
+    QPushButton* m_pBtnAddLabel;
+    QPushButton* m_pBtnRemoveLabels;
     QVBoxLayout* m_pLytListView;
     QTableView* m_pTableView;
     CModelGraphObjLabels* m_pModel;
