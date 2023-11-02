@@ -24,14 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryPoint.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPoint.h"
@@ -41,6 +33,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -82,7 +80,7 @@ public: // interface methods
 CGraphObj* CObjFactoryPoint::createGraphObj(
     CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -282,10 +280,7 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
     if( bPosValid )
     {
-        pGraphObj = new CGraphObjPoint(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
+        pGraphObj = new CGraphObjPoint(i_pDrawingScene, drawSettings, i_strObjName);
 
         i_pDrawingScene->addGraphObj(pGraphObj);
 

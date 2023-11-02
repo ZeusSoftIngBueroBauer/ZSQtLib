@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjPolyline_h
 #define ZSDraw_GraphObjPolyline_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsPolygonItem>
 #else
 #include <QtWidgets/QGraphicsPolygonItem>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -61,16 +58,16 @@ public: // class methods
     static QString ClassName() { return "CGraphObjPolyline"; }
 public: // ctors
     CGraphObjPolyline(
-        CDrawingScene*       i_pDrawingScene,
+        CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+        const QString& i_strObjName = "");
 protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
     CGraphObjPolyline(
-        CDrawingScene*       i_pDrawingScene,
-        const QString&       i_strFactoryGroupName,
-        EGraphObjType        i_type,
-        const QString&       i_strType,
-        const QString&       i_strObjName,
+        CDrawingScene* i_pDrawingScene,
+        const QString& i_strFactoryGroupName,
+        EGraphObjType i_type,
+        const QString& i_strType,
+        const QString& i_strObjName,
         const CDrawSettings& i_drawSettings );
 public: // dtor
     virtual ~CGraphObjPolyline();

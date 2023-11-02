@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjGroup_h
 #define ZSDraw_GraphObjGroup_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsItemGroup>
 #else
 #include <QtWidgets/QGraphicsItemGroup>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -61,17 +58,17 @@ public: // class methods
     static QString ClassName() { return "CGraphObjGroup"; }
 public: // ctor
     CGraphObjGroup(
-        CDrawingScene*       i_pDrawingScene,
+        CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+        const QString& i_strObjName = "");
 protected: // ctor (used by derived classes)
     CGraphObjGroup(
-        CDrawingScene*       i_pDrawingScene,
-        const QString&       i_strFactoryGroupName,
-        EGraphObjType        i_type,
-        const QString&       i_strType,
-        const QString&       i_strObjName,
-        const CDrawSettings& i_drawSettings );
+        CDrawingScene* i_pDrawingScene,
+        const QString& i_strFactoryGroupName,
+        EGraphObjType i_type,
+        const QString& i_strType,
+        const QString& i_strObjName,
+        const CDrawSettings& i_drawSettings);
 public: // dtor
     virtual ~CGraphObjGroup();
 public: // overridables of base class QGraphicsItem

@@ -748,7 +748,7 @@ void CGraphObjTransistor::updateToolTip()
 
     if( pGraphicsItem != nullptr )
     {
-        QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
+        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
         QPointF ptPos;
 
         m_strToolTip  = "ObjName:\t" + name();

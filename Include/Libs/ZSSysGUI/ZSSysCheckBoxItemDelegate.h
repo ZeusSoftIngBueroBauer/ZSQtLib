@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-Copyright 2004 - 2020 by ZeusSoft, Ing. Buero Bauer
+Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
                          D-83670 Bad Heilbrunn
                          Tel: 0049 8046 9488
@@ -24,55 +24,50 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjWdgtLineEdit_h
-#define ZSDraw_GraphObjWdgtLineEdit_h
+#ifndef ZSSysGUI_CheckBoxItemDelegate_h
+#define ZSSysGUI_CheckBoxItemDelegate_h
 
-#include "ZSDrawGraphObjWdgt.h"
+#include "ZSSysGUI/ZSSysGUIDllMain.h"
 
-class QLineEdit;
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qstyleditemdelegate.h>
+#else
+#include <QtWidgets/qstyleditemdelegate.h>
+#endif
 
 namespace ZS
 {
 namespace System
 {
 class CTrcAdminObj;
-}
 
-namespace Draw
-{
-class CDrawSettings;
-class CGraphObjSelectionPoint;
-
-namespace QtWidgets
+namespace GUI
 {
 //******************************************************************************
-class CGraphObjWdgtLineEdit : public CGraphObjWdgt
+class ZSSYSGUIDLL_API CCheckBoxItemDelegate : public QStyledItemDelegate
 //******************************************************************************
 {
-    /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::Draw::QtWidgets"; }
-    /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjWdgtLineEdit"; }
+    Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::System::GUI"; }
+    static QString ClassName() { return "CCheckBoxItemDelegate"; }
 public: // ctors and dtor
-    CGraphObjWdgtLineEdit(
-        CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString& i_strObjName = "");
-    virtual ~CGraphObjWdgtLineEdit();
-public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone();
-protected: // class members
-    /*!< Needed to set an initial unique name when creating a new instance. */
-    static qint64 s_iInstCount;
+    CCheckBoxItemDelegate(QWidget* i_pWdgtParent = nullptr);
+    virtual ~CCheckBoxItemDelegate();
+public: // overridables of base class QStyledItemDelegate
+    void paint(QPainter* i_pPainter, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
+protected: // overridables of base class QStyledItemDelegate
+    bool editorEvent(QEvent* i_pEv, QAbstractItemModel* i_pModel, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx);
 protected: // instance members
-    QLineEdit* m_pLineEdit;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
-}; // class CGraphObjWdgtLineEdit
+}; // class CCheckBoxItemDelegate
 
-} // namespace QtWidgets
+} // namespace GUI
 
-} // namespace Draw
+} // namespace System
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjWdgtLineEdit_h
+#endif // #ifndef ZSSysGUI_ProgressBar_h

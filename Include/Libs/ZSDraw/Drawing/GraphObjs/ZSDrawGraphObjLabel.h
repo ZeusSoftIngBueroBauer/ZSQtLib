@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjLabel_h
 #define ZSDraw_GraphObjLabel_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsSimpleTextItem>
 #else
 #include <QtWidgets/QGraphicsSimpleTextItem>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -65,11 +62,11 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjLabel"; }
 public: // ctors and dtor
-    CGraphObjLabel( // for (bounding) rectangles
-        CDrawingScene*  i_pDrawingScene,
-        CGraphObj*      i_pGraphObjParent,
-        const QString&  i_strKey,
-        const QString&  i_strText,
+    CGraphObjLabel(
+        CDrawingScene* i_pDrawingScene,
+        CGraphObj* i_pGraphObjParent,
+        const QString& i_strKey,
+        const QString& i_strText,
         ESelectionPoint i_selPt );
     virtual ~CGraphObjLabel();
 public: // overridables of base class QGraphicsItem
@@ -77,18 +74,19 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables
-    virtual QString getKey() const { return m_strKey; }
+    void setKey(const QString& i_strKey);
+    QString getKey() const;
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText( const QString& i_strText );
     QString getText() const;
 public: // overridables
     virtual void setLinkedSelectionPoint(ESelectionPoint i_selPt);
-    virtual ESelectionPoint getLinkedSelectionPoint() const { return m_selPtLinked; }
-    QSizeF getLinkedSelectionPointDistance() const { return m_sizeLinkedSelPtDist; }
+    virtual ESelectionPoint getLinkedSelectionPoint() const;
+    QSizeF getLinkedSelectionPointDistance() const;
 public: // overridables
     virtual void showAnchorLine();
     virtual void hideAnchorLine();
-    virtual bool isAnchorLineVisible() const { return m_bShowAnchorLine; }
+    virtual bool isAnchorLineVisible() const;
 public: // overridables
     //virtual void saveGraphObjDistance();
     //virtual QSizeF getGraphObjDistance() const { return m_sizGraphObjDist; }

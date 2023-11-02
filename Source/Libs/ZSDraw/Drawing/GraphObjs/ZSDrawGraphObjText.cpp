@@ -76,9 +76,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjText::CGraphObjText(
-    CDrawingScene*       i_pDrawingScene,
+    CDrawingScene* i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
@@ -211,7 +211,7 @@ CGraphObj* CGraphObjText::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjText* pGraphObj = new CGraphObjText(m_pDrawingScene,m_drawSettings);
+    CGraphObjText* pGraphObj = new CGraphObjText(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setPlainText( toPlainText() );

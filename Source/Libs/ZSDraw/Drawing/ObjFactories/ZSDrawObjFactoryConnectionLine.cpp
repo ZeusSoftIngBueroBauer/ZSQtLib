@@ -24,14 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-
-#if QT_VERSION < 0x050000
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactoryConnectionLine.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
@@ -42,6 +34,12 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
+
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -83,7 +81,7 @@ public: // interface methods
 CGraphObj* CObjFactoryConnectionLine::createGraphObj(
     CDrawingScene* i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
-    const CDrawSettings& i_drawSettings )
+    const CDrawSettings& i_drawSettings)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -340,15 +338,12 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
 
     if( pCnctPtStart != nullptr && pCnctPtEnd != nullptr && plg.size() > 1 )
     {
-        pGraphObj = new CGraphObjConnectionLine(
-            /* pDrawingScene */ i_pDrawingScene,
-            /* drawSettings  */ drawSettings,
-            /* strObjName    */ i_strObjName );
+        pGraphObj = new CGraphObjConnectionLine(i_pDrawingScene, drawSettings, i_strObjName);
 
         i_pDrawingScene->addGraphObj(pGraphObj);
 
-        pGraphObj->setConnectionPoint( ELinePoint::Start, pCnctPtStart );
-        pGraphObj->setConnectionPoint( ELinePoint::End, pCnctPtEnd );
+        pGraphObj->setConnectionPoint(ELinePoint::Start, pCnctPtStart);
+        pGraphObj->setConnectionPoint(ELinePoint::End, pCnctPtEnd);
 
         plg = pGraphObj->mapFromScene(plg);
 

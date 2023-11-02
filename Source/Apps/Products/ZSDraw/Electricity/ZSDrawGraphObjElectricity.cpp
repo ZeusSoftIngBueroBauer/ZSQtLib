@@ -52,13 +52,13 @@ protected: // ctor
 
 //------------------------------------------------------------------------------
 CGraphObjElectricity::CGraphObjElectricity(
-    CDrawingScene*       i_pDrawingScene,
-    const QString&       i_strType,
-    const QString&       i_strObjName,
+    CDrawingScene* i_pDrawingScene,
+    const QString& i_strType,
+    const QString& i_strObjName,
     const CDrawSettings& i_drawSettings ) :
 //------------------------------------------------------------------------------
     CGraphObjGroup(
-        /* pDrawingScene       */ i_pDrawingScene,
+        /* pDrawingScene */ i_pDrawingScene,
         /* strFactoryGroupName */ c_strFactoryGroupName,
         /* type                */ EGraphObjTypeUserDefined,
         /* strType             */ i_strType,
@@ -121,7 +121,7 @@ public: // overridables of base class CGraphObj
 //
 //            if( pGraphicsItemChild != nullptr && pGraphObjChild != nullptr )
 //            {
-//                pGraphObjChild->setKeyInTree( m_strKeyInTree + m_pDrawingScene->getGraphObjNameNodeSeparator() + pGraphObjChild->getObjName() );
+//                pGraphObjChild->setKeyInTree( m_strKeyInTree + CDrawingScene::getGraphObjNameNodeSeparator() + pGraphObjChild->getObjName() );
 //            }
 //        }
 //    }

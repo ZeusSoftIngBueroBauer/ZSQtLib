@@ -135,7 +135,7 @@ CDlgGraphObjLineProperties::CDlgGraphObjLineProperties(
     // Style Widgets
     //==============
 
-    CDrawingScene* pDrawingScene = m_pGraphObjLine->getDrawingScene();
+    CDrawingScene* pDrawingScene = m_pGraphObjLine->drawingScene();
 
     m_pScrollArea = new QScrollArea();
     m_pScrollArea->setWidgetResizable(true);

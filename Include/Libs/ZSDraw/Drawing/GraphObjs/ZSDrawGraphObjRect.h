@@ -27,16 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjRect_h
 #define ZSDraw_GraphObjRect_h
 
-#include <QtCore/qglobal.h>
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsRectItem>
 #else
 #include <QtWidgets/QGraphicsRectItem>
 #endif
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 
 namespace ZS
 {
@@ -61,9 +58,9 @@ public: // class methods
     static QString ClassName() { return "CGraphObjRect"; }
 public: // ctors and dtor
     CGraphObjRect(
-        CDrawingScene*       i_pDrawingScene,
+        CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+        const QString& i_strObjName = "");
     virtual ~CGraphObjRect();
 public: // overridables of base class QGraphicsItem
     virtual int type() const override { return EGraphObjTypeRect; }

@@ -77,9 +77,9 @@ public: // ctors
 
 //------------------------------------------------------------------------------
 CGraphObjPolyline::CGraphObjPolyline(
-    CDrawingScene*       i_pDrawingScene,
+    CDrawingScene* i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
@@ -136,11 +136,11 @@ protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
 
 //------------------------------------------------------------------------------
 CGraphObjPolyline::CGraphObjPolyline(
-    CDrawingScene*       i_pDrawingScene,
-    const QString&       i_strFactoryGroupName,
-    EGraphObjType        i_type,
-    const QString&       i_strType,
-    const QString&       i_strObjName,
+    CDrawingScene* i_pDrawingScene,
+    const QString& i_strFactoryGroupName,
+    EGraphObjType i_type,
+    const QString& i_strType,
+    const QString& i_strObjName,
     const CDrawSettings& i_drawSettings ) :
 //------------------------------------------------------------------------------
     CGraphObj(
@@ -189,9 +189,9 @@ CGraphObjPolyline::~CGraphObjPolyline()
     // called. And this is only always the case in the dtor of the class
     // derived from QGraphicsItem.
 
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        if (m_pDrawingScene != nullptr) {
+    if (m_pDrawingScene != nullptr) {
+        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
             if (!m_strKeyInTree.isEmpty()) {
                 try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
@@ -228,20 +228,14 @@ public: // must overridables of base class CGraphObj
 CGraphObj* CGraphObjPolyline::clone()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
-    {
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
-    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(m_pDrawingScene,m_drawSettings);
+    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setPolygon( polygon() );

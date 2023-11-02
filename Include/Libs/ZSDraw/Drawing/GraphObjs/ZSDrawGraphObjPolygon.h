@@ -27,9 +27,6 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjPolygon_h
 #define ZSDraw_GraphObjPolygon_h
 
-#include <QtCore/qglobal.h>
-
-#include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
 
 namespace ZS
@@ -55,9 +52,9 @@ public: // class methods
     static QString ClassName() { return "CGraphObjPolygon"; }
 public: // ctors and dtor
     CGraphObjPolygon(
-        CDrawingScene*       i_pDrawingScene,
+        CDrawingScene* i_pDrawingScene,
         const CDrawSettings& i_drawSettings,
-        const QString&       i_strObjName = "" );
+        const QString& i_strObjName = "");
     virtual ~CGraphObjPolygon();
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;

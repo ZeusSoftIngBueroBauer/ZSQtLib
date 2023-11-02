@@ -308,8 +308,14 @@ protected: // ctor
     The ctor does neither add the instance as a graphic item to Qt's grapics scene
     nor to the index tree of the drawing scene.
 
+    Please also note that the constructor of the base class does not add the
+    predefined label "Name". Othwerwise labels would also be added to labels which
+    again would have labels and so on (stack overflow). Also selection points should
+    not get a label. For this, and to be flexible, the "Name" label usually invisible
+    as default should be added in the constructor of the derived class - if desired.
+
     @param i_pDrawingScene [in]
-        Pointer to drawing scene the object will be added.
+        Pointer to drawing scene from which the object is created.
     @param i_strFactoryGroupName [in]
         The group name of the object factory used to create the graphical objects
         of the given type (e.g. "Draw::Standard Shapes", "Draw::Widgets", "Draw::Electricity").
@@ -410,6 +416,7 @@ CGraphObj::CGraphObj(
             m_drawSettings.setAttribute(idxAttr, i_settings.getAttribute(idxAttr));
         }
     }
+
 } // ctor
 
 /*==============================================================================
@@ -417,6 +424,15 @@ public: // dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Destroys the graphical object.
+
+    All selection points and labels will be destroyed together with the object.
+    The destructor of the CIdxTreeEntry will remove the item from the index tree.
+
+    But please note that destructor of the CGraphObj base class does not remove
+    the graphical object from the drawing scene. This is the task of the destructor
+    of the derived class. Why see comment in the method body below.
+*/
 CGraphObj::~CGraphObj()
 //------------------------------------------------------------------------------
 {
@@ -858,7 +874,7 @@ public: // instance methods
 //------------------------------------------------------------------------------
 /*! @brief Returns the drawing scene the object belongs to.
 */
-CDrawingScene* CGraphObj::getDrawingScene()
+CDrawingScene* CGraphObj::drawingScene()
 //------------------------------------------------------------------------------
 {
     return m_pDrawingScene;
@@ -3264,7 +3280,6 @@ double CGraphObj::bringToFront()
         /* strAddInfo   */ "" );
 
     double fZValue = m_fZValue;
-
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
         QRectF rctBounding = pGraphicsItem->boundingRect();
@@ -3699,10 +3714,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
             if (bShowSelPt) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
                 if (pGraphObjSelPt == nullptr) {
-                    pGraphObjSelPt = new CGraphObjSelectionPoint(
-                        /* pDrawingScene     */ m_pDrawingScene,
-                        /* pGraphObjSelected */ this,
-                        /* selectionPoint    */ selPt );
+                    pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, selPt);
                     m_arpSelPtsBoundingRect[idxSelPt] = pGraphObjSelPt;
                     QObject::connect(
                         pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -3869,10 +3881,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 
             if (pGraphObjSelPt == nullptr)
             {
-                pGraphObjSelPt = new CGraphObjSelectionPoint(
-                    /* pDrawingScene     */ m_pDrawingScene,
-                    /* pGraphObjSelected */ this,
-                    /* idxPt             */ idxSelPt );
+                pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, idxSelPt);
                 m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;
                 QObject::connect(
                     pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -4046,7 +4055,9 @@ bool CGraphObj::addLabel(const QString& i_strName)
     bool bCanAdd = !m_hshpLabels.contains(i_strName);
     if (bCanAdd) {
         CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(
-                m_pDrawingScene, this, i_strName, "", ESelectionPoint::Center);
+            m_pDrawingScene, this, i_strName, "", ESelectionPoint::Center);
+        pGraphObjLabel->setVisible(false);
+        m_hshpLabels.insert(i_strName, pGraphObjLabel);
         if (i_strName == "Name") {
             pGraphObjLabel->setText(m_strName);
         }
@@ -4083,7 +4094,7 @@ void CGraphObj::removeLabel(const QString& i_strName)
         /* strMethod    */ "CGraphObj::removeLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    // the dtor of the label removes itself from the drawing scene
+    // the dtor of the label removes itself from the drawing scene - if it was added.
     //m_pDrawingScene->removeGraphObj(m_pNameLabel);
 
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
@@ -4091,7 +4102,7 @@ void CGraphObj::removeLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    // "onLabelAboutToDestroyed" is called which removes the label from the hash.
+    // "onLabelAboutToBeDestroyed" is called which removes the label from the hash.
     delete pGraphObjLabel;
     pGraphObjLabel = nullptr;
 
@@ -4100,6 +4111,58 @@ void CGraphObj::removeLabel(const QString& i_strName)
     if (m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
     }
+}
+
+//------------------------------------------------------------------------------
+/*! Renames the label with the given name.
+
+    If a label with passed new name already exists, the label is not renamed and
+    the method returns false.
+
+    @param [in] i_strName
+        Current name of the label. If no label with the name exists an exception is thrown.
+    @param [in] i_strNameNew
+        New name of the label. If a label with the new name already exists, the
+        label will not be renamed.
+
+    @return true, if the label has been renamed, false otherwise.
+*/
+bool CGraphObj::renameLabel(const QString& i_strName, const QString& i_strNameNew)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + i_strNameNew;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::renameLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    // the dtor of the label removes itself from the drawing scene - if it was added.
+    //m_pDrawingScene->removeGraphObj(m_pNameLabel);
+
+    CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
+    if (pGraphObjLabel == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bCanRename = !m_hshpLabels.contains(i_strNameNew);
+    if (bCanRename) {
+        m_hshpLabels.remove(i_strName);
+        pGraphObjLabel->setKey(i_strNameNew);
+        m_hshpLabels.insert(i_strNameNew, pGraphObjLabel);
+        if (i_strNameNew == "Name") {
+            pGraphObjLabel->setText(m_strName);
+        }
+        emit_labelRenamed(i_strName, i_strNameNew);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+    return bCanRename;
 }
 
 //------------------------------------------------------------------------------
@@ -4234,39 +4297,40 @@ void CGraphObj::showLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    if (pGraphObjLabel->tree() == nullptr) {
+    if (pGraphObjLabel->scene() == nullptr) {
         m_pDrawingScene->addGraphObj(pGraphObjLabel, this);
+        pGraphObjLabel->setVisible(true);
 
         QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
         ESelectionPoint selPt = pGraphObjLabel->getLinkedSelectionPoint();
         QPointF ptSelPt = getSelectionPointCoors(selPt);
         ptSelPt = pGraphicsItem->mapToScene(ptSelPt);
 
-        QPointF ptLabelTmp = ptSelPt;
-        if (selPt != ESelectionPoint::BottomRight &&
-            selPt != ESelectionPoint::BottomLeft &&
-            selPt != ESelectionPoint::BottomCenter)
-        {
-            ptLabelTmp.setY(ptLabelTmp.y() - pGraphicsItem->boundingRect().height());
-        }
+        QPointF ptLabel = ptSelPt;
+        //if (selPt != ESelectionPoint::BottomRight &&
+        //    selPt != ESelectionPoint::BottomLeft &&
+        //    selPt != ESelectionPoint::BottomCenter)
+        //{
+        //    ptLabel.setY(ptLabelTmp.y() - pGraphicsItem->boundingRect().height());
+        //}
 
-        bool bUniquePos = false;
-        while (!bUniquePos) {
-            bUniquePos = true;
-            for (CGraphObjLabel* pGraphObjLabelTmp : m_hshpLabels) {
-                if (pGraphObjLabelTmp != pGraphObjLabel) {
-                    if (pGraphObjLabelTmp->scenePos() == ptLabelTmp) {
-                        QGraphicsItem* pGraphicsItemTmp = dynamic_cast<QGraphicsItem*>(pGraphObjLabelTmp);
-                        bUniquePos = false;
-                        ptLabelTmp.setX(pGraphObjLabelTmp->scenePos().x() + pGraphicsItemTmp->boundingRect().width() + 4);
-                        break;
-                    }
-                }
-            }
-        }
+        //bool bUniquePos = false;
+        //while (!bUniquePos) {
+        //    bUniquePos = true;
+        //    for (CGraphObjLabel* pGraphObjLabelTmp : m_hshpLabels) {
+        //        if (pGraphObjLabelTmp != pGraphObjLabel) {
+        //            if (pGraphObjLabelTmp->scenePos() == ptLabel) {
+        //                QGraphicsItem* pGraphicsItemTmp = dynamic_cast<QGraphicsItem*>(pGraphObjLabelTmp);
+        //                bUniquePos = false;
+        //                ptLabel.setX(pGraphObjLabelTmp->scenePos().x() + pGraphicsItemTmp->boundingRect().width() + 4);
+        //                break;
+        //            }
+        //        }
+        //    }
+        //}
 
-        QSize sizeDist(ptLabelTmp.x() - ptSelPt.x(), ptLabelTmp.y() - ptSelPt.y());
-        QPointF ptLabel(ptSelPt.x() + sizeDist.width(), ptSelPt.y() + sizeDist.height());
+        //QSize sizeDist(ptLabel.x() - ptSelPt.x(), ptLabel.y() - ptSelPt.y());
+        //ptLabel = QPointF(ptSelPt.x() + sizeDist.width(), ptSelPt.y() + sizeDist.height());
 
         pGraphObjLabel->setPos(ptLabel);
         pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.02);
@@ -4306,8 +4370,9 @@ void CGraphObj::hideLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    if (pGraphObjLabel->tree() != nullptr) {
+    if (pGraphObjLabel->scene() != nullptr) {
         m_pDrawingScene->removeGraphObj(pGraphObjLabel);
+        pGraphObjLabel->setVisible(false);
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -5378,9 +5443,6 @@ void CGraphObj::updateToolTip()
 
     if (pGraphicsItem != nullptr)
     {
-        QString strNodeSeparator = m_pDrawingScene->getGraphObjNameNodeSeparator();
-        QPointF ptPos;
-
         m_strToolTip = "ObjPath:\t\t" + path();
 
         // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
@@ -5390,13 +5452,12 @@ void CGraphObj::updateToolTip()
         // around the rotation origin point. In contrary it looks like "pos"
         // always returns the top left corner before rotating the object.
 
-        if( pGraphicsItem->parentItem() != nullptr )
-        {
+        QPointF ptPos;
+        if (pGraphicsItem->parentItem() != nullptr) {
             ptPos = pGraphicsItem->pos();
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
-        else
-        {
+        else {
             ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
             m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
         }
@@ -5578,7 +5639,7 @@ protected: // overridables
 //    }
 //
 //    CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(
-//        m_pDrawingScene, this, i_strKey, i_strText, i_selPt);
+//        this, i_strKey, i_strText, i_selPt);
 //    m_pDrawingScene->addGraphObj(pGraphObjLabel, this);
 //
 //    i_arpLabels.insert(i_strKey, pGraphObjLabel);
@@ -5808,6 +5869,23 @@ void CGraphObj::emit_labelRemoved(const QString& i_strName)
         /* strMethod    */ "CGraphObj::emit_labelRemoved",
         /* strAddInfo   */ strMthInArgs );
     emit labelRemoved(i_strName);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_labelRenamed(const QString& i_strName, const QString& i_strNameNew)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + i_strNameNew;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::emit_labelRenamed",
+        /* strAddInfo   */ strMthInArgs );
+    emit labelRenamed(i_strName, i_strNameNew);
 }
 
 //------------------------------------------------------------------------------

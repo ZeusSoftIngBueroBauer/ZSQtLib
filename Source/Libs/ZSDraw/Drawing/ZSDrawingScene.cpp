@@ -115,6 +115,8 @@ const QString CDrawingScene::c_strXmlAttrGraphObjFactoryGroupName = "FactoryGrou
 const QString CDrawingScene::c_strXmlAttrGraphObjType = "ObjectType";
 const QString CDrawingScene::c_strXmlAttrGraphObjName = "ObjectName";
 
+const QString CDrawingScene::s_strGraphObjNameSeparator = "/";
+
 /*==============================================================================
 public: // class methods
 ==============================================================================*/
@@ -184,7 +186,6 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_pGraphObjCreating(nullptr),
     m_pGraphicsItemAddingShapePoints(nullptr),
     m_pGraphObjAddingShapePoints(nullptr),
-    m_strGraphObjNameSeparator("/"),
     m_pGraphObjsIdxTree(nullptr),
     m_pGraphObjsIdxTreeClipboard(nullptr),
     m_arpGraphicsItemsAcceptingHoverEvents(),
@@ -198,11 +199,6 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_pTrcAdminObjPaintEvent(nullptr)
 {
     setObjectName(i_strName);
-
-    //if (m_strGraphObjNameSeparator.isEmpty())
-    //{
-    //    m_strGraphObjNameSeparator = "/";
-    //}
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Drawing", ClassName(), objectName());
@@ -1280,7 +1276,6 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
     // Otherwise the "boundingRect" call of groups (which implicitly calls childrenBoundingRect) does
     // not work as the childs bounding rectangles would be included. But the selection points and
     // labels should appear as childs in the index tree of the drawing scene.
-
     QGraphicsItem* pGraphicsItemParent = nullptr;
     if (!i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel()) {
         if (i_pGraphObjParent != nullptr) {
@@ -1291,10 +1286,15 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
         }
     }
 
+    // On adding the item to the graphics scene the itemChange method of the graphics
+    // item is called with "SceneHasChanged". On initially setting the drawing scene
+    // graphical object has to recalculate the position in pixel coordinates.
     addItem(pGraphicsItem, pGraphicsItemParent);
 
-    m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
-
+    // Selection points and labels should not be indicated in the index tree.
+    if (!i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel()) {
+        m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
+    }
 } // addGraphObj
 
 //------------------------------------------------------------------------------
@@ -1403,7 +1403,9 @@ void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
         /* strMethod    */ "removeItem",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsScene::removeItem(i_pGraphicsItem);
+    if (i_pGraphicsItem->scene() != nullptr) {
+        QGraphicsScene::removeItem(i_pGraphicsItem);
+    }
 }
 
 /*==============================================================================
@@ -2633,7 +2635,7 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
     }
     else
     {
-        strObjName = strObjNameParent + m_strGraphObjNameSeparator + strObjBaseName + strObjNr;
+        strObjName = strObjNameParent + s_strGraphObjNameSeparator + strObjBaseName + strObjNr;
     }
 
     QList<QGraphicsItem*> arpGraphicsItems = items();
@@ -2673,7 +2675,7 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
             }
             else
             {
-                strObjName = strObjNameParent + m_strGraphObjNameSeparator + strObjBaseName + strObjNr;
+                strObjName = strObjNameParent + s_strGraphObjNameSeparator + strObjBaseName + strObjNr;
             }
         }
 
@@ -3945,7 +3947,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                 strFilePath = url.toLocalFile();
 
-                pGraphObjImage = new CGraphObjImage(this,m_drawSettings);
+                pGraphObjImage = new CGraphObjImage(this, m_drawSettings);
 
                 pGraphObjImage->setImageFilePath(strFilePath);
 

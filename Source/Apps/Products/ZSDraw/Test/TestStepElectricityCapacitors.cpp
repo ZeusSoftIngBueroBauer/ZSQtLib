@@ -281,7 +281,6 @@ void CTest::doTestStepElectricityCapacitors( ZS::Test::CTestStepGroup* i_pTestSt
                 CDrawSettings drawSettings;
 
                 pGraphObj = pObjFactory->createGraphObj(
-                    /* pDrawingScene */ m_pDrawingScene,
                     /* ptItemPos     */ QPointF(0.0,0.0),
                     /* drawSettings  */ drawSettings );
 

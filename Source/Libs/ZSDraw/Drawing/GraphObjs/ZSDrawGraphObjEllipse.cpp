@@ -76,9 +76,9 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjEllipse::CGraphObjEllipse(
-    CDrawingScene*       i_pDrawingScene,
+    CDrawingScene* i_pDrawingScene,
     const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
@@ -156,8 +156,8 @@ CGraphObjEllipse::~CGraphObjEllipse()
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    if (pGraphicsItem != nullptr) {
-        if (m_pDrawingScene != nullptr) {
+    if (m_pDrawingScene != nullptr) {
+        if (pGraphicsItem != nullptr) {
             if (!m_strKeyInTree.isEmpty()) {
                 try {
                     // Cannot be called from within dtor of "CGraphObj" as the dtor
@@ -207,7 +207,7 @@ CGraphObj* CGraphObjEllipse::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(m_pDrawingScene,m_drawSettings);
+    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(m_pDrawingScene, m_drawSettings);
 
     pGraphObj->setName(m_strName);
     pGraphObj->setRect( rect() );

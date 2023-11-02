@@ -7,6 +7,13 @@
 #
 # For more detailled build instructions see "README.md".
 #
+# On Windows systems in order for CMake to find the Qt Installation the following
+# environment variables got to be set:
+#
+# - PATH
+#   - Add install directory of qmake.exe (e.g. C:\Qt\5.15.2\msvc2019_64\bin).
+#     To show the current PATH setting in powershell use $Env:Path
+#
 # Change working directory to where this CMakeList file is located ("<root of the repository>/Make").
 #
 # Generator: Visual Studio 16 (2019)

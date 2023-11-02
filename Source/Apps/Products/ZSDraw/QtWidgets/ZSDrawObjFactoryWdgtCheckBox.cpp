@@ -87,7 +87,7 @@ public: // interface methods
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryWdgtCheckBox::createGraphObj(
-    CDrawingScene* i_pDrawingScene,
+    CDrawingScene*       i_pDrawingScene,
     const CPhysValPoint& i_physValPoint,
     const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
