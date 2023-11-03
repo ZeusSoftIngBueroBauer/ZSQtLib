@@ -70,13 +70,16 @@ protected: // type definitions and constants
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Fills the label struct with the information retrieved from the graphical object.
+*/
 CModelGraphObjLabels::SLabelSettings CModelGraphObjLabels::SLabelSettings::fromGraphObj(
     CGraphObj* i_pGraphObj, const QString& i_strLabelName, int i_iRowIdx)
 //------------------------------------------------------------------------------
 {
     SLabelSettings labelSettings;
     labelSettings.m_bSelected = false;
-    labelSettings.m_strName = i_strLabelName;
+    labelSettings.m_strNameOrig = i_strLabelName;
+    labelSettings.m_strNameCurr = i_strLabelName;
     labelSettings.m_iRowIdx = i_iRowIdx;
     labelSettings.m_bIsPredefinedLabelName = i_pGraphObj->isPredefinedLabelName(i_strLabelName);
     labelSettings.m_strText = i_pGraphObj->labelText(i_strLabelName);
@@ -88,6 +91,26 @@ CModelGraphObjLabels::SLabelSettings CModelGraphObjLabels::SLabelSettings::fromG
 }
 
 //------------------------------------------------------------------------------
+CModelGraphObjLabels::SLabelSettings::SLabelSettings() :
+//------------------------------------------------------------------------------
+    m_strNameOrig(), m_strNameCurr(), m_iRowIdx(-1), m_bIsPredefinedLabelName(false),
+    m_strText(), m_selPt(ESelectionPoint::None), m_bVisible(false), m_bAnchorLineVisible(false),
+    m_bSelected(false), m_errResultInfo()
+{
+}
+
+//------------------------------------------------------------------------------
+CModelGraphObjLabels::SLabelSettings::SLabelSettings(
+    const QString& i_strName, int i_iRowIdx, bool i_bIsPredefinedLabelName,
+    const QString& i_strText, ESelectionPoint i_selPt, bool i_bVisible, bool i_bAnchorLineVisible) :
+//------------------------------------------------------------------------------
+    m_strNameOrig(), m_strNameCurr(i_strName), m_iRowIdx(i_iRowIdx), m_bIsPredefinedLabelName(i_bIsPredefinedLabelName),
+    m_strText(i_strText), m_selPt(i_selPt), m_bVisible(i_bVisible), m_bAnchorLineVisible(i_bAnchorLineVisible),
+    m_bSelected(false), m_errResultInfo()
+{
+}
+
+//------------------------------------------------------------------------------
 bool CModelGraphObjLabels::SLabelSettings::operator == (const SLabelSettings& i_other) const
 //------------------------------------------------------------------------------
 {
@@ -95,7 +118,10 @@ bool CModelGraphObjLabels::SLabelSettings::operator == (const SLabelSettings& i_
     if (m_bSelected != i_other.m_bSelected) {
         bEqual = false;
     }
-    else if (m_strName != i_other.m_strName) {
+    else if (m_strNameOrig != i_other.m_strNameOrig) {
+        bEqual = false;
+    }
+    else if (m_strNameCurr != i_other.m_strNameCurr) {
         bEqual = false;
     }
     else if (m_iRowIdx != i_other.m_iRowIdx) {
@@ -146,7 +172,6 @@ CModelGraphObjLabels::CModelGraphObjLabels(
     m_strKeyInTree(),
     m_pGraphObj(nullptr),
     m_arLabelSettings(),
-    m_hshName2RowIdx(),
     m_bContentChanged(false),
     m_iContentChangedSignalBlockedCounter(0),
     m_pTrcAdminObj(nullptr),
@@ -190,7 +215,6 @@ CModelGraphObjLabels::~CModelGraphObjLabels()
     //m_strKeyInTree;
     m_pGraphObj = nullptr;
     //m_arLabelSettings;
-    //m_hshName2RowIdx;
     m_bContentChanged = false;
     m_iContentChangedSignalBlockedCounter = 0;
     m_pTrcAdminObj = nullptr;
@@ -358,35 +382,37 @@ void CModelGraphObjLabels::applySettings()
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
             // First rename labels which have been renamed.
-            QStringList strlstLabelNames = m_hshName2RowIdx.keys();
-            for (const QString& strName : strlstLabelNames) {
-                int iRow = m_hshName2RowIdx.value(strName);
-                const SLabelSettings& labelSettings = m_arLabelSettings[iRow];
-                if (strName != labelSettings.m_strName) {
-                    m_pGraphObj->renameLabel(strName, labelSettings.m_strName);
-                    m_hshName2RowIdx.remove(strName);
-                    m_hshName2RowIdx.insert(labelSettings.m_strName, iRow);
+            for (const SLabelSettings& labelSettings : m_arLabelSettings) {
+                if (!labelSettings.m_strNameOrig.isEmpty()) {
+                    int iRow = labelSettings.m_iRowIdx;
+                    if (labelSettings.m_strNameOrig != labelSettings.m_strNameCurr) {
+                        if (m_pGraphObj->renameLabel(labelSettings.m_strNameOrig, labelSettings.m_strNameCurr)) {
+                            m_arLabelSettings[labelSettings.m_iRowIdx].m_strNameOrig = labelSettings.m_strNameCurr;
+                        }
+                    }
                 }
             }
             // Next remove labels which have been removed.
-            strlstLabelNames = m_pGraphObj->getLabelNames();
+            QStringList strlstLabelNames = m_pGraphObj->getLabelNames();
             for (const QString& strName : strlstLabelNames) {
-                if (!m_hshName2RowIdx.contains(strName)) {
+                if (getLabelRowIndex(strName) < 0) {
                     m_pGraphObj->removeLabel(strName);
                 }
             }
             // Last add or change labels which have been added or changed.
             for (const SLabelSettings& labelSettings : m_arLabelSettings) {
-                const QString& strName = labelSettings.m_strName;
-                if (!m_pGraphObj->isLabelAdded(strName)) {
-                    m_pGraphObj->addLabel(strName);
+                if (!m_pGraphObj->isLabelAdded(labelSettings.m_strNameCurr)) {
+                    m_pGraphObj->addLabel(labelSettings.m_strNameCurr);
+                    m_arLabelSettings[labelSettings.m_iRowIdx].m_strNameOrig = labelSettings.m_strNameCurr;
                 }
-                m_pGraphObj->setLabelText(strName, labelSettings.m_strText);
-                m_pGraphObj->setLabelAnchorPoint(strName, labelSettings.m_selPt);
+                m_pGraphObj->setLabelText(labelSettings.m_strNameCurr, labelSettings.m_strText);
+                m_pGraphObj->setLabelAnchorPoint(labelSettings.m_strNameCurr, labelSettings.m_selPt);
                 labelSettings.m_bVisible ?
-                    m_pGraphObj->showLabel(strName) : m_pGraphObj->hideLabel(strName);
+                    m_pGraphObj->showLabel(labelSettings.m_strNameCurr) :
+                    m_pGraphObj->hideLabel(labelSettings.m_strNameCurr);
                 labelSettings.m_bAnchorLineVisible ?
-                    m_pGraphObj->showLabelAnchorLine(strName) : m_pGraphObj->hideLabelAnchorLine(strName);
+                    m_pGraphObj->showLabelAnchorLine(labelSettings.m_strNameCurr) :
+                    m_pGraphObj->hideLabelAnchorLine(labelSettings.m_strNameCurr);
             }
         }
     }
@@ -409,7 +435,6 @@ void CModelGraphObjLabels::clearModel()
     if (m_arLabelSettings.size() > 0) {
         _beginRemoveRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
         m_arLabelSettings.clear();
-        m_hshName2RowIdx.clear();
         _endRemoveRows();
         emit_contentChanged();
     }
@@ -432,10 +457,6 @@ void CModelGraphObjLabels::fillModel()
         m_arLabelSettings = getLabelSettings(m_pGraphObj);
         if (m_arLabelSettings.size() > 0) {
             _beginInsertRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
-            for (int iRow = 0; iRow < m_arLabelSettings.size(); ++iRow) {
-                const SLabelSettings& labelSettings = m_arLabelSettings[iRow];
-                m_hshName2RowIdx.insert(labelSettings.m_strName, iRow);
-            }
             _endInsertRows();
             emit_contentChanged();
         }
@@ -458,21 +479,62 @@ QString CModelGraphObjLabels::findUniqueLabelName(const QString& i_strPrefix) co
     if (strName.isEmpty()) {
         strName = "Label";
     }
-    strName += QString::number(m_hshName2RowIdx.size());
-    if (m_hshName2RowIdx.contains(strName)) {
+    strName += QString::number(m_arLabelSettings.size());
+    if (!isUniqueLabelName(strName)) {
         strName = i_strPrefix;
         if (strName.isEmpty()) {
             strName = "Label";
         }
-        int iRow = 0;
+        int iRow = m_arLabelSettings.size();
         QString strNameTmp = strName + QString::number(iRow);
-        while (m_hshName2RowIdx.contains(strNameTmp)) {
+        while (!isUniqueLabelName(strNameTmp)) {
             ++iRow;
             strNameTmp = strName + QString::number(iRow);
         }
         strName = strNameTmp;
     }
     return strName;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given, current label name is unique and no other
+           label has the same current name.
+
+    @param [in] i_strName Name to be checked.
+
+    @return true, if the given name is unique, false otherwise.
+*/
+bool CModelGraphObjLabels::isUniqueLabelName(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    bool bUnique = true;
+    for (const SLabelSettings& labelSettings : m_arLabelSettings) {
+        if (i_strName == labelSettings.m_strNameCurr) {
+            bUnique = false;
+            break;
+        }
+    }
+    return bUnique;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the row index for the given, current label name.
+
+    @param [in] i_strName Name to be checked.
+
+    @return Row index of the label with the given current name, -1 otherwise.
+*/
+int CModelGraphObjLabels::getLabelRowIndex(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    int iRowIdx = -1;
+    for (const SLabelSettings& labelSettings : m_arLabelSettings) {
+        if (i_strName == labelSettings.m_strNameCurr) {
+            iRowIdx = labelSettings.m_iRowIdx;
+            break;
+        }
+    }
+    return iRowIdx;
 }
 
 //------------------------------------------------------------------------------
@@ -502,7 +564,6 @@ QString CModelGraphObjLabels::addLabel()
     int iRow = m_arLabelSettings.size();
     _beginInsertRows(QModelIndex(), iRow, iRow);
     m_arLabelSettings.append(SLabelSettings(strName, iRow, false, strName, selPt, false, false));
-    m_hshName2RowIdx.insert(strName, iRow);
     _endInsertRows();
     emit_contentChanged();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -527,15 +588,13 @@ void CModelGraphObjLabels::removeLabel(const QString& i_strName)
         /* strMethod          */ "removeLabel",
         /* strMethodInArgs    */ strMthInArgs );
 
-    int iRow = m_hshName2RowIdx.value(i_strName, -1);
+    int iRow = getLabelRowIndex(i_strName);
     if (iRow >= 0 && iRow < m_arLabelSettings.size()) {
         _beginRemoveRows(QModelIndex(), iRow, iRow);
         m_arLabelSettings.removeAt(iRow);
-        m_hshName2RowIdx.remove(i_strName);
         for (; iRow < m_arLabelSettings.size(); iRow++) {
             const SLabelSettings labelSettings = m_arLabelSettings[iRow];
             m_arLabelSettings[iRow].m_iRowIdx = iRow;
-            m_hshName2RowIdx[labelSettings.m_strName] = iRow;
         }
         _endRemoveRows();
         emit_contentChanged();
@@ -543,15 +602,28 @@ void CModelGraphObjLabels::removeLabel(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns a list with the names of the selected labels.
+/*! @brief Returns a list with the current names of the labels.
 */
-QStringList CModelGraphObjLabels::selectedLabels() const
+QStringList CModelGraphObjLabels::labelNames() const
+//------------------------------------------------------------------------------
+{
+    QStringList strlstNames;
+    for (const SLabelSettings& labelSettings : m_arLabelSettings) {
+        strlstNames.append(labelSettings.m_strNameCurr);
+    }
+    return strlstNames;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a list with the current names of the selected labels.
+*/
+QStringList CModelGraphObjLabels::selectedLabelNames() const
 //------------------------------------------------------------------------------
 {
     QStringList strlstNames;
     for (const SLabelSettings& labelSettings : m_arLabelSettings) {
         if (labelSettings.m_bSelected) {
-            strlstNames.append(labelSettings.m_strName);
+            strlstNames.append(labelSettings.m_strNameCurr);
         }
     }
     return strlstNames;
@@ -578,11 +650,9 @@ void CModelGraphObjLabels::removeSelectedLabels()
             if (labelSettings.m_bSelected) {
                 _beginRemoveRows(QModelIndex(), iRow, iRow);
                 m_arLabelSettings.removeAt(iRow);
-                m_hshName2RowIdx.remove(labelSettings.m_strName);
                 for (int iRowTmp = iRow; iRowTmp < m_arLabelSettings.size(); iRowTmp++) {
                     const SLabelSettings labelSettings = m_arLabelSettings[iRowTmp];
                     m_arLabelSettings[iRowTmp].m_iRowIdx = iRowTmp;
-                    m_hshName2RowIdx[labelSettings.m_strName] = iRowTmp;
                 }
                 _endRemoveRows();
             }
@@ -666,7 +736,7 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                 }
                 case EColumnName: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
-                        varData = labelSettings.m_strName;
+                        varData = labelSettings.m_strNameCurr;
                     }
                     break;
                 }
@@ -706,8 +776,13 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                         }
                     }
                     else if (i_iRole == Qt::AccessibleTextRole) {
-                        QList<ESelectionPoint> arSelPts =
-                            m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strName);
+                        QList<ESelectionPoint> arSelPts;
+                        if (!labelSettings.m_strNameOrig.isEmpty()) {
+                            m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameOrig);
+                        }
+                        else {
+                            m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameCurr);
+                        }
                         QList<SComboBoxItem> arItems;
                         for (const ESelectionPoint& selPt : arSelPts) {
                             if (m_pGraphObj->type() == EGraphObjTypeLine) {
@@ -801,7 +876,7 @@ bool CModelGraphObjLabels::setData(
             switch (iClm) {
                 case EColumnSelected: {
                     if (i_iRole == Qt::EditRole) {
-                        if (!m_pGraphObj->isPredefinedLabelName(labelSettings.m_strName)) {
+                        if (!m_pGraphObj->isPredefinedLabelName(labelSettings.m_strNameOrig)) {
                             labelSettings.m_bSelected = i_varData.toBool();
                             bDataSet = true;
                         }
@@ -811,27 +886,29 @@ bool CModelGraphObjLabels::setData(
                 case EColumnName: {
                     if (i_iRole == Qt::EditRole) {
                         QString strNameNew = i_varData.toString();
-                        if (labelSettings.m_strName != strNameNew) {
-                            if (m_pGraphObj->isPredefinedLabelName(strNameNew)) {
+                        if (labelSettings.m_strNameCurr != strNameNew) {
+                            if (strNameNew.isEmpty()) {
+                                labelSettings.m_errResultInfo = SErrResultInfo(
+                                    NameSpace(), ClassName(), objectName(), "setData",
+                                    EResultInvalidObjName, EResultSeverityError,
+                                    "User defined label names must at least have one character");
+                            }
+                            else if (m_pGraphObj->isPredefinedLabelName(strNameNew)) {
                                 labelSettings.m_errResultInfo = SErrResultInfo(
                                     NameSpace(), ClassName(), objectName(), "setData",
                                     EResultInvalidObjName, EResultSeverityError,
                                     "User defined label names must be different from predefined label names");
                             }
-                            else if (m_hshName2RowIdx.contains(strNameNew)) {
-                                if (m_hshName2RowIdx.value(strNameNew) != labelSettings.m_iRowIdx) {
-                                    labelSettings.m_errResultInfo = SErrResultInfo(
-                                        NameSpace(), ClassName(), objectName(), "setData",
-                                        EResultObjNameNotUnique, EResultSeverityError,
-                                        "Label names must be unique");
-                                }
+                            else if (!isUniqueLabelName(strNameNew)) {
+                                labelSettings.m_errResultInfo = SErrResultInfo(
+                                    NameSpace(), ClassName(), objectName(), "setData",
+                                    EResultObjNameNotUnique, EResultSeverityError,
+                                    "Label names must be unique");
                             }
                             else {
                                 labelSettings.m_errResultInfo = ErrResultSuccess;
                             }
-                            m_hshName2RowIdx.remove(labelSettings.m_strName);
-                            labelSettings.m_strName = i_varData.toString();
-                            m_hshName2RowIdx.insert(labelSettings.m_strName, labelSettings.m_iRowIdx);
+                            labelSettings.m_strNameCurr = strNameNew;
                         }
                         bDataSet = true;
                     }
@@ -999,7 +1076,7 @@ Qt::ItemFlags CModelGraphObjLabels::flags(const QModelIndex& i_modelIdx) const
             SLabelSettings labelSettings = m_arLabelSettings[iRow];
             switch (i_modelIdx.column()) {
                 case EColumnSelected: {
-                    if (!m_pGraphObj->isPredefinedLabelName(labelSettings.m_strName)) {
+                    if (!m_pGraphObj->isPredefinedLabelName(labelSettings.m_strNameOrig)) {
                         uFlags = uFlags | Qt::ItemIsUserCheckable;
                     }
                     break;
@@ -1067,10 +1144,10 @@ void CModelGraphObjLabels::onGraphObjLabelAdded(const QString& i_strName)
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            if (!m_hshName2RowIdx.contains(i_strName)) {
-                int iRow = m_arLabelSettings.size();
+            int iRow = getLabelRowIndex(i_strName);
+            if (iRow < 0) {
+                iRow = m_arLabelSettings.size();
                 _beginInsertRows(QModelIndex(), iRow, iRow);
-                m_hshName2RowIdx.insert(i_strName, iRow);
                 m_arLabelSettings.append(SLabelSettings::fromGraphObj(m_pGraphObj, i_strName, iRow));
                 _endInsertRows();
                 m_bContentChanged = true;
@@ -1110,14 +1187,12 @@ void CModelGraphObjLabels::onGraphObjLabelRemoved(const QString& i_strName)
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            if (m_hshName2RowIdx.contains(i_strName)) {
-                int iRow = m_hshName2RowIdx.value(i_strName);
+            int iRow = getLabelRowIndex(i_strName);
+            if (iRow >= 0 && iRow < m_arLabelSettings.size()) {
                 _beginRemoveRows(QModelIndex(), iRow, iRow);
-                m_hshName2RowIdx.remove(i_strName);
                 m_arLabelSettings.removeAt(iRow);
                 for (; iRow < m_arLabelSettings.size(); iRow++) {
                     m_arLabelSettings[iRow].m_iRowIdx = iRow;
-                    m_hshName2RowIdx[m_arLabelSettings[iRow].m_strName] = iRow;
                 }
                 _endRemoveRows();
                 m_bContentChanged = true;
@@ -1157,10 +1232,8 @@ void CModelGraphObjLabels::onGraphObjLabelRenamed(const QString& i_strName, cons
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            if (m_hshName2RowIdx.contains(i_strName)) {
-                int iRow = m_hshName2RowIdx.value(i_strName);
-                m_hshName2RowIdx.remove(i_strName);
-                m_hshName2RowIdx.insert(i_strName, iRow);
+            int iRow = getLabelRowIndex(i_strName);
+            if (iRow >= 0 && iRow < m_arLabelSettings.size()) {
                 SLabelSettings labelSettings = SLabelSettings::fromGraphObj(m_pGraphObj, i_strNameNew, iRow);
                 if (m_arLabelSettings[iRow] != labelSettings) {
                     m_arLabelSettings[iRow] = labelSettings;
@@ -1205,8 +1278,8 @@ void CModelGraphObjLabels::onGraphObjLabelChanged(const QString& i_strName)
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            if (m_hshName2RowIdx.contains(i_strName)) {
-                int iRow = m_hshName2RowIdx.value(i_strName);
+            int iRow = getLabelRowIndex(i_strName);
+            if (iRow >= 0 && iRow < m_arLabelSettings.size()) {
                 SLabelSettings labelSettings = SLabelSettings::fromGraphObj(m_pGraphObj, i_strName, iRow);
                 if (m_arLabelSettings[iRow] != labelSettings) {
                     m_arLabelSettings[iRow] = labelSettings;
@@ -1262,11 +1335,8 @@ QList<CModelGraphObjLabels::SLabelSettings> CModelGraphObjLabels::getLabelSettin
             QSet<QString> strlstLabelNamesAdded;
             for (const QString& strName : strlstPredefinedLabelNames) {
                 if (i_pGraphObj->isLabelAdded(strName)) {
-                    SLabelSettings labelSettings(
-                        strName, arLabelSettings.size(), true,
-                        i_pGraphObj->labelText(strName), i_pGraphObj->labelAnchorPoint(strName),
-                        i_pGraphObj->isLabelVisible(strName), i_pGraphObj->isLabelAnchorLineVisible(strName));
-                    arLabelSettings.append(std::move(labelSettings));
+                    arLabelSettings.append(
+                        SLabelSettings::fromGraphObj(i_pGraphObj, strName, arLabelSettings.size()));
                     strlstLabelNamesAdded.insert(strName);
                 }
             }
@@ -1276,11 +1346,8 @@ QList<CModelGraphObjLabels::SLabelSettings> CModelGraphObjLabels::getLabelSettin
                 if (i_pGraphObj->isLabelAdded(strName)) {
                     // If label has not already been added as a predefined label ...
                     if (!strlstLabelNamesAdded.contains(strName)) {
-                        SLabelSettings labelSettings(
-                            strName, arLabelSettings.size(), false,
-                            i_pGraphObj->labelText(strName), i_pGraphObj->labelAnchorPoint(strName),
-                            i_pGraphObj->isLabelVisible(strName), i_pGraphObj->isLabelAnchorLineVisible(strName));
-                        arLabelSettings.append(std::move(labelSettings));
+                        arLabelSettings.append(
+                            SLabelSettings::fromGraphObj(i_pGraphObj, strName, arLabelSettings.size()));
                         strlstLabelNamesAdded.insert(strName);
                     }
                 }
@@ -1289,33 +1356,6 @@ QList<CModelGraphObjLabels::SLabelSettings> CModelGraphObjLabels::getLabelSettin
     }
     return arLabelSettings;
 }
-
-////------------------------------------------------------------------------------
-//bool CModelGraphObjLabels::changedNameIsUnique() const
-////------------------------------------------------------------------------------
-//{
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObj,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strMethod    */ "changedNameIsUnique",
-//        /* strAddInfo   */ "" );
-//
-//    bool bIsUnique = true;
-//
-//    //if (m_pGraphObj != nullptr) {
-//    //    QString strParentBranchPath = m_pGraphObj->parentBranchPath();
-//    //    QString strNewKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(
-//    //        m_pGraphObj->entryTypeSymbol(), strParentBranchPath, m_pEdtName->text());
-//    //    if (strNewKeyInTree != m_strKeyInTree) {
-//    //        bIsUnique = (m_pDrawingScene->findGraphObj(strNewKeyInTree) == nullptr);
-//    //    }
-//    //}
-//
-//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-//        mthTracer.setMethodReturn(bIsUnique);
-//    }
-//    return bIsUnique;
-//}
 
 /*==============================================================================
 protected: // instance methods (tracing emitting signals)

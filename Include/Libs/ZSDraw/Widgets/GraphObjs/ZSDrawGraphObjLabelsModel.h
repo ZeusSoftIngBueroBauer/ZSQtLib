@@ -88,9 +88,12 @@ public: // instance methods
     void fillModel();
 public: // instance methods
     QString findUniqueLabelName(const QString& i_strPrefix = "") const;
+    bool isUniqueLabelName(const QString& i_strName) const;
+    int getLabelRowIndex(const QString& i_strName) const;
     QString addLabel();
     void removeLabel(const QString& i_strName);
-    QStringList selectedLabels() const;
+    QStringList labelNames() const;
+    QStringList selectedLabelNames() const;
     void removeSelectedLabels();
 public: // overridables of base class QAbstractItemModel
     int rowCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
@@ -104,35 +107,37 @@ protected: // type definitions and constants
     public:
         static SLabelSettings fromGraphObj(CGraphObj* i_pGraphObj, const QString& i_strLabelName, int i_iRowIdx = -1);
     public: // ctors
-        SLabelSettings() :
-            m_strName(), m_iRowIdx(-1), m_bIsPredefinedLabelName(false),
-            m_strText(), m_selPt(ESelectionPoint::None), m_bVisible(false), m_bAnchorLineVisible(false),
-            m_bSelected(false), m_errResultInfo()
-        {}
-        SLabelSettings(const QString& i_strName, int i_iRowIdx, bool i_bIsPredefinedLabelName) :
-            m_strName(i_strName), m_iRowIdx(i_iRowIdx), m_bIsPredefinedLabelName(i_bIsPredefinedLabelName),
-            m_strText(), m_selPt(ESelectionPoint::None), m_bVisible(false), m_bAnchorLineVisible(false),
-            m_bSelected(false), m_errResultInfo()
-        {}
+        SLabelSettings();
         SLabelSettings(
             const QString& i_strName, int i_iRowIdx, bool i_bIsPredefinedLabelName,
-            const QString& i_strText, ESelectionPoint i_selPt, bool i_bVisible, bool i_bAnchorLineVisible) :
-            m_strName(i_strName), m_iRowIdx(i_iRowIdx), m_bIsPredefinedLabelName(i_bIsPredefinedLabelName),
-            m_strText(i_strText), m_selPt(i_selPt), m_bVisible(i_bVisible), m_bAnchorLineVisible(i_bAnchorLineVisible),
-            m_bSelected(false), m_errResultInfo()
-        {}
+            const QString& i_strText, ESelectionPoint i_selPt, bool i_bVisible, bool i_bAnchorLineVisible);
     public: // operators
         bool operator == (const SLabelSettings& i_other) const;
         bool operator != (const SLabelSettings& i_other) const;
     public: // struct members
-        QString m_strName;
+        /*!< Original name of the label as retrieved from the graphical object.
+             Empty if the label is newly added to the model. */
+        QString m_strNameOrig;
+        /*!< Current name of the label. If the label has been retrieved from
+             the graphical object and has not been renamed the current name
+             equals to the original name. */
+        QString m_strNameCurr;
+        /*!< Index in the row of labels. */
         int m_iRowIdx;
+        /*!< True if the label belongs to the predefined labels of the graphical object. */
         bool m_bIsPredefinedLabelName;
+        /*!< Text to be indicated by the label. */
         QString m_strText;
+        /*!< Selection point the label should be anchored to. */
         ESelectionPoint m_selPt;
+        /*!< True if the label should be visible and added to the graphics scene. */
         bool m_bVisible;
+        /*!< True if the anchor line from the label to the selection point sould be drawn. */
         bool m_bAnchorLineVisible;
+        /*!< True if the label is selected within the model (e.g. for deletion). */
         bool m_bSelected;
+        /*!< Stores error info if the labels are wrongly configured by the user
+             (e.g. ambiguous or reserved names are used). */
         ZS::System::SErrResultInfo m_errResultInfo;
     };
 protected slots:
@@ -164,8 +169,6 @@ protected: // instance members
          The order is arbitrary. The relation between the row index and the
          label name (which must be unique) is stored in a separate hash. */
     QList<SLabelSettings> m_arLabelSettings;
-    /*!< If a label is changed the corresponding row index can be accessed through this hash. */
-    QHash<QString, int> m_hshName2RowIdx;
     /*!< Flag to indicate that the content of a data row has been changed while the "contentChanged"
          signal was blocked by the "contentChanged" counter. */
     bool m_bContentChanged;

@@ -456,7 +456,7 @@ void CWdgtGraphObjPropertiesLabels::onModelLabelsContentChanged()
         /* strMethod    */ "onModelLabelsContentChanged",
         /* strAddInfo   */ "" );
 
-    if (m_pModel->selectedLabels().size() > 0) {
+    if (m_pModel->selectedLabelNames().size() > 0) {
         m_pBtnRemoveLabels->setEnabled(true);
     }
     else {
