@@ -3268,7 +3268,11 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief
+/*! @brief Brings the object into front of all objects intersecting the bounding
+           rectangle of this object.
+
+    The method does not set the member "m_fZValue" as this member is used to
+    restore the stacking order on deselecting the object.
 
     @return The new ZValue.
 */
@@ -3288,7 +3292,7 @@ double CGraphObj::bringToFront()
         QRectF rctBounding = pGraphicsItem->boundingRect();
         rctBounding = pGraphicsItem->mapRectToScene(rctBounding);
         QList<QGraphicsItem*> arpGraphicsItemsIntersected = m_pDrawingScene->items(rctBounding);
-        m_pDrawingScene->bringToFront( pGraphicsItem, arpGraphicsItemsIntersected );
+        m_pDrawingScene->bringToFront(pGraphicsItem, arpGraphicsItemsIntersected);
         fZValue = pGraphicsItem->zValue();
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -3642,7 +3646,7 @@ void CGraphObj::bringSelectionPointsToFront( ESelectionPoints i_selPts )
                     QRectF rct = pGraphObjSelPt->rect();
                     rct = pGraphObjSelPt->mapRectToScene(rct);
                     QList<QGraphicsItem*> arpGraphicsItemsIntersected = m_pDrawingScene->items(rct);
-                    m_pDrawingScene->bringToFront( pGraphObjSelPt, arpGraphicsItemsIntersected );
+                    m_pDrawingScene->bringToFront(pGraphObjSelPt, arpGraphicsItemsIntersected);
                 }
             }
         }
@@ -3666,9 +3670,8 @@ protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief
-
-    Creates the selection points if not yet created.
+/*! @brief Creates the selection points if not yet created and adds them to
+           the graphics scene.
 */
 void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts )
 //------------------------------------------------------------------------------
@@ -3688,11 +3691,9 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
 
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr)
     {
-        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++)
-        {
+        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
             ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
             bool bShowSelPt = false;
-
             if (idxSelPt >= ESelectionPointCornerMin && idxSelPt <= ESelectionPointCornerMax) {
                 if (i_selPts & ESelectionPointsBoundingRectCorner) {
                     bShowSelPt = true;
@@ -3713,7 +3714,6 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                     bShowSelPt = true;
                 }
             }
-
             if (bShowSelPt) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
                 if (pGraphObjSelPt == nullptr) {
@@ -3725,14 +3725,14 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
 
                     // Please note that selection points should not belong as child to the graphics items
                     // for which the selection points are created. Otherwise the "boundingRect" call
-                    // of groups (which implicitly calls childrenBoundingRect) does not work as the
-                    // selection points of the bounding rectangle would be included. But the selection
-                    // points should appear as childs in the index tree of the drawing scene. This has to
-                    // be taken into account by the "addGraphObj" method of the drawing scene.
-                    m_pDrawingScene->addGraphObj(pGraphObjSelPt, this);
+                    // of groups (which implicitly calls childrenBoundingRect) does not work as expected
+                    // as the selection points would be included.
+                    // In addition selection points must be directly added to the graphics scene as they
+                    // should not be indicated in the index tree.
+                    m_pDrawingScene->addItem(pGraphObjSelPt);
 
-                    //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
-                    pGraphObjSelPt->installSceneEventFilter(pGraphicsItem); // event filters can only be installed on items in a scene
+                    // Event filters can only be installed on items in a scene.
+                    pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
                 }
 
                 if (pGraphObjSelPt != nullptr) {
@@ -3751,9 +3751,8 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                         ptSel = ZS::Draw::getSelectionPointCoors(i_rct,selPt);
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
-
                     pGraphObjSelPt->setPos(ptSel);
-                    pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
+                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
                 }
             }
         }
@@ -3778,11 +3777,9 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr)
     {
-        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++)
-        {
+        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
             ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
             bool bUpdateSelPt = false;
-
             if (idxSelPt >= ESelectionPointCornerMin && idxSelPt <= ESelectionPointCornerMax) {
                 if (i_selPts & ESelectionPointsBoundingRectCorner) {
                     bUpdateSelPt = true;
@@ -3803,7 +3800,6 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
                     bUpdateSelPt = true;
                 }
             }
-
             if (bUpdateSelPt) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
                 if (pGraphObjSelPt != nullptr) {
@@ -3822,9 +3818,8 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
                         ptSel = ZS::Draw::getSelectionPointCoors(i_rct,selPt);
                         ptSel = pGraphicsItem->mapToScene(ptSel);
                     }
-
                     pGraphObjSelPt->setPos(ptSel);
-                    pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
+                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
                 }
             }
         }
@@ -3832,9 +3827,8 @@ void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsign
 } // updateSelectionPointsOfBoundingRect
 
 //------------------------------------------------------------------------------
-/*! @brief
-
-    Creates the selection points if not yet created.
+/*! @brief Creates the selection points if not yet created and adds them to
+           the graphics scene.
 */
 void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 //------------------------------------------------------------------------------
@@ -3851,63 +3845,51 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
     if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr)
     {
-        if (m_arpSelPtsPolygon.size() != i_plg.size())
-        {
-            if (m_arpSelPtsPolygon.size() > 0)
-            {
-                for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt--)
-                {
+        if (m_arpSelPtsPolygon.size() != i_plg.size()) {
+            if (m_arpSelPtsPolygon.size() > 0) {
+                for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt--) {
                     // Deleting child objects leads to itemChange and an updateToolTip call
                     // accessing the array of selection points.
                     CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
                     m_arpSelPtsPolygon[idxSelPt] = nullptr;
-
-                    //m_pDrawingScene->removeGraphObj(pGraphObjSelPt); // the dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene
-
+                    // The dtor of the selection point (dtor of CGraphObj) removes itself from the drawing scene.
+                    //m_pDrawingScene->removeGraphObj(pGraphObjSelPt);
                     delete pGraphObjSelPt;
                     pGraphObjSelPt = nullptr;
                 }
                 m_arpSelPtsPolygon.clear();
             }
-            for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++)
-            {
+            for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++) {
                 m_arpSelPtsPolygon.append(nullptr);
             }
         }
-
-        for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++)
-        {
+        for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-
-            if (pGraphObjSelPt == nullptr)
-            {
+            if (pGraphObjSelPt == nullptr) {
                 pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, idxSelPt);
                 m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;
                 QObject::connect(
                     pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
                     this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
 
-                // Please note that the labels should not belong as child to the graphics items
+                // Please note that selection points should not belong as child to the graphics items
                 // for which the selection points are created. Otherwise the "boundingRect" call
-                // of groups (which implicitly calls childrenBoundingRect) does not work as the
-                // labels would be included. But the labels should appear as childs in the index
-                // tree of the drawing scene. This has to be taken into account by the "addGraphObj"
-                // method of the drawing scene.
-                m_pDrawingScene->addGraphObj(pGraphObjSelPt, this);
+                // of groups (which implicitly calls childrenBoundingRect) does not work as expected
+                // as the selection points would be included.
+                // In addition selection points must be directly added to the graphics scene as they
+                // should not be indicated in the index tree.
+                m_pDrawingScene->addItem(pGraphObjSelPt);
 
-                //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
-                pGraphObjSelPt->installSceneEventFilter(pGraphicsItem); // event filters can only be installed on items in a scene
+                // Event filters can only be installed on items in a scene.
+                pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
             }
-
-            if (pGraphObjSelPt != nullptr)
-            {
+            if (pGraphObjSelPt != nullptr) {
                 QPointF ptSel = i_plg[idxSelPt];
                 ptSel = pGraphicsItem->mapToScene(ptSel);
                 pGraphObjSelPt->setPos(ptSel);
-                pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
+                pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
             }
         }
     }
@@ -3937,7 +3919,7 @@ void CGraphObj::updateSelectionPointsOfPolygon( const QPolygonF& i_plg )
                     QPointF ptSel = i_plg[idxSelPt];
                     ptSel = pGraphicsItem->mapToScene(ptSel);
                     pGraphObjSelPt->setPos(ptSel);
-                    pGraphObjSelPt->setZValue( pGraphicsItem->zValue()+0.05 );
+                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
                 }
             }
         }
@@ -4347,8 +4329,16 @@ void CGraphObj::showLabel(const QString& i_strName)
     }
 
     if (pGraphObjLabel->scene() == nullptr) {
-        pGraphObjLabel->scene()->addItem(pGraphObjLabel);
+        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+        // Please note that labels should not belong as child to the graphics items
+        // for which the labels are created. Otherwise the "boundingRect" call of groups
+        // (which implicitly calls childrenBoundingRect) does not work as expected as
+        // the labels would be included.
+        // In addition the labels must be directly added to the graphics scene as they
+        // should not be indicated in the index tree.
+        m_pDrawingScene->addItem(pGraphObjLabel);
         pGraphObjLabel->setVisible(true);
+        pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.02);
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -4384,6 +4374,8 @@ void CGraphObj::hideLabel(const QString& i_strName)
     }
 
     if (pGraphObjLabel->scene() != nullptr) {
+        // Labels are directly added to the graphics scene as they should not be
+        // indicated in the index tree. So they also have to be "directly" removed.
         pGraphObjLabel->scene()->removeItem(pGraphObjLabel);
         pGraphObjLabel->setVisible(false);
         emit_labelChanged(i_strName);
@@ -5800,6 +5792,19 @@ void CGraphObj::emit_geometryChanged()
         /* strMethod    */ "CGraphObj::emit_geometryChanged",
         /* strAddInfo   */ "" );
     emit geometryChanged();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_zValueChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::emit_zValueChanged",
+        /* strAddInfo   */ "" );
+    emit zValueChanged();
 }
 
 //------------------------------------------------------------------------------

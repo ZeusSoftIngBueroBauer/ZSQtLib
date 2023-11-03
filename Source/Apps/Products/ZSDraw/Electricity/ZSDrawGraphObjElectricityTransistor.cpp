@@ -202,8 +202,6 @@ CGraphObjTransistor::CGraphObjTransistor(
 
     SGraphObjAlignment alignment;
 
-    int idxAttr;
-
     // Draw settings for group item
     //-----------------------------
 

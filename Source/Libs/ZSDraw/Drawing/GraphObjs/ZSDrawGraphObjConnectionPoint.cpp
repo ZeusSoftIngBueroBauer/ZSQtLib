@@ -1732,89 +1732,44 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
 
     QVariant valChanged = i_value;
 
+    bool bZValueChanged = false;
     bool bTreeEntryChanged = false;
 
-    if( i_change == ItemSelectedHasChanged )
-    {
+    if (i_change == ItemSceneHasChanged) {
+        // The item may have been removed from the scene.
+        if (scene() != nullptr) {
+        }
+    }
+    else if(i_change == ItemSelectedHasChanged) {
         prepareGeometryChange();
-
         // The connection point does not have selection points but is a selection point itself.
-
-        if( m_pDrawingScene->getMode() == EMode::Edit && isSelected() )
-        {
-            bringToFront(); // does not set "m_fZValue" as it is used to restore the stacking order on deselecting the object
-
+        if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
+            bringToFront();
             setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
-        else
-        {
+        else {
             setAcceptedMouseButtons(Qt::NoButton);
-
             setZValue(m_fZValue); // restore ZValue as before selecting the object
         }
-
         updateEditInfo();
         updateToolTip();
-
         bTreeEntryChanged = true;
-
-    } // if( i_change == ItemSelectedHasChanged )
-
-    else if( i_change == ItemPositionHasChanged || i_change == ItemParentHasChanged )
-    {
-        CGraphObjConnectionLine* pGraphObjCnctLine;
-        int                      idxLine;
-
-        for( idxLine = 0; idxLine < m_lstConnectionLines.count(); idxLine++ )
+    }
+    else if (i_change == ItemPositionHasChanged || i_change == ItemParentHasChanged) {
+        for (int idxLine = 0; idxLine < m_lstConnectionLines.count(); idxLine++)
         {
-            pGraphObjCnctLine = m_lstConnectionLines[idxLine];
-
-            if( pGraphObjCnctLine != nullptr )
-            {
+            CGraphObjConnectionLine* pGraphObjCnctLine = m_lstConnectionLines[idxLine];
+            if (pGraphObjCnctLine != nullptr) {
                 pGraphObjCnctLine->onParentItemCoorsHasChanged(this);
             }
         }
-
         updateEditInfo();
         updateToolTip();
     }
-
-    else if( i_change == ItemToolTipChange || i_change == ItemToolTipHasChanged
-          || i_change == ItemFlagsChange || i_change == ItemFlagsHaveChanged
-          || i_change == ItemPositionChange
-          || i_change == ItemVisibleChange
-          || i_change == ItemEnabledChange
-          || i_change == ItemSelectedChange
-          || i_change == ItemParentChange
-          || i_change == ItemTransformChange
-          || i_change == ItemSceneChange
-          || i_change == ItemCursorChange
-          || i_change == ItemZValueChange
-          #if QT_VERSION >= 0x040700
-          || i_change == ItemOpacityChange
-          || i_change == ItemRotationChange
-          || i_change == ItemScaleChange
-          || i_change == ItemTransformOriginPointChange )
-          #else
-          || i_change == ItemOpacityChange )
-          #endif
-    {
-    }
-
-    else if( i_change == ItemChildAddedChange
-          || i_change == ItemChildRemovedChange
-          || i_change == ItemVisibleHasChanged
-          || i_change == ItemEnabledHasChanged
-          || i_change == ItemCursorHasChanged
-          || i_change == ItemOpacityHasChanged )
-    {
-    }
-
     else if( i_change == ItemTransformChange
           || i_change == ItemPositionHasChanged
           || i_change == ItemTransformHasChanged
           || i_change == ItemParentHasChanged
-          || i_change == ItemSceneHasChanged
           #if QT_VERSION >= 0x040700
           || i_change == ItemScenePositionHasChanged
           || i_change == ItemRotationHasChanged
@@ -1827,55 +1782,15 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         updateEditInfo();
         updateToolTip();
     }
-
-    else if( i_change == ItemZValueHasChanged )
-    {
-        CGraphObjSelectionPoint* pGraphObjSelPt;
-        ESelectionPoint          selPt;
-        int                      idxSelPt;
-
-        for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-        {
-            selPt = static_cast<ESelectionPoint>(idxSelPt);
-
-            pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-
-            if( pGraphObjSelPt != nullptr )
-            {
-                pGraphObjSelPt->setZValue( zValue() + 0.05 );
-            }
-        }
-
-        for( idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++ )
-        {
-            pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-
-            if( pGraphObjSelPt != nullptr )
-            {
-                pGraphObjSelPt->setZValue( zValue()+0.05 );
-            }
-        }
-
-        //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-
-        //CGraphObjLabel* pGraphObjLabel;
-
-        //while( itLabels.hasNext() )
-        //{
-        //    itLabels.next();
-
-        //    pGraphObjLabel = itLabels.value();
-
-        //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-        //    {
-        //        pGraphObjLabel->m_pGraphObjLabel->setZValue( zValue() + 0.02 );
-        //    }
-        //}
+    else if (i_change == ItemZValueHasChanged) {
+        bZValueChanged = true;
+        bTreeEntryChanged = true;
     }
 
-
-    if( bTreeEntryChanged && m_pTree != nullptr )
-    {
+    if (bZValueChanged) {
+        emit_zValueChanged();
+    }
+    if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
     }
 
@@ -1885,7 +1800,6 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
     }
-
     return valChanged;
 
 } // itemChange

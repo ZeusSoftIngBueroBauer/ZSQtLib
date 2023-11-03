@@ -78,7 +78,7 @@ public: // ctors and dtor
 */
 CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjSelected,
+    CGraphObj* i_pGraphObjParent,
     ESelectionPoint i_selectionPoint) :
 //------------------------------------------------------------------------------
     CGraphObj(
@@ -89,8 +89,8 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* strObjName          */ "SelPt." + CEnumSelectionPoint(i_selectionPoint).toString(),
         /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
-    QGraphicsEllipseItem( QRectF( -s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px ) ),
-    m_pGraphObjSelected(i_pGraphObjSelected),
+    QGraphicsEllipseItem(QRectF(-s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px)),
+    m_pGraphObjParent(i_pGraphObjParent),
     m_selPtType(ESelectionPointType::BoundingRectangle),
     m_selPt(i_selectionPoint),
     m_idxPt(-1),
@@ -104,7 +104,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ObjName: " + m_strName +
-            ", GraphObjSelected: " + QString(i_pGraphObjSelected == nullptr ? "null" : i_pGraphObjSelected->keyInTree()) +
+            ", GraphObjSelected: " + QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree()) +
             ", SelPt: " + CEnumSelectionPoint(i_selectionPoint).toString();
     }
     CMethodTracer mthTracer(
@@ -116,9 +116,13 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 
     m_selPtSelectedBoundingRect = i_selectionPoint;
 
-    //setFlags( QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges );
+    //setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
     setAcceptHoverEvents(true);
+
+    QObject::connect(
+        m_pGraphObjParent, &CGraphObj::zValueChanged,
+        this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Undefined,
@@ -131,7 +135,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 */
 CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjSelected,
+    CGraphObj* i_pGraphObjParent,
     int i_idxPt) :
 //------------------------------------------------------------------------------
     CGraphObj(
@@ -142,8 +146,8 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* strObjName          */ "SelPt." + QString::number(i_idxPt),
         /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
-    QGraphicsEllipseItem( QRectF( -s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px ) ),
-    m_pGraphObjSelected(i_pGraphObjSelected),
+    QGraphicsEllipseItem(QRectF(-s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px)),
+    m_pGraphObjParent(i_pGraphObjParent),
     m_selPtType(ESelectionPointType::PolygonShapePoint),
     m_selPt(ESelectionPoint::None),
     m_idxPt(i_idxPt),
@@ -157,7 +161,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ObjName: " + m_strName +
-            ", GraphObjSelected: " + QString(i_pGraphObjSelected == nullptr ? "null" : i_pGraphObjSelected->keyInTree()) +
+            ", GraphObjSelected: " + QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree()) +
             ", IdxPt: " + QString::number(i_idxPt);
     }
     CMethodTracer mthTracer(
@@ -169,9 +173,13 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 
     m_idxSelPtSelectedPolygon = i_idxPt;
 
-    //setFlags( /*QGraphicsItem::ItemIsMovable |*/ QGraphicsItem::ItemIsSelectable /*| QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges*/ );
+    //setFlags(/*QGraphicsItem::ItemIsMovable|*/QGraphicsItem::ItemIsSelectable/*|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges*/);
 
     setAcceptHoverEvents(true);
+
+    QObject::connect(
+        m_pGraphObjParent, &CGraphObj::zValueChanged,
+        this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Undefined,
@@ -192,9 +200,21 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
-    m_pGraphObjSelected = nullptr;
-
     emit_aboutToBeDestroyed();
+
+    // Selection points have been "directly" added to the graphics scene and not by
+    // invoking CDrawingScene::addGraphObj so that they don't appear in the index tree.
+    // For this labels "directly" remove themselves from the graphics scene.
+    if (scene() != nullptr) {
+        scene()->removeItem(this);
+    }
+
+    m_pGraphObjParent = nullptr;
+    m_selPtType = static_cast<ESelectionPointType>(0);
+    m_selPt =  static_cast<ESelectionPoint>(0);
+    m_idxPt = 0;
+    m_fRadius_px = 0.0;
+    m_bSelected = false;
 
 } // dtor
 
@@ -535,8 +555,8 @@ bool CGraphObjSelectionPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pH
         if (bIsHit && o_pHitInfo != nullptr) {
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             double fRotAngleCurr_deg = m_fRotAngleCurr_deg;
-            if (m_pGraphObjSelected != nullptr) {
-                fRotAngleCurr_deg = m_pGraphObjSelected->getRotationAngleInDegree();
+            if (m_pGraphObjParent != nullptr) {
+                fRotAngleCurr_deg = m_pGraphObjParent->getRotationAngleInDegree();
             }
             o_pHitInfo->setCursor( Math::deg2Rad(fRotAngleCurr_deg) );
 #endif
@@ -591,8 +611,8 @@ void CGraphObjSelectionPoint::updateToolTip()
         /* strMethod    */ "updateToolTip",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObjSelected != nullptr) {
-        m_strToolTip = m_pGraphObjSelected->getToolTip();
+    if (m_pGraphObjParent != nullptr) {
+        m_strToolTip = m_pGraphObjParent->getToolTip();
     }
     else {
         m_strToolTip = CGraphObj::getToolTip();
@@ -711,8 +731,8 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         double fCursorAngle_rad  = 0.0;
         bool   bSetResizeCursor  = false;
 
-        if (m_pGraphObjSelected != nullptr) {
-            fRotAngleCurr_rad = Math::deg2Rad(m_pGraphObjSelected->getRotationAngleInDegree());
+        if (m_pGraphObjParent != nullptr) {
+            fRotAngleCurr_rad = Math::deg2Rad(m_pGraphObjParent->getRotationAngleInDegree());
         }
 
         if (m_selPtSelectedBoundingRect != ESelectionPoint::None) {
@@ -828,8 +848,8 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         double fCursorAngle_rad  = 0.0;
         bool   bSetResizeCursor  = false;
 
-        if (m_pGraphObjSelected != nullptr) {
-            fRotAngleCurr_rad = Math::deg2Rad(m_pGraphObjSelected->getRotationAngleInDegree());
+        if (m_pGraphObjParent != nullptr) {
+            fRotAngleCurr_rad = Math::deg2Rad(m_pGraphObjParent->getRotationAngleInDegree());
         }
 
         if (m_selPtSelectedBoundingRect != ESelectionPoint::None) {
@@ -1033,6 +1053,25 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 } // mouseDoubleClickEvent
 
 /*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::onGraphObjParentZValueChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onGraphObjParentZValueChanged",
+        /* strAddInfo   */ "" );
+
+    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent);
+    setZValue(pGraphicsItemParent->zValue() + 0.05);
+}
+
+/*==============================================================================
 protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
@@ -1063,53 +1102,13 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
 
     bool bTreeEntryChanged = false;
 
-    if (i_change == ItemSceneHasChanged)
-    {
-        //m_pDrawingScene = dynamic_cast<CDrawingScene*>(scene());
+    if (i_change == ItemSceneHasChanged) {
+        // The item may have been removed from the scene.
+        if (scene() != nullptr) {
+        }
     }
-    else if( i_change == ItemSelectedHasChanged )
-    {
+    else if (i_change == ItemSelectedHasChanged) {
     }
-    else if (i_change == ItemPositionHasChanged
-        || i_change == ItemTransformHasChanged
-        || i_change == ItemParentHasChanged
-        || i_change == ItemScenePositionHasChanged
-        || i_change == ItemRotationHasChanged
-        || i_change == ItemScaleHasChanged
-        || i_change == ItemTransformOriginPointHasChanged)
-    {
-    }
-    else if (i_change == ItemZValueHasChanged) {
-    }
-    // Ignored HasChanged event
-    //else if (i_change == ItemVisibleHasChanged
-    //      || i_change == ItemEnabledHasChanged
-    //      || i_change == ItemCursorHasChanged
-    //      || i_change == ItemToolTipHasChanged
-    //      || i_change == ItemFlagsHaveChanged
-    //      || i_change == ItemOpacityHasChanged)
-    //{
-    //}
-    // Ignore all "AboutToChange" events
-    //else if( i_change == ItemPositionChange
-    //      || i_change == ItemVisibleChange
-    //      || i_change == ItemEnabledChange
-    //      || i_change == ItemSelectedChange
-    //      || i_change == ItemParentChange
-    //      || i_change == ItemChildAddedChange
-    //      || i_change == ItemChildRemovedChange
-    //      || i_change == ItemTransformChange
-    //      || i_change == ItemSceneChange
-    //      || i_change == ItemCursorChange
-    //      || i_change == ItemToolTipChange
-    //      || i_change == ItemFlagsChange
-    //      || i_change == ItemZValueChange
-    //      || i_change == ItemOpacityChange
-    //      || i_change == ItemRotationChange
-    //      || i_change == ItemScaleChange
-    //      || i_change == ItemTransformOriginPointChange)
-    //{
-    //}
 
     if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
@@ -1145,7 +1144,7 @@ void CGraphObjSelectionPoint::traceInternalStates(
         else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
         else strTrcInfo = "";
         strTrcInfo +=
-            "GraphObjSelected: " + QString(m_pGraphObjSelected == nullptr ? "null" : m_pGraphObjSelected->keyInTree());
+            "GraphObjParent: " + QString(m_pGraphObjParent == nullptr ? "null" : m_pGraphObjParent->keyInTree());
         i_mthTracer.trace(strTrcInfo);
 
         if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";

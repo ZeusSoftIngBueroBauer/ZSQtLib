@@ -126,6 +126,7 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected slots:
     void onGraphObjParentGeometryChanged();
+    void onGraphObjParentZValueChanged();
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // auxiliary instance methods
@@ -145,9 +146,6 @@ protected: // instance members
     QString m_strKey;
     /*!< Graphical parent object this label belongs to. */
     CGraphObj* m_pGraphObjParent;
-    /*!< Graphical parent object this label belongs to. Same as m_pGraphObjParent
-         but stored to avoid unnecessary dynamic casts during runtime. */
-    QGraphicsItem* m_pGraphicsItemParent;
     /*!< Selection point of parent item the label is linked and aligned to. */
     ESelectionPoint m_selPtLinked;
     /*!< Distance to the selection point the label is aligned to. Calculated as follows:

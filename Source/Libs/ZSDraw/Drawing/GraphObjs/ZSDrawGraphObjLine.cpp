@@ -1534,14 +1534,15 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 
     bool bGeometryChanged = false;
     bool bSelectedChanged = false;
+    bool bZValueChanged = false;
     bool bTreeEntryChanged = false;
 
     if (i_change == ItemSceneHasChanged)
     {
-        if( m_pDrawingScene != dynamic_cast<CDrawingScene*>(scene())) {
-            throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_pDrawingScene == nullptr");
+        // The item may have been removed from the scene.
+        if (scene() != nullptr) {
+            bGeometryChanged = true;
         }
-        bGeometryChanged = true;
     }
     else if (i_change == ItemSelectedHasChanged) {
         prepareGeometryChange();
@@ -1601,28 +1602,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemZValueHasChanged) {
-        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
-            ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
-            CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-            if (pGraphObjSelPt != nullptr) {
-                pGraphObjSelPt->setZValue(zValue() + 0.05);
-            }
-        }
-        for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
-            CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-            if( pGraphObjSelPt != nullptr ) {
-                pGraphObjSelPt->setZValue(zValue() + 0.05);
-            }
-        }
-        //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-        //while (itLabels.hasNext()) {
-        //    itLabels.next();
-        //    CGraphObjLabel* pGraphObjLabel = itLabels.value();
-        //    if (pGraphObjLabel->m_pGraphObjLabel != nullptr) {
-        //        pGraphObjLabel->m_pGraphObjLabel->setZValue(zValue() + 0.02);
-        //    }
-        //}
-        //bGeometryChanged = true;
+        bZValueChanged = true;
         bTreeEntryChanged = true;
     }
 
@@ -1631,6 +1611,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     }
     if (bGeometryChanged) {
         emit_geometryChanged();
+    }
+    if (bZValueChanged) {
+        emit_zValueChanged();
     }
     if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);

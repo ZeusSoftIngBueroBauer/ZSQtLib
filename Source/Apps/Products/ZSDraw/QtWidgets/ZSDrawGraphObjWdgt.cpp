@@ -808,99 +808,51 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
 {
     QVariant valChanged = i_value;
 
+    bool bZValueChanged = false;
     bool bTreeEntryChanged = false;
 
-    if( i_change == ItemSelectedHasChanged )
-    {
-        if( m_pDrawingScene->getMode() == EMode::Edit && isSelected() )
-        {
-            bringToFront(); // does not set "m_fZValue" as it is used to restore the stacking order on deselecting the object
-
-            if( m_editMode == EEditMode::Creating )
-            {
-                showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
+    if (i_change == ItemSceneHasChanged) {
+        // The item may have been removed from the scene.
+        if (scene() != nullptr) {
+        }
+    }
+    else if (i_change == ItemSelectedHasChanged) {
+        if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
+            bringToFront();
+            if (m_editMode == EEditMode::Creating) {
+                showSelectionPoints(
+                    ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
             }
-            else
-            {
+            else {
                 showSelectionPoints();
             }
-
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();
-
             setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
-        else
-        {
+        else {
             setAcceptedMouseButtons(Qt::NoButton);
-
             hideSelectionPoints();
-
             setZValue(m_fZValue); // restore ZValue as before selecting the object
-
             m_editMode = EEditMode::None;
             m_editResizeMode = EEditResizeMode::None;
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-
         updateEditInfo();
         updateToolTip();
-
         bTreeEntryChanged = true;
-
-    } // if( i_change == ItemSelectedHasChanged )
-
-    else if( i_change == ItemToolTipChange || i_change == ItemToolTipHasChanged
-          || i_change == ItemFlagsChange || i_change == ItemFlagsHaveChanged
-          || i_change == ItemPositionChange
-          || i_change == ItemVisibleChange
-          || i_change == ItemEnabledChange
-          || i_change == ItemSelectedChange
-          || i_change == ItemParentChange
-          || i_change == ItemTransformChange
-          || i_change == ItemSceneChange
-          || i_change == ItemCursorChange
-          || i_change == ItemZValueChange
-          #if QT_VERSION >= 0x040700
-          || i_change == ItemOpacityChange
-          || i_change == ItemRotationChange
-          || i_change == ItemScaleChange
-          || i_change == ItemTransformOriginPointChange )
-          #else
-          || i_change == ItemOpacityChange )
-          #endif
-    {
     }
-
-    else if( i_change == ItemChildAddedChange
-          || i_change == ItemChildRemovedChange
-          || i_change == ItemVisibleHasChanged
-          || i_change == ItemEnabledHasChanged
-          || i_change == ItemCursorHasChanged
-          || i_change == ItemOpacityHasChanged )
-    {
-    }
-
-    else if( i_change == ItemTransformHasChanged )
-    {
-        CGraphObjSelectionPoint* pGraphObjSelPt;
-        QPointF                  ptSel;
-        CEnumSelectionPoint      selPt;
-
-        for( selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++ )
-        {
-            pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
-
-            if( pGraphObjSelPt != nullptr )
-            {
-                ptSel = getSelectionPointCoors(selPt.enumerator());
+    else if (i_change == ItemTransformHasChanged) {
+        for (CEnumSelectionPoint selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++) {
+            CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
+            if (pGraphObjSelPt != nullptr) {
+                QPointF ptSel = getSelectionPointCoors(selPt.enumerator());
                 ptSel = mapToScene(ptSel);
                 pGraphObjSelPt->setPos(ptSel);
             }
         }
-
         updateEditInfo();
         updateToolTip();
     }
@@ -909,39 +861,22 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
          //  || i_change == ItemPositionHasChanged
          //  || i_change == ItemParentHasChanged
          //  || i_change == ItemSceneHasChanged
-         //  || i_change == ItemZValueHasChanged
          //  || i_change == ItemScenePositionHasChanged
          //  || i_change == ItemRotationHasChanged
          //  || i_change == ItemScaleHasChanged
          //  || i_change == ItemTransformOriginPointHasChanged )
     {
-        CGraphObjSelectionPoint* pGraphObjSelPt;
-        QPointF                  ptSel;
-        CEnumSelectionPoint      selPt;
-
-        for( selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++ )
-        {
-            pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
-
-            if( pGraphObjSelPt != nullptr )
-            {
-                ptSel = getSelectionPointCoors(selPt.enumerator());
-                ptSel = mapToScene(ptSel);
-                pGraphObjSelPt->setPos(ptSel);
-
-                if( i_change == ItemZValueHasChanged )
-                {
-                    pGraphObjSelPt->setZValue( zValue() + 0.05 );
-                }
-            }
+        if (i_change == ItemZValueHasChanged) {
+            bZValueChanged = true;
         }
-
         updateEditInfo();
         updateToolTip();
     }
 
-    if( bTreeEntryChanged && m_pTree != nullptr )
-    {
+    if (bZValueChanged) {
+        emit_zValueChanged();
+    }
+    if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
     }
 

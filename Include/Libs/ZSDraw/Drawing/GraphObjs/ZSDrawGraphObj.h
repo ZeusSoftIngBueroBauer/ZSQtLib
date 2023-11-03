@@ -320,6 +320,8 @@ signals:
     void selectedChanged();
     /*!< This signal is emitted if the geometry of the object has been changed. */
     void geometryChanged();
+    /*!< This signal is emitted if the Z-value (stacking order) of the object has been changed. */
+    void zValueChanged();
     /*!< This signal is emitted if the drawing settings (pen style, etc.) of the object has been changed. */
     void drawSettingsChanged();
     /*!< This signal is emitted if a new text label has been added. */
@@ -597,6 +599,7 @@ protected: // auxiliary instance methods
 protected: // auxiliary instance methods (method tracing)
     void emit_selectedChanged();
     void emit_geometryChanged();
+    void emit_zValueChanged();
     void emit_drawSettingsChanged();
     void emit_labelAdded(const QString& i_strName);
     void emit_labelRemoved(const QString& i_strName);

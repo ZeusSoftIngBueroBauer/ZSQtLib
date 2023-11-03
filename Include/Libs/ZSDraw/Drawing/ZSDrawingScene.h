@@ -166,13 +166,6 @@ public: // instance methods
     //void removeGraphObj( CGraphObj* i_pGraphObj );
     QGraphicsItem* findGraphicsItem( const QString& i_strKeyInTree );
     CGraphObj* findGraphObj( const QString& i_strKeyInTree );
-protected: // instance methods
-    void addItem( QGraphicsItem* i_pGraphicsItem, QGraphicsItem* i_pGraphicsItemParent = nullptr );
-    void removeItem( QGraphicsItem* i_pGraphicsItem );
-    void deleteItem( QGraphicsItem* i_pGraphicsItem );
-    void deleteItem( CGraphObj* i_pGraphObj );
-protected: // instance methods
-    //void addChildItems( QGraphicsItem* i_pGraphicsItem );
 public: // instance methods
     void setMode(
         const ZS::System::CEnumMode& i_mode,

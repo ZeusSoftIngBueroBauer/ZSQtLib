@@ -292,9 +292,12 @@ bool CModelGraphObjLabels::hasErrors() const
         /* strAddInfo   */ "" );
 
     bool bHasErrors = false;
-    //if (!changedNameIsUnique()) {
-    //    bHasErrors = true;
-    //}
+    for (const SLabelSettings& labelSettings : m_arLabelSettings) {
+        if (isErrorResult(labelSettings.m_errResultInfo.getResult())) {
+            bHasErrors = true;
+            break;
+        }
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasErrors);
     }
@@ -748,7 +751,7 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                         QString strResult = labelSettings.m_errResultInfo.getResultStr();
                         QString strAddInfo = labelSettings.m_errResultInfo.getAddErrInfoDscr();
                         if (!strResult.isEmpty() && !strAddInfo.isEmpty()) {
-                            varData = strResult + "( " + strAddInfo + ")";
+                            varData = strResult + " (" + strAddInfo + ")";
                         }
                         else if (!strResult.isEmpty()) {
                             varData = strResult;
@@ -807,13 +810,30 @@ bool CModelGraphObjLabels::setData(
                 }
                 case EColumnName: {
                     if (i_iRole == Qt::EditRole) {
-                        labelSettings.m_strName = i_varData.toString();
+                        QString strNameNew = i_varData.toString();
+                        if (labelSettings.m_strName != strNameNew) {
+                            if (m_pGraphObj->isPredefinedLabelName(strNameNew)) {
+                                labelSettings.m_errResultInfo = SErrResultInfo(
+                                    NameSpace(), ClassName(), objectName(), "setData",
+                                    EResultInvalidObjName, EResultSeverityError,
+                                    "User defined label names must be different from predefined label names");
+                            }
+                            else if (m_hshName2RowIdx.contains(strNameNew)) {
+                                if (m_hshName2RowIdx.value(strNameNew) != labelSettings.m_iRowIdx) {
+                                    labelSettings.m_errResultInfo = SErrResultInfo(
+                                        NameSpace(), ClassName(), objectName(), "setData",
+                                        EResultObjNameNotUnique, EResultSeverityError,
+                                        "Label names must be unique");
+                                }
+                            }
+                            else {
+                                labelSettings.m_errResultInfo = ErrResultSuccess;
+                            }
+                            m_hshName2RowIdx.remove(labelSettings.m_strName);
+                            labelSettings.m_strName = i_varData.toString();
+                            m_hshName2RowIdx.insert(labelSettings.m_strName, labelSettings.m_iRowIdx);
+                        }
                         bDataSet = true;
-                        //m_pLblNameError->setToolTip("Name is not unique.");
-                        //QPixmap pxmErr = ZS::System::GUI::getErrPixmap(EResultSeverityError, QSize(20,20));
-                        //m_pLblNameError->setPixmap(pxmErr);
-                        //m_pLblNameError->hide();
-                        //m_pLytLineName->addWidget(m_pLblNameError);
                     }
                     break;
                 }
@@ -985,7 +1005,7 @@ Qt::ItemFlags CModelGraphObjLabels::flags(const QModelIndex& i_modelIdx) const
                     break;
                 }
                 case EColumnName: {
-                    if (!m_pGraphObj->isPredefinedLabelName(labelSettings.m_strName)) {
+                    if (!labelSettings.m_bIsPredefinedLabelName) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
                     break;

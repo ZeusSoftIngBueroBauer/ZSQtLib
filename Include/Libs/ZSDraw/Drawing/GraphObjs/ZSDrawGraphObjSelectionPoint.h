@@ -47,10 +47,16 @@ namespace Draw
 class CDrawSettings;
 
 //******************************************************************************
-// Please note that selection points should not belong as child to the graphics items
-// for which the selection points are created. Otherwise the "boundingRect" call
-// of groups (which implicitly calls childrenBoundingRect) does not work as the
-// selection points of the bounding rectangle would be included.
+/*! @brief Selection points of graphical objects.
+
+    Selection points are temporarily created when selecting objects to modify
+    the shape of the objects.
+
+    Please note that selection points should not belong as child to the graphics items
+    for which the selection points are created. Otherwise the "boundingRect" call
+    of groups (which implicitly calls childrenBoundingRect) does not work as the
+    selection points of the bounding rectangle would be included.
+*/
 class ZSDRAWDLL_API CGraphObjSelectionPoint : public CGraphObj, public QGraphicsEllipseItem
 //******************************************************************************
 {
@@ -64,11 +70,11 @@ public: // class methods
 public: // ctors and dtor
     CGraphObjSelectionPoint(
         CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjSelected,
+        CGraphObj* i_pGraphObjParent,
         ESelectionPoint i_selectionPoint );
     CGraphObjSelectionPoint(
         CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjSelected,
+        CGraphObj* i_pGraphObjParent,
         int i_idxPt );
     virtual ~CGraphObjSelectionPoint();
 public: // overridables of base class QGraphicsItem
@@ -78,7 +84,7 @@ public: // must overridables of base class CGraphObj
 public: // instance methods
     ESelectionPointType getSelectionPointType() const { return m_selPtType.enumerator(); }
 public: // instance methods
-    CGraphObj* getSelectedGraphObj() { return m_pGraphObjSelected; }
+    CGraphObj* getParentGraphObj() { return m_pGraphObjParent; }
     void setSelectionPoint( ESelectionPoint i_selPt );
     ESelectionPoint getSelectionPoint() const { return m_selPt.enumerator(); }
     void setShapePointIndex( int i_idxPt );
@@ -124,6 +130,8 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+protected slots:
+    void onGraphObjParentZValueChanged();
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
@@ -137,7 +145,7 @@ protected: // class members
 protected: // class members
     static double s_fRadius_px;
 protected: // instance members
-    CGraphObj* m_pGraphObjSelected;
+    CGraphObj* m_pGraphObjParent;
     CEnumSelectionPointType m_selPtType;
     CEnumSelectionPoint m_selPt;
     int m_idxPt;

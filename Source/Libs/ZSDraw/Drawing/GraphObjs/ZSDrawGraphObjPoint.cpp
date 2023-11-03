@@ -1319,92 +1319,43 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
 
-    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    //{
-    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-    //    strAddTrcInfo += ", Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
-    //    mthTracer.trace(strAddTrcInfo);
-    //}
-
     QVariant valChanged = i_value;
 
+    bool bZValueChanged = false;
     bool bTreeEntryChanged = false;
 
-    if( i_change == ItemSelectedHasChanged )
-    {
+    if (i_change == ItemSceneHasChanged) {
+        // The item may have been removed from the scene.
+        if (scene() != nullptr) {
+        }
+    }
+    else if (i_change == ItemSelectedHasChanged) {
         prepareGeometryChange();
-
-        if( m_pDrawingScene->getMode() == EMode::Edit && isSelected() )
-        {
-            bringToFront(); // does not set "m_fZValue" as it is used to restore the stacking order on deselecting the object
-
+        if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
+            bringToFront();
             showSelectionPoints();
-
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();
-
             setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
         }
-        else
-        {
+        else {
             setAcceptedMouseButtons(Qt::NoButton);
-
             hideSelectionPoints();
-
             setZValue(m_fZValue); // restore ZValue as before selecting the object
-
             m_editMode = EEditMode::None;
             m_editResizeMode = EEditResizeMode::None;
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-
         updateEditInfo();
         updateToolTip();
-
         bTreeEntryChanged = true;
-
-    } // if( i_change == ItemSelectedHasChanged )
-
-    else if( i_change == ItemToolTipChange || i_change == ItemToolTipHasChanged
-          || i_change == ItemFlagsChange || i_change == ItemFlagsHaveChanged
-          || i_change == ItemPositionChange
-          || i_change == ItemVisibleChange
-          || i_change == ItemEnabledChange
-          || i_change == ItemSelectedChange
-          || i_change == ItemParentChange
-          || i_change == ItemTransformChange
-          || i_change == ItemSceneChange
-          || i_change == ItemCursorChange
-          || i_change == ItemZValueChange
-          #if QT_VERSION >= 0x040700
-          || i_change == ItemOpacityChange
-          || i_change == ItemRotationChange
-          || i_change == ItemScaleChange
-          || i_change == ItemTransformOriginPointChange )
-          #else
-          || i_change == ItemOpacityChange )
-          #endif
-    {
     }
-
-    else if( i_change == ItemChildAddedChange
-          || i_change == ItemChildRemovedChange
-          || i_change == ItemVisibleHasChanged
-          || i_change == ItemEnabledHasChanged
-          || i_change == ItemCursorHasChanged
-          || i_change == ItemOpacityHasChanged )
-    {
-    }
-
     else if( i_change == ItemTransformChange
           || i_change == ItemPositionHasChanged
           || i_change == ItemTransformHasChanged
           || i_change == ItemParentHasChanged
-          || i_change == ItemSceneHasChanged
           #if QT_VERSION >= 0x040700
           || i_change == ItemScenePositionHasChanged
           || i_change == ItemRotationHasChanged
@@ -1418,73 +1369,24 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
         updateEditInfo();
         updateToolTip();
     }
-
-    else if( i_change == ItemZValueHasChanged )
-    {
-        CGraphObjSelectionPoint* pGraphObjSelPt;
-        ESelectionPoint          selPt;
-        int                      idxSelPt;
-
-        for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-        {
-            selPt = static_cast<ESelectionPoint>(idxSelPt);
-
-            pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-
-            if( pGraphObjSelPt != nullptr )
-            {
-                pGraphObjSelPt->setZValue( zValue() + 0.05 );
-            }
-        }
-
-        for( idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++ )
-        {
-            pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-
-            if( pGraphObjSelPt != nullptr )
-            {
-                pGraphObjSelPt->setZValue( zValue()+0.05 );
-            }
-        }
-
-        //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-
-        //CGraphObjLabel* pGraphObjLabel;
-
-        //while( itLabels.hasNext() )
-        //{
-        //    itLabels.next();
-
-        //    pGraphObjLabel = itLabels.value();
-
-        //    if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-        //    {
-        //        pGraphObjLabel->m_pGraphObjLabel->setZValue( zValue() + 0.02 );
-        //    }
-        //}
+    else if (i_change == ItemZValueHasChanged) {
+        bZValueChanged = true;
+        bTreeEntryChanged = true;
     }
 
-    if( bTreeEntryChanged && m_pTree != nullptr )
-    {
+    if (bZValueChanged) {
+        emit_zValueChanged();
+    }
+    if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);
     }
 
     valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
-    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    //{
-    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-    //    strAddTrcInfo += ", Pos: " + point2Str(pos());
-    //    mthTracer.trace(strAddTrcInfo);
-    //}
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
     }
-
     return valChanged;
 
 } // itemChange

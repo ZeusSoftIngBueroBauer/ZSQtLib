@@ -1255,32 +1255,33 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
     if (pGraphicsItem == nullptr) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "dynamic_cast<QGraphicsItem*>(i_pGraphObj)");
+        throw ZS::System::CException(
+            __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "dynamic_cast<QGraphicsItem*>(i_pGraphObj)");
     }
 
     // Please note that selection points and labels should not belong as child to the graphics items.
     // Otherwise the "boundingRect" call of groups (which implicitly calls childrenBoundingRect) does
-    // not work as the childs bounding rectangles would be included. But the selection points and
-    // labels should appear as childs in the index tree of the drawing scene.
+    // not work as expected as the childs bounding rectangles would be included.
+    // In addition selection points and labels must be directly added to the graphics scene as they
+    // should not be indicated in the index tree.
     QGraphicsItem* pGraphicsItemParent = nullptr;
-    if (!i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel()) {
-        if (i_pGraphObjParent != nullptr) {
-            pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(i_pGraphObjParent);
-            if (pGraphicsItemParent == nullptr) {
-                throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "dynamic_cast<QGraphicsItem*>(i_pGraphObjParent)");
-            }
-        }
+    if (i_pGraphObj->isSelectionPoint()) {
+        throw ZS::System::CException(
+            __FILE__, __LINE__, EResultInvalidMethodCall, "Selection points must be directly added to the graphics scene");
+    }
+    else if (i_pGraphObj->isLabel()) {
+        throw ZS::System::CException(
+            __FILE__, __LINE__, EResultInvalidMethodCall, "Labels must be directly added to the graphics scene");
     }
 
     // On adding the item to the graphics scene the itemChange method of the graphics
     // item is called with "SceneHasChanged". On initially setting the drawing scene
     // graphical object has to recalculate the position in pixel coordinates.
-    addItem(pGraphicsItem, pGraphicsItemParent);
-
-    // Selection points and labels should not be indicated in the index tree.
-    if (!i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel()) {
-        m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
+    if (pGraphicsItemParent != nullptr && pGraphicsItem->parentItem() != pGraphicsItemParent) {
+        pGraphicsItem->setParentItem(pGraphicsItemParent);
     }
+    QGraphicsScene::addItem(pGraphicsItem);
+    m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
 
     QObject::connect(
         i_pGraphObj, &CGraphObj::aboutToBeDestroyed,
@@ -1313,145 +1314,6 @@ CGraphObj* CDrawingScene::findGraphObj( const QString& i_strKeyInTree )
     }
     return pGraphObj;
 }
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! Adds the given graphics item to Qt's graphic scene.
-
-    This method is internally called by "addGraphObj".
-
-    If a parent item is passed the given graphics item will also be added as a child to
-    the parent graphics item.
-
-    This means that the given graphics item may not already be a child of the parent item
-    and the parent item must have already been added before to Qt's graphic scene.
-
-    @param i_pGraphicsItem [in]
-        Pointer to graphics item to be added to Qt's graphic scene.
-    @param i_pGraphicsItemParent [in]
-        Pointer to parent item or nullptr.
-        If a parent item is given the parent item must have already been added
-        before to Qt's graphic scene. The given graphics item will be added as a child
-        to the parent item.
-*/
-void CDrawingScene::addItem( QGraphicsItem* i_pGraphicsItem, QGraphicsItem* i_pGraphicsItemParent )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(i_pGraphicsItemParent);
-        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
-        strMthInArgs += ", Parent: " + QString(pGraphObjParent == nullptr ? "nullptr" : pGraphObjParent->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "addItem",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (i_pGraphicsItemParent != nullptr) {
-        i_pGraphicsItem->setParentItem(i_pGraphicsItemParent);
-    }
-    QGraphicsScene::addItem(i_pGraphicsItem);
-}
-
-//------------------------------------------------------------------------------
-void CDrawingScene::removeItem( QGraphicsItem* i_pGraphicsItem )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "removeItem",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (i_pGraphicsItem->scene() != nullptr) {
-        QGraphicsScene::removeItem(i_pGraphicsItem);
-    }
-}
-
-/*==============================================================================
-protected: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDrawingScene::deleteItem( QGraphicsItem* i_pGraphicsItem )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "deleteItem",
-        /* strAddInfo   */ strMthInArgs );
-
-    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-    if (pGraphObj != nullptr){
-        deleteItem(pGraphObj);
-        pGraphObj = nullptr;
-        i_pGraphicsItem = nullptr;
-    }
-}
-
-//------------------------------------------------------------------------------
-void CDrawingScene::deleteItem( CGraphObj* i_pGraphObj )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->path());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "deleteItem",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (i_pGraphObj != nullptr) {
-        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-        if (pGraphicsItem != nullptr) {
-            QList<QGraphicsItem*> arpGraphicsItemsChilds = pGraphicsItem->childItems();
-            QStringList strlstGraphObjIdsChilds;
-
-            // On deleting a graphical object the object may destroy other graphical objects
-            // (e.g. connection points may delete connection lines) and the list of selected
-            // items may change while the dtor is in process. So we don't store a list with object
-            // references but a list with object ids and check whether the object still belong
-            // to the drawing scene before deleting the object.
-
-            for (int idxChild = 0; idxChild < arpGraphicsItemsChilds.size(); idxChild++) {
-                QGraphicsItem* pGraphicsItemChild = arpGraphicsItemsChilds[idxChild];
-                CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
-                if (pGraphObjChild != nullptr) {
-                    strlstGraphObjIdsChilds.append(pGraphObjChild->keyInTree());
-                }
-            }
-            for (int idxChild = 0; idxChild < strlstGraphObjIdsChilds.size(); idxChild++) {
-                QString strGraphObjIdChild = strlstGraphObjIdsChilds[idxChild];
-                CGraphObj* pGraphObjChild = findGraphObj(strGraphObjIdChild);
-                if (pGraphObjChild != nullptr) {
-                    deleteItem(pGraphObjChild);
-                    pGraphObjChild = nullptr;
-                }
-            }
-            delete i_pGraphObj;
-            i_pGraphObj = nullptr;
-        }
-    }
-} // deleteItem
 
 /*==============================================================================
 protected: // instance methods
@@ -4127,7 +3989,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                             if (bBringToFront)
                             {
-                                bringToFront( pGraphicsItem, arpGraphicsItemsIntersected );
+                                bringToFront(pGraphicsItem, arpGraphicsItemsIntersected);
                                 pGraphicsItem->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
                                 strlstKeysInTreeGraphicsItemsBroughtToFront.append(pGraphObj->keyInTree());
                             }
@@ -4590,7 +4452,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             if (m_pGraphicsItemSelectionArea != nullptr)
             {
-                removeItem(m_pGraphicsItemSelectionArea);
+                QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
 
                 delete m_pGraphicsItemSelectionArea;
                 m_pGraphicsItemSelectionArea = nullptr;
@@ -4928,7 +4790,8 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
                 if( pGraphObj != nullptr )
                 {
-                    deleteItem(pGraphObj);
+                    delete pGraphObj;
+                    pGraphObj = nullptr;
                 }
             }
 
@@ -5463,7 +5326,7 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
     }
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-    if (pGraphicsItem != nullptr) {
+    if (pGraphicsItem != nullptr && pGraphicsItem->scene() != nullptr) {
         removeItem(pGraphicsItem);
     }
     if (m_pGraphObjCreating != nullptr && m_pGraphObjCreating == i_pGraphObj) {
@@ -5483,6 +5346,37 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
             }
         }
     }
+
+    // The children will be recursively deleted by the CGraphObj destructor.
+    /*
+    QList<QGraphicsItem*> arpGraphicsItemsChilds = pGraphicsItem->childItems();
+    QStringList strlstGraphObjIdsChilds;
+
+    // On deleting a graphical object the object may destroy other graphical objects
+    // (e.g. connection points may delete connection lines) and the list of selected
+    // items may change while the dtor is in process. So we don't store a list with object
+    // references but a list with object ids and check whether the object still belong
+    // to the drawing scene before deleting the object.
+
+    for (int idxChild = 0; idxChild < arpGraphicsItemsChilds.size(); idxChild++) {
+        QGraphicsItem* pGraphicsItemChild = arpGraphicsItemsChilds[idxChild];
+        CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
+        if (pGraphObjChild != nullptr) {
+            strlstGraphObjIdsChilds.append(pGraphObjChild->keyInTree());
+        }
+    }
+    for (int idxChild = 0; idxChild < strlstGraphObjIdsChilds.size(); idxChild++) {
+        QString strGraphObjIdChild = strlstGraphObjIdsChilds[idxChild];
+        CGraphObj* pGraphObjChild = findGraphObj(strGraphObjIdChild);
+        if (pGraphObjChild != nullptr) {
+            deleteItem(pGraphObjChild);
+            pGraphObjChild = nullptr;
+        }
+    }
+    delete i_pGraphObj;
+    i_pGraphObj = nullptr;
+    */
+
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Leave);
     }
