@@ -210,7 +210,7 @@ void CGraphObjEllipse::setRect( const QRectF& i_rct )
     m_rctCurr = i_rct;
     m_ptRotOriginCurr = m_rctCurr.center();
     if (isSelected()) {
-        updateSelectionPointsOfBoundingRect(m_rctCurr);
+        //updateSelectionPointsOfBoundingRect(m_rctCurr);
     }
 #endif
 
@@ -584,29 +584,29 @@ void CGraphObjEllipse::showSelectionPoints( unsigned char i_selPts )
     }
 } // showSelectionPoints
 
-//------------------------------------------------------------------------------
-void CGraphObjEllipse::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "SelectionPoints:" + selectionPoints2Str(i_selPts);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( parentItem() == nullptr )
-    {
-        updateSelectionPointsOfBoundingRect( rect(), i_selPts );
-    }
-} // updateSelectionPoints
+////------------------------------------------------------------------------------
+//void CGraphObjEllipse::updateSelectionPoints( unsigned char i_selPts )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
+//    {
+//        strMthInArgs = "SelectionPoints:" + selectionPoints2Str(i_selPts);
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "updateSelectionPoints",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if( parentItem() == nullptr )
+//    {
+//        //updateSelectionPointsOfBoundingRect( rect(), i_selPts );
+//    }
+//} // updateSelectionPoints
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
@@ -1261,7 +1261,7 @@ void CGraphObjEllipse::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             QGraphicsEllipseItem::setRect(m_rctCurr); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
 
-            updateSelectionPointsOfBoundingRect(m_rctCurr);
+            //updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
 
             updateEditInfo();
@@ -1381,7 +1381,7 @@ void CGraphObjEllipse::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             QGraphicsEllipseItem::setRect(m_rctCurr); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
 
-            updateSelectionPointsOfBoundingRect(m_rctCurr);
+            //updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
 
             // The object has been initially created.
@@ -1606,7 +1606,6 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemTransformHasChanged) {
-        updateSelectionPointsOfBoundingRect(rect());
         updateEditInfo();
         updateToolTip();
     }
@@ -1623,7 +1622,6 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
           #endif
     {
         updateTransform();
-        updateSelectionPointsOfBoundingRect( rect() );
         updateEditInfo();
         updateToolTip();
     }

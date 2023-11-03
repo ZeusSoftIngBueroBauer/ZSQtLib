@@ -3484,15 +3484,35 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns coordinates of selection point in item's coordinate system.
+/*! @brief Returns the coordinates of the selection point on the bounding rectangle
+           in item's coordinate system.
 */
-QPointF CGraphObj::getSelectionPointCoors( ESelectionPoint i_selPt ) const
+QPointF CGraphObj::getBoundingRectSelectionPointCoors( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF pt;
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
         pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), i_selPt);
+    }
+    return pt;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the coordinates of the selection point of a polygon
+           in item's coordinate system.
+
+    @note The default implementation returns the center of the bounding rectangle.
+          For polygon shapes the method got to be overridden and should return
+          the corresponding coordinates of the polygon point.
+*/
+QPointF CGraphObj::getPolygonSelectionPointCoors( int /*i_idxPt*/) const
+//------------------------------------------------------------------------------
+{
+    QPointF pt;
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItem != nullptr) {
+        pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), ESelectionPoint::Center);
     }
     return pt;
 }
@@ -3730,101 +3750,82 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                     // In addition selection points must be directly added to the graphics scene as they
                     // should not be indicated in the index tree.
                     m_pDrawingScene->addItem(pGraphObjSelPt);
+                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
 
                     // Event filters can only be installed on items in a scene.
                     pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
-                }
-
-                if (pGraphObjSelPt != nullptr) {
-                    QPointF ptSel;
-                    if (selPt == ESelectionPoint::RotateTop /*&& m_fScaleFacYCurr != 0.0*/) {
-                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::TopCenter);
-                        ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
-                        ptSel = pGraphicsItem->mapToScene(ptSel);
-                    }
-                    else if (selPt == ESelectionPoint::RotateBottom /*&& m_fScaleFacYCurr != 0.0*/) {
-                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::BottomCenter);
-                        ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
-                        ptSel = pGraphicsItem->mapToScene(ptSel);
-                    }
-                    else {
-                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,selPt);
-                        ptSel = pGraphicsItem->mapToScene(ptSel);
-                    }
-                    pGraphObjSelPt->setPos(ptSel);
-                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
                 }
             }
         }
     }
 } // showSelectionPointsOfBoundingRect
 
-//------------------------------------------------------------------------------
-void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = rect2Str(i_rct);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::updateSelectionPointsOfBoundingRect",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr)
-    {
-        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
-            ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
-            bool bUpdateSelPt = false;
-            if (idxSelPt >= ESelectionPointCornerMin && idxSelPt <= ESelectionPointCornerMax) {
-                if (i_selPts & ESelectionPointsBoundingRectCorner) {
-                    bUpdateSelPt = true;
-                }
-            }
-            else if (idxSelPt >= ESelectionPointLineCenterMin && idxSelPt <= ESelectionPointLineCenterMax) {
-                if (i_selPts & ESelectionPointsBoundingRectLineCenter) {
-                    bUpdateSelPt = true;
-                }
-            }
-            else if (selPt == ESelectionPoint::Center) {
-                if (i_selPts & ESelectionPointsBoundingRectCenter) {
-                    bUpdateSelPt = true;
-                }
-            }
-            else if (idxSelPt >= ESelectionPointRotateMin && idxSelPt <= ESelectionPointRotateMax) {
-                if (i_selPts & ESelectionPointsBoundingRectRotate) {
-                    bUpdateSelPt = true;
-                }
-            }
-            if (bUpdateSelPt) {
-                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-                if (pGraphObjSelPt != nullptr) {
-                    QPointF ptSel;
-                    if (selPt == ESelectionPoint::RotateTop /*&& m_fScaleFacYCurr != 0.0*/) {
-                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::TopCenter);
-                        ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
-                        ptSel = pGraphicsItem->mapToScene(ptSel);
-                    }
-                    else if (selPt == ESelectionPoint::RotateBottom /*&& m_fScaleFacYCurr != 0.0*/) {
-                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::BottomCenter);
-                        ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
-                        ptSel = pGraphicsItem->mapToScene(ptSel);
-                    }
-                    else {
-                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,selPt);
-                        ptSel = pGraphicsItem->mapToScene(ptSel);
-                    }
-                    pGraphObjSelPt->setPos(ptSel);
-                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
-                }
-            }
-        }
-    }
-} // updateSelectionPointsOfBoundingRect
+////------------------------------------------------------------------------------
+//void CGraphObj::updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = rect2Str(i_rct);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::updateSelectionPointsOfBoundingRect",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+//    if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr)
+//    {
+//        for (int idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++) {
+//            ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
+//            bool bUpdateSelPt = false;
+//            if (idxSelPt >= ESelectionPointCornerMin && idxSelPt <= ESelectionPointCornerMax) {
+//                if (i_selPts & ESelectionPointsBoundingRectCorner) {
+//                    bUpdateSelPt = true;
+//                }
+//            }
+//            else if (idxSelPt >= ESelectionPointLineCenterMin && idxSelPt <= ESelectionPointLineCenterMax) {
+//                if (i_selPts & ESelectionPointsBoundingRectLineCenter) {
+//                    bUpdateSelPt = true;
+//                }
+//            }
+//            else if (selPt == ESelectionPoint::Center) {
+//                if (i_selPts & ESelectionPointsBoundingRectCenter) {
+//                    bUpdateSelPt = true;
+//                }
+//            }
+//            else if (idxSelPt >= ESelectionPointRotateMin && idxSelPt <= ESelectionPointRotateMax) {
+//                if (i_selPts & ESelectionPointsBoundingRectRotate) {
+//                    bUpdateSelPt = true;
+//                }
+//            }
+//            if (bUpdateSelPt) {
+//                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+//                if (pGraphObjSelPt != nullptr) {
+//                    QPointF ptSel;
+//                    if (selPt == ESelectionPoint::RotateTop /*&& m_fScaleFacYCurr != 0.0*/) {
+//                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::TopCenter);
+//                        ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
+//                        ptSel = pGraphicsItem->mapToScene(ptSel);
+//                    }
+//                    else if (selPt == ESelectionPoint::RotateBottom /*&& m_fScaleFacYCurr != 0.0*/) {
+//                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,ESelectionPoint::BottomCenter);
+//                        ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/*/m_fScaleFacYCurr*/ );
+//                        ptSel = pGraphicsItem->mapToScene(ptSel);
+//                    }
+//                    else {
+//                        ptSel = ZS::Draw::getSelectionPointCoors(i_rct,selPt);
+//                        ptSel = pGraphicsItem->mapToScene(ptSel);
+//                    }
+//                    pGraphObjSelPt->setPos(ptSel);
+//                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
+//                }
+//            }
+//        }
+//    }
+//} // updateSelectionPointsOfBoundingRect
 
 //------------------------------------------------------------------------------
 /*! @brief Creates the selection points if not yet created and adds them to
@@ -3881,50 +3882,45 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 // In addition selection points must be directly added to the graphics scene as they
                 // should not be indicated in the index tree.
                 m_pDrawingScene->addItem(pGraphObjSelPt);
+                pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
 
                 // Event filters can only be installed on items in a scene.
                 pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
-            }
-            if (pGraphObjSelPt != nullptr) {
-                QPointF ptSel = i_plg[idxSelPt];
-                ptSel = pGraphicsItem->mapToScene(ptSel);
-                pGraphObjSelPt->setPos(ptSel);
-                pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
             }
         }
     }
 } // showSelectionPointsOfPolygon
 
-//------------------------------------------------------------------------------
-void CGraphObj::updateSelectionPointsOfPolygon( const QPolygonF& i_plg )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = polygon2Str(i_plg);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::updateSelectionPointsOfPolygon",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
-        if (i_plg.size() == m_arpSelPtsPolygon.size()) {
-            for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++) {
-                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-                if (pGraphObjSelPt != nullptr) {
-                    QPointF ptSel = i_plg[idxSelPt];
-                    ptSel = pGraphicsItem->mapToScene(ptSel);
-                    pGraphObjSelPt->setPos(ptSel);
-                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
-                }
-            }
-        }
-    }
-}
+////------------------------------------------------------------------------------
+//void CGraphObj::updateSelectionPointsOfPolygon( const QPolygonF& i_plg )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = polygon2Str(i_plg);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::updateSelectionPointsOfPolygon",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+//    if (pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr) {
+//        if (i_plg.size() == m_arpSelPtsPolygon.size()) {
+//            for (int idxSelPt = 0; idxSelPt < i_plg.size(); idxSelPt++) {
+//                CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+//                if (pGraphObjSelPt != nullptr) {
+//                    QPointF ptSel = i_plg[idxSelPt];
+//                    ptSel = pGraphicsItem->mapToScene(ptSel);
+//                    pGraphObjSelPt->setPos(ptSel);
+//                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
+//                }
+//            }
+//        }
+//    }
+//}
 
 /*==============================================================================
 public: // overridables
@@ -4338,7 +4334,7 @@ void CGraphObj::showLabel(const QString& i_strName)
         // should not be indicated in the index tree.
         m_pDrawingScene->addItem(pGraphObjLabel);
         pGraphObjLabel->setVisible(true);
-        pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.02);
+        pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.1);
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -5660,7 +5656,7 @@ protected: // overridables
 //    QPointF ptLabel( ptSelPt.x() + sizeDist.width(), ptSelPt.y() + sizeDist.height() );
 //
 //    pGraphObjLabel->setPos(ptLabel);
-//    pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.02);
+//    pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.1);
 //
 //    if( m_pTree != nullptr )
 //    {

@@ -670,38 +670,6 @@ void CGraphObjPolyline::showSelectionPoints( unsigned char i_selPts )
     }
 } // showSelectionPoints
 
-//------------------------------------------------------------------------------
-void CGraphObjPolyline::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( parentItem() == nullptr )
-    {
-        QPolygonF plg = polygon();
-        QRectF    rct = plg.boundingRect();
-
-        // Create bounding rectangle's selection points before shape edge points so that
-        // the shape edge points receive mouse events before the bounding rectangle's
-        // selection points (as they are "above" them).
-
-        updateSelectionPointsOfBoundingRect( rct, i_selPts );
-        updateSelectionPointsOfPolygon( plg );
-    }
-} // updateSelectionPoints
-
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
 ==============================================================================*/
@@ -1574,11 +1542,6 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 // on starting the edit process on pressing the mouse.
                 //setPos(ptPosNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
 
-                updateSelectionPointsOfPolygon(plg);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-                updateSelectionPointsOfBoundingRect(m_rctCurr);
-#endif
-
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
                 m_bCoorsDirty = true;
 #endif
@@ -2164,8 +2127,6 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
     else if (i_change == ItemTransformHasChanged) {
         QPolygonF plg = polygon();
         QRectF    rctBounding = plg.boundingRect();
-        updateSelectionPointsOfBoundingRect(rctBounding);
-        updateSelectionPointsOfPolygon(plg);
         updateEditInfo();
         updateToolTip();
     }
@@ -2185,9 +2146,6 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
 
         QPolygonF plg = polygon();
         QRectF    rctBounding = plg.boundingRect();
-
-        updateSelectionPointsOfBoundingRect(rctBounding);
-        updateSelectionPointsOfPolygon(plg);
 
         updateEditInfo();
         updateToolTip();

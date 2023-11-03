@@ -211,7 +211,7 @@ void CGraphObjWdgt::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_p
 
         setGeometry(m_rctCurr);
 
-        updateSelectionPointsOfBoundingRect(m_rctCurr);
+        //updateSelectionPointsOfBoundingRect(m_rctCurr);
     }
 #endif
 
@@ -321,16 +321,6 @@ void CGraphObjWdgt::showSelectionPoints( unsigned char i_selPts )
     if (parentItem() == nullptr) {
         QRectF rct = QGraphicsProxyWidget::boundingRect();
         showSelectionPointsOfBoundingRect(rct,i_selPts);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjWdgt::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    if (parentItem() == nullptr) {
-        QRectF rct = QGraphicsProxyWidget::boundingRect();
-        updateSelectionPointsOfBoundingRect(rct,i_selPts);
     }
 }
 
@@ -848,7 +838,7 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
         for (CEnumSelectionPoint selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
             if (pGraphObjSelPt != nullptr) {
-                QPointF ptSel = getSelectionPointCoors(selPt.enumerator());
+                QPointF ptSel = getBoundingRectSelectionPointCoors(selPt.enumerator());
                 ptSel = mapToScene(ptSel);
                 pGraphObjSelPt->setPos(ptSel);
             }

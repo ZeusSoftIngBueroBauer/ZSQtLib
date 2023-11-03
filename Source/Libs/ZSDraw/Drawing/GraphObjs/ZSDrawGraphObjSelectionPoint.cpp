@@ -121,6 +121,9 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     setAcceptHoverEvents(true);
 
     QObject::connect(
+        m_pGraphObjParent, &CGraphObj::geometryChanged,
+        this, &CGraphObjSelectionPoint::onGraphObjParentGeometryChanged);
+    QObject::connect(
         m_pGraphObjParent, &CGraphObj::zValueChanged,
         this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
 
@@ -177,6 +180,9 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 
     setAcceptHoverEvents(true);
 
+    QObject::connect(
+        m_pGraphObjParent, &CGraphObj::geometryChanged,
+        this, &CGraphObjSelectionPoint::onGraphObjParentGeometryChanged);
     QObject::connect(
         m_pGraphObjParent, &CGraphObj::zValueChanged,
         this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
@@ -1057,6 +1063,20 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::onGraphObjParentGeometryChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onGraphObjParentGeometryChanged",
+        /* strAddInfo   */ "" );
+
+    updatePosition();
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::onGraphObjParentZValueChanged()
 //------------------------------------------------------------------------------
 {
@@ -1105,9 +1125,8 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
+            updatePosition();
         }
-    }
-    else if (i_change == ItemSelectedHasChanged) {
     }
 
     if (bTreeEntryChanged && m_pTree != nullptr) {
@@ -1125,6 +1144,65 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
         mthTracer.setMethodReturn(strMthRet);
     }
     return valChanged;
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the position of the label and the
+           coordinates (start and end point) of the anchor line.
+
+    On moving the label the current distance to the parent item is stored.
+    If the geometry of the parent item changes (position moved or size changed or
+    any other geometry change) the label must be moved so that the distance remains
+    the same.
+*/
+void CGraphObjSelectionPoint::updatePosition()
+//------------------------------------------------------------------------------
+{
+    // "setPos" leads to a "itemChange" call with ItemPositionChange(d) whereupon
+    // "updatePosition" would be called again. This reentry is not desired.
+    if (m_bUpdatePositionInProgress) {
+        return;
+    }
+    m_bUpdatePositionInProgress = true;
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updatePosition",
+        /* strAddInfo   */ "" );
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Enter,
+            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
+    }
+
+    QPointF ptSelScenePosParent;
+    if (m_selPtType == ESelectionPointType::BoundingRectangle) {
+        QPointF ptSelPosParent = m_pGraphObjParent->getBoundingRectSelectionPointCoors(m_selPt.enumerator());
+        ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
+        if (m_selPt == ESelectionPoint::RotateTop) {
+            ptSelScenePosParent.setY(ptSelScenePosParent.y() - getSelectionPointRotateDistance());
+        }
+        else if (m_selPt == ESelectionPoint::RotateBottom) {
+            ptSelScenePosParent.setY(ptSelScenePosParent.y() + getSelectionPointRotateDistance());
+        }
+    }
+    else /*if (m_selPtType == ESelectionPointType::PolygonShapePoint)*/ {
+        QPointF ptSelPosParent = m_pGraphObjParent->getPolygonSelectionPointCoors(m_idxPt);
+        ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
+    }
+    setPos(ptSelScenePosParent);
+
+    m_bUpdatePositionInProgress = false;
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Leave,
+            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
+    }
 }
 
 /*==============================================================================

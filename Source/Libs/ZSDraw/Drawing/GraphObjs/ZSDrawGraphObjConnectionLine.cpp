@@ -295,7 +295,6 @@ bool CGraphObjConnectionLine::setConnectionPoint( ELinePoint i_linePoint, CGraph
 
             } // if( linePoint == ELinePoint::End )
 
-            updateSelectionPointsOfPolygon(plg);
             updateToolTip();
             updateEditInfo();
 
@@ -383,7 +382,6 @@ void CGraphObjConnectionLine::setPolygon( const QPolygonF& i_plg )
         {
             if( plg.size() == m_plgCurr.size() )
             {
-                updateSelectionPointsOfPolygon(plg);
             }
             else
             {
@@ -734,26 +732,6 @@ void CGraphObjConnectionLine::showSelectionPoints( unsigned char i_selPts )
         if (i_selPts & ESelectionPointsPolygonShapePoints) {
             showSelectionPointsOfPolygon( polygon() );
         }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionLine::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = selectionPoints2Str(i_selPts);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( parentItem() == nullptr ) {
-        updateSelectionPointsOfPolygon( polygon() );
     }
 }
 
@@ -2421,7 +2399,6 @@ QVariant CGraphObjConnectionLine::itemChange( GraphicsItemChange i_change, const
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateSelectionPointsOfPolygon( polygon() );
         updateEditInfo();
         updateToolTip();
         update();

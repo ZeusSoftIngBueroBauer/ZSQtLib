@@ -766,10 +766,17 @@ public: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Returns coordinates of selection point in item's coordinate system.
 */
-QPointF CGraphObjLine::getSelectionPointCoors( ESelectionPoint i_selPt ) const
+QPointF CGraphObjLine::getPolygonSelectionPointCoors( int i_idxPt ) const
 //------------------------------------------------------------------------------
 {
-    return ZS::Draw::getSelectionPointCoors(line(), i_selPt);
+    QPointF pt;
+    if (i_idxPt == 0) {
+        pt = line().p1();
+    }
+    else {
+        pt = line().p2();
+    }
+    return pt;
 }
 
 /*==============================================================================
@@ -799,30 +806,6 @@ void CGraphObjLine::showSelectionPoints( unsigned char i_selPts )
             plg.append(lineF.p2());
             showSelectionPointsOfPolygon(plg);
         }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjLine::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = selectionPoints2Str(i_selPts);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (parentItem() == nullptr) {
-        QLineF lineF = line();
-        QPolygonF plg;
-        plg.append(lineF.p1());
-        plg.append(lineF.p2());
-        updateSelectionPointsOfPolygon(plg);
     }
 }
 
@@ -1593,7 +1576,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         QPolygonF plg;
         plg.append(lineF.p1());
         plg.append(lineF.p2());
-        updateSelectionPointsOfPolygon(plg);
         updateLineEndArrowHeadPolygons();
         updateEditInfo();
         updateToolTip();

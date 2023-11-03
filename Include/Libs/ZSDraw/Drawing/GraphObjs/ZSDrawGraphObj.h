@@ -497,18 +497,19 @@ public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
 public: // overridables
-    virtual QPointF getSelectionPointCoors( ESelectionPoint i_selPt ) const;
+    virtual QPointF getBoundingRectSelectionPointCoors( ESelectionPoint i_selPt ) const;
+    virtual QPointF getPolygonSelectionPointCoors( int i_idxPt ) const;
 protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
-    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
+    //virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
     virtual void hideSelectionPoints( ESelectionPoints i_selPts = ESelectionPointsAll );
     virtual void bringSelectionPointsToFront( ESelectionPoints i_selPts = ESelectionPointsAll );
 protected: // overridables
     virtual void showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
-    virtual void updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
+    //virtual void updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
     virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );
-    virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
+    //virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
 public: // overridables (text labels)
     QString findUniqueLabelName(const QString& i_strPrefix = "") const;
     QStringList getLabelNames() const;

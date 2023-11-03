@@ -114,8 +114,7 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override { i_selPts = i_selPts; }
-    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override { i_selPts = i_selPts; }
+    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {}
 protected: // overridables of base class CGraphObj
     virtual void updateToolTip() override;
 public: // must overridables of base class QGraphicsItem
@@ -131,9 +130,12 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected slots:
+    void onGraphObjParentGeometryChanged();
     void onGraphObjParentZValueChanged();
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+protected: // auxiliary instance methods
+    void updatePosition();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -143,14 +145,28 @@ protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;
 protected: // class members
+    /*!< Default radius to be used for painting the selection points. */
     static double s_fRadius_px;
 protected: // instance members
+    /*!< Graphical parent object the selection point belongs to. */
     CGraphObj* m_pGraphObjParent;
+    /*!< Type of the selection point. Selection points are differentiated into
+         selection points on the bounding rectangle around the graphical object
+         or into polygon shape points. */
     CEnumSelectionPointType m_selPtType;
+    /*!< For selection points on the bounding rectangle specifies the position
+         on (or within) the bounding rectangle.
+         For polygon shape points the enum is set to PolygonPoint. */
     CEnumSelectionPoint m_selPt;
+    /*!< For selection points on a polygon the index of the polygon point
+         is stored the selection point is assigned to. */
     int m_idxPt;
+    /*!< Radius for drawing the selection point. */
     double m_fRadius_px;
+    /*!< True if the selection point is selected for changing the shape of the graphical object. */
     bool m_bSelected;
+    /*!< Flag used to avoid recursive calls of "updatePosition". */
+    bool m_bUpdatePositionInProgress;
 
 }; // class CGraphObjSelectionPoint
 

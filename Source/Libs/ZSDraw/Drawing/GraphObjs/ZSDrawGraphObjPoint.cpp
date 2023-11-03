@@ -466,7 +466,7 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QPointF CGraphObjPoint::getSelectionPointCoors( ESelectionPoint /*i_selPt*/ ) const
+QPointF CGraphObjPoint::getPolygonSelectionPointCoors( int /*i_idxPt*/ ) const
 //------------------------------------------------------------------------------
 {
     return QPointF(0.0, 0.0);
@@ -501,32 +501,6 @@ void CGraphObjPoint::showSelectionPoints( unsigned char i_selPts )
         showSelectionPointsOfBoundingRect(rct, ESelectionPointsBoundingRectCenter);
     }
 } // showSelectionPoints
-
-//------------------------------------------------------------------------------
-void CGraphObjPoint::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "SelectionPoints:" + selectionPoints2Str(i_selPts);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strMthInArgs );
-
-    if( parentItem() == nullptr )
-    {
-        QRectF rct = ZS::Draw::boundingRect( QPointF(0.0,0.0), 1.0 );
-
-        updateSelectionPointsOfBoundingRect(rct, ESelectionPointsBoundingRectCenter);
-    }
-} // updateSelectionPoints
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
@@ -1365,7 +1339,6 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateSelectionPoints();
         updateEditInfo();
         updateToolTip();
     }

@@ -85,10 +85,9 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
-    virtual QPointF getSelectionPointCoors( ESelectionPoint i_selPt ) const override; // returns coordinates of selection point in item's coordinate system
+    virtual QPointF getPolygonSelectionPointCoors( int i_idxPt = 0 ) const override; // returns coordinates of selection point in item's coordinate system
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
-    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;

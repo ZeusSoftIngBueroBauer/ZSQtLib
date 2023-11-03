@@ -369,7 +369,7 @@ void CGraphObjConnectionPoint::setRect( const QRectF& i_rct )
     m_ptRotOriginCurr = m_rctCurr.center();
 
     if (isSelected()) {
-        updateSelectionPointsOfBoundingRect(m_rctCurr);
+        //updateSelectionPointsOfBoundingRect(m_rctCurr);
     }
 #endif
 
@@ -763,17 +763,6 @@ void CGraphObjConnectionPoint::setCursor( const QCursor& i_cursor )
     QGraphicsEllipseItem::setCursor(i_cursor);
 
 } // setCursor
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QPointF CGraphObjConnectionPoint::getSelectionPointCoors( ESelectionPoint /*i_selPt*/ ) const
-//------------------------------------------------------------------------------
-{
-    return QPointF(0.0, 0.0);
-}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj

@@ -88,8 +88,8 @@ CGraphObjLabel::CGraphObjLabel(
         /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_strKey(i_strKey),
     m_pGraphObjParent(i_pGraphObjParent),
+    m_strKey(i_strKey),
     m_selPtLinked(i_selPt),
     m_distanceToLinkedSelPt(0.0, 0.0),
     m_bShowAnchorLine(false),
@@ -147,8 +147,8 @@ CGraphObjLabel::~CGraphObjLabel()
         scene()->removeItem(this);
     }
 
-    //m_strKey;
     m_pGraphObjParent = nullptr;
+    //m_strKey;
     m_selPtLinked = static_cast<ESelectionPoint>(0);
     //m_distanceToLinkedSelPt;
     m_bShowAnchorLine = false;
@@ -969,7 +969,7 @@ void CGraphObjLabel::updatePosition()
             m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
 
-    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelPosParent = m_pGraphObjParent->getBoundingRectSelectionPointCoors(m_selPtLinked);
     QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
     QPointF ptScenePosThis = ptSelScenePosParent;
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
@@ -1019,7 +1019,7 @@ void CGraphObjLabel::updateDistanceToLinkedSelPt()
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelPosParent = m_pGraphObjParent->getBoundingRectSelectionPointCoors(m_selPtLinked);
     QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
 
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
@@ -1073,7 +1073,7 @@ void CGraphObjLabel::updateDistanceToLinkedSelPt()
 //------------------------------------------------------------------------------
 void CGraphObjLabel::updateAnchorLine()
 {
-    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelPosParent = m_pGraphObjParent->getBoundingRectSelectionPointCoors(m_selPtLinked);
     QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();

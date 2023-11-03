@@ -246,11 +246,6 @@ void CGraphObjImage::setPixmap( const QPixmap& i_pxm )
     m_rctCurr.setSize( m_pxmOrig.size() );
 #endif
 
-    if( isSelected() )
-    {
-        updateSelectionPoints();
-    }
-
 } // setPixmap
 
 /*==============================================================================
@@ -577,32 +572,6 @@ void CGraphObjImage::showSelectionPoints( unsigned char i_selPts )
         showSelectionPointsOfBoundingRect( rct, i_selPts );
     }
 } // showSelectionPoints
-
-//------------------------------------------------------------------------------
-void CGraphObjImage::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( parentItem() == nullptr )
-    {
-        QRectF rct = QGraphicsPixmapItem::boundingRect();
-
-        updateSelectionPointsOfBoundingRect( rct, i_selPts );
-    }
-} // updateSelectionPoints
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem

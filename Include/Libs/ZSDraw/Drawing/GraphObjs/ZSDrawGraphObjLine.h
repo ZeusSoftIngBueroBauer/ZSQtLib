@@ -104,10 +104,9 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
-    virtual QPointF getSelectionPointCoors(ESelectionPoint i_selPt) const override;
+    virtual QPointF getPolygonSelectionPointCoors(int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
-    virtual void updateSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
 public: // overridables of base class CGraphObj
     virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem

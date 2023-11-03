@@ -215,11 +215,6 @@ void CGraphObjText::setHtml( const QString& i_strText )
     m_rctCurr = QGraphicsTextItem::boundingRect();
 #endif
 
-    if( isSelected() )
-    {
-        updateSelectionPoints();
-    }
-
 } // setHtml
 
 //------------------------------------------------------------------------------
@@ -245,11 +240,6 @@ void CGraphObjText::setPlainText( const QString& i_strText )
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_rctCurr = QGraphicsTextItem::boundingRect();
 #endif
-
-    if( isSelected() )
-    {
-        updateSelectionPoints();
-    }
 
 } // setPlainText
 
@@ -334,10 +324,6 @@ void CGraphObjText::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld
         m_rctCurr = QGraphicsTextItem::boundingRect();
 #endif
 
-        if( isSelected() )
-        {
-            updateSelectionPoints();
-        }
     }
 
 } // onDrawSettingsChanged
@@ -530,27 +516,6 @@ void CGraphObjText::showSelectionPoints( unsigned char i_selPts )
     if (QGraphicsObject::parent() == nullptr) {
         unsigned char selPts = i_selPts & ESelectionPointsBoundingRectRotate;
         showSelectionPointsOfBoundingRect( rect(), selPts );
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjText::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if (QGraphicsObject::parent() == nullptr) {
-        unsigned char selPts = i_selPts & ESelectionPointsBoundingRectRotate;
-        updateSelectionPointsOfBoundingRect( rect(), selPts );
     }
 }
 
@@ -1599,8 +1564,6 @@ void CGraphObjText::keyPressEvent( QKeyEvent* i_pEv )
     m_rctCurr = QGraphicsTextItem::boundingRect();
 #endif
 
-    updateSelectionPoints();
-
 } // keyPressEvent
 
 //------------------------------------------------------------------------------
@@ -1631,8 +1594,6 @@ void CGraphObjText::keyReleaseEvent( QKeyEvent* i_pEv )
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_rctCurr = QGraphicsTextItem::boundingRect();
 #endif
-
-    updateSelectionPoints();
 
 } // keyReleaseEvent
 
@@ -1699,7 +1660,6 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemTransformHasChanged) {
-        updateSelectionPointsOfBoundingRect(rect());
         updateEditInfo();
         updateToolTip();
     }
@@ -1716,7 +1676,6 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
           #endif
     {
         updateTransform();
-        updateSelectionPointsOfBoundingRect( rect() );
         updateEditInfo();
         updateToolTip();
     }

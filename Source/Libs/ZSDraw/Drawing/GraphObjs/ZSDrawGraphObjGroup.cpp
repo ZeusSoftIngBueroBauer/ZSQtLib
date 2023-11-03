@@ -2697,32 +2697,6 @@ void CGraphObjGroup::showSelectionPoints( unsigned char i_selPts )
 #endif
 } // showSelectionPoints
 
-//------------------------------------------------------------------------------
-void CGraphObjGroup::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = selectionPoints2Str(i_selPts);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strMthInArgs );
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    if( parentItem() == nullptr )
-    {
-        updateSelectionPointsOfBoundingRect( m_rctCurr, i_selPts );
-    }
-#endif
-} // updateSelectionPoints
-
 /*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/

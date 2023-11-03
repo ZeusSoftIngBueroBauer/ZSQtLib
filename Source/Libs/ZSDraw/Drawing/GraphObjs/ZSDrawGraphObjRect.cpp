@@ -594,30 +594,6 @@ void CGraphObjRect::showSelectionPoints( unsigned char i_selPts )
     }
 } // showSelectionPoints
 
-//------------------------------------------------------------------------------
-void CGraphObjRect::updateSelectionPoints( unsigned char i_selPts )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateSelectionPoints",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( parentItem() == nullptr )
-    {
-        updateSelectionPointsOfBoundingRect( rect(), i_selPts );
-    }
-} // updateSelectionPoints
-
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
 ==============================================================================*/
@@ -1618,7 +1594,6 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemTransformHasChanged) {
-        updateSelectionPointsOfBoundingRect( rect() );
         updateEditInfo();
         updateToolTip();
     }
@@ -1635,7 +1610,6 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
           #endif
     {
         updateTransform();
-        updateSelectionPointsOfBoundingRect(rect());
         updateEditInfo();
         updateToolTip();
     }
