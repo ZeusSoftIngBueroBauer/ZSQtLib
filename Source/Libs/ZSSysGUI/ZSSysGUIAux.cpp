@@ -312,7 +312,7 @@ QString ZS::System::GUI::qKeyEvent2Str(QKeyEvent* i_pEv)
     QString str =
         "Type: " + qEventType2Str(i_pEv->type()) +
         ", Key: " + qKeyCode2Str(i_pEv->key()) +
-        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
+        ", Modifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
         ", Text: " + i_pEv->text() +
         ", AutoRepeat: " + bool2Str(i_pEv->isAutoRepeat());
     if (i_pEv->isAutoRepeat()) {

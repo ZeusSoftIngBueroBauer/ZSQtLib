@@ -147,6 +147,19 @@ CGraphObjEllipse::~CGraphObjEllipse()
 } // dtor
 
 /*==============================================================================
+public: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the type method of QGraphicsItem.
+*/
+int CGraphObjEllipse::type() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsItem::UserType + EGraphObjTypeEllipse;
+}
+
+/*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -583,30 +596,6 @@ void CGraphObjEllipse::showSelectionPoints( unsigned char i_selPts )
         showSelectionPointsOfBoundingRect( rect(), i_selPts );
     }
 } // showSelectionPoints
-
-////------------------------------------------------------------------------------
-//void CGraphObjEllipse::updateSelectionPoints( unsigned char i_selPts )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-//    {
-//        strMthInArgs = "SelectionPoints:" + selectionPoints2Str(i_selPts);
-//    }
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "updateSelectionPoints",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if( parentItem() == nullptr )
-//    {
-//        //updateSelectionPointsOfBoundingRect( rect(), i_selPts );
-//    }
-//} // updateSelectionPoints
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem

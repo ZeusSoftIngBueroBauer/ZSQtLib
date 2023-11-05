@@ -59,9 +59,9 @@ public: // ctors and dtor
         const QString& i_strObjName = "");
     virtual ~CGraphObjConnectionLine();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const { return static_cast<int>(EGraphObjTypeConnectionLine); }
+    virtual int type() const override;
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone();
+    virtual CGraphObj* clone() override;
 public: // overridables
     virtual bool setConnectionPoint( ELinePoint i_linePoint, CGraphObjConnectionPoint* i_pCnctPt ); // Connects the specified line point with the specified connection point by appending the line to the connection point. Returns false if the line is already connected with the specified connection point.
     virtual ELinePoint getConnectionLinePoint( CGraphObjConnectionPoint* i_pCnctPt );               // Returns the line point (start or end) which is connected to the specified connection point.
@@ -93,7 +93,7 @@ public: // reimplementing methods of base class QGraphicItem
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 public: // overridables of base class CGraphObj
-    virtual void onParentItemCoorsHasChanged( CGraphObj* i_pGraphObjParent ) override;
+    virtual void onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent ) override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;

@@ -88,7 +88,6 @@ CGraphObjLabel::CGraphObjLabel(
         /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_pGraphObjParent(i_pGraphObjParent),
     m_strKey(i_strKey),
     m_selPtLinked(i_selPt),
     m_distanceToLinkedSelPt(0.0, 0.0),
@@ -116,12 +115,7 @@ CGraphObjLabel::CGraphObjLabel(
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    QObject::connect(
-        m_pGraphObjParent, &CGraphObj::geometryChanged,
-        this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
-    QObject::connect(
-        m_pGraphObjParent, &CGraphObj::zValueChanged,
-        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
+    setParentGraphObj(i_pGraphObjParent);
 
 } // ctor
 
@@ -147,7 +141,6 @@ CGraphObjLabel::~CGraphObjLabel()
         scene()->removeItem(this);
     }
 
-    m_pGraphObjParent = nullptr;
     //m_strKey;
     m_selPtLinked = static_cast<ESelectionPoint>(0);
     //m_distanceToLinkedSelPt;
@@ -156,6 +149,19 @@ CGraphObjLabel::~CGraphObjLabel()
     m_bUpdatePositionInProgress = false;
 
 } // dtor
+
+/*==============================================================================
+public: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the type method of QGraphicsItem.
+*/
+int CGraphObjLabel::type() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsItem::UserType + EGraphObjTypeLabel;
+}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj
@@ -845,29 +851,37 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::onGraphObjParentGeometryChanged()
+void CGraphObjLabel::onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "onGraphObjParentGeometryChanged",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     updatePosition();
 }
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::onGraphObjParentZValueChanged()
+void CGraphObjLabel::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "onGraphObjParentZValueChanged",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent);
     setZValue(pGraphicsItemParent->zValue() + 0.1);

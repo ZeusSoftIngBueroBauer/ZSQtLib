@@ -72,7 +72,7 @@ protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
 public: // dtor
     virtual ~CGraphObjPolyline();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const { return EGraphObjTypePolyline; }
+    virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // replacing methods of QGraphicsPolygonItem
@@ -101,7 +101,6 @@ public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll );
-    virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll );
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;

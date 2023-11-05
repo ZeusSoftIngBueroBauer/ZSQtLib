@@ -351,7 +351,7 @@ CGraphObj::CGraphObj(
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
     m_strType(i_strType),
-    //m_strDescription(),
+    m_pGraphObjParent(nullptr),
     m_drawSettings(i_type),
     m_pDrawSettingsTmp(nullptr),
     m_physValSizeMinimum(),
@@ -589,7 +589,7 @@ CGraphObj::~CGraphObj()
     //m_strFactoryGroupName;
     m_type = static_cast<EGraphObjType>(0);
     //m_strType;
-    //m_strDescription;
+    m_pGraphObjParent = nullptr;
     //m_drawSettings;
     m_pDrawSettingsTmp = nullptr;
     //m_physValSizeMinimum;
@@ -883,9 +883,71 @@ CDrawingScene* CGraphObj::drawingScene()
     return m_pDrawingScene;
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Returns the parent object the object belongs to.
+
+    For selection points this is the object creating the selection points and
+    to which the selection points are linked to.
+    For labels this is also the object creating the labels and to which the
+    labels are linked to.
+    If the object is added as a child to a group the parent is the group object.
+
+    @return nullptr, if the object is neither a selection point, a label or is not
+            added as a child to a group, pointer to parent otherwise.
+*/
+//------------------------------------------------------------------------------
+CGraphObj* CGraphObj::parentGraphObj()
+{
+    return m_pGraphObjParent;
+}
+
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the parent object the object belongs to.
+
+    For selection points this is the object creating the selection points and
+    to which the selection points are linked to.
+    For labels this is also the object creating the labels and to which the
+    labels are linked to.
+    If the object is added as a child to a group the parent is the group object.
+*/
+void CGraphObj::setParentGraphObj(CGraphObj* i_pGraphObjParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::rename",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_pGraphObjParent != i_pGraphObjParent) {
+        if (m_pGraphObjParent != nullptr) {
+            QObject::disconnect(
+                m_pGraphObjParent, &CGraphObj::geometryChanged,
+                this, &CGraphObj::onGraphObjParentGeometryChanged);
+            QObject::disconnect(
+                m_pGraphObjParent, &CGraphObj::zValueChanged,
+                this, &CGraphObj::onGraphObjParentZValueChanged);
+        }
+        m_pGraphObjParent = i_pGraphObjParent;
+        if (m_pGraphObjParent != nullptr) {
+            QObject::connect(
+                m_pGraphObjParent, &CGraphObj::geometryChanged,
+                this, &CGraphObj::onGraphObjParentGeometryChanged);
+            QObject::connect(
+                m_pGraphObjParent, &CGraphObj::zValueChanged,
+                this, &CGraphObj::onGraphObjParentZValueChanged);
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! This method is provided for convinience to rename an entry without the need
@@ -1111,34 +1173,6 @@ QString CGraphObj::getEditInfo() const
 //------------------------------------------------------------------------------
 {
     return m_strEditInfo;
-}
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the parent object or nullptr, if the object is does not have a parent.
-
-    Please note that selection points and labels should not belong as child to the
-    graphics items. Otherwise the "boundingRect" call of groups (which implicitly calls
-    childrenBoundingRect) does not work as the childs bounding rectangles would be
-    included. But the selection points and labels should appear as childs in the
-    index tree of the drawing scene.
-*/
-CGraphObj* CGraphObj::parentGraphObj()
-//------------------------------------------------------------------------------
-{
-    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(parentBranch());
-    if (m_type != EGraphObjTypeSelectionPoint && m_type != EGraphObjTypeLabel) {
-        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-        QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
-        CGraphObj* pGraphObjParentTmp = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-        if (pGraphObjParentTmp != pGraphObjParent) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError, "pGraphObjParent != pGraphicsItemParent");
-        }
-    }
-    return pGraphObjParent;
 }
 
 /*==============================================================================
@@ -3518,22 +3552,6 @@ QPointF CGraphObj::getPolygonSelectionPointCoors( int /*i_idxPt*/) const
 }
 
 /*==============================================================================
-protected: // must overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief
-
-void CGraphObj::showSelectionPoints( unsigned char i_selPts )
-------------------------------------------------------------------------------*/
-
-//------------------------------------------------------------------------------
-/*! @brief
-
-void CGraphObj::updateSelectionPoints( unsigned char i_selPts )
-------------------------------------------------------------------------------*/
-
-/*==============================================================================
 protected: // overridables
 ==============================================================================*/
 
@@ -4963,14 +4981,46 @@ public: // instance methods
 //} // addLabels
 
 /*==============================================================================
-public: // overridables
+protected slots: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObj::onParentItemCoorsHasChanged( CGraphObj* /*i_pGraphObjParent*/ )
+void CGraphObj::onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Convert to protected slot")
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::onGraphObjParentGeometryChanged",
+        /* strAddInfo   */ strMthInArgs );
 }
+
+//------------------------------------------------------------------------------
+void CGraphObj::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"Convert to protected slot")
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::onGraphObjParentZValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+/*==============================================================================
+protected slots: // overridables
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! Informs the grapical object that a selection point is going to be destroyed.
@@ -5774,7 +5824,7 @@ void CGraphObj::emit_selectedChanged()
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::emit_selectedChanged",
         /* strAddInfo   */ "" );
-    emit selectedChanged();
+    emit selectedChanged(this);
 }
 
 //------------------------------------------------------------------------------
@@ -5787,7 +5837,7 @@ void CGraphObj::emit_geometryChanged()
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::emit_geometryChanged",
         /* strAddInfo   */ "" );
-    emit geometryChanged();
+    emit geometryChanged(this);
 }
 
 //------------------------------------------------------------------------------
@@ -5800,7 +5850,7 @@ void CGraphObj::emit_zValueChanged()
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::emit_zValueChanged",
         /* strAddInfo   */ "" );
-    emit zValueChanged();
+    emit zValueChanged(this);
 }
 
 //------------------------------------------------------------------------------
@@ -5813,7 +5863,7 @@ void CGraphObj::emit_drawSettingsChanged()
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::emit_drawSettingsChanged",
         /* strAddInfo   */ "" );
-    emit drawSettingsChanged();
+    emit drawSettingsChanged(this);
 }
 
 //------------------------------------------------------------------------------
@@ -5830,7 +5880,7 @@ void CGraphObj::emit_labelAdded(const QString& i_strName)
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::emit_labelAdded",
         /* strAddInfo   */ strMthInArgs );
-    emit labelAdded(i_strName);
+    emit labelAdded(this, i_strName);
 }
 
 //------------------------------------------------------------------------------
@@ -5847,7 +5897,7 @@ void CGraphObj::emit_labelRemoved(const QString& i_strName)
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::emit_labelRemoved",
         /* strAddInfo   */ strMthInArgs );
-    emit labelRemoved(i_strName);
+    emit labelRemoved(this, i_strName);
 }
 
 //------------------------------------------------------------------------------
@@ -5864,7 +5914,7 @@ void CGraphObj::emit_labelRenamed(const QString& i_strName, const QString& i_str
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::emit_labelRenamed",
         /* strAddInfo   */ strMthInArgs );
-    emit labelRenamed(i_strName, i_strNameNew);
+    emit labelRenamed(this, i_strName, i_strNameNew);
 }
 
 //------------------------------------------------------------------------------
@@ -5881,7 +5931,7 @@ void CGraphObj::emit_labelChanged(const QString& i_strName)
         /* strObjName   */ m_strName,
         /* strMethod    */ "CGraphObj::emit_labelChanged",
         /* strAddInfo   */ strMthInArgs );
-    emit labelChanged(i_strName);
+    emit labelChanged(this, i_strName);
 }
 
 /*==============================================================================

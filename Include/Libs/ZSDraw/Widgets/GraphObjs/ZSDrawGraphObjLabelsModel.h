@@ -141,10 +141,10 @@ protected: // type definitions and constants
         ZS::System::SErrResultInfo m_errResultInfo;
     };
 protected slots:
-    void onGraphObjLabelAdded(const QString& i_strName);
-    void onGraphObjLabelRemoved(const QString& i_strName);
-    void onGraphObjLabelRenamed(const QString& i_strName, const QString& i_strNameNew);
-    void onGraphObjLabelChanged(const QString& i_strName);
+    void onGraphObjLabelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void onGraphObjLabelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void onGraphObjLabelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
+    void onGraphObjLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
     void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // instance methods
     QList<SLabelSettings> getLabelSettings(CGraphObj* i_pGraphObj) const;

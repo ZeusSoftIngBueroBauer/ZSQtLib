@@ -1123,12 +1123,13 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::onGraphObjLabelAdded(const QString& i_strName)
+void CModelGraphObjLabels::onGraphObjLabelAdded(
+    CGraphObj* i_pGraphObj, const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName;
+        strMthInArgs = i_pGraphObj->keyInTree() + ", " + i_strName;
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -1166,12 +1167,13 @@ void CModelGraphObjLabels::onGraphObjLabelAdded(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::onGraphObjLabelRemoved(const QString& i_strName)
+void CModelGraphObjLabels::onGraphObjLabelRemoved(
+    CGraphObj* i_pGraphObj, const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName;
+        strMthInArgs = i_pGraphObj->keyInTree() + ", " + i_strName;
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -1211,12 +1213,13 @@ void CModelGraphObjLabels::onGraphObjLabelRemoved(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::onGraphObjLabelRenamed(const QString& i_strName, const QString& i_strNameNew)
+void CModelGraphObjLabels::onGraphObjLabelRenamed(
+    CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strNameNew;
+        strMthInArgs = i_pGraphObj->keyInTree() + ", " + i_strName + ", " + i_strNameNew;
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -1257,12 +1260,13 @@ void CModelGraphObjLabels::onGraphObjLabelRenamed(const QString& i_strName, cons
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::onGraphObjLabelChanged(const QString& i_strName)
+void CModelGraphObjLabels::onGraphObjLabelChanged(
+    CGraphObj* i_pGraphObj, const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName;
+        strMthInArgs = i_pGraphObj->keyInTree() + ", " + i_strName;
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,

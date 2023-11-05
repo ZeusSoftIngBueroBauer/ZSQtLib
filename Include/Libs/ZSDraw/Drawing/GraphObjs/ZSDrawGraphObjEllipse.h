@@ -63,9 +63,9 @@ public: // ctors and dtor
         const QString& i_strObjName = "");
     virtual ~CGraphObjEllipse();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const { return EGraphObjTypeEllipse; }
+    virtual int type() const override;
 public: // must overridables of base class CGraphObj
-    virtual CGraphObj* clone();
+    virtual CGraphObj* clone() override;
 public: // replacing methods of QGraphicsEllipseItem
     void setRect( const QRectF& i_rct );
     void setRect( qreal i_x, qreal i_y, qreal i_width, qreal i_height );

@@ -67,7 +67,7 @@ public: // ctors and dtor
         const QString& i_strObjName = "");
     virtual ~CGraphObjConnectionPoint();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override { return static_cast<int>(EGraphObjTypeConnectionPoint); }
+    virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables
@@ -107,7 +107,7 @@ public: // overridables of base class CGraphObj
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {}
 public: // overridables of base class CGraphObj
-    virtual void onParentItemCoorsHasChanged( CGraphObj* i_pGraphObjParent ) override;
+    virtual void onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent ) override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
@@ -133,7 +133,7 @@ protected: // class members
     static double s_fInnerCircleRadius_px;
 protected: // instance members
     QList<CGraphObjConnectionLine*> m_lstConnectionLines;
-    double                          m_fInnerCircleWidth_perCent;
+    double m_fInnerCircleWidth_perCent;
 
 }; // class CGraphObjConnectionPoint
 

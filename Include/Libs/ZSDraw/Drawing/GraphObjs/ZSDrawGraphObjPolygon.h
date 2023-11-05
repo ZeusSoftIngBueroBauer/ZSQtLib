@@ -65,7 +65,7 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override { return EGraphObjTypePolygon; }
+    virtual int type() const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;

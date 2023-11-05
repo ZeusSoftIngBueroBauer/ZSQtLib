@@ -182,6 +182,19 @@ CGraphObjPolyline::~CGraphObjPolyline()
 } // dtor
 
 /*==============================================================================
+public: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the type method of QGraphicsItem.
+*/
+int CGraphObjPolyline::type() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsItem::UserType + EGraphObjTypePolyline;
+}
+
+/*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 

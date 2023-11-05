@@ -63,7 +63,7 @@ public: // ctors and dtor
         const QString& i_strObjName = "");
     virtual ~CGraphObjPoint();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override { return EGraphObjTypePoint; }
+    virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables of base class CGraphObj

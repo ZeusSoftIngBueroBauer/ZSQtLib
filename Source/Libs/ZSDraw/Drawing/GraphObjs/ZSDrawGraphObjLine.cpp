@@ -25,12 +25,12 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
-#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrCode.h"
@@ -865,7 +865,6 @@ QRectF CGraphObjLine::boundingRect() const
         /* strAddInfo   */ "" );
 
     QRectF rctBounding = QGraphicsLineItem::boundingRect();
-
     for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
         CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
         if (pGraphObjSelPt != nullptr) {
@@ -880,38 +879,11 @@ QRectF CGraphObjLine::boundingRect() const
     if (m_plgP2ArrowHead.size() > 0) {
         rctBounding |= m_plgP2ArrowHead.boundingRect();
     }
-
     rctBounding = QRectF(
         rctBounding.left() - m_drawSettings.getPenWidth()/2,
         rctBounding.top() - m_drawSettings.getPenWidth()/2,
         rctBounding.width() + m_drawSettings.getPenWidth(),
         rctBounding.height() + m_drawSettings.getPenWidth() );
-
-    //if (m_bIsHit || isSelected()) {
-    //    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-    //    CGraphObjLabel* pGraphObjLabel;
-    //    QRectF          rctLabel;
-    //    QPolygonF       plgLabel;
-
-    //    while( itLabels.hasNext() )
-    //    {
-    //        itLabels.next();
-    //        pGraphObjLabel = itLabels.value();
-
-    //        if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-    //        {
-    //            // Calling pGraphObjLabel->boundingRect() may lead to endless recursion as the
-    //            // label itself may call the boundingRect method of its parent item (which is
-    //            // this item) if the label is selected or has been hit. For this we call
-    //            // boundingRect of the label with a different signature to indicate that we
-    //            // are only interested in the bounding rect of the simple text item.
-    //            rctLabel = pGraphObjLabel->m_pGraphObjLabel->boundingRect(true);
-    //            plgLabel = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, rctLabel );
-    //            rctBounding |= plgLabel.boundingRect();
-    //        }
-    //    }
-    //}
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qRect2Str(rctBounding);
         mthTracer.setMethodReturn(strMthRet);
@@ -939,7 +911,6 @@ QPainterPath CGraphObjLine::shape() const
     if (m_plgP2ArrowHead.size() > 0) {
         painterPath.addPolygon(m_plgP2ArrowHead);
     }
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
@@ -962,7 +933,6 @@ void CGraphObjLine::paint(
         /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
         /* strAddInfo   */ "" );
-
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter,
             m_pTrcAdminObjPaint->getRuntimeInfoTraceDetailLevel());
@@ -1024,18 +994,6 @@ void CGraphObjLine::paint(
         pn.setColor(Qt::blue);
         i_pPainter->setPen(pn);
         i_pPainter->setBrush(Qt::NoBrush);
-
-        //QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-        //while (itLabels.hasNext()) {
-        //    itLabels.next();
-        //    CGraphObjLabel* pGraphObjLabel = itLabels.value();
-        //    if (pGraphObjLabel->m_pGraphObjLabel != nullptr) {
-        //        QPointF ptSelPt = getSelectionPointCoors(pGraphObjLabel->m_selPt.enumerator());
-        //        QPointF ptLabelSelPt = pGraphObjLabel->m_pGraphObjLabel->getSelectionPointCoors(ESelectionPoint::Center);
-        //        ptLabelSelPt = mapFromItem(pGraphObjLabel->m_pGraphObjLabel, ptLabelSelPt);
-        //        i_pPainter->drawLine(ptSelPt, ptLabelSelPt);
-        //    }
-        //}
     }
 
     i_pPainter->restore();
@@ -1082,101 +1040,74 @@ bool CGraphObjLine::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEv
         /* strAddInfo   */ strMthInArgs );
 
     bool bEventHandled = false;
-
-    switch (i_pEv->type())
-    {
-        case QEvent::GraphicsSceneMouseMove:
-        {
-            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-            if (pEv != nullptr) {
-                QPointF ptEvPos;
-                for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
-                    Qt::MouseButton button = Qt::MouseButton(btns);
-                    ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->buttonDownPos(button));
-                    pEv->setButtonDownPos(button, ptEvPos);
-                }
-                ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->pos());
-                pEv->setPos(ptEvPos);
-                ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->lastPos());
-                pEv->setLastPos(ptEvPos);
-                mouseMoveEvent(pEv);
-                bEventHandled = true;
+    if (i_pEv->type() == QEvent::GraphicsSceneMouseMove) {
+        QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+        if (pEv != nullptr) {
+            QPointF ptEvPos;
+            for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
+                Qt::MouseButton button = Qt::MouseButton(btns);
+                ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->buttonDownPos(button));
+                pEv->setButtonDownPos(button, ptEvPos);
             }
-            break;
+            ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->pos());
+            pEv->setPos(ptEvPos);
+            ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->lastPos());
+            pEv->setLastPos(ptEvPos);
+            mouseMoveEvent(pEv);
+            bEventHandled = true;
         }
-        case QEvent::GraphicsSceneMousePress:
-        {
-            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-            if (pEv != nullptr) {
-                QPointF ptEvPos;
-                for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
-                    Qt::MouseButton button = Qt::MouseButton(btns);
-                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-                    pEv->setButtonDownPos( button, ptEvPos );
-                }
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-                pEv->setPos(ptEvPos);
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-                pEv->setLastPos(ptEvPos);
-                mousePressEvent(pEv);
-                bEventHandled = true;
+    }
+    else if (i_pEv->type() == QEvent::GraphicsSceneMousePress) {
+        QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+        if (pEv != nullptr) {
+            QPointF ptEvPos;
+            for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
+                Qt::MouseButton button = Qt::MouseButton(btns);
+                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
+                pEv->setButtonDownPos( button, ptEvPos );
             }
-            break;
+            ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
+            pEv->setPos(ptEvPos);
+            ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
+            pEv->setLastPos(ptEvPos);
+            mousePressEvent(pEv);
+            bEventHandled = true;
         }
-        case QEvent::GraphicsSceneMouseRelease:
-        {
-            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-            if (pEv != nullptr) {
-                QPointF ptEvPos;
-                for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
-                    Qt::MouseButton button = Qt::MouseButton(btns);
-                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-                    pEv->setButtonDownPos( button, ptEvPos );
-                }
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-                pEv->setPos(ptEvPos);
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-                pEv->setLastPos(ptEvPos);
-                mouseReleaseEvent(pEv);
-                bEventHandled = true;
+    }
+    else if (i_pEv->type() == QEvent::GraphicsSceneMouseRelease) {
+        QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+        if (pEv != nullptr) {
+            QPointF ptEvPos;
+            for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
+                Qt::MouseButton button = Qt::MouseButton(btns);
+                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
+                pEv->setButtonDownPos( button, ptEvPos );
             }
-            break;
+            ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
+            pEv->setPos(ptEvPos);
+            ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
+            pEv->setLastPos(ptEvPos);
+            mouseReleaseEvent(pEv);
+            bEventHandled = true;
         }
-        case QEvent::GraphicsSceneMouseDoubleClick:
-        {
-            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-            if (pEv != nullptr) {
-                QPointF ptEvPos;
-                for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
-                    Qt::MouseButton button = Qt::MouseButton(btns);
-                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-                    pEv->setButtonDownPos( button, ptEvPos );
-                }
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-                pEv->setPos(ptEvPos);
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-                pEv->setLastPos(ptEvPos);
-                mouseDoubleClickEvent(pEv);
-                bEventHandled = true;
+    }
+    else if (i_pEv->type() == QEvent::GraphicsSceneMouseDoubleClick) {
+        QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+        if (pEv != nullptr) {
+            QPointF ptEvPos;
+            for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
+                Qt::MouseButton button = Qt::MouseButton(btns);
+                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
+                pEv->setButtonDownPos( button, ptEvPos );
             }
-            break;
+            ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
+            pEv->setPos(ptEvPos);
+            ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
+            pEv->setLastPos(ptEvPos);
+            mouseDoubleClickEvent(pEv);
+            bEventHandled = true;
         }
-        case QEvent::GraphicsSceneContextMenu:
-        case QEvent::GraphicsSceneHoverEnter:
-        case QEvent::GraphicsSceneHoverMove:
-        case QEvent::GraphicsSceneHoverLeave:
-        case QEvent::GraphicsSceneHelp:
-        case QEvent::GraphicsSceneDragEnter:
-        case QEvent::GraphicsSceneDragMove:
-        case QEvent::GraphicsSceneDragLeave:
-        case QEvent::GraphicsSceneDrop:
-        case QEvent::GraphicsSceneWheel:
-        default:
-        {
-            break;
-        }
-    } // switch( i_pEv->type() )
-
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bEventHandled);
     }

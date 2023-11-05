@@ -456,10 +456,9 @@ bool ZS::Draw::isGraphicsSceneMouseEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString str = "Pos {" + point2Str(i_pEv->pos()) + "}" +
+    return "Pos {" + point2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}";
-    return str;
 }
 
 /*******************************************************************************

@@ -167,6 +167,19 @@ CGraphObjGroup::~CGraphObjGroup()
 } // dtor
 
 /*==============================================================================
+public: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the type method of QGraphicsItem.
+*/
+int CGraphObjGroup::type() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsItem::UserType + EGraphObjTypeGroup;
+}
+
+/*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -2702,60 +2715,40 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjGroup::onParentItemCoorsHasChanged( CGraphObj* i_pGraphObjParent )
+/*! @brief Called by the parent graphic item to inform the child about geometry changes.
+
+    Connection lines don't belong to groups. But their connection points do. So if the
+    group is moved also the connection points are moved by Qt's graphics scene.
+    But not the connection lines which are linked to the connection points.
+    "onGraphObjParentGeometryChanged" is called to inform the connection points
+    and so that child groups forward the call to their child groups and child
+    connection points.
+*/
+void CGraphObjGroup::onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = QString(i_pGraphObjParent == nullptr ? "nullptr" : i_pGraphObjParent->path());
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "onParentItemCoorsHasChanged",
+        /* strMethod    */ "onGraphObjParentGeometryChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
-
-    // Connection lines don't belong to groups. But their connection points do. So if the
-    // group is moved also the connection points are moved by Qt's graphics scene.
-    // But not the connection lines which are linked to the connection points. We
-    // call "onParentItemCoorsHasChanged" to inform the connection points and so that
-    // child groups forward the call to their child groups and child connection points.
-
     QList<QGraphicsItem*> arpGraphicsItemChilds = childItems();
-    QGraphicsItem*        pGraphicsItem;
-    CGraphObj*            pGraphObj;
-    int                   idxGraphObj;
-
-    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemChilds.size(); idxGraphObj++ )
-    {
-        pGraphicsItem = arpGraphicsItemChilds[idxGraphObj];
-
-        pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-        if( pGraphObj != nullptr )
-        {
-            pGraphObj->onParentItemCoorsHasChanged(this);
+    for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemChilds.size(); idxGraphObj++) {
+        QGraphicsItem* pGraphicsItem = arpGraphicsItemChilds[idxGraphObj];
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+        if (pGraphObj != nullptr) {
+            pGraphObj->onGraphObjParentGeometryChanged(this);
         }
     }
-
     updateEditInfo();
     updateToolTip();
-
-} // onParentItemCoorsHasChanged
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
@@ -3977,14 +3970,14 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         // Connection lines don't belong to groups. But their connection points do. So if the
         // group is moved also the connection points are moved by Qt's graphics scene.
         // But not the connection lines which are linked to the connection points. We
-        // call "onParentItemCoorsHasChanged" to inform the connection points and so that
+        // call "onGraphObjParentGeometryChanged" to inform the connection points and so that
         // child groups forward the call to their child groups and child connection points.
         QList<QGraphicsItem*> arpGraphicsItemChilds = childItems();
         for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemChilds.size(); idxGraphObj++) {
             QGraphicsItem* pGraphicsItem = arpGraphicsItemChilds[idxGraphObj];
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
             if (pGraphObj != nullptr) {
-                pGraphObj->onParentItemCoorsHasChanged(this);
+                pGraphObj->onGraphObjParentGeometryChanged(this);
             }
         }
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

@@ -117,7 +117,7 @@ public: // struct members
 /*! @brief Abstract base class for all graphical objects within ZS::Draw.
 
     Class hierarchy
-    ---------------
+    ===============
 
     Please note that this class is not derived from QGraphicsItem to avoid double
     inheritance from QGraphicsItem as the specialized classes like CGraphObjLine
@@ -168,10 +168,8 @@ public: // struct members
     - void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
       Also creates the selection points if not yet created.
 
-    - void updateSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
-
     Pixel and world coordinates
-    ---------------------------
+    ===========================
 
     In a 1:1 "wysiwyg" scenario with a screen resolution of 4 px/mm
 
@@ -236,8 +234,27 @@ public: // struct members
 
       Ypx = ImageHeight/px - P1y/px
 
+    Selection Points
+    ================
+
+    Selection points are used to change the shape of the objects.
+    If located at the edge or center points of the outer lines of the bounding rectangle
+    they are used to resize the objects.
+    For polygons they are also located on the polygon shape points and will be used
+    to move this single shape point.
+    Selection points will be dynamically created by the object if the object is selected.
+    When moving the parent the selection points must also be moved to keep their position
+    on the bounding rectangle or on the polygon shape points.
+    When moving a selection point the parent got to be informed that the selection point
+    has been moved to adapt its shape.
+    This information path could be implemented in two ways:
+    - the parent could install a scene filter and listen to mouse events
+    - the parent can connect to the geometryChanged signal of the selection point.
+    Currently the first way is implemented. But the second way is preferrable as this
+    is a common way also used by other scenarios like moving labels or resizing groups.
+
     Labels
-    ------
+    ======
 
     Several labels may be assigned to a graphical object:
 
@@ -317,21 +334,21 @@ signals:
          must call "emit_aboutToBeDestroyed" in their destructors. */
     void aboutToBeDestroyed(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the selected state of the object has been changed. */
-    void selectedChanged();
+    void selectedChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the geometry of the object has been changed. */
-    void geometryChanged();
+    void geometryChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the Z-value (stacking order) of the object has been changed. */
-    void zValueChanged();
+    void zValueChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the drawing settings (pen style, etc.) of the object has been changed. */
-    void drawSettingsChanged();
+    void drawSettingsChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if a new text label has been added. */
-    void labelAdded(const QString& i_strName);
+    void labelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a text label has been removed. */
-    void labelRemoved(const QString& i_strName);
+    void labelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
     /*!< This signal is emitted if a text label has been renamed. */
-    void labelRenamed(const QString& i_strName, const QString& i_strNameNew);
+    void labelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
     /*!< This signal is emitted if a text label has been changed. */
-    void labelChanged(const QString& i_strName);
+    void labelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
 protected: // instance methods (trace admin objects for method tracing)
     void createTraceAdminObjs(const QString& i_strClassName);
     void releaseTraceAdminObjs();
@@ -355,7 +372,9 @@ public: // instance methods
     bool isLabel() const;
 public: // instance methods
     CDrawingScene* drawingScene();
+    CGraphObj* parentGraphObj();
 public: // overridables
+    virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
     virtual void rename( const QString& i_strNameNew );
 protected: // overridables of base class CIdxTreeEntry
     virtual void setName( const QString& i_strName ) override;
@@ -371,8 +390,6 @@ public: // instance methods
     CEnumSelectionPoint getSelectedBoundingRectPoint() const;
     QString getToolTip() const;
     QString getEditInfo() const;
-public: // instance methods
-    CGraphObj* parentGraphObj();
 public: // overridables
     virtual void onCreateAndExecDlgFormatGraphObjs();
 public: // overridables
@@ -501,15 +518,12 @@ public: // overridables
     virtual QPointF getPolygonSelectionPointCoors( int i_idxPt ) const;
 protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
-    //virtual void updateSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
     virtual void hideSelectionPoints( ESelectionPoints i_selPts = ESelectionPointsAll );
     virtual void bringSelectionPointsToFront( ESelectionPoints i_selPts = ESelectionPointsAll );
 protected: // overridables
     virtual void showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
-    //virtual void updateSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
     virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );
-    //virtual void updateSelectionPointsOfPolygon( const QPolygonF& i_plg );
 public: // overridables (text labels)
     QString findUniqueLabelName(const QString& i_strPrefix = "") const;
     QStringList getLabelNames() const;
@@ -564,8 +578,9 @@ public: // overridables (dimension line labels)
     //virtual void showDimLineLabelAnchorLine(const QString& i_strName);
     //virtual void hideDimLineLabelAnchorLine(const QString& i_strName);
     //virtual bool isDimLineLabelAnchorLineVisible(const QString& i_strName) const;
-public: // overridables
-    virtual void onParentItemCoorsHasChanged(CGraphObj* i_pGraphObjParent);
+public slots: // overridables
+    virtual void onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent);
+    virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
 protected slots: // overridables
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
@@ -637,6 +652,15 @@ protected: // instance members
     EGraphObjType m_type;
     /*!< Type of the graphical object. */
     QString m_strType;
+    /*!< Graphical parent object.
+         nullptr, if the object is neither a selection point, a label or is not
+         added as a child to a group.
+         For selection points this is the object creating the selection points and
+         to which the selection points are linked to.
+         For labels this is also the object creating the labels and to which the
+         labels are linked to.
+         If the object is added as a child to a group the parent is the group object. */
+    CGraphObj* m_pGraphObjParent;
     /*!< Draw settings like pen and brush used to draw the graphical object.
          Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc..
          Call "updateSettings" before accessing settings to keep this struct up to date with graphics

@@ -63,7 +63,7 @@ public: // ctors and dtor
         const QString& i_strObjName = "");
     virtual ~CGraphObjText();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override { return EGraphObjTypeText; }
+    virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // replacing methods of QGraphicsTextItem

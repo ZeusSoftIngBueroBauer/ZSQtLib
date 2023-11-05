@@ -73,7 +73,7 @@ public: // ctors and dtor
         ESelectionPoint i_selPt );
     virtual ~CGraphObjLabel();
 public: // overridables of base class QGraphicsItem
-    int type() const override { return static_cast<int>(EGraphObjTypeLabel); }
+    int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // overridables
@@ -123,9 +123,9 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
-protected slots:
-    void onGraphObjParentGeometryChanged();
-    void onGraphObjParentZValueChanged();
+public slots: // overridables of base class CGraphObj
+    void onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent ) override;
+    void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // auxiliary instance methods
@@ -141,8 +141,6 @@ protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;
 protected: // instance members
-    /*!< Graphical parent object the label belongs to. */
-    CGraphObj* m_pGraphObjParent;
     /*!< Key of the label within the list of labels of the graphical objects. */
     QString m_strKey;
     /*!< Selection point of parent item the label is linked and aligned to. */

@@ -166,6 +166,19 @@ CGraphObjConnectionPoint::~CGraphObjConnectionPoint()
 } // dtor
 
 /*==============================================================================
+public: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the type method of QGraphicsItem.
+*/
+int CGraphObjConnectionPoint::type() const
+//------------------------------------------------------------------------------
+{
+    return QGraphicsItem::UserType + EGraphObjTypeConnectionPoint;
+}
+
+/*==============================================================================
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -739,6 +752,17 @@ bool CGraphObjConnectionPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_p
 }
 
 /*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QPointF CGraphObjConnectionPoint::getPolygonSelectionPointCoors( int /*i_idxPt*/ ) const
+//------------------------------------------------------------------------------
+{
+    return QPointF(0.0, 0.0);
+}
+
+/*==============================================================================
 public: // reimplementing methods of base class QGraphicItem
 ==============================================================================*/
 
@@ -769,50 +793,37 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::onParentItemCoorsHasChanged( CGraphObj* i_pGraphObjParent )
+/*! @brief Called by the parent graphic item to inform the child about geometry changes.
+
+    Connection lines don't belong to groups. But their connection points do.
+    If a group is moved also the connection points are moved by Qt's graphics scene.
+    But not the connection lines which are linked to the connection points.
+    "onGraphObjParentGeometryChanged" is called to inform the connection points in order to
+    forward the call to child groups and the connection points or their connection lines.
+*/
+void CGraphObjConnectionPoint::onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Parent:" + i_pGraphObjParent->name();
-        strMthInArgs += ", Selected:" + bool2Str(isSelected());
-        strMthInArgs += ", EditMode:" + m_editMode.toString();
-        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
-        strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "onParentItemCoorsHasChanged",
+        /* strMethod    */ "onGraphObjParentGeometryChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    // Connection lines don't belong to groups. But their connection points do.
-    // If a group is moved also the connection points are moved by Qt's graphics scene.
-    // But not the connection lines which are linked to the connection points. We
-    // call "onParentItemCoorsHasChanged" to inform the connection points and so that
-    // child groups forward the call to their child groups and child connection points.
-
-    CGraphObjConnectionLine* pGraphObjCnctLine;
-    int                      idxLine;
-
-    for( idxLine = 0; idxLine < m_lstConnectionLines.count(); idxLine++ )
-    {
-        pGraphObjCnctLine = m_lstConnectionLines[idxLine];
-
-        if( pGraphObjCnctLine != nullptr )
-        {
-            pGraphObjCnctLine->onParentItemCoorsHasChanged(this);
+    for (int idxLine = 0; idxLine < m_lstConnectionLines.count(); idxLine++) {
+        CGraphObjConnectionLine* pGraphObjCnctLine = m_lstConnectionLines[idxLine];
+        if (pGraphObjCnctLine != nullptr) {
+            pGraphObjCnctLine->onGraphObjParentGeometryChanged(this);
         }
     }
-
     updateEditInfo();
     updateToolTip();
-
-} // onParentItemCoorsHasChanged
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
@@ -1749,7 +1760,7 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         {
             CGraphObjConnectionLine* pGraphObjCnctLine = m_lstConnectionLines[idxLine];
             if (pGraphObjCnctLine != nullptr) {
-                pGraphObjCnctLine->onParentItemCoorsHasChanged(this);
+                pGraphObjCnctLine->onGraphObjParentGeometryChanged(this);
             }
         }
         updateEditInfo();

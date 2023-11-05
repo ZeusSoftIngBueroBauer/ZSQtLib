@@ -72,7 +72,7 @@ protected: // ctor (used by derived classes)
 public: // dtor
     virtual ~CGraphObjGroup();
 public: // overridables of base class QGraphicsItem
-    virtual int type() const override { return static_cast<int>(EGraphObjTypeGroup); }
+    virtual int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // instance methods
@@ -103,7 +103,7 @@ public: // reimplementing methods of base class QGraphicItem
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 public: // overridables of base class CGraphObj
-    virtual void onParentItemCoorsHasChanged( CGraphObj* i_pGraphObjParent ) override;
+    virtual void onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent ) override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
