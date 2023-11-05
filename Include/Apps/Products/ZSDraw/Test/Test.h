@@ -34,6 +34,7 @@ may result in using the software modules.
 #include <QtGui/qpolygon.h>
 
 #include "ZSTest/ZSTest.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
 
 class QGraphicsItem;
 class QPainterPath;
@@ -49,6 +50,7 @@ namespace Draw
 {
 class CDrawingScene;
 class CDrawingView;
+class CDrawingSize;
 class CGraphObj;
 }
 
@@ -73,12 +75,14 @@ public: // ctors and dtor
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
 protected: // instance methods
-    void createTestGroupDrawStandardShapes(int& io_idxGroup);
-    void createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
-protected: // instance methods
-    //void createTestGroupMouseEventsStandardShapes( ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup );
-protected: // instance methods
-    //void createTestGroupMouseEventsStandardShapesPoints( ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup );
+    ZS::Test::CTestStepGroup* createTestGroupLoadSaveFile(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupSaveScene(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupPixelsDrawing(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupMetricsDrawing(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupPrepareScene(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup, const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEvents(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup, ZS::Draw::EGraphObjType i_graphObjType);
+    ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
 protected slots:
     void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
@@ -91,76 +95,10 @@ protected slots:
     void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseReleaseEvent( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepMouseEventsStandardShapesPointsClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepMouseEventsStandardShapesPointsActivateDrawingTool( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepMouseEventsStandardShapesPointsActivateEditSelect( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepMouseEventsStandardShapesPointsTriggerEditGroup( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepMouseEventsStandardShapesPointsTriggerEditUngroup( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepMouseEventsStandardShapesPointsCheckResult( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepMouseEventsStandardShapesPoints( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesLines( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesRectangles( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesEllipses( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesPolylines( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesPolygons( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesTexts( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesImages( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesConnections( ZS::Test::CTestStep* i_pTestStep );
-protected slots:
-    //void doTestStepStandardShapesGroups( ZS::Test::CTestStep* i_pTestStep );
-protected: // instance methods
-    //void createTestGroupElectricityResistors();
-protected slots:
-    //void doTestStepElectricityResistors( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepElectricityCapacitors( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepElectricityInductors( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepElectricityTransistors( ZS::Test::CTestStep* i_pTestStep );
-    //void doTestStepElectricitySwitches( ZS::Test::CTestStep* i_pTestStep );
 public: // instance members
     CMainWindow* m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;
     ZS::Draw::CDrawingScene* m_pDrawingScene;
-    //QPoint                   m_ptDrawingSceneMousePos;
-    //QPoint                   m_ptDrawingViewMousePos;
-    //ZS::Draw::CGraphObj*     m_pGraphObjCreating;
-    //ZS::Draw::CGraphObj*     m_pGraphObjSelected;
-    //int                      m_iTestStepLev1;   // Standard, QtWidgets, Electricity
-    //int                      m_iTestStepLev2;   // Standard/Lines, ...
-    //int                      m_iTestStepLev3;   // Standard/Lines/Create, ...
-    //int                      m_iTestStepLev4;   // Standard/Lines/Create/Step0, ...
-    //double                   m_fAngle_degree;
-    //double                   m_fxOffsHor;
-    //double                   m_fyOffsHor;
-    //int                      m_iPointsCount;
-    //int                      m_iLinesCount;
-    //int                      m_iRectanglesCount;
-    //int                      m_iEllipsesCount;
-    //int                      m_iPolylinesCount;
-    //int                      m_iPolygonsCount;
-    //int                      m_iTextsCount;
-    //int                      m_iImagesCount;
-    //int                      m_iConnectionPointsCount;
-    //int                      m_iConnectionLinesCount;
-    //int                      m_iGroupsCount;
-    //int                      m_iElectricityResistorsCount;
-    //int                      m_iElectricityCapacitorsCount;
-    //int                      m_iElectricityInductorsCount;
-    //int                      m_iElectricityTransistorsCount;
-    //int                      m_iElectricitySwitchesCount;
-    //int                      m_iWdgtCheckBoxesCount;
-    //int                      m_iWdgtComboBoxesCount;
-    //int                      m_iWdgtGroupBoxesCount;
-    //int                      m_iWdgtLabelsCount;
-    //int                      m_iWdgtLineEditsCount;
-    //int                      m_iWdgtPushButtonsCount;
 
 }; // class CTest
 

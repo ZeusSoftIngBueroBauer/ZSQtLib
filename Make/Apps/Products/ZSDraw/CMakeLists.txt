@@ -145,23 +145,6 @@ list(APPEND _SourcesQtWidgets
 
 list(APPEND _SourcesTest
     ${_SourcesPath}/ZSDraw/Test/Test.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepElectricity.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepElectricityCapacitors.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepElectricityInductors.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepElectricityResistors.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepElectricitySwitches.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepElectricityTransistors.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapes.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesConnections.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesEllipses.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesGroups.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesImages.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesLines.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesPoints.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesPolygons.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesPolylines.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesRectangles.cpp
-    ${_SourcesPath}/ZSDraw/Test/TestStepStandardShapesTexts.cpp
 )
 
 list(APPEND _Sources
