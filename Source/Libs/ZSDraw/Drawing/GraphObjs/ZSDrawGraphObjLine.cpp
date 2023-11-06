@@ -124,10 +124,10 @@ CGraphObjLine::CGraphObjLine(
     for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
         if (!m_hshpLabels.contains(strLabelName)) {
             if (strLabelName == "P1") {
-                addLabel(strLabelName, strLabelName, ESelectionPoint::TopLeft);
+                addLabel(strLabelName, strLabelName, 0);
             }
             else if (strLabelName == "P2") {
-                addLabel(strLabelName, strLabelName, ESelectionPoint::BottomRight);
+                addLabel(strLabelName, strLabelName, 1);
             }
             else {
                 addLabel(strLabelName, strLabelName, ESelectionPoint::Center);
@@ -309,26 +309,6 @@ void CGraphObjLine::onCreateAndExecDlgFormatGraphObjs()
 /*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_drawingSize.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "onDrawingSizeChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_bForceConversionToSceneCoors = true;
-    setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
-    m_bForceConversionToSceneCoors = false;
-}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
@@ -766,14 +746,14 @@ public: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Returns coordinates of selection point in item's coordinate system.
 */
-QPointF CGraphObjLine::getPolygonSelectionPointCoors( int i_idxPt ) const
+QPointF CGraphObjLine::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF pt;
-    if (i_idxPt == 0) {
+    if (i_selPt.m_idxPt == 0) {
         pt = line().p1();
     }
-    else {
+    else if (i_selPt.m_idxPt == 1) {
         pt = line().p2();
     }
     return pt;
@@ -830,18 +810,18 @@ public: // overridables of base class CGraphObj
 
     @return List of possbile selection points.
 */
-QList<ESelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const QString& i_strName) const
+QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    static const QHash<QString, QList<ESelectionPoint>> s_hshSelPtsPredefinedNames = {
+    static const QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefinedNames = {
         { "Name", {ESelectionPoint::Center} },
-        { "P1", {ESelectionPoint::TopLeft} },       // Start point of the line
-        { "P2", {ESelectionPoint::BottomRight} }    // End point of the line
+        { "P1", {0} },
+        { "P2", {1} }
     };
-    static const QList<ESelectionPoint> s_arSelPtsUserDefined = {
+    static const QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined = {
         ESelectionPoint::Center,
-        ESelectionPoint::TopLeft,       // Start point of the line
-        ESelectionPoint::BottomRight    // End point of the line
+        0,   // P1, Start point of the line
+        1    // P2, End point of the line
     };
     if (s_hshSelPtsPredefinedNames.contains(i_strName)) {
         return s_hshSelPtsPredefinedNames[i_strName];
@@ -1618,6 +1598,26 @@ void CGraphObjLine::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_lineP
 /*==============================================================================
 protected: // overridables of base class CGraphObj
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawingSize.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_bForceConversionToSceneCoors = true;
+    setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
+    m_bForceConversionToSceneCoors = false;
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::updateToolTip()

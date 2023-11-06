@@ -71,29 +71,21 @@ public: // ctors and dtor
     CGraphObjSelectionPoint(
         CDrawingScene* i_pDrawingScene,
         CGraphObj* i_pGraphObjParent,
-        ESelectionPoint i_selectionPoint );
-    CGraphObjSelectionPoint(
-        CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjParent,
-        int i_idxPt );
+        const SGraphObjSelectionPoint& i_selPt);
     virtual ~CGraphObjSelectionPoint();
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // instance methods
-    ESelectionPointType getSelectionPointType() const;
-public: // instance methods
-    void setSelectionPoint( ESelectionPoint i_selPt );
-    ESelectionPoint getSelectionPoint() const { return m_selPt.enumerator(); }
-    void setShapePointIndex( int i_idxPt );
-    int getShapePointIndex() const { return m_idxPt; }
+    SGraphObjSelectionPoint getSelectionPoint() const;
+    void setSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
 public: // instance methods
     void setRadiusInPx( double i_fRadius_px );
-    double getRadiusInPx() { return m_fRadius_px; }
+    double getRadiusInPx() const;
 public: // instance methods (replacing the methods of base class QGraphicsItem)
     void setSelected( bool i_bSelected );
-    bool isSelected() const { return m_bSelected; }
+    bool isSelected() const;
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
@@ -141,23 +133,11 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // class members
-    /*!< Needed to set an initial unique name when creating a new instance. */
-    static qint64 s_iInstCount;
-protected: // class members
     /*!< Default radius to be used for painting the selection points. */
     static double s_fRadius_px;
 protected: // instance members
-    /*!< Type of the selection point. Selection points are differentiated into
-         selection points on the bounding rectangle around the graphical object
-         or into polygon shape points. */
-    CEnumSelectionPointType m_selPtType;
-    /*!< For selection points on the bounding rectangle specifies the position
-         on (or within) the bounding rectangle.
-         For polygon shape points the enum is set to PolygonPoint. */
-    CEnumSelectionPoint m_selPt;
-    /*!< For selection points on a polygon the index of the polygon point
-         is stored the selection point is assigned to. */
-    int m_idxPt;
+    /*!< Defines the type of the selection point. */
+    SGraphObjSelectionPoint m_selPt;
     /*!< Radius for drawing the selection point. */
     double m_fRadius_px;
     /*!< True if the selection point is selected for changing the shape of the graphical object. */

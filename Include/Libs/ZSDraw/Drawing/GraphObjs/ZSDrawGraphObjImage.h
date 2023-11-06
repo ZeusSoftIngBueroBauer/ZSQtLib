@@ -110,8 +110,11 @@ protected: // overridables of base class QGraphicsItem
 protected: // instance members
     QString m_strImgFilePath;
     QPixmap m_pxmOrig;
-protected: // class members
-    /*!< Needed to set an initial unique name when creating a new instance. */
+public: // class members
+    /*!< Needed to set an initial unique name when creating a new instance.
+         Incremented by the ctor but not decremented by the dtor.
+         Used to create a unique name for newly created objects of this type.
+         public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 
 }; // class CGraphObjImage

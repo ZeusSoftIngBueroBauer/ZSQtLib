@@ -76,7 +76,6 @@ double CGraphObjSelectionPoint::GetDefaultRadiusInPx()
 protected: // class members
 ==============================================================================*/
 
-qint64 CGraphObjSelectionPoint::s_iInstCount = 0;
 double CGraphObjSelectionPoint::s_fRadius_px = 3.0;
 
 /*==============================================================================
@@ -89,26 +88,22 @@ public: // ctors and dtor
 CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     CDrawingScene* i_pDrawingScene,
     CGraphObj* i_pGraphObjParent,
-    ESelectionPoint i_selectionPoint) :
+    const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeSelectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
-        /* strObjName          */ "SelPt." + CEnumSelectionPoint(i_selectionPoint).toString(),
+        /* strObjName          */ "SelPt." + i_selPt.name(),
         /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsEllipseItem(QRectF(-s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px)),
-    m_selPtType(ESelectionPointType::BoundingRectangle),
-    m_selPt(i_selectionPoint),
-    m_idxPt(-1),
+    m_selPt(i_selPt),
     m_fRadius_px(s_fRadius_px),
     m_bSelected(false),
     m_bUpdatePositionInProgress(false)
 {
-    s_iInstCount++; // not really used
-
     createTraceAdminObjs("SelectionPoints::" + ClassName());
 
     QString strMthInArgs;
@@ -116,7 +111,7 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         strMthInArgs =
             "ObjName: " + m_strName +
             ", Parent: " + QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree()) +
-            ", SelPt: " + CEnumSelectionPoint(i_selectionPoint).toString();
+            ", SelPt: " + i_selPt.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -125,65 +120,9 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    m_selPtSelectedBoundingRect = i_selectionPoint;
+    m_selPtSelectedBoundingRect = i_selPt.m_selPt;
 
     //setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
-
-    setAcceptHoverEvents(true);
-
-    setParentGraphObj(i_pGraphObjParent);
-
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Undefined,
-            m_pTrcAdminObjCtorsAndDtor->getRuntimeInfoTraceDetailLevel());
-    }
-} // ctor
-
-//------------------------------------------------------------------------------
-/*! @brief Constructor for selection points at polygon shape points.
-*/
-CGraphObjSelectionPoint::CGraphObjSelectionPoint(
-    CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjParent,
-    int i_idxPt) :
-//------------------------------------------------------------------------------
-    CGraphObj(
-        /* pDrawingScene       */ i_pDrawingScene,
-        /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
-        /* type                */ EGraphObjTypeSelectionPoint,
-        /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
-        /* strObjName          */ "SelPt." + QString::number(i_idxPt),
-        /* drawSettings        */ CDrawSettings(),
-        /* idxTreeEntryType    */ EEntryType::Leave ),
-    QGraphicsEllipseItem(QRectF(-s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px)),
-    m_selPtType(ESelectionPointType::PolygonShapePoint),
-    m_selPt(ESelectionPoint::None),
-    m_idxPt(i_idxPt),
-    m_fRadius_px(s_fRadius_px),
-    m_bSelected(false),
-    m_bUpdatePositionInProgress(false)
-{
-    s_iInstCount++; // not really used
-
-    createTraceAdminObjs("SelectionPoints::" + ClassName());
-
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs =
-            "ObjName: " + m_strName +
-            ", Parent: " + QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree()) +
-            ", IdxPt: " + QString::number(i_idxPt);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_idxSelPtSelectedPolygon = i_idxPt;
-
-    //setFlags(/*QGraphicsItem::ItemIsMovable|*/QGraphicsItem::ItemIsSelectable/*|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges*/);
 
     setAcceptHoverEvents(true);
 
@@ -217,9 +156,7 @@ CGraphObjSelectionPoint::~CGraphObjSelectionPoint()
         scene()->removeItem(this);
     }
 
-    m_selPtType = static_cast<ESelectionPointType>(0);
-    m_selPt =  static_cast<ESelectionPoint>(0);
-    m_idxPt = 0;
+    //m_selPt;
     m_fRadius_px = 0.0;
     m_bSelected = false;
     m_bUpdatePositionInProgress = false;
@@ -268,23 +205,19 @@ public: // instance methods
     Selection points are differentiated into selection points on the bounding
     rectangle around the graphical object or into polygon shape points.
 */
-ESelectionPointType CGraphObjSelectionPoint::getSelectionPointType() const
+SGraphObjSelectionPoint CGraphObjSelectionPoint::getSelectionPoint() const
 //------------------------------------------------------------------------------
 {
-    return m_selPtType.enumerator();
+    return m_selPt;
 }
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setSelectionPoint( ESelectionPoint i_selPt )
+void CGraphObjSelectionPoint::setSelectionPoint( const SGraphObjSelectionPoint& i_selPt )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "SelPt:" + CEnumSelectionPoint(i_selPt).toString();
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "SelPt:" + i_selPt.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -296,24 +229,6 @@ void CGraphObjSelectionPoint::setSelectionPoint( ESelectionPoint i_selPt )
     m_selPt = i_selPt;
 }
 
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setShapePointIndex( int i_idxPt )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Idx:" + QString::number(i_idxPt);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setShapePointIndex",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_idxPt = i_idxPt;
-}
-
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
@@ -323,7 +238,7 @@ void CGraphObjSelectionPoint::setRadiusInPx( double i_fRadius_px )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Radius:" + QString::number(i_fRadius_px);
     }
     CMethodTracer mthTracer(
@@ -349,6 +264,13 @@ void CGraphObjSelectionPoint::setRadiusInPx( double i_fRadius_px )
     }
 }
 
+//------------------------------------------------------------------------------
+double CGraphObjSelectionPoint::getRadiusInPx() const
+//------------------------------------------------------------------------------
+{
+    return m_fRadius_px;
+}
+
 /*==============================================================================
 public: // instance methods (replacing the methods of base class QGraphicsItem)
 ==============================================================================*/
@@ -358,7 +280,7 @@ void CGraphObjSelectionPoint::setSelected( bool i_bSelected )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Selected:" + bool2Str(i_bSelected);
     }
     CMethodTracer mthTracer(
@@ -372,6 +294,13 @@ void CGraphObjSelectionPoint::setSelected( bool i_bSelected )
         m_bSelected = i_bSelected;
         update();
     }
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObjSelectionPoint::isSelected() const
+//------------------------------------------------------------------------------
+{
+    return m_bSelected;
 }
 
 /*==============================================================================
@@ -570,19 +499,19 @@ bool CGraphObjSelectionPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pH
             rct, EFillStyle::SolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo);
         if (bIsHit) {
             if (o_pHitInfo != nullptr) {
-                if (m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    o_pHitInfo->m_editMode = selectionPoint2EditMode(m_selPt.enumerator());
-                    o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(m_selPt.enumerator());
-                    o_pHitInfo->m_selPtBoundingRect = m_selPt;
+                if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    o_pHitInfo->m_editMode = selectionPoint2EditMode(m_selPt.m_selPt);
+                    o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(m_selPt.m_selPt);
+                    o_pHitInfo->m_selPtBoundingRect = m_selPt.m_selPt;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = rct.center();
                 }
-                else if (m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
                     o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
                     o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-                    o_pHitInfo->m_idxPolygonShapePoint = m_idxPt;
+                    o_pHitInfo->m_idxPolygonShapePoint = m_selPt.m_idxPt;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = rct.center();
                 }
@@ -1219,20 +1148,15 @@ void CGraphObjSelectionPoint::updatePosition()
             m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
 
-    QPointF ptSelScenePosParent;
-    if (m_selPtType == ESelectionPointType::BoundingRectangle) {
-        QPointF ptSelPosParent = m_pGraphObjParent->getBoundingRectSelectionPointCoors(m_selPt.enumerator());
-        ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
+    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
+    QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
+    if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
         if (m_selPt == ESelectionPoint::RotateTop) {
             ptSelScenePosParent.setY(ptSelScenePosParent.y() - getSelectionPointRotateDistance());
         }
         else if (m_selPt == ESelectionPoint::RotateBottom) {
             ptSelScenePosParent.setY(ptSelScenePosParent.y() + getSelectionPointRotateDistance());
         }
-    }
-    else /*if (m_selPtType == ESelectionPointType::PolygonShapePoint)*/ {
-        QPointF ptSelPosParent = m_pGraphObjParent->getPolygonSelectionPointCoors(m_idxPt);
-        ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
     }
     setPos(ptSelScenePosParent);
 
@@ -1268,9 +1192,7 @@ void CGraphObjSelectionPoint::traceInternalStates(
         else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
         else strTrcInfo = "";
         strTrcInfo +=
-            "SelectionPoint {Type: " + QString(m_selPtType.isValid() ? m_selPtType.toString() : "?") +
-            ", " + QString(m_selPt.isValid() ? m_selPt.toString() : "?") +
-            ", Idx: " + QString::number(m_idxPt) + "}";
+            "SelectionPoint {" + m_selPt.toString() + "}";
         i_mthTracer.trace(strTrcInfo);
 
         if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";

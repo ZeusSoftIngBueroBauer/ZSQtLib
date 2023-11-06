@@ -233,6 +233,7 @@ protected: // instance methods (for ctor)
     void createStatusBar();
     void createToolBars();
     void createDockWidgets();
+    void destroyDockWidgets();
 protected: // overridables of base class QWidget
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
 public: // instance methods

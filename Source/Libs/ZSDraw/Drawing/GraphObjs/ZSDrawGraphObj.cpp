@@ -48,6 +48,135 @@ using namespace ZS::Draw;
 
 
 /*==============================================================================
+struct SGraphObjSelectionPoint
+==============================================================================*/
+
+/* public: // ctors
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint() :
+//------------------------------------------------------------------------------
+    m_selPtType(ESelectionPointType::BoundingRectangle),
+    m_selPt(ESelectionPoint::Center),
+    m_idxPt(-1)
+{
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(ESelectionPoint i_selPt) :
+//------------------------------------------------------------------------------
+    m_selPtType(ESelectionPointType::BoundingRectangle),
+    m_selPt(i_selPt),
+    m_idxPt(-1)
+{
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(int idxPt) :
+//------------------------------------------------------------------------------
+    m_selPtType(ESelectionPointType::PolygonShapePoint),
+    m_selPt(ESelectionPoint::PolygonPoint),
+    m_idxPt(idxPt)
+{
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other) :
+//------------------------------------------------------------------------------
+    m_selPtType(i_other.m_selPtType),
+    m_selPt(i_other.m_selPt),
+    m_idxPt(i_other.m_idxPt)
+{
+}
+
+/* public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint& SGraphObjSelectionPoint::operator = (const SGraphObjSelectionPoint& i_other)
+//------------------------------------------------------------------------------
+{
+    m_selPtType = i_other.m_selPtType;
+    m_selPt = i_other.m_selPt;
+    m_idxPt = i_other.m_idxPt;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint& SGraphObjSelectionPoint::operator = (ESelectionPoint i_selPt)
+//------------------------------------------------------------------------------
+{
+    m_selPtType = ESelectionPointType::BoundingRectangle;
+    m_selPt = i_selPt;
+    m_idxPt = -1;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint& SGraphObjSelectionPoint::operator = (int i_idxPt)
+//------------------------------------------------------------------------------
+{
+    m_selPtType = ESelectionPointType::PolygonShapePoint;
+    m_selPt = ESelectionPoint::None;
+    m_idxPt = i_idxPt;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+bool SGraphObjSelectionPoint::operator == (const SGraphObjSelectionPoint& i_other) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = true;
+    if (m_selPtType != i_other.m_selPtType) {
+        bEqual = false;
+    }
+    else if (m_selPt != i_other.m_selPt) {
+        bEqual = false;
+    }
+    else if (m_idxPt != i_other.m_idxPt) {
+        bEqual = false;
+    }
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool SGraphObjSelectionPoint::operator != (const SGraphObjSelectionPoint& i_other) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString SGraphObjSelectionPoint::name() const
+//------------------------------------------------------------------------------
+{
+    QString strName;
+    if (m_selPtType == ESelectionPointType::BoundingRectangle) {
+        strName += CEnumSelectionPoint(m_selPt).toString();
+    } else {
+        strName += "ShapePoint" + QString::number(m_idxPt);
+    }
+    return strName;
+}
+
+//------------------------------------------------------------------------------
+QString SGraphObjSelectionPoint::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str = CEnumSelectionPointType(m_selPtType).toString();
+    if (m_selPtType == ESelectionPointType::BoundingRectangle) {
+        str += ", " + CEnumSelectionPoint(m_selPt).toString();
+    } else {
+        str += ", " + QString::number(m_idxPt);
+    }
+    return str;
+}
+
+/*==============================================================================
 struct SGraphObjHitInfo
 ==============================================================================*/
 
@@ -414,6 +543,10 @@ CGraphObj::CGraphObj(
             m_drawSettings.setAttribute(idxAttr, i_settings.getAttribute(idxAttr));
         }
     }
+
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
+        this, &CGraphObj::onDrawingSizeChanged);
 
 } // ctor
 
@@ -1199,42 +1332,6 @@ void CGraphObj::onCreateAndExecDlgFormatGraphObjs()
     pDlgFormatGraphObjs->exec();
     delete pDlgFormatGraphObjs;
     pDlgFormatGraphObjs = nullptr;
-}
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Called by the drawing scene if the drawing size is changed.
-
-    When changing the drawing size in metric unit dimension
-    (e.g. on changing the Y Scale Orientation) the scene coordinates
-    must be newly calculated even if the original values stored in
-    metric units have not been changed. On changing the drawing size
-    the drawing scene will call "onDrawingSizeChanged" and the method
-    MUST set the flag "m_bForceConversionToSceneCoors" to true before
-    converting the coordinates and setting the converted values. */
-void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"Pure virtual")
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_drawingSize.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::onDrawingSizeChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_bForceConversionToSceneCoors = true;
-
-    // Here add code in your derived class to convert and recalculate the coordinates.
-
-    m_bForceConversionToSceneCoors = false;
 }
 
 /*==============================================================================
@@ -3518,35 +3615,25 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the coordinates of the selection point on the bounding rectangle
-           in item's coordinate system.
-*/
-QPointF CGraphObj::getBoundingRectSelectionPointCoors( ESelectionPoint i_selPt ) const
-//------------------------------------------------------------------------------
-{
-    QPointF pt;
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), i_selPt);
-    }
-    return pt;
-}
+/*! @brief Returns the coordinates of the selection point in item's coordinate system.
 
-//------------------------------------------------------------------------------
-/*! @brief Returns the coordinates of the selection point of a polygon
-           in item's coordinate system.
-
-    @note The default implementation returns the center of the bounding rectangle.
+    @note If the selection point is linked to a polyogon shape point the default
+          implementation returns the center of the bounding rectangle.
           For polygon shapes the method got to be overridden and should return
           the corresponding coordinates of the polygon point.
 */
-QPointF CGraphObj::getPolygonSelectionPointCoors( int /*i_idxPt*/) const
+QPointF CGraphObj::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF pt;
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
-        pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), ESelectionPoint::Center);
+        if (i_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+            pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), i_selPt.m_selPt);
+        }
+        else {
+            pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), ESelectionPoint::Center);
+        }
     }
     return pt;
 }
@@ -4033,10 +4120,10 @@ bool CGraphObj::isPredefinedLabelName(const QString& i_strName) const
         If PolygonPoint is contained in the list of returned selection points the possible
         anchor points depend on the number of line points of the polygon or polyline.
 */
-QList<ESelectionPoint> CGraphObj::getPossibleLabelAnchorPoints(const QString& i_strName) const
+QList<SGraphObjSelectionPoint> CGraphObj::getPossibleLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    QList<ESelectionPoint> arSelPts;
+    QList<SGraphObjSelectionPoint> arSelPts;
     if (i_strName == "Name") {
         arSelPts = {ESelectionPoint::Center};
     }
@@ -4077,12 +4164,12 @@ bool CGraphObj::isLabelAdded(const QString& i_strName) const
 
     @return true, if the label has been created and added, false otherwise.
 */
-bool CGraphObj::addLabel(const QString& i_strName, const QString& i_strText, ESelectionPoint i_selPt)
+bool CGraphObj::addLabel(const QString& i_strName, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strText + ", " + CEnumSelectionPoint(i_selPt).toString();
+        strMthInArgs = i_strName + ", " + i_strText + ", " + i_selPt.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -4271,12 +4358,12 @@ QString CGraphObj::labelText(const QString& i_strName) const
     @param [in] i_selPt
         Selection point the label should be anchored to.
 */
-void CGraphObj::setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt)
+void CGraphObj::setLabelAnchorPoint(const QString& i_strName, const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + CEnumSelectionPoint(i_selPt).toString();
+        strMthInArgs = i_strName + ", " + i_selPt.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -4289,8 +4376,8 @@ void CGraphObj::setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_
     if (pGraphObjLabel == nullptr) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    if (pGraphObjLabel->getLinkedSelectionPoint() != i_selPt) {
-        pGraphObjLabel->setLinkedSelectionPoint(i_selPt);
+    if (pGraphObjLabel->getSelectionPoint() != i_selPt) {
+        pGraphObjLabel->setSelectionPoint(i_selPt);
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -4304,15 +4391,15 @@ void CGraphObj::setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
 */
-ESelectionPoint CGraphObj::labelAnchorPoint(const QString& i_strName) const
+SGraphObjSelectionPoint CGraphObj::labelAnchorPoint(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    ESelectionPoint selPt = ESelectionPoint::None;
+    SGraphObjSelectionPoint selPt;
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel == nullptr) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    return pGraphObjLabel->getLinkedSelectionPoint();
+    return pGraphObjLabel->getSelectionPoint();
 }
 
 //------------------------------------------------------------------------------
@@ -4979,6 +5066,43 @@ public: // instance methods
 //    }
 //
 //} // addLabels
+
+/*==============================================================================
+protected slots: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Called by the drawing scene if the drawing size is changed.
+
+    When changing the drawing size in metric unit dimension
+    (e.g. on changing the Y Scale Orientation) the scene coordinates must be
+    newly calculated even if the original values stored in metric units have not
+    been changed. On changing the drawing size the the drawing scene will emit
+    the signal "drawingSizeChanged" and the method MUST set the flag
+    "m_bForceConversionToSceneCoors" to true before converting the coordinates
+    and setting the converted values.
+*/
+void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"Pure virtual")
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawingSize.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::onDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_bForceConversionToSceneCoors = true;
+
+    // Here add code in your derived class to convert and recalculate the coordinates.
+
+    m_bForceConversionToSceneCoors = false;
+}
 
 /*==============================================================================
 protected slots: // overridables

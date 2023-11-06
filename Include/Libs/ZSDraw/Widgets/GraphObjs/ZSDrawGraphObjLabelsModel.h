@@ -29,7 +29,7 @@ may result in using the software modules.
 
 #include <QtCore/qabstractitemmodel.h>
 
-#include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSSys/ZSSysErrResult.h"
 
 namespace ZS
@@ -110,7 +110,7 @@ protected: // type definitions and constants
         SLabelSettings();
         SLabelSettings(
             const QString& i_strName, int i_iRowIdx, bool i_bIsPredefinedLabelName,
-            const QString& i_strText, ESelectionPoint i_selPt, bool i_bVisible, bool i_bAnchorLineVisible);
+            const QString& i_strText, const SGraphObjSelectionPoint& i_selPt, bool i_bVisible, bool i_bAnchorLineVisible);
     public: // operators
         bool operator == (const SLabelSettings& i_other) const;
         bool operator != (const SLabelSettings& i_other) const;
@@ -129,7 +129,7 @@ protected: // type definitions and constants
         /*!< Text to be indicated by the label. */
         QString m_strText;
         /*!< Selection point the label should be anchored to. */
-        ESelectionPoint m_selPt;
+        SGraphObjSelectionPoint m_selPt;
         /*!< True if the label should be visible and added to the graphics scene. */
         bool m_bVisible;
         /*!< True if the anchor line from the label to the selection point sould be drawn. */

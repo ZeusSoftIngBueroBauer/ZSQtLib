@@ -62,12 +62,6 @@ class CGraphObjLabel : public CGraphObj, public QGraphicsSimpleTextItem
 *******************************************************************************/
 
 /*==============================================================================
-protected: // class members
-==============================================================================*/
-
-qint64 CGraphObjLabel::s_iInstCount = 0;
-
-/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -77,34 +71,32 @@ CGraphObjLabel::CGraphObjLabel(
     CGraphObj* i_pGraphObjParent,
     const QString& i_strKey,
     const QString& i_strText,
-    ESelectionPoint i_selPt ) :
+    const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeLabel,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),
-        /* strObjName          */ /*i_pGraphObjParent->path() + ".Label." +*/ i_strKey,
+        /* strObjName          */ i_strKey,
         /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
     m_strKey(i_strKey),
-    m_selPtLinked(i_selPt),
+    m_selPt(i_selPt),
     m_distanceToLinkedSelPt(0.0, 0.0),
     m_bShowAnchorLine(false),
     m_anchorLine(),
     m_bUpdatePositionInProgress(false)
 {
-    // Just incremented by the ctor but not decremented by the dtor.
-    // Used to create a unique name for newly created objects of this type.
-    s_iInstCount++;
-
     createTraceAdminObjs("Labels::" + ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Key: " + i_strKey + ", Text: " + i_strText +
-            ", SelPt: " + CEnumSelectionPoint(i_selPt).toString();
+            ", Parent: " + QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree()) +
+            ", Text: " + i_strText +
+            ", SelPt: " + i_selPt.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -142,7 +134,7 @@ CGraphObjLabel::~CGraphObjLabel()
     }
 
     //m_strKey;
-    m_selPtLinked = static_cast<ESelectionPoint>(0);
+    //m_selPt;
     //m_distanceToLinkedSelPt;
     m_bShowAnchorLine = false;
     //m_anchorLine;
@@ -255,35 +247,40 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::setLinkedSelectionPoint(ESelectionPoint i_selPt)
+/*! @brief Returns the type of the selection point.
+
+    Selection points are differentiated into selection points on the bounding
+    rectangle around the graphical object or into polygon shape points.
+*/
+SGraphObjSelectionPoint CGraphObjLabel::getSelectionPoint() const
+//------------------------------------------------------------------------------
+{
+    return m_selPt;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::setSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumSelectionPoint(i_selPt).toString();
+        strMthInArgs = i_selPt.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setLinkedSelectionPoint",
+        /* strMethod    */ "setSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_selPtLinked != i_selPt)
+    if (m_selPt != i_selPt)
     {
-        m_selPtLinked = i_selPt;
+        m_selPt = i_selPt;
         updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
     }
-}
-
-//------------------------------------------------------------------------------
-ESelectionPoint CGraphObjLabel::getLinkedSelectionPoint() const
-//------------------------------------------------------------------------------
-{
-    return m_selPtLinked;
 }
 
 /*==============================================================================
@@ -983,7 +980,7 @@ void CGraphObjLabel::updatePosition()
             m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
 
-    QPointF ptSelPosParent = m_pGraphObjParent->getBoundingRectSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
     QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
     QPointF ptScenePosThis = ptSelScenePosParent;
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
@@ -1033,7 +1030,7 @@ void CGraphObjLabel::updateDistanceToLinkedSelPt()
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    QPointF ptSelPosParent = m_pGraphObjParent->getBoundingRectSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
     QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
 
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
@@ -1087,7 +1084,7 @@ void CGraphObjLabel::updateDistanceToLinkedSelPt()
 //------------------------------------------------------------------------------
 void CGraphObjLabel::updateAnchorLine()
 {
-    QPointF ptSelPosParent = m_pGraphObjParent->getBoundingRectSelectionPointCoors(m_selPtLinked);
+    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
     QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
@@ -1134,7 +1131,7 @@ void CGraphObjLabel::traceInternalStates(
         else strTrcInfo = "";
         strTrcInfo +=
             "Key: " + m_strKey + ", Parent: " + m_pGraphObjParent->path() +
-            ", LinkedTo: " + CEnumSelectionPoint(m_selPtLinked).toString() +
+            ", LinkedTo: " + m_selPt.toString() +
             ", Visible: " + QString(isVisible() ? "true" : "false") +
             ", ShowAnchorLine: " + QString(m_bShowAnchorLine ? "true" : "false");
         i_mthTracer.trace(strTrcInfo);

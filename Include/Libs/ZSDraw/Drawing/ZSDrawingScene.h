@@ -120,6 +120,8 @@ public: // ctors and dtor
     CDrawingScene(const QString& i_strName, QObject* i_pObjParent = nullptr);
     ~CDrawingScene();
 signals:
+    /*! Signal emitted if the drawing is about to be cleared and all graphical objects will be removed. */
+    void aboutToBeCleared();
     /*! Signal emitted if the drawing size has been changed.
         @param i_size [in] Contains the new drawing size (pixel dimension, metric, etc.). */
     void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
@@ -275,6 +277,7 @@ protected slots:
 protected: // auxiliary instance methods
     void forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsSceneMouseEvent* i_pEv);
     void forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv);
+    void invalidateItemInAcceptingHoverEventsList(CGraphObj* i_pGraphObj);
     void paintGridLines(QPainter* i_pPainter);
 protected: // auxiliary instance methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
@@ -296,6 +299,7 @@ protected: // auxiliary instance methods
     std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":", bool i_bAttrIsMandatory = true, const std::pair<int, int>& i_valDefault = std::make_pair(0, 0)) const;
     double getDoubleVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, double fValDefault = 0.0) const;
 protected: // auxiliary instance methods (trace emitting signals)
+    void emit_aboutToBeCleared();
     void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
     void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
     void emit_mousePosChanged( const QPointF& i_ptMousePos );

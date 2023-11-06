@@ -479,7 +479,7 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QPointF CGraphObjPoint::getPolygonSelectionPointCoors( int /*i_idxPt*/ ) const
+QPointF CGraphObjPoint::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
 //------------------------------------------------------------------------------
 {
     return QPointF(0.0, 0.0);

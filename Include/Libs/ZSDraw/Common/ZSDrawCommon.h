@@ -349,9 +349,9 @@ enum class ESelectionPoint
 //==============================================================================
 {
     None          =  0, /*!< No selection point. */
-    TopLeft       =  1, /*!< Top left corner of a rectangle. Also used to select the StartPoint of a line. */
+    TopLeft       =  1, /*!< Top left corner of a rectangle. */
     TopRight      =  2, /*!< Top right corner of a rectangle. */
-    BottomRight   =  3, /*!< Bottom right corner of a rectangle. Also used to select the EndPoint of a line. */
+    BottomRight   =  3, /*!< Bottom right corner of a rectangle. */
     BottomLeft    =  4, /*!< Top right corner of a rectangle. */
     TopCenter     =  5, /*!< Center point of the top line of a rectangle. */
     RightCenter   =  6, /*!< Center point of the right line of a rectangle. */

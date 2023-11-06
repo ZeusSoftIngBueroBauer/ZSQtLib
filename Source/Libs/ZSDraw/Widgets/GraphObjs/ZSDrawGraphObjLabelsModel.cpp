@@ -102,7 +102,8 @@ CModelGraphObjLabels::SLabelSettings::SLabelSettings() :
 //------------------------------------------------------------------------------
 CModelGraphObjLabels::SLabelSettings::SLabelSettings(
     const QString& i_strName, int i_iRowIdx, bool i_bIsPredefinedLabelName,
-    const QString& i_strText, ESelectionPoint i_selPt, bool i_bVisible, bool i_bAnchorLineVisible) :
+    const QString& i_strText, const SGraphObjSelectionPoint& i_selPt,
+    bool i_bVisible, bool i_bAnchorLineVisible) :
 //------------------------------------------------------------------------------
     m_strNameOrig(), m_strNameCurr(i_strName), m_iRowIdx(i_iRowIdx), m_bIsPredefinedLabelName(i_bIsPredefinedLabelName),
     m_strText(i_strText), m_selPt(i_selPt), m_bVisible(i_bVisible), m_bAnchorLineVisible(i_bAnchorLineVisible),
@@ -556,8 +557,8 @@ QString CModelGraphObjLabels::addLabel()
         /* strMethodInArgs    */ "" );
 
     QString strName = findUniqueLabelName("Label");
-    ESelectionPoint selPt = ESelectionPoint::None;
-    QList<ESelectionPoint> arSelPts = m_pGraphObj->getPossibleLabelAnchorPoints(strName);
+    SGraphObjSelectionPoint selPt;
+    QList<SGraphObjSelectionPoint> arSelPts = m_pGraphObj->getPossibleLabelAnchorPoints(strName);
     if (arSelPts.size() > 0) {
         selPt = arSelPts[0];
     }
@@ -760,23 +761,15 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                 }
                 case EColumnAnchor: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
-                        if (m_pGraphObj->type() == EGraphObjTypeLine) {
-                            if (labelSettings.m_selPt == ESelectionPoint::TopLeft) {
-                                varData = "P1";
-                            }
-                            else if (labelSettings.m_selPt == ESelectionPoint::BottomRight) {
-                                varData = "P2";
-                            }
-                            else {
-                                varData = CEnumSelectionPoint(labelSettings.m_selPt).toString();
-                            }
+                        if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                            varData = CEnumSelectionPoint(labelSettings.m_selPt.m_selPt).toString();
                         }
                         else {
-                            varData = CEnumSelectionPoint(labelSettings.m_selPt).toString();
+                            varData = "P" + QString::number(labelSettings.m_selPt.m_idxPt);
                         }
                     }
                     else if (i_iRole == Qt::AccessibleTextRole) {
-                        QList<ESelectionPoint> arSelPts;
+                        QList<SGraphObjSelectionPoint> arSelPts;
                         if (!labelSettings.m_strNameOrig.isEmpty()) {
                             m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameOrig);
                         }
@@ -784,20 +777,12 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                             m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameCurr);
                         }
                         QList<SComboBoxItem> arItems;
-                        for (const ESelectionPoint& selPt : arSelPts) {
-                            if (m_pGraphObj->type() == EGraphObjTypeLine) {
-                                if (selPt == ESelectionPoint::TopLeft) {
-                                    arItems.append(SComboBoxItem("P1"));
-                                }
-                                else if (selPt == ESelectionPoint::BottomRight) {
-                                    arItems.append(SComboBoxItem("P2"));
-                                }
-                                else {
-                                    arItems.append(SComboBoxItem(CEnumSelectionPoint(selPt).toString()));
-                                }
+                        for (const SGraphObjSelectionPoint& selPt : arSelPts) {
+                            if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                                arItems.append(SComboBoxItem(CEnumSelectionPoint(selPt.m_selPt).toString()));
                             }
                             else {
-                                arItems.append(SComboBoxItem(CEnumSelectionPoint(selPt).toString()));
+                                arItems.append(SComboBoxItem("P" + QString::number(selPt.m_idxPt)));
                             }
                         }
                         varData.setValue(arItems);

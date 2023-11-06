@@ -55,6 +55,42 @@ class CGraphObjSelectionPoint;
 //==============================================================================
 /*!
 */
+struct ZSDRAWDLL_API SGraphObjSelectionPoint
+//==============================================================================
+{
+public: // ctors
+    SGraphObjSelectionPoint();
+    SGraphObjSelectionPoint(ESelectionPoint i_selPt);
+    SGraphObjSelectionPoint(int idxPt);
+    SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other);
+public: // operators
+    SGraphObjSelectionPoint& operator = (const SGraphObjSelectionPoint& i_other);
+    SGraphObjSelectionPoint& operator = (ESelectionPoint i_selPt);
+    SGraphObjSelectionPoint& operator = (int i_idxPt);
+    bool operator == (const SGraphObjSelectionPoint& i_other) const;
+    bool operator != (const SGraphObjSelectionPoint& i_other) const;
+public: // struct methods
+    QString name() const;
+    QString toString() const;
+public: // struct members
+    /*!< Type of the selection point. Selection points are differentiated into
+         selection points on the bounding rectangle around the graphical object
+         or into polygon shape points. */
+    ESelectionPointType m_selPtType;
+    /*!< For selection points on the bounding rectangle specifies the position
+         on (or within) the bounding rectangle.
+         For polygon shape points the enum is set to PolygonPoint. */
+    ESelectionPoint m_selPt;
+    /*!< For selection points on a polygon the index of the polygon point
+         is stored the selection point is assigned to. */
+    int m_idxPt;
+
+}; // struct SGraphObjSelectionPoint
+
+
+//==============================================================================
+/*!
+*/
 struct ZSDRAWDLL_API SGraphObjHitInfo
 //==============================================================================
 {
@@ -393,8 +429,6 @@ public: // instance methods
 public: // overridables
     virtual void onCreateAndExecDlgFormatGraphObjs();
 public: // overridables
-    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
-public: // overridables
     virtual void setDrawSettings(const CDrawSettings& i_drawSettings);
     virtual CDrawSettings getDrawSettings() const;
     virtual bool updateDrawSettings();
@@ -514,8 +548,7 @@ public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
 public: // overridables
-    virtual QPointF getBoundingRectSelectionPointCoors( ESelectionPoint i_selPt ) const;
-    virtual QPointF getPolygonSelectionPointCoors( int i_idxPt ) const;
+    virtual QPointF getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const;
 protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
@@ -529,15 +562,15 @@ public: // overridables (text labels)
     QStringList getLabelNames() const;
     virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
-    virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
+    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
-    virtual bool addLabel(const QString& i_strName, const QString& i_strText = "", ESelectionPoint i_selPt = ESelectionPoint::Center);
+    virtual bool addLabel(const QString& i_strName, const QString& i_strText = "", const SGraphObjSelectionPoint& i_selPt = ESelectionPoint::Center);
     virtual bool removeLabel(const QString& i_strName);
     virtual bool renameLabel(const QString& i_strName, const QString& i_strNameNew);
     virtual void setLabelText(const QString& i_strName, const QString& i_strText);
     virtual QString labelText(const QString& i_strName) const;
-    virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
-    virtual ESelectionPoint labelAnchorPoint(const QString& i_strName) const;
+    virtual void setLabelAnchorPoint(const QString& i_strName, const SGraphObjSelectionPoint& i_selPt);
+    virtual SGraphObjSelectionPoint labelAnchorPoint(const QString& i_strName) const;
     virtual void showLabel(const QString& i_strName);
     virtual void hideLabel(const QString& i_strName);
     virtual bool isLabelVisible(const QString& i_strName) const;
@@ -578,6 +611,8 @@ public: // overridables (dimension line labels)
     //virtual void showDimLineLabelAnchorLine(const QString& i_strName);
     //virtual void hideDimLineLabelAnchorLine(const QString& i_strName);
     //virtual bool isDimLineLabelAnchorLineVisible(const QString& i_strName) const;
+protected slots: // overridables
+    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
 public slots: // overridables
     virtual void onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
@@ -638,8 +673,8 @@ protected: // instance members
          (e.g. on changing the Y Scale Orientation) the scene coordinates
          must be newly calculated even if the original values stored in
          metric units have not been changed. On changing the drawing size
-         the drawing scene will call "onDrawingSizeChanged" of the graphical
-         object and the method sets this flag to true. */
+         the drawing scene will emit "drawingSizeChanged" and the slot method
+         "onDrawingSizeChanged" of the graphical object must set this flag to true. */
     bool m_bForceConversionToSceneCoors;
     /*!< Pointer to drawing scene the graphical object belongs to.
          Is set if the graphical object is added to the scene. */

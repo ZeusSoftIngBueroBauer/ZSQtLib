@@ -70,7 +70,7 @@ public: // ctors and dtor
         CGraphObj* i_pGraphObjParent,
         const QString& i_strKey,
         const QString& i_strText,
-        ESelectionPoint i_selPt );
+        const SGraphObjSelectionPoint& i_selPt);
     virtual ~CGraphObjLabel();
 public: // overridables of base class QGraphicsItem
     int type() const override;
@@ -82,13 +82,13 @@ public: // overridables
 public: // replacing methods of QGraphicsSimpleTextItem
     void setText( const QString& i_strText );
     QString getText() const;
-public: // overridables
-    virtual void setLinkedSelectionPoint(ESelectionPoint i_selPt);
-    virtual ESelectionPoint getLinkedSelectionPoint() const;
-public: // overridables
-    virtual void showAnchorLine();
-    virtual void hideAnchorLine();
-    virtual bool isAnchorLineVisible() const;
+public: // instance methods
+    SGraphObjSelectionPoint getSelectionPoint() const;
+    void setSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
+public: // instance methods
+    void showAnchorLine();
+    void hideAnchorLine();
+    bool isAnchorLineVisible() const;
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
@@ -137,14 +137,11 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
-protected: // class members
-    /*!< Needed to set an initial unique name when creating a new instance. */
-    static qint64 s_iInstCount;
 protected: // instance members
     /*!< Key of the label within the list of labels of the graphical objects. */
     QString m_strKey;
-    /*!< Selection point of parent item the label is linked and aligned to. */
-    ESelectionPoint m_selPtLinked;
+    /*!< Defines the selection point the label is linked to. */
+    SGraphObjSelectionPoint m_selPt;
     /*!< Distance to the selection point the label is aligned to. Calculated as follows:
          - width = this.center.x - LinkedSelPt.x
          - height = this.center.y - LinkedSelPt.y

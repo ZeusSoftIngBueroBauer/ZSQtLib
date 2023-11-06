@@ -400,15 +400,15 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();
 
-        for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
-            QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-            if (pGraphObj != nullptr) {
-                if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
-                    pGraphObj->onDrawingSizeChanged(m_drawingSize);
-                }
-            }
-        }
+        //for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
+        //    QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
+        //    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+        //    if (pGraphObj != nullptr) {
+        //        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
+        //            pGraphObj->onDrawingSizeChanged(m_drawingSize);
+        //        }
+        //    }
+        //}
 
         update();
         emit_drawingSizeChanged(m_drawingSize);
@@ -1189,6 +1189,8 @@ void CDrawingScene::clear()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "clear",
         /* strAddInfo   */ "" );
+
+    emit_aboutToBeCleared();
 
     m_pGraphicsItemSelectionArea = nullptr;
     m_pGraphicsItemCreating = nullptr;
@@ -4907,11 +4909,10 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
         m_pGraphicsItemAddingShapePoints = nullptr;
         m_pGraphObjAddingShapePoints = nullptr;
     }
-    if (m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
+    if (pGraphicsItem != nullptr && m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
+        invalidateItemInAcceptingHoverEventsList(i_pGraphObj);
         for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
-            QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-            if (pGraphObj != nullptr && pGraphObj == i_pGraphObj) {
+            if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
                 m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
             }
         }
@@ -5161,6 +5162,39 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
                     /* pen    */ penSelectionArea,
                     /* brush  */ brsSelectionArea );
             }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the item and all its childs recursively from the list of 
+           items accepting hover events.
+
+    If a graphical object is destroyed the signal aboutToBeDestroyed is emitted
+    and the drawing scene removes the graphical object from all members the
+    object has been kept for internal processing. But selection points and
+    labels are not added to the drawing scene and therefore the drawing scene
+    will not be informed if labels or selection points are destroyed and removed
+    from the graphics scene. But labels and selection points may have been added
+    to the list of items accepting hover events.
+
+    If a graphical object emits the aboutToBeDestroyed signal its selection points
+    got to be removed from the list of items acceptiong hover events.
+    This internal method sets the element of the given graphics item and all its
+    child to nullptr. After invoking the method the list got to be cleared by
+    removing all nullptr elements.
+
+    @note Labels and selection points are not added as childs to the graphic item
+          they belong to. They are only linked to its parent via the parent member.
+*/
+void CDrawingScene::invalidateItemInAcceptingHoverEventsList(CGraphObj* i_pGraphObj)
+//------------------------------------------------------------------------------
+{
+    for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+        QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+        if (pGraphObj != nullptr && (pGraphObj == i_pGraphObj || pGraphObj->parentGraphObj() == i_pGraphObj)) {
+            m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] = nullptr;
         }
     }
 }
@@ -5718,6 +5752,19 @@ double CDrawingScene::getDoubleVal(
 /*==============================================================================
 protected: // auxiliary methods (trace emitting signals)
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::emit_aboutToBeCleared()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_aboutToBeCleared",
+        /* strAddInfo   */ "" );
+
+    emit aboutToBeCleared();
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::emit_drawingSizeChanged( const CDrawingSize& i_size )

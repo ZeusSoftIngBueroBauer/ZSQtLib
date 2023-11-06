@@ -520,6 +520,8 @@ CMainWindow::~CMainWindow()
     }
     m_pDlgTest = nullptr;
 
+    destroyDockWidgets();
+
     try {
         delete m_pModelObjFactories;
     }
@@ -2298,6 +2300,23 @@ void CMainWindow::createDockWidgets()
         m_pMenuView->addAction(m_pDockWdgtGraphObjs->toggleViewAction());
     }
 } // createDockWidgets
+
+//------------------------------------------------------------------------------
+void CMainWindow::destroyDockWidgets()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "destroyDockWidgets",
+        /* strAddInfo   */ "" );
+
+    delete m_pDockWdgtObjFactories;
+    m_pDockWdgtObjFactories = nullptr;
+
+    delete m_pDockWdgtGraphObjs;
+    m_pDockWdgtGraphObjs = nullptr;
+}
 
 /*==============================================================================
 protected: // overridables of base class QWidget

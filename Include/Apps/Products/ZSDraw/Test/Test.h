@@ -75,14 +75,33 @@ public: // ctors and dtor
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
 protected: // instance methods
-    ZS::Test::CTestStepGroup* createTestGroupLoadSaveFile(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
-    ZS::Test::CTestStepGroup* createTestGroupSaveScene(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
-    ZS::Test::CTestStepGroup* createTestGroupPixelsDrawing(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
-    ZS::Test::CTestStepGroup* createTestGroupMetricsDrawing(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
-    ZS::Test::CTestStepGroup* createTestGroupPrepareScene(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup, const ZS::Draw::CDrawingSize& i_drawingSize);
-    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEvents(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup, ZS::Draw::EGraphObjType i_graphObjType);
-    ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapes(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
-    ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapesLines(ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupLoadSaveFile(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupSaveScene(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupPixelsDrawing(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupMetricsDrawing(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupPrepareScene(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapes(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapesLines(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsCreateObject(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        ZS::Draw::EGraphObjType i_graphObjType, const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
+    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsResizeObject(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
+    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsMoveObject(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
+    ZS::Test::CTestStepGroup* createTestGroupShowLabels(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strObjName);
 protected slots:
     void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
@@ -95,6 +114,7 @@ protected slots:
     void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseReleaseEvent( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep );
 public: // instance members
     CMainWindow* m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;

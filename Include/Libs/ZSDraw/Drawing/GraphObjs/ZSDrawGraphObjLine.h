@@ -73,7 +73,6 @@ public: // overridables of base class CGraphObj (for subsystem test)
 public: // overridables of base class CGraphObj
     virtual void onCreateAndExecDlgFormatGraphObjs() override;
 public: // overridables of base class CGraphObj
-    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods
     void setLine(const CPhysValLine& i_physValLine);
@@ -104,11 +103,11 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
-    virtual QPointF getPolygonSelectionPointCoors(int i_idxPt) const override;
+    virtual QPointF getSelectionPointCoors(const SGraphObjSelectionPoint& i_selPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
 public: // overridables of base class CGraphObj
-    virtual QList<ESelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
@@ -130,6 +129,7 @@ protected: // instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
 protected: // overridables of base class CGraphObj
+    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
     void setPhysValLine(const CPhysValLine& i_physValLine);
@@ -140,10 +140,11 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
-protected: // class members
+public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
-         Used to create a unique name for newly created objects of this type. */
+         Used to create a unique name for newly created objects of this type.
+         public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
     /*!< The original, untransformed line coordinates with unit.

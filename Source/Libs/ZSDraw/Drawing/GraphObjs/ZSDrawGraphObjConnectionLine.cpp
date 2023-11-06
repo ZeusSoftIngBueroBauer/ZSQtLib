@@ -1619,7 +1619,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 if( pGraphObjSelPt != nullptr )
                 {
-                    pGraphObjSelPt->setShapePointIndex(idxSelPt);
+                    pGraphObjSelPt->setSelectionPoint(idxSelPt);
 
                     if( idxSelPt == m_idxSelPtSelectedPolygon )
                     {
@@ -1849,7 +1849,7 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 
                         if( pGraphObjSelPt != nullptr )
                         {
-                            pGraphObjSelPt->setShapePointIndex(idxSelPt);
+                            pGraphObjSelPt->setSelectionPoint(idxSelPt);
 
                             if( idxSelPt == m_idxSelPtSelectedPolygon )
                             {
@@ -2218,7 +2218,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 
                             if( pGraphObjSelPt != nullptr )
                             {
-                                pGraphObjSelPt->setShapePointIndex(idxSelPt);
+                                pGraphObjSelPt->setSelectionPoint(idxSelPt);
 
                                 if( idxSelPt == idxSelPtSelectedPolygon )
                                 {
