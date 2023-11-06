@@ -771,10 +771,10 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                     else if (i_iRole == Qt::AccessibleTextRole) {
                         QList<SGraphObjSelectionPoint> arSelPts;
                         if (!labelSettings.m_strNameOrig.isEmpty()) {
-                            m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameOrig);
+                            arSelPts = m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameOrig);
                         }
                         else {
-                            m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameCurr);
+                            arSelPts = m_pGraphObj->getPossibleLabelAnchorPoints(labelSettings.m_strNameCurr);
                         }
                         QList<SComboBoxItem> arItems;
                         for (const SGraphObjSelectionPoint& selPt : arSelPts) {
@@ -915,19 +915,15 @@ bool CModelGraphObjLabels::setData(
                 }
                 case EColumnAnchor: {
                     if (i_iRole == Qt::EditRole) {
-                        if (m_pGraphObj->type() == EGraphObjTypeLine) {
-                            if (i_varData.toString() == "P1") {
-                                labelSettings.m_selPt = ESelectionPoint::TopLeft;
-                            }
-                            else if (i_varData.toString() == "P2") {
-                                labelSettings.m_selPt = ESelectionPoint::BottomRight;
-                            }
-                            else {
-                                labelSettings.m_selPt = CEnumSelectionPoint(i_varData.toString()).enumerator();
-                            }
+                        QString strData = i_varData.toString();
+                        bool bIsBoundingRectPoint = false;
+                        CEnumSelectionPoint selPt = CEnumSelectionPoint::fromString(strData, &bIsBoundingRectPoint);
+                        if (bIsBoundingRectPoint) {
+                            labelSettings.m_selPt = selPt.enumerator();
                         }
-                        else {
-                            labelSettings.m_selPt = CEnumSelectionPoint(i_varData.toString()).enumerator();
+                        else if (strData.startsWith("P")) {
+                            QString strShapePoint = i_varData.toString().remove("P");
+                            labelSettings.m_selPt = strShapePoint.toInt();
                         }
                         bDataSet = true;
                     }
