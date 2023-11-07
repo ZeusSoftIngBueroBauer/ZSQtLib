@@ -361,8 +361,13 @@ void CObjFactory::saveGraphObjLabels(
         /* strMethod    */ "saveGraphObjLabels",
         /* strAddInfo   */ strMthInArgs );
 
+    // The predefined labels should be at the beginning. And sorted by their names so that
+    // the content of the file is always the same (hashes have an unpredicted order).
     QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
-    for (const QString& strName : strlstLabelNames) {
+    strlstLabelNames.sort();
+    QStringList strlstPredefinedLabelNames = i_pGraphObj->getPredefinedLabelNames();
+    QSet<QString> strlstLabelNamesAdded;
+    for (const QString& strName : strlstPredefinedLabelNames) {
         const CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getLabel(strName);
         i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameLabel);
         // To keep the XML file as short as possible the properties of
@@ -377,6 +382,28 @@ void CObjFactory::saveGraphObjLabels(
             i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(pGraphObjLabel->isAnchorLineVisible()));
         }
         i_xmlStreamWriter.writeEndElement();
+        strlstLabelNamesAdded.insert(strName);
+    }
+    // The user defined labels should follow the predefined labels.
+    // Add those after the predefined labels.
+    for (const QString& strName : strlstLabelNames) {
+        if (!strlstLabelNamesAdded.contains(strName)) {
+            const CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getLabel(strName);
+            i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameLabel);
+            // To keep the XML file as short as possible the properties of
+            // the labels are stored as attributes and not as text elements.
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrKey, pGraphObjLabel->key());
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrText, pGraphObjLabel->text());
+            SGraphObjSelectionPoint selPt = pGraphObjLabel->selectionPoint();
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrSelPt, selPt.toString());
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, size2Str(pGraphObjLabel->distanceToLinkedSelPt()));
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
+            if (pGraphObjLabel->isAnchorLineVisible()) { // don't write default for this property
+                i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(pGraphObjLabel->isAnchorLineVisible()));
+            }
+            i_xmlStreamWriter.writeEndElement();
+            strlstLabelNamesAdded.insert(strName);
+        }
     }
 }
 

@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawSettings.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysException.h"
@@ -676,7 +677,7 @@ void CDrawSettings::save( QXmlStreamWriter& i_xmlStreamWriter )
             if (bSave) {
                 QString strName = getAttributeName(idxAttr);
                 QString strValue = attributeValue2Str(idxAttr);
-                i_xmlStreamWriter.writeTextElement(strName,strValue);
+                i_xmlStreamWriter.writeAttribute(strName, strValue);
             }
         }
     }
@@ -690,7 +691,7 @@ void CDrawSettings::load( QXmlStreamReader& i_xmlStreamReader )
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
             if (i_xmlStreamReader.isStartElement()) {
-                if (strElemName == "DrawSettings") {
+                if (strElemName == CDrawingScene::c_strXmlElemNameDrawSettings) {
                     for (int iAttribute = 0; iAttribute < EDrawAttributeCount; ++iAttribute) {
                         QString strName = drawAttribute2Str(iAttribute);
                         if (i_xmlStreamReader.attributes().hasAttribute(strName)) {
@@ -701,7 +702,7 @@ void CDrawSettings::load( QXmlStreamReader& i_xmlStreamReader )
                 }
             }
             else if (i_xmlStreamReader.isEndElement()) {
-                if (strElemName == "DrawSettings") {
+                if (strElemName == CDrawingScene::c_strXmlElemNameDrawSettings) {
                     break;
                 }
             }

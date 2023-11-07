@@ -1088,8 +1088,9 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         // creating the connection lines their connection points must already exist.
         // For this the connection lines will be saved at the end of the XML file.
         // Labels and selection points will not be saved at all (labels are created by their parents).
-        for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
-            QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
+        CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin();
+        while (itIdxTree != m_pGraphObjsIdxTree->end()) {
+            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(*itIdxTree);
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
             if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
                 // Group members will be saved as child items of the groups.
@@ -1100,10 +1101,12 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
                     }
                 }
             }
+            ++itIdxTree;
         }
         if (!errResultInfo.isErrorResult()) {
-            for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
-                QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
+            CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin();
+            while (itIdxTree != m_pGraphObjsIdxTree->end()) {
+                QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(*itIdxTree);
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                 if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && pGraphObj->isConnectionLine()) {
                     // Group members will be saved as child items of the groups.
@@ -1115,6 +1118,7 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
                         }
                     }
                 }
+                ++itIdxTree;
             }
         }
 
