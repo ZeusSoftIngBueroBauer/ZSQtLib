@@ -108,8 +108,8 @@ CGraphObj* CObjFactoryWdgtLabel::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjWdgtLabel(i_pDrawingScene, drawSettings);
-
+    CGraphObj* pGraphObj = new CGraphObjWdgtLabel(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
     return pGraphObj;
 
 } // createGraphObj

@@ -76,17 +76,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjText::CGraphObjText(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeText,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeText),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Text" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Text" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsTextItem()
 {
     // Just incremented by the ctor but not decremented by the dtor.
@@ -185,9 +182,9 @@ CGraphObj* CGraphObjText::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjText* pGraphObj = new CGraphObjText(m_pDrawingScene, m_drawSettings);
+    CGraphObjText* pGraphObj = new CGraphObjText(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
-    pGraphObj->setName(m_strName);
     pGraphObj->setPlainText( toPlainText() );
     pGraphObj->setPos( pos() );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

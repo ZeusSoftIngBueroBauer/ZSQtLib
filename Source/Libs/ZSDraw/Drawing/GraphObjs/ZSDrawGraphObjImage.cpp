@@ -76,17 +76,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjImage::CGraphObjImage(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeImage,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeImage),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Image" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Image" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPixmapItem(),
     m_strImgFilePath(),
     m_pxmOrig()
@@ -184,9 +181,9 @@ CGraphObj* CGraphObjImage::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjImage* pGraphObj = new CGraphObjImage(m_pDrawingScene, m_drawSettings);
+    CGraphObjImage* pGraphObj = new CGraphObjImage(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
-    pGraphObj->setName(m_strName);
     pGraphObj->setImageFilePath(m_strImgFilePath);
     pGraphObj->setPos( pos() );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

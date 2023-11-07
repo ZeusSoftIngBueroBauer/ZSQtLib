@@ -78,15 +78,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjWdgtPushButton::CGraphObjWdgtPushButton(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjWdgt(
         /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "PushButton",
-        /* strObjName    */ i_strObjName.isEmpty() ? "PushButton" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings  */ i_drawSettings ),
+        /* strObjName    */ i_strObjName.isEmpty() ? "PushButton" + QString::number(s_iInstCount) : i_strObjName),
     m_pPushButton(nullptr)
 {
     // Just incremented by the ctor but not decremented by the dtor.

@@ -79,7 +79,6 @@ CGraphObjLabel::CGraphObjLabel(
         /* type                */ EGraphObjTypeLabel,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLabel),
         /* strObjName          */ i_strKey,
-        /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
     m_strKey(i_strKey),
@@ -175,7 +174,7 @@ CGraphObj* CGraphObjLabel::clone()
 }
 
 /*==============================================================================
-public: // overridables
+public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -202,7 +201,7 @@ void CGraphObjLabel::setKey(const QString& i_strKey)
 }
 
 //------------------------------------------------------------------------------
-QString CGraphObjLabel::getKey() const
+QString CGraphObjLabel::key() const
 //------------------------------------------------------------------------------
 {
     return m_strKey;
@@ -236,27 +235,15 @@ void CGraphObjLabel::setText( const QString& i_strText )
 }
 
 //------------------------------------------------------------------------------
-QString CGraphObjLabel::getText() const
+QString CGraphObjLabel::text() const
 //------------------------------------------------------------------------------
 {
     return QGraphicsSimpleTextItem::text();
 }
 
 /*==============================================================================
-public: // overridables
+public: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the type of the selection point.
-
-    Selection points are differentiated into selection points on the bounding
-    rectangle around the graphical object or into polygon shape points.
-*/
-SGraphObjSelectionPoint CGraphObjLabel::getSelectionPoint() const
-//------------------------------------------------------------------------------
-{
-    return m_selPt;
-}
 
 //------------------------------------------------------------------------------
 void CGraphObjLabel::setSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
@@ -283,8 +270,55 @@ void CGraphObjLabel::setSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
     }
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Returns the type of the selection point.
+
+    Selection points are differentiated into selection points on the bounding
+    rectangle around the graphical object or into polygon shape points.
+*/
+SGraphObjSelectionPoint CGraphObjLabel::selectionPoint() const
+//------------------------------------------------------------------------------
+{
+    return m_selPt;
+}
+
 /*==============================================================================
-public: // overridables
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::setDistanceToLinkedSelPt(const QSizeF& i_size)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qSize2Str(i_size);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setDistanceToLinkedSelPt",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_distanceToLinkedSelPt != i_size) {
+        m_distanceToLinkedSelPt = i_size;
+        updatePosition();
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+QSizeF CGraphObjLabel::distanceToLinkedSelPt() const
+//------------------------------------------------------------------------------
+{
+    return m_distanceToLinkedSelPt;
+}
+
+/*==============================================================================
+public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

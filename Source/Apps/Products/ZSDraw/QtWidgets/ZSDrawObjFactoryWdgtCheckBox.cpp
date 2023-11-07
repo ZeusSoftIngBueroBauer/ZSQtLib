@@ -108,7 +108,8 @@ CGraphObj* CObjFactoryWdgtCheckBox::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjWdgtCheckBox(i_pDrawingScene, drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjWdgtCheckBox(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
     return pGraphObj;
 

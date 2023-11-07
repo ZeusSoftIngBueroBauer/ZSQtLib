@@ -99,8 +99,9 @@ CGraphObj* CObjFactoryLine::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeLine);
-    CGraphObjLine* pGraphObj = new CGraphObjLine(
-        i_pDrawingScene, drawSettings, "", i_physValPoint, i_physValPoint);
+    CGraphObjLine* pGraphObj = new CGraphObjLine(i_pDrawingScene);
+    pGraphObj->setLine(i_physValPoint, i_physValPoint);
+    pGraphObj->setDrawSettings(drawSettings);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pGraphObj->path());
@@ -132,7 +133,7 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
 
     CGraphObjLine* pGraphObj = dynamic_cast<CGraphObjLine*>(i_pGraphObj);
     if (pGraphObj == nullptr) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjLine == nullptr" );
+        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
     }
 
     // Draw Attributes
@@ -156,25 +157,17 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
     i_xmlStreamWriter.writeTextElement( "P2", point2Str(pt2) );
     i_xmlStreamWriter.writeEndElement(); // ShapePoints
     i_xmlStreamWriter.writeEndElement(); // Geometry
-
-    // It makes no sense to rotate or scale a line.
-
-    // Z-Value
-    //---------------
-
     i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObj->getStackingOrderValue()) );
 
     // Labels
     //----------------
 
-    //QHash<QString, CGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
-
-    //if( arpLabels.size() > 0 )
-    //{
-    //    i_xmlStreamWriter.writeStartElement("Labels");
-    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-    //    i_xmlStreamWriter.writeEndElement();
-    //}
+    QStringList strlstLabels = i_pGraphObj->getLabelNames();
+    if (!strlstLabels.isEmpty()) {
+        i_xmlStreamWriter.writeStartElement("Labels");
+        saveGraphObjLabels(i_pGraphObj, i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
@@ -185,9 +178,9 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryLine::loadGraphObj(
-    CDrawingScene*    i_pDrawingScene,
-    CGraphObjGroup*   i_pGraphObjGroup,
-    const QString&    i_strObjName,
+    CDrawingScene* i_pDrawingScene,
+    CGraphObjGroup* i_pGraphObjGroup,
+    const QString& i_strObjName,
     QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
@@ -206,7 +199,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjLine* pGraphObj = nullptr;
+    CGraphObjLine* pGraphObj = new CGraphObjLine(i_pDrawingScene, i_strObjName);
 
     CDrawSettings drawSettings(EGraphObjTypeLine);
     CPhysValPoint physValPoint1;
@@ -214,12 +207,11 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     bool bPt1Valid = false;
     bool bPt2Valid = false;
     double fZValue = 0.0;
-    QHash<QString, CGraphObjLabel*> arpLabels;
 
     enum ELevel {
-        ELevelGraphObj = 0, // expecting DrawSettings, Geometry, ZValue, Labels
-        ELevelGeometry = 1, // expecting ShapePoints
-        ELevelShapePoints = 2 // expecting P1, P2
+        ELevelGraphObj = 0,     // expecting DrawSettings, Geometry, ZValue, Labels
+        ELevelGeometry = 1,     // expecting ShapePoints
+        ELevelShapePoints = 2   // expecting P1, P2
     };
     int iLevel = ELevelGraphObj;
 
@@ -249,7 +241,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                     }
                     else if (strElemName == CDrawingScene::c_strXmlElemNameLabels) {
                         if (i_xmlStreamReader.isStartElement()) {
-                            arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+                            loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
                         }
                     }
                     else {
@@ -319,45 +311,22 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     if (!bPt1Valid || !bPt2Valid) {
         i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
     }
-    else {
-        pGraphObj = new CGraphObjLine(
-            i_pDrawingScene, drawSettings, i_strObjName, physValPoint1, physValPoint2);
-        //QLineF lin(pt1, pt2);
-        //lin.translate(-pt1.x(), -pt1.y());
-        //pGraphObj->setLine(lin);
 
-        // Before calling "onGraphObjCreationFinished" the object must have been added
-        // to its parent group. Otherwise the drawing scene is not able to retrieve
-        // the unique object id and add the object to the hash.
+    if (!i_xmlStreamReader.hasError()) {
         if (i_pGraphObjGroup != nullptr) {
             throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
             //i_pGraphObjGroup->addGraphObj(pGraphObj);
         }
         else {
+            pGraphObj->setLine(physValPoint1, physValPoint2);
+            pGraphObj->setDrawSettings(drawSettings);
+            pGraphObj->setStackingOrderValue(fZValue);
             i_pDrawingScene->addGraphObj(pGraphObj);
         }
-        pGraphObj->setStackingOrderValue(fZValue);
-
-        //#pragma message(__TODO__"BEGIN: Shouldn't be necessary to call")
-        //pGraphObj->setPos(pt1);
-        //i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
-        //pGraphObj->acceptCurrentAsOriginalCoors();
-        //#pragma message(__TODO__"END: Shouldn't be necessary to call")
-
-        //if (arpLabels.size() > 0) {
-        //    pGraphObj->addLabels(arpLabels);
-        //}
-    } // if( bPt1Valid && bPt2Valid )
-
-    if (arpLabels.size() > 0) {
-        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-        while (itLabels.hasNext()) {
-            itLabels.next();
-            CGraphObjLabel* pGraphObjLabel = itLabels.value();
-            arpLabels.remove(pGraphObjLabel->getKey());
-            delete pGraphObjLabel;
-            pGraphObjLabel = nullptr;
-        }
+    }
+    else {
+        delete pGraphObj;
+        pGraphObj = nullptr;
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

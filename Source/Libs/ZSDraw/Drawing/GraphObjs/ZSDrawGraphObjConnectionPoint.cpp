@@ -80,17 +80,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjConnectionPoint::CGraphObjConnectionPoint(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName ) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionPoint),
-        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionPoint" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsEllipseItem( QRectF( QPointF(0.0,0.0), QSize(2.0*s_fOuterCircleRadius_px,2.0*s_fOuterCircleRadius_px) ) ),
     m_lstConnectionLines(),
     m_fInnerCircleWidth_perCent(100.0*(s_fInnerCircleRadius_px/s_fOuterCircleRadius_px))
@@ -199,7 +196,8 @@ CGraphObj* CGraphObjConnectionPoint::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(m_pDrawingScene, m_drawSettings);
+    CGraphObjConnectionPoint* pGraphObj = new CGraphObjConnectionPoint(m_pDrawingScene);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     pGraphObj->setName(m_strName);

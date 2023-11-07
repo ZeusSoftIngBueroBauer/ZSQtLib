@@ -88,15 +88,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjVoltageSource::CGraphObjVoltageSource(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
         /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "VoltageSource",
-        /* strObjName    */ i_strObjName.isEmpty() ? "V" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings  */ i_drawSettings ),
+        /* strObjName    */ i_strObjName.isEmpty() ? "V" + QString::number(s_iInstCount) : i_strObjName),
     m_pLinCnct(nullptr),
     m_pEllBody(nullptr),
     m_pLinSignMinus(nullptr),

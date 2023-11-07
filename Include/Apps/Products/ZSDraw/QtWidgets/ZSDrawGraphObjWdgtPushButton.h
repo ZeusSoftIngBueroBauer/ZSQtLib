@@ -50,10 +50,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjWdgtPushButton"; }
 public: // ctors and dtor
-    CGraphObjWdgtPushButton(
-        CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString& i_strObjName = "");
+    CGraphObjWdgtPushButton(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjWdgtPushButton();
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone();

@@ -61,10 +61,7 @@ public: // class methods
     static double GetDefaultOuterCircleRadiusInPx() { return s_fOuterCircleRadius_px; }
     static double GetDefaultInnerCircleRadiusInPx() { return s_fInnerCircleRadius_px; }
 public: // ctors and dtor
-    CGraphObjConnectionPoint(
-        CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString& i_strObjName = "");
+    CGraphObjConnectionPoint(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjConnectionPoint();
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;

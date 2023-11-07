@@ -172,194 +172,9 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupLoadSaveFile(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupLoadSaveFile",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idxStep = 0;
-
-    ZS::Test::CTestStep* pTestStep = nullptr;
-
-    ZS::Test::CTestStepGroup* pGrpLoadSaveFile = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Load/Save File",
-        /* pTSGrpParent */ i_pTestStepGroupParent );
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SetGeometry",
-        /* strOperation    */ "MainWindow.setGeometry",
-        /* pGrpParent      */ pGrpLoadSaveFile,
-        /* szDoTestStepFct */ SLOT(doTestStepMainWindowSetGeometry(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Width", 1600);
-    pTestStep->setConfigValue("Height", 800);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Clear",
-        /* strOperation    */ "DrawingScene.clear",
-        /* pGrpParent      */ pGrpLoadSaveFile,
-        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " LoadFile",
-        /* strOperation    */ "DrawingScene.load",
-        /* pGrpParent      */ pGrpLoadSaveFile,
-        /* szDoTestStepFct */ SLOT(doTestStepLoadFile(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FileName", "600px400pxOneLine.xml");
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SaveFile",
-        /* strOperation    */ "DrawingScene.save",
-        /* pGrpParent      */ pGrpLoadSaveFile,
-        /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FileName", "600px400pxOneLine.xml");
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpLoadSaveFile->path());
-    }
-    return pGrpLoadSaveFile;
-
-} // createTestGroupLoadSaveFile
-
-//------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupSaveScene(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupSaveScene",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idxStep = 0;
-
-    ZS::Test::CTestStep* pTestStep = nullptr;
-
-    ZS::Test::CTestStepGroup* pGrpSaveScene = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Save Scene",
-        /* pTSGrpParent */ i_pTestStepGroupParent );
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SaveScene",
-        /* strOperation    */ "DrawingScene.save",
-        /* pGrpParent      */ pGrpSaveScene,
-        /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
-    QString strFileName = i_pTestStepGroupParent->path().remove("/");
-    pTestStep->setConfigValue("FileName", strFileName);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpSaveScene->path());
-    }
-    return pGrpSaveScene;
-
-} // createTestGroupSaveScene
-
-//------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupPixelsDrawing(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupPixelsDrawing",
-        /* strAddInfo   */ strMthInArgs );
-
-    ZS::Test::CTestStepGroup* pGrpPixelsDrawing = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Pixels Drawing",
-        /* pTSGrpParent */ i_pTestStepGroupParent );
-
-    CDrawingSize drawingSize("Test-PixelsDrawing");
-    drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
-    drawingSize.setScreenResolutionInPxPerMM(1.0);
-    drawingSize.setImageSize(CPhysVal(800, Units.Length.px), CPhysVal(600, Units.Length.px));
-    createTestGroupPrepareScene(pGrpPixelsDrawing, io_idxGroup, drawingSize);
-    createTestGroupDrawStandardShapes(pGrpPixelsDrawing, io_idxGroup);
-    createTestGroupSaveScene(pGrpPixelsDrawing, io_idxGroup);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpPixelsDrawing->path());
-    }
-    return pGrpPixelsDrawing;
-
-} // createTestGroupPixelsDrawing
-
-//------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawing(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupMetricsDrawing",
-        /* strAddInfo   */ strMthInArgs );
-
-    ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Metrics Drawing",
-        /* pTSGrpParent */ nullptr );
-
-    CDrawingSize drawingSize("Test-MetricsDrawing");
-    drawingSize.setDimensionUnit(EScaleDimensionUnit::Metric);
-    drawingSize.setScreenResolutionInPxPerMM(1.0);
-    drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
-    createTestGroupPrepareScene(pGrpMetricsDrawing, io_idxGroup, drawingSize);
-    createTestGroupDrawStandardShapes(pGrpMetricsDrawing, io_idxGroup);
-    createTestGroupSaveScene(pGrpMetricsDrawing, io_idxGroup);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpMetricsDrawing->path());
-    }
-    return pGrpMetricsDrawing;
-
-} // createTestGroupMetricsDrawing
-
-//------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
-    int& io_idxGroup, const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+    const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -394,7 +209,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Clear",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Clear Drawing",
         /* strOperation    */ "DrawingScene.clear",
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
@@ -443,6 +258,156 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
     return pGrpPrepareScene;
 
 } // createTestGroupPrepareScene
+
+//------------------------------------------------------------------------------
+ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+    const ZS::Draw::CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
+                       ", IdxGroup:" + QString::number(io_idxGroup) +
+                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupSaveLoadFile",
+        /* strAddInfo   */ strMthInArgs );
+
+    int idxStep = 0;
+
+    ZS::Test::CTestStep* pTestStep = nullptr;
+
+    ZS::Test::CTestStepGroup* pGrpSaveLoadFile = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Save/Load File",
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+
+    QString strAbsDirPath =
+        QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + QDir::separator() + "Test";
+    QString strFileName;
+    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strFileName = QString::number(i_drawingSize.imageWidthInPixels()) + "x" +
+                      QString::number(i_drawingSize.imageHeightInPixels()) + "px.xml";
+    }
+    else {
+        strFileName = QString::number(static_cast<int>(i_drawingSize.metricImageWidth().getVal())) + "x" +
+                      QString::number(static_cast<int>(i_drawingSize.metricImageWidth().getVal())) +
+                      i_drawingSize.metricUnit().symbol() + ".xml";
+    }
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " SaveFile",
+        /* strOperation    */ "DrawingScene.save",
+        /* pGrpParent      */ pGrpSaveLoadFile,
+        /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("AbsDirPath", strAbsDirPath);
+    pTestStep->setConfigValue("FileName", strFileName);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Clear Drawing",
+        /* strOperation    */ "DrawingScene.clear",
+        /* pGrpParent      */ pGrpSaveLoadFile,
+        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " LoadFile",
+        /* strOperation    */ "DrawingScene.load",
+        /* pGrpParent      */ pGrpSaveLoadFile,
+        /* szDoTestStepFct */ SLOT(doTestStepLoadFile(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("AbsDirPath", strAbsDirPath);
+    pTestStep->setConfigValue("FileName", strFileName);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+        mthTracer.setMethodOutArgs(strMthOutArgs);
+        mthTracer.setMethodReturn(pGrpSaveLoadFile->path());
+    }
+    return pGrpSaveLoadFile;
+
+} // createTestGroupLoadSaveFile
+
+//------------------------------------------------------------------------------
+ZS::Test::CTestStepGroup* CTest::createTestGroupPixelsDrawing(
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
+                       ", IdxGroup:" + QString::number(io_idxGroup);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupPixelsDrawing",
+        /* strAddInfo   */ strMthInArgs );
+
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Pixels Drawing",
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+
+    CDrawingSize drawingSize("Test-PixelsDrawing");
+    drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
+    drawingSize.setScreenResolutionInPxPerMM(1.0);
+    drawingSize.setImageSize(CPhysVal(800, Units.Length.px), CPhysVal(600, Units.Length.px));
+    createTestGroupPrepareScene(pGrpPixelsDrawing, io_idxGroup, drawingSize);
+    createTestGroupDrawStandardShapes(pGrpPixelsDrawing, io_idxGroup);
+    createTestGroupSaveLoadFile(pGrpPixelsDrawing, io_idxGroup, drawingSize);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+        mthTracer.setMethodOutArgs(strMthOutArgs);
+        mthTracer.setMethodReturn(pGrpPixelsDrawing->path());
+    }
+    return pGrpPixelsDrawing;
+
+} // createTestGroupPixelsDrawing
+
+//------------------------------------------------------------------------------
+ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawing(
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
+                       ", IdxGroup:" + QString::number(io_idxGroup);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "createTestGroupMetricsDrawing",
+        /* strAddInfo   */ strMthInArgs );
+
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Metrics Drawing",
+        /* pTSGrpParent */ nullptr );
+
+    CDrawingSize drawingSize("Test-MetricsDrawing");
+    drawingSize.setDimensionUnit(EScaleDimensionUnit::Metric);
+    drawingSize.setScreenResolutionInPxPerMM(1.0);
+    drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
+    createTestGroupPrepareScene(pGrpMetricsDrawing, io_idxGroup, drawingSize);
+    createTestGroupDrawStandardShapes(pGrpMetricsDrawing, io_idxGroup);
+    createTestGroupSaveLoadFile(pGrpMetricsDrawing, io_idxGroup, drawingSize);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+        mthTracer.setMethodOutArgs(strMthOutArgs);
+        mthTracer.setMethodReturn(pGrpMetricsDrawing->path());
+    }
+    return pGrpMetricsDrawing;
+
+} // createTestGroupMetricsDrawing
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapes(
@@ -1011,33 +976,6 @@ void CTest::doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep )
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pTestStep->path();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepLoadFile",
-        /* strAddInfo   */ strMthInArgs );
-
-    QString strFileName = i_pTestStep->getConfigValue("FileName").toString();
-    QString strAbsFilePath = c_strTestInputFilesAbsDirPath + QDir::separator() + strFileName;
-
-    SErrResultInfo errResultInfo;
-    i_pTestStep->setExpectedValue(errResultInfo.toString());
-
-    errResultInfo = m_pDrawingScene->load(strAbsFilePath);
-    if (errResultInfo.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfo);
-    }
-    i_pTestStep->setResultValue(errResultInfo.toString());
-}
-
-//------------------------------------------------------------------------------
 void CTest::doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
@@ -1051,12 +989,10 @@ void CTest::doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep )
         /* strMethod    */ "doTestStepSaveFile",
         /* strAddInfo   */ strMthInArgs );
 
+    QString strAbsDirPath = i_pTestStep->getConfigValue("AbsDirPath").toString();
     QString strFileName = i_pTestStep->getConfigValue("FileName").toString();
-    QString strTestFilesSaveAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    QString strAbsFilePath =
-        strTestFilesSaveAbsDirPath +
-        QDir::separator() + "Test" +
-        QDir::separator() + strFileName;
+    QString strAbsFilePath = strAbsDirPath + QDir::separator() + strFileName;
+
     QFileInfo fileInfo(strAbsFilePath);
     QDir dir = fileInfo.absoluteDir();
     if (!dir.exists()) {
@@ -1067,6 +1003,34 @@ void CTest::doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep )
     i_pTestStep->setExpectedValue(errResultInfo.toString());
 
     errResultInfo = m_pDrawingScene->save(strAbsFilePath);
+    if (errResultInfo.isErrorResult()) {
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+    }
+    i_pTestStep->setResultValue(errResultInfo.toString());
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepLoadFile",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strAbsDirPath = i_pTestStep->getConfigValue("AbsDirPath").toString();
+    QString strFileName = i_pTestStep->getConfigValue("FileName").toString();
+    QString strAbsFilePath = strAbsDirPath + QDir::separator() + strFileName;
+
+    SErrResultInfo errResultInfo;
+    i_pTestStep->setExpectedValue(errResultInfo.toString());
+
+    errResultInfo = m_pDrawingScene->load(strAbsFilePath);
     if (errResultInfo.isErrorResult()) {
         CErrLog::GetInstance()->addEntry(errResultInfo);
     }

@@ -66,7 +66,6 @@ public: // type definitions and constants
 public: // ctors and dtor
     CGraphObjSwitch(
         CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
         EState i_state = EStateOpened,
         const QString& i_strObjName = "");
     virtual ~CGraphObjSwitch();

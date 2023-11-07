@@ -130,8 +130,8 @@ public: // overridables
     virtual bool hasInitialSize() const { return false; }
     virtual QSizeF getInitialSize() const { return QSizeF(); }
 protected: // overridables
-    virtual ZS::System::SErrResultInfo saveGraphObjLabels( const QHash<QString, CGraphObjLabel*>& i_arpLabels, QXmlStreamWriter& i_xmlStreamWriter );
-    virtual QHash<QString, CGraphObjLabel*> loadGraphObjLabels( QXmlStreamReader& i_xmlStreamReader );
+    virtual void saveGraphObjLabels( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter );
+    virtual void loadGraphObjLabels( CGraphObj* i_pGraphObj, QXmlStreamReader& i_xmlStreamReader );
 protected: // class members
     static int s_iInstCount;
     static ZS::System::CIdxTree* s_pIdxTree;

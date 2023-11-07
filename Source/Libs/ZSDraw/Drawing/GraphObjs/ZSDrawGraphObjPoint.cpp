@@ -75,17 +75,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjPoint::CGraphObjPoint(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePoint),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Point" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Point" + QString::number(s_iInstCount) : i_strObjName),
     QAbstractGraphicsShapeItem()
 {
     // Just incremented by the ctor but not decremented by the dtor.
@@ -181,9 +178,9 @@ CGraphObj* CGraphObjPoint::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjPoint* pGraphObj = new CGraphObjPoint(m_pDrawingScene, m_drawSettings);
+    CGraphObjPoint* pGraphObj = new CGraphObjPoint(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
-    pGraphObj->setName(m_strName);
     pGraphObj->setPos( pos() );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     pGraphObj->acceptCurrentAsOriginalCoors();

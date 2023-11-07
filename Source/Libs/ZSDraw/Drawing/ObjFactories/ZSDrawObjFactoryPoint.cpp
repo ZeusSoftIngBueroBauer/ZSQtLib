@@ -96,7 +96,8 @@ CGraphObj* CObjFactoryPoint::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypePoint);
-    CGraphObjPoint* pGraphObj = new CGraphObjPoint(i_pDrawingScene, drawSettings);
+    CGraphObjPoint* pGraphObj = new CGraphObjPoint(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
     return pGraphObj;
 
@@ -167,15 +168,6 @@ SErrResultInfo CObjFactoryPoint::saveGraphObj(
     // Labels
     //----------------
 
-    //QHash<QString, CGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
-
-    //if( arpLabels.size() > 0 )
-    //{
-    //    i_xmlStreamWriter.writeStartElement("Labels");
-    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-    //    i_xmlStreamWriter.writeEndElement();
-    //}
-
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
@@ -215,7 +207,6 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
     QPointF                         ptPos;
     bool                            bPosValid = false;
     double                          fZValue = 0.0;
-    QHash<QString, CGraphObjLabel*> arpLabels;
 
     while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
@@ -261,7 +252,7 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
             else if( strElemName == "Labels" )
             {
-                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+                loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
 
             } // if( strElemName == "Labels" )
 
@@ -280,7 +271,8 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
     if( bPosValid )
     {
-        pGraphObj = new CGraphObjPoint(i_pDrawingScene, drawSettings, i_strObjName);
+        pGraphObj = new CGraphObjPoint(i_pDrawingScene, i_strObjName);
+        pGraphObj->setDrawSettings(drawSettings);
 
         i_pDrawingScene->addGraphObj(pGraphObj);
 
@@ -302,29 +294,7 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
         pGraphObj->acceptCurrentAsOriginalCoors();
 #endif
 
-        //if( arpLabels.size() > 0 )
-        //{
-        //    pGraphObj->addLabels(arpLabels);
-        //}
     } // if( bPosValid )
-
-    if( arpLabels.size() > 0 )
-    {
-        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-        CGraphObjLabel* pGraphObjLabel;
-
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-
-            pGraphObjLabel = itLabels.value();
-
-            arpLabels.remove(pGraphObjLabel->getKey());
-
-            delete pGraphObjLabel;
-            pGraphObjLabel = nullptr;
-        }
-    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());

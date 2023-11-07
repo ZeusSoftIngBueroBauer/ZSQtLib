@@ -57,18 +57,14 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjPolyline"; }
 public: // ctors
-    CGraphObjPolyline(
-        CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString& i_strObjName = "");
+    CGraphObjPolyline(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
 protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
     CGraphObjPolyline(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strFactoryGroupName,
         EGraphObjType i_type,
         const QString& i_strType,
-        const QString& i_strObjName,
-        const CDrawSettings& i_drawSettings );
+        const QString& i_strObjName);
 public: // dtor
     virtual ~CGraphObjPolyline();
 public: // overridables of base class QGraphicsItem

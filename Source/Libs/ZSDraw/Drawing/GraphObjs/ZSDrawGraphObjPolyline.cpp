@@ -77,17 +77,14 @@ public: // ctors
 
 //------------------------------------------------------------------------------
 CGraphObjPolyline::CGraphObjPolyline(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePolyline,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePolyline),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Polyline" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Polyline" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPolygonItem(),
     m_bCoorsDirty(true),
     m_plgCurr(),
@@ -140,16 +137,14 @@ CGraphObjPolyline::CGraphObjPolyline(
     const QString& i_strFactoryGroupName,
     EGraphObjType i_type,
     const QString& i_strType,
-    const QString& i_strObjName,
-    const CDrawSettings& i_drawSettings ) :
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ i_strFactoryGroupName,
         /* type                */ i_type,
         /* strType             */ i_strType,
-        /* strObjName          */ i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName),
     QGraphicsPolygonItem(),
     m_bCoorsDirty(true),
     m_plgCurr(),
@@ -209,9 +204,9 @@ CGraphObj* CGraphObjPolyline::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
-    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(m_pDrawingScene, m_drawSettings);
+    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
-    pGraphObj->setName(m_strName);
     pGraphObj->setPolygon( polygon() );
     pGraphObj->setPos( pos() );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

@@ -96,7 +96,8 @@ CGraphObj* CObjFactoryRect::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeRect);
-    CGraphObjRect* pGraphObj = new CGraphObjRect(i_pDrawingScene, drawSettings);
+    CGraphObjRect* pGraphObj = new CGraphObjRect(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
     // We need to create an object with at least one pixel size so that the
     // drawing scene can "find" the object and can dispatch events to it.
@@ -296,7 +297,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                 }
                 else if( strElemName == "Labels" )
                 {
-                    arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+                    loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
                 }
             } // if( xmlStreamReader.isStartElement() )
 
@@ -312,7 +313,8 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
 
     if( bPosValid && bSizeValid )
     {
-        pGraphObj = new CGraphObjRect(i_pDrawingScene, drawSettings, i_strObjName);
+        pGraphObj = new CGraphObjRect(i_pDrawingScene, i_strObjName);
+        pGraphObj->setDrawSettings(drawSettings);
 
         pGraphObj->setRect( QRectF( QPointF(0.0,0.0), siz ) );
 
@@ -354,7 +356,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
 
             pGraphObjLabel = itLabels.value();
 
-            arpLabels.remove(pGraphObjLabel->getKey());
+            arpLabels.remove(pGraphObjLabel->key());
 
             delete pGraphObjLabel;
             pGraphObjLabel = nullptr;

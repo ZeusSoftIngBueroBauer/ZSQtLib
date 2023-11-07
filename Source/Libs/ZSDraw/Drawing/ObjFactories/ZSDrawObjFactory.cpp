@@ -35,6 +35,7 @@ may result in using the software modules.
 #endif
 
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSSys/ZSSysAux.h"
@@ -254,14 +255,11 @@ public: // instance methods
 void CObjFactory::setToolIconPixmap( const QPixmap& i_pxm )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setToolIconPixmap",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
     m_pxmToolIcon = i_pxm;
 }
@@ -274,15 +272,15 @@ public: // instance methods
 void CObjFactory::setFileDir( const QString& i_strFileDir )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strAddTrcInfo = i_strFileDir;
+        strMthInArgs = i_strFileDir;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFileDir",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_strFileDir = i_strFileDir;
 }
@@ -291,15 +289,15 @@ void CObjFactory::setFileDir( const QString& i_strFileDir )
 void CObjFactory::setFileName( const QString& i_strFileName )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strAddTrcInfo = i_strFileName;
+        strMthInArgs = i_strFileName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFileName",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QFileInfo fileInfo(i_strFileName);
     if (fileInfo.fileName() == i_strFileName) {
@@ -315,15 +313,15 @@ void CObjFactory::setFileName( const QString& i_strFileName )
 void CObjFactory::setFilePath( const QString& i_strFilePath )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strAddTrcInfo = "FilePath:" + i_strFilePath;
+        strMthInArgs = "FilePath:" + i_strFilePath;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFilePath",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QFileInfo fileInfo(i_strFilePath);
     if (fileInfo.fileName() == i_strFilePath) {
@@ -349,151 +347,121 @@ protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-SErrResultInfo CObjFactory::saveGraphObjLabels(
-    const QHash<QString, CGraphObjLabel*>& i_arpLabels,
-    QXmlStreamWriter& i_xmlStreamWriter )
+void CObjFactory::saveGraphObjLabels(
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->keyInTree());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "saveGraphObjLabels",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    SErrResultInfo errResultInfo;
-
-    QHashIterator<QString, CGraphObjLabel*> itLabels(i_arpLabels);
-    while (itLabels.hasNext()) {
-        itLabels.next();
-        CGraphObjLabel* pGraphObjLabel = itLabels.value();
-        i_xmlStreamWriter.writeStartElement("Label");
-
+    QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
+    for (const QString& strName : strlstLabelNames) {
+        const CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getLabel(strName);
+        i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameLabel);
         // To keep the XML file as short as possible the properties of
         // the labels are stored as attributes and not as text elements.
-        //i_xmlStreamWriter.writeAttribute( "Key", pGraphObjLabel->m_strKey );
-        //i_xmlStreamWriter.writeAttribute( "Text", pGraphObjLabel->m_strText );
-        //i_xmlStreamWriter.writeAttribute( "SelectionPoint", pGraphObjLabel->m_selPt.toString() );
-        //i_xmlStreamWriter.writeAttribute( "Distance", size2Str(pGraphObjLabel->m_sizDist) );
-        //i_xmlStreamWriter.writeAttribute( "Visible", bool2Str(pGraphObjLabel->m_bVisible) );
-
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrKey, pGraphObjLabel->key());
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrText, pGraphObjLabel->text());
+        SGraphObjSelectionPoint selPt = pGraphObjLabel->selectionPoint();
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrSelPt, selPt.toString());
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, size2Str(pGraphObjLabel->distanceToLinkedSelPt()));
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
+        if (pGraphObjLabel->isAnchorLineVisible()) { // don't write default for this property
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(pGraphObjLabel->isAnchorLineVisible()));
+        }
         i_xmlStreamWriter.writeEndElement();
     }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(errResultInfo);
-    }
-    return errResultInfo;
-
-} // saveGraphObjLabels
+}
 
 //------------------------------------------------------------------------------
-QHash<QString, CGraphObjLabel*> CObjFactory::loadGraphObjLabels(
-    QXmlStreamReader& i_xmlStreamReader )
+void CObjFactory::loadGraphObjLabels(
+    CGraphObj* i_pGraphObj, QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->keyInTree());
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "loadGraphObjLabels",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    QHash<QString, CGraphObjLabel*> arpLabels;
-    QXmlStreamAttributes xmlStreamAttrs;
+    while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
+        QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
+        if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
+            QString strElemName = i_xmlStreamReader.name().toString();
+            if (i_xmlStreamReader.isStartElement()) {
+                if (strElemName == CDrawingScene::c_strXmlElemNameLabel) {
+                    QString strAttr;
+                    QString strKey;
+                    QString strText;
+                    SGraphObjSelectionPoint selPt;
+                    QSizeF distanceToSelPt;
+                    bool bDistValid = false;
+                    bool bVisible = false;
+                    bool bAnchorLineVisible = false;
+                    bool bConverted;
 
-    QString         strElemName;
-    QString         strAttr;
-    bool            bConverted;
-    CGraphObjLabel* pGraphObjLabel = nullptr;
+                    // To keep the XML file as short as possible the properties of
+                    // the labels are stored as attributes and not as text elements.
+                    QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
 
-    while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
-    {
-        //xmlStreamTokenType = i_xmlStreamReader.readNext();
-        QString strElemName = i_xmlStreamReader.name().toString();
-
-        if (i_xmlStreamReader.isStartElement())
-        {
-            if (strElemName == "Label")
-            {
-                QString         strKey;
-                QString         strText;
-                ESelectionPoint selPt = ESelectionPoint::None;
-                QSizeF          sizDist;
-                bool            bDistValid = false;
-                bool            bVisible = false;
-
-                // To keep the XML file as short as possible the properties of
-                // the labels are stored as attributes and not as text elements.
-
-                xmlStreamAttrs = i_xmlStreamReader.attributes();
-
-                if (xmlStreamAttrs.hasAttribute("Key")) {
-                    strKey = xmlStreamAttrs.value("Key").toString();
-                }
-                if (xmlStreamAttrs.hasAttribute("Text")) {
-                    strText = xmlStreamAttrs.value("Text").toString();
-                }
-                if (xmlStreamAttrs.hasAttribute("SelectionPoint")) {
-                    strAttr = xmlStreamAttrs.value("SelectionPoint").toString();
-                    CEnumSelectionPoint selPtTmp = CEnumSelectionPoint::fromString(strAttr, &bConverted);
-                    if (bConverted) {
-                        selPt = selPtTmp.enumerator();
+                    if (xmlStreamAttrs.hasAttribute(CDrawingScene::c_strXmlAttrKey)) {
+                        strKey = xmlStreamAttrs.value(CDrawingScene::c_strXmlAttrKey).toString();
                     }
-                }
-                if (xmlStreamAttrs.hasAttribute("Distance")) {
-                    strAttr = xmlStreamAttrs.value("Distance").toString();
-                    QSizeF sizTmp = str2SizeF(strAttr,&bConverted);
-                    if (bConverted) {
-                        sizDist = sizTmp;
-                        bDistValid = true;
+                    if (xmlStreamAttrs.hasAttribute(CDrawingScene::c_strXmlAttrText)) {
+                        strText = xmlStreamAttrs.value(CDrawingScene::c_strXmlAttrText).toString();
                     }
-                }
-                if (xmlStreamAttrs.hasAttribute("Visible")) {
-                    strAttr = xmlStreamAttrs.value("Visible").toString();
-                    bVisible = str2Bool(strAttr);
-                }
-
-                if (!strKey.isEmpty() && !strText.isEmpty() && !arpLabels.contains(strKey) && selPt != ESelectionPoint::None && bDistValid)
-                {
-                    if (pGraphObjLabel != nullptr) {
-                        //if( arpLabels.contains(pGraphObjLabel->m_strKey) )
-                        //{
-                        //    arpLabels.remove(pGraphObjLabel->m_strKey);
-                        //}
-                        //delete pGraphObjLabel;
-                        //pGraphObjLabel = nullptr;
+                    if (xmlStreamAttrs.hasAttribute(CDrawingScene::c_strXmlAttrSelPt)) {
+                        strAttr = xmlStreamAttrs.value(CDrawingScene::c_strXmlAttrSelPt).toString();
+                        SGraphObjSelectionPoint selPtTmp = SGraphObjSelectionPoint::fromString(strAttr, &bConverted);
+                        if (bConverted) {
+                            selPt = selPtTmp;
+                        }
+                    }
+                    if (xmlStreamAttrs.hasAttribute(CDrawingScene::c_strXmlAttrDistance)) {
+                        strAttr = xmlStreamAttrs.value(CDrawingScene::c_strXmlAttrDistance).toString();
+                        QSizeF sizTmp = str2SizeF(strAttr, &bConverted);
+                        if (bConverted) {
+                            distanceToSelPt = sizTmp;
+                            bDistValid = true;
+                        }
+                    }
+                    if (xmlStreamAttrs.hasAttribute(CDrawingScene::c_strXmlAttrVisible)) {
+                        strAttr = xmlStreamAttrs.value(CDrawingScene::c_strXmlAttrVisible).toString();
+                        bVisible = str2Bool(strAttr);
+                    }
+                    if (xmlStreamAttrs.hasAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible)) {
+                        strAttr = xmlStreamAttrs.value(CDrawingScene::c_strXmlAttrAnchorLineVisible).toString();
+                        bAnchorLineVisible = str2Bool(strAttr);
                     }
 
-                    //pGraphObjLabel = new CGraphObjLabel(strKey,strText,selPt);
-
-                    //pGraphObjLabel->m_sizDist = sizDist;
-                    //pGraphObjLabel->m_bDistValid = bDistValid;
-                    //pGraphObjLabel->m_bVisible = bVisible;
+                    if (!strKey.isEmpty()) {
+                        if (!i_pGraphObj->isLabelAdded(strKey)) {
+                            i_pGraphObj->addLabel(strKey);
+                        }
+                        i_pGraphObj->setLabelText(strKey, strText);
+                        i_pGraphObj->setLabelAnchorPoint(strKey, selPt);
+                        bVisible ? i_pGraphObj->showLabel(strKey) : i_pGraphObj->hideLabel(strKey);
+                        i_pGraphObj->setLabelDistanceToLinkedSelPt(strKey, distanceToSelPt);
+                        bAnchorLineVisible ? i_pGraphObj->showLabelAnchorLine(strKey) : i_pGraphObj->hideLabelAnchorLine(strKey);
+                    }
                 }
-            } // if( strElemName == "Label" )
-        } // if( i_xmlStreamReader.isStartElement() )
-
-        else if (i_xmlStreamReader.isEndElement()) {
-            if( strElemName == "Label" ) {
-                //if( pGraphObjLabel != nullptr && !pGraphObjLabel->m_strKey.isEmpty() && !arpLabels.contains(pGraphObjLabel->m_strKey) )
-                //{
-                //    arpLabels.insert( pGraphObjLabel->m_strKey, pGraphObjLabel );
-                //    pGraphObjLabel = nullptr;
-                //}
             }
-            else if (strElemName == "Labels") {
-                break;
+            else /* if (i_xmlStreamReader.isEndElement())*/ {
+                if (strElemName == CDrawingScene::c_strXmlElemNameLabels) {
+                    break;
+                }
             }
-        } // if( i_xmlStreamReader.isEndElement() )
+        } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement())
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
-        mthTracer.setMethodReturn(QString::number(arpLabels.size()));
-    }
-
-    return arpLabels;
-
 } // loadGraphObjLabels

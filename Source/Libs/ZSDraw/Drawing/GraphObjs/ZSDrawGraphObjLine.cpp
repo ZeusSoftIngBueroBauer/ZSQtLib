@@ -80,40 +80,22 @@ public: // ctors and dtor
     The number of line objects stored in s_iInstCount is increased to create
     a unique line name when creating objects by passing an empty object name.
 
-    @param [in] i_drawSettings
-        Current draw settings like pen width, pen color, line style etc. to be used.
     @param [in] i_strObjName
         Name of the graphical object.
         Names of graphical objects must be unique below its parent.
         If an empty string is passed a unique name is created by adding the
         current number of line objects taken from s_iInstCount to "Line".
-    @param [in] i_physValPoint1
-        Start point of the line.
-        Coordinates are assumed to be relative to the parent item the item
-        will later be added to as a child (or in scene coordinates if the item
-        is added to the scene).
-    @param [in] i_physValPoint2
-        End point of the line.
-        Coordinates are assumed to be relative to the parent item the item
-        will later be added to as a child (or in scene coordinates if the item
-        is added to the scene).
 */
-CGraphObjLine::CGraphObjLine(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName,
-    const CPhysValPoint& i_physValPoint1,
-    const CPhysValPoint& i_physValPoint2 ) :
+CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeLine,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsLineItem(),
-    m_physValLine(i_physValPoint1, i_physValPoint2),
+    m_physValLine(),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
@@ -148,10 +130,7 @@ CGraphObjLine::CGraphObjLine(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ObjName: " + i_strObjName +
-            ", Pt1 {" + i_physValPoint1.toString() + "}" +
-            ", Pt2 {" + i_physValPoint2.toString() + "}" +
-            ", DrawSettings {" + i_drawSettings.toString() + "}";
+        strMthInArgs = "ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -159,41 +138,9 @@ CGraphObjLine::CGraphObjLine(
         /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsDetailed)) {
-        strMthInArgs = "DrawSettings {" + i_drawSettings.toString() + "}";
-        mthTracer.trace(strMthInArgs);
-    }
 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
            | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
-
-    // The line coordinates are passed relative to the parent item
-    // (usually the scene coordinates or a group item).
-    // But the graphics item expects the coordinates based on the
-    // local coordinate system of the graphics item.
-    // Items live in their own local coordinate system.
-    // Their coordinates are usually centered around its center point (0, 0).
-    // As the item is not yet added to a parent we got to adjust
-    // the coordinates coorespondingly.
-    QLineF lineF = m_physValLine.toQLineF();
-    if (m_physValLine.unit() != Units.Length.px) {
-        lineF = m_pDrawingScene->convert(m_physValLine, Units.Length.px).toQLineF();
-    }
-
-    // Center position in parent coordinates.
-    QPointF ptPos = lineF.center();
-
-    // Move the points into the item's local coordinate system.
-    QPointF p1 = lineF.p1() - ptPos;
-    QPointF p2 = lineF.p2() - ptPos;
-
-    // Set the line in local coordinate system.
-    QGraphicsLineItem_setLine(QLineF(p1, p2));
-
-    // GraphicsLineItem::setLine does not update the position.
-    // Must be done "manually" afterwards.
-    // Move the object to the parent position.
-    QGraphicsItem_setPos(ptPos);
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Undefined,
@@ -247,10 +194,10 @@ CGraphObj* CGraphObjLine::clone()
         /* strAddInfo   */ "" );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CGraphObjLine* pGraphObj = new CGraphObjLine(
-        m_pDrawingScene, m_drawSettings, m_strName,
-        getP1(drawingSize.unit()), getP2(drawingSize.unit()) );
-    return pGraphObj;
+    CGraphObjLine* pGraphObjLine = new CGraphObjLine(m_pDrawingScene, m_strName);
+    pGraphObjLine->setLine(getLine(drawingSize.unit()));
+    pGraphObjLine->setDrawSettings(m_drawSettings);
+    return pGraphObjLine;
 }
 
 /*==============================================================================
@@ -439,6 +386,19 @@ void CGraphObjLine::setLine(const QLineF& i_line, const CUnit& i_unit)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the line coordinates by passing P1 and P2.
+
+    @param [in] i_physValP1
+        Start point of the line.
+        Coordinates are assumed to be relative to the parent item the item
+        will later be added to as a child (or in scene coordinates if the item
+        is added to the scene).
+    @param [in] i_physValP2
+        End point of the line.
+        Coordinates are assumed to be relative to the parent item the item
+        will later be added to as a child (or in scene coordinates if the item
+        is added to the scene).
+*/
 void CGraphObjLine::setLine(
     const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2)
 //------------------------------------------------------------------------------

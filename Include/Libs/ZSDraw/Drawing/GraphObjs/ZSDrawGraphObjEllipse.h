@@ -57,10 +57,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjEllipse"; }
 public: // ctors and dtor
-    CGraphObjEllipse(
-        CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString& i_strObjName = "");
+    CGraphObjEllipse(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjEllipse();
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;

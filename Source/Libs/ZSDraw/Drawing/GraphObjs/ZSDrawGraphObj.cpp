@@ -51,6 +51,39 @@ using namespace ZS::Draw;
 struct SGraphObjSelectionPoint
 ==============================================================================*/
 
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(const QString& i_str, bool* i_pbOk)
+//------------------------------------------------------------------------------
+{
+    bool bOk = false;
+    SGraphObjSelectionPoint selPt;
+    QStringList strlst = i_str.split(",");
+    if (strlst.size() == 2) {
+        strlst[0]  = strlst[0].trimmed();
+        strlst[1]  = strlst[1].trimmed();
+        CEnumSelectionPointType selPtType = CEnumSelectionPointType::fromString(strlst[0], &bOk);
+        if (bOk && selPtType == ESelectionPointType::BoundingRectangle) {
+            CEnumSelectionPoint selPtTmp = CEnumSelectionPoint::fromString(strlst[1], &bOk);
+            if (bOk) {
+                selPt = selPtTmp.enumerator();
+            }
+        }
+        else {
+            int idxPt = strlst[1].toInt(&bOk);
+            if (bOk) {
+                selPt = idxPt;
+            }
+        }
+    }
+    if (i_pbOk != nullptr) {
+        *i_pbOk = bOk;
+    }
+    return selPt;
+}
+
 /* public: // ctors
 ==============================================================================*/
 
@@ -469,7 +502,6 @@ CGraphObj::CGraphObj(
     EGraphObjType i_type,
     const QString& i_strType,
     const QString& i_strObjName,
-    const CDrawSettings& i_settings,
     CIdxTreeEntry::EEntryType i_idxTreeEntryType ) :
 //------------------------------------------------------------------------------
     CIdxTreeEntry(i_idxTreeEntryType, i_strObjName),
@@ -538,12 +570,6 @@ CGraphObj::CGraphObj(
     m_pTrcAdminObjMouseMoveEvents(nullptr),
     m_pTrcAdminObjKeyEvents(nullptr)
 {
-    for (int idxAttr = 0; idxAttr < EDrawAttributeCount; idxAttr++) {
-        if (m_drawSettings.isAttributeUsed(idxAttr)) {
-            m_drawSettings.setAttribute(idxAttr, i_settings.getAttribute(idxAttr));
-        }
-    }
-
     QObject::connect(
         m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
         this, &CGraphObj::onDrawingSizeChanged);
@@ -4105,6 +4131,13 @@ bool CGraphObj::isPredefinedLabelName(const QString& i_strName) const
 }
 
 //------------------------------------------------------------------------------
+const CGraphObjLabel* CGraphObj::getLabel(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    return m_hshpLabels.value(i_strName, nullptr);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the list of the possible selection points a label may be anchored to.
 
     The method has to be overridden by the specialized classes.
@@ -4376,7 +4409,7 @@ void CGraphObj::setLabelAnchorPoint(const QString& i_strName, const SGraphObjSel
     if (pGraphObjLabel == nullptr) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    if (pGraphObjLabel->getSelectionPoint() != i_selPt) {
+    if (pGraphObjLabel->selectionPoint() != i_selPt) {
         pGraphObjLabel->setSelectionPoint(i_selPt);
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -4399,7 +4432,7 @@ SGraphObjSelectionPoint CGraphObj::labelAnchorPoint(const QString& i_strName) co
     if (pGraphObjLabel == nullptr) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    return pGraphObjLabel->getSelectionPoint();
+    return pGraphObjLabel->selectionPoint();
 }
 
 //------------------------------------------------------------------------------
@@ -4502,6 +4535,46 @@ bool CGraphObj::isLabelVisible(const QString& i_strName) const
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
     return pGraphObjLabel->isVisible();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::setLabelDistanceToLinkedSelPt(const QString& i_strName, const QSizeF& i_size)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + qSize2Str(i_size);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::setLabelDistanceToLinkedSelPt",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
+    if (pGraphObjLabel == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    if (pGraphObjLabel->distanceToLinkedSelPt() != i_size) {
+        pGraphObjLabel->setDistanceToLinkedSelPt(i_size);
+        emit_labelChanged(i_strName);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+QSizeF CGraphObj::labelDistanceToLinkedSelPt(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
+    if (pGraphObjLabel == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+    return pGraphObjLabel->distanceToLinkedSelPt();
 }
 
 //------------------------------------------------------------------------------
@@ -5216,14 +5289,14 @@ void CGraphObj::onLabelAboutToBeDestroyed(CGraphObj* i_pLabel)
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = dynamic_cast<CGraphObjLabel*>(i_pLabel);
-    if( m_hshpLabels.contains(pGraphObjLabel->getKey())) {
-        m_hshpLabels.remove(pGraphObjLabel->getKey());
+    if( m_hshpLabels.contains(pGraphObjLabel->key())) {
+        m_hshpLabels.remove(pGraphObjLabel->key());
     }
-    else if (m_hshpPosLabels.contains(pGraphObjLabel->getKey())) {
-        m_hshpPosLabels.remove(pGraphObjLabel->getKey());
+    else if (m_hshpPosLabels.contains(pGraphObjLabel->key())) {
+        m_hshpPosLabels.remove(pGraphObjLabel->key());
     }
-    else if (m_hshpDimLineLabels.contains(pGraphObjLabel->getKey())) {
-        m_hshpDimLineLabels.remove(pGraphObjLabel->getKey());
+    else if (m_hshpDimLineLabels.contains(pGraphObjLabel->key())) {
+        m_hshpDimLineLabels.remove(pGraphObjLabel->key());
     }
 }
 

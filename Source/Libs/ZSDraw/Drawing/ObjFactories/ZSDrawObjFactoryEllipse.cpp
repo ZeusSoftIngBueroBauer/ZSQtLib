@@ -99,7 +99,8 @@ CGraphObj* CObjFactoryEllipse::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeEllipse);
-    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene, drawSettings);
+    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
 #if 0
     QPointF ptStart = i_ptItemPos;
@@ -172,18 +173,6 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
 
     i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObj->getStackingOrderValue()) );
 
-    // Labels
-    //----------------
-
-    //QHash<QString, CGraphObjLabel*> arpLabels = i_pGraphObj->getLabels();
-
-    //if( arpLabels.size() > 0 )
-    //{
-    //    i_xmlStreamWriter.writeStartElement("Labels");
-    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-    //    i_xmlStreamWriter.writeEndElement();
-    //}
-
     if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         mthTracer.setMethodReturn(errResultInfo);
@@ -226,7 +215,6 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
     bool                            bSizeValid = false;
     double                          fRotAngle_deg = 0.0;
     double                          fZValue = 0.0;
-    QHash<QString, CGraphObjLabel*> arpLabels;
 
     while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
@@ -300,7 +288,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
             else if( strElemName == "Labels" )
             {
-                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+                loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
 
             } // if( strElemName == "Labels" )
 
@@ -319,7 +307,8 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
     if( bPosValid && bSizeValid )
     {
-        pGraphObj = new CGraphObjEllipse(i_pDrawingScene, drawSettings, i_strObjName);
+        pGraphObj = new CGraphObjEllipse(i_pDrawingScene, i_strObjName);
+        pGraphObj->setDrawSettings(drawSettings);
 
         pGraphObj->setRect( QRectF( QPointF(0.0,0.0), siz ) );
 
@@ -344,29 +333,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
         pGraphObj->acceptCurrentAsOriginalCoors();
 #endif
 
-        //if( arpLabels.size() > 0 )
-        //{
-        //    pGraphObj->addLabels(arpLabels);
-        //}
     } // if( bPosValid && bSizeValid )
-
-    if( arpLabels.size() > 0 )
-    {
-        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-        CGraphObjLabel* pGraphObjLabel;
-
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-
-            pGraphObjLabel = itLabels.value();
-
-            arpLabels.remove(pGraphObjLabel->getKey());
-
-            delete pGraphObjLabel;
-            pGraphObjLabel = nullptr;
-        }
-    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());

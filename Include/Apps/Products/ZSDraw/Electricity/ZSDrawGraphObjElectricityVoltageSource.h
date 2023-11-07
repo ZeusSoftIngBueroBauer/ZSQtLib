@@ -59,10 +59,7 @@ public: // class methods
 public: // type definitions and constants
     static const QSize c_sizInitial;
 public: // ctors and dtor
-    CGraphObjVoltageSource(
-        CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString& i_strObjName = "");
+    CGraphObjVoltageSource(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjVoltageSource();
 public: // instance methods
     double getVoltage() const { return m_fVoltage_V; }

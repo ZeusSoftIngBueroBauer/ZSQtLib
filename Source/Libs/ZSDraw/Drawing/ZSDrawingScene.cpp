@@ -88,6 +88,7 @@ const QString CDrawingScene::c_strXmlElemNameShapePointP1 = "P1";
 const QString CDrawingScene::c_strXmlElemNameShapePointP2 = "P2";
 const QString CDrawingScene::c_strXmlElemNameZValue = "ZValue";
 const QString CDrawingScene::c_strXmlElemNameLabels = "Labels";
+const QString CDrawingScene::c_strXmlElemNameLabel = "Label";
 
 /*==============================================================================
 public: // type definitions and constants
@@ -116,6 +117,12 @@ const QString CDrawingScene::c_strXmlAttrGridLabelsTextEffect = "GridLabelsTextE
 const QString CDrawingScene::c_strXmlAttrGraphObjFactoryGroupName = "FactoryGroupName";
 const QString CDrawingScene::c_strXmlAttrGraphObjType = "ObjectType";
 const QString CDrawingScene::c_strXmlAttrGraphObjName = "ObjectName";
+const QString CDrawingScene::c_strXmlAttrKey = "Key";
+const QString CDrawingScene::c_strXmlAttrText = "Text";
+const QString CDrawingScene::c_strXmlAttrSelPt = "SelPt";
+const QString CDrawingScene::c_strXmlAttrDistance = "Distance";
+const QString CDrawingScene::c_strXmlAttrVisible = "Visible";
+const QString CDrawingScene::c_strXmlAttrAnchorLineVisible = "AnchorLineVisible";
 
 const QString CDrawingScene::s_strGraphObjNameSeparator = "/";
 
@@ -747,6 +754,8 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
         /* strMethod    */ "load",
         /* strAddInfo   */ strMthInArgs );
 
+    clear();
+
     SErrResultInfo errResultInfo;
 
     QFile fileXML;
@@ -1078,13 +1087,11 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         // Connection points need to be recalled before the connection lines as on
         // creating the connection lines their connection points must already exist.
         // For this the connection lines will be saved at the end of the XML file.
+        // Labels and selection points will not be saved at all (labels are created by their parents).
         for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
             QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-            if (pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
-             && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
-             && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeConnectionLine)) {
+            if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
                 // Group members will be saved as child items of the groups.
                 if (pGraphicsItem->parentItem() == nullptr) {
                     errResultInfo = save(pGraphObj, xmlStreamWriter);
@@ -1094,14 +1101,11 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
                 }
             }
         }
-
         if (!errResultInfo.isErrorResult()) {
             for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
                 QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
-
-                if (pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
-                 && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel)
-                 && pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionLine)) {
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && pGraphObj->isConnectionLine()) {
                     // Group members will be saved as child items of the groups.
                     if (pGraphicsItem->parentItem() == nullptr) {
                         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
@@ -3600,7 +3604,8 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                 strFilePath = url.toLocalFile();
 
-                pGraphObjImage = new CGraphObjImage(this, m_drawSettings);
+                pGraphObjImage = new CGraphObjImage(this);
+                pGraphObjImage->setDrawSettings(m_drawSettings);
 
                 pGraphObjImage->setImageFilePath(strFilePath);
 

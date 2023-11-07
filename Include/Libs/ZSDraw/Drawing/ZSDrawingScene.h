@@ -87,6 +87,7 @@ public: // type definitions and constants
     static const QString c_strXmlElemNameShapePointP2;
     static const QString c_strXmlElemNameZValue;
     static const QString c_strXmlElemNameLabels;
+    static const QString c_strXmlElemNameLabel;
 public: // type definitions and constants
     static const QString c_strXmlAttrDimensionUnit;
     static const QString c_strXmlAttrScreenResolutionPxPerMilliMeter;
@@ -111,6 +112,12 @@ public: // type definitions and constants
     static const QString c_strXmlAttrGraphObjFactoryGroupName;
     static const QString c_strXmlAttrGraphObjType;
     static const QString c_strXmlAttrGraphObjName;
+    static const QString c_strXmlAttrKey;
+    static const QString c_strXmlAttrText;
+    static const QString c_strXmlAttrSelPt;
+    static const QString c_strXmlAttrDistance;
+    static const QString c_strXmlAttrVisible;
+    static const QString c_strXmlAttrAnchorLineVisible;
 public: // class methods
     static QString getGraphObjNameNodeSeparator() { return s_strGraphObjNameSeparator; }
     //static QString FindUniqueGraphObjId(

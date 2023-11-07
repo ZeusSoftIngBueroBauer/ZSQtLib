@@ -120,16 +120,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjTransistor::CGraphObjTransistor(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    EDopingType          i_dopingType,
-    const QString&       i_strObjName ) :
+    CDrawingScene* i_pDrawingScene,
+    EDopingType    i_dopingType,
+    const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjElectricity(
         /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "Transistor",
-        /* strObjName    */ i_strObjName.isEmpty() ? "T" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings  */ i_drawSettings ),
+        /* strObjName    */ i_strObjName.isEmpty() ? "T" + QString::number(s_iInstCount) : i_strObjName),
     m_pEllBody(nullptr),
     m_pLinBase(nullptr),
     m_pLinBaseUp(nullptr),

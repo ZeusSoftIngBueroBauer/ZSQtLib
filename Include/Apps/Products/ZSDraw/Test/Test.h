@@ -75,17 +75,16 @@ public: // ctors and dtor
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
 protected: // instance methods
-    ZS::Test::CTestStepGroup* createTestGroupLoadSaveFile(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
-    ZS::Test::CTestStepGroup* createTestGroupSaveScene(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupPrepareScene(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupSaveLoadFile(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupPixelsDrawing(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupMetricsDrawing(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
-    ZS::Test::CTestStepGroup* createTestGroupPrepareScene(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapes(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapesLines(
@@ -107,8 +106,8 @@ protected slots:
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );

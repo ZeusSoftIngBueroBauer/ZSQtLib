@@ -101,7 +101,8 @@ CGraphObj* CObjFactoryImage::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeImage);
-    CGraphObjImage* pGraphObj = new CGraphObjImage(i_pDrawingScene, drawSettings);
+    CGraphObjImage* pGraphObj = new CGraphObjImage(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
     pGraphObj->setImageFilePath(strFilePath);
 

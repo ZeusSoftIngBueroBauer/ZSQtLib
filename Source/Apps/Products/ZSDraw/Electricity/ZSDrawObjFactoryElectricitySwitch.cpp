@@ -109,7 +109,8 @@ CGraphObj* CObjFactorySwitch::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjSwitch(i_pDrawingScene, drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjSwitch(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
     return pGraphObj;
 

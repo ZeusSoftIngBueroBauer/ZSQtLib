@@ -74,17 +74,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjPolygon::CGraphObjPolygon(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjPolyline(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePolygon,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePolygon),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Polygon" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings )
+        /* strObjName          */ i_strObjName.isEmpty() ? "Polygon" + QString::number(s_iInstCount) : i_strObjName)
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -171,9 +168,9 @@ CGraphObj* CGraphObjPolygon::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(m_pDrawingScene, m_drawSettings);
+    CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
-    pGraphObj->setName(m_strName);
     pGraphObj->setPolygon( polygon() );
     pGraphObj->setPos( pos() );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

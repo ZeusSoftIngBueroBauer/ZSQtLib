@@ -96,7 +96,8 @@ CGraphObj* CObjFactoryPolyline::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypePolyline);
-    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(i_pDrawingScene, drawSettings);
+    CGraphObjPolyline* pGraphObj = new CGraphObjPolyline(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
 #if 0
     QPolygonF plg;
@@ -312,7 +313,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
             else if( strElemName == "Labels" )
             {
-                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+                loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
 
             } // if( strElemName == "Labels" )
 
@@ -331,7 +332,8 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
     if( bPosValid && plg.size() > 1 )
     {
-        pGraphObj = new CGraphObjPolyline(i_pDrawingScene, drawSettings, i_strObjName);
+        pGraphObj = new CGraphObjPolyline(i_pDrawingScene, i_strObjName);
+        pGraphObj->setDrawSettings(drawSettings);
 
         pGraphObj->setPolygon(plg);
 
@@ -373,7 +375,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
             pGraphObjLabel = itLabels.value();
 
-            arpLabels.remove(pGraphObjLabel->getKey());
+            arpLabels.remove(pGraphObjLabel->key());
 
             delete pGraphObjLabel;
             pGraphObjLabel = nullptr;

@@ -98,7 +98,8 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene, drawSettings);
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
     return pGraphObj;
 

@@ -76,17 +76,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjRect::CGraphObjRect(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeRect,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeRect),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Rect" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Rect" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsRectItem()
 {
     // Just incremented by the ctor but not decremented by the dtor.
@@ -178,9 +175,9 @@ CGraphObj* CGraphObjRect::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjRect* pGraphObj = new CGraphObjRect(m_pDrawingScene, m_drawSettings);
+    CGraphObjRect* pGraphObj = new CGraphObjRect(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
-    pGraphObj->setName(m_strName);
     pGraphObj->setPos( pos() );
     pGraphObj->setRect( rect() );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

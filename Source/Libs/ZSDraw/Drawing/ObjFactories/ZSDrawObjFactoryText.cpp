@@ -96,7 +96,8 @@ CGraphObj* CObjFactoryText::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeText);
-    CGraphObj* pGraphObj = new CGraphObjText(i_pDrawingScene, drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjText(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
 
     return pGraphObj;
 
@@ -281,7 +282,7 @@ CGraphObj* CObjFactoryText::loadGraphObj(
 
             else if( strElemName == "Labels" )
             {
-                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
+                loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
 
             } // if( strElemName == "Labels" )
 
@@ -300,7 +301,8 @@ CGraphObj* CObjFactoryText::loadGraphObj(
 
     if( !strText.isEmpty() && bPosValid )
     {
-        pGraphObj = new CGraphObjText(i_pDrawingScene, drawSettings, i_strObjName);
+        pGraphObj = new CGraphObjText(i_pDrawingScene, i_strObjName);
+        pGraphObj->setDrawSettings(drawSettings);
 
         pGraphObj->setPlainText(strText);
 
@@ -342,7 +344,7 @@ CGraphObj* CObjFactoryText::loadGraphObj(
 
             pGraphObjLabel = itLabels.value();
 
-            arpLabels.remove(pGraphObjLabel->getKey());
+            arpLabels.remove(pGraphObjLabel->key());
 
             delete pGraphObjLabel;
             pGraphObjLabel = nullptr;

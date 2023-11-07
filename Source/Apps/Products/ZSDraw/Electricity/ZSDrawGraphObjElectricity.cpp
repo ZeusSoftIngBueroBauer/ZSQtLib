@@ -54,16 +54,14 @@ protected: // ctor
 CGraphObjElectricity::CGraphObjElectricity(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strType,
-    const QString& i_strObjName,
-    const CDrawSettings& i_drawSettings ) :
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjGroup(
-        /* pDrawingScene */ i_pDrawingScene,
+        /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ c_strFactoryGroupName,
         /* type                */ EGraphObjTypeUserDefined,
         /* strType             */ i_strType,
-        /* strObjName          */ i_strObjName,
-        /* drawSettings        */ i_drawSettings )
+        /* strObjName          */ i_strObjName)
 {
 } // ctor
 

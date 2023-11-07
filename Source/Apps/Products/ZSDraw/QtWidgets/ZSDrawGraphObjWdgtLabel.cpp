@@ -78,15 +78,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjWdgtLabel::CGraphObjWdgtLabel(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObjWdgt(
         /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "Label",
-        /* strObjName    */ i_strObjName.isEmpty() ? "Label" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings  */ i_drawSettings ),
+        /* strObjName    */ i_strObjName.isEmpty() ? "Label" + QString::number(s_iInstCount) : i_strObjName),
     m_pLabel(nullptr)
 {
     // Just incremented by the ctor but not decremented by the dtor.

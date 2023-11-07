@@ -57,10 +57,7 @@ public: // class methods
 public: // type definitions and constants
     static const QSize c_sizInitial;
 public: // ctors and dtor
-    CGraphObjInductor(
-        CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString& i_strObjName = "");
+    CGraphObjInductor(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjInductor();
 public: // instance methods
     double getInductance() const { return m_fInductance_H; }

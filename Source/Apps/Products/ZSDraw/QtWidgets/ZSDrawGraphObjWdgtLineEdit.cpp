@@ -78,15 +78,12 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjWdgtLineEdit::CGraphObjWdgtLineEdit(
-    CDrawingScene*       i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString&       i_strObjName ) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObjWdgt(
         /* pDrawingScene */ i_pDrawingScene,
         /* strType       */ "LineEdit",
-        /* strObjName    */ i_strObjName.isEmpty() ? "LineEdit" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings  */ i_drawSettings ),
+        /* strObjName    */ i_strObjName.isEmpty() ? "LineEdit" + QString::number(s_iInstCount) : i_strObjName),
     m_pLineEdit(nullptr)
 {
     // Just incremented by the ctor but not decremented by the dtor.

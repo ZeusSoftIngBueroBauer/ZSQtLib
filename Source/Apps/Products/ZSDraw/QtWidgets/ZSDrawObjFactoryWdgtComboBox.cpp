@@ -108,7 +108,8 @@ CGraphObj* CObjFactoryWdgtComboBox::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjWdgtComboBox(i_pDrawingScene, drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjWdgtComboBox(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
     return pGraphObj;
 
 } // createGraphObj

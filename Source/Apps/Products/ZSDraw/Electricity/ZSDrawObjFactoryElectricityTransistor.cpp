@@ -109,7 +109,8 @@ CGraphObj* CObjFactoryTransistor::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjTransistor(i_pDrawingScene, drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjTransistor(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
     return pGraphObj;
 
 } // createGraphObj

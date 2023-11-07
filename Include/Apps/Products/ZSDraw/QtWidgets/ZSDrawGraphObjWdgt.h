@@ -68,8 +68,7 @@ protected: // ctor
     CGraphObjWdgt(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strType,
-        const QString& i_strObjName,
-        const CDrawSettings& i_drawSettings );
+        const QString& i_strObjName);
 public: // dtor
     virtual ~CGraphObjWdgt();
 public: // overridables of base class CGraphObj

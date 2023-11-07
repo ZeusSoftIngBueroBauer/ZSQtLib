@@ -96,7 +96,6 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         /* type                */ EGraphObjTypeSelectionPoint,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeSelectionPoint),
         /* strObjName          */ "SelPt." + i_selPt.name(),
-        /* drawSettings        */ CDrawSettings(),
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsEllipseItem(QRectF(-s_fRadius_px, -s_fRadius_px, 2.0*s_fRadius_px, 2.0*s_fRadius_px)),
     m_selPt(i_selPt),

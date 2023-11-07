@@ -76,17 +76,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjEllipse::CGraphObjEllipse(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName ) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeEllipse,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeEllipse),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Ellipse" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Ellipse" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsEllipseItem()
 {
     // Just incremented by the ctor but not decremented by the dtor.
@@ -180,9 +177,9 @@ CGraphObj* CGraphObjEllipse::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(m_pDrawingScene, m_drawSettings);
+    CGraphObjEllipse* pGraphObj = new CGraphObjEllipse(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
-    pGraphObj->setName(m_strName);
     pGraphObj->setRect( rect() );
     pGraphObj->setPos( pos() );
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS

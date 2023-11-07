@@ -75,17 +75,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjGroup::CGraphObjGroup(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypeGroup,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
-        /* strObjName          */ i_strObjName.isEmpty() ? "Group" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "Group" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsItemGroup()
 {
     // Just incremented by the ctor but not decremented by the dtor.
@@ -131,16 +128,14 @@ CGraphObjGroup::CGraphObjGroup(
     const QString& i_strFactoryGroupName,
     EGraphObjType i_type,
     const QString& i_strType,
-    const QString& i_strObjName,
-    const CDrawSettings& i_drawSettings ) :
+    const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ i_strFactoryGroupName,
         /* type                */ i_type,
         /* strType             */ i_strType,
-        /* strObjName          */ i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName),
     QGraphicsItemGroup()
 {
 } // ctor
@@ -200,25 +195,15 @@ CGraphObj* CGraphObjGroup::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(m_pDrawingScene, m_drawSettings);
-
-    pGraphObj->setName(m_strName);
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
     QList<QGraphicsItem*> arpGraphicsItemsChilds = childItems();
-    CGraphObj*            pGraphObjChild;
-    CGraphObj*            pGraphObjChildClone;
-    int                   idxGraphObjChild;
-
-    for( idxGraphObjChild = 0; idxGraphObjChild < arpGraphicsItemsChilds.size(); idxGraphObjChild++ )
-    {
-        pGraphObjChild = dynamic_cast<CGraphObj*>(arpGraphicsItemsChilds[idxGraphObjChild]);
-
-        if( pGraphObjChild != nullptr )
-        {
-            pGraphObjChildClone = pGraphObjChild->clone();
-
-            if( pGraphObjChildClone != nullptr )
-            {
+    for (int idxGraphObjChild = 0; idxGraphObjChild < arpGraphicsItemsChilds.size(); idxGraphObjChild++) {
+        CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(arpGraphicsItemsChilds[idxGraphObjChild]);
+        if (pGraphObjChild != nullptr) {
+            CGraphObj* pGraphObjChildClone = pGraphObjChild->clone();
+            if (pGraphObjChildClone != nullptr) {
                 throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
                 //pGraphObj->addGraphObj(pGraphObjChildClone);
             }

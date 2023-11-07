@@ -76,7 +76,6 @@ public: // type definitions and constants
 public: // ctors and dtor
     CGraphObjTransistor(
         CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
         EDopingType i_dopingType = EDopingTypeNPN,
         const QString& i_strObjName = "");
     virtual ~CGraphObjTransistor();

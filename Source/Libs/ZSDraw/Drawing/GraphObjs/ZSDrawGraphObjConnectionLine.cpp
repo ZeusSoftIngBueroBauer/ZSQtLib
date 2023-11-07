@@ -77,17 +77,14 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CGraphObjConnectionLine::CGraphObjConnectionLine(
-    CDrawingScene* i_pDrawingScene,
-    const CDrawSettings& i_drawSettings,
-    const QString& i_strObjName ) :
+    CDrawingScene* i_pDrawingScene, const QString& i_strObjName ) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameConnections,
         /* type                */ EGraphObjTypeConnectionLine,
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeConnectionLine),
-        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionLine" + QString::number(s_iInstCount) : i_strObjName,
-        /* drawSettings        */ i_drawSettings ),
+        /* strObjName          */ i_strObjName.isEmpty() ? "ConnectionLine" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsPolygonItem(),
     m_bCoorsDirty(true),
     m_plgCurr(),
@@ -188,9 +185,8 @@ CGraphObj* CGraphObjConnectionLine::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjConnectionLine* pGraphObj = new CGraphObjConnectionLine(m_pDrawingScene, m_drawSettings);
-
-    pGraphObj->setName(m_strName);
+    CGraphObjConnectionLine* pGraphObj = new CGraphObjConnectionLine(m_pDrawingScene, m_strName);
+    pGraphObj->setDrawSettings(m_drawSettings);
 
     QPointF ptPos = pos();
 

@@ -109,7 +109,8 @@ CGraphObj* CObjFactoryDiode::createGraphObj(
 
     CDrawSettings drawSettings = i_drawSettings;
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
-    CGraphObj* pGraphObj = new CGraphObjDiode(i_pDrawingScene, drawSettings);
+    CGraphObj* pGraphObj = new CGraphObjDiode(i_pDrawingScene);
+    pGraphObj->setDrawSettings(drawSettings);
     return pGraphObj;
 
 } // createGraphObj

@@ -58,6 +58,8 @@ class CGraphObjSelectionPoint;
 struct ZSDRAWDLL_API SGraphObjSelectionPoint
 //==============================================================================
 {
+public: // struct methods
+    static SGraphObjSelectionPoint fromString(const QString& i_str, bool* i_pbOk = nullptr);
 public: // ctors
     SGraphObjSelectionPoint();
     SGraphObjSelectionPoint(ESelectionPoint i_selPt);
@@ -359,8 +361,7 @@ protected: // ctor
         EGraphObjType i_type,
         const QString& i_strType,
         const QString& i_strObjName,
-        const CDrawSettings& i_drawSettings,
-        ZS::System::CIdxTreeEntry::EEntryType i_idxTreeEntryType = ZS::System::CIdxTreeEntry::EEntryType::Branch );
+        ZS::System::CIdxTreeEntry::EEntryType i_idxTreeEntryType = ZS::System::CIdxTreeEntry::EEntryType::Branch);
 public: // dtor
     virtual ~CGraphObj();
 signals:
@@ -562,6 +563,7 @@ public: // overridables (text labels)
     QStringList getLabelNames() const;
     virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
+    const CGraphObjLabel* getLabel(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
     virtual bool addLabel(const QString& i_strName, const QString& i_strText = "", const SGraphObjSelectionPoint& i_selPt = ESelectionPoint::Center);
@@ -574,6 +576,8 @@ public: // overridables (text labels)
     virtual void showLabel(const QString& i_strName);
     virtual void hideLabel(const QString& i_strName);
     virtual bool isLabelVisible(const QString& i_strName) const;
+    virtual void setLabelDistanceToLinkedSelPt(const QString& i_strName, const QSizeF& i_size);
+    virtual QSizeF labelDistanceToLinkedSelPt(const QString& i_strName) const;
     virtual void showLabelAnchorLine(const QString& i_strName);
     virtual void hideLabelAnchorLine(const QString& i_strName);
     virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;

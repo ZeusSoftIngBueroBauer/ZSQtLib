@@ -57,10 +57,7 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CGraphObjText"; }
 public: // ctors and dtor
-    CGraphObjText(
-        CDrawingScene* i_pDrawingScene,
-        const CDrawSettings& i_drawSettings,
-        const QString& i_strObjName = "");
+    CGraphObjText(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
     virtual ~CGraphObjText();
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;
