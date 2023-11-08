@@ -170,7 +170,7 @@ CRequestSequencer::CRequestSequencer(
     // Receivers of the signal may call methods of the sequencer as a reentry.
     // So we need to use a recursive mutex to allow the same thread to access
     // the list of requests (at least to find a request item).
-    m_pMtx = new QMutex(QMutex::Recursive);
+    m_pMtx = new QRecursiveMutex();
 
 } // ctor
 

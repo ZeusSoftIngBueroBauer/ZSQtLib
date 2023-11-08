@@ -322,7 +322,7 @@ source_group("Qml Files" FILES ${_QmlFiles})
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE ZSSYSGUIDLL_EXPORTS)
 
-set(_Libs Qt5::Gui Qt5::Widgets Qt5::Quick Qt5::QuickControls2 ZSSys)
+set(_Libs Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Quick Qt${QT_VERSION_MAJOR}::QuickControls2 ZSSys)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${_Libs})
 

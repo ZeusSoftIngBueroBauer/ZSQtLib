@@ -38,6 +38,7 @@ namespace ZS
 namespace System
 {
 class CMutex;
+class CRecursiveMutex;
 class CWaitCondition;
 }
 namespace Trace
@@ -149,7 +150,7 @@ private: // instance methods
 private: // instance members
     CMyClass2Thread*                m_pMyClass2Thread;
     QTimer*                         m_pTmrMessages;
-    ZS::System::CMutex*             m_pMtxCounters;
+    ZS::System::CRecursiveMutex*    m_pMtxCounters;
     int                             m_iRecursionCount;
     int                             m_iMsgCount;
     QString                         m_strMyClass3ObjName;

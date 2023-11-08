@@ -27,6 +27,7 @@ may result in using the software modules.
 #include <QtCore/qdir.h>
 #include <QtCore/qfile.h>
 #include <QtCore/qfileinfo.h>
+#include <QtCore/qregularexpression.h>
 #include <QtCore/qtimer.h>
 #include <QtNetwork/qhostinfo.h>
 
@@ -2170,7 +2171,11 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+#else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+#endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2278,7 +2283,11 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+#else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+#endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2386,7 +2395,11 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+#else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+#endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2954,9 +2967,21 @@ void CTest::onLogClientLogWdgtTextItemAdded( const QString& i_strText )
                         int idxExpected = strExpectedValue.indexOf("yyyy-MM-dd hh:mm:ss.zzz");
                         if( idxExpected >= 0 )
                         {
+                            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                             QRegExp regExp("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}:\\d{3}");
                             idxBegLogWdgt = regExp.indexIn(strResultValueLogWdgt);
                             idxBegLogFile = regExp.indexIn(strResultValueLogFile);
+                            #else
+                            QRegularExpression regExp("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}:\\d{3}");
+                            QRegularExpressionMatch regMatchLogWdgt = regExp.match(strResultValueLogWdgt);
+                            QRegularExpressionMatch regMatchLogFile = regExp.match(strResultValueLogWdgt);
+                            if (regMatchLogWdgt.hasMatch()) {
+                                idxBegLogWdgt = regMatchLogWdgt.capturedStart();
+                            }
+                            if (regMatchLogFile.hasMatch()) {
+                                idxBegLogFile = regMatchLogFile.capturedStart();
+                            }
+                            #endif
                             if( idxBegLogWdgt == idxExpected && idxBegLogFile == idxExpected ) {
                                 strTmpLogWdgt = strResultValueLogWdgt.mid(idxExpected, 23);
                                 strTmpLogFile = strResultValueLogFile.mid(idxExpected, 23);
@@ -2970,9 +2995,21 @@ void CTest::onLogClientLogWdgtTextItemAdded( const QString& i_strText )
                         idxExpected = strExpectedValue.indexOf("(SysTime)");
                         if( idxExpected >= 0 )
                         {
+                            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                             QRegExp regExp("\\( {1,}\\d{1,}.\\d{6}\\)");
                             idxBegLogWdgt = regExp.indexIn(strResultValueLogWdgt);
                             idxBegLogFile = regExp.indexIn(strResultValueLogFile);
+                            #else
+                            QRegularExpression regExp("\\( {1,}\\d{1,}.\\d{6}\\)");
+                            QRegularExpressionMatch regMatchLogWdgt = regExp.match(strResultValueLogWdgt);
+                            QRegularExpressionMatch regMatchLogFile = regExp.match(strResultValueLogWdgt);
+                            if (regMatchLogWdgt.hasMatch()) {
+                                idxBegLogWdgt = regMatchLogWdgt.capturedStart();
+                            }
+                            if (regMatchLogFile.hasMatch()) {
+                                idxBegLogFile = regMatchLogFile.capturedStart();
+                            }
+                            #endif
                             if( idxBegLogWdgt == idxExpected && idxBegLogFile == idxExpected ) {
                                 idxEndLogWdgt = strResultValueLogWdgt.indexOf(")", idxBegLogWdgt);
                                 idxEndLogFile = strResultValueLogWdgt.indexOf(")", idxBegLogFile);

@@ -496,7 +496,7 @@ class CLogServer : public QObject
 protected: // class members
 ==============================================================================*/
 
-QMutex CLogServer::s_mtx(QMutex::Recursive);
+QRecursiveMutex CLogServer::s_mtx;
 CLogServer* CLogServer::s_pTheInst;
 QHash<Qt::HANDLE, QString> CLogServer::s_hshThreadNames;
 QHash<QString, Qt::HANDLE> CLogServer::s_hshThreadIds;

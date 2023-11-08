@@ -59,16 +59,13 @@ public: // class methods
 public: // ctors and dtor
     CWdgtPhysUnitsGrp(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtPhysUnitsGrp();
-public: // overridables
-    virtual QString nameSpace() const { return CWdgtPhysUnitsGrp::NameSpace(); }
-    virtual QString className() const { return CWdgtPhysUnitsGrp::ClassName(); }
 public: // overridables of base class CWdgtAbstractTreeEntry
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
     virtual void resizeToContents() override;
 protected slots:
     void onBtnTableViewRefValsResizeToContentsClicked( bool i_bChecked );
     void onBtnTableViewUnitsGrpResizeToContentsClicked( bool i_bChecked );
-    void onCmbViewModeCurrentIndexChanged( const QString& i_strCurrentText );
+    void onCmbViewModeCurrentIndexChanged( int i_idx );
 protected: // instance methods
     void updateTableView();
 protected: // instance members

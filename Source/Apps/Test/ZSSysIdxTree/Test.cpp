@@ -32,15 +32,14 @@ may result in using the software modules.
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlineedit.h>
 #else
+#include <QtWidgets/qapplication.h>
 #include <QtWidgets/qlineedit.h>
 #endif
 
 #include "Test.h"
-#include "App.h"
 #include "MainWindow.h"
 
 #include "ZSTest/ZSTestStepIdxTreeEntry.h"
-#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
@@ -59,7 +58,6 @@ may result in using the software modules.
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Trace;
 using namespace ZS::Apps::Test::IdxTree;
 
 
@@ -3658,14 +3656,24 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
         QModelIndex modelIdx = pTreeViewIdxTree->currentIndex();
         QRect       rct = pTreeViewIdxTree->visualRect(modelIdx);
         QPoint      ptLocalPos(rct.x(), rct.y());
+        QPoint      ptGlobalPos = pMainWindow->mapToGlobal(ptLocalPos);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QMouseEvent* pMouseEvent = new QMouseEvent(
             /* type      */ mouseEvent,
             /* ptPos     */ ptLocalPos,
             /* button    */ mouseButton,
             /* buttons   */ mouseButton,
             /* modifiers */ Qt::NoModifier );
-
+#else
+        QMouseEvent* pMouseEvent = new QMouseEvent(
+            /* type      */ mouseEvent,
+            /* localPos  */ ptLocalPos,
+            /* globalPos */ ptGlobalPos,
+            /* button    */ mouseButton,
+            /* buttons   */ mouseButton,
+            /* modifiers */ Qt::NoModifier );
+#endif
         QApplication::postEvent(pTreeViewIdxTree->viewport(), pMouseEvent);
         // delete pMouseEvent; Deleted by Qt
         pMouseEvent = nullptr;

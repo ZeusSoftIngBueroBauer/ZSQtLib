@@ -956,7 +956,12 @@ void CTreeViewIdxTreeLoggers::keyPressEvent( QKeyEvent* i_pEv )
                         if( modelIdxSelected.column() == CModelIdxTreeLoggers::EColumnEnabled )
                         {
                             QVariant val = pModelAbstract->data(modelIdxSelected, Qt::DisplayRole);
+                            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                             if( val.canConvert(QVariant::Bool) )
+                            #else
+                            // static_cast to avoid deprecation warning
+                            if( val.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                            #endif
                             {
                                 pModelAbstract->setData(modelIdxSelected, !val.toBool(), Qt::EditRole);
                             }
@@ -1039,7 +1044,12 @@ void CTreeViewIdxTreeLoggers::mouseReleaseEvent( QMouseEvent* i_pEv )
                     if( pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
                         QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( val.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( val.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }
@@ -1052,7 +1062,12 @@ void CTreeViewIdxTreeLoggers::mouseReleaseEvent( QMouseEvent* i_pEv )
                     if( pDelegate != nullptr && pDelegate->isCheckBoxAddThreadNameHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
                         QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( val.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( val.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }
@@ -1065,7 +1080,12 @@ void CTreeViewIdxTreeLoggers::mouseReleaseEvent( QMouseEvent* i_pEv )
                     if( pDelegate != nullptr && pDelegate->isCheckBoxAddDateTimeHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
                         QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( val.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( val.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }
@@ -1078,7 +1098,12 @@ void CTreeViewIdxTreeLoggers::mouseReleaseEvent( QMouseEvent* i_pEv )
                     if( pDelegate != nullptr && pDelegate->isCheckBoxAddSystemTimeHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
                         QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( val.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( val.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }

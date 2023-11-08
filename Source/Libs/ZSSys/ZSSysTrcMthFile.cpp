@@ -52,7 +52,7 @@ class CTrcMthFile
 protected: // class members
 ==============================================================================*/
 
-QMutex CTrcMthFile::s_mtx(QMutex::Recursive);
+QRecursiveMutex CTrcMthFile::s_mtx;
 QMap<QString, CTrcMthFile*> CTrcMthFile::s_mapTrcMthFiles;
 
 /*==============================================================================
@@ -898,7 +898,7 @@ void CTrcMthFile::addEntry(
     }
     str.reserve(iStrLen);
 
-    str.fill(0x00);
+    str.fill(QChar(0x00));
 
     QString strPrintThreadName;
     strPrintThreadName.resize(c_iStrLenThreadMax+3);

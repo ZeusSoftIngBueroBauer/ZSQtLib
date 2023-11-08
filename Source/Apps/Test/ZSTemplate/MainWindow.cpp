@@ -48,7 +48,6 @@ may result in using the software modules.
 #include "WidgetCentral.h"
 
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
-#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSysGUI/ZSSysErrLogDlg.h"
 #include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
 #include "ZSSys/ZSSysErrLog.h"
@@ -188,7 +187,7 @@ CMainWindow::CMainWindow(
     //----------------------
 
     m_pActFileQuit = new QAction("Quit", this);
-    m_pActFileQuit->setShortcut(Qt::Key_F4 + Qt::ALT);
+    m_pActFileQuit->setShortcut(Qt::Key_F4 | Qt::ALT);
 
     m_pMnuFile->addAction(m_pActFileQuit);
 

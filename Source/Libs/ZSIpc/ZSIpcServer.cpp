@@ -200,11 +200,11 @@ CServer::CServer(
     {
         if( m_pTrcMthFile != nullptr )
         {
-            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
+            m_pMtx = new CRecursiveMutex(ClassName() + "-" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
         }
         else
         {
-            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName);
+            m_pMtx = new CRecursiveMutex(ClassName() + "-" + i_strObjName);
         }
     }
 

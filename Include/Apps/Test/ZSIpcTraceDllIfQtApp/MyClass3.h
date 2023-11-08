@@ -36,7 +36,7 @@ namespace ZS
 {
 namespace System
 {
-class CMutex;
+class CRecursiveMutex;
 class CWaitCondition;
 }
 namespace Trace
@@ -138,7 +138,7 @@ private: // instance methods
     int sendData3(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // instance members
     CMyClass3Thread*                m_pMyClass3Thread;
-    ZS::System::CMutex*             m_pMtxCounters;
+    ZS::System::CRecursiveMutex*    m_pMtxCounters;
     int                             m_iRecursionCount;
     ZS::Trace::DllIf::CTrcAdminObj* m_pTrcAdminObj;
     ZS::Trace::DllIf::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;

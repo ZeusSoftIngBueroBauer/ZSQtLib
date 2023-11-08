@@ -183,7 +183,11 @@ public: // class methods
         const SEnumEntry* i_pEnumArr,
         int               i_iArrLen,
         int               i_iEnumerator,
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
          QVariant::Type   i_type = QVariant::Invalid,
+        #else
+        QMetaType::Type   i_type = QMetaType::UnknownType,
+        #endif
         bool*             o_pbOk = nullptr );
     static int str2Enumerator(
         const SEnumEntry*   i_pEnumArr,
@@ -196,7 +200,11 @@ public: // class methods
         const SEnumEntry*   i_pEnumArr,
         int                 i_iArrLen,
         const QString&      i_strName,
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QVariant::Type      i_type = QVariant::Invalid,
+        #else
+        QMetaType::Type     i_type = QMetaType::UnknownType,
+        #endif
         int                 i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
         Qt::CaseSensitivity i_caseSensitivity = Qt::CaseInsensitive,
         bool*               o_pbOk = nullptr );
@@ -233,7 +241,11 @@ public: // class methods
         const SEnumEntry*                   i_pEnumArr,
         int                                 i_iArrLen,
         const QString&                      i_strName,
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QVariant::Type                      i_type = QVariant::Invalid,
+        #else
+        QMetaType::Type                     i_type = QMetaType::UnknownType,
+        #endif
         int                                 i_idxAlias = EEnumEntryAliasStrUndefined, // if Undefined all string list entries will be compared
         Qt::CaseSensitivity                 i_caseSensitivity = Qt::CaseInsensitive,
         bool*                               o_pbOk = nullptr );

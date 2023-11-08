@@ -222,7 +222,7 @@ protected: // instance methods
 protected slots:
     void onTimeoutAutoSaveFile();
 protected: // class members
-    static QMutex                   s_mtx;          /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
+    static QRecursiveMutex s_mtx;          /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
     static QMap<QString, CLogFile*> s_mapLogFiles;  /*!< Map containing all existing (allocated) log file instances.
                                                          The key of the entries is the absolute file path of the log files.
                                                          The value is the pointer to the log file instance. */

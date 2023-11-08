@@ -109,7 +109,7 @@ public: // ctors and dtor
         DllIf::CLogger(),
         m_szKeyInTree(nullptr)
     {
-        m_pMtx = new QMutex(QMutex::Recursive);
+        m_pMtx = new QRecursiveMutex();
 
         size_t iStrLen = strlen(i_szKeyInTree);
         m_szKeyInTree = new char[iStrLen+1];
@@ -130,8 +130,8 @@ public: // instance methods
         return m_szKeyInTree;
     }
 private: // instance members
-    QMutex* m_pMtx;
-    char*   m_szKeyInTree;
+    QRecursiveMutex* m_pMtx;
+    char* m_szKeyInTree;
 };
 } // namespace DllMain
 } // namespace DllIf

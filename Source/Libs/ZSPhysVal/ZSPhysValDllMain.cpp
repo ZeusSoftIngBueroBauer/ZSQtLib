@@ -169,9 +169,6 @@ QString ZS::PhysVal::FormatResult::result2Str( TFormatResult i_formatResult )
 /* enum EUnitClassType
 ==============================================================================*/
 
-template<> QMutex CEnum<EUnitClassType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EUnitClassType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
 template<> const QVector<SEnumEntry> CEnum<EUnitClassType>::s_arEnumEntries(
 {
     /* 0 */ SEnumEntry( static_cast<int>(EUnitClassType::Undefined), "Undefined" ),
@@ -182,9 +179,6 @@ template<> const QVector<SEnumEntry> CEnum<EUnitClassType>::s_arEnumEntries(
 
 /* enum EPhysScienceField
 ==============================================================================*/
-
-template<> QMutex CEnum<EPhysScienceField>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EPhysScienceField>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 template<> const QVector<SEnumEntry> CEnum<EPhysScienceField>::s_arEnumEntries(
 {
@@ -202,9 +196,6 @@ template<> const QVector<SEnumEntry> CEnum<EPhysScienceField>::s_arEnumEntries(
 /* enum EUnitFind
 ==============================================================================*/
 
-template<> QMutex CEnum<EUnitFind>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EUnitFind>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
 template<> const QVector<SEnumEntry> CEnum<EUnitFind>::s_arEnumEntries(
 {
     /* 0 */ SEnumEntry( static_cast<int>(EUnitFind::None), "None" ),
@@ -213,9 +204,6 @@ template<> const QVector<SEnumEntry> CEnum<EUnitFind>::s_arEnumEntries(
 
 /* enum EResType
 ==============================================================================*/
-
-template<> QMutex CEnum<EResType>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EResType>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 template<> const QVector<SEnumEntry> CEnum<EResType>::s_arEnumEntries(
 {

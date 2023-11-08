@@ -181,7 +181,7 @@ class CErrLog : public QObject
 protected: // class members
 ==============================================================================*/
 
-QMutex CErrLog::s_mtx(QMutex::Recursive);
+QRecursiveMutex CErrLog::s_mtx;
 QHash<QString, CErrLog*> CErrLog::s_hshpInstances;
 int CErrLog::s_iMsgHandlerInstallCount = 0;
 
@@ -741,7 +741,7 @@ CErrLog::CErrLog(
         #endif
     }
 
-    m_pMtx = new QMutex(QMutex::Recursive);
+    m_pMtx = new QRecursiveMutex();
 
     // Create and/or recall error log file
     //------------------------------------

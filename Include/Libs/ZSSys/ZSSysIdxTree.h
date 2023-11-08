@@ -37,7 +37,7 @@ namespace ZS
 {
 namespace System
 {
-class CMutex;
+class CRecursiveMutex;
 class CTrcAdminObj;
 class CTrcMthFile;
 
@@ -226,7 +226,7 @@ public: // overridables
     virtual QString className() const { return ClassName(); }
 public: // instance methods
     /*! Returns a pointer to the mutex used to protect the index tree if access by different threads. */
-    CMutex* mutex() { return m_pMtx; }
+    CRecursiveMutex* mutex() { return m_pMtx; }
     Q_INVOKABLE void lock();
     Q_INVOKABLE void unlock();
 public: // instance methods
@@ -342,7 +342,7 @@ protected: // instance members
     /*!< String used to seperate the node names with an entries path. */
     QString m_strNodeSeparator;
     /*!< Mutex to protect the instance if accessed by different threads. */
-    mutable CMutex* m_pMtx;
+    mutable CRecursiveMutex* m_pMtx;
     /*!< Map with pointers to all tree entries. */
     QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;
     /*!< Vector with pointers to all tree entries. */

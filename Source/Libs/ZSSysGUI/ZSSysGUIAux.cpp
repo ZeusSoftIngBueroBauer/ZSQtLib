@@ -323,18 +323,17 @@ QMouseEvent
 QString ZS::System::GUI::qMouseEvent2Str( QMouseEvent* i_pEv, int /*i_iDetailLevel*/ )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", Button: " + qMouseButton2Str(i_pEv->button());
-    str += ", Buttons: " + qMouseButtons2Str(i_pEv->buttons());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers());
-    str += ", Pos: " + qPoint2Str(i_pEv->pos());
-    str += ", GlobalPos: " + qPoint2Str(i_pEv->globalPos());
-
-    return str;
-
-} // qMouseEvent2Str
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", Button: " + qMouseButton2Str(i_pEv->button()) +
+        ", Buttons: " + qMouseButtons2Str(i_pEv->buttons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->pos()) +
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        ", GlobalPos: " + qPoint2Str(i_pEv->globalPos());
+        #else
+           ", GlobalPos: " + qPoint2Str(i_pEv->globalPosition());
+        #endif
+}
 
 /*==============================================================================
 QDrag/Drop-Event
@@ -344,61 +343,59 @@ QDrag/Drop-Event
 QString ZS::System::GUI::qDragEnterEvent2Str( QDragEnterEvent* i_pEv, int /*i_iDetailLevel*/ )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", DropAction: " + qDropAction2Str(i_pEv->dropAction());
-    str += ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers());
-    str += ", Pos: " + qPoint2Str(i_pEv->pos());
-    str += ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-
-    return str;
-
-} // qDragEnterEvent2Str
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->pos()) +
+        #else
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->buttons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
+           ", Pos: " + qPoint2Str(i_pEv->position().toPoint()) +
+        #endif
+        ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qDragLeaveEvent2Str( QDragLeaveEvent* i_pEv, int /*i_iDetailLevel*/ )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    str = "Type: " + qEventType2Str(i_pEv->type());
-
-    return str;
-
-} // qDragLeaveEvent2Str
+    return "Type: " + qEventType2Str(i_pEv->type());
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qDragMoveEvent2Str( QDragMoveEvent* i_pEv, int /*i_iDetailLevel*/ )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", DropAction: " + qDropAction2Str(i_pEv->dropAction());
-    str += ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers());
-    str += ", Pos: " + qPoint2Str(i_pEv->pos());
-    str += ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-
-    return str;
-
-} // qDragMoveEvent2Str
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->pos()) +
+        #else
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->buttons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->position().toPoint()) +
+        #endif
+        ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qDropEvent2Str( QDropEvent* i_pEv, int /*i_iDetailLevel*/ )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    str  = "Type: " + qEventType2Str(i_pEv->type());
-    str += ", DropAction: " + qDropAction2Str(i_pEv->dropAction());
-    str += ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons());
-    str += ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers());
-    str += ", Pos: " + qPoint2Str(i_pEv->pos());
-    str += ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
-
-    return str;
-
-} // qDropEvent2Str
+    return "Type: " + qEventType2Str(i_pEv->type()) +
+        ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->mouseButtons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->keyboardModifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->pos()) +
+        #else
+        ", MouseButtons: " + qMouseButtons2Str(i_pEv->buttons()) +
+        ", KeyboardModifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers()) +
+        ", Pos: " + qPoint2Str(i_pEv->position().toPoint()) +
+        #endif
+        ", MimeData: " + qMimeData2Str(i_pEv->mimeData());
+}

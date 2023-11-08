@@ -546,7 +546,7 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "-" + objectName() + "-Counters");
+    m_pMtxCounters = new CRecursiveMutex(ClassName() + "-" + objectName() + "-Counters");
 
 } // ctor
 

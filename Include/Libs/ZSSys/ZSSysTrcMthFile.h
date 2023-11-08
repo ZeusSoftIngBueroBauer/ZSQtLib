@@ -35,7 +35,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysLogFile.h"
 
 class QFile;
-class QMutex;
+class QRecursiveMutex;
 class QTextStream;
 
 namespace ZS
@@ -228,10 +228,12 @@ protected: // instance methods
 protected: // auxiliary instance methods
     QString currentThreadName() const;
 protected: // class members
-    static QMutex                      s_mtx;             /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
-    static QMap<QString, CTrcMthFile*> s_mapTrcMthFiles;  /*!< Map containing all existing (allocated) method trace file instances.
-                                                               The key of the entries is the absolute file path of the method trace files.
-                                                               The value is the pointer to the method trace file instance. */
+    /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
+    static QRecursiveMutex s_mtx;
+    /*!< Map containing all existing (allocated) method trace file instances.
+         The key of the entries is the absolute file path of the method trace files.
+         The value is the pointer to the method trace file instance. */
+    static QMap<QString, CTrcMthFile*> s_mapTrcMthFiles;
 protected: // instance methods
     bool                  m_bEnabled;               /*!< By setting this flag to false writing method traces to the log file may be temporarily disabled. */
     ZS::System::CLogFile* m_pLogFile;               /*!< Log file instance used to write the method trace. */

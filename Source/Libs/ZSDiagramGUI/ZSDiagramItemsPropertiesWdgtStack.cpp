@@ -273,7 +273,9 @@ void CWdgtStackDiagramItemsProperties::createDiagItemPropertiesWdgts()
     m_hshpWdgtsObjProperties[pWdgt->diagItemClassName()] = pWdgt;
     m_hshIdxWdgtsObjProperties[pWdgt->diagItemClassName()] = m_pStackedWdgtObjsProperties->addWidget(pWdgt);
 
+    #ifdef _WINDOWS
     #pragma message(__TODO__"Implement concrete DiagObj Properties Widget classes")
+    #endif
 
     pWdgt = new CWdgtDiagramObjPropertiesBase("CWdgtDiagramObjCurveProperties", m_pDiagram, "CDiagObjCurve");
     m_hshpWdgtsObjProperties[pWdgt->diagItemClassName()] = pWdgt;

@@ -373,7 +373,7 @@ CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2T
             QString("ctor(" + strMthInArgs + ")").toStdString().c_str());
     }
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "-" + objectName() + "-Counters");
+    m_pMtxCounters = new CRecursiveMutex(ClassName() + "-" + objectName() + "-Counters");
     m_pMtxWaitClass3ThreadRunning = new CMutex(ClassName() + "-" + objectName() + "-WaitClass3ThreadRunning");
     m_pWaitClass3ThreadRunning = new CWaitCondition(ClassName() + "-" + objectName() + "-Class3ThreadRunning");
 

@@ -430,7 +430,7 @@ void CWdgtLog::loadThreadColors( const QString& i_strAbsFilePath )
         {
             xmlStreamReader.raiseError("Invalid XML document");
         }
-        if( xmlStreamReader.readNext() != QXmlStreamReader::StartElement && xmlStreamReader.name() != "LogClient" )
+        if( xmlStreamReader.readNext() != QXmlStreamReader::StartElement && xmlStreamReader.name() != QString("LogClient") )
         {
             xmlStreamReader.raiseError("File does not seem to be an valid XML file for the log client");
         }

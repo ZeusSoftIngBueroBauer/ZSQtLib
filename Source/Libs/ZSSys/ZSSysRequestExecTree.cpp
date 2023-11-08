@@ -49,7 +49,7 @@ protected: // class members
 
 CRequestExecTree* CRequestExecTree::s_pInstance = nullptr;
 
-QMutex CRequestExecTree::s_mtx(QMutex::Recursive);
+QRecursiveMutex CRequestExecTree::s_mtx;
 
 /*==============================================================================
 public: // class methods
@@ -182,7 +182,7 @@ CRequestExecTree::CRequestExecTree( QObject* i_pObjParent ) :
     // Receivers of the signal may call e.g. "findRequest" as a reentry.
     // So we need to use a recursive mutex to allow the same thread to access
     // the list of requess (at least to find a request item).
-    m_pMtx = new QMutex(QMutex::Recursive);
+    m_pMtx = new QRecursiveMutex();
 
     m_pTmrGarbageCollector = new QTimer(this);
 

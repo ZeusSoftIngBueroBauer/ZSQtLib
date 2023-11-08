@@ -1752,8 +1752,9 @@ void CDiagObjMarker::updateData()
             }
 
             double fValDst = 0.0;
+            CUnit unit = pPhysValSrc->unit();
             EValueValidity valueValid = m_pDiagTrace->getVal(
-                m_scaleDirCursorMove, pPhysValSrc->getVal(), &pPhysValSrc->unit(),
+                m_scaleDirCursorMove, pPhysValSrc->getVal(), &unit,
                 scaleDirDst, &fValDst, &unitDst, false);
             if (valueValid == EValueValidity::Valid) {
                 if( unitDst.isValid() ) {
@@ -1780,7 +1781,8 @@ void CDiagObjMarker::updateData()
         // If the markers X position is changeable by the user ..
         if( m_scaleDirCursorMove == EScaleDir::X )
         {
-            xPix = m_pDiagTrace->getValPix(EScaleDir::X, pPhysValSrc->getVal(), &pPhysValSrc->unit());
+            CUnit unit = pPhysValSrc->unit();
+            xPix = m_pDiagTrace->getValPix(EScaleDir::X, pPhysValSrc->getVal(), &unit);
 
             // If the marker is positioned between two valid values ...
             if( pPhysValDst->isValid() ) {
@@ -1802,11 +1804,13 @@ void CDiagObjMarker::updateData()
         // If the markers Y position is changeable by the user ..
         else if( m_scaleDirCursorMove == EScaleDir::Y )
         {
-            yPix = m_pDiagTrace->getValPix(EScaleDir::Y, pPhysValSrc->getVal(), &pPhysValSrc->unit());
+            CUnit unitSrc = pPhysValSrc->unit();
+            yPix = m_pDiagTrace->getValPix(EScaleDir::Y, pPhysValSrc->getVal(), &unitSrc);
 
             // If the marker is positioned between two valid values ...
             if( pPhysValDst->isValid() ) {
-                xPix = m_pDiagTrace->getValPix(EScaleDir::X, pPhysValDst->getVal(), &pPhysValDst->unit());
+                CUnit unitDst = pPhysValDst->unit();
+                xPix = m_pDiagTrace->getValPix(EScaleDir::X, pPhysValDst->getVal(), &unitDst);
             }
             if( yPix < m_rectContent.top() ) {
                 yPix = m_rectContent.top();

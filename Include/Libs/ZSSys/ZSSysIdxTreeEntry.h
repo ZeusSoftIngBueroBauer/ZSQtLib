@@ -34,7 +34,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSSys/ZSSysErrResult.h"
 
-class QMutex;
+class QRecursiveMutex;
 
 namespace ZS
 {
@@ -211,7 +211,7 @@ protected: // instance members
          (may be nullptr if not used). If you want to protect the index tree entry via
          this mutex you must derive your own class for the tree entry and create the
          mutex in the derived classes constructor. */
-    QMutex* m_pMtx;
+    QRecursiveMutex* m_pMtx;
     /*!< Reference to index tree. */
     CIdxTree* m_pTree;
     /*!< Unique key in the index tree:

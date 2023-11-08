@@ -33,6 +33,13 @@ may result in using the software modules.
 #endif /* !INC_OLE1 */
 #endif
 
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysEnumEntry.h"
+#include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMsg.h"
+#include "ZSSys/ZSSysRequest.h"
+
 #include <QtCore/qabstractitemmodel.h>
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qcoreevent.h>
@@ -53,13 +60,6 @@ may result in using the software modules.
 #else
 #include <QtCore/qxmlstream.h>
 #endif
-
-#include "ZSSys/ZSSysAux.h"
-#include "ZSSys/ZSSysEnumEntry.h"
-#include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysMsg.h"
-#include "ZSSys/ZSSysRequest.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -1076,8 +1076,8 @@ bool ZS::System::isNumeric( const QVariant& i_var )
 {
     bool bIsNumeric = false;
 
-    switch( i_var.type() )
-    {
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    switch (i_var.type()) {
         case QVariant::Int: // = 2,
         case QVariant::UInt: // = 3,
         case QVariant::LongLong: // = 4,
@@ -1087,58 +1087,28 @@ bool ZS::System::isNumeric( const QVariant& i_var )
             bIsNumeric = true;
             break;
         }
-        /*
-        case QVariant::Invalid: // = 0,
-        case QVariant::Bool: // = 1,
-        case QVariant::Char: // = 7,
-        case QVariant::Map: // = 8,
-        case QVariant::List: // = 9,
-        case QVariant::String: // = 10,
-        case QVariant::StringList: // = 11,
-        case QVariant::ByteArray: // = 12,
-        case QVariant::BitArray: // = 13,
-        case QVariant::Date: // = 14,
-        case QVariant::Time: // = 15,
-        case QVariant::DateTime: // = 16,
-        case QVariant::Url: // = 17,
-        case QVariant::Locale: // = 18,
-        case QVariant::Rect: // = 19,
-        case QVariant::RectF: // = 20,
-        case QVariant::Size: // = 21,
-        case QVariant::SizeF: // = 22,
-        case QVariant::Line: // = 23,
-        case QVariant::LineF: // = 24,
-        case QVariant::Point: // = 25,
-        case QVariant::PointF: // = 26,
-        case QVariant::RegExp: // = 27,
-        case QVariant::Hash: // = 28,
-        case QVariant::LastCoreType: // = Hash,
-        case QVariant::Font: // = 64,
-        case QVariant::Pixmap: // = 65,
-        case QVariant::Brush: // = 66,
-        case QVariant::Color: // = 67,
-        case QVariant::Palette: // = 68,
-        case QVariant::Icon: // = 69,
-        case QVariant::Image: // = 70,
-        case QVariant::Polygon: // = 71,
-        case QVariant::Region: // = 72,
-        case QVariant::Bitmap: // = 73,
-        case QVariant::Cursor: // = 74,
-        case QVariant::SizePolicy: // = 75,
-        case QVariant::KeySequence: // = 76,
-        case QVariant::Pen: // = 77,
-        case QVariant::TextLength: // = 78,
-        case QVariant::TextFormat: // = 79,
-        case QVariant::Matrix: // = 80,
-        case QVariant::Transform: // = 81,
-        case QVariant::LastGuiType: // = Transform,
-        case QVariant::UserType: // = 127,
-        */
         default:
         {
             break;
         }
     }
+    #else
+    switch (i_var.typeId()) {
+        case QMetaType::Int: // = 2,
+        case QMetaType::UInt: // = 3,
+        case QMetaType::LongLong: // = 4,
+        case QMetaType::ULongLong: // = 5,
+        case QMetaType::Double: // = 6,
+        {
+            bIsNumeric = true;
+            break;
+        }
+    default:
+        {
+            break;
+        }
+    }
+    #endif
     return bIsNumeric;
 
 } // isNumeric
@@ -1265,48 +1235,6 @@ Qt::SortOrder ZS::System::str2QSortOrder( const QString& i_str, EEnumEntryAliasS
     }
     return sortOrder;
 }
-
-
-/*==============================================================================
-Enum QMutex::RecursionMode
-==============================================================================*/
-
-static const SEnumEntry s_arEnumStrQtMutexRecursionMode[] = {
-    /* 0 */ SEnumEntry( QMutex::NonRecursive, "NonRecursive", "N" ),
-    /* 1 */ SEnumEntry( QMutex::Recursive,    "Recursive",    "R" )
-};
-
-//------------------------------------------------------------------------------
-QString ZS::System::qMutexRecursionMode2Str( int i_iVal, EEnumEntryAliasStr i_alias )
-//------------------------------------------------------------------------------
-{
-    return SEnumEntry::enumerator2Str(s_arEnumStrQtMutexRecursionMode, _ZSArrLen(s_arEnumStrQtMutexRecursionMode), i_iVal, i_alias);
-}
-
-//------------------------------------------------------------------------------
-QMutex::RecursionMode ZS::System::str2QMutexRecursionMode( const QString& i_str, EEnumEntryAliasStr i_alias, bool* o_pbConverted )
-//------------------------------------------------------------------------------
-{
-    QMutex::RecursionMode eVal = QMutex::NonRecursive;
-
-    bool bConverted = false;
-
-    int iVal = SEnumEntry::str2Enumerator( s_arEnumStrQtMutexRecursionMode, _ZSArrLen(s_arEnumStrQtMutexRecursionMode), i_str, i_alias, Qt::CaseInsensitive );
-
-    if( iVal >= 0 && iVal < _ZSArrLen(s_arEnumStrQtMutexRecursionMode) )
-    {
-        eVal = static_cast<QMutex::RecursionMode>(iVal);
-        bConverted = true;
-    }
-
-    if( o_pbConverted != nullptr )
-    {
-        *o_pbConverted = bConverted;
-    }
-
-    return eVal;
-
-} // str2QMutexRecursionMode
 
 
 /*==============================================================================
@@ -1839,7 +1767,11 @@ static const ZS::System::SEnumEntry s_arEnumStrQEventType[] =
     /*   188 */ SEnumEntry( QEvent::GrabKeyboard, "GrabKeyboard", "GrabKeyboard" ),
     /*   189 */ SEnumEntry( QEvent::UngrabKeyboard, "UngrabKeyboard", "UngrabKeyboard" ),
     /*   190 */ SEnumEntry( 190, "190 (Unused)", "190 (Unused)" ),
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     /*   191 */ SEnumEntry( QEvent::MacGLClearDrawable, "MacGLClearDrawable", "Internal Cocoa, the window has changed, so we must clear" ),
+    #else
+    /*   191 */ SEnumEntry( 191, "191 (Unused)", "191 (Unused)" ),
+    #endif
     /*   192 */ SEnumEntry( QEvent::StateMachineSignal, "StateMachineSignal", "StateMachineSignal" ),
     /*   193 */ SEnumEntry( QEvent::StateMachineWrapped, "StateMachineWrapped", "StateMachineWrapped" ),
     /*   194 */ SEnumEntry( QEvent::TouchBegin, "TouchBegin", "TouchBegin" ),
@@ -2046,7 +1978,9 @@ QString ZS::System::qItemFlags2Str( quint32 i_flags )
         ItemIsDropEnabled = 8,
         ItemIsUserCheckable = 16,
         ItemIsEnabled = 32,
-        ItemIsTristate = 64
+        ItemIsAutoTristate = 64,
+        ItemNeverHasChildren = 128,
+        ItemIsUserTristate = 256
     }; */
 
     if( i_flags == Qt::NoItemFlags )
@@ -2103,13 +2037,29 @@ QString ZS::System::qItemFlags2Str( quint32 i_flags )
             }
             str += "Ena";
         }
-        if( i_flags & Qt::ItemIsTristate )
+        if( i_flags & Qt::ItemIsAutoTristate )
         {
             if( !str.isEmpty() )
             {
                 str += "|";
             }
-            str += "Tri";
+            str += "AuT";
+        }
+        if( i_flags & Qt::ItemNeverHasChildren )
+        {
+            if( !str.isEmpty() )
+            {
+                str += "|";
+            }
+            str += "NHC";
+        }
+        if( i_flags & Qt::ItemIsUserTristate )
+        {
+            if( !str.isEmpty() )
+            {
+                str += "|";
+            }
+            str += "UsT";
         }
     } // if( i_flags != Qt::NoItemFlags )
 
@@ -3502,7 +3452,11 @@ static const QHash<int, QString> s_hshEnumStrVariantTypes =
     { QVariant::LineF, "LineF" },
     { QVariant::Point, "Point" },
     { QVariant::PointF, "PointF" },
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     { QVariant::RegExp, "RegExp" },
+    #else
+    { QVariant::RegularExpression, "RegExp" },
+    #endif
     { QVariant::Hash, "Hash" },
     #if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
     { QVariant::EasingCurve, "EasingCurve" },
@@ -3526,7 +3480,9 @@ static const QHash<int, QString> s_hshEnumStrVariantTypes =
     { QVariant::Pen, "Pen" },
     { QVariant::TextLength, "TextLength" },
     { QVariant::TextFormat, "TextFormat" },
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     { QVariant::Matrix, "Matrix" },
+    #endif
     { QVariant::Transform, "Transform" },
     { QVariant::Matrix4x4, "Matrix4x4" },
     { QVariant::Vector2D, "Vector2D" },

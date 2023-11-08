@@ -24,23 +24,25 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-#include <QtGui/qevent.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qheaderview.h>
-#include <QtGui/qmenu.h>
-#else
-#include <QtWidgets/qheaderview.h>
-#include <QtWidgets/qmenu.h>
-#endif
-
 #include "ZSTestGUI/ZSTestStepIdxTreeView.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeDelegate.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeModel.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
+
+#include <QtCore/qglobal.h>
+#include <QtGui/qevent.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qactiongroup.h>
+#include <QtGui/qheaderview.h>
+#include <QtGui/qmenu.h>
+#else
+#include <QtWidgets/qactiongroup.h>
+#include <QtWidgets/qheaderview.h>
+#include <QtWidgets/qmenu.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

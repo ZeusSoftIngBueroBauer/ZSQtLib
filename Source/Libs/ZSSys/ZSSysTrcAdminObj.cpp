@@ -247,7 +247,7 @@ CTrcAdminObj::CTrcAdminObj(
     m_strlstDataFilterInclude(),
     m_strlstDataFilterExclude()
 {
-    m_pMtx = new QMutex(QMutex::Recursive);
+    m_pMtx = new QRecursiveMutex();
 
     QThread* pThread = QThread::currentThread();
 

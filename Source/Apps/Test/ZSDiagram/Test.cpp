@@ -1517,16 +1517,19 @@ void CTest::onTimerSigGenTimeout()
             s_arfYValuesTrace1[idxVal] = fy + (fRandFacTrace1 / 10.0) * fyRange;
         }
 
+        CUnit unitX = m_scaleX.unit();
+        CUnit unitY = m_scaleY.unit();
+
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &m_scaleX.unit());
-            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &m_scaleY.unit());
+            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitY);
+            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &unitY);
         }
 
         if( m_pDiagTraceSigGen2 != nullptr )
         {
-            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01, &m_scaleX.unit());
-            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1, &m_scaleY.unit());
+            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitX);
+            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1, &unitY);
         }
     } // if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
 

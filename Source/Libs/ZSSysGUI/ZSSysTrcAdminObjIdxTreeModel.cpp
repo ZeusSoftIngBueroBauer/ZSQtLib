@@ -792,7 +792,12 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
                 {
                     if( pTrcAdminObj != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( i_varData.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             try
                             {
@@ -810,7 +815,11 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
                 {
                     if( pTrcAdminObj != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.type() == QVariant::Int )
+                        #else
+                        if( i_varData.typeId() == QMetaType::Int )
+                        #endif
                         {
                             try
                             {
@@ -821,7 +830,12 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
                             {
                             }
                         }
-                        else if( i_varData.type() == QVariant::String )
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                        if( i_varData.canConvert(QVariant::String) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( i_varData.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+                        #endif
                         {
                             try
                             {
@@ -839,7 +853,11 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
                 {
                     if( pTrcAdminObj != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.type() == QVariant::Int )
+                        #else
+                        if( i_varData.typeId() == QMetaType::Int )
+                        #endif
                         {
                             try
                             {
@@ -850,7 +868,11 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
                             {
                             }
                         }
-                        else if( i_varData.type() == QVariant::String )
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                        if( i_varData.type() == QVariant::String )
+                        #else
+                        if( i_varData.typeId() == QMetaType::QString )
+                        #endif
                         {
                             try
                             {
@@ -868,7 +890,11 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
                 {
                     if( pTrcAdminObj != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.type() == QVariant::String )
+                        #else
+                        if( i_varData.typeId() == QMetaType::QString )
+                        #endif
                         {
                             pTrcAdminObj->setTraceDataFilter(i_varData.toString());
                         }

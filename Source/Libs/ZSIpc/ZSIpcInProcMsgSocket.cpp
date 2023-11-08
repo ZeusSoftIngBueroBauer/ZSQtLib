@@ -416,7 +416,7 @@ CInProcMsgSocket::CInProcMsgSocket(
     #endif
     #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
-    m_pMutex = new QMutex(QMutex::Recursive);
+    m_pMutex = new QRecursiveMutex();
     m_pTimer = new QTimer(this);
 
     m_uLocalPort = GetUniquePort();
@@ -473,7 +473,7 @@ CInProcMsgSocket::CInProcMsgSocket(
         s_pInProcMsgSocketsAdminObj = new CInProcMsgSocketsAdminObj();
     }
 
-    m_pMutex = new QMutex();
+    m_pMutex = new QRecursiveMutex();
     m_pTimer = new QTimer(this);
 
     if( i_pServer->getPort() != i_pSocketClient->getServerListenPort() )

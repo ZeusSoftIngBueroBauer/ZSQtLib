@@ -27,16 +27,16 @@ may result in using the software modules.
 #ifndef ZSSys_Aux_h
 #define ZSSys_Aux_h
 
+#include "ZSSys/ZSSysDllMain.h"
+#include "ZSSys/ZSSysCommon.h"
+#include "ZSSys/ZSSysTime.h"
+
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmargins.h>
 #include <QtCore/qmutex.h>
 #include <QtCore/qprocess.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qthread.h>
-
-#include "ZSSys/ZSSysDllMain.h"
-#include "ZSSys/ZSSysCommon.h"
-#include "ZSSys/ZSSysTime.h"
 
 #ifdef _WINDOWS
 // As "min" will be defined as a macro with two arguments and qdatetime uses "min"
@@ -55,7 +55,9 @@ class QEvent;
 class QMimeData;
 class QModelIndex;
 class QPoint;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 class QStringList;
+#endif
 class QVariant;
 
 namespace ZS
@@ -145,9 +147,6 @@ ZSSYSDLL_API Qt::Orientation str2QOrientation( const QString& i_str, EEnumEntryA
 
 ZSSYSDLL_API QString qSortOrder2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API Qt::SortOrder str2QSortOrder( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
-
-ZSSYSDLL_API QString qMutexRecursionMode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
-ZSSYSDLL_API QMutex::RecursionMode str2QMutexRecursionMode( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
 
 ZSSYSDLL_API QString qProcessExitStatus2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API QProcess::ExitStatus str2QProcessExitStatus( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );

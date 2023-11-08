@@ -206,7 +206,7 @@ CMainWindow::CMainWindow(
     //----------------------
 
     m_pActFileQuit = new QAction("Quit", this);
-    m_pActFileQuit->setShortcut(Qt::Key_F4 + Qt::ALT);
+    m_pActFileQuit->setShortcut(Qt::Key_F4 | Qt::ALT);
 
     m_pMnuFile->addAction(m_pActFileQuit);
 

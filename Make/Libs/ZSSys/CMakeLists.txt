@@ -160,7 +160,7 @@ target_include_directories(${PROJECT_NAME}
     $<BUILD_INTERFACE:${_HeadersPath}>
     $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
-set(_Libs Qt5::Core Qt5::Xml Qt5::Network Qt5::Qml)
+set(_Libs Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Xml Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Qml)
 if(WIN32)
     set(_Libs ${_Libs} Dbghelp)
 endif()

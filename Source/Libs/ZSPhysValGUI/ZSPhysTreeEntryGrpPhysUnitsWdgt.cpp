@@ -264,14 +264,9 @@ CWdgtPhysUnitsGrp::CWdgtPhysUnitsGrp(QWidget* i_pWdgtParent) :
     m_pCmbViewModeUnitsGrp->setFixedWidth(m_cxEdtWidth);
     m_pLytHeadlineUnitsGrp->addWidget(m_pCmbViewModeUnitsGrp);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pCmbViewModeUnitsGrp,
-        /* szSignal     */ SIGNAL(currentIndexChanged(const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbViewModeCurrentIndexChanged(const QString&)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pCmbViewModeUnitsGrp, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtPhysUnitsGrp::onCmbViewModeCurrentIndexChanged);
 
     m_pLytHeadlineUnitsGrp->addStretch();
 
@@ -461,7 +456,7 @@ void CWdgtPhysUnitsGrp::onBtnTableViewUnitsGrpResizeToContentsClicked( bool /*i_
 }
 
 //------------------------------------------------------------------------------
-void CWdgtPhysUnitsGrp::onCmbViewModeCurrentIndexChanged( const QString& /*i_strCurrentText*/ )
+void CWdgtPhysUnitsGrp::onCmbViewModeCurrentIndexChanged( int /*i_idx*/ )
 //------------------------------------------------------------------------------
 {
     updateTableView();

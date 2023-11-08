@@ -2208,7 +2208,11 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+    #else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    #endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2300,7 +2304,11 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+    #else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    #endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2392,7 +2400,11 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+    #else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    #endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2486,7 +2498,11 @@ void CTest::doTestStepLogMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+    #else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    #endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }

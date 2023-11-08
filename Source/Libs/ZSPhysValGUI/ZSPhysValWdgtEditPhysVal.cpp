@@ -554,8 +554,8 @@ void CWdgtEditPhysVal::setResolution( double i_fVal )
         }
         if( !strVal.isEmpty() ) {
             QLocale locale(QLocale::C);
-            QChar chDecimalPoint = locale.decimalPoint();
-            int iPosDecimalPoint = strVal.indexOf(chDecimalPoint);
+            QString strDecimalPoint = locale.decimalPoint();
+            int iPosDecimalPoint = strVal.indexOf(strDecimalPoint);
             if( iPosDecimalPoint >= 0 ) {
                 iDecimals = strVal.length() - iPosDecimalPoint - 1;
             }

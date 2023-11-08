@@ -337,14 +337,14 @@ private: // class members
 ==============================================================================*/
 
 static qint64 s_iMsgIdCounter = 0;
-static QMutex s_mtxId(QMutex::Recursive);
+static QRecursiveMutex s_mtxId;
 
 static qint64                s_iMsgObjCtorCounter = 0;
 static qint64                s_iMsgObjDtorCounter = 0;
 static qint64                s_iMsgObjLiveCounter = 0;
 static QHash<qint64,int>     s_hshMsgIdsLiveCounter;
 static QHash<qint64,QString> s_hshMsgIdsLiveTrcInfo;
-static QMutex                s_mtxMsgIdsLiveCounter(QMutex::Recursive);
+static QRecursiveMutex       s_mtxMsgIdsLiveCounter;
 
 static bool s_bTracing = false;
 static bool s_bTracingEnabled = false;
