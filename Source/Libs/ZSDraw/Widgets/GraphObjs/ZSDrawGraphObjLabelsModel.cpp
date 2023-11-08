@@ -34,7 +34,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class ZSDRAWDLL_API CModelGraphObjLabels : public ZS::System::GUI::CModelIdxTree
+class ZSDRAWDLL_API CModelGraphObjLabels : public QAbstractTableModel
 *******************************************************************************/
 
 /*==============================================================================
@@ -49,9 +49,9 @@ QString CModelGraphObjLabels::column2Str(int i_clm)
         { EColumnSelected, "Selected"},
         { EColumnName, "Name"},
         { EColumnText, "Text"},
-        { EColumnVisible, "Visible"},
+        { EColumnShow, "Show"},
         { EColumnAnchor, "Anchor"},
-        { EColumnAnchorLineVisible, "AnchorLineVisible"},
+        { EColumnShowAnchorLine, "ShowAnchorLine"},
         { EColumnError, "Error"}
     };
 
@@ -259,6 +259,9 @@ bool CModelGraphObjLabels::setKeyInTree(const QString& i_strKeyInTree)
             QObject::disconnect(
                 m_pGraphObj, &CGraphObj::labelChanged,
                 this, &CModelGraphObjLabels::onGraphObjLabelChanged);
+            QObject::disconnect(
+                m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+                this, &CModelGraphObjLabels::onGraphObjAboutToBeDestroyed);
         }
 
         m_strKeyInTree = i_strKeyInTree;
@@ -283,6 +286,9 @@ bool CModelGraphObjLabels::setKeyInTree(const QString& i_strKeyInTree)
             QObject::connect(
                 m_pGraphObj, &CGraphObj::labelChanged,
                 this, &CModelGraphObjLabels::onGraphObjLabelChanged);
+            QObject::connect(
+                m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
+                this, &CModelGraphObjLabels::onGraphObjAboutToBeDestroyed);
         }
 
         // Fill the content of the edit controls.
@@ -747,7 +753,7 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                     }
                     break;
                 }
-                case EColumnVisible: {
+                case EColumnShow: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = labelSettings.m_bVisible;
                     }
@@ -765,7 +771,8 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                             varData = CEnumSelectionPoint(labelSettings.m_selPt.m_selPt).toString();
                         }
                         else {
-                            varData = "P" + QString::number(labelSettings.m_selPt.m_idxPt);
+                            // Convert P0 to P1 and so on ...
+                            varData = "P" + QString::number(labelSettings.m_selPt.m_idxPt + 1);
                         }
                     }
                     else if (i_iRole == Qt::AccessibleTextRole) {
@@ -782,14 +789,15 @@ QVariant CModelGraphObjLabels::data(const QModelIndex& i_modelIdx, int i_iRole) 
                                 arItems.append(SComboBoxItem(CEnumSelectionPoint(selPt.m_selPt).toString()));
                             }
                             else {
-                                arItems.append(SComboBoxItem("P" + QString::number(selPt.m_idxPt)));
+                                // Convert P0 to P1 and so on ...
+                                arItems.append(SComboBoxItem("P" + QString::number(selPt.m_idxPt + 1)));
                             }
                         }
                         varData.setValue(arItems);
                     }
                     break;
                 }
-                case EColumnAnchorLineVisible: {
+                case EColumnShowAnchorLine: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = labelSettings.m_bAnchorLineVisible;
                     }
@@ -906,7 +914,7 @@ bool CModelGraphObjLabels::setData(
                     }
                     break;
                 }
-                case EColumnVisible: {
+                case EColumnShow: {
                     if (i_iRole == Qt::EditRole) {
                         labelSettings.m_bVisible = i_varData.toBool();
                         bDataSet = true;
@@ -923,13 +931,14 @@ bool CModelGraphObjLabels::setData(
                         }
                         else if (strData.startsWith("P")) {
                             QString strShapePoint = i_varData.toString().remove("P");
-                            labelSettings.m_selPt = strShapePoint.toInt();
+                            // Convert P1 to P0 and so on ...
+                            labelSettings.m_selPt = strShapePoint.toInt() - 1;
                         }
                         bDataSet = true;
                     }
                     break;
                 }
-                case EColumnAnchorLineVisible: {
+                case EColumnShowAnchorLine: {
                     if (i_iRole == Qt::EditRole) {
                         labelSettings.m_bAnchorLineVisible = i_varData.toBool();
                         bDataSet = true;
@@ -998,9 +1007,9 @@ QVariant CModelGraphObjLabels::headerData(int i_iSection, Qt::Orientation i_orie
                 }
                 break;
             }
-            case EColumnVisible: {
+            case EColumnShow: {
                 if (i_iRole == Qt::DisplayRole) {
-                    varData = "Visible";
+                    varData = "Show";
                 }
                 break;
             }
@@ -1010,7 +1019,7 @@ QVariant CModelGraphObjLabels::headerData(int i_iSection, Qt::Orientation i_orie
                 }
                 break;
             }
-            case EColumnAnchorLineVisible: {
+            case EColumnShowAnchorLine: {
                 if (i_iRole == Qt::DisplayRole) {
                     varData = "Line";
                 }
@@ -1072,7 +1081,7 @@ Qt::ItemFlags CModelGraphObjLabels::flags(const QModelIndex& i_modelIdx) const
                     uFlags = uFlags | Qt::ItemIsEditable;
                     break;
                 }
-                case EColumnVisible: {
+                case EColumnShow: {
                     uFlags = uFlags | Qt::ItemIsUserCheckable;
                     break;
                 }
@@ -1080,7 +1089,7 @@ Qt::ItemFlags CModelGraphObjLabels::flags(const QModelIndex& i_modelIdx) const
                     uFlags = uFlags | Qt::ItemIsEditable;
                     break;
                 }
-                case EColumnAnchorLineVisible: {
+                case EColumnShowAnchorLine: {
                     uFlags = uFlags | Qt::ItemIsUserCheckable;
                     break;
                 }

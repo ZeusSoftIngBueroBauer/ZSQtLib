@@ -386,6 +386,8 @@ signals:
     void labelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
     /*!< This signal is emitted if a text label has been changed. */
     void labelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
+    /*!< This signal is emitted if a geometry label has been changed. */
+    void geometryLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
 protected: // instance methods (trace admin objects for method tracing)
     void createTraceAdminObjs(const QString& i_strClassName);
     void releaseTraceAdminObjs();
@@ -581,40 +583,20 @@ public: // overridables (text labels)
     virtual void showLabelAnchorLine(const QString& i_strName);
     virtual void hideLabelAnchorLine(const QString& i_strName);
     virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;
-public: // overridables (position labels)
-    //virtual QStringList getPredefinedPositionLabelNames() const;
-    //virtual QStringList getPositionLabelNames() const;
-    //virtual QList<ESelectionPoint> getPossiblePositionLabelAnchorPoints(const QString& i_strName) const;
-    //virtual bool isPositionLabelAdded(const QString& i_strName) const;
-    //virtual int addPositionLabel(const QString& i_strName);
-    //virtual void removePositionLabel(const QString& i_strName);
-    //virtual void setPositionLabelText(const QString& i_strName, const QString& i_strText);
-    //virtual QString positionLabelText(const QString& i_strName);
-    //virtual void setPositionLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
-    //virtual ESelectionPoint positionLabelAnchorPoint(const QString& i_strName) const;
-    //virtual void showPositionLabel(const QString& i_strName);
-    //virtual void hidePositionLabel(const QString& i_strName);
-    //virtual bool isPositionLabelVisible(const QString& i_strName) const;
-    //virtual void showPositionLabelAnchorLine(const QString& i_strName);
-    //virtual void hidePositionLabelAnchorLine(const QString& i_strName);
-    //virtual bool isPositionLabelAnchorLineVisible(const QString& i_strName) const;
-public: // overridables (dimension line labels)
-    //virtual QStringList getPredefinedDimLineLabelNames() const;
-    //virtual QStringList getDimLineLabelNames() const;
-    //virtual QList<ESelectionPoint> getPossibleDimLineLabelAnchorPoints(const QString& i_strName) const;
-    //virtual bool isDimLineLabelAdded(const QString& i_strName) const;
-    //virtual int addDimLineLabel(const QString& i_strName);
-    //virtual void removeDimLineLabel(const QString& i_strName);
-    //virtual void setDimLineLabelText(const QString& i_strName, const QString& i_strText);
-    //virtual QString dimLineLabelText(const QString& i_strName);
-    //virtual void setDimLineLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
-    //virtual ESelectionPoint dimLineLabelAnchorPoint(const QString& i_strName) const;
-    //virtual void showDimLineLabel(const QString& i_strName);
-    //virtual void hideDimLineLabel(const QString& i_strName);
-    //virtual bool isDimLineLabelVisible(const QString& i_strName) const;
-    //virtual void showDimLineLabelAnchorLine(const QString& i_strName);
-    //virtual void hideDimLineLabelAnchorLine(const QString& i_strName);
-    //virtual bool isDimLineLabelAnchorLineVisible(const QString& i_strName) const;
+public: // overridables (geometry labels)
+    virtual QStringList getValueNames() const;
+    virtual void setXValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValX);
+    virtual ZS::PhysVal::CPhysVal getXValue(const QString& i_strName);
+    virtual void setYValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValY);
+    virtual ZS::PhysVal::CPhysVal getYValue(const QString& i_strName);
+    virtual void showValueLabel(const QString& i_strName);
+    virtual void hideValueLabel(const QString& i_strName);
+    virtual bool isValueLabelVisible(const QString& i_strName) const;
+    virtual void setValueLabelDistance(const QString& i_strName, const QSizeF& i_size);
+    virtual QSizeF valueLabelDistance(const QString& i_strName) const;
+    virtual void showValueLabelAnchorLine(const QString& i_strName);
+    virtual void hideValueLabelAnchorLine(const QString& i_strName);
+    virtual bool isValueLabelAnchorLineVisible(const QString& i_strName) const;
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
 public slots: // overridables
@@ -660,6 +642,7 @@ protected: // auxiliary instance methods (method tracing)
     void emit_labelRemoved(const QString& i_strName);
     void emit_labelRenamed(const QString& i_strName, const QString& i_strNameNew);
     void emit_labelChanged(const QString& i_strName);
+    void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
     virtual void traceInternalStates(
@@ -767,13 +750,10 @@ protected: // instance members
          In addition to those predefined labels additional labels may be added by defining a
          unique name and assigning a text. Both the name and the text are stored in the Label object. */
     QHash<QString, CGraphObjLabel*> m_hshpLabels;
-    /*!< Hash with position coordinates which may be indicated. The number of position labels depend on
-         the object type. E.g. for the Line object the positions "P1", "P2" and "Center" may be shown. */
-    QHash<QString, CGraphObjLabel*> m_hshpPosLabels;
-    /*!< Hash with dimension line labels which may be indicated. The number and type of dimension labels
-         depend on the object type.  E.g. for the Line object the dimensions "Length", "Angle", "Width"
-         and "Height" may be shown. */
-    QHash<QString, CGraphObjLabel*> m_hshpDimLineLabels;
+    /*!< Hash with geometry values which may be indicated. The number of value label depend on
+         the object type. E.g. for the Line object the positions "P1", "P2" and "Center" as well as
+         the "Size" (width and height), "Length" and "Angle" may be shown. */
+    QHash<QString, CGraphObjLabel*> m_hshpGeometryLabels;
     /*!< The tool tip contains various interesting information about the graphical object like the name,
          the position and the dimension. But also other information which depends on the type of the object. */
     QString m_strToolTip;

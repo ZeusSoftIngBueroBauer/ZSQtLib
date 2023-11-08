@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjLabelsModel_h
-#define ZSDraw_GraphObjLabelsModel_h
+#ifndef ZSDraw_GraphObjGeometryModel_h
+#define ZSDraw_GraphObjGeometryModel_h
 
 #include <QtCore/qabstractitemmodel.h>
 
@@ -45,7 +45,7 @@ class CDrawingScene;
 class CGraphObj;
 
 //******************************************************************************
-class ZSDRAWDLL_API CModelGraphObjLabels : public QAbstractTableModel
+class ZSDRAWDLL_API CModelGraphObjGeometry : public QAbstractTableModel
 //******************************************************************************
 {
     Q_OBJECT
@@ -53,27 +53,25 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CModelGraphObjLabels"; }
+    static QString ClassName() { return "CModelGraphObjGeometry"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnSelected       = 0,
-        EColumnName           = 1,
-        EColumnText           = 2,
-        EColumnShow           = 3,
-        EColumnAnchor         = 4,
-        EColumnShowAnchorLine = 5,
-        EColumnError          = 6,
+        EColumnName     = 0,
+        EColumnXVal     = 1,
+        EColumnYVal     = 2,
+        EColumnShowVals = 3,
+        EColumnShowLine = 4,
         EColumnCount
     };
     static QString column2Str(int i_clm);
 public: // ctors and dtor
-    CModelGraphObjLabels(
+    CModelGraphObjGeometry(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strNameSpace,
         const QString& i_strGraphObjType,
         const QString& i_strObjName,
         QObject* i_pObjParent = nullptr);
-    virtual ~CModelGraphObjLabels();
+    virtual ~CModelGraphObjGeometry();
 signals:
     /*! This signal is emitted if the indicated content has been changed. */
     void contentChanged();
@@ -87,14 +85,8 @@ public: // instance methods
     void clearModel();
     void fillModel();
 public: // instance methods
-    QString findUniqueLabelName(const QString& i_strPrefix = "") const;
-    bool isUniqueLabelName(const QString& i_strName) const;
-    int getLabelRowIndex(const QString& i_strName) const;
-    QString addLabel();
-    void removeLabel(const QString& i_strName);
-    QStringList labelNames() const;
-    QStringList selectedLabelNames() const;
-    void removeSelectedLabels();
+    int getValueRowIndex(const QString& i_strValueName) const;
+    QStringList valueNames() const;
 public: // overridables of base class QAbstractItemModel
     int rowCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
     int columnCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
@@ -103,51 +95,47 @@ public: // overridables of base class QAbstractItemModel
     QVariant headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
     Qt::ItemFlags flags(const QModelIndex& i_modelIdx) const override;
 protected: // type definitions and constants
-    struct SLabelSettings {
+    struct SDataRow {
     public:
-        static SLabelSettings fromGraphObj(CGraphObj* i_pGraphObj, const QString& i_strLabelName, int i_iRowIdx = -1);
+        static SDataRow fromGraphObj(CGraphObj* i_pGraphObj, const QString& i_strValueName, int i_iRowIdx = -1);
     public: // ctors
-        SLabelSettings();
-        SLabelSettings(
-            const QString& i_strName, int i_iRowIdx, bool i_bIsPredefinedLabelName,
-            const QString& i_strText, const SGraphObjSelectionPoint& i_selPt, bool i_bVisible, bool i_bAnchorLineVisible);
+        SDataRow();
+        SDataRow(
+            const QString& i_strValueName, int i_iRowIdx,
+            const ZS::PhysVal::CPhysVal& i_physValX, const ZS::PhysVal::CPhysVal& i_physValY,
+            bool i_bVisible, bool i_bLineVisible);
     public: // operators
-        bool operator == (const SLabelSettings& i_other) const;
-        bool operator != (const SLabelSettings& i_other) const;
+        bool operator == (const SDataRow& i_other) const;
+        bool operator != (const SDataRow& i_other) const;
     public: // struct members
-        /*!< Original name of the label as retrieved from the graphical object.
-             Empty if the label is newly added to the model. */
-        QString m_strNameOrig;
-        /*!< Current name of the label. If the label has been retrieved from
-             the graphical object and has not been renamed the current name
-             equals to the original name. */
-        QString m_strNameCurr;
+        /*!< Name of the value as retrieved from the graphical object.
+             Possible names could be "P1", "Center", "Size", "Length", "Angle".
+             "Length" and "Angle" are treated special as they are single values
+             and not X/Y value pairs. */
+        QString m_strValueName;
         /*!< Index in the row of labels. */
         int m_iRowIdx;
-        /*!< True if the label belongs to the predefined labels of the graphical object. */
-        bool m_bIsPredefinedLabelName;
-        /*!< Text to be indicated by the label. */
-        QString m_strText;
-        /*!< Selection point the label should be anchored to. */
-        SGraphObjSelectionPoint m_selPt;
-        /*!< True if the label should be visible and added to the graphics scene. */
+        /*!< X Value. For "Size" this is the width of the object's bounding rectangle.
+             Also used for "Length" and "Angle". */
+        ZS::PhysVal::CPhysVal m_physValX;
+        /*!< Y Value. For "Size" this is the height of the object's bounding rectangle.
+             Not used (set invalid) for "Length" and "Angle". */
+        ZS::PhysVal::CPhysVal m_physValY;
+        /*!< True if the value should be shown. */
         bool m_bVisible;
-        /*!< True if the anchor line from the label to the selection point sould be drawn. */
-        bool m_bAnchorLineVisible;
-        /*!< True if the label is selected within the model (e.g. for deletion). */
-        bool m_bSelected;
-        /*!< Stores error info if the labels are wrongly configured by the user
-             (e.g. ambiguous or reserved names are used). */
-        ZS::System::SErrResultInfo m_errResultInfo;
+        /*!< True if a line should be drawn from the label showing the value and the
+             corresponding shape point of the object.
+             For "Line" this means that a dimension line is drawn.
+             For "Angle" this means that a circle segment is drawn. */
+        bool m_bLineVisible;
     };
 protected slots:
-    void onGraphObjLabelAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
-    void onGraphObjLabelRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
-    void onGraphObjLabelRenamed(CGraphObj* i_pGraphObj, const QString& i_strName, const QString& i_strNameNew);
-    void onGraphObjLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
+    //void onGraphObjShapePointAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
+    //void onGraphObjShapePointRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
+    void onGraphObjGeometryChanged(CGraphObj* i_pGraphObj);
     void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // instance methods
-    QList<SLabelSettings> getLabelSettings(CGraphObj* i_pGraphObj) const;
+    QList<SDataRow> getDataRows(CGraphObj* i_pGraphObj) const;
 protected: // instance methods (tracing emitting signals)
     void emit_contentChanged();
     void _beginInsertRows(const QModelIndex& i_modelIdxParent, int i_iRowFirst, int i_iRowLast);
@@ -163,11 +151,11 @@ protected: // instance members
     /*!< If the unique key is set the drawing scene is queried to get the pointer to
          the graphical object which should be edited. */
     CGraphObj* m_pGraphObj;
-    /*!< Cached draw settings of the labels of the graphical object.
-         The labels are sorted. First the predefined labels are inserted.
-         The order is arbitrary. The relation between the row index and the
-         label name (which must be unique) is stored in a separate hash. */
-    QList<SLabelSettings> m_arLabelSettings;
+    /*!< Cached geometry settings of the graphical object.
+         The order is defined by the graphical object returning the list of values.
+         The relation between the row index and the value names (which must be unique)
+         is stored in a separate hash. */
+    QList<SDataRow> m_arDataRows;
     /*!< Flag to indicate that the content of a data row has been changed while the "contentChanged"
          signal was blocked by the "contentChanged" counter. */
     bool m_bContentChanged;
@@ -182,10 +170,10 @@ protected: // instance members
     /*!< Trace admin object to trace noisy methods (often called methods like "data", "columnCount", "RowCount"). */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
-}; // class CModelGraphObjLabels
+}; // class CModelGraphObjGeometry
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjLabelsModel_h
+#endif // #ifndef ZSDraw_GraphObjGeometryModel_h

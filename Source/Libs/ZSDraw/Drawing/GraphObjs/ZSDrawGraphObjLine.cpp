@@ -773,7 +773,7 @@ public: // overridables of base class CGraphObj
 QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    static const QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefinedNames = {
+    static const QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined = {
         { "Name", {ESelectionPoint::Center} },
         { "P1", {0} },
         { "P2", {1} }
@@ -783,8 +783,8 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const
         0,   // P1, Start point of the line
         1    // P2, End point of the line
     };
-    if (s_hshSelPtsPredefinedNames.contains(i_strName)) {
-        return s_hshSelPtsPredefinedNames[i_strName];
+    if (s_hshSelPtsPredefined.contains(i_strName)) {
+        return s_hshSelPtsPredefined[i_strName];
     }
     return s_arSelPtsUserDefined;
 }

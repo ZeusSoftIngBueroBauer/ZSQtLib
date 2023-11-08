@@ -106,14 +106,15 @@ list(APPEND _HeadersWidgetsGraphObjFormat
 
 list(APPEND _HeadersWidgetsGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGeometryModel.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLabelsModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjTextStylePropertiesWdgt.h
 )
@@ -217,14 +218,15 @@ list(APPEND _SourcesWidgetsGraphObjFormat
 
 list(APPEND _SourcesWidgetsGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGeometryModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLabelsModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjTextStylePropertiesWdgt.cpp
 )

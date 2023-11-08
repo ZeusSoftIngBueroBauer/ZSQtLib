@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesLabelsWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsModel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
@@ -45,16 +45,16 @@ may result in using the software modules.
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
-#include <QtGui/qtableview.h>
 #include <QtGui/qpushbutton.h>
+#include <QtGui/qtableview.h>
 #else
 #include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
-#include <QtWidgets/qtableview.h>
 #include <QtWidgets/qpushbutton.h>
+#include <QtWidgets/qtableview.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -211,11 +211,11 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pTableView->setItemDelegateForColumn(
         CModelGraphObjLabels::EColumnSelected, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
     m_pTableView->setItemDelegateForColumn(
-        CModelGraphObjLabels::EColumnVisible, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
+        CModelGraphObjLabels::EColumnShow, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
     m_pTableView->setItemDelegateForColumn(
         CModelGraphObjLabels::EColumnAnchor, new CComboBoxItemDelegate(m_pModel, m_pTableView));
     m_pTableView->setItemDelegateForColumn(
-        CModelGraphObjLabels::EColumnAnchorLineVisible, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
+        CModelGraphObjLabels::EColumnShowAnchorLine, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
     m_pTableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
     m_pTableView->resizeColumnsToContents();
     m_pTableView->resizeRowsToContents();
@@ -381,6 +381,23 @@ void CWdgtGraphObjPropertiesLabels::applySettings(bool i_bImmediatelyApplySettin
 }
 
 /*==============================================================================
+protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjPropertiesLabels::fillEditControls()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "fillEditControls",
+        /* strAddInfo   */ "" );
+
+    m_pModel->fillModel();
+}
+
+/*==============================================================================
 protected slots:
 ==============================================================================*/
 
@@ -463,21 +480,4 @@ void CWdgtGraphObjPropertiesLabels::onModelLabelsContentChanged()
         m_pBtnRemoveLabels->setEnabled(false);
     }
     emit_contentChanged();
-}
-
-/*==============================================================================
-protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::fillEditControls()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "fillEditControls",
-        /* strAddInfo   */ "" );
-
-    m_pModel->fillModel();
 }

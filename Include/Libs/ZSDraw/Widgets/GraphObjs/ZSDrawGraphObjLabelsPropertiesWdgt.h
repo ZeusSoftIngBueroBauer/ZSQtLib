@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGraphObjPropertiesLabelsWdgt_h
-#define ZSDraw_DrawGraphObjPropertiesLabelsWdgt_h
+#ifndef ZSDraw_DrawGraphObjLabelsPropertiesWdgt_h
+#define ZSDraw_DrawGraphObjLabelsPropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
@@ -58,11 +58,13 @@ public: // ctors and dtor
 public: // instance methods
     void expand(bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    virtual bool setKeyInTree(const QString& i_strKeyInTree) override;
+    bool setKeyInTree(const QString& i_strKeyInTree) override;
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasErrors() const override;
     bool hasChanges() const override;
     void applySettings(bool i_bImmediatelyApplySettings = true) override;
+protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    void fillEditControls() override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
     void onBtnResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
@@ -70,8 +72,6 @@ protected slots:
     void onBtnRemoveLabelClicked(bool i_bChecked = false);
 protected slots:
     void onModelLabelsContentChanged();
-protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void fillEditControls() override;
 private: // instance members
     /*!< Edit controls. */
     QWidget* m_pWdgtHeadline;
@@ -98,4 +98,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGraphObjPropertiesLabelsWdgt_h
+#endif // #ifndef ZSDraw_DrawGraphObjLabelsPropertiesWdgt_h
