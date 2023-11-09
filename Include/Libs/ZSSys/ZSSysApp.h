@@ -50,9 +50,9 @@ ZSSYSDLL_API void parseAppArgs(
     QStringList& io_strlstPars,
     QStringList& io_strlstVals );
 
-ZSSYSDLL_API QString getAppConfigDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting = true );
-ZSSYSDLL_API QString getAppLogDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting = true );
-ZSSYSDLL_API QString getAppDataDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting = true );
+ZSSYSDLL_API QString getAppConfigDir( const QString& i_strIniFileScope = "User", bool i_bCreateDirIfNotExisting = true );
+ZSSYSDLL_API QString getAppLogDir( const QString& i_strIniFileScope = "User", bool i_bCreateDirIfNotExisting = true );
+ZSSYSDLL_API QString getAppDataDir( const QString& i_strIniFileScope = "User", bool i_bCreateDirIfNotExisting = true );
 
 struct ZSSYSDLL_API SLastUsedFile {
     SLastUsedFile() :

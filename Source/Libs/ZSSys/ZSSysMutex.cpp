@@ -588,7 +588,7 @@ CRecursiveMutex::~CRecursiveMutex()
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
-        /* strMethod          */ "ctor",
+        /* strMethod          */ "dtor",
         /* strMthInArgs       */ "" );
     if( m_pTrcAdminObj != nullptr )
     {

@@ -28,9 +28,7 @@ may result in using the software modules.
 #include <QtNetwork/qtcpsocket.h>
 
 #include "ZSIpc/ZSIpcSocketWrapperTcp.h"
-#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -211,62 +209,27 @@ CTcpSocketWrapper::CTcpSocketWrapper(
     m_socketDscr.m_hostAddrRemote = m_pTcpSocket->peerAddress();
     m_socketDscr.m_uRemotePort = m_pTcpSocket->peerPort();
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(connected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onConnected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(disconnected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDisconnected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(error(QAbstractSocket::SocketError)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onError(QAbstractSocket::SocketError)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onStateChanged(QAbstractSocket::SocketState)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(aboutToClose()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onAboutToClose()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(bytesWritten(qint64)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBytesWritten(qint64)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(readyRead()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onReadyRead()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::connected,
+        this, &CTcpSocketWrapper::onConnected);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::disconnected,
+        this, &CTcpSocketWrapper::onDisconnected);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::errorOccurred,
+        this, &CTcpSocketWrapper::onError);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::stateChanged,
+        this, &CTcpSocketWrapper::onStateChanged);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::aboutToClose,
+        this, &CTcpSocketWrapper::onAboutToClose);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::bytesWritten,
+        this, &CTcpSocketWrapper::onBytesWritten);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::readyRead,
+        this, &CTcpSocketWrapper::onReadyRead);
 
 } // ctor
 
@@ -317,62 +280,27 @@ CTcpSocketWrapper::CTcpSocketWrapper(
 
     m_socketDscr.m_hostAddrLocal = m_pTcpSocket->localAddress();
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(connected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onConnected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(disconnected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDisconnected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(error(QAbstractSocket::SocketError)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onError(QAbstractSocket::SocketError)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onStateChanged(QAbstractSocket::SocketState)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(aboutToClose()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onAboutToClose()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(bytesWritten(qint64)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBytesWritten(qint64)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpSocket,
-        /* szSignal     */ SIGNAL(readyRead()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onReadyRead()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::connected,
+        this, &CTcpSocketWrapper::onConnected);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::disconnected,
+        this, &CTcpSocketWrapper::onDisconnected);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::errorOccurred,
+        this, &CTcpSocketWrapper::onError);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::stateChanged,
+        this, &CTcpSocketWrapper::onStateChanged);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::aboutToClose,
+        this, &CTcpSocketWrapper::onAboutToClose);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::bytesWritten,
+        this, &CTcpSocketWrapper::onBytesWritten);
+    QObject::connect(
+        m_pTcpSocket, &QTcpSocket::readyRead,
+        this, &CTcpSocketWrapper::onReadyRead);
 
 } // ctor
 
@@ -396,40 +324,26 @@ CTcpSocketWrapper::~CTcpSocketWrapper()
         if( m_pTcpSocket != nullptr )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pTcpSocket,
-                /* szSignal     */ SIGNAL(connected()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onConnected()) );
+                m_pTcpSocket, &QTcpSocket::connected,
+                this, &CTcpSocketWrapper::onConnected);
             QObject::disconnect(
-                /* pObjSender   */ m_pTcpSocket,
-                /* szSignal     */ SIGNAL(disconnected()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onDisconnected()) );
+                m_pTcpSocket, &QTcpSocket::disconnected,
+                this, &CTcpSocketWrapper::onDisconnected);
             QObject::disconnect(
-                /* pObjSender   */ m_pTcpSocket,
-                /* szSignal     */ SIGNAL(error(QAbstractSocket::SocketError)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onError(QAbstractSocket::SocketError)) );
+                m_pTcpSocket, &QTcpSocket::errorOccurred,
+                this, &CTcpSocketWrapper::onError);
             QObject::disconnect(
-                /* pObjSender   */ m_pTcpSocket,
-                /* szSignal     */ SIGNAL(stateChanged(QAbstractSocket::SocketState)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onStateChanged(QAbstractSocket::SocketState)) );
+                m_pTcpSocket, &QTcpSocket::stateChanged,
+                this, &CTcpSocketWrapper::onStateChanged);
             QObject::disconnect(
-                /* pObjSender   */ m_pTcpSocket,
-                /* szSignal     */ SIGNAL(aboutToClose()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onAboutToClose()) );
+                m_pTcpSocket, &QTcpSocket::aboutToClose,
+                this, &CTcpSocketWrapper::onAboutToClose);
             QObject::disconnect(
-                /* pObjSender   */ m_pTcpSocket,
-                /* szSignal     */ SIGNAL(bytesWritten(qint64)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onBytesWritten(qint64)) );
+                m_pTcpSocket, &QTcpSocket::bytesWritten,
+                this, &CTcpSocketWrapper::onBytesWritten);
             QObject::disconnect(
-                /* pObjSender   */ m_pTcpSocket,
-                /* szSignal     */ SIGNAL(readyRead()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onReadyRead()) );
+                m_pTcpSocket, &QTcpSocket::readyRead,
+                this, &CTcpSocketWrapper::onReadyRead);
 
             m_pTcpSocket->abort();
             m_pTcpSocket->deleteLater();

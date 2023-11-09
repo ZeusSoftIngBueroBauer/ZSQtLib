@@ -49,11 +49,9 @@ may result in using the software modules.
 #endif
 
 #include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTime.h"
-#include "ZSSys/ZSSysVersion.h"
 
 #include <stdexcept>
 
@@ -290,23 +288,12 @@ CErrLog* CErrLog::CreateInstance(
         strAppNameNormalized.remove("<");
         strAppNameNormalized.remove(">");
 
-        // Range of IniFileScope: ["AppDir", "User", "System"]
-        #ifdef __linux__
-        // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-        // where the application has not write access rights. Stupid ...
-        QString strIniFileScope = "User";
-        #else
-        QString strIniFileScope = "System"; // Default
-        #endif
-
-        QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
+        QString strAppLogDir = ZS::System::getAppLogDir();
         QString strErrLogFileBaseName = strAppNameNormalized + "-ErrLog";
         QString strErrLogFileSuffix = "xml";
 
         strAbsFilePath = strAppLogDir + "/" + strErrLogFileBaseName + "." + strErrLogFileSuffix;
-
-    } // if( strAbsFilePath.isEmpty() )
+    }
 
     CErrLog* pErrLog = new CErrLog(
         i_strName, strAbsFilePath,

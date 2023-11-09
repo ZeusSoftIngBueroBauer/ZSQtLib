@@ -136,14 +136,7 @@ CApplication::CApplication(
     QString     strWindowTitle = i_strWindowTitle;
     QString     strRemoteAppName;
 
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
     QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
 
     parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
 

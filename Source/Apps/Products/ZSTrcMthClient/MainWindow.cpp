@@ -637,7 +637,7 @@ void CMainWindow::onActFileRecallAdminObjsTriggered()
     QString   strAbsFilePath;
 
     settings.beginGroup("FilePaths");
-    strAbsFilePath = settings.value("AdminObjs", getAppConfigDir("System")).toString();
+    strAbsFilePath = settings.value("AdminObjs", getAppConfigDir()).toString();
     settings.endGroup();
 
     strAbsFilePath = QFileDialog::getOpenFileName(
@@ -666,7 +666,7 @@ void CMainWindow::onActFileSaveAdminObjsTriggered()
     QString   strAbsFilePath;
 
     settings.beginGroup("FilePaths");
-    strAbsFilePath = settings.value("AdminObjs", getAppConfigDir("System")).toString();
+    strAbsFilePath = settings.value("AdminObjs", getAppConfigDir()).toString();
     settings.endGroup();
 
     strAbsFilePath = QFileDialog::getSaveFileName(
@@ -695,7 +695,7 @@ void CMainWindow::onActFileReadTrcMthFileTriggered()
     QString   strAbsFilePath;
 
     settings.beginGroup("FilePaths");
-    strAbsFilePath = settings.value("TrcMthFile", getAppLogDir("System")).toString();
+    strAbsFilePath = settings.value("TrcMthFile", getAppLogDir()).toString();
     settings.endGroup();
 
     strAbsFilePath = QFileDialog::getOpenFileName(
@@ -724,7 +724,7 @@ void CMainWindow::onActFileWriteTrcMthFileTriggered()
     QString   strAbsFilePath;
 
     settings.beginGroup("FilePaths");
-    strAbsFilePath = settings.value("TrcMthFile", getAppLogDir("System")).toString();
+    strAbsFilePath = settings.value("TrcMthFile", getAppLogDir()).toString();
     settings.endGroup();
 
     strAbsFilePath = QFileDialog::getSaveFileName(

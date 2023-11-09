@@ -106,8 +106,6 @@ bool CGUIApp::notify( QObject* i_pObjRcv, QEvent* i_pEv )
 
     if( pMsgExc == nullptr )
     {
-        QString strExcType;
-
         try
         {
             bResult = QApplication::notify(i_pObjRcv,i_pEv);

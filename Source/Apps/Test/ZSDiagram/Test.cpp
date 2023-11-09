@@ -25,7 +25,6 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Test.h"
-#include "App.h"
 #include "WidgetCentral.h"
 #include "WdgtTestOutput.h"
 #include "Units/Units.h"
@@ -45,7 +44,6 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
-#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysMath.h"
 
@@ -63,7 +61,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 using namespace ZS::Diagram;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Test::Diagram;
@@ -1522,7 +1519,7 @@ void CTest::onTimerSigGenTimeout()
 
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitY);
+            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitX);
             m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &unitY);
         }
 

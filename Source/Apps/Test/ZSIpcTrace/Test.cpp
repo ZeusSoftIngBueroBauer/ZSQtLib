@@ -2895,22 +2895,10 @@ void CTest::onZSTraceClientTrcMthListWdgtTextItemAdded( const QString& i_strText
                 // Check if entries added to log file.
                 //------------------------------------
 
-                // Range of IniFileScope: ["AppDir", "User", "System"]
-                #ifdef __linux__
-                // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-                // where the application has not write access rights. Stupid ...
-                QString strIniFileScope = "User";
-                #else
-                QString strIniFileScope = "System"; // Default
-                #endif
-
-                QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
+                QString strAppLogDir = ZS::System::getAppLogDir();
                 QString strTrcMthFileSuffix = "log";
                 QString strTrcMthFileBaseName = "ZSTrcServer-TrcMth00";
-
                 QString strTrcMthFileAbsFilePath = strAppLogDir + "/" + strTrcMthFileBaseName + "." + strTrcMthFileSuffix;
-
                 QFile fileTrcMthFile(strTrcMthFileAbsFilePath);
 
                 // Temporarily disable trace output. This will close (flush buffer) the file

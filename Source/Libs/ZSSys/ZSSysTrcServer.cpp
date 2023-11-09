@@ -641,7 +641,7 @@ QString CTrcServer::GetAdminObjFileAbsoluteFilePath()
 
     if( s_strAdminObjFileAbsFilePath.isEmpty() )
     {
-        QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+        QString strAppConfigDir = ZS::System::getAppConfigDir();
         QString strTrcAdminObjFileSuffix = "xml";
         QString strTrcAdminObjFileBaseName = "ZSTrcServer-TrcMthAdmObj";
         SetAdminObjFileAbsoluteFilePath(
@@ -699,7 +699,7 @@ QString CTrcServer::GetLocalTrcFileAbsoluteFilePath()
 
     if( s_strLocalTrcFileAbsFilePath.isEmpty() )
     {
-        QString strAppLogDir = ZS::System::getAppLogDir("System");
+        QString strAppLogDir = ZS::System::getAppLogDir();
         QString strTrcLogFileSuffix = "log";
         QString strTrcLogFileBaseName = "ZSTrcServer-TrcMth";
         SetLocalTrcFileAbsoluteFilePath(

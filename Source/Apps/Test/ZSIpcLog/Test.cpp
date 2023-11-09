@@ -2895,22 +2895,10 @@ void CTest::onLogClientLogWdgtTextItemAdded( const QString& i_strText )
                 // Retrieve result values from log file
                 //-------------------------------------
 
-                // Range of IniFileScope: ["AppDir", "User", "System"]
-                #ifdef __linux__
-                // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-                // where the application has not write access rights. Stupid ...
-                QString strIniFileScope = "User";
-                #else
-                QString strIniFileScope = "System"; // Default
-                #endif
-
-                QString strAppLogDir = ZS::System::getAppLogDir(strIniFileScope);
-
+                QString strAppLogDir = ZS::System::getAppLogDir();
                 QString strLogFileSuffix = "log";
                 QString strLogFileBaseName = "ZSLogServer00";
-
                 QString strLogFileAbsFilePath = strAppLogDir + "/" + strLogFileBaseName + "." + strLogFileSuffix;
-
                 QFile fileLogFile(strLogFileAbsFilePath);
 
                 // Close (flush buffer) the local log file so that its content

@@ -27,6 +27,7 @@ may result in using the software modules.
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qdir.h>
 #include <QtCore/qsettings.h>
+#include <QtCore/qstandardpaths.h>
 #include <QtCore/qthread.h>
 
 #include "ZSSys/ZSSysApp.h"
@@ -170,103 +171,21 @@ void ZS::System::parseAppArgs(
 QString ZS::System::getAppConfigDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting )
 //------------------------------------------------------------------------------
 {
-    QString strOrgNameNormalized = QCoreApplication::organizationName();
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The organization name may contain characters which are invalid in file names:
-    strOrgNameNormalized.remove(":");
-    strOrgNameNormalized.remove("\\");
-    strOrgNameNormalized.remove("/");
-    strOrgNameNormalized.remove("<");
-    strOrgNameNormalized.remove(">");
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strIniFileAbsDirPath;
-    QString strIniFileBaseName = strAppNameNormalized;
-    QString strIniFileSuffix = "ini";
-    QString strIniFileAbsFilePath;
-
-    if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 )
-    {
-        QString strAppDirAbsPath = QCoreApplication::applicationDirPath();
-
-        // Applications installation directory
-        QDir dirApp(strAppDirAbsPath);
-
-        strIniFileAbsDirPath = dirApp.absolutePath();
-
-        int idxStrPos = strIniFileAbsDirPath.indexOf("Bin",0,Qt::CaseInsensitive);
-
-        if( idxStrPos >= 0 ) // Development environment
-        {
-            strIniFileAbsDirPath = strIniFileAbsDirPath.left(idxStrPos);
-            strIniFileAbsDirPath += "Config";
-
-            strIniFileAbsFilePath = strIniFileAbsDirPath + "/" + strIniFileBaseName + ".ini";
-
-            QSettings settingsFile( strIniFileAbsFilePath, QSettings::IniFormat );
-            strIniFileAbsFilePath = settingsFile.fileName();
-            QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-            strIniFileAbsDirPath = fileInfoIniFile.absolutePath();
-        }
-        else // if( idxStrPos == 0 )  // Program Files
-        {
-            strIniFileAbsFilePath = strIniFileAbsDirPath + "/" + strIniFileBaseName + ".ini";
-            QSettings settingsFile( strIniFileAbsFilePath, QSettings::IniFormat );
-            strIniFileAbsFilePath = settingsFile.fileName();
-            QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-            strIniFileAbsDirPath = fileInfoIniFile.absolutePath();
-        }
-    } // if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 )
-
-    else if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 )
-    {
-        QSettings settingsFile(
-            /* format          */ QSettings::IniFormat,
-            /* scope           */ QSettings::UserScope,
-            /* strOrganization */ strOrgNameNormalized,
-            /* strAppName      */ strAppNameNormalized );
-        strIniFileAbsFilePath = settingsFile.fileName();
-        QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-        strIniFileAbsDirPath = fileInfoIniFile.absolutePath();
-
-        if( !strIniFileAbsDirPath.endsWith(strAppNameNormalized,Qt::CaseInsensitive) )
-        {
-            strIniFileAbsDirPath += "/" + strAppNameNormalized;
-        }
-    } // if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 )
-
-    else // if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 ) Default
-    {
-        QSettings settingsFile(
-            /* format          */ QSettings::IniFormat,
-            /* scope           */ QSettings::SystemScope,
-            /* strOrganization */ strOrgNameNormalized,
-            /* strAppName      */ strAppNameNormalized );
-        strIniFileAbsFilePath = settingsFile.fileName();
-        QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-        strIniFileAbsDirPath = fileInfoIniFile.absolutePath();
-
-        if( !strIniFileAbsDirPath.endsWith(strAppNameNormalized,Qt::CaseInsensitive) )
-        {
-            strIniFileAbsDirPath += "/" + strAppNameNormalized;
-        }
-    } // if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 )
-
-    if( i_bCreateDirIfNotExisting )
-    {
-        QDir().mkpath(strIniFileAbsDirPath);
+    QString strAbsDirPath;
+    if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
     }
-
-    return strIniFileAbsDirPath;
-
-} // getAppConfigDir
+    else if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    }
+    else if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    }
+    if (i_bCreateDirIfNotExisting) {
+        QDir().mkpath(strAbsDirPath);
+    }
+    return strAbsDirPath;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the absolute path to the log directory of the application.
@@ -294,104 +213,21 @@ QString ZS::System::getAppConfigDir( const QString& i_strIniFileScope, bool i_bC
 QString ZS::System::getAppLogDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting )
 //------------------------------------------------------------------------------
 {
-    QString strLogFileAbsDirPath;
-
-    QString strOrgNameNormalized = QCoreApplication::organizationName();
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The organization name may contain characters which are invalid in file names:
-    strOrgNameNormalized.remove(":");
-    strOrgNameNormalized.remove("\\");
-    strOrgNameNormalized.remove("/");
-    strOrgNameNormalized.remove("<");
-    strOrgNameNormalized.remove(">");
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strIniFileAbsDirPath;
-    QString strIniFileBaseName = strAppNameNormalized;
-    QString strIniFileSuffix = "ini";
-    QString strIniFileAbsFilePath;
-
-    if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 )
-    {
-        QString strAppDirAbsPath = QCoreApplication::applicationDirPath();
-
-        // Applications installation directory
-        QDir dirApp(strAppDirAbsPath);
-
-        strIniFileAbsDirPath = dirApp.absolutePath();
-
-        int idxStrPos = strIniFileAbsDirPath.indexOf("Bin",0,Qt::CaseInsensitive);
-
-        if( idxStrPos >= 0 ) // Development environment
-        {
-            strIniFileAbsDirPath = strIniFileAbsDirPath.left(idxStrPos);
-            strLogFileAbsDirPath = strIniFileAbsDirPath;
-            strLogFileAbsDirPath += "Log";
-        }
-        else // if( idxStrPos == 0 )  // Program Files
-        {
-            strIniFileAbsFilePath = strIniFileAbsDirPath + "/" + strIniFileBaseName + ".ini";
-            QSettings settingsFile( strIniFileAbsFilePath, QSettings::IniFormat );
-            strIniFileAbsFilePath = settingsFile.fileName();
-            QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-            strLogFileAbsDirPath = fileInfoIniFile.absolutePath();
-            strLogFileAbsDirPath += "/Log";
-        }
-    } // if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 )
-
-    else if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 )
-    {
-        QSettings settingsFile(
-            /* format          */ QSettings::IniFormat,
-            /* scope           */ QSettings::UserScope,
-            /* strOrganization */ strOrgNameNormalized,
-            /* strAppName      */ strAppNameNormalized );
-        strIniFileAbsFilePath = settingsFile.fileName();
-        QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-        strLogFileAbsDirPath = fileInfoIniFile.absolutePath();
-
-        if( !strLogFileAbsDirPath.endsWith(strAppNameNormalized,Qt::CaseInsensitive) )
-        {
-            strLogFileAbsDirPath += "/" + strAppNameNormalized;
-        }
-        strLogFileAbsDirPath += "/Log";
-
-    } // if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 )
-
-    else // if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 ) Default
-    {
-        QSettings settingsFile(
-            /* format          */ QSettings::IniFormat,
-            /* scope           */ QSettings::SystemScope,
-            /* strOrganization */ strOrgNameNormalized,
-            /* strAppName      */ strAppNameNormalized );
-        strIniFileAbsFilePath = settingsFile.fileName();
-        QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-        strLogFileAbsDirPath = fileInfoIniFile.absolutePath();
-
-        if( !strLogFileAbsDirPath.endsWith(strAppNameNormalized,Qt::CaseInsensitive) )
-        {
-            strLogFileAbsDirPath += "/" + strAppNameNormalized;
-        }
-        strLogFileAbsDirPath += "/Log";
-
-    } // if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 )
-
-    if( i_bCreateDirIfNotExisting )
-    {
-        QDir().mkpath(strLogFileAbsDirPath);
+    QString strAbsDirPath;
+    if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     }
-
-    return strLogFileAbsDirPath;
-
-} // getAppLogDir
+    else if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    }
+    else if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    }
+    if (i_bCreateDirIfNotExisting) {
+        QDir().mkpath(strAbsDirPath);
+    }
+    return strAbsDirPath;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the absolute path to the data directory of the application.
@@ -419,105 +255,21 @@ QString ZS::System::getAppLogDir( const QString& i_strIniFileScope, bool i_bCrea
 QString ZS::System::getAppDataDir( const QString& i_strIniFileScope, bool i_bCreateDirIfNotExisting )
 //------------------------------------------------------------------------------
 {
-    QString strDataFileAbsDirPath;
-
-    QString strOrgNameNormalized = QCoreApplication::organizationName();
-    QString strAppNameNormalized = QCoreApplication::applicationName();
-
-    // The organization name may contain characters which are invalid in file names:
-    strOrgNameNormalized.remove(":");
-    strOrgNameNormalized.remove("\\");
-    strOrgNameNormalized.remove("/");
-    strOrgNameNormalized.remove("<");
-    strOrgNameNormalized.remove(">");
-
-    // The application name may contain characters which are invalid in file names:
-    strAppNameNormalized.remove(":");
-    strAppNameNormalized.remove("\\");
-    strAppNameNormalized.remove("/");
-    strAppNameNormalized.remove("<");
-    strAppNameNormalized.remove(">");
-
-    QString strIniFileAbsDirPath;
-    QString strIniFileBaseName = strAppNameNormalized;
-    QString strIniFileSuffix = "ini";
-    QString strIniFileAbsFilePath;
-
-    if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 )
-    {
-        QString strAppDirAbsPath = QCoreApplication::applicationDirPath();
-
-        // Applications installation directory
-        QDir dirApp(strAppDirAbsPath);
-
-        strIniFileAbsDirPath = dirApp.absolutePath();
-
-        int idxStrPos = strIniFileAbsDirPath.indexOf("Bin",0,Qt::CaseInsensitive);
-
-        if( idxStrPos >= 0 ) // Development environment
-        {
-            strIniFileAbsDirPath = strIniFileAbsDirPath.left(idxStrPos);
-            strDataFileAbsDirPath = strIniFileAbsDirPath;
-            strDataFileAbsDirPath += "Data";
-        }
-        else // if( idxStrPos == 0 )  // Program Files
-        {
-            strIniFileAbsFilePath = strIniFileAbsDirPath + "/" + strIniFileBaseName + ".ini";
-            QSettings settingsFile( strIniFileAbsFilePath, QSettings::IniFormat );
-            strIniFileAbsFilePath = settingsFile.fileName();
-            QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-            strDataFileAbsDirPath = fileInfoIniFile.absolutePath();
-            strDataFileAbsDirPath += "/Data";
-        }
-    } // if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 )
-
-    else if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 )
-    {
-        QSettings settingsFile(
-            /* format          */ QSettings::IniFormat,
-            /* scope           */ QSettings::UserScope,
-            /* strOrganization */ strOrgNameNormalized,
-            /* strAppName      */ strAppNameNormalized );
-        strIniFileAbsFilePath = settingsFile.fileName();
-        QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-        strDataFileAbsDirPath = fileInfoIniFile.absolutePath();
-
-        if( !strDataFileAbsDirPath.endsWith(strAppNameNormalized,Qt::CaseInsensitive) )
-        {
-            strDataFileAbsDirPath += "/" + strAppNameNormalized;
-        }
-        strDataFileAbsDirPath += "/Data";
-
-    } // if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 )
-
-    else // if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 ) Default
-    {
-        QSettings settingsFile(
-            /* format          */ QSettings::IniFormat,
-            /* scope           */ QSettings::SystemScope,
-            /* strOrganization */ strOrgNameNormalized,
-            /* strAppName      */ strAppNameNormalized );
-        strIniFileAbsFilePath = settingsFile.fileName();
-        QFileInfo fileInfoIniFile(strIniFileAbsFilePath);
-        strDataFileAbsDirPath = fileInfoIniFile.absolutePath();
-
-        if( !strDataFileAbsDirPath.endsWith(strAppNameNormalized,Qt::CaseInsensitive) )
-        {
-            strDataFileAbsDirPath += "/" + strAppNameNormalized;
-        }
-        strDataFileAbsDirPath += "/Data";
-
-    } // if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 )
-
-    if( i_bCreateDirIfNotExisting )
-    {
-        QDir().mkpath(strDataFileAbsDirPath);
+    QString strAbsDirPath;
+    if( i_strIniFileScope.compare("AppDir",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     }
-
-    return strDataFileAbsDirPath;
-
-} // getAppDataDir
-
+    else if( i_strIniFileScope.compare("System",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    }
+    else if( i_strIniFileScope.compare("User",Qt::CaseInsensitive) == 0 ) {
+        strAbsDirPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    }
+    if (i_bCreateDirIfNotExisting) {
+        QDir().mkpath(strAbsDirPath);
+    }
+    return strAbsDirPath;
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a list with the last used files from the given settings with

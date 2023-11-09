@@ -140,6 +140,7 @@ CApplication::CApplication(
     // Trace Server
     //-------------
 
+#if 0
     m_pTrcServer = CIpcTrcServer::CreateInstance();
     m_pTrcServer->setLocalTrcFileSubFileLineCountMax(10000);
 
@@ -149,7 +150,7 @@ CApplication::CApplication(
     m_pTrcServer->startup();
 
     m_pTrcAdminObj = m_pTrcServer->GetTraceAdminObj(NameSpace(), ClassName(), objectName());
-
+#endif
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

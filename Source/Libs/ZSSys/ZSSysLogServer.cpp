@@ -866,7 +866,7 @@ QString CLogServer::GetLoggerFileAbsoluteFilePath()
 
     if( s_strLoggerFileAbsFilePath.isEmpty() )
     {
-        QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+        QString strAppConfigDir = ZS::System::getAppConfigDir();
         QString strLoggerFileSuffix = "xml";
         QString strLoggerFileBaseName = "ZSLogServer-Loggers";
         SetLoggerFileAbsoluteFilePath(
@@ -924,7 +924,7 @@ QString CLogServer::GetLocalLogFileAbsoluteFilePath()
 
     if( s_strLocalLogFileAbsFilePath.isEmpty() )
     {
-        QString strAppLogDir = ZS::System::getAppLogDir("System");
+        QString strAppLogDir = ZS::System::getAppLogDir();
         QString strTrcLogFileSuffix = "log";
         QString strTrcLogFileBaseName = "ZSLogServer";
         SetLocalLogFileAbsoluteFilePath(

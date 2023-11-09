@@ -458,7 +458,7 @@ QString CWindowsStyle::getSaveRecallAbsoluteFilePath() const
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "getSaveRecallAbsoluteFilePath",
         /* strMethodInArgs    */ "" );
-    QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+    QString strAppConfigDir = ZS::System::getAppConfigDir();
     QString strFileSuffix = "xml";
     QString strBaseName = "ZSWindowsStyle";
     QString strAbsFilePath = strAppConfigDir + QDir::separator() + strBaseName + "." + strFileSuffix;

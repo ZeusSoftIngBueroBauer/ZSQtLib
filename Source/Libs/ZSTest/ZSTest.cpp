@@ -123,15 +123,16 @@ CTest::CTest(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
+    QString strIniFileScope = "User";
+#ifdef _WINDOWS
+    strIniFileScope = "System";
+#endif
     m_pIdxTree = new CTestStepIdxTree(this);
-
-    if( m_strTestStepsAbsFilePath.isEmpty() )
-    {
-        m_strTestStepsAbsFilePath = GetDefaultTestStepsAbsFilePath();
+    if (m_strTestStepsAbsFilePath.isEmpty()) {
+        m_strTestStepsAbsFilePath = GetDefaultTestStepsAbsFilePath(strIniFileScope);
     }
-    if( m_strTestResultsAbsFilePath.isEmpty() )
-    {
-        m_strTestResultsAbsFilePath = GetDefaultTestResultsAbsFilePath();
+    if (m_strTestResultsAbsFilePath.isEmpty()) {
+        m_strTestResultsAbsFilePath = GetDefaultTestResultsAbsFilePath(strIniFileScope);
     }
 
     // Should be called by derived class if desired.

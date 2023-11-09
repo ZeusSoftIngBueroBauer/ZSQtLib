@@ -365,7 +365,7 @@ if(CREATE_PYTHON_BINDINGS)
     add_subdirectory(Libs/ZSIpcTracePy)
 endif()
 
-#add_subdirectory(Apps/Products/ZSLogClient)
+add_subdirectory(Apps/Products/ZSLogClient)
 add_subdirectory(Apps/Products/ZSTrcMthClient)
 
 add_subdirectory(Apps/Test/ZSDiagram)

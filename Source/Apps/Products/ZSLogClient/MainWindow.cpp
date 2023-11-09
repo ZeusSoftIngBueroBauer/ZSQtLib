@@ -623,7 +623,7 @@ void CMainWindow::onActFileRecallLoggersTriggered()
     QString   strAbsFilePath;
 
     settings.beginGroup("FilePaths");
-    strAbsFilePath = settings.value("Loggers", getAppConfigDir("System")).toString();
+    strAbsFilePath = settings.value("Loggers", getAppConfigDir()).toString();
     settings.endGroup();
 
     strAbsFilePath = QFileDialog::getOpenFileName(
@@ -652,7 +652,7 @@ void CMainWindow::onActFileSaveLoggersTriggered()
     QString   strAbsFilePath;
 
     settings.beginGroup("FilePaths");
-    strAbsFilePath = settings.value("Loggers", getAppConfigDir("System")).toString();
+    strAbsFilePath = settings.value("Loggers", getAppConfigDir()).toString();
     settings.endGroup();
 
     strAbsFilePath = QFileDialog::getSaveFileName(
@@ -681,7 +681,7 @@ void CMainWindow::onActFileReadLogFileTriggered()
     QString   strAbsFilePath;
 
     settings.beginGroup("FilePaths");
-    strAbsFilePath = settings.value("LogFile", getAppLogDir("System")).toString();
+    strAbsFilePath = settings.value("LogFile", getAppLogDir()).toString();
     settings.endGroup();
 
     strAbsFilePath = QFileDialog::getOpenFileName(
@@ -710,7 +710,7 @@ void CMainWindow::onActFileWriteLogFileTriggered()
     QString   strAbsFilePath;
 
     settings.beginGroup("FilePaths");
-    strAbsFilePath = settings.value("LogFile", getAppLogDir("System")).toString();
+    strAbsFilePath = settings.value("LogFile", getAppLogDir()).toString();
     settings.endGroup();
 
     strAbsFilePath = QFileDialog::getSaveFileName(

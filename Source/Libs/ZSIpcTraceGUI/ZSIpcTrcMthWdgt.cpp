@@ -480,7 +480,7 @@ QString CWdgtTrcMthList::getDefaultThreadColorsFilePath() const
     }
     strThreadClrFileBaseName += "-ThreadColors";
 
-    QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+    QString strAppConfigDir = ZS::System::getAppConfigDir();
     QString strThreadClrFileSuffix = "xml";
 
     return strAppConfigDir + "/" + strThreadClrFileBaseName + "." + strThreadClrFileSuffix;

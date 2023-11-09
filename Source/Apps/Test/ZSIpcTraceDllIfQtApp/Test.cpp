@@ -1627,16 +1627,7 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     // Expected Values
     //---------------
 
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
-    QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
+    QString strAppConfigDir = ZS::System::getAppConfigDir();
 
     QString strTrcAdminObjFileSuffix = "xml";
     QString strTrcAdminObjFileBaseName = QString(m_pTrcServer->name()) + "-TrcMthAdmObj";
