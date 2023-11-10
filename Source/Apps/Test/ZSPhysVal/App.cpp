@@ -140,17 +140,14 @@ CApplication::CApplication(
     // Trace Server
     //-------------
 
-#if 0
     m_pTrcServer = CIpcTrcServer::CreateInstance();
     m_pTrcServer->setLocalTrcFileSubFileLineCountMax(10000);
-
     m_pTrcServer->setCacheTrcDataIfNotConnected(true);
     m_pTrcServer->setCacheTrcDataMaxArrLen(5000);
     m_pTrcServer->recallAdminObjs();
     m_pTrcServer->startup();
 
     m_pTrcAdminObj = m_pTrcServer->GetTraceAdminObj(NameSpace(), ClassName(), objectName());
-#endif
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

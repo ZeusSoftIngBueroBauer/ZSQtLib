@@ -998,6 +998,10 @@ CLogServer::~CLogServer()
         //m_pLoggersIdxTree->save(m_logSettings.m_strLoggerFileAbsFilePath);
     }
 
+    QObject::disconnect(
+        m_pLogger, &CLogger::aboutToBeDestroyed,
+        this, &CLogServer::onDefaultLoggerAboutToBeDestroyed);
+
     try
     {
         delete m_pLoggersIdxTree;

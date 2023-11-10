@@ -649,8 +649,8 @@ void CShmSocketWrapper::connectToHost(
 
     SHM_SERVERCTRLCHAN_LOCK;
 
-    SShmMainHdr*       pShmMainHdrCtrlChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemoryServerCtrlChan->data());
-    quint32            uMsgLen = sizeof(SShmMsgHdrReqConnect) + m_socketDscr.m_strLocalHostName.length();
+    SShmMainHdr* pShmMainHdrCtrlChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemoryServerCtrlChan->data());
+    quint32 uMsgLen = static_cast<quint32>(sizeof(SShmMsgHdrReqConnect) + m_socketDscr.m_strLocalHostName.length());
     SShmMsgReqConnect* pShmMsgReqConnect = reinterpret_cast<SShmMsgReqConnect*>(pShmMainHdrCtrlChan->allocMsg(m_pSharedMemoryServerCtrlChan,EMsgTypeReqConnect,uMsgLen));
 
     if( pShmMsgReqConnect == nullptr )
@@ -775,8 +775,8 @@ void CShmSocketWrapper::disconnectFromHost()
         {
             SHM_SOCKETCOMMCHAN_LOCK;
 
-            SShmMainHdr*          pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
-            quint32               uMsgLen = sizeof(SShmMsgReqDisconnect) + m_socketDscr.m_strLocalHostName.length();
+            SShmMainHdr* pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
+            quint32 uMsgLen = static_cast<quint32>(sizeof(SShmMsgReqDisconnect) + m_socketDscr.m_strLocalHostName.length());
             SShmMsgReqDisconnect* pShmMsgReqDisconnect = reinterpret_cast<SShmMsgReqDisconnect*>(pShmMainHdrCommChan->allocMsg(m_pSharedMemorySocketCommChan,EMsgTypeReqDisconnect,uMsgLen));
 
             if( pShmMsgReqDisconnect == nullptr )
@@ -903,8 +903,8 @@ void CShmSocketWrapper::abort()
         {
             SHM_SOCKETCOMMCHAN_LOCK;
 
-            SShmMainHdr*          pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
-            quint32               uMsgLen = sizeof(SShmMsgReqDisconnect) + m_socketDscr.m_strLocalHostName.length();
+            SShmMainHdr* pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
+            quint32 uMsgLen = static_cast<quint32>(sizeof(SShmMsgReqDisconnect) + m_socketDscr.m_strLocalHostName.length());
             SShmMsgReqDisconnect* pShmMsgReqDisconnect = reinterpret_cast<SShmMsgReqDisconnect*>(pShmMainHdrCommChan->allocMsg(m_pSharedMemorySocketCommChan,EMsgTypeReqDisconnect,uMsgLen));
 
             if( pShmMsgReqDisconnect == nullptr )
@@ -1045,8 +1045,8 @@ qint64 CShmSocketWrapper::write( const QByteArray& i_byteArr )
 
     SHM_SOCKETCOMMCHAN_LOCK;
 
-    SShmMainHdr*           pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
-    quint32                uBlockLen = sizeof(SShmMsgHdrReqReceiveData) + i_byteArr.size();
+    SShmMainHdr* pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
+    quint32 uBlockLen = static_cast<quint32>(sizeof(SShmMsgHdrReqReceiveData) + i_byteArr.size());
     SShmMsgReqReceiveData* pShmMsgReqReceiveData = reinterpret_cast<SShmMsgReqReceiveData*>(pShmMainHdrCommChan->allocMsg(m_pSharedMemorySocketCommChan,EMsgTypeReqReceiveData,uBlockLen));
 
     if( pShmMsgReqReceiveData == nullptr )

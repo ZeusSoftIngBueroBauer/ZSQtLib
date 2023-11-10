@@ -29,7 +29,6 @@ may result in using the software modules.
 
 #include <QtCore/qstring.h>
 
-#include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 
 namespace ZS

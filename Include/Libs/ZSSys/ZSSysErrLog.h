@@ -28,15 +28,10 @@ may result in using the software modules.
 #define ZSSys_ErrLog_h
 
 #include <QtCore/qdatetime.h>
-#include <QtCore/qobject.h>
+#include <QtCore/qthread.h>
 
-#include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysMsg.h"
-
-#ifdef WIN32
-#include <Windows.h>
-#endif
+//#include "ZSSys/ZSSysMsg.h"
 
 class QFile;
 class QRecursiveMutex;
@@ -242,7 +237,7 @@ private: // class methods
     #endif
     static void TerminateHandler();
     #ifdef WIN32
-    static long ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers);
+    //static long ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers);
     #endif
 protected: // ctors and dtor
     CErrLog(
@@ -336,7 +331,7 @@ protected: // instance methods
         const QString&    i_strProposal = "" );
     void removeEntry_( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
     #ifdef WIN32
-    QString generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const;
+    //QString generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const;
     #endif
 private: // copy ctor not allowed
     CErrLog( const CErrLog& );

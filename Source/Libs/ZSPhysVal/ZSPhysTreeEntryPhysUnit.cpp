@@ -51,7 +51,7 @@ public: // ctors and dtor
 
     @param i_pPhysSize [in]
     @param i_strPrefix [in]
-        e.g. "" for SI-Base, "m", "k", "µ", "M", ...
+        e.g. "" for SI-Base, "m", "k", "u", "M", ...
 */
 CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit(
     CUnitsTreeEntryGrpPhysUnits* i_pPhysSize, const QString& i_strFactorPrefix ) :
@@ -114,7 +114,7 @@ CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit(
     @param i_strName [in]
         e.g. "Degree", "Inch", ... or "dBWatt", "dBMilliWatt", "dBu(0.775V)", ...
     @param i_strSymbol [in]
-        e.g. "°", "in", ... or "dBW", "dBm", "dBu", ...
+        e.g. "o", "in", ... or "dBW", "dBm", "dBu", ...
 */
 CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit(
     CUnitsTreeEntryGrpPhysUnits* i_pPhysSize,
@@ -155,7 +155,7 @@ CUnitsTreeEntryPhysUnit::CUnitsTreeEntryPhysUnit(
     @param i_strName [in]
         e.g. "Degree", "Inch", ... or "dBWatt", "dBMilliWatt", "dBu(0.775V)", ...
     @param i_strSymbol [in]
-        e.g. "°", "in", ... or "dBW", "dBm", "dBu", ...
+        e.g. "o", "in", ... or "dBW", "dBm", "dBu", ...
     @param i_fMFromSI [in]
         e.g. "180/PI", 0.0254, ... or 1.0 for dBW, 1.0e-3 for dBm, 0.775 for 0.775 V, ...
 */
@@ -934,9 +934,9 @@ public: // instance methods (conversion routines to convert into units of other 
 //        {
 //            case EFctConvert_xMULr:             // y = x*r
 //            case EFctConvert_xDIVr:             // y = x/r
-//            case EFctConvert_SQRxDIVr:          // y = x²/r
+//            case EFctConvert_SQRxDIVr:          // y = (x*x)/r
 //            case EFctConvert_SQRT_xMULr_:       // y = sqrt(x*r)
-//            case EFctConvert_SQRxMULr:          // y = x²*r
+//            case EFctConvert_SQRxMULr:          // y = (x*x)*r
 //            case EFctConvert_SQRT_xDIVr_:       // y = sqrt(x/r)
 //            {
 //                break;
@@ -1015,7 +1015,7 @@ public: // instance methods (conversion routines to convert into units of other 
 //                fK = -fMDstFrom;
 //                break;
 //            }
-//            case EFctConvert_SQRxDIVr: // 3. Fall: y = x²/r
+//            case EFctConvert_SQRxDIVr: // 3. Fall: y = (x*x)/r
 //            {
 //                fctConvertType = EFctConvert_mMULxADDtADDkLOGr;
 //                fM = 2.0*fMDstFrom/fMSrcInto;
@@ -1031,7 +1031,7 @@ public: // instance methods (conversion routines to convert into units of other 
 //                fK = 0.5*fMDstFrom;
 //                break;
 //            }
-//            case EFctConvert_SQRxMULr: // 5. Fall: y = x²*r
+//            case EFctConvert_SQRxMULr: // 5. Fall: y = (x*x)*r
 //            {
 //                fctConvertType = EFctConvert_mMULxADDtADDkLOGr;
 //                fM = 2.0*fMDstFrom/fMSrcInto;

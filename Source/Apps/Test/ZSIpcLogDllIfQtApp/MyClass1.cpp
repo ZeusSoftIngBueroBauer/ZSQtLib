@@ -35,6 +35,7 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysSleeperThread.h"
+#include "ZSSys/ZSSysTime.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

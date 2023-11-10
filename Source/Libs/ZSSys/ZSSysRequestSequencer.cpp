@@ -32,6 +32,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMsg.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 

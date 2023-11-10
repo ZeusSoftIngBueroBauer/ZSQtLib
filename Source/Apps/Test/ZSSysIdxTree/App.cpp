@@ -193,14 +193,13 @@ CApplication::CApplication(
     // Create trace server
     //------------------------
 
-#if 0
     m_pTrcServer = ZS::Trace::CIpcTrcServer::CreateInstance();
 
     m_pTrcServer->setHostSettings(m_trcServerHostSettings);
     m_pTrcServer->setTraceSettings(m_trcServerSettings);
     m_pTrcServer->recallAdminObjs();
     m_pTrcServer->startup();
-#endif
+
     // Test
     //----------------------------
 

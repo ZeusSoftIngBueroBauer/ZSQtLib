@@ -27,12 +27,13 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcServer.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
 
+#include <QtQml/qqmlengine.h>
 #include <QtCore/qmutex.h>
 #include <QtCore/qthread.h>
-#include <QtQml/qqmlapplicationengine.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

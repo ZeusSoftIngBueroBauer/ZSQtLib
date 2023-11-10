@@ -41,6 +41,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTestGUI/ZSTestStepDlg.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"

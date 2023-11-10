@@ -39,13 +39,6 @@ may result in using the software modules.
 
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
 
-#ifdef _WINDOWS
-// As "min" will be defined as a macro with two arguments and qdatetime uses "min"
-// as a function with no arguments "windows.h" must be included after qdatetime
-// (which is included by ZSSysTime (which again is included by ZSSysAux)).
-#include <windows.h>
-#endif
-
 class QMouseEvent;
 class QKeyEvent;
 

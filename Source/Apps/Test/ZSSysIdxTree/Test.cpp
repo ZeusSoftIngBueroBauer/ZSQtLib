@@ -24,6 +24,25 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "Test.h"
+#include "MainWindow.h"
+
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
+#include "ZSTest/ZSTestStep.h"
+#include "ZSTest/ZSTestStepGroup.h"
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
+#include "ZSSysGUI/ZSSysGUIAux.h"
+#include "ZSSysGUI/ZSSysIdxTreeModel.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
+#include "ZSSysGUI/ZSSysIdxTreeView.h"
+#include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
+#include "ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h"
+
 #include <QtCore/qtimer.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qmimedata.h>
@@ -35,23 +54,6 @@ may result in using the software modules.
 #include <QtWidgets/qapplication.h>
 #include <QtWidgets/qlineedit.h>
 #endif
-
-#include "Test.h"
-#include "MainWindow.h"
-
-#include "ZSTest/ZSTestStepIdxTreeEntry.h"
-#include "ZSTest/ZSTestStep.h"
-#include "ZSTest/ZSTestStepGroup.h"
-#include "ZSSysGUI/ZSSysGUIAux.h"
-#include "ZSSysGUI/ZSSysIdxTreeModel.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
-#include "ZSSysGUI/ZSSysIdxTreeView.h"
-#include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
-#include "ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h"
-#include "ZSSys/ZSSysTrcServer.h"
-#include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

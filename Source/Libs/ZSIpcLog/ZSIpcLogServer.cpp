@@ -219,6 +219,16 @@ CIpcLogServer::~CIpcLogServer()
 {
     m_bIsBeingDestroyed = true;
 
+    QObject::disconnect(
+        m_pLoggersIdxTree, &CIdxTree::treeEntryAdded,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryAdded);
+    QObject::disconnect(
+        m_pLoggersIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved);
+    QObject::disconnect(
+        m_pLoggersIdxTree, &CIdxTreeLoggers::treeEntryChanged,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryChanged);
+
     for( int idx = 0; idx < m_iLogDataCachedCount; idx++ )
     {
         try

@@ -24,7 +24,13 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <stdlib.h>
+#include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysTime.h"
+#ifdef WIN32
+#include "ZSSys/ZSSysVersion.h"
+#endif
 
 #include <QtCore/qcoreapplication.h>
 #include <QtCore/qdatetime.h>
@@ -48,14 +54,10 @@ may result in using the software modules.
 #include <QtCore/QXmlStreamWriter>
 #endif
 
-#include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysApp.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysTime.h"
-
 #include <stdexcept>
 
 #ifdef WIN32
+#include <Windows.h>
 #include <dbghelp.h>
 #endif
 
@@ -610,51 +612,51 @@ void CErrLog::TerminateHandler()
 }
 
 #ifdef WIN32
-//------------------------------------------------------------------------------
-/*! @brief Top-level exception filter function that will be called whenever
-           the UnhandledExceptionFilter function gets control, and the process
-           is not being debugged.
-
-    To active this method you need to pass true for the corresponding flag
-    when creating the ErrLog instance.
-
-    @param i_pExceptionPointers [in]
-        The filter function has syntax similar to that of UnhandledExceptionFilter:
-        It takes a single parameter of type LPEXCEPTION_POINTERS, has a WINAPI
-        calling convention, and returns a value of type LONG.
-
-    @return EXCEPTION_EXECUTE_HANDLER (0x1)
-        Return from UnhandledExceptionFilter and execute the associated
-        exception handler. This usually results in process termination.
-
-    @Note The filter function could also return one of the following values.
-        EXCEPTION_CONTINUE_EXECUTION (0xffffffff)
-            Return from UnhandledExceptionFilter and continue execution from the
-            point of the exception. Note that the filter function is free to
-            modify the continuation state by modifying the exception information
-            supplied through its LPEXCEPTION_POINTERS parameter.
-        EXCEPTION_CONTINUE_SEARCH (0x0)
-            Proceed with normal execution of UnhandledExceptionFilter. That means
-            obeying the SetErrorMode flags, or invoking the Application Error pop-up message box.
-*/
-long CErrLog::ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers)
-//------------------------------------------------------------------------------
-{
-    System::CErrLog* pModelErrLog = System::CErrLog::GetInstance();
-
-    if( pModelErrLog != nullptr )
-    {
-        QString strDumpFileName = pModelErrLog->generateDump(i_pExceptionPointers);
-
-        System::SErrResultInfo errResultInfo(
-            /* errSource  */ "", "", "", "ExceptionHandler",
-            /* result     */ System::EResultUndefined,
-            /* severity   */ System::EResultSeverityCritical,
-            /* strAddInfo */ "Crash Dump Info available in " + strDumpFileName );
-        pModelErrLog->addEntry(errResultInfo);
-    }
-    return EXCEPTION_EXECUTE_HANDLER;
-}
+////------------------------------------------------------------------------------
+///*! @brief Top-level exception filter function that will be called whenever
+//           the UnhandledExceptionFilter function gets control, and the process
+//           is not being debugged.
+//
+//    To active this method you need to pass true for the corresponding flag
+//    when creating the ErrLog instance.
+//
+//    @param i_pExceptionPointers [in]
+//        The filter function has syntax similar to that of UnhandledExceptionFilter:
+//        It takes a single parameter of type LPEXCEPTION_POINTERS, has a WINAPI
+//        calling convention, and returns a value of type LONG.
+//
+//    @return EXCEPTION_EXECUTE_HANDLER (0x1)
+//        Return from UnhandledExceptionFilter and execute the associated
+//        exception handler. This usually results in process termination.
+//
+//    @Note The filter function could also return one of the following values.
+//        EXCEPTION_CONTINUE_EXECUTION (0xffffffff)
+//            Return from UnhandledExceptionFilter and continue execution from the
+//            point of the exception. Note that the filter function is free to
+//            modify the continuation state by modifying the exception information
+//            supplied through its LPEXCEPTION_POINTERS parameter.
+//        EXCEPTION_CONTINUE_SEARCH (0x0)
+//            Proceed with normal execution of UnhandledExceptionFilter. That means
+//            obeying the SetErrorMode flags, or invoking the Application Error pop-up message box.
+//*/
+//long CErrLog::ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers)
+////------------------------------------------------------------------------------
+//{
+//    CErrLog* pModelErrLog = CErrLog::GetInstance();
+//
+//    if( pModelErrLog != nullptr )
+//    {
+//        QString strDumpFileName = pModelErrLog->generateDump(i_pExceptionPointers);
+//
+//        SErrResultInfo errResultInfo(
+//            /* errSource  */ "", "", "", "ExceptionHandler",
+//            /* result     */ System::EResultUndefined,
+//            /* severity   */ System::EResultSeverityCritical,
+//            /* strAddInfo */ "Crash Dump Info available in " + strDumpFileName );
+//        pModelErrLog->addEntry(errResultInfo);
+//    }
+//    return EXCEPTION_EXECUTE_HANDLER;
+//}
 #endif
 
 /*==============================================================================
@@ -724,7 +726,7 @@ CErrLog::CErrLog(
     if( i_bInstallFaultHandler )
     {
         #ifdef WIN32
-        SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER) ExceptionHandler);
+        //SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER) ExceptionHandler);
         #endif
     }
 
@@ -2183,45 +2185,45 @@ void CErrLog::removeEntry_( int i_iRowIdx, EResultSeverity i_severity )
 } // removeEntry_
 
 #ifdef WIN32
-//------------------------------------------------------------------------------
-QString CErrLog::generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const
-//------------------------------------------------------------------------------
-{
-    MINIDUMP_EXCEPTION_INFORMATION ExpParam;
-
-    ExpParam.ThreadId = GetCurrentThreadId();
-    ExpParam.ExceptionPointers = i_pExceptionPointers;
-    ExpParam.ClientPointers = TRUE;
-
-    QFileInfo fileInfo(m_strAbsFilePath);
-    QString strDumpFilePath = fileInfo.absolutePath() + QDir::separator() + fileInfo.baseName();
-    strDumpFilePath += "-" + ZSQTLIB_GIT_VERSION_INFO;
-    strDumpFilePath += "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss-zzz");
-    strDumpFilePath += ".dmp";
-
-    HANDLE hDumpFile = CreateFile(
-        strDumpFilePath.toStdWString().c_str(),
-        GENERIC_READ|GENERIC_WRITE,
-        FILE_SHARE_WRITE|FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
-
-    MINIDUMP_TYPE dumpType = static_cast<MINIDUMP_TYPE>(
-        MiniDumpWithDataSegs |
-        MiniDumpWithFullMemory |
-        MiniDumpWithHandleData |
-        MiniDumpWithThreadInfo |
-        MiniDumpWithProcessThreadData |
-        MiniDumpWithFullMemoryInfo |
-        MiniDumpWithUnloadedModules |
-        MiniDumpWithFullAuxiliaryState |
-        MiniDumpIgnoreInaccessibleMemory |
-        MiniDumpWithTokenInformation);
-    MiniDumpWriteDump(
-        GetCurrentProcess(), GetCurrentProcessId(),
-        hDumpFile, dumpType,
-        &ExpParam, NULL, NULL);
-
-    return strDumpFilePath;
-}
+////------------------------------------------------------------------------------
+//QString CErrLog::generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const
+////------------------------------------------------------------------------------
+//{
+//    MINIDUMP_EXCEPTION_INFORMATION ExpParam;
+//
+//    ExpParam.ThreadId = GetCurrentThreadId();
+//    ExpParam.ExceptionPointers = i_pExceptionPointers;
+//    ExpParam.ClientPointers = TRUE;
+//
+//    QFileInfo fileInfo(m_strAbsFilePath);
+//    QString strDumpFilePath = fileInfo.absolutePath() + QDir::separator() + fileInfo.baseName();
+//    strDumpFilePath += "-" + ZSQTLIB_GIT_VERSION_INFO;
+//    strDumpFilePath += "-" + QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss-zzz");
+//    strDumpFilePath += ".dmp";
+//
+//    HANDLE hDumpFile = CreateFile(
+//        strDumpFilePath.toStdWString().c_str(),
+//        GENERIC_READ|GENERIC_WRITE,
+//        FILE_SHARE_WRITE|FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
+//
+//    MINIDUMP_TYPE dumpType = static_cast<MINIDUMP_TYPE>(
+//        MiniDumpWithDataSegs |
+//        MiniDumpWithFullMemory |
+//        MiniDumpWithHandleData |
+//        MiniDumpWithThreadInfo |
+//        MiniDumpWithProcessThreadData |
+//        MiniDumpWithFullMemoryInfo |
+//        MiniDumpWithUnloadedModules |
+//        MiniDumpWithFullAuxiliaryState |
+//        MiniDumpIgnoreInaccessibleMemory |
+//        MiniDumpWithTokenInformation);
+//    MiniDumpWriteDump(
+//        GetCurrentProcess(), GetCurrentProcessId(),
+//        hDumpFile, dumpType,
+//        &ExpParam, NULL, NULL);
+//
+//    return strDumpFilePath;
+//}
 #endif
 
 

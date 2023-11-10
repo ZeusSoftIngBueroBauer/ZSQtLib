@@ -24,11 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qdir.h>
-#include <QtCore/qfile.h>
-#include <QtCore/qfileinfo.h>
-#include <QtCore/qtimer.h>
-
 #include "Test.h"
 #include "TestConfig.h"
 #include "MyClass1.h"
@@ -40,10 +35,17 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTestGUI/ZSTestStepDlg.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysLoggerIdxTree.h"
 #include "ZSSys/ZSSysLogger.h"
 #include "ZSSys/ZSSysLogServer.h"
+#include "ZSSys/ZSSysTime.h"
+
+#include <QtCore/qdir.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qtimer.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

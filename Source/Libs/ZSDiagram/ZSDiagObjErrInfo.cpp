@@ -340,7 +340,7 @@ QSize CDiagObjErrInfo::sizeHint()
     {
         // Calculate extent of label:
         QFontMetrics fntmtr(m_arfntText[m_errResultInfoCurr.getSeverity()]);
-        QString      strDummyLabel = "Öy,²";
+        QString      strDummyLabel = "Oy,2";
         QRect        rectText = fntmtr.boundingRect(strDummyLabel);
 
         switch( m_textOrientation )

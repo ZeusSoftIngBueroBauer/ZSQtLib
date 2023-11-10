@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
+#include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"

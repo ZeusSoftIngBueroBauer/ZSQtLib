@@ -351,87 +351,87 @@ bool ZS::System::dir_removeRecursively( const QString& i_strDirPath )
 #endif
 
 #ifdef _WINDOWS
-//------------------------------------------------------------------------------
-BOOL ZS::System::SafeTerminateProcess( HANDLE i_hndProcess, UINT i_uExitCode )
-//------------------------------------------------------------------------------
-{
-    /*
-    Safely terminate a process by creating a remote thread
-    in the process that calls ExitProcess
-    */
-
-    DWORD     dwTID;
-    DWORD     dwCode;
-    DWORD     dwErr = 0;
-    HANDLE    hndProcessDup = INVALID_HANDLE_VALUE;
-    HANDLE    hndProcess = i_hndProcess;
-    HANDLE    hndRT = nullptr;
-    HINSTANCE hinstKernel = GetModuleHandle(_T("Kernel32"));
-    BOOL      bSuccess = FALSE;
-
-    BOOL bResDupHandle = DuplicateHandle(
-        /* hndSourceProcessHandle */ GetCurrentProcess(),
-        /* hndSourceHandle        */ i_hndProcess,
-        /* hndTargetProcessHandle */ GetCurrentProcess(),
-        /* lpTargetHandle         */ &hndProcessDup,
-        /* dwDesiredAccess        */ PROCESS_ALL_ACCESS,
-        /* bInheritHandle         */ FALSE,
-        /* dwOption               */ 0 );
-
-    // Detect the special case where the process is already dead...
-    if( bResDupHandle )
-    {
-        hndProcess = hndProcessDup;
-    }
-
-    BOOL bResExitCodeProcess = GetExitCodeProcess( hndProcess, &dwCode );
-
-    if( bResExitCodeProcess && (dwCode == STILL_ACTIVE) )
-    {
-        FARPROC pfnExitProc;
-
-        pfnExitProc = GetProcAddress(hinstKernel, "ExitProcess");
-
-        hndRT = CreateRemoteThread(
-            /* hProcess           */ hndProcess,
-            /* lpThreadAttributes */ nullptr,
-            /* dwStackSize        */ 0,
-            /* lpStartAddress     */ (LPTHREAD_START_ROUTINE)pfnExitProc,
-            /* lpParameter        */ (PVOID)&i_uExitCode,
-            /* dwCreationFlags    */ 0,
-            /* lpThreadI          */ &dwTID );
-
-        if( hndRT == nullptr )
-        {
-            dwErr = GetLastError();
-        }
-    }
-    else
-    {
-        dwErr = ERROR_PROCESS_ABORTED;
-    }
-
-    if( hndRT )
-    {
-        // Must wait process to terminate to guarantee that it has exited...
-        WaitForSingleObject(hndProcess, INFINITE);
-        CloseHandle(hndRT);
-        bSuccess = TRUE;
-    }
-
-    if( bResDupHandle )
-    {
-        CloseHandle(hndProcessDup);
-    }
-
-    if( !bSuccess )
-    {
-        SetLastError(dwErr);
-    }
-
-    return bSuccess;
-
-} // SafeTerminateProcess
+////------------------------------------------------------------------------------
+//BOOL ZS::System::SafeTerminateProcess( HANDLE i_hndProcess, UINT i_uExitCode )
+////------------------------------------------------------------------------------
+//{
+//    /*
+//    Safely terminate a process by creating a remote thread
+//    in the process that calls ExitProcess
+//    */
+//
+//    DWORD     dwTID;
+//    DWORD     dwCode;
+//    DWORD     dwErr = 0;
+//    HANDLE    hndProcessDup = INVALID_HANDLE_VALUE;
+//    HANDLE    hndProcess = i_hndProcess;
+//    HANDLE    hndRT = nullptr;
+//    HINSTANCE hinstKernel = GetModuleHandle(_T("Kernel32"));
+//    BOOL      bSuccess = FALSE;
+//
+//    BOOL bResDupHandle = DuplicateHandle(
+//        /* hndSourceProcessHandle */ GetCurrentProcess(),
+//        /* hndSourceHandle        */ i_hndProcess,
+//        /* hndTargetProcessHandle */ GetCurrentProcess(),
+//        /* lpTargetHandle         */ &hndProcessDup,
+//        /* dwDesiredAccess        */ PROCESS_ALL_ACCESS,
+//        /* bInheritHandle         */ FALSE,
+//        /* dwOption               */ 0 );
+//
+//    // Detect the special case where the process is already dead...
+//    if( bResDupHandle )
+//    {
+//        hndProcess = hndProcessDup;
+//    }
+//
+//    BOOL bResExitCodeProcess = GetExitCodeProcess( hndProcess, &dwCode );
+//
+//    if( bResExitCodeProcess && (dwCode == STILL_ACTIVE) )
+//    {
+//        FARPROC pfnExitProc;
+//
+//        pfnExitProc = GetProcAddress(hinstKernel, "ExitProcess");
+//
+//        hndRT = CreateRemoteThread(
+//            /* hProcess           */ hndProcess,
+//            /* lpThreadAttributes */ nullptr,
+//            /* dwStackSize        */ 0,
+//            /* lpStartAddress     */ (LPTHREAD_START_ROUTINE)pfnExitProc,
+//            /* lpParameter        */ (PVOID)&i_uExitCode,
+//            /* dwCreationFlags    */ 0,
+//            /* lpThreadI          */ &dwTID );
+//
+//        if( hndRT == nullptr )
+//        {
+//            dwErr = GetLastError();
+//        }
+//    }
+//    else
+//    {
+//        dwErr = ERROR_PROCESS_ABORTED;
+//    }
+//
+//    if( hndRT )
+//    {
+//        // Must wait process to terminate to guarantee that it has exited...
+//        WaitForSingleObject(hndProcess, INFINITE);
+//        CloseHandle(hndRT);
+//        bSuccess = TRUE;
+//    }
+//
+//    if( bResDupHandle )
+//    {
+//        CloseHandle(hndProcessDup);
+//    }
+//
+//    if( !bSuccess )
+//    {
+//        SetLastError(dwErr);
+//    }
+//
+//    return bSuccess;
+//
+//} // SafeTerminateProcess
 #endif // #ifdef _WINDOWS
 
 
@@ -718,114 +718,114 @@ WINDOWS specific
 ==============================================================================*/
 
 #ifdef _WINDOWS
-//------------------------------------------------------------------------------
-QString ZS::System::hResult2Str( HRESULT i_hRes )
-//------------------------------------------------------------------------------
-{
-    QString strError;
-    LPTSTR  lpMsgBuf = nullptr;
-    LPTSTR  lpDisplayBuf = nullptr;
-    SIZE_T  uDisplayBufSize;
-
-    FormatMessage(
-        /* dwFlags      */ FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
-        /* lpSource     */ nullptr,
-        /* dwMessageId  */ i_hRes,
-        /* dwLanguageId */ MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
-        /* lpBuffer     */ (LPTSTR)&lpMsgBuf,
-        /* nSize        */ 0,
-        /* pArguments   */ nullptr );
-
-    uDisplayBufSize = ( lstrlen((LPCTSTR)lpMsgBuf) + 60 ) * sizeof(TCHAR);
-    lpDisplayBuf = (LPTSTR)LocalAlloc( LMEM_ZEROINIT, uDisplayBufSize );
-
-    #pragma warning( disable : 4995 )
-
-    wsprintf( lpDisplayBuf, _TEXT("%s"), lpMsgBuf );
-
-    #pragma warning( default : 4995 )
-
-    #if QT_VERSION >= 0x040704
-        char* ascii = new char[wcslen(lpDisplayBuf)+1];
-        memset( ascii, 0x00, wcslen(lpDisplayBuf)+1 );
-        #pragma warning( disable : 4996 )
-        wcstombs( ascii, lpDisplayBuf, wcslen(lpDisplayBuf) );
-        #pragma warning( default : 4996 )
-        //std::string ststr = ascii;
-        strError = QString(ascii); // ::fromStdString(ststr);
-        // strError = QString::fromWCharArray(lpDisplayBuf);
-        delete [] ascii;
-    #else
-        strError = QString::fromUtf16(reinterpret_cast<const ushort*>(lpDisplayBuf));
-    #endif
-
-    LocalFree(lpMsgBuf);
-    LocalFree(lpDisplayBuf);
-
-    return strError;
-
-} // hResult2Str
+////------------------------------------------------------------------------------
+//QString ZS::System::hResult2Str( HRESULT i_hRes )
+////------------------------------------------------------------------------------
+//{
+//    QString strError;
+//    LPTSTR  lpMsgBuf = nullptr;
+//    LPTSTR  lpDisplayBuf = nullptr;
+//    SIZE_T  uDisplayBufSize;
+//
+//    FormatMessage(
+//        /* dwFlags      */ FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
+//        /* lpSource     */ nullptr,
+//        /* dwMessageId  */ i_hRes,
+//        /* dwLanguageId */ MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
+//        /* lpBuffer     */ (LPTSTR)&lpMsgBuf,
+//        /* nSize        */ 0,
+//        /* pArguments   */ nullptr );
+//
+//    uDisplayBufSize = ( lstrlen((LPCTSTR)lpMsgBuf) + 60 ) * sizeof(TCHAR);
+//    lpDisplayBuf = (LPTSTR)LocalAlloc( LMEM_ZEROINIT, uDisplayBufSize );
+//
+//    #pragma warning( disable : 4995 )
+//
+//    wsprintf( lpDisplayBuf, _TEXT("%s"), lpMsgBuf );
+//
+//    #pragma warning( default : 4995 )
+//
+//    #if QT_VERSION >= 0x040704
+//        char* ascii = new char[wcslen(lpDisplayBuf)+1];
+//        memset( ascii, 0x00, wcslen(lpDisplayBuf)+1 );
+//        #pragma warning( disable : 4996 )
+//        wcstombs( ascii, lpDisplayBuf, wcslen(lpDisplayBuf) );
+//        #pragma warning( default : 4996 )
+//        //std::string ststr = ascii;
+//        strError = QString(ascii); // ::fromStdString(ststr);
+//        // strError = QString::fromWCharArray(lpDisplayBuf);
+//        delete [] ascii;
+//    #else
+//        strError = QString::fromUtf16(reinterpret_cast<const ushort*>(lpDisplayBuf));
+//    #endif
+//
+//    LocalFree(lpMsgBuf);
+//    LocalFree(lpDisplayBuf);
+//
+//    return strError;
+//
+//} // hResult2Str
 #endif // #ifdef _WINDOWS
 
 #ifdef _WINDOWS
-//------------------------------------------------------------------------------
-QString ZS::System::winErrorCode2MessageStr( DWORD i_dwErrCode )
-//------------------------------------------------------------------------------
-{
-    QString strError;
-    LPTSTR  lpMsgBuf = nullptr;
-    LPTSTR  lpDisplayBuf = nullptr;
-    SIZE_T  uDisplayBufSize;
-
-    FormatMessage(
-        /* dwFlags      */ FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
-        /* lpSource     */ nullptr,
-        /* dwMessageId  */ i_dwErrCode,
-        /* dwLanguageId */ MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
-        /* lpBuffer     */ (LPTSTR)&lpMsgBuf,
-        /* nSize        */ 0,
-        /* pArguments   */ nullptr );
-
-    uDisplayBufSize = ( lstrlen((LPCTSTR)lpMsgBuf) + 60 ) * sizeof(TCHAR);
-    lpDisplayBuf = (LPTSTR)LocalAlloc( LMEM_ZEROINIT, uDisplayBufSize );
-
-    #pragma warning( disable : 4995 )
-
-    wsprintf( lpDisplayBuf, _TEXT("%s"), lpMsgBuf );
-
-    #pragma warning( default : 4995 )
-
-    #if QT_VERSION >= 0x040704
-        size_t iDisplayBufLen = wcslen(lpDisplayBuf);
-        char* ascii = new char[iDisplayBufLen + 1];
-        memset(ascii, 0x00, iDisplayBufLen + 1);
-        #pragma warning( disable : 4996 )
-        wcstombs( ascii, lpDisplayBuf, iDisplayBufLen );
-        #pragma warning( default : 4996 )
-        //std::string ststr = ascii;
-        strError = QString(ascii); // ::fromStdString(ststr);
-        // strError = QString::fromWCharArray(lpDisplayBuf);
-        delete [] ascii;
-    #else
-        strError = QString::fromUtf16(reinterpret_cast<const ushort*>(lpDisplayBuf));
-    #endif
-
-    LocalFree(lpMsgBuf);
-    LocalFree(lpDisplayBuf);
-
-    return strError;
-
-} // winErrorCode2MessageStr
+////------------------------------------------------------------------------------
+//QString ZS::System::winErrorCode2MessageStr( DWORD i_dwErrCode )
+////------------------------------------------------------------------------------
+//{
+//    QString strError;
+//    LPTSTR  lpMsgBuf = nullptr;
+//    LPTSTR  lpDisplayBuf = nullptr;
+//    SIZE_T  uDisplayBufSize;
+//
+//    FormatMessage(
+//        /* dwFlags      */ FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
+//        /* lpSource     */ nullptr,
+//        /* dwMessageId  */ i_dwErrCode,
+//        /* dwLanguageId */ MAKELANGID(LANG_NEUTRAL,SUBLANG_DEFAULT),
+//        /* lpBuffer     */ (LPTSTR)&lpMsgBuf,
+//        /* nSize        */ 0,
+//        /* pArguments   */ nullptr );
+//
+//    uDisplayBufSize = ( lstrlen((LPCTSTR)lpMsgBuf) + 60 ) * sizeof(TCHAR);
+//    lpDisplayBuf = (LPTSTR)LocalAlloc( LMEM_ZEROINIT, uDisplayBufSize );
+//
+//    #pragma warning( disable : 4995 )
+//
+//    wsprintf( lpDisplayBuf, _TEXT("%s"), lpMsgBuf );
+//
+//    #pragma warning( default : 4995 )
+//
+//    #if QT_VERSION >= 0x040704
+//        size_t iDisplayBufLen = wcslen(lpDisplayBuf);
+//        char* ascii = new char[iDisplayBufLen + 1];
+//        memset(ascii, 0x00, iDisplayBufLen + 1);
+//        #pragma warning( disable : 4996 )
+//        wcstombs( ascii, lpDisplayBuf, iDisplayBufLen );
+//        #pragma warning( default : 4996 )
+//        //std::string ststr = ascii;
+//        strError = QString(ascii); // ::fromStdString(ststr);
+//        // strError = QString::fromWCharArray(lpDisplayBuf);
+//        delete [] ascii;
+//    #else
+//        strError = QString::fromUtf16(reinterpret_cast<const ushort*>(lpDisplayBuf));
+//    #endif
+//
+//    LocalFree(lpMsgBuf);
+//    LocalFree(lpDisplayBuf);
+//
+//    return strError;
+//
+//} // winErrorCode2MessageStr
 #endif // #ifdef _WINDOWS
 
-#ifdef _WINDOWS
-//------------------------------------------------------------------------------
-QString ZS::System::lastWinErrorCode2MessageStr()
-//------------------------------------------------------------------------------
-{
-    return winErrorCode2MessageStr( GetLastError() );
-}
-#endif // #ifdef _WINDOWS
+//#ifdef _WINDOWS
+////------------------------------------------------------------------------------
+//QString ZS::System::lastWinErrorCode2MessageStr()
+////------------------------------------------------------------------------------
+//{
+//    return winErrorCode2MessageStr( GetLastError() );
+//}
+//#endif // #ifdef _WINDOWS
 
 #ifdef _WINDOWS
 //------------------------------------------------------------------------------
@@ -3421,6 +3421,7 @@ QString ZS::System::qSize2Str( const QSizeF& i_size, bool i_bShort )
 Enum QVariant::Type
 ==============================================================================*/
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 //------------------------------------------------------------------------------
 static const QHash<int, QString> s_hshEnumStrVariantTypes =
 //------------------------------------------------------------------------------
@@ -3491,6 +3492,62 @@ static const QHash<int, QString> s_hshEnumStrVariantTypes =
     { QVariant::Quaternion, "Quaternion" },
     { QVariant::UserType, "UserType" }
 };
+#else
+//------------------------------------------------------------------------------
+static const QHash<int, QString> s_hshEnumStrVariantTypes =
+//------------------------------------------------------------------------------
+{
+    { QMetaType::UnknownType, "UnknownType" },
+    { QMetaType::Bool, "Bool" },
+    { QMetaType::Int, "Int" },
+    { QMetaType::UInt, "UInt" },
+    { QMetaType::LongLong, "LongLong" },
+    { QMetaType::ULongLong, "ULongLong" },
+    { QMetaType::Double, "Double" },
+    { QMetaType::Char, "Char" },
+    { QMetaType::QString, "String" },
+    { QMetaType::QStringList, "StringList" },
+    { QMetaType::QByteArray, "ByteArray" },
+    { QMetaType::QBitArray, "BitArray" },
+    { QMetaType::QDate, "Date" },
+    { QMetaType::QTime, "Time" },
+    { QMetaType::QDateTime, "DateTime" },
+    { QMetaType::QUrl, "Url" },
+    { QMetaType::QLocale, "Locale" },
+    { QMetaType::QRect, "Rect" },
+    { QMetaType::QRectF, "RectF" },
+    { QMetaType::QSize, "Size" },
+    { QMetaType::QSizeF, "SizeF" },
+    { QMetaType::QLine, "Line" },
+    { QMetaType::QLineF, "LineF" },
+    { QMetaType::QPoint, "Point" },
+    { QMetaType::QPointF, "PointF" },
+    { QMetaType::QRegularExpression, "RegExp" },
+    { QMetaType::QEasingCurve, "EasingCurve" },
+    { QMetaType::QFont, "Font" },
+    { QMetaType::QPixmap, "Pixmap" },
+    { QMetaType::QBrush, "Brush" },
+    { QMetaType::QColor, "Color" },
+    { QMetaType::QPalette, "Palette" },
+    { QMetaType::QIcon, "Icon" },
+    { QMetaType::QImage, "Image" },
+    { QMetaType::QPolygon, "Polygon" },
+    { QMetaType::QRegion, "Region" },
+    { QMetaType::QBitmap, "Bitmap" },
+    { QMetaType::QCursor, "Cursor" },
+    { QMetaType::QSizePolicy, "SizePolicy" },
+    { QMetaType::QKeySequence, "KeySequence" },
+    { QMetaType::QPen, "Pen" },
+    { QMetaType::QTextLength, "TextLength" },
+    { QMetaType::QTextFormat, "TextFormat" },
+    { QMetaType::QTransform, "Transform" },
+    { QMetaType::QMatrix4x4, "Matrix4x4" },
+    { QMetaType::QVector2D, "Vector2D" },
+    { QMetaType::QVector3D, "Vector3D" },
+    { QMetaType::QVector4D, "Vector4D" },
+    { QMetaType::QQuaternion, "Quaternion" }
+};
+#endif
 
 //------------------------------------------------------------------------------
 QString ZS::System::qVariantType2Str( int i_type )

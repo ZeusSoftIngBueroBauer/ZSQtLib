@@ -25,7 +25,9 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSSysGUI/ZSSysErrLogModel.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtGui/qguiapplication.h>

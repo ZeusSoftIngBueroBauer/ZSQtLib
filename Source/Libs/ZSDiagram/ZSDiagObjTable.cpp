@@ -2085,7 +2085,7 @@ void CDiagObjTable::updateLayout()
 
     EDataType    dataTypeCellDpl;
     QFontMetrics fntmtr(m_fnt);
-    QString      strCell = "Öy,²";
+    QString      strCell = "Oy,2";
     QString      strCellTmp;
     QRect        rectCell = fntmtr.boundingRect(strCell);
     int          cxClmWidth;

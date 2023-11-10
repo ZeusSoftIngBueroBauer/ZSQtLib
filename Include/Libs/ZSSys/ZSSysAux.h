@@ -43,7 +43,7 @@ may result in using the software modules.
 // as a function with no arguments "windows.h" must be included after qdatetime
 // (which is included by ZSSysTime (which again is included by ZSSysAux)).
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+//#include <windows.h>
 #endif
 
 /*******************************************************************************
@@ -100,7 +100,7 @@ ZSSYSDLL_API bool dir_removeRecursively( const QString& i_strDirPath );
 /* A Safer Alternative to TerminateProcess()
    See http://www.drdobbs.com/a-safer-alternative-to-terminateprocess/184416547
    for more details. */
-ZSSYSDLL_API BOOL SafeTerminateProcess( HANDLE i_hndProcess, UINT i_uExitCode );
+//ZSSYSDLL_API BOOL SafeTerminateProcess( HANDLE i_hndProcess, UINT i_uExitCode );
 #endif
 
 
@@ -128,8 +128,8 @@ ZSSYSDLL_API QByteArray bool2ByteArr( bool i_bValue );
 ZSSYSDLL_API bool byteArr2Bool( const QByteArray& i_str, bool* o_pbConverted = nullptr );
 
 #ifdef _WINDOWS
-ZSSYSDLL_API QString hResult2Str( HRESULT i_hRes );
-ZSSYSDLL_API QString winErrorCode2MessageStr( DWORD i_dwErrCode );
+//ZSSYSDLL_API QString hResult2Str( HRESULT i_hRes );
+//ZSSYSDLL_API QString winErrorCode2MessageStr( DWORD i_dwErrCode );
 ZSSYSDLL_API QString lastWinErrorCode2MessageStr();
 #ifndef __oaidl_h__
 typedef /* [wire_marshal] */ struct tagVARIANT VARIANT;

@@ -982,10 +982,6 @@ void CWdgtDiagram::keyPressEvent( QKeyEvent* i_pEv )
             double fMoveKeyEventTimeDelay_ms = 0.0;
             int    iMoveKeyCurr = i_pEv->key();
 
-            // TODO: Hr. Koehler will, dass mit Up/Down der "Mouse-Cursor" nach
-            //       oben und unten verschoben werden kann. Vorläufig wandeln wir
-            //       aber Up in Right und Down in Left um.
-
             if( i_pEv->key() == Qt::Key_Down )
             {
                 iMoveKeyCurr = Qt::Key_Left;

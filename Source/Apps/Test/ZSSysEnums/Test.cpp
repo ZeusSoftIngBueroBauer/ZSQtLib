@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStepIdxTreeEntry.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumTemplate.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
@@ -725,7 +726,7 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
 
         strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
         #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QMetaType::Double, &bOk);
+        valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
         #else
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QMetaType::Double, &bOk);
         #endif

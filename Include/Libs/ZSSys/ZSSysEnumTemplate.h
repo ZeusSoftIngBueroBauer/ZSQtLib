@@ -254,7 +254,11 @@ private: // instance members
 
 }; // template class CEnum
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+template<typename E> QMutex CEnum<E>::s_mtxArMapsStr2Enumerators;
+#else
 template<typename E> QMutex CEnum<E>::s_mtxArMapsStr2Enumerators = QMutex();
+#endif
 template<typename E> QVector<QHash<QString, int>> CEnum<E>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 /*==============================================================================

@@ -28,7 +28,6 @@ may result in using the software modules.
 #define ZSSys_Exception_h
 
 #include <QtCore/qstring.h>
-#include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysErrResult.h"
 
 namespace ZS
