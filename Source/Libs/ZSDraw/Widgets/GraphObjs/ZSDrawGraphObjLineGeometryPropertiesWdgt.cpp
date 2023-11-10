@@ -44,6 +44,7 @@ may result in using the software modules.
 #if QT_VERSION < 0x050000
 #include <QtGui/qcheckbox.h>
 #include <QtGui/qcombobox.h>
+#include <QtGui/qheaderview.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
@@ -53,6 +54,7 @@ may result in using the software modules.
 #else
 #include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qcombobox.h>
+#include <QtWidgets/qheaderview.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
@@ -309,7 +311,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytWdgtMetric->addLayout(m_pLytMetricGeometryListView, 1);
 
     m_pModelMetricGeometry = new CModelGraphObjGeometry(
-        m_pDrawingScene, i_strNameSpace, "Line", i_strObjName, this);
+        m_pDrawingScene, i_strNameSpace, "Line", i_strObjName, EScaleDimensionUnit::Metric, this);
     m_pTableViewMetricGeometry = new QTableView();
     m_pTableViewMetricGeometry->setModel(m_pModelMetricGeometry);
     m_pTableViewMetricGeometry->setItemDelegateForColumn(
@@ -628,7 +630,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytWdgtPixels->addLayout(m_pLytPixelsGeometryListView, 1);
 
     m_pModelPixelsGeometry = new CModelGraphObjGeometry(
-        m_pDrawingScene, i_strNameSpace, "Line", i_strObjName, this);
+        m_pDrawingScene, i_strNameSpace, "Line", i_strObjName, EScaleDimensionUnit::Pixels, this);
     m_pTableViewPixelsGeometry = new QTableView();
     m_pTableViewPixelsGeometry->setModel(m_pModelPixelsGeometry);
     m_pTableViewPixelsGeometry->setItemDelegateForColumn(

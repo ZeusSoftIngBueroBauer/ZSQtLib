@@ -70,6 +70,7 @@ public: // ctors and dtor
         const QString& i_strNameSpace,
         const QString& i_strGraphObjType,
         const QString& i_strObjName,
+        const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit,
         QObject* i_pObjParent = nullptr);
     virtual ~CModelGraphObjGeometry();
 signals:
@@ -97,7 +98,9 @@ public: // overridables of base class QAbstractItemModel
 protected: // type definitions and constants
     struct SDataRow {
     public:
-        static SDataRow fromGraphObj(CGraphObj* i_pGraphObj, const QString& i_strValueName, int i_iRowIdx = -1);
+        static SDataRow fromGraphObj(
+            CGraphObj* i_pGraphObj, const QString& i_strValueName,
+            const ZS::PhysVal::CUnit& i_unit, int i_iRowIdx = -1);
     public: // ctors
         SDataRow();
         SDataRow(
@@ -146,6 +149,8 @@ protected: // instance methods (tracing emitting signals)
 protected: // instance members
     /*!< Pointer to drawing scene. */
     CDrawingScene* m_pDrawingScene;
+    /*!< Values may be indicated either in metrics of pixels unit. */
+    ZS::System::CEnumScaleDimensionUnit m_eDimensionUnit;
     /*!< Unique key of the graphical object to be edited. */
     QString m_strKeyInTree;
     /*!< If the unique key is set the drawing scene is queried to get the pointer to

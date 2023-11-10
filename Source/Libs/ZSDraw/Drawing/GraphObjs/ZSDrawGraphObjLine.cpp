@@ -95,10 +95,14 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
         /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsLineItem(),
-    m_physValLine(),
+    m_physValLine(i_pDrawingScene->drawingSize().unit()),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
+    // Just incremented by the ctor but not decremented by the dtor.
+    // Used to create a unique name for newly created objects of this type.
+    s_iInstCount++;
+
     m_strlstPredefinedLabelNames.append("Name");
     m_strlstPredefinedLabelNames.append("P1");
     m_strlstPredefinedLabelNames.append("P2");
@@ -117,9 +121,37 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         }
     }
 
-    // Just incremented by the ctor but not decremented by the dtor.
-    // Used to create a unique name for newly created objects of this type.
-    s_iInstCount++;
+    m_strlstGeometryLabelNames.append("P1");
+    m_strlstGeometryLabelNames.append("P2");
+    m_strlstGeometryLabelNames.append("Center");
+    m_strlstGeometryLabelNames.append("Length");
+    m_strlstGeometryLabelNames.append("Angle");
+
+    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
+    for (const QString& strLabelName : m_strlstGeometryLabelNames) {
+        //m_hshpGeometryLabels[strLabelName] = ;
+        QString strText;
+        if (strLabelName == "P1") {
+            strText = getP1(unit).toString();
+            addValueLabel(strLabelName, strText, 0);
+        }
+        else if (strLabelName == "P2") {
+            strText = getP2(unit).toString();
+            addValueLabel(strLabelName, strText, 1);
+        }
+        else if (strLabelName == "Center") {
+            strText = getCenter(unit).toString();
+            addValueLabel(strLabelName, strText, ESelectionPoint::Center);
+        }
+        else if (strLabelName == "Length") {
+            strText = getLength(unit).toString();
+            addValueLabel(strLabelName, strText, ESelectionPoint::Center);
+        }
+        else if (strLabelName == "Angle") {
+            strText = getAngle(Units.Angle.Degree).toString();
+            addValueLabel(strLabelName, strText, ESelectionPoint::Center);
+        }
+    }
 
     // Initialise list with number of selection points.
     // A line may provide two selection points - at start and end of line.
@@ -363,6 +395,19 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the item's line to the given line coordinates.
+
+    @param [in] i_fX1
+        X coordinate of point 1 passed by the given unit.
+    @param [in] i_fY1
+        Y coordinate of point 1 passed by the given unit.
+    @param [in] i_fX2
+        X coordinate of point 2 passed by the given unit.
+    @param [in] i_fY2
+        y coordinate of point 2 passed by the given unit.
+    @param [in] i_unit
+        Unit in which the coordinates are passed.
+*/
 void CGraphObjLine::setLine(
     double i_fX1, double i_fY1, double i_fX2, double i_fY2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
@@ -371,6 +416,15 @@ void CGraphObjLine::setLine(
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the item's line to the given line coordinates.
+
+    @param [in] i_p1
+        X and Y coordinates of point 1 passed by the given unit.
+    @param [in] i_p2
+        X and Y coordinates of point 2 passed by the given unit.
+    @param [in] i_unit
+        Unit in which the coordinates are passed.
+*/
 void CGraphObjLine::setLine(
     const QPointF& i_p1, const QPointF& i_p2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
@@ -379,6 +433,13 @@ void CGraphObjLine::setLine(
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the item's line to the given line coordinates.
+
+    @param [in] i_line
+        Line coordinates passed by the given unit.
+    @param [in] i_unit
+        Unit in which the coordinates are passed.
+*/
 void CGraphObjLine::setLine(const QLineF& i_line, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
@@ -407,24 +468,179 @@ void CGraphObjLine::setLine(
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the item's line in the given unit.
+
+    @param [in] i_unit
+        Unit in which the line coordinates should be returned.
+*/
 CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return m_physValLine;
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    double fRes = drawingSize.imageCoorsResolution(i_unit).getVal();
+    CPhysValLine physValLine = m_physValLine;
+    if (i_unit != physValLine.unit()) {
+        physValLine = m_pDrawingScene->convert(physValLine, i_unit);
+    }
+    return physValLine;
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the coordinates of P1 in the given unit.
+
+    Point 2 remains unchanged.
+
+    @param [in] i_fX
+        X coordinate of point 1 passed by the given unit.
+    @param [in] i_fY
+        Y coordinate of point 1 passed by the given unit.
+    @param [in] i_unit
+        Unit in which the coordinates are passed.
+*/
+void CGraphObjLine::setP1(double i_fX, double i_fY, const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    CPhysValLine physValLine = m_physValLine;
+    physValLine.setP1(CPhysValPoint(i_fX, i_fY, i_unit));
+    setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's point 1 in the given unit.
+
+    @param [in] i_unit
+        Unit in which the coordinates should be returned.
+*/
 CPhysValPoint CGraphObjLine::getP1(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return m_physValLine.p1();
+    return getLine(i_unit).p1();
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the coordinates of P2 in the given unit.
+
+    Point 1 remains unchanged.
+
+    @param [in] i_fX
+        X coordinate of point 2 passed by the given unit.
+    @param [in] i_fY
+        y coordinate of point 2 passed by the given unit.
+    @param [in] i_unit
+        Unit in which the coordinates are passed.
+*/
+void CGraphObjLine::setP2(double i_fX, double i_fY, const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    CPhysValLine physValLine = m_physValLine;
+    physValLine.setP2(CPhysValPoint(i_fX, i_fY, i_unit));
+    setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's point 2 in the given unit.
+
+    @param [in] i_unit
+        Unit in which the coordinates should be returned.
+*/
 CPhysValPoint CGraphObjLine::getP2(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return m_physValLine.p2();
+    return getLine(i_unit).p2();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the center of the line in the given unit.
+
+    Both point 1 and point 2 are updated correspondingly.
+    The length and the angle remain the same.
+
+    @param [in] i_fX
+        X coordinate of center point passed by the given unit.
+    @param [in] i_fY
+        y coordinate of center point passed by the given unit.
+    @param [in] i_unit
+        Unit in which the coordinates are passed.
+*/
+void CGraphObjLine::setCenter(double i_fX, double i_fY, const CUnit& i_unit)
+//------------------------------------------------------------------------------
+{
+    CPhysValLine physValLine = getLine(i_unit);
+    physValLine.setCenter(CPhysValPoint(i_fX, i_fY, i_unit));
+    setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's center point in the given unit.
+
+    @param [in] i_unit
+        Unit in which the coordinates should be returned.
+*/
+CPhysValPoint CGraphObjLine::getCenter(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return getLine(i_unit).center();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the length of the line in the given unit.
+
+    Point 1 remains unchanged. Point 2 is updated correspondingly.
+    The angle remains the same.
+
+    @param [in] i_physValLength
+        Length to be set.
+*/
+void CGraphObjLine::setLength(const CPhysVal& i_physValLength)
+//------------------------------------------------------------------------------
+{
+    CPhysValLine physValLine = getLine(i_physValLength.unit());
+    physValLine.setLength(i_physValLength);
+    setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's length in the given unit.
+
+    @param [in] i_unit
+        Unit in which the length should be returned.
+*/
+CPhysVal CGraphObjLine::getLength(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    double fRes = drawingSize.imageCoorsResolution(i_unit).getVal();
+    CPhysValLine physValLine = getLine(i_unit);
+    return CPhysVal(physValLine.length().getVal(), i_unit, fRes);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the angle of the line in the given unit.
+
+    Point 1 remains unchanged. Point 2 is updated correspondingly.
+    The length remains the same.
+
+    @param [in] i_physValLength
+        Length to be set.
+*/
+void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
+//------------------------------------------------------------------------------
+{
+    CPhysValLine physValLine = m_physValLine;
+    physValLine.setAngle(i_physValAngle);
+    setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's angle in the given unit.
+
+    @param [in] i_unit
+        Unit in which the angle should be returned.
+*/
+CPhysVal CGraphObjLine::getAngle(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(m_physValLine.angle().getVal(i_unit), i_unit, 0.1);
 }
 
 /*==============================================================================
@@ -750,7 +966,7 @@ void CGraphObjLine::showSelectionPoints( unsigned char i_selPts )
 }
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
+public: // overridables of base class CGraphObj (text labels)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -787,6 +1003,114 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const
         return s_hshSelPtsPredefined[i_strName];
     }
     return s_arSelPtsUserDefined;
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj (geometry labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QStringList CGraphObjLine::getValueNames() const
+//------------------------------------------------------------------------------
+{
+    static const QStringList s_strlstValueNames = {
+        "P1", "P2", "Center", "Length", "Angle"
+    };
+    return s_strlstValueNames;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::setXValue(const QString& i_strName, const CPhysVal& i_physValX)
+//------------------------------------------------------------------------------
+{
+    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
+    if (i_strName == "P1") {
+        setP1(i_physValX.getVal(unit), getP1(unit).y().getVal(), unit);
+    }
+    else if (i_strName == "P2") {
+        setP2(i_physValX.getVal(unit), getP2(unit).y().getVal(), unit);
+    }
+    else if (i_strName == "Center") {
+        setCenter(i_physValX.getVal(unit), getCenter(unit).x().getVal(), unit);
+    }
+    else if (i_strName == "Length") {
+        setLength(i_physValX);
+    }
+    else if (i_strName == "Angle") {
+        setAngle(i_physValX);
+    }
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CGraphObjLine::getXValue(const QString& i_strName, const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physVal;
+    if (i_strName == "P1") {
+        physVal = getP1(i_unit).x();
+        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
+    }
+    else if (i_strName == "P2") {
+        physVal = getP2(i_unit).x();
+        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
+    }
+    else if (i_strName == "Center") {
+        physVal = getCenter(i_unit).x();
+        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
+    }
+    else if (i_strName == "Length") {
+        // The resolution is already set by getLength.
+        physVal = getLength(i_unit);
+    }
+    else if (i_strName == "Angle") {
+        // The resolution is already set by getAngle.
+        // The unit is always either Angle (default) or Rad.
+        if (Units.Angle.findPhysUnit(i_unit.symbol()) == nullptr) {
+            physVal = getAngle(Units.Angle.Degree);
+        }
+        else {
+            physVal = getAngle(i_unit);
+        }
+    }
+    return physVal;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::setYValue(const QString& i_strName, const CPhysVal& i_physValY)
+//------------------------------------------------------------------------------
+{
+    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
+    if (i_strName == "P1") {
+        setP1(getP1(unit).x().getVal(), i_physValY.getVal(unit), unit);
+    }
+    else if (i_strName == "P2") {
+        setP2(getP2(unit).x().getVal(), i_physValY.getVal(unit), unit);
+    }
+    else if (i_strName == "Center") {
+        setCenter(getCenter(unit).x().getVal(), i_physValY.getVal(unit), unit);
+    }
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CGraphObjLine::getYValue(const QString& i_strName, const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physVal;
+    if (i_strName == "P1") {
+        physVal = getP1(i_unit).y();
+        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
+    }
+    else if (i_strName == "P2") {
+        physVal = getP2(i_unit).y();
+        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
+    }
+    else if (i_strName == "Center") {
+        physVal = getCenter(i_unit).y();
+        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
+    }
+    return physVal;
 }
 
 /*==============================================================================

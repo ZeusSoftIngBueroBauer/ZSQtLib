@@ -72,14 +72,15 @@ protected: // type definitions and constants
 /*! @brief Fills the label struct with the information retrieved from the graphical object.
 */
 CModelGraphObjGeometry::SDataRow CModelGraphObjGeometry::SDataRow::fromGraphObj(
-    CGraphObj* i_pGraphObj, const QString& i_strValueName, int i_iRowIdx)
+    CGraphObj* i_pGraphObj, const QString& i_strValueName,
+    const CUnit& i_unit, int i_iRowIdx)
 //------------------------------------------------------------------------------
 {
     SDataRow dataRow;
     dataRow.m_strValueName = i_strValueName;
     dataRow.m_iRowIdx = i_iRowIdx;
-    dataRow.m_physValX = i_pGraphObj->getXValue(i_strValueName);
-    dataRow.m_physValY = i_pGraphObj->getYValue(i_strValueName);
+    dataRow.m_physValX = i_pGraphObj->getXValue(i_strValueName, i_unit);
+    dataRow.m_physValY = i_pGraphObj->getYValue(i_strValueName, i_unit);
     dataRow.m_bVisible = i_pGraphObj->isValueLabelAnchorLineVisible(i_strValueName);
     dataRow.m_bLineVisible = i_pGraphObj->isValueLabelAnchorLineVisible(i_strValueName);
     return dataRow;
@@ -149,10 +150,12 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
     const QString& i_strNameSpace,
     const QString& i_strGraphObjType,
     const QString& i_strObjName,
-    QObject*       i_pObjParent ) :
+    const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit,
+    QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),
     m_pDrawingScene(i_pDrawingScene),
+    m_eDimensionUnit(i_eDimensionUnit),
     m_strKeyInTree(),
     m_pGraphObj(nullptr),
     m_arDataRows(),
@@ -196,6 +199,7 @@ CModelGraphObjGeometry::~CModelGraphObjGeometry()
     }
 
     m_pDrawingScene = nullptr;
+    m_eDimensionUnit = static_cast<EScaleDimensionUnit>(0);
     //m_strKeyInTree;
     m_pGraphObj = nullptr;
     //m_arDataRows;
@@ -514,17 +518,27 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = dataRow.m_strValueName;
                     }
+                    else if (i_iRole == Qt::SizeHintRole) {
+                        QSize size(100, 20);
+                        varData = size;
+                    }
                     break;
                 }
                 case EColumnXVal: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = dataRow.m_physValX.toString();
                     }
+                    else if (i_iRole == Qt::TextAlignmentRole) {
+                        varData = static_cast<int>(Qt::AlignRight|Qt::AlignVCenter);
+                    }
                     break;
                 }
                 case EColumnYVal: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
                         varData = dataRow.m_physValY.toString();
+                    }
+                    else if (i_iRole == Qt::TextAlignmentRole) {
+                        varData = static_cast<int>(Qt::AlignRight|Qt::AlignVCenter);
                     }
                     break;
                 }
@@ -536,7 +550,7 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         varData = dataRow.m_bVisible ? Qt::Checked : Qt::Unchecked;
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
-                        varData = static_cast<int>(Qt::AlignHCenter | Qt::AlignVCenter);
+                        varData = static_cast<int>(Qt::AlignHCenter|Qt::AlignVCenter);
                     }
                     break;
                 }
@@ -548,7 +562,7 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         varData = dataRow.m_bLineVisible ? Qt::Checked : Qt::Unchecked;
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
-                        varData = static_cast<int>(Qt::AlignHCenter | Qt::AlignVCenter);
+                        varData = static_cast<int>(Qt::AlignHCenter|Qt::AlignVCenter);
                     }
                     break;
                 }
@@ -820,14 +834,16 @@ QList<CModelGraphObjGeometry::SDataRow> CModelGraphObjGeometry::getDataRows(CGra
 //------------------------------------------------------------------------------
 {
     QList<SDataRow> arDataRows;
+    CUnit unit = m_pDrawingScene->drawingSize().unit();
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        unit = Units.Length.px;
+    }
     if (i_pGraphObj != nullptr) {
         QStringList strlstValueNames = i_pGraphObj->getValueNames();
         if (strlstValueNames.size() > 0) {
             for (const QString& strName : strlstValueNames) {
-                if (i_pGraphObj->isLabelAdded(strName)) {
-                    arDataRows.append(
-                        SDataRow::fromGraphObj(i_pGraphObj, strName, arDataRows.size()));
-                }
+                arDataRows.append(
+                    SDataRow::fromGraphObj(i_pGraphObj, strName, unit, arDataRows.size()));
             }
         }
     }

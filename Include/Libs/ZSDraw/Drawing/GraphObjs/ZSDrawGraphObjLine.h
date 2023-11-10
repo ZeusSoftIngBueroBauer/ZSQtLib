@@ -76,8 +76,16 @@ public: // instance methods
     void setLine(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unit);
     void setLine(const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2);
     CPhysValLine getLine(const ZS::PhysVal::CUnit& i_unit) const;
+    void setP1(double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
     CPhysValPoint getP1(const ZS::PhysVal::CUnit& i_unit) const;
+    void setP2(double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
     CPhysValPoint getP2(const ZS::PhysVal::CUnit& i_unit) const;
+    void setCenter(double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPoint getCenter(const ZS::PhysVal::CUnit& i_unit) const;
+    void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
+    ZS::PhysVal::CPhysVal getLength(const ZS::PhysVal::CUnit& i_unit) const;
+    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
+    ZS::PhysVal::CPhysVal getAngle(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
     virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) override;
     virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) override;
@@ -101,8 +109,14 @@ public: // overridables of base class CGraphObj
     virtual QPointF getSelectionPointCoors(const SGraphObjSelectionPoint& i_selPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
-public: // overridables of base class CGraphObj
+public: // overridables of base class CGraphObj (text labels)
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+public: // overridables of base class CGraphObj (geometry labels)
+    virtual QStringList getValueNames() const override;
+    virtual void setXValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValX) override;
+    virtual ZS::PhysVal::CPhysVal getXValue(const QString& i_strName, const ZS::PhysVal::CUnit& i_unit) const override;
+    virtual void setYValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValY) override;
+    virtual ZS::PhysVal::CPhysVal getYValue(const QString& i_strName, const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;

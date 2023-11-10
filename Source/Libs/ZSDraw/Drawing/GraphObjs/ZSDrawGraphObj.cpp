@@ -530,6 +530,7 @@ CGraphObj::CGraphObj(
     m_arpSelPtsBoundingRect(CEnumSelectionPoint::count()),
     m_strlstPredefinedLabelNames(),
     m_hshpLabels(),
+    m_strlstGeometryLabelNames(),
     m_hshpGeometryLabels(),
     m_strToolTip(),
     m_strEditInfo(),
@@ -752,6 +753,7 @@ CGraphObj::~CGraphObj()
     //m_arpSelPtsBoundingRect;
     //m_strlstPredefinedLabelNames;
     //m_hshpLabels;
+    //m_strlstGeometryLabelNames;
     //m_hshpGeometryLabels;
     //m_strToolTip;
     //m_strEditInfo;
@@ -4187,7 +4189,8 @@ bool CGraphObj::isLabelAdded(const QString& i_strName) const
 
     @return true, if the label has been created and added, false otherwise.
 */
-bool CGraphObj::addLabel(const QString& i_strName, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt)
+bool CGraphObj::addLabel(
+    const QString& i_strName, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4510,7 +4513,7 @@ void CGraphObj::hideLabel(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
-/*! Checks whether the label at the specified index is visible.
+/*! @Returns whether the visibility of the label with the given name.
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
@@ -4528,6 +4531,14 @@ bool CGraphObj::isLabelVisible(const QString& i_strName) const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the distance in width and height in pixels between the labels
+           position and the linked selection point.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+    @param [in] i_size
+        Distance to the linked selection point.
+*/
 void CGraphObj::setLabelDistanceToLinkedSelPt(const QString& i_strName, const QSizeF& i_size)
 //------------------------------------------------------------------------------
 {
@@ -4557,6 +4568,14 @@ void CGraphObj::setLabelDistanceToLinkedSelPt(const QString& i_strName, const QS
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the distance in width and height in pixels between the labels
+           position and the linked selection point.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+
+    @return Distance to the linked selection point.
+*/
 QSizeF CGraphObj::labelDistanceToLinkedSelPt(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
@@ -4638,8 +4657,8 @@ void CGraphObj::hideLabelAnchorLine(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
-/*! Checks whether the line between the label and the selection point
-    the label is aligned is visible.
+/*! Returns the visibility of the line between the label and the selection point
+    the label is aligned to.
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
@@ -4661,14 +4680,41 @@ public: // geometry labels
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief This method must be overridden by derived classes to return the names
+           for all geometry values which can be edited or indicated.
+
+    Usually for each geometry value a pair of X and Y values can be set.
+    Most of the geometry values specify shape points with X and Y coordinates.
+    For the "Size" value X means width and Y means height.
+
+    But there are also specific geometry values with a special meaning like
+    "Length" and "Angle". For those only one value can be set and indicated.
+    For those the X value is used and the Y value is invalid.
+
+    A Line object for example supports the following geometry values:
+
+    - P1 (x/y), P2 (x/y), Center (x/y), Size (width/height), Length("x"), Angle ("x").
+
+    @return Supported value names.
+*/
 QStringList CGraphObj::getValueNames() const
 //------------------------------------------------------------------------------
 {
-#pragma message(__TODO__"pure virtual")
-    return QStringList();
+    return m_strlstGeometryLabelNames;
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the X coordinate for the given value name.
+
+    @note For some specific values X has a different meaning than X coordinate
+          For "Size" X means for example "width".
+          For "Length" and "Angle" X means the corresponding length or angle.
+
+    @param [in] i_strName
+        Value name (e.g. "P1", .. "P<N>", "Size", "Length", "Angle")
+    @param [in] i_physValX
+        The physical value to be set.
+*/
 void CGraphObj::setXValue(const QString& i_strName, const CPhysVal& i_physValX)
 //------------------------------------------------------------------------------
 {
@@ -4686,14 +4732,38 @@ void CGraphObj::setXValue(const QString& i_strName, const CPhysVal& i_physValX)
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getXValue(const QString& i_strName)
+/*! @brief Returns the X coordinate for the given value name.
+
+    @note For some specific values X has a different meaning than X coordinate
+          For "Size" X means for example "width".
+          For "Length" and "Angle" X means the corresponding length or angle.
+
+    @param [in] i_strName
+        Value name (e.g. "P1", .. "P<N>", "Size", "Length", "Angle")
+
+    @return Physical value.
+*/
+CPhysVal CGraphObj::getXValue(const QString& i_strName, const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"pure virtual")
-    return CPhysVal();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    double fRes = drawingSize.imageCoorsResolution(i_unit).getVal();
+    return CPhysVal(0.0, i_unit, fRes);
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the Y coordinate for the given value name.
+
+    @note For some specific values Y has a different meaning than Y coordinate
+          For "Size" Y means for example "height".
+          For "Length" and "Angle" Y is undefined.
+
+    @param [in] i_strName
+        Value name (e.g. "P1", .. "P<N>", "Size")
+    @param [in] i_physValY
+        The physical value to be set.
+*/
 void CGraphObj::setYValue(const QString& i_strName, const CPhysVal& i_physValY)
 //------------------------------------------------------------------------------
 {
@@ -4711,14 +4781,34 @@ void CGraphObj::setYValue(const QString& i_strName, const CPhysVal& i_physValY)
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CGraphObj::getYValue(const QString& i_strName)
+/*! @brief Returns the Y coordinate for the given value name.
+
+    @note For some specific values Y has a different meaning than Y coordinate
+          For "Size" Y means for example "height".
+          For "Length" and "Angle" Y is undefined.
+
+    @param [in] i_strName
+        Value name (e.g. "P1", .. "P<N>", "Size")
+
+    @return Physical value.
+*/
+CPhysVal CGraphObj::getYValue(const QString& i_strName, const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"pure virtual")
-    return CPhysVal();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    double fRes = drawingSize.imageCoorsResolution(i_unit).getVal();
+    return CPhysVal(0.0, i_unit, fRes);
 }
 
 //------------------------------------------------------------------------------
+/*! Shows the label (set visible) with the given name.
+
+    The label is added to the graphics scene and becomes visible.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+*/
 void CGraphObj::showValueLabel(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
@@ -4757,6 +4847,13 @@ void CGraphObj::showValueLabel(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
+/*! Hides the label.
+
+    The label is removed from the graphics scene and becomes invisible.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+*/
 void CGraphObj::hideValueLabel(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
@@ -4789,6 +4886,13 @@ void CGraphObj::hideValueLabel(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
+/*! @Returns whether the visibility of the label with the given name.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+
+    @return true, if the label is visible. false otherwise.
+*/
 bool CGraphObj::isValueLabelVisible(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
@@ -4800,6 +4904,14 @@ bool CGraphObj::isValueLabelVisible(const QString& i_strName) const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the distance in width and height in pixels between the labels
+           position and the linked selection point.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+    @param [in] i_size
+        Distance to the linked selection point.
+*/
 void CGraphObj::setValueLabelDistance(const QString& i_strName, const QSizeF& i_size)
 //------------------------------------------------------------------------------
 {
@@ -4829,6 +4941,14 @@ void CGraphObj::setValueLabelDistance(const QString& i_strName, const QSizeF& i_
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the distance in width and height in pixels between the labels
+           position and the linked selection point.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+
+    @return Distance to the linked selection point.
+*/
 QSizeF CGraphObj::valueLabelDistance(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
@@ -4840,6 +4960,11 @@ QSizeF CGraphObj::valueLabelDistance(const QString& i_strName) const
 }
 
 //------------------------------------------------------------------------------
+/*! Shows the line between the label and the selection point the label is aligned to.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+*/
 void CGraphObj::showValueLabelAnchorLine(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
@@ -4869,6 +4994,13 @@ void CGraphObj::showValueLabelAnchorLine(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
+/*! Hides the line between the description label and the selection point the label is aligned to.
+
+    The method just sets a flag. If the description label is not visible the method has no effect.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+*/
 void CGraphObj::hideValueLabelAnchorLine(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
@@ -4898,6 +5030,14 @@ void CGraphObj::hideValueLabelAnchorLine(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
+/*! Returns the visibility of the line between the label and the selection point
+    the label is aligned to.
+
+    @param [in] i_strName
+        Name of the label. If no label with the name exists an exception is thrown.
+
+    @return true, if the anchor line is visible, false otherwise.
+*/
 bool CGraphObj::isValueLabelAnchorLineVisible(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
@@ -4906,6 +5046,69 @@ bool CGraphObj::isValueLabelAnchorLineVisible(const QString& i_strName) const
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
     return pGraphObjLabel->isAnchorLineVisible();
+}
+
+/*==============================================================================
+protected: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Creates a new text label with the given name.
+
+    The label is not added to the graphics scene and remains invisible.
+    To add the label also to the graphics scene the label must be shown.
+
+    The predefined labels (including "Name") got to be added in the constructor
+    of the derived class. Adding labels in the constructor of the base class
+    would lead to crashes as "QGraphicsItem" is not yet created and the constructor
+    of the label object tries to access the parent (the linked) "QGraphicsItem".
+
+    @param [in] i_strName
+        Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_strText (optional)
+        If not empty defines the text to be shown.
+    @param [in] i_selPt
+        Selection point the label should be anchored to.
+
+    @return true, if the label has been created and added, false otherwise.
+*/
+bool CGraphObj::addValueLabel(
+    const QString& i_strName, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + i_strText + ", " + i_selPt.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::addValueLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bCanAdd = !m_hshpGeometryLabels.contains(i_strName);
+    if (bCanAdd) {
+        QString strText = i_strText;
+        if (i_strName == "Name") {
+            strText = m_strName;
+        }
+        CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(
+            m_pDrawingScene, this, i_strName, strText, i_selPt);
+        pGraphObjLabel->setVisible(false);
+        m_hshpGeometryLabels.insert(i_strName, pGraphObjLabel);
+        QObject::connect(
+            pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
+            this, &CGraphObj::onLabelAboutToBeDestroyed);
+        emit_labelAdded(i_strName);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bCanAdd);
+    }
+    return bCanAdd;
 }
 
 /*==============================================================================

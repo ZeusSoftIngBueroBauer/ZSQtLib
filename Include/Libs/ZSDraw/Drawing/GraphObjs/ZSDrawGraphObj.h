@@ -586,9 +586,9 @@ public: // overridables (text labels)
 public: // overridables (geometry labels)
     virtual QStringList getValueNames() const;
     virtual void setXValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValX);
-    virtual ZS::PhysVal::CPhysVal getXValue(const QString& i_strName);
+    virtual ZS::PhysVal::CPhysVal getXValue(const QString& i_strName, const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setYValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValY);
-    virtual ZS::PhysVal::CPhysVal getYValue(const QString& i_strName);
+    virtual ZS::PhysVal::CPhysVal getYValue(const QString& i_strName, const ZS::PhysVal::CUnit& i_unit) const;
     virtual void showValueLabel(const QString& i_strName);
     virtual void hideValueLabel(const QString& i_strName);
     virtual bool isValueLabelVisible(const QString& i_strName) const;
@@ -597,6 +597,8 @@ public: // overridables (geometry labels)
     virtual void showValueLabelAnchorLine(const QString& i_strName);
     virtual void hideValueLabelAnchorLine(const QString& i_strName);
     virtual bool isValueLabelAnchorLineVisible(const QString& i_strName) const;
+protected: // overridables (geometry labels)
+    virtual bool addValueLabel(const QString& i_strName, const QString& i_strText = "", const SGraphObjSelectionPoint& i_selPt = ESelectionPoint::Center);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
 public slots: // overridables
@@ -750,6 +752,11 @@ protected: // instance members
          In addition to those predefined labels additional labels may be added by defining a
          unique name and assigning a text. Both the name and the text are stored in the Label object. */
     QHash<QString, CGraphObjLabel*> m_hshpLabels;
+    /*!< List with the value names. Got to be initialised in the constructor of derived classes
+         in addition to the hash with geometry values. Keeping the values names also a string list
+         should verify that the returned value names are always in the same order as the order
+         in a hash is arbitrary. */
+    QStringList m_strlstGeometryLabelNames;
     /*!< Hash with geometry values which may be indicated. The number of value label depend on
          the object type. E.g. for the Line object the positions "P1", "P2" and "Center" as well as
          the "Size" (width and height), "Length" and "Angle" may be shown. */
