@@ -136,14 +136,9 @@ CWdgtRequestExecTree::CWdgtRequestExecTree( const QString& i_strHeadline, QWidge
     m_pBtnClear->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnClear);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnClear,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnClearClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnClear, &QPushButton::clicked,
+        this, &CWdgtRequestExecTree::onBtnClearClicked);
 
     // <Button> Delete selected entries
     //---------------------------------
@@ -152,14 +147,9 @@ CWdgtRequestExecTree::CWdgtRequestExecTree( const QString& i_strHeadline, QWidge
     m_pBtnDeleteRow->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnDeleteRow);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnDeleteRow,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnDeleteRowClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnDeleteRow, &QPushButton::clicked,
+        this, &CWdgtRequestExecTree::onBtnDeleteRowClicked);
 
     // <Button> Resize Columns To Contents
     //------------------------------------
@@ -168,14 +158,9 @@ CWdgtRequestExecTree::CWdgtRequestExecTree( const QString& i_strHeadline, QWidge
     m_pBtnResizeRowsAndColumnsToContents->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnResizeRowsAndColumnsToContents);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnResizeRowsAndColumnsToContents,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnResizeRowsAndColumnsToContentsClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
+        this, &CWdgtRequestExecTree::onBtnResizeRowsAndColumnsToContentsClicked);
 
     // <Button> Expand All
     //--------------------
@@ -184,14 +169,9 @@ CWdgtRequestExecTree::CWdgtRequestExecTree( const QString& i_strHeadline, QWidge
     m_pBtnExpandAll->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnExpandAll);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnExpandAll,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnExpandAllClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnExpandAll, &QPushButton::clicked,
+        this, &CWdgtRequestExecTree::onBtnExpandAllClicked);
 
     // <Button> Collapse All
     //----------------------
@@ -200,14 +180,9 @@ CWdgtRequestExecTree::CWdgtRequestExecTree( const QString& i_strHeadline, QWidge
     m_pBtnCollapseAll->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnCollapseAll);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnCollapseAll,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCollapseAllClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnCollapseAll, &QPushButton::clicked,
+        this, &CWdgtRequestExecTree::onBtnCollapseAllClicked);
 
     m_pLytLineBtns->addSpacing(30);
 
@@ -229,14 +204,9 @@ CWdgtRequestExecTree::CWdgtRequestExecTree( const QString& i_strHeadline, QWidge
 
     m_pChkGarbageCollectorEnabled->setCheckState( CRequestExecTree::GetInstance()->isGarbageCollectorEnabled() ? Qt::Checked : Qt::Unchecked );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkGarbageCollectorEnabled,
-        /* szSignal     */ SIGNAL(stateChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkGarbageCollecterEnabledStateChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkGarbageCollectorEnabled, &QCheckBox::stateChanged,
+        this, &CWdgtRequestExecTree::onChkGarbageCollecterEnabledStateChanged);
 
     // <CheckBox> Garbage Collector Interval
     //--------------------------------------
@@ -250,14 +220,9 @@ CWdgtRequestExecTree::CWdgtRequestExecTree( const QString& i_strHeadline, QWidge
 
     m_pEdtGarbageCollectorInterval_s->setText( QString::number(CRequestExecTree::GetInstance()->getGarbageCollectorIntervalInSec()) );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtGarbageCollectorInterval_s,
-        /* szSignal     */ SIGNAL(editingFinished()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtGarbageCollecterIntervalEditingFinished()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdtGarbageCollectorInterval_s, &QLineEdit::editingFinished,
+        this, &CWdgtRequestExecTree::onEdtGarbageCollecterIntervalEditingFinished);
 
     // <CheckBox> Garbage Collector Interval
     //--------------------------------------
@@ -270,14 +235,9 @@ CWdgtRequestExecTree::CWdgtRequestExecTree( const QString& i_strHeadline, QWidge
 
     m_pEdtGarbageCollectorElapsed_s->setText( QString::number(CRequestExecTree::GetInstance()->getGarbageCollectorElapsedInSec()) );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtGarbageCollectorElapsed_s,
-        /* szSignal     */ SIGNAL(editingFinished()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtGarbageCollecterElapsedEditingFinished()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdtGarbageCollectorElapsed_s, &QLineEdit::editingFinished,
+        this, &CWdgtRequestExecTree::onEdtGarbageCollecterElapsedEditingFinished);
 
     m_pLytLineBtns->addStretch();
 

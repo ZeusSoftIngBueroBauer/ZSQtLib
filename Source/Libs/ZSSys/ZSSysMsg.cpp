@@ -264,10 +264,8 @@ void CMsgSndRcvDestroyedHandler::onMsgSenderChanged()
     if( m_pObjSender != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pObjSender,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onSenderDestroyed(QObject*)) );
+            m_pObjSender, &QObject::destroyed,
+            this, &CMsgSndRcvDestroyedHandler::onSenderDestroyed);
     }
 
     m_pObjSender = m_pMsg->getSender();
@@ -288,10 +286,8 @@ void CMsgSndRcvDestroyedHandler::onMsgReceiverChanged()
     if( m_pObjReceiver != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pObjReceiver,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onReceiverDestroyed(QObject*)) );
+            m_pObjReceiver, &QObject::destroyed,
+            this, &CMsgSndRcvDestroyedHandler::onReceiverDestroyed);
     }
 
     m_pObjReceiver = m_pMsg->getReceiver();

@@ -94,14 +94,9 @@ CWdgtIdxTreeLoggers::CWdgtIdxTreeLoggers(
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setToolTip("Press to resize the columns to their contents");
     m_pLytHeadLine->addWidget(m_pBtnTreeViewResizeRowsAndColumnsToContents);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnTreeViewResizeRowsAndColumnsToContents,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnTreeViewResizeRowsAndColumnsToContentsClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnTreeViewResizeRowsAndColumnsToContents, &QPushButton::clicked,
+        this, &CWdgtIdxTreeLoggers::onBtnTreeViewResizeRowsAndColumnsToContentsClicked);
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -116,14 +111,9 @@ CWdgtIdxTreeLoggers::CWdgtIdxTreeLoggers(
     m_pBtnTreeViewExpandAll->setToolTip("Press to expand all branches of the tree");
     m_pLytHeadLine->addWidget(m_pBtnTreeViewExpandAll);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnTreeViewExpandAll,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnTreeViewExpandAllClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnTreeViewExpandAll, &QPushButton::clicked,
+        this, &CWdgtIdxTreeLoggers::onBtnTreeViewExpandAllClicked);
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -138,14 +128,9 @@ CWdgtIdxTreeLoggers::CWdgtIdxTreeLoggers(
     m_pBtnTreeViewCollapseAll->setToolTip("Press to collapse all branches of the tree");
     m_pLytHeadLine->addWidget(m_pBtnTreeViewCollapseAll);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnTreeViewCollapseAll,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnTreeViewCollapseAllClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnTreeViewCollapseAll, &QPushButton::clicked,
+        this, &CWdgtIdxTreeLoggers::onBtnTreeViewCollapseAllClicked);
 
     m_pLytHeadLine->addStretch();
 
@@ -162,14 +147,9 @@ CWdgtIdxTreeLoggers::CWdgtIdxTreeLoggers(
 
     if( m_pTreeView != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTreeView,
-            /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewExpanded(const QModelIndex&) ) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTreeView, &QTreeView::expanded,
+            this, &CWdgtIdxTreeLoggers::onTreeViewExpanded);
     }
 
     // <Line> Buttons
@@ -244,10 +224,8 @@ void CWdgtIdxTreeLoggers::onBtnTreeViewExpandAllClicked( bool i_bChecked )
     if( m_pTreeView != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTreeView,
-            /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewExpanded(const QModelIndex&) ) );
+            m_pTreeView, &QTreeView::expanded,
+            this, &CWdgtIdxTreeLoggers::onTreeViewExpanded);
 
         m_pTreeView->expandAll();
 
@@ -256,14 +234,9 @@ void CWdgtIdxTreeLoggers::onBtnTreeViewExpandAllClicked( bool i_bChecked )
             m_pTreeView->resizeColumnToContents(idxClm);
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTreeView,
-            /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewExpanded(const QModelIndex&) ) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTreeView, &QTreeView::expanded,
+            this, &CWdgtIdxTreeLoggers::onTreeViewExpanded);
     }
 }
 

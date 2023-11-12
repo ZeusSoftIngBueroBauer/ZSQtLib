@@ -128,53 +128,25 @@ CDlgTrcClient::CDlgTrcClient(
     m_pWdgtIpcClient = new ZS::Ipc::GUI::CWdgtIpcClient(objectName());
     m_pTabWidget->addTab( m_pWdgtIpcClient, "Connection Settings" );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcClient,
-        /* szSignal     */ SIGNAL(accepted()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcClientSettingsAccepted()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcClient,
-        /* szSignal     */ SIGNAL(rejected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcClientSettingsRejected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcClient,
-        /* szSignal     */ SIGNAL(detailsVisibilityChanged(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onWdgtIpcClientDetailsVisibilityChanged(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pWdgtIpcClient, &CWdgtIpcClient::accepted,
+        this, &CDlgTrcClient::onIpcClientSettingsAccepted);
+    QObject::connect(
+        m_pWdgtIpcClient, &CWdgtIpcClient::rejected,
+        this, &CDlgTrcClient::onIpcClientSettingsRejected);
+    QObject::connect(
+        m_pWdgtIpcClient, &CWdgtIpcClient::detailsVisibilityChanged,
+        this, &CDlgTrcClient::onWdgtIpcClientDetailsVisibilityChanged);
 
     m_pWdgtTrcSettings = new CWdgtTrcSettings();
     m_pTabWidget->addTab( m_pWdgtTrcSettings, "Trace Settings" );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtTrcSettings,
-        /* szSignal     */ SIGNAL(accepted()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTrcSettingsAccepted()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtTrcSettings,
-        /* szSignal     */ SIGNAL(rejected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTrcSettingsRejected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pWdgtTrcSettings, &CWdgtTrcSettings::accepted,
+        this, &CDlgTrcClient::onTrcSettingsAccepted);
+    QObject::connect(
+        m_pWdgtTrcSettings, &CWdgtTrcSettings::rejected,
+        this, &CDlgTrcClient::onTrcSettingsRejected);
 
 } // ctor
 

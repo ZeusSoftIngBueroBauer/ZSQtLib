@@ -486,15 +486,9 @@ CInProcMsgSocket::CInProcMsgSocket(
 
     m_uLocalPort = GetUniquePort();
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pInProcMsgSocketPeer,
-        /* szSignal     */ SIGNAL(destroyed(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSocketPeerDestroyed(QObject*)),
-        /* connectType  */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pInProcMsgSocketPeer, &QObject::destroyed,
+        this, &CInProcMsgSocket::onSocketPeerDestroyed);
 
     s_pInProcMsgSocketsAdminObj->onSocketCreated(this);
 
@@ -738,10 +732,8 @@ void CInProcMsgSocket::connectToServer(
         if( m_pInProcMsgServer != nullptr )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pInProcMsgServer,
-                /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onServerDestroyed(QObject*)) );
+                m_pInProcMsgServer, &QObject::destroyed,
+                this, &CInProcMsgSocket::onServerDestroyed);
             m_pInProcMsgServer = nullptr;
         }
 
@@ -756,15 +748,10 @@ void CInProcMsgSocket::connectToServer(
 
         if( m_pInProcMsgServer != nullptr )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pInProcMsgServer,
-                /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onServerDestroyed(QObject*)),
-                /* connectType  */ Qt::DirectConnection ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pInProcMsgServer, &QObject::destroyed,
+                this, &CInProcMsgSocket::onServerDestroyed,
+                Qt::DirectConnection);
 
             SSocketDscr socketDscr(
                 /* strRemoteHostName */ m_strLocalHostName,     // the server's IP address (same as client's address for InProcMsg)
@@ -927,10 +914,8 @@ void CInProcMsgSocket::abort()
     if( m_bOnTimerTimeoutConnected )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTimer,
-            /* szSignal     */ SIGNAL(timeout()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTimerTimeout()) );
+            m_pTimer, &QTimer::timeout,
+            this, &CInProcMsgSocket::onTimerTimeout);
         m_bOnTimerTimeoutConnected = false;
     }
 
@@ -1154,12 +1139,9 @@ bool CInProcMsgSocket::event( QEvent* i_pMsg )
                     if( !m_bOnTimerTimeoutConnected )
                     {
                         m_bOnTimerTimeoutConnected = QObject::connect(
-                            /* pObjSender   */ m_pTimer,
-                            /* szSignal     */ SIGNAL(timeout()),
-                            /* pObjReceiver */ this,
-                            /* szSlot       */ SLOT(onTimerTimeout()) );
-                        if( !m_bOnTimerTimeoutConnected )
-                        {
+                            m_pTimer, &QTimer::timeout,
+                            this, &CInProcMsgSocket::onTimerTimeout);
+                        if( !m_bOnTimerTimeoutConnected ) {
                             throw CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
                         }
                         m_fTimerStartTime_ms = Time::getProcTimeInMilliSec();
@@ -1194,10 +1176,8 @@ bool CInProcMsgSocket::event( QEvent* i_pMsg )
                     if( m_bOnTimerTimeoutConnected )
                     {
                         QObject::disconnect(
-                            /* pObjSender   */ m_pTimer,
-                            /* szSignal     */ SIGNAL(timeout()),
-                            /* pObjReceiver */ this,
-                            /* szSlot       */ SLOT(onTimerTimeout()) );
+                            m_pTimer, &QTimer::timeout,
+                            this, &CInProcMsgSocket::onTimerTimeout);
                         m_bOnTimerTimeoutConnected = false;
                     }
                     if( pMsgReq->mustBeConfirmed() )
@@ -1264,10 +1244,8 @@ bool CInProcMsgSocket::event( QEvent* i_pMsg )
                             if( m_bOnTimerTimeoutConnected )
                             {
                                 QObject::disconnect(
-                                    /* pObjSender   */ m_pTimer,
-                                    /* szSignal     */ SIGNAL(timeout()),
-                                    /* pObjReceiver */ this,
-                                    /* szSlot       */ SLOT(onTimerTimeout()) );
+                                    m_pTimer, &QTimer::timeout,
+                                    this, &CInProcMsgSocket::onTimerTimeout);
                                 m_bOnTimerTimeoutConnected = false;
                             }
                             if( errResultInfo.isErrorResult() )
@@ -1284,15 +1262,9 @@ bool CInProcMsgSocket::event( QEvent* i_pMsg )
                                 m_iReqMsgId = -1;
                                 m_errResultInfo = errResultInfo;
                                 m_pInProcMsgSocketPeer = CInProcMsgSocket::Find(m_uRemotePort);
-                                if( !QObject::connect(
-                                    /* pObjSender   */ m_pInProcMsgSocketPeer,
-                                    /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                                    /* pObjReceiver */ this,
-                                    /* szSlot       */ SLOT(onSocketPeerDestroyed(QObject*)),
-                                    /* connectType  */ Qt::DirectConnection ) )
-                                {
-                                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                }
+                                QObject::connect(
+                                    m_pInProcMsgSocketPeer, &QObject::destroyed,
+                                    this, &CInProcMsgSocket::onSocketPeerDestroyed);
                                 emit connected();
                             }
                             break;
@@ -1337,10 +1309,8 @@ bool CInProcMsgSocket::event( QEvent* i_pMsg )
                             if( m_bOnTimerTimeoutConnected )
                             {
                                 QObject::disconnect(
-                                    /* pObjSender   */ m_pTimer,
-                                    /* szSignal     */ SIGNAL(timeout()),
-                                    /* pObjReceiver */ this,
-                                    /* szSlot       */ SLOT(onTimerTimeout()) );
+                                    m_pTimer, &QTimer::timeout,
+                                    this, &CInProcMsgSocket::onTimerTimeout);
                                 m_bOnTimerTimeoutConnected = false;
                             }
                             if( errResultInfo.isErrorResult() )
@@ -1526,10 +1496,8 @@ void CInProcMsgSocket::onTimerTimeout()
     {
         m_pTimer->stop();
         QObject::disconnect(
-            /* pObjSender   */ m_pTimer,
-            /* szSignal     */ SIGNAL(timeout()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTimerTimeout()) );
+            m_pTimer, &QTimer::timeout,
+            this, &CInProcMsgSocket::onTimerTimeout);
         m_bOnTimerTimeoutConnected = false;
     }
 

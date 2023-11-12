@@ -226,14 +226,9 @@ CWdgtPhysUnit::CWdgtPhysUnit(QWidget* i_pWdgtParent) :
     m_pLytLinePhysValSrc->addWidget(m_pEdtPhysValSrc);
     m_pLytLinePhysValSrc->addStretch();
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtPhysValSrc,
-        /* szSignal     */ SIGNAL(editingFinished()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtPhysValSrcEditingFinished()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdtPhysValSrc, &CWdgtEditPhysVal::editingFinished,
+        this, &CWdgtPhysUnit::onEdtPhysValSrcEditingFinished);
 
     m_pLytLineValDst = new QHBoxLayout;
     m_pLyt->addLayout(m_pLytLineValDst);
@@ -258,14 +253,9 @@ CWdgtPhysUnit::CWdgtPhysUnit(QWidget* i_pWdgtParent) :
     //m_pCmbUnitsDst->setFixedWidth(m_cxEdtWidth);
     pLytWdgtValDst->addWidget(m_pCmbUnitsDst);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pCmbUnitsDst,
-        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbUnitsDstCurrentIndexChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pCmbUnitsDst, &QComboBox::currentIndexChanged,
+        this, &CWdgtPhysUnit::onCmbUnitsDstCurrentIndexChanged);
 
     m_pLytLineValDst->addStretch();
 
@@ -470,16 +460,12 @@ void CWdgtPhysUnit::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
         }
 
         QObject::disconnect(
-            /* pObjSender   */ m_pEdtPhysValSrc,
-            /* szSignal     */ SIGNAL(editingFinished()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtPhysValSrcEditingFinished()) );
+            m_pEdtPhysValSrc, &CWdgtEditPhysVal::editingFinished,
+            this, &CWdgtPhysUnit::onEdtPhysValSrcEditingFinished);
         QObject::disconnect(
-            /* pObjSender   */ m_pCmbUnitsDst,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbUnitsDstCurrentIndexChanged(int)) );
-
+            m_pCmbUnitsDst, &QComboBox::currentIndexChanged,
+            this, &CWdgtPhysUnit::onCmbUnitsDstCurrentIndexChanged);
+ 
         if( pPhysUnit == nullptr )
         {
             m_pEdtSymbol->setText("---");
@@ -539,22 +525,12 @@ void CWdgtPhysUnit::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
             m_pEdtFctConvertFromSIUnit->setText( pPhysUnit->getFctConvertFromSIUnitName() );
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pEdtPhysValSrc,
-            /* szSignal     */ SIGNAL(editingFinished()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtPhysValSrcEditingFinished()) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pCmbUnitsDst,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbUnitsDstCurrentIndexChanged(int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pEdtPhysValSrc, &CWdgtEditPhysVal::editingFinished,
+            this, &CWdgtPhysUnit::onEdtPhysValSrcEditingFinished);
+        QObject::connect(
+            m_pCmbUnitsDst, &QComboBox::currentIndexChanged,
+            this, &CWdgtPhysUnit::onCmbUnitsDstCurrentIndexChanged);
 
         m_pModelFctConvertsInternal->setKeyInTreeOfRootEntry(i_strKeyInTree);
         m_pModelFctConvertsExternal->setKeyInTreeOfRootEntry(i_strKeyInTree);

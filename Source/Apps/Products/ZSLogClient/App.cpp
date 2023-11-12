@@ -250,14 +250,9 @@ CApplication::CApplication(
 
     //setQuitOnLastWindowClosed(false);
 
-    //if( !QObject::connect(
-    //    /* pObjSender   */ this,
-    //    /* szSignal     */ SIGNAL(lastWindowClosed()),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT(onLastWindowClosed()) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
+    //QObject::connect(
+    //    this, &CApplication::lastWindowClosed,
+    //    this, &CApplication::onLastWindowClosed);
 
     m_pMainWindow = new CMainWindow(strWindowTitle, m_pLogClient);
     m_pMainWindow->show();

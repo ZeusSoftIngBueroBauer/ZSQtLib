@@ -270,9 +270,15 @@ void CModelErrLog::setErrLog( QObject* i_pErrLog )
     {
         if( m_pErrLog != nullptr )
         {
-            QObject::disconnect(m_pErrLog, &CErrLog::entryAdded, this, &CModelErrLog::onEntryAdded);
-            QObject::disconnect(m_pErrLog, &CErrLog::entryChanged, this, &CModelErrLog::onEntryChanged);
-            QObject::disconnect(m_pErrLog, &CErrLog::entryRemoved, this, &CModelErrLog::onEntryRemoved);
+            QObject::disconnect(
+                m_pErrLog, &CErrLog::entryAdded,
+                this, &CModelErrLog::onEntryAdded);
+            QObject::disconnect(
+                m_pErrLog, &CErrLog::entryChanged,
+                this, &CModelErrLog::onEntryChanged);
+            QObject::disconnect(
+                m_pErrLog, &CErrLog::entryRemoved,
+                this, &CModelErrLog::onEntryRemoved);
 
             for( int iSeverity = m_ararpEntries.count()-1; iSeverity >= 0; iSeverity-- )
             {
@@ -312,9 +318,15 @@ void CModelErrLog::setErrLog( QObject* i_pErrLog )
                 onEntryAdded(pErrLogEntry->m_errResultInfo);
             }
 
-            QObject::connect(m_pErrLog, &CErrLog::entryAdded, this, &CModelErrLog::onEntryAdded);
-            QObject::connect(m_pErrLog, &CErrLog::entryChanged, this, &CModelErrLog::onEntryChanged);
-            QObject::connect(m_pErrLog, &CErrLog::entryRemoved, this, &CModelErrLog::onEntryRemoved);
+            QObject::connect(
+                m_pErrLog, &CErrLog::entryAdded,
+                this, &CModelErrLog::onEntryAdded);
+            QObject::connect(
+                m_pErrLog, &CErrLog::entryChanged,
+                this, &CModelErrLog::onEntryChanged);
+            QObject::connect(
+                m_pErrLog, &CErrLog::entryRemoved,
+                this, &CModelErrLog::onEntryRemoved);
         }
 
         emit errLogChanged(m_pErrLog);
@@ -551,21 +563,14 @@ void CModelErrLog::removeEntry( int i_iRowIdx )
         endRemoveRows();
 
         QObject::disconnect(
-            /* pObjSender   */ m_pErrLog,
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) );
+            m_pErrLog, &CErrLog::entryRemoved,
+            this, &CModelErrLog::onEntryRemoved);
 
         m_pErrLog->removeEntry(errResultInfo);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pErrLog,
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pErrLog, &CErrLog::entryRemoved,
+            this, &CModelErrLog::onEntryRemoved);
         emit countChanged();
     }
 } // removeEntry

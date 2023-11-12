@@ -133,14 +133,9 @@ CDlgWdgtTrcMthListSettings::CDlgWdgtTrcMthListSettings(
     m_pLytLineShowTimeInfo->addWidget(m_pChkShowTimeInfo);
     m_pLytLineShowTimeInfo->addStretch();
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkShowTimeInfo,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkShowTimeInfoToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkShowTimeInfo, &QCheckBox::toggled,
+        this, &CDlgWdgtTrcMthListSettings::onChkShowTimeInfoToggled);
 
     m_pLyt->addWidget(new CSepLine(5, this));
 
@@ -151,56 +146,31 @@ CDlgWdgtTrcMthListSettings::CDlgWdgtTrcMthListSettings(
     m_pBtnApply->setEnabled(false);
     m_pLytBtns->addWidget(m_pBtnApply);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnApply,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnApply, &QPushButton::clicked,
+        this, &CDlgWdgtTrcMthListSettings::onBtnApplyClicked);
 
     m_pBtnOk = new QPushButton("Ok");
     m_pLytBtns->addWidget(m_pBtnOk);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnOk,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnOkClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnOk, &QPushButton::clicked,
+        this, &CDlgWdgtTrcMthListSettings::onBtnOkClicked);
 
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytBtns->addWidget(m_pBtnCancel);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnCancel,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnCancel, &QPushButton::clicked,
+        this, &CDlgWdgtTrcMthListSettings::onBtnCancelClicked);
 
-    if( !QObject::connect(
-        /* pObjSender   */ this,
-        /* szSignal     */ SIGNAL(accepted()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(hide()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        this, &CDlgWdgtTrcMthListSettings::accepted,
+        this, &CDlgWdgtTrcMthListSettings::hide);
+    QObject::connect(
+        this, &CDlgWdgtTrcMthListSettings::rejected,
+        this, &CDlgWdgtTrcMthListSettings::hide);
 
-    if( !QObject::connect(
-        /* pObjSender   */ this,
-        /* szSignal     */ SIGNAL(rejected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(hide()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -230,10 +200,8 @@ void CDlgWdgtTrcMthListSettings::setTraceMethodListWidget( CWdgtTrcMthList* i_pW
     if( m_pWdgtTrcMthList != i_pWdgtTrcMthList )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pChkShowTimeInfo,
-            /* szSignal     */ SIGNAL(toggled(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onChkShowTimeInfoToggled(bool)) );
+            m_pChkShowTimeInfo, &QCheckBox::toggled,
+            this, &CDlgWdgtTrcMthListSettings::onChkShowTimeInfoToggled);
 
         m_pWdgtTrcMthList = i_pWdgtTrcMthList;
 
@@ -257,14 +225,9 @@ void CDlgWdgtTrcMthListSettings::setTraceMethodListWidget( CWdgtTrcMthList* i_pW
             m_pBtnApply->setEnabled(false);
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pChkShowTimeInfo,
-            /* szSignal     */ SIGNAL(toggled(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onChkShowTimeInfoToggled(bool)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pChkShowTimeInfo, &QCheckBox::toggled,
+            this, &CDlgWdgtTrcMthListSettings::onChkShowTimeInfoToggled);
     }
 } // setTraceMethodListWidget
 

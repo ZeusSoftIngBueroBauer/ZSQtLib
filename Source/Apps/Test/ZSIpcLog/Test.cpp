@@ -84,26 +84,16 @@ CTest::CTest() :
     m_pTmrTestStepTimeout = new QTimer(this);
     m_pTmrTestStepTimeout->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrTestStepTimeout,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerTestStepTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrTestStepTimeout, &QTimer::timeout,
+        this, &CTest::onTimerTestStepTimeout);
 
     m_pTmrCheckLogClientLogWdgtIsEmpty = new QTimer(this);
     m_pTmrCheckLogClientLogWdgtIsEmpty->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrCheckLogClientLogWdgtIsEmpty,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerCheckLogClientLogWdgtIsEmptyTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrCheckLogClientLogWdgtIsEmpty, &QTimer::timeout,
+        this, &CTest::onTimerCheckLogClientLogWdgtIsEmptyTimeout);
 
     ZS::Test::CTestStep* pTestStep = nullptr;
 
@@ -1449,27 +1439,17 @@ void CTest::doTestStepLogClientConnect( ZS::Test::CTestStep* i_pTestStep )
 
             m_hshReqsInProgress[pReq->getId()] = pReq;
 
-            if( !QObject::connect(
-                /* pObjSender   */ pReq,
-                /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                pReq, &CRequest::changed,
+                this, &CTest::onRequestChanged);
 
             if( arpTreeEntriesServer.size() > 0 )
             {
                 m_pTmrTestStepTimeout->start(1000);
 
-                if( !QObject::connect(
-                    /* pObjSender   */ pLogClient,
-                    /* szSignal     */ SIGNAL(loggerInserted(QObject*, const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onLogClientLoggerInserted(QObject*, const QString&)) ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    pLogClient, &CIpcLogClient::loggerInserted,
+                    this, &CTest::onLogClientLoggerInserted);
             }
         }
         else // if( !isAsynchronousRequest(pReq) )
@@ -1535,14 +1515,9 @@ void CTest::doTestStepLogClientDisconnect( ZS::Test::CTestStep* i_pTestStep )
 
             m_hshReqsInProgress[pReq->getId()] = pReq;
 
-            if( !QObject::connect(
-                /* pObjSender   */ pReq,
-                /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                pReq, &CRequest::changed,
+                this, &CTest::onRequestChanged);
         }
         else // if( isAsynchronousRequest(pReq) )
         {
@@ -1654,14 +1629,9 @@ void CTest::doTestStepLogServerGetLogger( ZS::Test::CTestStep* i_pTestStep )
         {
             m_pTmrTestStepTimeout->start(1000);
 
-            if( !QObject::connect(
-                /* pObjSender   */ pLogClient,
-                /* szSignal     */ SIGNAL(loggerInserted(QObject*, const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLoggerInserted(QObject*, const QString&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                pLogClient, &CIpcLogClient::loggerInserted,
+                this, &CTest::onLogClientLoggerInserted);
         }
         else
         {
@@ -1861,14 +1831,9 @@ void CTest::doTestStepModifyLogger( ZS::Test::CTestStep* i_pTestStep )
     {
         m_pTmrTestStepTimeout->start(1000);
 
-        if( !QObject::connect(
-            /* pObjSender   */ pLogClient,
-            /* szSignal     */ SIGNAL(loggerChanged(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogClientLoggerChanged(QObject*, const QString&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            pLogClient, &CIpcLogClient::loggerChanged,
+            this, &CTest::onLogClientLoggerChanged);
     }
 
 } // doTestStepModifyLogger
@@ -1973,14 +1938,9 @@ void CTest::doTestStepModifyLogServer( ZS::Test::CTestStep* i_pTestStep )
 
     m_pTmrTestStepTimeout->start(1000);
 
-    if( !QObject::connect(
-        /* pObjSender   */ pLogClient,
-        /* szSignal     */ SIGNAL(logSettingsChanged(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onLogClientLogSettingsChanged(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        pLogClient, &CIpcLogClient::logSettingsChanged,
+        this, &CTest::onLogClientLogSettingsChanged);
 
 } // doTestStepModifyLogServer
 
@@ -2251,14 +2211,9 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
         }
         else
         {
-            if( !QObject::connect(
-                /* pObjSender   */ pWdgtLog,
-                /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLogWdgtTextItemAdded(const QString&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                pWdgtLog, &CWdgtLog::textItemAdded,
+                this, &CTest::onLogClientLogWdgtTextItemAdded);
             m_pTmrTestStepTimeout->start(1000);
         }
     }
@@ -2363,14 +2318,9 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
         }
         else
         {
-            if( !QObject::connect(
-                /* pObjSender   */ pWdgtLog,
-                /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLogWdgtTextItemAdded(const QString&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                pWdgtLog, &CWdgtLog::textItemAdded,
+                this, &CTest::onLogClientLogWdgtTextItemAdded);
             m_pTmrTestStepTimeout->start(1000);
         }
     }
@@ -2473,14 +2423,9 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
         }
         else
         {
-            if( !QObject::connect(
-                /* pObjSender   */ pWdgtLog,
-                /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLogWdgtTextItemAdded(const QString&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                pWdgtLog, &CWdgtLog::textItemAdded,
+                this, &CTest::onLogClientLogWdgtTextItemAdded);
             m_pTmrTestStepTimeout->start(1000);
         }
     }
@@ -2527,10 +2472,8 @@ void CTest::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
             // On updating the request this slot method would be invoked as a reentry.
             // As the request is finished we don't want this reentry call.
             QObject::disconnect(
-                /* pObjSender   */ pReq,
-                /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)) );
+                pReq, &CRequest::changed,
+                this, &CTest::onRequestChanged);
 
             ZS::Test::CTestStep* pTestStep = reinterpret_cast<ZS::Test::CTestStep*>(pReq->takeExecutionData(QString::number(i_reqDscr.m_iId)));
 
@@ -2677,10 +2620,8 @@ void CTest::onLogClientLoggerInserted( QObject* /*i_pLogClient*/, const QString&
                     }
 
                     QObject::disconnect(
-                        /* pObjSender   */ pLogClient,
-                        /* szSignal     */ SIGNAL(loggerInserted(QObject*, const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onLogClientLoggerInserted(QObject*, const QString&)) );
+                        pLogClient, &CIpcLogClient::loggerInserted,
+                        this, &CTest::onLogClientLoggerInserted);
 
                     QString     strResultValue;
                     QStringList strlstResultValues;
@@ -2722,10 +2663,8 @@ void CTest::onLogClientLoggerInserted( QObject* /*i_pLogClient*/, const QString&
                 }
 
                 QObject::disconnect(
-                    /* pObjSender   */ pLogClient,
-                    /* szSignal     */ SIGNAL(loggerInserted(QObject*, const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onLogClientLoggerInserted(QObject*, const QString&)) );
+                    pLogClient, &CIpcLogClient::loggerInserted,
+                    this, &CTest::onLogClientLoggerInserted);
 
                 // Actual Values
                 //---------------
@@ -2797,10 +2736,8 @@ void CTest::onLogClientLoggerChanged( QObject* /*i_pLogClient*/, const QString& 
             }
 
             QObject::disconnect(
-                /* pObjSender   */ pLogClient,
-                /* szSignal     */ SIGNAL(loggerChanged(QObject*, const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLoggerChanged(QObject*, const QString&)) );
+                pLogClient, &CIpcLogClient::loggerChanged,
+                this, &CTest::onLogClientLoggerChanged);
 
             QString     strResultValue;
             QStringList strlstResultValues;
@@ -2875,10 +2812,8 @@ void CTest::onLogClientLogWdgtTextItemAdded( const QString& i_strText )
                 }
 
                 QObject::disconnect(
-                    /* pObjSender   */ pWdgtLog,
-                    /* szSignal     */ SIGNAL(textItemAdded(const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onLogClientLogWdgtTextItemAdded(const QString&)) );
+                    pWdgtLog, &CWdgtLog::textItemAdded,
+                    this, &CTest::onLogClientLogWdgtTextItemAdded);
 
                 // Retrieve result values from log widget
                 //---------------------------------------
@@ -3053,10 +2988,8 @@ void CTest::onLogClientLogSettingsChanged( QObject* /*i_pLogClient*/ )
         CIpcLogClient* pLogClient = CApplication::GetInstance()->getLogClient();
 
         QObject::disconnect(
-            /* pObjSender   */ pLogClient,
-            /* szSignal     */ SIGNAL(logSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogClientLogSettingsChanged(QObject*)) );
+            pLogClient, &CIpcLogClient::logSettingsChanged,
+            this, &CTest::onLogClientLogSettingsChanged);
 
         SLogServerSettings logSettings = pLogClient->getLogSettings();
 
@@ -3144,15 +3077,11 @@ void CTest::onTimerTestStepTimeout()
             CIpcLogClient* pLogClient = CApplication::GetInstance()->getLogClient();
 
             QObject::disconnect(
-                /* pObjSender   */ pLogClient,
-                /* szSignal     */ SIGNAL(loggerInserted(QObject*, const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLoggerInserted(QObject*, const QString&)) );
+                pLogClient, &CIpcLogClient::loggerInserted,
+                this, &CTest::onLogClientLoggerInserted);
             QObject::disconnect(
-                /* pObjSender   */ pLogClient,
-                /* szSignal     */ SIGNAL(loggerChanged(QObject*, const QString&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onLogClientLoggerChanged(QObject*, const QString&)) );
+                pLogClient, &CIpcLogClient::loggerChanged,
+                this, &CTest::onLogClientLoggerChanged);
         }
     } // if( pTestStep != nullptr )
 

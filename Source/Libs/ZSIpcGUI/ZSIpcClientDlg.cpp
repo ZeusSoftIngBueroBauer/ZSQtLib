@@ -121,32 +121,15 @@ CDlgIpcClient::CDlgIpcClient(
     m_pWdgtIpcClient = new CWdgtIpcClient(objectName());
     m_pLyt->addWidget(m_pWdgtIpcClient);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcClient,
-        /* szSignal     */ SIGNAL(accepted()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSettingsAccepted()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcClient,
-        /* szSignal     */ SIGNAL(rejected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSettingsRejected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcClient,
-        /* szSignal     */ SIGNAL(detailsVisibilityChanged(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onWdgtIpcClientDetailsVisibilityChanged(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pWdgtIpcClient, &CWdgtIpcClient::accepted,
+        this, &CDlgIpcClient::onSettingsAccepted);
+    QObject::connect(
+        m_pWdgtIpcClient, &CWdgtIpcClient::rejected,
+        this, &CDlgIpcClient::onSettingsRejected);
+    QObject::connect(
+        m_pWdgtIpcClient, &CWdgtIpcClient::detailsVisibilityChanged,
+        this, &CDlgIpcClient::onWdgtIpcClientDetailsVisibilityChanged);
 
 } // ctor
 

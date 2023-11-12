@@ -1341,46 +1341,21 @@ void CShmSocketWrapper::createTimer()
     m_pTimerSocketCommChanListenForReq = new QTimer(this);
     m_pTimerSocketCommChanWaitForCon = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerServerCtrlChanReqConnect,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutServerCtrlChanReqConnect()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerServerCtrlChanConConnect,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutServerCtrlChanConConnect()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerSocketCommChanWatchDog,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutSocketCommChanWatchDog()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerSocketCommChanListenForReq,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutSocketCommChanListenForReq()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerSocketCommChanWaitForCon,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutSocketCommChanWaitForCon()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimerServerCtrlChanReqConnect, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutServerCtrlChanReqConnect);
+    QObject::connect(
+        m_pTimerServerCtrlChanConConnect, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutServerCtrlChanConConnect);
+    QObject::connect(
+        m_pTimerSocketCommChanWatchDog, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutSocketCommChanWatchDog);
+    QObject::connect(
+        m_pTimerSocketCommChanListenForReq, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutSocketCommChanListenForReq);
+    QObject::connect(
+        m_pTimerSocketCommChanWaitForCon, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutSocketCommChanWaitForCon);
 
 } // createTimer
 

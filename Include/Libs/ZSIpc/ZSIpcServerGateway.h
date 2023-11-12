@@ -88,7 +88,7 @@ protected slots: // overridables
 protected slots: // must overridables of base class CSrvCltBaseGateway
     virtual void onDisconnected( QObject* i_pSocketWrapper ) override;
     virtual void onReadyRead( QObject* i_pSocketWrapper ) override;
-    virtual void onError( QObject* i_pSocketWrapper, ZS::System::SErrResultInfo& i_errResultInfo ) override;
+    virtual void onError( QObject* i_pSocketWrapper, const ZS::System::SErrResultInfo& i_errResultInfo ) override;
 public: // overridables of inherited class QObject
     virtual bool event( QEvent* i_pMsg ) override;
 protected: // instance members

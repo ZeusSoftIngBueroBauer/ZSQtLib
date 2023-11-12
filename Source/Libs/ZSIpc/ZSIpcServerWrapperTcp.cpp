@@ -165,14 +165,10 @@ bool CTcpServerWrapper::listen()
         /* strMethod          */ "listen",
         /* strAddInfo         */ "" );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTcpServer,
-        /* szSignal     */ SIGNAL(newConnection()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onNewConnection()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTcpServer, &QTcpServer::newConnection,
+        this, &CTcpServerWrapper::onNewConnection);
+
     return m_pTcpServer->listen( QHostAddress::Any, m_uLocalPort );
 
 } // listen
@@ -199,14 +195,10 @@ void CTcpServerWrapper::close()
         /* strMethod          */ "close",
         /* strAddInfo         */ "" );
 
-    if( !QObject::disconnect(
-        /* pObjSender   */ m_pTcpServer,
-        /* szSignal     */ SIGNAL(newConnection()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onNewConnection()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::disconnect(
+        m_pTcpServer, &QTcpServer::newConnection,
+        this, &CTcpServerWrapper::onNewConnection);
+
     m_pTcpServer->close();
 
 } // close

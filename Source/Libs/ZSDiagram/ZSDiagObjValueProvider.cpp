@@ -82,67 +82,37 @@ CDiagObjValueProvider::CDiagObjValueProvider(
     {
         if( m_scaleDirOp1 == EScaleDir::X )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pDiagObjOp1,
-                /* pcSignal     */ SIGNAL(valueXChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op1ValueXChanged(ZS::Diagram::CDiagObj*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pDiagObjOp1, &CDiagObj::valueXChanged,
+                this, &CDiagObjValueProvider::op1ValueXChanged);
         }
         else if( m_scaleDirOp1 == EScaleDir::Y )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pDiagObjOp1,
-                /* pcSignal     */ SIGNAL(valueYChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op1ValueYChanged(ZS::Diagram::CDiagObj*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pDiagObjOp1, &CDiagObj::valueYChanged,
+                this, &CDiagObjValueProvider::op1ValueYChanged);
         }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDiagObjOp1,
-            /* pcSignal     */ SIGNAL(visibilityChanged(ZS::Diagram::CDiagObj*)),
-            /* pObjReceiver */ this,
-            /* pcMember     */ SLOT(op1VisibilityChanged(ZS::Diagram::CDiagObj*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pDiagObjOp1, &CDiagObj::visibilityChanged,
+            this, &CDiagObjValueProvider::op1VisibilityChanged);
     }
     if( m_pDiagObjOp2 != nullptr )
     {
         if( m_scaleDirOp2 == EScaleDir::X )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pDiagObjOp2,
-                /* pcSignal     */ SIGNAL(valueXChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op2ValueXChanged(ZS::Diagram::CDiagObj*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pDiagObjOp2, &CDiagObj::valueXChanged,
+                this, &CDiagObjValueProvider::op2ValueXChanged);
         }
         else if( m_scaleDirOp2 == EScaleDir::Y )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pDiagObjOp2,
-                /* pcSignal     */ SIGNAL(valueYChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op2ValueYChanged(ZS::Diagram::CDiagObj*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pDiagObjOp2, &CDiagObj::valueYChanged,
+                this, &CDiagObjValueProvider::op2ValueYChanged);
         }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDiagObjOp2,
-            /* pcSignal     */ SIGNAL(visibilityChanged(ZS::Diagram::CDiagObj*)),
-            /* pObjReceiver */ this,
-            /* pcMember     */ SLOT(op2VisibilityChanged(ZS::Diagram::CDiagObj*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pDiagObjOp2, &CDiagObj::visibilityChanged,
+            this, &CDiagObjValueProvider::op2VisibilityChanged);
     }
 
 } // ctor
@@ -198,24 +168,18 @@ void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, const CEnumScaleDir& i
         if( m_scaleDirOp1 == EScaleDir::X )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pDiagObjOp1,
-                /* pcSignal     */ SIGNAL(valueXChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op1ValueXChanged(ZS::Diagram::CDiagObj*)) );
+                m_pDiagObjOp1, &CDiagObj::valueXChanged,
+                this, &CDiagObjValueProvider::op1ValueXChanged);
         }
         else if( m_scaleDirOp1 == EScaleDir::Y )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pDiagObjOp1,
-                /* pcSignal     */ SIGNAL(valueYChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op1ValueYChanged(ZS::Diagram::CDiagObj*)) );
+                m_pDiagObjOp1, &CDiagObj::valueYChanged,
+                this, &CDiagObjValueProvider::op1ValueYChanged);
         }
         QObject::disconnect(
-            /* pObjSender   */ m_pDiagObjOp1,
-            /* pcSignal     */ SIGNAL(visibilityChanged(ZS::Diagram::CDiagObj*)),
-            /* pObjReceiver */ this,
-            /* pcMember     */ SLOT(op1VisibilityChanged(ZS::Diagram::CDiagObj*)) );
+            m_pDiagObjOp1, &CDiagObj::visibilityChanged,
+            this, &CDiagObjValueProvider::op1VisibilityChanged);
     }
     m_pDiagObjOp1 = i_pDiagObj;
     m_scaleDirOp1 = i_scaleDir.enumerator();
@@ -224,34 +188,19 @@ void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, const CEnumScaleDir& i
     {
         if( m_scaleDirOp1 == EScaleDir::X )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pDiagObjOp1,
-                /* pcSignal     */ SIGNAL(valueXChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op1ValueXChanged(ZS::Diagram::CDiagObj*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pDiagObjOp1, &CDiagObj::valueXChanged,
+                this, &CDiagObjValueProvider::op1ValueXChanged);
         }
         else if( m_scaleDirOp1 == EScaleDir::Y )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pDiagObjOp1,
-                /* pcSignal     */ SIGNAL(valueYChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op1ValueYChanged(ZS::Diagram::CDiagObj*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pDiagObjOp1, &CDiagObj::valueYChanged,
+                this, &CDiagObjValueProvider::op1ValueYChanged);
         }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDiagObjOp1,
-            /* pcSignal     */ SIGNAL(visibilityChanged(ZS::Diagram::CDiagObj*)),
-            /* pObjReceiver */ this,
-            /* pcMember     */ SLOT(op1VisibilityChanged(ZS::Diagram::CDiagObj*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pDiagObjOp1, &CDiagObj::visibilityChanged,
+            this, &CDiagObjValueProvider::op1VisibilityChanged);
     }
     m_physVal.setValidity(EValueValidity::Invalid);
     invalidate(EUpdateData);
@@ -281,24 +230,18 @@ void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, const CEnumScaleDir& i
         if( m_scaleDirOp2 == EScaleDir::X )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pDiagObjOp2,
-                /* pcSignal     */ SIGNAL(valueXChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op2ValueXChanged(ZS::Diagram::CDiagObj*)) );
+                m_pDiagObjOp2, &CDiagObj::valueXChanged,
+                this, &CDiagObjValueProvider::op2ValueXChanged);
         }
         else if( m_scaleDirOp1 == EScaleDir::Y )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pDiagObjOp2,
-                /* pcSignal     */ SIGNAL(valueYChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op2ValueYChanged(ZS::Diagram::CDiagObj*)) );
+                m_pDiagObjOp2, &CDiagObj::valueYChanged,
+                this, &CDiagObjValueProvider::op2ValueYChanged);
         }
         QObject::disconnect(
-            /* pObjSender   */ m_pDiagObjOp2,
-            /* pcSignal     */ SIGNAL(visibilityChanged(ZS::Diagram::CDiagObj*)),
-            /* pObjReceiver */ this,
-            /* pcMember     */ SLOT(op2VisibilityChanged(ZS::Diagram::CDiagObj*)) );
+            m_pDiagObjOp2, &CDiagObj::visibilityChanged,
+            this, &CDiagObjValueProvider::op2VisibilityChanged);
     }
     m_pDiagObjOp2 = i_pDiagObj;
     m_scaleDirOp2 = i_scaleDir.enumerator();
@@ -307,34 +250,19 @@ void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, const CEnumScaleDir& i
     {
         if( m_scaleDirOp2 == EScaleDir::X )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pDiagObjOp2,
-                /* pcSignal     */ SIGNAL(valueXChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op2ValueXChanged(ZS::Diagram::CDiagObj*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pDiagObjOp2, &CDiagObj::valueXChanged,
+                this, &CDiagObjValueProvider::op2ValueXChanged);
         }
         else if( m_scaleDirOp1 == EScaleDir::Y )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pDiagObjOp2,
-                /* pcSignal     */ SIGNAL(valueYChanged(ZS::Diagram::CDiagObj*)),
-                /* pObjReceiver */ this,
-                /* pcMember     */ SLOT(op2ValueYChanged(ZS::Diagram::CDiagObj*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pDiagObjOp2, &CDiagObj::valueYChanged,
+                this, &CDiagObjValueProvider::op2ValueYChanged);
         }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDiagObjOp2,
-            /* pcSignal     */ SIGNAL(visibilityChanged(ZS::Diagram::CDiagObj*)),
-            /* pObjReceiver */ this,
-            /* pcMember     */ SLOT(op2VisibilityChanged(ZS::Diagram::CDiagObj*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pDiagObjOp2, &CDiagObj::visibilityChanged,
+            this, &CDiagObjValueProvider::op2VisibilityChanged);
     }
     m_physVal.setValidity(EValueValidity::Invalid);
     invalidate(EUpdateData);

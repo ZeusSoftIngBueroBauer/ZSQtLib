@@ -344,14 +344,9 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
                     {
                         pCmb->addItem(eDetailLevel.toString());
                     }
-                    if( !QObject::connect(
-                        /* pObjSender   */ pCmb,
-                        /* szSignal     */ SIGNAL( activated(int) ),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT( onComboDetailLevelActivated(int) ) ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pCmb, &QComboBox::activated,
+                        this, &CDelegateIdxTreeLoggers::onComboDetailLevelActivated);
                 }
                 break;
             }
@@ -362,14 +357,9 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
                     QLineEdit* pEdt = new QLineEdit(i_pWdgtParent);
                     pEdt->setObjectName(pCModelTreeEntry->keyInTree() + ".DataFilter");
                     pWdgtEditor = pEdt;
-                    if( !QObject::connect(
-                        /* pObjSender   */ pEdt,
-                        /* szSignal     */ SIGNAL( editingFinished() ),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT( onEdtDataFilterEditingFinished() ) ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pEdt, &QLineEdit::editingFinished,
+                        this, &CDelegateIdxTreeLoggers::onEdtDataFilterEditingFinished);
                 }
                 break;
             }
@@ -656,27 +646,17 @@ CTreeViewIdxTreeLoggers::CTreeViewIdxTreeLoggers(
     m_pActionNameSpaceExpand = new QAction(pxmExpandAll, "Expand", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceExpand);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceExpand,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceExpandTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceExpand, &QAction::triggered,
+        this, &CTreeViewIdxTreeLoggers::onActionNameSpaceExpandTriggered);
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     m_pActionNameSpaceCollapse = new QAction(pxmCollapseAll, "Collapse", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceCollapse);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceCollapse,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceCollapseTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceCollapse, &QAction::triggered,
+        this, &CTreeViewIdxTreeLoggers::onActionNameSpaceCollapseTriggered);
 
     m_pMenuNameSpaceContext->addSeparator();
 
@@ -688,52 +668,32 @@ CTreeViewIdxTreeLoggers::CTreeViewIdxTreeLoggers(
     m_pActionNameSpaceEnableLoggers = new QAction("Recursively Enable Loggers",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceEnableLoggers);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceEnableLoggers,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceEnableLoggersTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceEnableLoggers, &QAction::triggered,
+        this, &CTreeViewIdxTreeLoggers::onActionNameSpaceEnableLoggersTriggered);
 
     m_pActionNameSpaceDisableLoggers = new QAction("Recursively Disable Loggers",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceDisableLoggers);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceDisableLoggers,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceDisableLoggersTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceDisableLoggers, &QAction::triggered,
+        this, &CTreeViewIdxTreeLoggers::onActionNameSpaceDisableLoggersTriggered);
 
     m_pMenuNameSpaceContext->addSeparator();
 
     m_pActionNameSpaceSetLoggersDetailLevel = new QAction("Recursively Set Detail Level of Loggers",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetLoggersDetailLevel);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceSetLoggersDetailLevel,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceSetLoggersDetailLevelTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceSetLoggersDetailLevel, &QAction::triggered,
+        this, &CTreeViewIdxTreeLoggers::onActionNameSpaceSetLoggersDetailLevelTriggered);
 
     m_pActionNameSpaceSetLoggersDataFilter = new QAction("Recursively Set Data Filter of Loggers",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetLoggersDataFilter);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceSetLoggersDataFilter,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceSetLoggersDataFilterTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceSetLoggersDataFilter, &QAction::triggered,
+        this, &CTreeViewIdxTreeLoggers::onActionNameSpaceSetLoggersDataFilterTriggered);
 
 } // ctor
 

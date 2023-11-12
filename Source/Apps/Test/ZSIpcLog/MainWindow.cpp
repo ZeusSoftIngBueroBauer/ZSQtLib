@@ -143,28 +143,18 @@ CMainWindow::CMainWindow(
 
     if( pLogServer != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ pLogServer->getIpcServer(),
-            /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogServerStateChanged(QObject*,int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            pLogServer->getIpcServer(), &ZS::Ipc::CServer::stateChanged,
+            this, &CMainWindow::onLogServerStateChanged);
     }
 
     CIpcLogClient* pLogClient = CApplication::GetInstance()->getLogClient();
 
     if( pLogClient != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ pLogClient,
-            /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogClientStateChanged(QObject*,int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            pLogClient, &CIpcLogClient::stateChanged,
+            this, &CMainWindow::onLogClientStateChanged);
     }
 
     // <Menu> File
@@ -179,14 +169,9 @@ CMainWindow::CMainWindow(
     m_pMnuFile->addAction(m_pActFileSaveTestResults);
     m_pMnuFile->addSeparator();
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileSaveTestResults,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActFileSaveTestResultsTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileSaveTestResults, &QAction::triggered,
+        this, &CMainWindow::onActFileSaveTestResultsTriggered);
 
     // <MenuItem> File::Quit
     //----------------------
@@ -194,14 +179,9 @@ CMainWindow::CMainWindow(
     m_pActFileQuit = new QAction("&Quit",this);
     m_pMnuFile->addAction(m_pActFileQuit);
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileQuit,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ CApplication::GetInstance(),
-        /* szSlot       */ SLOT(quit()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileQuit, &QAction::triggered,
+        CApplication::GetInstance(), &CApplication::quit);
 
     // <Menu> Debug
     //=============
@@ -214,14 +194,9 @@ CMainWindow::CMainWindow(
     m_pActDebugLogServer = new QAction("Log Server",this);
     m_pMnuDebug->addAction(m_pActDebugLogServer);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDebugLogServer,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugLogServerTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDebugLogServer, &QAction::triggered,
+        this, &CMainWindow::onActDebugLogServerTriggered);
 
     // <MenuItem> Debug::LogServerLoggersIdxTree
     //------------------------------------------
@@ -229,14 +204,9 @@ CMainWindow::CMainWindow(
     m_pActDebugLogServerLoggersIdxTree = new QAction("Log Server Loggers",this);
     m_pMnuDebug->addAction(m_pActDebugLogServerLoggersIdxTree);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDebugLogServerLoggersIdxTree,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugLogServerLoggersIdxTreeTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDebugLogServerLoggersIdxTree, &QAction::triggered,
+        this, &CMainWindow::onActDebugLogServerLoggersIdxTreeTriggered);
 
     // <MenuItem> Debug::LogClient
     //----------------------------
@@ -244,14 +214,9 @@ CMainWindow::CMainWindow(
     m_pActDebugLogClient = new QAction("Log Client",this);
     m_pMnuDebug->addAction(m_pActDebugLogClient);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDebugLogClient,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugLogClientTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDebugLogClient, &QAction::triggered,
+        this, &CMainWindow::onActDebugLogClientTriggered);
 
     // <MenuItem> Debug::LogClientLoggersIdxTree
     //------------------------------------------
@@ -259,14 +224,9 @@ CMainWindow::CMainWindow(
     m_pActDebugLogClientLoggersIdxTree = new QAction("Log Client Loggers",this);
     m_pMnuDebug->addAction(m_pActDebugLogClientLoggersIdxTree);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDebugLogClientLoggersIdxTree,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugLogClientLoggersIdxTreeTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDebugLogClientLoggersIdxTree, &QAction::triggered,
+        this, &CMainWindow::onActDebugLogClientLoggersIdxTreeTriggered);
 
     // <MenuItem> Debug::Error Log
     //-----------------------------
@@ -281,14 +241,9 @@ CMainWindow::CMainWindow(
 
     m_pMnuDebug->addAction(m_pActDebugErrLog);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActDebugErrLog,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugErrLogTriggered()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActDebugErrLog, &QAction::triggered,
+        this, &CMainWindow::onActDebugErrLogTriggered);
 
     // <MenuItem> Debug::Request Execution Tree
     //-----------------------------------------
@@ -303,14 +258,9 @@ CMainWindow::CMainWindow(
 
     m_pMnuDebug->addAction(m_pActDebugRequestExecTree);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActDebugRequestExecTree,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugRequestExecTreeTriggered()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActDebugRequestExecTree, &QAction::triggered,
+        this, &CMainWindow::onActDebugRequestExecTreeTriggered);
 
     // <Menu> Info
     //=============
@@ -423,31 +373,16 @@ CMainWindow::CMainWindow(
 
         updateErrorsStatus();
 
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryAdded(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryAdded(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryChanged(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryChanged(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( CErrLog::GetInstance() != nullptr )
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryAdded,
+            this, &CMainWindow::onErrLogEntryAdded);
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryChanged,
+            this, &CMainWindow::onErrLogEntryChanged);
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryRemoved,
+            this, &CMainWindow::onErrLogEntryRemoved);
+    }
 
     // Central Widget
     //===============
@@ -456,14 +391,9 @@ CMainWindow::CMainWindow(
 
     setCentralWidget(m_pWdgtCentral);
 
-    if( !connect(
-        /* pObjSender   */ m_pWdgtCentral,
-        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onWidgetCentralProgressBarConnectDblClicked()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pWdgtCentral, &CWidgetCentral::progressBarConnectDblClicked,
+        this, &CMainWindow::onWidgetCentralProgressBarConnectDblClicked);
 
     // Restore geometry of widget
     //===========================

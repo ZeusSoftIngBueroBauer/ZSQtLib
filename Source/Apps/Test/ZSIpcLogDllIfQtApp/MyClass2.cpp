@@ -216,15 +216,10 @@ void CMyClass2Thread::run()
 
     m_pMyClass2 = new CMyClass2(m_strMyClass2ObjName, this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pMyClass2,
-        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)),
-        /* cnctType     */ Qt::DirectConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pMyClass2, &CMyClass2::aboutToBeDestroyed,
+        this, &CMyClass2Thread::onClass2AboutToBeDestroyed,
+        Qt::DirectConnection);
 
     // To always get the same trace output. Sleep a bit to let the thread starting
     // instance wait on the wait condition.
@@ -233,10 +228,8 @@ void CMyClass2Thread::run()
     exec();
 
     QObject::disconnect(
-        /* pObjSender   */ m_pMyClass2,
-        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)) );
+        m_pMyClass2, &CMyClass2::aboutToBeDestroyed,
+        this, &CMyClass2Thread::onClass2AboutToBeDestroyed);
 
     try
     {
@@ -464,15 +457,10 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
         {
             m_pMyClass3Thread = new CMyClass3Thread(i_strMyClass3ObjName, this);
 
-            if( !QObject::connect(
-                /* pObjSender   */ m_pMyClass3Thread,
-                /* szSignal     */ SIGNAL(running()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onClass3ThreadRunning()),
-                /* cnctType     */ Qt::DirectConnection) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pMyClass3Thread, &CMyClass3Thread::running,
+                this, &CMyClass2::onClass3ThreadRunning,
+                Qt::DirectConnection);
         }
 
         if( !m_pMyClass3Thread->isRunning() )

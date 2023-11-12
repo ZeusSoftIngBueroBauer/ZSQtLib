@@ -108,26 +108,16 @@ CTreeViewIdxTreeTestSteps::CTreeViewIdxTreeTestSteps(
     m_pActionEnableTestGroups = new QAction("Recursively Enable Test Groups",this);
     m_pMenuGroupContext->addAction(m_pActionEnableTestGroups);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionEnableTestGroups,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionEnableTestGroupsTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionEnableTestGroups, &QAction::triggered,
+        this, &CTreeViewIdxTreeTestSteps::onActionEnableTestGroupsTriggered);
 
     m_pActionDisableTestGroups = new QAction("Recursively Disable Test Groups",this);
     m_pMenuGroupContext->addAction(m_pActionDisableTestGroups);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionDisableTestGroups,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionDisableTestGroupsTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionDisableTestGroups, &QAction::triggered,
+        this, &CTreeViewIdxTreeTestSteps::onActionDisableTestGroupsTriggered);
 
     QHeaderView* pHdrView = header();
 
@@ -151,15 +141,10 @@ CTreeViewIdxTreeTestSteps::CTreeViewIdxTreeTestSteps(
     if( pHdrView->sectionsClickable() )
     #endif
     {
-        if( !QObject::connect(
-            /* pObjSender   */ header(),
-            /* szSignal     */ SIGNAL( customContextMenuRequested(const QPoint&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onHeaderCustomContextMenuRequested(const QPoint&) ) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( pHdrView->sectionsClickable() )
+        QObject::connect(
+            header(), &QHeaderView::customContextMenuRequested,
+            this, &CTreeViewIdxTreeTestSteps::onHeaderCustomContextMenuRequested);
+    }
 
 } // ctor
 

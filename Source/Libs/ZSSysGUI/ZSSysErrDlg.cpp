@@ -221,14 +221,9 @@ CDlgErr::CDlgErr( const QString& i_strDlgTitle, QWidget* i_pWdgtParent ) :
     m_pBtnOk = m_pBtnBox->addButton(QDialogButtonBox::Ok);
     m_pLyt->addWidget(m_pBtnBox);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnOk,
-        /* szSignal     */ SIGNAL(clicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(accept()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnOk, &QPushButton::clicked,
+        this, &CDlgErr::accept);
 
 } // ctor
 

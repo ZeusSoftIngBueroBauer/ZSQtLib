@@ -2227,14 +2227,9 @@ void CTest::doTestStepCreateTree( ZS::Test::CTestStep* i_pTestStep )
 
     m_pIdxTree = new CTrcAdmObjIdxTree();
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pIdxTree,
-        /* szSignal     */ SIGNAL(destroyed(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIdxTreeDestroyed(QObject*)) ) )
-    {
-        throw CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pIdxTree, &QObject::destroyed,
+        this, &CTest::onIdxTreeDestroyed);
 
     emit idxTreeAdded(m_pIdxTree);
 

@@ -581,10 +581,8 @@ void CRequestSequencer::start( CRequest* i_pReqParent )
         if( m_pReqParent != nullptr )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pReqParent,
-                /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onParentRequestDestroyed(QObject*)) );
+                m_pReqParent, &CRequest::destroyed,
+                this, QOverload<QObject*>::of(&CRequestSequencer::onParentRequestDestroyed));
         }
 
         // All top level requests will get the same parent request id provided on starting the sequence.
@@ -2030,10 +2028,8 @@ void CRequestSequencer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
             m_hshpReqs.remove(i_reqDscr.m_iId);
 
             QObject::disconnect(
-                /* pObjSender   */ pReq,
-                /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)) );
+                pReq, &CRequest::changed,
+                this, &CRequestSequencer::onRequestChanged);
         }
 
         SRequestSeqEntry* pReqSeqEntry = m_hshReqSeqs[i_reqDscr.m_iId];

@@ -354,7 +354,9 @@ CWdgtLogSettings::CWdgtLogSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLytBtns->addWidget(m_pBtnOk);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    QObject::connect(m_pBtnOk, &QPushButton::clicked, this, &CWdgtLogSettings::onBtnOkClicked);
+    QObject::connect(
+        m_pBtnOk, &QPushButton::clicked,
+        this, &CWdgtLogSettings::onBtnOkClicked);
 
     // <Button> Cancel
     //----------------
@@ -364,7 +366,9 @@ CWdgtLogSettings::CWdgtLogSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLytBtns->addWidget(m_pBtnCancel);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    QObject::connect(m_pBtnCancel, &QPushButton::clicked, this, &CWdgtLogSettings::onBtnCancelClicked);
+    QObject::connect(
+        m_pBtnCancel, &QPushButton::clicked,
+        this, &CWdgtLogSettings::onBtnCancelClicked);
 
     // <Button> Reset
     //---------------
@@ -374,7 +378,9 @@ CWdgtLogSettings::CWdgtLogSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLytBtns->addWidget(m_pBtnReset);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    QObject::connect(m_pBtnReset, &QPushButton::clicked, this, &CWdgtLogSettings::onBtnResetClicked);
+    QObject::connect(
+        m_pBtnReset, &QPushButton::clicked,
+        this, &CWdgtLogSettings::onBtnResetClicked);
 
     // <Button> Apply
     //---------------
@@ -383,7 +389,9 @@ CWdgtLogSettings::CWdgtLogSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pBtnApply->setFixedWidth(cxBtnWidth);
     m_pLytBtns->addWidget(m_pBtnApply);
 
-    QObject::connect(m_pBtnApply, &QPushButton::clicked, this, &CWdgtLogSettings::onBtnApplyClicked);
+    QObject::connect(
+        m_pBtnApply, &QPushButton::clicked,
+        this, &CWdgtLogSettings::onBtnApplyClicked);
 
     // <Stretch> at right side of buttons
     //-----------------------------------
@@ -459,20 +467,14 @@ void CWdgtLogSettings::setServer( CIpcLogServer* i_pLogServer )
     if( m_pLogClient != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pLogClient,
-            /* szSignal     */ SIGNAL(connected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientConnected(QObject*)) );
+            m_pLogClient, &CIpcLogClient::connected,
+            this, &CWdgtLogSettings::onIpcClientConnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pLogClient,
-            /* szSignal     */ SIGNAL(disconnected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientDisconnected(QObject*)) );
+            m_pLogClient, &CIpcLogClient::disconnected,
+            this, &CWdgtLogSettings::onIpcClientDisconnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pLogClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogSettingsChanged(QObject*)) );
+            m_pLogClient, &CIpcLogClient::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
 
         m_pLogClient = nullptr;
 
@@ -483,10 +485,8 @@ void CWdgtLogSettings::setServer( CIpcLogServer* i_pLogServer )
     if( m_pLogServer != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pLogServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogSettingsChanged(QObject*)) );
+            m_pLogServer, &CIpcLogServer::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
 
         m_pLogServer = nullptr;
 
@@ -520,10 +520,8 @@ void CWdgtLogSettings::setClient( CIpcLogClient* i_pLogClient )
     if( m_pLogServer != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pLogServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogSettingsChanged(QObject*)) );
+            m_pLogServer, &CIpcLogServer::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
 
         m_pLogServer = nullptr;
 
@@ -534,20 +532,14 @@ void CWdgtLogSettings::setClient( CIpcLogClient* i_pLogClient )
     if( m_pLogClient != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pLogClient,
-            /* szSignal     */ SIGNAL(connected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientConnected(QObject*)) );
+            m_pLogClient, &CIpcLogClient::connected,
+            this, &CWdgtLogSettings::onIpcClientConnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pLogClient,
-            /* szSignal     */ SIGNAL(disconnected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientDisconnected(QObject*)) );
+            m_pLogClient, &CIpcLogClient::disconnected,
+            this, &CWdgtLogSettings::onIpcClientDisconnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pLogClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogSettingsChanged(QObject*)) );
+            m_pLogClient, &CIpcLogClient::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
 
         m_pLogClient = nullptr;
 
@@ -561,8 +553,12 @@ void CWdgtLogSettings::setClient( CIpcLogClient* i_pLogClient )
     {
         onLogSettingsChanged(m_pLogClient);
 
-        QObject::connect(m_pLogClient, &CIpcLogClient::connected, this, &CWdgtLogSettings::onIpcClientConnected);
-        QObject::connect(m_pLogClient, &CIpcLogClient::logSettingsChanged, this, &CWdgtLogSettings::onLogSettingsChanged);
+        QObject::connect(
+            m_pLogClient, &CIpcLogClient::connected,
+            this, &CWdgtLogSettings::onIpcClientConnected);
+        QObject::connect(
+            m_pLogClient, &CIpcLogClient::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
 
         // GUI controls will be enabled if the trace client connects with the server.
         if( m_pLogClient->isConnected() )
@@ -633,22 +629,26 @@ void CWdgtLogSettings::applyChanges()
     if( m_pLogServer != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pLogServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onLogSettingsChanged(QObject*)) );
+            m_pLogServer, &CIpcLogServer::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
 
         m_pLogServer->setLogSettings(logSettings);
 
-        QObject::connect(m_pLogServer, &CIpcLogServer::logSettingsChanged, this, &CWdgtLogSettings::onLogSettingsChanged);
+        QObject::connect(
+            m_pLogServer, &CIpcLogServer::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
     }
     else if( m_pLogClient != nullptr )
     {
-        QObject::disconnect(m_pLogClient, &CIpcLogClient::logSettingsChanged, this, &CWdgtLogSettings::onLogSettingsChanged);
+        QObject::disconnect(
+            m_pLogClient, &CIpcLogClient::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
 
         m_pLogClient->setLogSettings(logSettings);
 
-        QObject::connect(m_pLogClient, &CIpcLogClient::logSettingsChanged, this, &CWdgtLogSettings::onLogSettingsChanged);
+        QObject::connect(
+            m_pLogClient, &CIpcLogClient::logSettingsChanged,
+            this, &CWdgtLogSettings::onLogSettingsChanged);
     }
 
     bool bHasChanges = hasChanges();
@@ -687,94 +687,39 @@ void CWdgtLogSettings::enableGuiControls( bool i_bEnabled )
 void CWdgtLogSettings::connectGuiControlsOnValueChangedSignals()
 //------------------------------------------------------------------------------
 {
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkLoggingEnabled,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkLoggingEnabledToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkNewLoggersEnabledAsDefault,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkNewLoggersEnabledAsDefaultToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pCmbNewLoggersDefaultDetailLevel,
-        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbNewLoggersDefaultDetailLevelCurrentIndexChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkUseIpcServer,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseIpcServerToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkCacheDataIfNotConnected,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkUseLocalLogFile,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseLocalLogFileToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtLocalLogFileAutoSaveInterval,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalLogFileAutoSaveIntervalValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtLocalLogFileSubFileCountMax,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalLogFileSubFileCountMaxValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtLocalLogFileSubFileLineCountMax,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalLogFileSubFileLineCountMaxValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkLocalLogFileCloseFileAfterEachWrite,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkLocalLogFileCloseFileAfterEachWriteToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkLoggingEnabled, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkLoggingEnabledToggled);
+    QObject::connect(
+        m_pChkNewLoggersEnabledAsDefault, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkNewLoggersEnabledAsDefaultToggled);
+    QObject::connect(
+        m_pCmbNewLoggersDefaultDetailLevel, &QComboBox::currentIndexChanged,
+        this, &CWdgtLogSettings::onCmbNewLoggersDefaultDetailLevelCurrentIndexChanged);
+    QObject::connect(
+        m_pChkUseIpcServer, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkUseIpcServerToggled);
+    QObject::connect(
+        m_pChkCacheDataIfNotConnected, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkCacheDataIfNotConnectedToggled);
+    QObject::connect(
+        m_pEdtCacheDataMaxArrLen, &QSpinBox::valueChanged,
+        this, &CWdgtLogSettings::onEdtCacheDataMaxArrLenValueChanged);
+    QObject::connect(
+        m_pChkUseLocalLogFile, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkUseLocalLogFileToggled);
+    QObject::connect(
+        m_pEdtLocalLogFileAutoSaveInterval, &QSpinBox::valueChanged,
+        this, &CWdgtLogSettings::onEdtLocalLogFileAutoSaveIntervalValueChanged);
+    QObject::connect(
+        m_pEdtLocalLogFileSubFileCountMax, &QSpinBox::valueChanged,
+        this, &CWdgtLogSettings::onEdtLocalLogFileSubFileCountMaxValueChanged);
+    QObject::connect(
+        m_pEdtLocalLogFileSubFileLineCountMax, &QSpinBox::valueChanged,
+        this, &CWdgtLogSettings::onEdtLocalLogFileSubFileLineCountMaxValueChanged);
+    QObject::connect(
+        m_pChkLocalLogFileCloseFileAfterEachWrite, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkLocalLogFileCloseFileAfterEachWriteToggled);
 }
 
 //------------------------------------------------------------------------------
@@ -782,60 +727,38 @@ void CWdgtLogSettings::disconnectGuiControlsOnValueChangedSignals()
 //------------------------------------------------------------------------------
 {
     QObject::disconnect(
-        /* pObjSender   */ m_pChkLoggingEnabled,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkLoggingEnabledToggled(bool)) );
+        m_pChkLoggingEnabled, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkLoggingEnabledToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkNewLoggersEnabledAsDefault,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkNewLoggersEnabledAsDefaultToggled(bool)) );
+        m_pChkNewLoggersEnabledAsDefault, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkNewLoggersEnabledAsDefaultToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pCmbNewLoggersDefaultDetailLevel,
-        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbNewLoggersDefaultDetailLevelCurrentIndexChanged(int)) );
+        m_pCmbNewLoggersDefaultDetailLevel, &QComboBox::currentIndexChanged,
+        this, &CWdgtLogSettings::onCmbNewLoggersDefaultDetailLevelCurrentIndexChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkUseIpcServer,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseIpcServerToggled(bool)) );
+        m_pChkUseIpcServer, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkUseIpcServerToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkCacheDataIfNotConnected,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) );
+        m_pChkCacheDataIfNotConnected, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkCacheDataIfNotConnectedToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) );
+        m_pEdtCacheDataMaxArrLen, &QSpinBox::valueChanged,
+        this, &CWdgtLogSettings::onEdtCacheDataMaxArrLenValueChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkUseLocalLogFile,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseLocalLogFileToggled(bool)) );
+        m_pChkUseLocalLogFile, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkUseLocalLogFileToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtLocalLogFileAutoSaveInterval,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalLogFileAutoSaveIntervalValueChanged(int)) );
+        m_pEdtLocalLogFileAutoSaveInterval, &QSpinBox::valueChanged,
+        this, &CWdgtLogSettings::onEdtLocalLogFileAutoSaveIntervalValueChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtLocalLogFileSubFileCountMax,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalLogFileSubFileCountMaxValueChanged(int)) );
+        m_pEdtLocalLogFileSubFileCountMax, &QSpinBox::valueChanged,
+        this, &CWdgtLogSettings::onEdtLocalLogFileSubFileCountMaxValueChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtLocalLogFileSubFileLineCountMax,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalLogFileSubFileLineCountMaxValueChanged(int)) );
+        m_pEdtLocalLogFileSubFileLineCountMax, &QSpinBox::valueChanged,
+        this, &CWdgtLogSettings::onEdtLocalLogFileSubFileLineCountMaxValueChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkLocalLogFileCloseFileAfterEachWrite,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkLocalLogFileCloseFileAfterEachWriteToggled(bool)) );
+        m_pChkLocalLogFileCloseFileAfterEachWrite, &QCheckBox::toggled,
+        this, &CWdgtLogSettings::onChkLocalLogFileCloseFileAfterEachWriteToggled);
 }
 
 /*==============================================================================

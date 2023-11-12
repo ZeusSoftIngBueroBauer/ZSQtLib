@@ -84,14 +84,9 @@ CDiagObjErrInfo::CDiagObjErrInfo(
     m_pTimer = new QTimer(this);
     m_pTimer->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* szSender   */ m_pTimer,
-        /* szSignal   */ SIGNAL(timeout()),
-        /* szReceiver */ this,
-        /* szSlot     */ SLOT(timeout())) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimer, &QTimer::timeout,
+        this, &CDiagObjErrInfo::timeout);
 
     for( int idxSev = 0; idxSev < EResultSeverityCount; idxSev++ )
     {

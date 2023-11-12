@@ -72,7 +72,7 @@ public: // dtor
 signals:
     void connected( QObject* i_pSocketWrapper );
     void disconnected( QObject* i_pSocketWrapper );
-    void error( QObject* i_pSocketWrapper, ZS::System::SErrResultInfo& i_errResultInfo );
+    void error( QObject* i_pSocketWrapper, const ZS::System::SErrResultInfo& i_errResultInfo );
     void stateChanged( QObject* i_pSocketWrapper, int i_iState );
     void aboutToClose( QObject* i_pSocketWrapper );
     void bytesWritten( QObject* i_pSocketWrapper, qint64 i_iBytes );

@@ -146,38 +146,23 @@ CDlgEditIntValue::CDlgEditIntValue(
     m_pBtnApply = new QPushButton("Apply");
     m_pLytBtns->addWidget(m_pBtnApply);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnApply,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnApply, &QPushButton::clicked,
+        this, &CDlgEditIntValue::onBtnApplyClicked);
 
     m_pBtnOk = new QPushButton("Ok");
     m_pLytBtns->addWidget(m_pBtnOk);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnOk,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnOkClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnOk, &QPushButton::clicked,
+        this, &CDlgEditIntValue::onBtnOkClicked);
 
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytBtns->addWidget(m_pBtnCancel);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnCancel,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnCancel, &QPushButton::clicked,
+        this, &CDlgEditIntValue::onBtnCancelClicked);
 
 } // ctor
 

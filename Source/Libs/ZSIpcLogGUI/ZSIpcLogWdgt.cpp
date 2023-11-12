@@ -185,14 +185,9 @@ CWdgtLog::CWdgtLog(
     pLytBtnListWidget->addWidget(m_pBtnClear);
     pLytBtnListWidget->addSpacing(10);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnClear,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnClearClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnClear, &QPushButton::clicked,
+        this, &CWdgtLog::onBtnClearClicked);
 
     // <CheckBox> Logging Enabled (at Server)
     //---------------------------------------
@@ -205,14 +200,9 @@ CWdgtLog::CWdgtLog(
     pLytBtnListWidget->addWidget(m_pChkServerLoggingEnabled);
     pLytBtnListWidget->addSpacing(10);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkServerLoggingEnabled,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkServerLoggingEnabledToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkServerLoggingEnabled, &QCheckBox::toggled,
+        this, &CWdgtLog::onChkServerLoggingEnabledToggled);
 
     // <CheckBox> Use Ipc Server (at Server)
     //---------------------------------------
@@ -225,14 +215,9 @@ CWdgtLog::CWdgtLog(
     pLytBtnListWidget->addWidget(m_pChkServerUseIpcServer);
     pLytBtnListWidget->addSpacing(20);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkServerUseIpcServer,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkServerUseIpcServerToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkServerUseIpcServer, &QCheckBox::toggled,
+        this, &CWdgtLog::onChkServerUseIpcServerToggled);
 
     // <Button> Loggers Index Tree
     //----------------------------
@@ -242,14 +227,9 @@ CWdgtLog::CWdgtLog(
     pLytBtnListWidget->addWidget(m_pBtnLoggerIdxTree);
     pLytBtnListWidget->addSpacing(10);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnLoggerIdxTree,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnLoggerIdxTreeClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnLoggerIdxTree, &QPushButton::clicked,
+        this, &CWdgtLog::onBtnLoggerIdxTreeClicked);
 
     // <Button> Connect/Disconnect
     //----------------------------
@@ -266,14 +246,9 @@ CWdgtLog::CWdgtLog(
         m_pBtnConnect->setText(c_strBtnConnect);
     }
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnConnect,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnConnectClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnConnect, &QPushButton::clicked,
+        this, &CWdgtLog::onBtnConnectClicked);
 
     m_pProgressBarCnct = new CProgressBar();
     m_pProgressBarCnct->setFixedWidth(240);
@@ -291,46 +266,21 @@ CWdgtLog::CWdgtLog(
 
     onIpcClientSettingsChanged(m_pLogClient);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLogClient,
-        /* szSignal     */ SIGNAL(connected(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcClientConnected(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLogClient,
-        /* szSignal     */ SIGNAL(disconnected(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcClientDisconnected(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLogClient,
-        /* szSignal     */ SIGNAL(settingsChanged(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcClientSettingsChanged(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLogClient,
-        /* szSignal     */ SIGNAL(logSettingsChanged(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onLogSettingsChanged(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pLogClient,
-        /* szSignal     */ SIGNAL( logDataReceived(QObject*, const QString&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onLogDataReceived(QObject*, const QString&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pLogClient, &CIpcLogClient::connected,
+        this, &CWdgtLog::onIpcClientConnected);
+    QObject::connect(
+        m_pLogClient, &CIpcLogClient::disconnected,
+        this, &CWdgtLog::onIpcClientDisconnected);
+    QObject::connect(
+        m_pLogClient, &CIpcLogClient::settingsChanged,
+        this, &CWdgtLog::onIpcClientSettingsChanged);
+    QObject::connect(
+        m_pLogClient, &CIpcLogClient::logSettingsChanged,
+        this, &CWdgtLog::onLogSettingsChanged);
+    QObject::connect(
+        m_pLogClient, &CIpcLogClient::logDataReceived,
+        this, &CWdgtLog::onLogDataReceived);
 
 } // ctor
 
@@ -990,14 +940,9 @@ void CWdgtLog::onBtnConnectClicked( bool /*i_bChecked*/ )
                 m_pProgressBarCnct->setIncrementInMs(200);
                 m_pProgressBarCnct->start();
 
-                if( !QObject::connect(
-                    /* pObjSender   */ m_pReqInProgress,
-                    /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onIpcClientPendingRequestChanged(ZS::System::SRequestDscr)) ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    m_pReqInProgress, &CRequest::changed,
+                    this, &CWdgtLog::onIpcClientPendingRequestChanged);
             }
         } // if( m_requestQueue.isIdle() )
     } // if( m_pBtnConnect->text() == c_strBtnConnect )
@@ -1024,14 +969,9 @@ void CWdgtLog::onBtnConnectClicked( bool /*i_bChecked*/ )
                 m_pProgressBarCnct->setIncrementInMs(200);
                 m_pProgressBarCnct->start();
 
-                if( !QObject::connect(
-                    /* pObjSender   */ m_pReqInProgress,
-                    /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onIpcClientPendingRequestChanged(ZS::System::SRequestDscr)) ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    m_pReqInProgress, &CRequest::changed,
+                    this, &CWdgtLog::onIpcClientPendingRequestChanged);
             }
         } // if( m_requestQueue.isIdle() )
     } // if( m_pBtnConnect->text() == c_strBtnDisconnect )

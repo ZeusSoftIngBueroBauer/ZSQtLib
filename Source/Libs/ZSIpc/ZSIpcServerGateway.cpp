@@ -471,30 +471,15 @@ void CServerGateway::onNewConnectionPending( QObject* /*i_pServerWrapper*/ )
 
     pIpcSocketWrapper->setSocketId(iSocketId);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_arpIpcSocketWrapper[iSocketId],
-        /* szSignal     */ SIGNAL(disconnected(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDisconnected(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_arpIpcSocketWrapper[iSocketId],
-        /* szSignal     */ SIGNAL(readyRead(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onReadyRead(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_arpIpcSocketWrapper[iSocketId],
-        /* szSignal     */ SIGNAL(error(QObject*,ZS::System::SErrResultInfo&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onError(QObject*,ZS::System::SErrResultInfo&)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_arpIpcSocketWrapper[iSocketId], &CIpcSocketWrapper::disconnected,
+        this, &CServerGateway::onDisconnected);
+    QObject::connect(
+        m_arpIpcSocketWrapper[iSocketId], &CIpcSocketWrapper::readyRead,
+        this, &CServerGateway::onReadyRead);
+    QObject::connect(
+        m_arpIpcSocketWrapper[iSocketId], QOverload<QObject*, const SErrResultInfo&>::of(&CIpcSocketWrapper::error),
+        this, &CServerGateway::onError);
 
     CMsgIndConnected* pMsgInd = new CMsgIndConnected(
         /* pObjSender   */ this,
@@ -581,30 +566,15 @@ void CServerGateway::onDisconnected( QObject* i_pSocketWrapper )
         case ERequestDisconnect:
         case ERequestChangeSettings:
         {
-            if( !QObject::disconnect(
-                /* pObjSender   */ m_arpIpcSocketWrapper[iSocketId],
-                /* szSignal     */ SIGNAL(disconnected(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onDisconnected(QObject*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-            if( !QObject::disconnect(
-                /* pObjSender   */ m_arpIpcSocketWrapper[iSocketId],
-                /* szSignal     */ SIGNAL(readyRead(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onReadyRead(QObject*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-            if( !QObject::disconnect(
-                /* pObjSender   */ m_arpIpcSocketWrapper[iSocketId],
-                /* szSignal     */ SIGNAL(error(QObject*,ZS::System::SErrResultInfo&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onError(QObject*,ZS::System::SErrResultInfo&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::disconnect(
+                m_arpIpcSocketWrapper[iSocketId], &CIpcSocketWrapper::disconnected,
+                this, &CServerGateway::onDisconnected);
+            QObject::disconnect(
+                m_arpIpcSocketWrapper[iSocketId], &CIpcSocketWrapper::readyRead,
+                this, &CServerGateway::onReadyRead);
+            QObject::disconnect(
+                m_arpIpcSocketWrapper[iSocketId], QOverload<QObject*, const SErrResultInfo&>::of(&CIpcSocketWrapper::error),
+                this, &CServerGateway::onError);
 
             SSocketDscr socketDscr = pIpcSocketWrapper->getSocketDscr();
 
@@ -687,7 +657,7 @@ void CServerGateway::onReadyRead( QObject* i_pSocketWrapper )
 } // onReadyRead
 
 //------------------------------------------------------------------------------
-void CServerGateway::onError( QObject* i_pSocketWrapper, ZS::System::SErrResultInfo& i_errResultInfo )
+void CServerGateway::onError( QObject* i_pSocketWrapper, const ZS::System::SErrResultInfo& i_errResultInfo )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -976,14 +946,9 @@ bool CServerGateway::event( QEvent* i_pMsg )
                             }
                         }
 
-                        if( !QObject::connect(
-                            /* pObjSender   */ m_pIpcServerWrapper,
-                            /* szSignal     */ SIGNAL(newConnection(QObject*)),
-                            /* pObjReceiver */ this,
-                            /* szSlot       */ SLOT(onNewConnectionPending(QObject*)) ) )
-                        {
-                            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                        }
+                        QObject::connect(
+                            m_pIpcServerWrapper, &CIpcServerWrapper::newConnection,
+                            this, &CServerGateway::onNewConnectionPending);
 
                         m_pIpcServerWrapper->setMaxPendingConnections( m_hostSettings.m_uMaxPendingConnections );
                         m_pIpcServerWrapper->setLocalHostName(m_hostSettings.m_strLocalHostName);
@@ -1133,14 +1098,9 @@ bool CServerGateway::event( QEvent* i_pMsg )
 
                     m_pIpcServerWrapper->close();
 
-                    if( !QObject::disconnect(
-                        /* pObjSender   */ m_pIpcServerWrapper,
-                        /* szSignal     */ SIGNAL(newConnection(QObject*)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onNewConnectionPending(QObject*)) ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::disconnect(
+                        m_pIpcServerWrapper, &CIpcServerWrapper::newConnection,
+                        this, &CServerGateway::onNewConnectionPending);
 
                     try
                     {
@@ -1379,14 +1339,9 @@ bool CServerGateway::event( QEvent* i_pMsg )
                                     }
                                 }
 
-                                if( !QObject::connect(
-                                    /* pObjSender   */ m_pIpcServerWrapper,
-                                    /* szSignal     */ SIGNAL(newConnection(QObject*)),
-                                    /* pObjReceiver */ this,
-                                    /* szSlot       */ SLOT(onNewConnectionPending(QObject*)) ) )
-                                {
-                                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                }
+                                QObject::connect(
+                                    m_pIpcServerWrapper, &CIpcServerWrapper::newConnection,
+                                    this, &CServerGateway::onNewConnectionPending);
                             }
 
                             m_pIpcServerWrapper->setMaxPendingConnections(m_hostSettings.m_uMaxPendingConnections);

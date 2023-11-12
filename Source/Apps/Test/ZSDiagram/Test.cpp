@@ -130,14 +130,9 @@ CTest::CTest() :
     m_pTmrTestStepTimeout = new QTimer();
     m_pTmrTestStepTimeout->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrTestStepTimeout,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerTestStepTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrTestStepTimeout, &QTimer::timeout,
+        this, &CTest::onTimerTestStepTimeout);
 
     // Test Steps
     //-----------
@@ -1399,14 +1394,9 @@ void CTest::doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep )
     m_pTimerSigGen = new QTimer(this);
     m_pTimerSigGen->start(10);
 
-    if( !connect(
-        /* pObjSender   */ m_pTimerSigGen,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerSigGenTimeout()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pTimerSigGen, &QTimer::timeout,
+        this, &CTest::onTimerSigGenTimeout);
 
     // Actual Result Values
     //---------------------

@@ -77,14 +77,9 @@ CTest::CTest() :
     m_pTmrTestStepTimeout = new QTimer(this);
     m_pTmrTestStepTimeout->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrTestStepTimeout,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerTestStepTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrTestStepTimeout, &QTimer::timeout,
+        this, &CTest::onTimerTestStepTimeout);
 
     ZS::Test::CTestStep* pTestStep = nullptr;
 
@@ -1307,10 +1302,8 @@ CTest::~CTest()
     for( auto& pObj : m_hshpMyClass1InstancesByName )
     {
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass1::aboutToBeDestroyed,
+            this, &CTest::onClass1AboutToBeDestroyed);
 
         strObjName = pObj->objectName();
 
@@ -2561,15 +2554,10 @@ void CTest::doTestStepLogMethodCall( ZS::Test::CTestStep* i_pTestStep )
                 CMyClass1* pObj = new CMyClass1(strlstInArgs[0]);
                 m_hshpMyClass1InstancesByName[strObjName] = pObj;
 
-                if( !QObject::connect(
-                    /* pObjSender   */ pObj,
-                    /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)),
-                    /* cnctType     */ Qt::DirectConnection ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    pObj, &CMyClass1::aboutToBeDestroyed,
+                    this, &CTest::onClass1AboutToBeDestroyed,
+                    Qt::DirectConnection);
             }
         }
         else if( strMth == "dtor" )

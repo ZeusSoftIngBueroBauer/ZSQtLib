@@ -126,14 +126,9 @@ CWdgtRequestSequencer::CWdgtRequestSequencer(
     m_pBtnClear->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnClear);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnClear,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnClearClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnClear, &QPushButton::clicked,
+        this, &CWdgtRequestSequencer::onBtnClearClicked);
 
     // <Button> Delete selected entries
     //---------------------------------
@@ -142,14 +137,9 @@ CWdgtRequestSequencer::CWdgtRequestSequencer(
     m_pBtnDeleteRow->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnDeleteRow);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnDeleteRow,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnDeleteRowClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnDeleteRow, &QPushButton::clicked,
+        this, &CWdgtRequestSequencer::onBtnDeleteRowClicked);
 
     // <Button> Resize Columns To Contents
     //------------------------------------
@@ -158,14 +148,9 @@ CWdgtRequestSequencer::CWdgtRequestSequencer(
     m_pBtnResizeRowsAndColumnsToContents->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnResizeRowsAndColumnsToContents);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnResizeRowsAndColumnsToContents,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnResizeRowsAndColumnsToContentsClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
+        this, &CWdgtRequestSequencer::onBtnResizeRowsAndColumnsToContentsClicked);
 
     // <Button> Expand All
     //--------------------
@@ -174,14 +159,9 @@ CWdgtRequestSequencer::CWdgtRequestSequencer(
     m_pBtnExpandAll->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnExpandAll);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnExpandAll,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnExpandAllClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnExpandAll, &QPushButton::clicked,
+        this, &CWdgtRequestSequencer::onBtnExpandAllClicked);
 
     // <Button> Collapse All
     //----------------------
@@ -190,14 +170,9 @@ CWdgtRequestSequencer::CWdgtRequestSequencer(
     m_pBtnCollapseAll->setFixedWidth(cxBtnWidth);
     m_pLytLineBtns->addWidget(m_pBtnCollapseAll);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnCollapseAll,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCollapseAllClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnCollapseAll, &QPushButton::clicked,
+        this, &CWdgtRequestSequencer::onBtnCollapseAllClicked);
 
     m_pLytLineBtns->addStretch();
 

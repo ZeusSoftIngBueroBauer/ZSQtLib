@@ -142,14 +142,9 @@ CDlgTestStep::CDlgTestStep(
     m_pLytGrpTestResults->addStretch();
     m_pGrpTestResults->setLayout(m_pLytGrpTestResults);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnGrpTestResults,
-        /* szSignal     */ SIGNAL(buttonToggled(QAbstractButton*, bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnGroupTestResultsButtonToggled(QAbstractButton*, bool))) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnGrpTestResults, &QButtonGroup::buttonToggled,
+        this, &CDlgTestStep::onBtnGroupTestResultsButtonToggled);
 
     m_pLytLineButtons = new QHBoxLayout();
     m_pLytMain->addLayout(m_pLytLineButtons);
@@ -178,38 +173,18 @@ CDlgTestStep::CDlgTestStep(
     m_pBtnStop->setIcon(pxmStop);
     m_pLytLineButtons->addWidget(m_pBtnStop);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnRun,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnRunClicked(bool))) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnStep,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnStepClicked(bool))) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnPause,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnPauseClicked(bool))) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnStop,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnStopClicked(bool))) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnRun, &QPushButton::clicked,
+        this, &CDlgTestStep::onBtnRunClicked);
+    QObject::connect(
+        m_pBtnStep, &QPushButton::clicked,
+        this, &CDlgTestStep::onBtnStepClicked);
+    QObject::connect(
+        m_pBtnPause, &QPushButton::clicked,
+        this, &CDlgTestStep::onBtnPauseClicked);
+    QObject::connect(
+        m_pBtnStop, &QPushButton::clicked,
+        this, &CDlgTestStep::onBtnStopClicked);
 
     onBtnGroupTestResultsButtonToggled(nullptr, true);
 
@@ -217,14 +192,9 @@ CDlgTestStep::CDlgTestStep(
 
     restoreGeometry( settings.value(m_strSettingsKey+"/Geometry").toByteArray() );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnCompareExpectedWithResultValues,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCompareExpectedWithResultValuesClicked(bool))) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnCompareExpectedWithResultValues, &QPushButton::clicked,
+        this, &CDlgTestStep::onBtnCompareExpectedWithResultValuesClicked);
 
 } // ctor
 

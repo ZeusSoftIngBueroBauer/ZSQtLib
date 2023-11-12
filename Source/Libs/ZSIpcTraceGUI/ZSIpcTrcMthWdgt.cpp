@@ -199,14 +199,9 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     pLytBtnListWidget->addWidget(m_pBtnClear);
     pLytBtnListWidget->addSpacing(10);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnClear,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnClearClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnClear, &QPushButton::clicked,
+        this, &CWdgtTrcMthList::onBtnClearClicked);
 
     // <CheckBox> Tracing Enabled (at Server)
     //---------------------------------------
@@ -219,14 +214,9 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     pLytBtnListWidget->addWidget(m_pChkServerTracingEnabled);
     pLytBtnListWidget->addSpacing(10);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkServerTracingEnabled,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkServerTracingEnabledToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkServerTracingEnabled, &QCheckBox::toggled,
+        this, &CWdgtTrcMthList::onChkServerTracingEnabledToggled);
 
     // <CheckBox> Use Ipc Server (at Server)
     //---------------------------------------
@@ -239,14 +229,9 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     pLytBtnListWidget->addWidget(m_pChkServerUseIpcServer);
     pLytBtnListWidget->addSpacing(20);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkServerUseIpcServer,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkServerUseIpcServerToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkServerUseIpcServer, &QCheckBox::toggled,
+        this, &CWdgtTrcMthList::onChkServerUseIpcServerToggled);
 
     // <Button> Trace Admin Objects Index Tree
     //----------------------------------------
@@ -256,14 +241,9 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     pLytBtnListWidget->addWidget(m_pBtnTrcAdminObjIdxTree);
     pLytBtnListWidget->addSpacing(10);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnTrcAdminObjIdxTreeClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnTrcAdminObjIdxTree, &QPushButton::clicked,
+        this, &CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked);
 
     // <Button> Connect/Disconnect
     //----------------------------
@@ -280,14 +260,9 @@ CWdgtTrcMthList::CWdgtTrcMthList(
         m_pBtnConnect->setText(c_strBtnConnect);
     }
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnConnect,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnConnectClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnConnect, &QPushButton::clicked,
+        this, &CWdgtTrcMthList::onBtnConnectClicked);
 
     m_pProgressBarCnct = new CProgressBar();
     m_pProgressBarCnct->setFixedWidth(240);
@@ -314,14 +289,9 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_pTmrDataRateRefresh = new QTimer(this);
     m_pTmrDataRateRefresh->start(1000);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrDataRateRefresh,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTmrDataRateRefreshTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrDataRateRefresh, &QTimer::timeout,
+        this, &CWdgtTrcMthList::onTmrDataRateRefreshTimeout);
 
     m_pLblTimeSpanTooMuchData = new QLabel("Time Span:");
     m_pLblTimeSpanTooMuchData->setToolTip("Double click to edit the time span used to detect too much data");
@@ -351,46 +321,21 @@ CWdgtTrcMthList::CWdgtTrcMthList(
 
     onIpcClientSettingsChanged(m_pTrcClient);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL(connected(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcClientConnected(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL(disconnected(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcClientDisconnected(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL(settingsChanged(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcClientSettingsChanged(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL( traceDataReceived(QObject*, const QString&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTraceDataReceived(QObject*, const QString&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTrcClient, &CIpcTrcClient::connected,
+        this, &CWdgtTrcMthList::onIpcClientConnected);
+    QObject::connect(
+        m_pTrcClient, &CIpcTrcClient::disconnected,
+        this, &CWdgtTrcMthList::onIpcClientDisconnected);
+    QObject::connect(
+        m_pTrcClient, &CIpcTrcClient::settingsChanged,
+        this, &CWdgtTrcMthList::onIpcClientSettingsChanged);
+    QObject::connect(
+        m_pTrcClient, &CIpcTrcClient::traceSettingsChanged,
+        this, &CWdgtTrcMthList::onTraceSettingsChanged);
+    QObject::connect(
+        m_pTrcClient, &CIpcTrcClient::traceDataReceived,
+        this, &CWdgtTrcMthList::onTraceDataReceived);
 
 } // ctor
 
@@ -1102,14 +1047,9 @@ void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
                 m_pProgressBarCnct->setIncrementInMs(200);
                 m_pProgressBarCnct->start();
 
-                if( !QObject::connect(
-                    /* pObjSender   */ m_pReqInProgress,
-                    /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onIpcClientPendingRequestChanged(ZS::System::SRequestDscr)) ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    m_pReqInProgress, &CRequest::changed,
+                    this, &CWdgtTrcMthList::onIpcClientPendingRequestChanged);
             }
         } // if( m_requestQueue.isIdle() )
     } // if( m_pBtnConnect->text() == c_strBtnConnect )
@@ -1136,14 +1076,9 @@ void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
                 m_pProgressBarCnct->setIncrementInMs(200);
                 m_pProgressBarCnct->start();
 
-                if( !QObject::connect(
-                    /* pObjSender   */ m_pReqInProgress,
-                    /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onIpcClientPendingRequestChanged(ZS::System::SRequestDscr)) ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    m_pReqInProgress, &CRequest::changed,
+                    this, &CWdgtTrcMthList::onIpcClientPendingRequestChanged);
             }
         } // if( m_requestQueue.isIdle() )
     } // if( m_pBtnConnect->text() == c_strBtnDisconnect )
@@ -1883,30 +1818,15 @@ void CWdgtTrcMthList::showEditMaxDataRateDialog()
         m_pDlgEditTimeSpanTooMuchData->adjustSize();
         m_pDlgEditTimeSpanTooMuchData->show();
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDlgEditTimeSpanTooMuchData,
-            /* szSignal     */ SIGNAL(applied()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onDlgEditTimeSpanTooMuchDataApplied()) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDlgEditTimeSpanTooMuchData,
-            /* szSignal     */ SIGNAL(accepted()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onDlgEditTimeSpanTooMuchDataAccepted()) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pDlgEditTimeSpanTooMuchData,
-            /* szSignal     */ SIGNAL(rejected()),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onDlgEditTimeSpanTooMuchDataRejected()) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pDlgEditTimeSpanTooMuchData, &CDlgEditIntValue::applied,
+            this, &CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataApplied);
+        QObject::connect(
+            m_pDlgEditTimeSpanTooMuchData, &CDlgEditIntValue::accepted,
+            this, &CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataAccepted);
+        QObject::connect(
+            m_pDlgEditTimeSpanTooMuchData, &CDlgEditIntValue::rejected,
+            this, &CWdgtTrcMthList::onDlgEditTimeSpanTooMuchDataRejected);
     }
     else
     {

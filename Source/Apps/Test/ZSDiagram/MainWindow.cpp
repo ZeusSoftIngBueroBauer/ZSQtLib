@@ -123,14 +123,9 @@ CMainWindow::CMainWindow(
 
     if( pTrcServer != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ pTrcServer->getIpcServer(),
-            /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTrcServerStateChanged(QObject*,int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            pTrcServer->getIpcServer(), &ZS::Ipc::CServer::stateChanged,
+            this, &CMainWindow::onTrcServerStateChanged);
     }
 
     // <Menu> File
@@ -144,14 +139,9 @@ CMainWindow::CMainWindow(
     m_pActFileQuit = new QAction("&Quit",this);
     m_pMnuFile->addAction(m_pActFileQuit);
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileQuit,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ CApplication::GetInstance(),
-        /* szSlot       */ SLOT(quit()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileQuit, &QAction::triggered,
+        CApplication::GetInstance(), &CApplication::quit);
 
     // <Menu> Debug
     //=============
@@ -164,14 +154,9 @@ CMainWindow::CMainWindow(
     m_pActDebugTrcServer = new QAction("Trace Server",this);
     m_pMnuDebug->addAction(m_pActDebugTrcServer);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDebugTrcServer,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugTrcServerTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDebugTrcServer, &QAction::triggered,
+        this, &CMainWindow::onActDebugTrcServerTriggered);
 
     // <MenuItem> Debug::TraceServerAdminObjPool
     //------------------------------------------
@@ -179,14 +164,9 @@ CMainWindow::CMainWindow(
     m_pActDebugTrcServerAdminObjIdxTree = new QAction("Trace Server Admin Objects",this);
     m_pMnuDebug->addAction(m_pActDebugTrcServerAdminObjIdxTree);
 
-    if( !connect(
-        /* pObjSender   */ m_pActDebugTrcServerAdminObjIdxTree,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugTrcServerAdminObjIdxTreeTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActDebugTrcServerAdminObjIdxTree, &QAction::triggered,
+        this, &CMainWindow::onActDebugTrcServerAdminObjIdxTreeTriggered);
 
     // <MenuItem> Debug::Error Log
     //-----------------------------
@@ -205,14 +185,9 @@ CMainWindow::CMainWindow(
 
     m_pMnuDebug->addAction(m_pActDebugErrLog);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActDebugErrLog,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugErrLogTriggered()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActDebugErrLog, &QAction::triggered,
+        this, &CMainWindow::onActDebugErrLogTriggered);
 
     // <Menu> Info
     //=============
@@ -255,31 +230,16 @@ CMainWindow::CMainWindow(
 
         updateErrorsStatus();
 
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryAdded(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryAdded(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryChanged(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryChanged(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( CErrLog::GetInstance() != nullptr )
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryAdded,
+            this, &CMainWindow::onErrLogEntryAdded);
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryChanged,
+            this, &CMainWindow::onErrLogEntryChanged);
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryRemoved,
+            this, &CMainWindow::onErrLogEntryRemoved);
+    }
 
     // <Label> Trace Server Status
     //----------------------------
@@ -295,14 +255,9 @@ CMainWindow::CMainWindow(
         m_pWdgtTrcServerStatus->installEventFilter(this);
         //m_pWdgtTrcServerStatus->setContextMenuPolicy(Qt::CustomContextMenu);
 
-        //if( !QObject::connect(
-        //    /* pObjSender   */ m_pWdgtTrcServerStatus,
-        //    /* szSignal     */ SIGNAL(customContextMenuRequested(const QPoint&)),
-        //    /* pObjReceiver */ this,
-        //    /* szSlot       */ SLOT(onWdgtTrcServerStatusContextMenuRequested(const QPoint&)) ) )
-        //{
-        //    throw CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        //}
+        //QObject::connect(
+        //    m_pWdgtTrcServerStatus, &QWidget::customContextMenuRequested,
+        //    this, &CMainWindow::onWdgtTrcServerStatusContextMenuRequested);
 
         m_pLblTrcServerStatusIcon = new QLabel("");
         m_pLblTrcServerStatusIcon->setScaledContents(true);

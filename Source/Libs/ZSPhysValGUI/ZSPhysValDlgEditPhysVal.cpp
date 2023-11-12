@@ -120,14 +120,9 @@ CDlgEditPhysVal::CDlgEditPhysVal(
         }
         m_pCmbUnit->setCurrentIndex( m_pCmbUnit->findText(pPhysSize->getSIUnitName()) );
 
-        if( !connect(
-            /* pObjSender   */ m_pCmbUnit,
-            /* szSignal     */ SIGNAL(activated(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbUnitActivated(int)) ) )
-        {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-        }
+        QObject::connect(
+            m_pCmbUnit, &QComboBox::activated,
+            this, &CDlgEditPhysVal::onCmbUnitActivated);
     }
 
     // Ok, Accept and Cancel buttons
@@ -140,36 +135,21 @@ CDlgEditPhysVal::CDlgEditPhysVal(
     m_pBtnOk = new QPushButton("Ok");
     m_pLytButtons->addWidget(m_pBtnOk);
     m_pBtnOk->setDefault(true);
-    if( !connect(
-        /* pObjSender   */ m_pBtnOk,
-        /* szSignal     */ SIGNAL(clicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(accept()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pBtnOk, &QPushButton::clicked,
+        this, &CDlgEditPhysVal::accept);
 
     m_pBtnReset = new QPushButton("Reset");
     m_pLytButtons->addWidget(m_pBtnReset);
-    if( !connect(
-        /* pObjSender   */ m_pBtnReset,
-        /* szSignal     */ SIGNAL(clicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDlgBtnResetClicked()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pBtnReset, &QPushButton::clicked,
+        this, &CDlgEditPhysVal::onDlgBtnResetClicked);
 
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytButtons->addWidget(m_pBtnCancel);
-    if( !connect(
-        /* pObjSender   */ m_pBtnCancel,
-        /* szSignal     */ SIGNAL(clicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(reject()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pBtnCancel, &QPushButton::clicked,
+        this, &CDlgEditPhysVal::reject);
 
     m_pLytButtons->addStretch();
 

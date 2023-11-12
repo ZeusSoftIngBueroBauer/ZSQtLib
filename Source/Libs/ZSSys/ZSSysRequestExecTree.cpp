@@ -241,10 +241,8 @@ CRequestExecTree::~CRequestExecTree()
     }
 
     QObject::disconnect(
-        /* pObjSender   */ m_pTmrGarbageCollector,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTmrGarbageCollectorTimeout()) );
+        m_pTmrGarbageCollector, &QTimer::timeout,
+        this, &CRequestExecTree::onTmrGarbageCollectorTimeout);
 
     m_pTmrGarbageCollector->stop();
 

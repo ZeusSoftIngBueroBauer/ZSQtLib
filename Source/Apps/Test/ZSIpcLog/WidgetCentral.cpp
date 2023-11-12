@@ -134,14 +134,9 @@ CWidgetCentral::CWidgetCentral(
     m_pWdgtLog = new CWdgtLog(pLogClient);
     m_pTabWidgetLog->addTab(m_pWdgtLog, strCltName);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtLog,
-        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onProgressBarConnectDblClicked()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pWdgtLog, &CWdgtLog::progressBarConnectDblClicked,
+        this, &CWidgetCentral::onProgressBarConnectDblClicked);
 
     // Restore geometry of widget
     //---------------------------

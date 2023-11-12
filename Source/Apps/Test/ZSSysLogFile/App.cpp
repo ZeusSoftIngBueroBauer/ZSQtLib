@@ -160,14 +160,9 @@ CApplication::CApplication(
     {
         m_pTest->start();
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTest,
-            /* szSignal     */ SIGNAL(testFinished(const ZS::Test::CEnumTestResult&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTestFinished(const ZS::Test::CEnumTestResult&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTest, &CTest::testFinished,
+            this, &CApplication::onTestFinished);
     }
 } // ctor
 

@@ -227,15 +227,10 @@ CInProcMsgSocketWrapper::CInProcMsgSocketWrapper(
         // The slot "onSocketCreated" will be connected using DirectConnection to the
         // "socketCreated" signal. This way the slot is called directly from within the
         // IpcSocket thread context signaling the end of the wait condition.
-        if( !QObject::connect(
-            /* pObjSender   */ m_pInProcMsgSocketThread,
-            /* szSignal     */ SIGNAL(socketCreated(QObject*,QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onSocketCreated(QObject*,QObject*)),
-            /* connectType  */ Qt::DirectConnection ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pInProcMsgSocketThread, &CInProcMsgSocketThread::socketCreated,
+            this, &CInProcMsgSocketWrapper::onSocketCreated,
+            Qt::DirectConnection);
 
         m_pInProcMsgSocketThread->start();
 
@@ -245,10 +240,8 @@ CInProcMsgSocketWrapper::CInProcMsgSocketWrapper(
         mtx.unlock();
 
         QObject::disconnect(
-            /* pObjSender   */ m_pInProcMsgSocketThread,
-            /* szSignal     */ SIGNAL(socketCreated(QObject*,QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onSocketCreated(QObject*,QObject*)) );
+            m_pInProcMsgSocketThread, &CInProcMsgSocketThread::socketCreated,
+            this, &CInProcMsgSocketWrapper::onSocketCreated);
 
     } // if( m_pInProcMsgSocket == nullptr )
 
@@ -290,44 +283,33 @@ CInProcMsgSocketWrapper::CInProcMsgSocketWrapper(
     // way that the events will be created and sent to the wrappers event method
     // on executing the slot methods.
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pInProcMsgSocket,
-        /* szSignal     */ SIGNAL(destroyed(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onSocketDestroyed(QObject*)),
-        /* connectType  */ Qt::DirectConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pInProcMsgSocket, &QObject::destroyed,
+        this, &CInProcMsgSocketWrapper::onSocketDestroyed,
+        Qt::DirectConnection);
 
     m_bSlotOnConnectedConnected = QObject::connect(
-        /* pObjSender   */ m_pInProcMsgSocket,
-        /* szSignal     */ SIGNAL(connected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onConnected()),
-        /* connectType  */ Qt::DirectConnection );
+        m_pInProcMsgSocket, &CInProcMsgSocket::connected,
+        this, &CInProcMsgSocketWrapper::onConnected,
+        Qt::DirectConnection);
     if( !m_bSlotOnConnectedConnected )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
-    m_bSlotOnDisconnectedConnected = QObject::connect(
-        /* pObjSender   */ m_pInProcMsgSocket,
-        /* szSignal     */ SIGNAL(disconnected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onDisconnected()),
-        /* connectType  */ Qt::DirectConnection );
+    QObject::connect(
+        m_pInProcMsgSocket, &CInProcMsgSocket::disconnected,
+        this, &CInProcMsgSocketWrapper::onDisconnected,
+        Qt::DirectConnection);
     if( !m_bSlotOnDisconnectedConnected )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
     }
 
     m_bSlotOnReadyReadConnected = QObject::connect(
-        /* pObjSender   */ m_pInProcMsgSocket,
-        /* szSignal     */ SIGNAL(readyRead()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onReadyRead()),
-        /* connectType  */ Qt::DirectConnection );
+        m_pInProcMsgSocket, &CInProcMsgSocket::readyRead,
+        this, &CInProcMsgSocketWrapper::onReadyRead,
+        Qt::DirectConnection);
     if( !m_bSlotOnReadyReadConnected )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -335,10 +317,8 @@ CInProcMsgSocketWrapper::CInProcMsgSocketWrapper(
 
     // We never wait for errors so the "onError" slot may use AutoConnection:
     m_bSlotOnErrorConnected = QObject::connect(
-        /* pObjSender   */ m_pInProcMsgSocket,
-        /* szSignal     */ SIGNAL(error(ZS::System::EResult)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onError(ZS::System::EResult)) );
+        m_pInProcMsgSocket, QOverload<EResult>::of(&CInProcMsgSocket::error),
+        this, &CInProcMsgSocketWrapper::onError);
     if( !m_bSlotOnErrorConnected )
     {
         throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
@@ -366,34 +346,26 @@ CInProcMsgSocketWrapper::~CInProcMsgSocketWrapper()
         if( m_bSlotOnConnectedConnected )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pInProcMsgSocket,
-                /* szSignal     */ SIGNAL(connected()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onConnected()) );
+                m_pInProcMsgSocket, &CInProcMsgSocket::connected,
+                this, &CInProcMsgSocketWrapper::onConnected);
         }
         if( m_bSlotOnDisconnectedConnected )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pInProcMsgSocket,
-                /* szSignal     */ SIGNAL(disconnected()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onDisconnected()) );
+                m_pInProcMsgSocket, &CInProcMsgSocket::disconnected,
+                this, &CInProcMsgSocketWrapper::onDisconnected);
         }
         if( m_bSlotOnErrorConnected )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pInProcMsgSocket,
-                /* szSignal     */ SIGNAL(error(ZS::System::EResult)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onError(ZS::System::EResult)) );
+                m_pInProcMsgSocket, QOverload<EResult>::of(&CInProcMsgSocket::error),
+                this, &CInProcMsgSocketWrapper::onError);
         }
         if( m_bSlotOnReadyReadConnected )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pInProcMsgSocket,
-                /* szSignal     */ SIGNAL(readyRead()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onReadyRead()) );
+                m_pInProcMsgSocket, &CInProcMsgSocket::readyRead,
+                this, &CInProcMsgSocketWrapper::onReadyRead);
         }
     } // if( m_pInProcMsgSocket != nullptr )
 
@@ -1293,7 +1265,7 @@ void CInProcMsgSocketWrapper::onDisconnected()
 } // onDisconnected
 
 //------------------------------------------------------------------------------
-void CInProcMsgSocketWrapper::onError( ZS::System::EResult i_result )
+void CInProcMsgSocketWrapper::onError( EResult i_result )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;

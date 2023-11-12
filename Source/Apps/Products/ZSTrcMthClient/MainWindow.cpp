@@ -150,38 +150,18 @@ CMainWindow::CMainWindow(
         throw CException(__FILE__,__LINE__,EResultArgOutOfRange);
     }
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL(destroyed(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTrcClientDestroyed(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL(connected(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTrcClientConnected(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL(disconnected(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTrcClientDisconnected(QObject*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTrcClient,
-        /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTrcClientStateChanged(QObject*,int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTrcClient, &QObject::destroyed,
+        this, &CMainWindow::onTrcClientDestroyed);
+    QObject::connect(
+        m_pTrcClient, &CIpcTrcClient::connected,
+        this, &CMainWindow::onTrcClientConnected);
+    QObject::connect(
+        m_pTrcClient, &CIpcTrcClient::disconnected,
+        this, &CMainWindow::onTrcClientDisconnected);
+    QObject::connect(
+        m_pTrcClient, &CIpcTrcClient::stateChanged,
+        this, &CMainWindow::onTrcClientStateChanged);
 
     // <Menu> File
     //=============
@@ -194,14 +174,9 @@ CMainWindow::CMainWindow(
     m_pActFileRecallAdminObjs = new QAction("Recall Trace Admin Objects", this);
     m_pMnuFile->addAction(m_pActFileRecallAdminObjs);
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileRecallAdminObjs,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActFileRecallAdminObjsTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileRecallAdminObjs, &QAction::triggered,
+        this, &CMainWindow::onActFileRecallAdminObjsTriggered);
 
     // <MenuItem> File::Save Trace Admin Objects
     //------------------------------------------
@@ -209,14 +184,9 @@ CMainWindow::CMainWindow(
     m_pActFileSaveAdminObjs = new QAction("Save Trace Admin Objects", this);
     m_pMnuFile->addAction(m_pActFileSaveAdminObjs);
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileSaveAdminObjs,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActFileSaveAdminObjsTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileSaveAdminObjs, &QAction::triggered,
+        this, &CMainWindow::onActFileSaveAdminObjsTriggered);
 
     // <MenuItem> File::Read Trace Method File
     //----------------------------------------
@@ -226,14 +196,9 @@ CMainWindow::CMainWindow(
     m_pActFileReadTrcMthFile = new QAction("Read Trace Method File", this);
     m_pMnuFile->addAction(m_pActFileReadTrcMthFile);
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileReadTrcMthFile,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActFileReadTrcMthFileTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileReadTrcMthFile, &QAction::triggered,
+        this, &CMainWindow::onActFileReadTrcMthFileTriggered);
 
     // <MenuItem> File::Write Trace Method File
     //-----------------------------------------
@@ -241,14 +206,9 @@ CMainWindow::CMainWindow(
     m_pActFileWriteTrcMthFile = new QAction("Write Trace Method File", this);
     m_pMnuFile->addAction(m_pActFileWriteTrcMthFile);
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileWriteTrcMthFile,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActFileWriteTrcMthFileTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileWriteTrcMthFile, &QAction::triggered,
+        this, &CMainWindow::onActFileWriteTrcMthFileTriggered);
 
     // <MenuItem> File::Quit
     //----------------------
@@ -258,14 +218,9 @@ CMainWindow::CMainWindow(
     m_pActFileQuit = new QAction("&Quit", this);
     m_pMnuFile->addAction(m_pActFileQuit);
 
-    if( !connect(
-        /* pObjSender   */ m_pActFileQuit,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ CApplication::GetInstance(),
-        /* szSlot       */ SLOT(quit()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActFileQuit, &QAction::triggered,
+        qApp, &CApplication::quit);
 
     // <Menu> Edit
     //============
@@ -279,14 +234,9 @@ CMainWindow::CMainWindow(
     m_pActEditFind->setShortcuts(QKeySequence::Find);
     m_pMnuEdit->addAction(m_pActEditFind);
 
-    if( !connect(
-        /* pObjSender   */ m_pActEditFind,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActEditFindTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActEditFind, &QAction::triggered,
+        this, &CMainWindow::onActEditFindTriggered);
 
     // <Menu> Settings
     //================
@@ -299,14 +249,9 @@ CMainWindow::CMainWindow(
     m_pActSettingsWdgtTrcMthList = new QAction("&Method Trace Widget",this);
     m_pMnuSettings->addAction(m_pActSettingsWdgtTrcMthList);
 
-    if( !connect(
-        /* pObjSender   */ m_pActSettingsWdgtTrcMthList,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActSettingsWdgtTrcMthListTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActSettingsWdgtTrcMthList, &QAction::triggered,
+        this, &CMainWindow::onActSettingsWdgtTrcMthListTriggered);
 
     // <MenuItem> Settings::TrcClient
     //----------------------------------
@@ -314,14 +259,9 @@ CMainWindow::CMainWindow(
     m_pActSettingsTrcClient = new QAction("&Trace Client",this);
     m_pMnuSettings->addAction(m_pActSettingsTrcClient);
 
-    if( !connect(
-        /* pObjSender   */ m_pActSettingsTrcClient,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActSettingsTrcClientTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActSettingsTrcClient, &QAction::triggered,
+        this, &CMainWindow::onActSettingsTrcClientTriggered);
 
     // <MenuItem> Settings::TraceAdminIdxTree
     //---------------------------------------
@@ -329,14 +269,9 @@ CMainWindow::CMainWindow(
     m_pActSettingsTrcAdminObjIdxTree = new QAction("&Trace Admin Objects",this);
     m_pMnuSettings->addAction(m_pActSettingsTrcAdminObjIdxTree);
 
-    if( !connect(
-        /* pObjSender   */ m_pActSettingsTrcAdminObjIdxTree,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActSettingsTrcAdminObjIdxTreeTriggered()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pActSettingsTrcAdminObjIdxTree, &QAction::triggered,
+        this, &CMainWindow::onActSettingsTrcAdminObjIdxTreeTriggered);
 
     // <Menu> Debug
     //=============
@@ -356,14 +291,9 @@ CMainWindow::CMainWindow(
 
     m_pMnuDebug->addAction(m_pActDebugErrLog);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActDebugErrLog,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugErrLogTriggered()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActDebugErrLog, &QAction::triggered,
+        this, &CMainWindow::onActDebugErrLogTriggered);
 
     // <MenuItem> Debug::Request Execution Tree
     //-----------------------------------------
@@ -378,14 +308,9 @@ CMainWindow::CMainWindow(
 
     m_pMnuDebug->addAction(m_pActDebugRequestExecTree);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActDebugRequestExecTree,
-        /* szSignal     */ SIGNAL(triggered()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onActDebugRequestExecTreeTriggered()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActDebugRequestExecTree, &QAction::triggered,
+        this, &CMainWindow::onActDebugRequestExecTreeTriggered);
 
     // <Menu> Info
     //============
@@ -459,31 +384,16 @@ CMainWindow::CMainWindow(
 
         updateErrorsStatus();
 
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryAdded(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryAdded(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryChanged(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryChanged(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ CErrLog::GetInstance(),
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onErrLogEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( CErrLog::GetInstance() != nullptr )
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryAdded,
+            this, &CMainWindow::onErrLogEntryAdded);
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryChanged,
+            this, &CMainWindow::onErrLogEntryChanged);
+        QObject::connect(
+            CErrLog::GetInstance(), &CErrLog::entryRemoved,
+            this, &CMainWindow::onErrLogEntryRemoved);
+    }
 
     // <Label> Trace Client Status
     //----------------------------
@@ -512,14 +422,9 @@ CMainWindow::CMainWindow(
 
     setCentralWidget(m_pWdgtCentral);
 
-    if( !connect(
-        /* pObjSender   */ m_pWdgtCentral,
-        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onWidgetCentralProgressBarConnectDblClicked()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pWdgtCentral, &CWidgetCentral::progressBarConnectDblClicked,
+        this, &CMainWindow::onWidgetCentralProgressBarConnectDblClicked);
 
     // Restore geometry of widget
     //===========================
