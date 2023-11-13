@@ -85,65 +85,46 @@ Application
     @endcode
 */
 void ZS::System::parseAppArgs(
-    int&         i_argc,
+    int          i_argc,
     char*        i_argv[],
     QStringList& io_strlstPars,
     QStringList& io_strlstVals )
 //------------------------------------------------------------------------------
 {
-    if( i_argc > 1 )
-    {
-        int     idxArg;
-        QString strArg;
-        QString strPar;
-        QString strVal;
-
-        strArg = i_argv[1];
-
-        for( idxArg = 1; idxArg < i_argc; idxArg++ )
-        {
+    if (i_argc > 1) {
+        QString strArg = i_argv[1];
+        for (int idxArg = 1; idxArg < i_argc; idxArg++) {
             strArg = i_argv[idxArg];
-            strPar = "";
-            strVal = "";
-
-            if( strArg.at(0) == '/' )
-            {
+            QString strPar = "";
+            QString strVal = "";
+            if (strArg.at(0) == '/') {
+                strArg = strArg.remove(0, 1);
+            }
+            else if (strArg.at(0) == '-') {
                 strArg = strArg.remove(0,1);
             }
-            else if( strArg.at(0) == '-' )
-            {
-                strArg = strArg.remove(0,1);
+            else if (strArg.endsWith(",")) {
+                strArg = strArg.remove(strArg.size() - 1, 1);
             }
-            else if( strArg.endsWith(",") )
-            {
+            else if (strArg.endsWith(";")) {
                 strArg = strArg.remove(strArg.size()-1,1);
             }
-            else if( strArg.endsWith(";") )
-            {
-                strArg = strArg.remove(strArg.size()-1,1);
-            }
-            if( strArg.contains("=") )
-            {
+            if (strArg.contains("=")) {
                 strPar = strArg.section("=",0,0);
                 strVal = strArg.section("=",1,1);
-
-                if( !strVal.isEmpty() && strVal.at(0) == '"' )
-                {
+                if (!strVal.isEmpty() && strVal.at(0) == '"') {
                     strVal = strVal.section("\"",1,1);
                 }
             }
-            else
-            {
+            else  {
                 strPar = strArg;
             }
-            if( !strPar.isEmpty() )
-            {
+            if (!strPar.isEmpty()) {
                 io_strlstPars.append(strPar);
                 io_strlstVals.append(strVal);
             }
         }
     }
-
 } // parseAppArgs
 
 //------------------------------------------------------------------------------
@@ -391,6 +372,25 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates a QCoreApplication instance.
+
+    This class overwrites the notify function which tries to catch exceptions
+    and adds the exception to the error log instance.
+
+    @note The data referred to by argc and argv must stay valid for the entire
+          lifetime of the QCoreApplication object. In addition, argc must be greater
+          than zero and argv must contain at least one valid character string.
+
+    @note If using the linux distribution of Qt all application constructors
+          must pass argc by reference.
+          Otherwise the application crashes as somehow someone somewhere overwrites
+          the argc variable stored in QCoreApplicationPrivate data.
+
+    @param [in] i_argc
+        Number of arguments passed to the program.
+    @param [in] i_argv
+        Arguments passed to the program.
+*/
 CCoreApp::CCoreApp( int& i_argc, char* i_argv[] ) :
 //------------------------------------------------------------------------------
     QCoreApplication(i_argc,i_argv)

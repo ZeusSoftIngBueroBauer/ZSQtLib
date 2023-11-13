@@ -54,6 +54,25 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates a QCoreApplication instance.
+
+    This class overwrites the notify function which tries to catch exceptions
+    and adds the exception to the error log instance.
+
+    @note The data referred to by argc and argv must stay valid for the entire
+          lifetime of the QCoreApplication object. In addition, argc must be greater
+          than zero and argv must contain at least one valid character string.
+
+    @note If using the linux distribution of Qt all application constructors
+          must pass argc by reference.
+          Otherwise the application crashes as somehow someone somewhere overwrites
+          the argc variable stored in QCoreApplicationPrivate data.
+
+    @param [in] i_argc
+        Number of arguments passed to the program.
+    @param [in] i_argv
+        Arguments passed to the program.
+*/
 CGUIApp::CGUIApp( int& i_argc, char* i_argv[] ) :
 //------------------------------------------------------------------------------
     QApplication(i_argc,i_argv)

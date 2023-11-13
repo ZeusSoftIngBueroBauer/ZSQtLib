@@ -45,7 +45,7 @@ Application
 *******************************************************************************/
 
 ZSSYSDLL_API void parseAppArgs(
-    int&         i_argc,
+    int          i_argc,
     char*        i_argv[],
     QStringList& io_strlstPars,
     QStringList& io_strlstVals );
