@@ -72,6 +72,8 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasErrors() const override;
     bool hasChanges() const override;
+    void acceptChanges() override;
+    void rejectChanges() override;
     void applySettings(bool i_bImmediatelyApplySettings = true) override;
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;

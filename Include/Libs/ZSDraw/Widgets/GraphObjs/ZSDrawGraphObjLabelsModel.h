@@ -82,10 +82,8 @@ public: // instance methods
 public: // instance methods
     bool hasErrors() const;
     bool hasChanges() const;
-    void applySettings();
-public: // instance methods
-    void clearModel();
-    void fillModel();
+    void acceptChanges();
+    void rejectChanges();
 public: // instance methods
     QString findUniqueLabelName(const QString& i_strPrefix = "") const;
     bool isUniqueLabelName(const QString& i_strName) const;
@@ -147,6 +145,9 @@ protected slots:
     void onGraphObjLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
     void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // instance methods
+    void clearModel();
+    void fillModel();
+protected: // auxiliary instance methods
     QList<SLabelSettings> getLabelSettings(CGraphObj* i_pGraphObj) const;
 protected: // instance methods (tracing emitting signals)
     void emit_contentChanged();

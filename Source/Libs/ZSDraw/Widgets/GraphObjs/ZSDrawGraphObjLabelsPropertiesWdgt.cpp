@@ -66,7 +66,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtGraphObjPropertiesLabels : public CWdgtGraphObjPropertiesAbstract
+class CWdgtGraphObjLabelsProperties : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
 
 /*==============================================================================
@@ -74,7 +74,7 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
+CWdgtGraphObjLabelsProperties::CWdgtGraphObjLabelsProperties(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strNameSpace,
     const QString& i_strGraphObjType,
@@ -131,7 +131,7 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
 
     QObject::connect(
         m_pBtnCollapse, &QPushButton::clicked,
-        this, &CWdgtGraphObjPropertiesLabels::onBtnCollapseClicked);
+        this, &CWdgtGraphObjLabelsProperties::onBtnCollapseClicked);
 
     QPixmap pxmHeadline(":/ZS/Draw/Key16x16.png");
     m_pLblHeadlineIcon = new QLabel();
@@ -173,7 +173,7 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pLytLineEditButtons->addSpacing(10);
     QObject::connect(
         m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtGraphObjPropertiesLabels::onBtnResizeRowsAndColumnsToContentsClicked );
+        this, &CWdgtGraphObjLabelsProperties::onBtnResizeRowsAndColumnsToContentsClicked );
 
     QPixmap pxmAddLabel(":/ZS/Button/ButtonAdd24x24.png");
     m_pBtnAddLabel = new QPushButton();
@@ -184,7 +184,7 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pLytLineEditButtons->addSpacing(10);
     QObject::connect(
         m_pBtnAddLabel, &QPushButton::clicked,
-        this, &CWdgtGraphObjPropertiesLabels::onBtnAddLabelClicked );
+        this, &CWdgtGraphObjLabelsProperties::onBtnAddLabelClicked );
 
     QPixmap pxmRemoveLabel(":/ZS/Button/ButtonDelete24x24.png");
     m_pBtnRemoveLabels = new QPushButton();
@@ -196,7 +196,7 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
     m_pLytLineEditButtons->addStretch();
     QObject::connect(
         m_pBtnRemoveLabels, &QPushButton::clicked,
-        this, &CWdgtGraphObjPropertiesLabels::onBtnRemoveLabelClicked );
+        this, &CWdgtGraphObjLabelsProperties::onBtnRemoveLabelClicked );
 
     // <Line> Table View
     //------------------
@@ -223,7 +223,7 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
 
     QObject::connect(
         m_pModel, &CModelGraphObjLabels::contentChanged,
-        this, &CWdgtGraphObjPropertiesLabels::onModelLabelsContentChanged);
+        this, &CWdgtGraphObjLabelsProperties::onModelLabelsContentChanged);
 
     // Restore visibility
     //-------------------
@@ -235,7 +235,7 @@ CWdgtGraphObjPropertiesLabels::CWdgtGraphObjPropertiesLabels(
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjPropertiesLabels::~CWdgtGraphObjPropertiesLabels()
+CWdgtGraphObjLabelsProperties::~CWdgtGraphObjLabelsProperties()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -268,7 +268,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::expand(bool i_bExpand)
+void CWdgtGraphObjLabelsProperties::expand(bool i_bExpand)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -301,7 +301,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjPropertiesLabels::setKeyInTree(const QString& i_strKeyInTree)
+bool CWdgtGraphObjLabelsProperties::setKeyInTree(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -316,10 +316,14 @@ bool CWdgtGraphObjPropertiesLabels::setKeyInTree(const QString& i_strKeyInTree)
     bool bObjectChanged = false;
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
-        CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
-        m_pModel->setKeyInTree(i_strKeyInTree);
-        m_pTableView->resizeColumnsToContents();
-        m_pTableView->resizeRowsToContents();
+        // Fill the content of the edit controls.
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+            CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
+            m_pModel->setKeyInTree(i_strKeyInTree);
+            m_pTableView->resizeColumnsToContents();
+            m_pTableView->resizeRowsToContents();
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bObjectChanged);
@@ -332,7 +336,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjPropertiesLabels::hasErrors() const
+bool CWdgtGraphObjLabelsProperties::hasErrors() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -348,7 +352,7 @@ bool CWdgtGraphObjPropertiesLabels::hasErrors() const
 }
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjPropertiesLabels::hasChanges() const
+bool CWdgtGraphObjLabelsProperties::hasChanges() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -364,37 +368,29 @@ bool CWdgtGraphObjPropertiesLabels::hasChanges() const
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::applySettings(bool i_bImmediatelyApplySettings)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ImmediatelyApply: " + bool2Str(i_bImmediatelyApplySettings);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "applySettings",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_pModel->applySettings();
-}
-
-/*==============================================================================
-protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::fillEditControls()
+void CWdgtGraphObjLabelsProperties::acceptChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "fillEditControls",
+        /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
-    m_pModel->fillModel();
+    m_pModel->acceptChanges();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLabelsProperties::rejectChanges()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "rejectChanges",
+        /* strAddInfo   */ "" );
+
+    m_pModel->rejectChanges();
 }
 
 /*==============================================================================
@@ -402,7 +398,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onBtnCollapseClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjLabelsProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -420,7 +416,7 @@ void CWdgtGraphObjPropertiesLabels::onBtnCollapseClicked(bool /*i_bChecked*/)
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjLabelsProperties::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -434,7 +430,7 @@ void CWdgtGraphObjPropertiesLabels::onBtnResizeRowsAndColumnsToContentsClicked(b
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onBtnAddLabelClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjLabelsProperties::onBtnAddLabelClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -447,7 +443,7 @@ void CWdgtGraphObjPropertiesLabels::onBtnAddLabelClicked(bool /*i_bChecked*/)
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onBtnRemoveLabelClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjLabelsProperties::onBtnRemoveLabelClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -464,7 +460,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjPropertiesLabels::onModelLabelsContentChanged()
+void CWdgtGraphObjLabelsProperties::onModelLabelsContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(

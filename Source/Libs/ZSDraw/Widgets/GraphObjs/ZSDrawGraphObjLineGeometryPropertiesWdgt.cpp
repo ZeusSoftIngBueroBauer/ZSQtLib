@@ -29,7 +29,8 @@ may result in using the software modules.
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGeometryModel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
+#include "ZSPhysValGUI/ZSPhysValEditItemDelegate.h"
+#include "ZSPhysValGUI/ZSPhysValEditWdgt.h"
 #include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSys/ZSSysAux.h"
@@ -311,9 +312,16 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytWdgtMetric->addLayout(m_pLytMetricGeometryListView, 1);
 
     m_pModelMetricGeometry = new CModelGraphObjGeometry(
-        m_pDrawingScene, i_strNameSpace, "Line", i_strObjName, EScaleDimensionUnit::Metric, this);
+        m_pDrawingScene, i_strNameSpace, "StandardShapes::Line",
+        i_strObjName, EScaleDimensionUnit::Metric, this);
     m_pTableViewMetricGeometry = new QTableView();
     m_pTableViewMetricGeometry->setModel(m_pModelMetricGeometry);
+    m_pTableViewMetricGeometry->setItemDelegateForColumn(
+        CModelGraphObjGeometry::EColumnXVal,
+        new CEditPhysValtemDelegate(m_pModelMetricGeometry, m_pTableViewMetricGeometry));
+    m_pTableViewMetricGeometry->setItemDelegateForColumn(
+        CModelGraphObjGeometry::EColumnYVal,
+        new CEditPhysValtemDelegate(m_pModelMetricGeometry, m_pTableViewMetricGeometry));
     m_pTableViewMetricGeometry->setItemDelegateForColumn(
         CModelGraphObjGeometry::EColumnShowVals,
         new CCheckBoxItemDelegate(m_pModelMetricGeometry, m_pTableViewMetricGeometry));
@@ -370,6 +378,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricPt1->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtMetricPt1X = new CWdgtEditPhysVal(strMetric + "." + c_strCoorPoint1 + "." + c_strCoorX);
+    m_pEdtMetricPt1X->setReadOnly(true);
     m_pEdtMetricPt1X->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtMetricPt1X->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPt1X);
@@ -387,6 +396,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricPt1->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtMetricPt1Y = new CWdgtEditPhysVal(strMetric + "." + c_strCoorPoint1 + "." + c_strCoorY);
+    m_pEdtMetricPt1Y->setReadOnly(true);
     m_pEdtMetricPt1Y->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtMetricPt1Y->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPt1Y);
@@ -416,6 +426,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricPt2->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtMetricPt2X = new CWdgtEditPhysVal(strMetric + "." + c_strCoorPoint2 + "." + c_strCoorX);
+    m_pEdtMetricPt2X->setReadOnly(true);
     m_pEdtMetricPt2X->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtMetricPt2X->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPt2X);
@@ -433,6 +444,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricPt2->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtMetricPt2Y = new CWdgtEditPhysVal(strMetric + "." + c_strCoorPoint2 + "." + c_strCoorY);
+    m_pEdtMetricPt2Y->setReadOnly(true);
     m_pEdtMetricPt2Y->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtMetricPt2Y->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricPt2Y);
@@ -462,6 +474,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricPtCenter->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtMetricPtCenterX = new CWdgtEditPhysVal(strMetric + "." + c_strCoorCenter + "." + c_strCoorX);
+    m_pEdtMetricPtCenterX->setReadOnly(true);
     m_pEdtMetricPtCenterX->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtMetricPtCenterX->setResolution(0.1);
     m_pEdtMetricPtCenterX->setMinimum(0.0);
@@ -480,6 +493,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricPtCenter->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtMetricPtCenterY = new CWdgtEditPhysVal(strMetric + "." + c_strCoorCenter + "." + c_strCoorY);
+    m_pEdtMetricPtCenterY->setReadOnly(true);
     m_pEdtMetricPtCenterY->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtMetricPtCenterY->setResolution(0.1);
     m_pEdtMetricPtCenterY->setMinimum(0.0);
@@ -510,6 +524,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricSize->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtMetricWidth = new CWdgtEditPhysVal(strMetric + "." + c_strCoorWidth);
+    m_pEdtMetricWidth->setReadOnly(true);
     m_pEdtMetricWidth->setFixedWidth(m_ariClmWidths[4]);
     registerEditPropertyDialog(m_pEdtMetricWidth);
     m_pLytLineMetricSize->addWidget(m_pEdtMetricWidth);
@@ -526,6 +541,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricSize->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtMetricHeight = new CWdgtEditPhysVal(strMetric + "." + c_strCoorHeight);
+    m_pEdtMetricHeight->setReadOnly(true);
     m_pEdtMetricHeight->setFixedWidth(m_ariClmWidths[8]);
     registerEditPropertyDialog(m_pEdtMetricHeight);
     m_pLytLineMetricSize->addWidget(m_pEdtMetricHeight);
@@ -554,6 +570,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricAngle->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtMetricLength = new CWdgtEditPhysVal(strMetric + "." + c_strCoorLength);
+    m_pEdtMetricLength->setReadOnly(true);
     m_pEdtMetricLength->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtMetricLength->setMinimum(0.0);
     registerEditPropertyDialog(m_pEdtMetricLength);
@@ -571,6 +588,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineMetricAngle->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtMetricAngle = new CWdgtEditPhysVal(strMetric + "." + c_strCoorAngle);
+    m_pEdtMetricAngle->setReadOnly(true);
     m_pEdtMetricAngle->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtMetricAngle->setUnit(Units.Angle.Degree);
     m_pEdtMetricAngle->setResolution(0.1);
@@ -630,9 +648,16 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytWdgtPixels->addLayout(m_pLytPixelsGeometryListView, 1);
 
     m_pModelPixelsGeometry = new CModelGraphObjGeometry(
-        m_pDrawingScene, i_strNameSpace, "Line", i_strObjName, EScaleDimensionUnit::Pixels, this);
+        m_pDrawingScene, i_strNameSpace, "StandardShapes::Line",
+        i_strObjName, EScaleDimensionUnit::Pixels, this);
     m_pTableViewPixelsGeometry = new QTableView();
     m_pTableViewPixelsGeometry->setModel(m_pModelPixelsGeometry);
+    m_pTableViewPixelsGeometry->setItemDelegateForColumn(
+        CModelGraphObjGeometry::EColumnXVal,
+        new CEditPhysValtemDelegate(m_pModelPixelsGeometry, m_pTableViewPixelsGeometry));
+    m_pTableViewPixelsGeometry->setItemDelegateForColumn(
+        CModelGraphObjGeometry::EColumnYVal,
+        new CEditPhysValtemDelegate(m_pModelPixelsGeometry, m_pTableViewPixelsGeometry));
     m_pTableViewPixelsGeometry->setItemDelegateForColumn(
         CModelGraphObjGeometry::EColumnShowVals,
         new CCheckBoxItemDelegate(m_pModelPixelsGeometry, m_pTableViewPixelsGeometry));
@@ -678,6 +703,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsPt1->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtPixelsPt1X = new CWdgtEditPhysVal(strPixels + "." + c_strCoorPoint1 + "." + c_strCoorX);
+    m_pEdtPixelsPt1X->setReadOnly(true);
     m_pEdtPixelsPt1X->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtPixelsPt1X->setUnit(Units.Length.px);
     m_pEdtPixelsPt1X->setResolution(1.0);
@@ -697,6 +723,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsPt1->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtPixelsPt1Y = new CWdgtEditPhysVal(strPixels + "." + c_strCoorPoint1 + "." + c_strCoorY);
+    m_pEdtPixelsPt1Y->setReadOnly(true);
     m_pEdtPixelsPt1Y->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtPixelsPt1Y->setUnit(Units.Length.px);
     m_pEdtPixelsPt1Y->setResolution(1.0);
@@ -728,6 +755,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsPt2->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtPixelsPt2X = new CWdgtEditPhysVal(strPixels + "." + c_strCoorPoint2 + "." + c_strCoorX);
+    m_pEdtPixelsPt2X->setReadOnly(true);
     m_pEdtPixelsPt2X->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtPixelsPt2X->setUnit(Units.Length.px);
     m_pEdtPixelsPt2X->setResolution(1.0);
@@ -747,6 +775,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsPt2->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtPixelsPt2Y = new CWdgtEditPhysVal(strPixels + "." + c_strCoorPoint2 + "." + c_strCoorY);
+    m_pEdtPixelsPt2Y->setReadOnly(true);
     m_pEdtPixelsPt2Y->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtPixelsPt2Y->setUnit(Units.Length.px);
     m_pEdtPixelsPt2Y->setResolution(1.0);
@@ -778,8 +807,8 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsPtCenter->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtPixelsPtCenterX = new CWdgtEditPhysVal(strPixels + "." + c_strCoorCenter + "." + c_strCoorX);
-    m_pEdtPixelsPtCenterX->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtPixelsPtCenterX->setReadOnly(true);
+    m_pEdtPixelsPtCenterX->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtPixelsPtCenterX->setUnit(Units.Length.px);
     m_pEdtPixelsPtCenterX->setResolution(0.1);
     m_pEdtPixelsPtCenterX->setMinimum(0.0);
@@ -797,8 +826,8 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsPtCenter->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtPixelsPtCenterY = new CWdgtEditPhysVal(strPixels + "." + c_strCoorCenter + "." + c_strCoorY);
+    m_pEdtPixelsPtCenterX->setReadOnly(true);
     m_pEdtPixelsPtCenterY->setFixedWidth(m_ariClmWidths[8]);
-    m_pEdtPixelsPtCenterY->setReadOnly(true);
     m_pEdtPixelsPtCenterY->setUnit(Units.Length.px);
     m_pEdtPixelsPtCenterY->setResolution(0.1);
     m_pEdtPixelsPtCenterY->setMinimum(0.0);
@@ -828,6 +857,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsSize->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtPixelsWidth = new CWdgtEditPhysVal(strPixels + "." + c_strCoorWidth);
+    m_pEdtPixelsWidth->setReadOnly(true);
     m_pEdtPixelsWidth->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtPixelsWidth->setUnit(Units.Length.px);
     m_pEdtPixelsWidth->setResolution(1.0);
@@ -846,6 +876,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsSize->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtPixelsHeight = new CWdgtEditPhysVal(strPixels + "." + c_strCoorHeight);
+    m_pEdtPixelsHeight->setReadOnly(true);
     m_pEdtPixelsHeight->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtPixelsHeight->setUnit(Units.Length.px);
     m_pEdtPixelsHeight->setResolution(1.0);
@@ -876,8 +907,8 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsAngle->addSpacing(m_ariClmWidths[3]);
 
     m_pEdtPixelsLength = new CWdgtEditPhysVal(strPixels + "." + c_strCoorLength);
-    m_pEdtPixelsLength->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtPixelsLength->setReadOnly(true);
+    m_pEdtPixelsLength->setFixedWidth(m_ariClmWidths[4]);
     m_pEdtPixelsLength->setUnit(Units.Length.px);
     m_pEdtPixelsLength->setResolution(0.1);
     m_pEdtPixelsLength->setMinimum(0.0);
@@ -895,8 +926,8 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLinePixelsAngle->addSpacing(m_ariClmWidths[7]);
 
     m_pEdtPixelsAngle = new CWdgtEditPhysVal(strPixels + "." + c_strCoorAngle);
-    m_pEdtPixelsAngle->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtPixelsAngle->setReadOnly(true);
+    m_pEdtPixelsAngle->setFixedWidth(m_ariClmWidths[8]);
     m_pEdtPixelsAngle->setUnit(Units.Angle.Degree);
     m_pEdtPixelsAngle->setResolution(0.1);
     m_pEdtPixelsAngle->setMinimum(-360.0);
@@ -1174,6 +1205,80 @@ bool CWdgtGraphObjLineGeometryProperties::hasChanges() const
 }
 
 //------------------------------------------------------------------------------
+void CWdgtGraphObjLineGeometryProperties::acceptChanges()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "acceptChanges",
+        /* strAddInfo   */ "" );
+
+    if (!hasErrors())
+    {
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+            // Apply the settings from the edit controls at the graphical object.
+            applySettings();
+
+            if (m_pModelMetricGeometry != nullptr) {
+                m_pModelMetricGeometry->acceptChanges();
+            }
+            if (m_pModelPixelsGeometry != nullptr) {
+                m_pModelPixelsGeometry->acceptChanges();
+            }
+        }
+
+        // If the "contentChanged" signal is no longer blocked and the content of
+        // properties widget has been changed ...
+        if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+            // .. emit the contentChanged signal and update the enabled state
+            // of the Apply and Reset buttons.
+            emit_contentChanged();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjLineGeometryProperties::rejectChanges()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "rejectChanges",
+        /* strAddInfo   */ "" );
+
+    // "fillEditControls" is used to fill the edit controls with the current settings
+    // of the graphical object. To avoid that the signal "contentChanged" is emitted
+    // for each property of the graphical object set at the edit controls the
+    // ContentChangedSignalBlockedCounter is incremented. After fillEditControls has
+    // been executed the contentChanged flag is checked and the contentChanged signal
+    // is emitted if necessary.
+
+    {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+        // Fill the content of the edit controls.
+        fillEditControls();
+
+        if (m_pModelMetricGeometry != nullptr) {
+            m_pModelMetricGeometry->rejectChanges();
+        }
+        if (m_pModelPixelsGeometry != nullptr) {
+            m_pModelPixelsGeometry->rejectChanges();
+        }
+    }
+
+    // If the "contentChanged" signal is no longer blocked and the content of
+    // properties widget has been changed ...
+    if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+        // .. emit the contentChanged signal and update the enabled state
+        // of the Apply and Reset buttons.
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
 void CWdgtGraphObjLineGeometryProperties::applySettings(bool i_bImmediatelyApplySettings)
 //------------------------------------------------------------------------------
 {
@@ -1188,20 +1293,14 @@ void CWdgtGraphObjLineGeometryProperties::applySettings(bool i_bImmediatelyApply
         /* strAddInfo   */ strMthInArgs );
 
 #pragma message(__TODO__"line geometry completely handled in model")
-    CGraphObjLine* pGraphObjLine = nullptr;
-    if (m_pGraphObj != nullptr) {
-        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-    }
-    if (pGraphObjLine != nullptr && !hasErrors() && hasChanges()) {
-        pGraphObjLine->setLine(m_physValLine);
-    }
+    //CGraphObjLine* pGraphObjLine = nullptr;
+    //if (m_pGraphObj != nullptr) {
+    //    pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+    //}
+    //if (pGraphObjLine != nullptr && !hasErrors() && hasChanges()) {
+    //    pGraphObjLine->setLine(m_physValLine);
+    //}
 #pragma message(__TODO__"line geometry completely handled in model")
-    if (m_pModelMetricGeometry != nullptr) {
-        m_pModelMetricGeometry->applySettings();
-    }
-    if (m_pModelPixelsGeometry != nullptr) {
-        m_pModelPixelsGeometry->applySettings();
-    }
 }
 
 /*==============================================================================
@@ -1234,12 +1333,6 @@ void CWdgtGraphObjLineGeometryProperties::fillEditControls()
     }
     fillEditControls(m_physValLine);
 #pragma message(__TODO__"line geometry completely handled in model")
-    if (m_pModelMetricGeometry != nullptr) {
-        m_pModelMetricGeometry->fillModel();
-    }
-    if (m_pModelPixelsGeometry != nullptr) {
-        m_pModelPixelsGeometry->fillModel();
-    }
 }
 
 /*==============================================================================
@@ -1308,21 +1401,21 @@ void CWdgtGraphObjLineGeometryProperties::onDrawingSceneDrawingSizeChanged(const
             m_pWdgtMetric->show();
             //m_pWdgtSepLinePixelsGeometry->show();
 
-            m_pEdtPixelsPt1X->setReadOnly(true);
-            m_pEdtPixelsPt1Y->setReadOnly(true);
-            m_pEdtPixelsPt2X->setReadOnly(true);
-            m_pEdtPixelsPt2Y->setReadOnly(true);
-            m_pEdtPixelsWidth->setReadOnly(true);
-            m_pEdtPixelsHeight->setReadOnly(true);
+            //m_pEdtPixelsPt1X->setReadOnly(true);
+            //m_pEdtPixelsPt1Y->setReadOnly(true);
+            //m_pEdtPixelsPt2X->setReadOnly(true);
+            //m_pEdtPixelsPt2Y->setReadOnly(true);
+            //m_pEdtPixelsWidth->setReadOnly(true);
+            //m_pEdtPixelsHeight->setReadOnly(true);
         }
         else // if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels)
         {
-            m_pEdtPixelsPt1X->setReadOnly(false);
-            m_pEdtPixelsPt1Y->setReadOnly(false);
-            m_pEdtPixelsPt2X->setReadOnly(false);
-            m_pEdtPixelsPt2Y->setReadOnly(false);
-            m_pEdtPixelsWidth->setReadOnly(false);
-            m_pEdtPixelsHeight->setReadOnly(false);
+            //m_pEdtPixelsPt1X->setReadOnly(false);
+            //m_pEdtPixelsPt1Y->setReadOnly(false);
+            //m_pEdtPixelsPt2X->setReadOnly(false);
+            //m_pEdtPixelsPt2Y->setReadOnly(false);
+            //m_pEdtPixelsWidth->setReadOnly(false);
+            //m_pEdtPixelsHeight->setReadOnly(false);
 
             m_pWdgtMetric->hide();
             //m_pWdgtSepLinePixelsGeometry->hide();
@@ -1413,10 +1506,6 @@ void CWdgtGraphObjLineGeometryProperties::onModelMetricGeometryContentChanged()
 
     emit_contentChanged();
 }
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
 
 //------------------------------------------------------------------------------
 void CWdgtGraphObjLineGeometryProperties::onModelPixelsGeometryContentChanged()

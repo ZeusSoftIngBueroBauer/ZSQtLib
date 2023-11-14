@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
+#include "ZSPhysValGUI/ZSPhysValEditDlg.h"
 #include "ZSPhysVal/ZSPhysUnitsIdxTree.h"
 #include "ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h"
 #include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"

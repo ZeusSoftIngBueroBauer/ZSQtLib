@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #include "ZSDiagramGUI/ZSDiagramScalePropertiesWdgt.h"
 #include "ZSDiagram/ZSDiagramProcWdgt.h"
-#include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
+#include "ZSPhysValGUI/ZSPhysValEditWdgt.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysRefCountGuard.h"

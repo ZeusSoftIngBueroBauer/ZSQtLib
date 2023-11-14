@@ -349,6 +349,15 @@ class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
 {
     Q_OBJECT
+public: // type definitions and constants
+    static const QString c_strLabelName;
+public: // type definitions and constants
+    static const QString c_strValueNameP1;
+    static const QString c_strValueNameP2;
+    static const QString c_strValueNameCenter;
+    static const QString c_strValueNameSize;
+    static const QString c_strValueNameLength;
+    static const QString c_strValueNameAngle;
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
@@ -585,10 +594,6 @@ public: // overridables (text labels)
     virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;
 public: // overridables (geometry labels)
     virtual QStringList getValueNames() const;
-    virtual void setXValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValX);
-    virtual ZS::PhysVal::CPhysVal getXValue(const QString& i_strName, const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setYValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValY);
-    virtual ZS::PhysVal::CPhysVal getYValue(const QString& i_strName, const ZS::PhysVal::CUnit& i_unit) const;
     virtual void showValueLabel(const QString& i_strName);
     virtual void hideValueLabel(const QString& i_strName);
     virtual bool isValueLabelVisible(const QString& i_strName) const;

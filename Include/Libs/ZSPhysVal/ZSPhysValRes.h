@@ -83,6 +83,8 @@ protected: // instance members
 
 }; // class CPhysValRes
 
+Q_DECLARE_METATYPE(CPhysValRes);
+
 } // namespace PhysVal
 
 } // namespace ZS

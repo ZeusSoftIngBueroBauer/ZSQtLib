@@ -38,7 +38,7 @@ namespace Draw
 class CModelGraphObjLabels;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjPropertiesLabels : public CWdgtGraphObjPropertiesAbstract
+class ZSDRAWDLL_API CWdgtGraphObjLabelsProperties : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
 {
     Q_OBJECT
@@ -46,15 +46,15 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CWdgtGraphObjPropertiesLabels"; }
+    static QString ClassName() { return "CWdgtGraphObjLabelsProperties"; }
 public: // ctors and dtor
-    CWdgtGraphObjPropertiesLabels(
+    CWdgtGraphObjLabelsProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strNameSpace,
         const QString& i_strGraphObjType,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtGraphObjPropertiesLabels();
+    virtual ~CWdgtGraphObjLabelsProperties();
 public: // instance methods
     void expand(bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -62,9 +62,8 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasErrors() const override;
     bool hasChanges() const override;
-    void applySettings(bool i_bImmediatelyApplySettings = true) override;
-protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void fillEditControls() override;
+    void acceptChanges() override;
+    void rejectChanges() override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
     void onBtnResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
@@ -92,7 +91,7 @@ private: // instance members
     QTableView* m_pTableView;
     CModelGraphObjLabels* m_pModel;
 
-}; // class CWdgtGraphObjPropertiesLabels
+}; // class CWdgtGraphObjLabelsProperties
 
 } // namespace Draw
 

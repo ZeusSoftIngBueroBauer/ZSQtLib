@@ -461,6 +461,18 @@ class CGraphObj
 *******************************************************************************/
 
 /*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+const QString CGraphObj::c_strLabelName = "Name";
+const QString CGraphObj::c_strValueNameP1 = "P1";
+const QString CGraphObj::c_strValueNameP2 = "P2";
+const QString CGraphObj::c_strValueNameCenter = "Center";
+const QString CGraphObj::c_strValueNameSize = "Size";
+const QString CGraphObj::c_strValueNameLength = "Length";
+const QString CGraphObj::c_strValueNameAngle = "Angle";
+
+/*==============================================================================
 protected: // ctor
 ==============================================================================*/
 
@@ -1176,7 +1188,7 @@ void CGraphObj::setName( const QString& i_strName )
     if (m_strName != i_strName)
     {
         CIdxTreeEntry::setName(i_strName);
-        CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value("Name", nullptr);
+        CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(c_strLabelName, nullptr);
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setText(name());
         }
@@ -1213,7 +1225,7 @@ void CGraphObj::setKeyInTree( const QString& i_strKey )
     if (m_strKeyInTree != i_strKey)
     {
         CIdxTreeEntry::setKeyInTree(i_strKey);
-        CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value("Name", nullptr);
+        CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(c_strLabelName, nullptr);
         if (pGraphObjLabel != nullptr) {
             pGraphObjLabel->setText(name());
         }
@@ -4144,7 +4156,7 @@ QList<SGraphObjSelectionPoint> CGraphObj::getPossibleLabelAnchorPoints(const QSt
 //------------------------------------------------------------------------------
 {
     static const QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined = {
-        { "Name", {ESelectionPoint::Center} }
+        { c_strLabelName, {ESelectionPoint::Center} }
     };
     static const QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined = {
         ESelectionPoint::Center
@@ -4207,7 +4219,7 @@ bool CGraphObj::addLabel(
     bool bCanAdd = !m_hshpLabels.contains(i_strName);
     if (bCanAdd) {
         QString strText = i_strText;
-        if (i_strName == "Name") {
+        if (i_strName == c_strLabelName) {
             strText = m_strName;
         }
         CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(
@@ -4309,7 +4321,7 @@ bool CGraphObj::renameLabel(const QString& i_strName, const QString& i_strNameNe
         m_hshpLabels.remove(i_strName);
         pGraphObjLabel->setKey(i_strNameNew);
         m_hshpLabels.insert(i_strNameNew, pGraphObjLabel);
-        if (i_strNameNew == "Name") {
+        if (i_strNameNew == c_strLabelName) {
             pGraphObjLabel->setText(m_strName);
         }
         emit_labelRenamed(i_strName, i_strNameNew);
@@ -4704,104 +4716,6 @@ QStringList CGraphObj::getValueNames() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the X coordinate for the given value name.
-
-    @note For some specific values X has a different meaning than X coordinate
-          For "Size" X means for example "width".
-          For "Length" and "Angle" X means the corresponding length or angle.
-
-    @param [in] i_strName
-        Value name (e.g. "P1", .. "P<N>", "Size", "Length", "Angle")
-    @param [in] i_physValX
-        The physical value to be set.
-*/
-void CGraphObj::setXValue(const QString& i_strName, const CPhysVal& i_physValX)
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"pure virtual")
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_physValX.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setXValue",
-        /* strAddInfo   */ strMthInArgs );
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the X coordinate for the given value name.
-
-    @note For some specific values X has a different meaning than X coordinate
-          For "Size" X means for example "width".
-          For "Length" and "Angle" X means the corresponding length or angle.
-
-    @param [in] i_strName
-        Value name (e.g. "P1", .. "P<N>", "Size", "Length", "Angle")
-
-    @return Physical value.
-*/
-CPhysVal CGraphObj::getXValue(const QString& i_strName, const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"pure virtual")
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    double fRes = drawingSize.imageCoorsResolution(i_unit).getVal();
-    return CPhysVal(0.0, i_unit, fRes);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the Y coordinate for the given value name.
-
-    @note For some specific values Y has a different meaning than Y coordinate
-          For "Size" Y means for example "height".
-          For "Length" and "Angle" Y is undefined.
-
-    @param [in] i_strName
-        Value name (e.g. "P1", .. "P<N>", "Size")
-    @param [in] i_physValY
-        The physical value to be set.
-*/
-void CGraphObj::setYValue(const QString& i_strName, const CPhysVal& i_physValY)
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"pure virtual")
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_physValY.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setYValue",
-        /* strAddInfo   */ strMthInArgs );
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the Y coordinate for the given value name.
-
-    @note For some specific values Y has a different meaning than Y coordinate
-          For "Size" Y means for example "height".
-          For "Length" and "Angle" Y is undefined.
-
-    @param [in] i_strName
-        Value name (e.g. "P1", .. "P<N>", "Size")
-
-    @return Physical value.
-*/
-CPhysVal CGraphObj::getYValue(const QString& i_strName, const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"pure virtual")
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    double fRes = drawingSize.imageCoorsResolution(i_unit).getVal();
-    return CPhysVal(0.0, i_unit, fRes);
-}
-
-//------------------------------------------------------------------------------
 /*! Shows the label (set visible) with the given name.
 
     The label is added to the graphics scene and becomes visible.
@@ -5090,7 +5004,7 @@ bool CGraphObj::addValueLabel(
     bool bCanAdd = !m_hshpGeometryLabels.contains(i_strName);
     if (bCanAdd) {
         QString strText = i_strText;
-        if (i_strName == "Name") {
+        if (i_strName == c_strLabelName) {
             strText = m_strName;
         }
         CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(

@@ -27,16 +27,14 @@ may result in using the software modules.
 #ifndef ZSPhysValGUI_WdgtEditPhysVal_h
 #define ZSPhysValGUI_WdgtEditPhysVal_h
 
-#include <QtCore/qglobal.h>
+#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
+#include "ZSPhysVal/ZSPhysVal.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qwidget.h>
 #else
 #include <QtWidgets/qwidget.h>
 #endif
-
-#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
-#include "ZSPhysVal/ZSPhysVal.h"
 
 class QDoubleSpinBox;
 class QHBoxLayout;

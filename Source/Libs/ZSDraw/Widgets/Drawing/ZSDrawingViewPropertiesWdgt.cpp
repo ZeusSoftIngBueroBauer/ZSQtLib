@@ -29,7 +29,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
-#include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
+#include "ZSPhysValGUI/ZSPhysValEditWdgt.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"

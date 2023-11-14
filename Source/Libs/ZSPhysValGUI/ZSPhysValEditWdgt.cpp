@@ -40,7 +40,7 @@ may result in using the software modules.
 #include <QtWidgets/qstyle.h>
 #endif
 
-#include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
+#include "ZSPhysValGUI/ZSPhysValEditWdgt.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysRefCountGuard.h"

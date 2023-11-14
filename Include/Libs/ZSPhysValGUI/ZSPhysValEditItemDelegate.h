@@ -24,10 +24,11 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSSysGUI_ComboBoxItemDelegate_h
-#define ZSSysGUI_ComboBoxItemDelegate_h
+#ifndef ZSPhysValGUI_EditItemDelegate_h
+#define ZSPhysValGUI_EditItemDelegate_h
 
-#include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSPhysValGUI/ZSPhysValGUIDllMain.h"
+#include "ZSPhysVal/ZSPhysVal.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qstyleditemdelegate.h>
@@ -40,7 +41,9 @@ namespace ZS
 namespace System
 {
 class CTrcAdminObj;
-
+}
+namespace PhysVal
+{
 namespace GUI
 {
 //******************************************************************************
@@ -78,36 +81,28 @@ Q_DECLARE_METATYPE(QList<SComboBoxItem>);
           current text is more flexible than returning an index value as the list of
           items may address the same enum but some of the enums may not be selectable.
 */
-class ZSSYSGUIDLL_API CComboBoxItemDelegate : public QStyledItemDelegate
+class ZSPHYSVALGUIDLL_API CEditPhysValtemDelegate : public QStyledItemDelegate
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    static QString NameSpace() { return "ZS::System::GUI"; }
-    static QString ClassName() { return "CComboBoxItemDelegate"; }
+    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
+    static QString ClassName() { return "CEditPhysValtemDelegate"; }
 public: // ctors and dtor
-    CComboBoxItemDelegate(QAbstractItemModel* i_pModel, QWidget* i_pWdgtParent = nullptr);
-    virtual ~CComboBoxItemDelegate();
-public: // instance methods
-    void setItemDataRole(int i_iRole);
-    int itemDataRole() const;
-public: // overridables of base class QObject
-    bool eventFilter(QObject* i_pObjSrc, QEvent* i_pEv) override;
+    CEditPhysValtemDelegate(QAbstractItemModel* i_pModel, QWidget* i_pWdgtParent = nullptr);
+    virtual ~CEditPhysValtemDelegate();
 public: // overridables of base class QStyledItemDelegate
-    void paint(QPainter* i_pPainter, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
     QWidget* createEditor(QWidget* i_pWdgtParent, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
     void setEditorData(QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx) const override;
     void setModelData(QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx) const override;
     void updateEditorGeometry(QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
 protected slots:
-    void onCmbCurrentTextChanged(const QString& i_strText);
+    void onEditPhysValValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
 protected: // instance members
     /*!< Pointer to the model the delegate is assigned to. Passed by the constructor. */
     QAbstractItemModel* m_pModel;
-    /*!< Item data role to query the list of available combo box items from the model. */
-    int m_iItemDataRole;
     /*!< Model index at which the editor was created.
-         Needed to set the model data if the current text is changed. */
+         Needed to set the model data if the current value is changed. */
     mutable QModelIndex m_modelIdxEditorCreated;
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
@@ -118,8 +113,8 @@ protected: // instance members
 
 } // namespace GUI
 
-} // namespace System
+} // namespace PhysVal
 
 } // namespace ZS
 
-#endif // #ifndef ZSSysGUI_ComboBoxItemDelegate_h
+#endif // #ifndef ZSPhysValGUI_EditItemDelegate_h

@@ -14,7 +14,7 @@ Content: This file is part of the ZSQtLib.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGeometryModel.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
 #include "ZSSys/ZSSysAux.h"
@@ -71,44 +71,39 @@ protected: // type definitions and constants
 //------------------------------------------------------------------------------
 /*! @brief Fills the label struct with the information retrieved from the graphical object.
 */
-CModelGraphObjGeometry::SDataRow CModelGraphObjGeometry::SDataRow::fromGraphObj(
-    CGraphObj* i_pGraphObj, const QString& i_strValueName,
-    const CUnit& i_unit, int i_iRowIdx)
+CModelGraphObjGeometry::SLabelSettings CModelGraphObjGeometry::SLabelSettings::fromGraphObj(
+    CGraphObj* i_pGraphObj, const QString& i_strValueName, int i_iRowIdx)
 //------------------------------------------------------------------------------
 {
-    SDataRow dataRow;
-    dataRow.m_strValueName = i_strValueName;
-    dataRow.m_iRowIdx = i_iRowIdx;
-    dataRow.m_physValX = i_pGraphObj->getXValue(i_strValueName, i_unit);
-    dataRow.m_physValY = i_pGraphObj->getYValue(i_strValueName, i_unit);
-    dataRow.m_bVisible = i_pGraphObj->isValueLabelAnchorLineVisible(i_strValueName);
-    dataRow.m_bLineVisible = i_pGraphObj->isValueLabelAnchorLineVisible(i_strValueName);
-    return dataRow;
+    SLabelSettings labelSettings;
+    labelSettings.m_strValueName = i_strValueName;
+    labelSettings.m_iRowIdx = i_iRowIdx;
+    labelSettings.m_bVisible = i_pGraphObj->isValueLabelAnchorLineVisible(i_strValueName);
+    labelSettings.m_bLineVisible = i_pGraphObj->isValueLabelAnchorLineVisible(i_strValueName);
+    return labelSettings;
 }
 
 //------------------------------------------------------------------------------
-CModelGraphObjGeometry::SDataRow::SDataRow() :
+CModelGraphObjGeometry::SLabelSettings::SLabelSettings() :
 //------------------------------------------------------------------------------
     m_strValueName(), m_iRowIdx(-1),
-    m_physValX(), m_physValY(),
     m_bVisible(false), m_bLineVisible(false)
 {
 }
 
 //------------------------------------------------------------------------------
-CModelGraphObjGeometry::SDataRow::SDataRow(
+CModelGraphObjGeometry::SLabelSettings::SLabelSettings(
     const QString& i_strValueName, int i_iRowIdx,
     const CPhysVal& i_physValX, const CPhysVal& i_physValY,
     bool i_bVisible, bool i_bLineVisible) :
 //------------------------------------------------------------------------------
     m_strValueName(), m_iRowIdx(-1),
-    m_physValX(), m_physValY(),
     m_bVisible(false), m_bLineVisible(false)
 {
 }
 
 //------------------------------------------------------------------------------
-bool CModelGraphObjGeometry::SDataRow::operator == (const SDataRow& i_other) const
+bool CModelGraphObjGeometry::SLabelSettings::operator == (const SLabelSettings& i_other) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
@@ -116,12 +111,6 @@ bool CModelGraphObjGeometry::SDataRow::operator == (const SDataRow& i_other) con
         bEqual = false;
     }
     else if (m_iRowIdx != i_other.m_iRowIdx) {
-        bEqual = false;
-    }
-    else if (m_physValX != i_other.m_physValX) {
-        bEqual = false;
-    }
-    else if (m_physValY != i_other.m_physValY) {
         bEqual = false;
     }
     else if (m_bVisible != i_other.m_bVisible) {
@@ -134,7 +123,7 @@ bool CModelGraphObjGeometry::SDataRow::operator == (const SDataRow& i_other) con
 }
 
 //------------------------------------------------------------------------------
-bool CModelGraphObjGeometry::SDataRow::operator != (const SDataRow& i_other) const
+bool CModelGraphObjGeometry::SLabelSettings::operator != (const SLabelSettings& i_other) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_other);
@@ -158,16 +147,19 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
     m_eDimensionUnit(i_eDimensionUnit),
     m_strKeyInTree(),
     m_pGraphObj(nullptr),
-    m_arDataRows(),
+    m_physValLine(),
+    m_arLabelSettings(),
     m_bContentChanged(false),
     m_iContentChangedSignalBlockedCounter(0),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjNoisyMethods(nullptr)
 {
+    setObjectName(i_strObjName + m_eDimensionUnit.toString());
+
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::" + i_strGraphObjType, ClassName(), i_strObjName);
+        i_strNameSpace + "::" + i_strGraphObjType, ClassName(), objectName());
     m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::" + i_strGraphObjType, ClassName() + "::NoisyMethods", i_strObjName);
+        i_strNameSpace + "::" + i_strGraphObjType, ClassName() + "::NoisyMethods", objectName());
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "DrawingScene: " + QString(i_pDrawingScene == nullptr ? "nullptr" : i_pDrawingScene->objectName());
@@ -202,7 +194,8 @@ CModelGraphObjGeometry::~CModelGraphObjGeometry()
     m_eDimensionUnit = static_cast<EScaleDimensionUnit>(0);
     //m_strKeyInTree;
     m_pGraphObj = nullptr;
-    //m_arDataRows;
+    //m_physValLine;
+    //m_arLabelSettings;
     m_bContentChanged = false;
     m_iContentChangedSignalBlockedCounter = 0;
     m_pTrcAdminObj = nullptr;
@@ -215,6 +208,13 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Selects the object to be indicated and edited in the widget.
+
+    "fillModel" is called to fill the model with the settings of the graphical object.
+
+    @param i_strKeyInTree [in]
+        Unique key of the graphical object.
+*/
 bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
@@ -272,6 +272,16 @@ bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
     return bObjectChanged;
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Returns the unique key of the graphical object currently shown in
+           the widget.
+*/
+QString CModelGraphObjGeometry::getKeyInTree() const
+//------------------------------------------------------------------------------
+{
+    return m_strKeyInTree;
+}
+
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
@@ -317,9 +327,18 @@ bool CModelGraphObjGeometry::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
+    CGraphObjLine* pGraphObjLine = nullptr;
     if (m_pGraphObj != nullptr) {
-        QList<SDataRow> arDataRows = getDataRows(m_pGraphObj);
-        bHasChanges = (arDataRows != m_arDataRows);
+        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+    }
+    if (pGraphObjLine != nullptr) {
+        const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+        CPhysValLine physValLine = pGraphObjLine->getLine(drawingSize.unit());
+        bHasChanges = (m_physValLine != physValLine);
+        if (!bHasChanges) {
+            QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObj);
+            bHasChanges = (arLabelSettings != m_arLabelSettings);
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
@@ -328,85 +347,92 @@ bool CModelGraphObjGeometry::hasChanges() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief This method is called by acceptChanges to apply the settings from
-           the model at the graphical object.
+/*! @brief This method is called to apply the changes made in the model to the graphical object.
 
-    The ContentChangedSignalBlocked counter has been incrememented by the
-    acceptChanges method as on changing properties of the graphical object
-    the on<Properties>Changed slots are called as reentries when applying the
-    changes at the graphical object. The on<Properties>Changed slots should
-    not call fillModel when applying the changes at the graphical object
-    as that would overwrite current settings with old setting.
+    The values from the model are applied one after another at the graphical object.
+
+    For each changed property the method "onGraphObjChanged" is called as an reentry.
+    "onGraphObjChanged" is also used to fill the model with the current values of the
+    graphical object if a new graphical object has been set or if the settings got to be reset.
+
+    To avoid that "onGraphObjChanged" overwrites settings in the model which haven't been
+    applied yet the m_iContentChangedSignalBlockedCounter is incremented before applying
+    the changes from the model.
 */
-void CModelGraphObjGeometry::applySettings()
+void CModelGraphObjGeometry::acceptChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "applySettings",
+        /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
     if (m_pGraphObj != nullptr && !hasErrors())
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            for (const SDataRow& dataRow : m_arDataRows) {
-                m_pGraphObj->setXValue(dataRow.m_strValueName, dataRow.m_physValX);
-                m_pGraphObj->setYValue(dataRow.m_strValueName, dataRow.m_physValY);
-                dataRow.m_bVisible ?
-                    m_pGraphObj->showValueLabel(dataRow.m_strValueName) :
-                    m_pGraphObj->hideValueLabel(dataRow.m_strValueName);
-                dataRow.m_bLineVisible ?
-                    m_pGraphObj->showValueLabelAnchorLine(dataRow.m_strValueName) :
-                    m_pGraphObj->hideValueLabelAnchorLine(dataRow.m_strValueName);
+            CGraphObjLine* pGraphObjLine = nullptr;
+            if (m_pGraphObj != nullptr) {
+                pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+            }
+            if (pGraphObjLine != nullptr && !hasErrors() && hasChanges()) {
+                pGraphObjLine->setLine(m_physValLine);
+                for (const SLabelSettings& labelSettings : m_arLabelSettings) {
+                    labelSettings.m_bVisible ?
+                        m_pGraphObj->showValueLabel(labelSettings.m_strValueName) :
+                        m_pGraphObj->hideValueLabel(labelSettings.m_strValueName);
+                    labelSettings.m_bLineVisible ?
+                        m_pGraphObj->showValueLabelAnchorLine(labelSettings.m_strValueName) :
+                        m_pGraphObj->hideValueLabelAnchorLine(labelSettings.m_strValueName);
+                }
             }
         }
-    }
-}
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CModelGraphObjGeometry::clearModel()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "clearModel",
-        /* strMethodInArgs    */ "" );
-
-    if (m_arDataRows.size() > 0) {
-        _beginRemoveRows(QModelIndex(), 0, m_arDataRows.size()-1);
-        m_arDataRows.clear();
-        _endRemoveRows();
-        emit_contentChanged();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CModelGraphObjGeometry::fillModel()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "fillModel",
-        /* strMethodInArgs    */ "" );
-
-    if (m_arDataRows.size() > 0) {
-        clearModel();
-    }
-    if (m_pGraphObj != nullptr) {
-        m_arDataRows = getDataRows(m_pGraphObj);
-        if (m_arDataRows.size() > 0) {
-            _beginInsertRows(QModelIndex(), 0, m_arDataRows.size()-1);
-            _endInsertRows();
+        // If the "contentChanged" signal is no longer blocked and the content of
+        // properties widget has been changed ...
+        if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+            // .. emit the contentChanged signal.
             emit_contentChanged();
         }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Resets the current settings of the edit controls to the current values
+           of the graphical object.
+
+    Resetting is done be invoking "onGraphObjChanged", which fills the edit
+    controls with the current property values of the graphical object.
+*/
+void CModelGraphObjGeometry::rejectChanges()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "rejectChanges",
+        /* strAddInfo   */ "" );
+
+    // "fillModel" is used to fill the model with the current settings of the
+    // graphical object. To avoid that the signal "contentChanged" is emitted
+    // for each value of the graphical object set in the model the
+    // ContentChangedSignalBlockedCounter is incremented. After fillModel has
+    // been executed the contentChanged flag is checked and the contentChanged
+    // signal is emitted if necessary.
+
+    {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+        // Fill the content of the edit controls.
+        fillModel();
+    }
+
+    // If the "contentChanged" signal is no longer blocked and the content of
+    // properties widget has been changed ...
+    if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+        // .. emit the contentChanged signal and update the enabled state
+        // of the Apply and Reset buttons.
+        emit_contentChanged();
     }
 }
 
@@ -425,9 +451,9 @@ int CModelGraphObjGeometry::getValueRowIndex(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     int iRowIdx = -1;
-    for (const SDataRow& dataRow : m_arDataRows) {
-        if (i_strName == dataRow.m_strValueName) {
-            iRowIdx = dataRow.m_iRowIdx;
+    for (const SLabelSettings& labelSettings : m_arLabelSettings) {
+        if (i_strName == labelSettings.m_strValueName) {
+            iRowIdx = labelSettings.m_iRowIdx;
             break;
         }
     }
@@ -441,8 +467,8 @@ QStringList CModelGraphObjGeometry::valueNames() const
 //------------------------------------------------------------------------------
 {
     QStringList strlstNames;
-    for (const SDataRow& dataRow : m_arDataRows) {
-        strlstNames.append(dataRow.m_strValueName);
+    for (const SLabelSettings& labelSettings : m_arLabelSettings) {
+        strlstNames.append(labelSettings.m_strValueName);
     }
     return strlstNames;
 }
@@ -466,9 +492,9 @@ int CModelGraphObjGeometry::rowCount(const QModelIndex& i_modelIdxParent) const
         /* strMethodInArgs    */ strMthInArgs );
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(m_arDataRows.size());
+        mthTracer.setMethodReturn(m_arLabelSettings.size());
     }
-    return m_arDataRows.size();
+    return m_arLabelSettings.size();
 }
 
 //------------------------------------------------------------------------------
@@ -511,12 +537,12 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
     if (m_pGraphObj != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
-        if ((iRow >= 0) && (iRow < m_arDataRows.size())) {
-            const SDataRow& dataRow = m_arDataRows[iRow];
+        if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
+            const SLabelSettings& labelSettings = m_arLabelSettings[iRow];
             switch (iClm) {
                 case EColumnName: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
-                        varData = dataRow.m_strValueName;
+                        varData = labelSettings.m_strValueName;
                     }
                     else if (i_iRole == Qt::SizeHintRole) {
                         QSize size(100, 20);
@@ -525,8 +551,45 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                     break;
                 }
                 case EColumnXVal: {
-                    if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
-                        varData = dataRow.m_physValX.toString();
+                    if (i_iRole == Qt::DisplayRole) {
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP1) {
+                            varData = m_physValLine.p1().x().toString();
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP2) {
+                            varData = m_physValLine.p2().x().toString();
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameCenter) {
+                            varData = m_physValLine.center().x().toString();
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                            varData = m_physValLine.width().toString();
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameLength) {
+                            varData = m_physValLine.length().toString();
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameAngle) {
+                            varData = m_physValLine.angle().toString();
+                        }
+                    }
+                    else if (i_iRole == Qt::EditRole) {
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP1) {
+                            varData = QVariant::fromValue(m_physValLine.p1().x());
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP2) {
+                            varData = QVariant::fromValue(m_physValLine.p2().x());
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameCenter) {
+                            varData = QVariant::fromValue(m_physValLine.center().x());
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                            varData = QVariant::fromValue(m_physValLine.width());
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameLength) {
+                            varData = QVariant::fromValue(m_physValLine.length());
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameAngle) {
+                            varData = QVariant::fromValue(m_physValLine.angle());
+                        }
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
                         varData = static_cast<int>(Qt::AlignRight|Qt::AlignVCenter);
@@ -534,8 +597,33 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                     break;
                 }
                 case EColumnYVal: {
-                    if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
-                        varData = dataRow.m_physValY.toString();
+                    if (i_iRole == Qt::DisplayRole) {
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP1) {
+                            varData = m_physValLine.p1().y().toString();
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP2) {
+                            varData = m_physValLine.p2().y().toString();
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameCenter) {
+                            varData = m_physValLine.center().y().toString();
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                            varData = m_physValLine.height().toString();
+                        }
+                    }
+                    else if (i_iRole == Qt::EditRole) {
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP1) {
+                            varData = QVariant::fromValue(m_physValLine.p1().y());
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP2) {
+                            varData = QVariant::fromValue(m_physValLine.p2().y());
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameCenter) {
+                            varData = QVariant::fromValue(m_physValLine.center().y());
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                            varData = QVariant::fromValue(m_physValLine.height());
+                        }
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
                         varData = static_cast<int>(Qt::AlignRight|Qt::AlignVCenter);
@@ -544,10 +632,10 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                 }
                 case EColumnShowVals: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
-                        varData = dataRow.m_bVisible;
+                        varData = labelSettings.m_bVisible;
                     }
                     else if (i_iRole == Qt::CheckStateRole) {
-                        varData = dataRow.m_bVisible ? Qt::Checked : Qt::Unchecked;
+                        varData = labelSettings.m_bVisible ? Qt::Checked : Qt::Unchecked;
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
                         varData = static_cast<int>(Qt::AlignHCenter|Qt::AlignVCenter);
@@ -556,10 +644,10 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                 }
                 case EColumnShowLine: {
                     if (i_iRole == Qt::DisplayRole || i_iRole == Qt::EditRole) {
-                        varData = dataRow.m_bLineVisible;
+                        varData = labelSettings.m_bLineVisible;
                     }
                     else if (i_iRole == Qt::CheckStateRole) {
-                        varData = dataRow.m_bLineVisible ? Qt::Checked : Qt::Unchecked;
+                        varData = labelSettings.m_bLineVisible ? Qt::Checked : Qt::Unchecked;
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
                         varData = static_cast<int>(Qt::AlignHCenter|Qt::AlignVCenter);
@@ -573,7 +661,14 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(varData.toString());
+        QString strMthRet;
+        if (i_iRole == Qt::EditRole && (i_modelIdx.column() == EColumnXVal || i_modelIdx.column() == EColumnYVal)) {
+            strMthRet = varData.value<CPhysVal>().toString();
+        }
+        else {
+            strMthRet = varData.toString();
+        }
+        mthTracer.setMethodReturn(strMthRet);
     }
     return varData;
 }
@@ -586,8 +681,13 @@ bool CModelGraphObjGeometry::setData(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}" +
-                       ", Data: " + i_varData.toString() +
                        ", Role: " + QString::number(i_iRole) + " (" + qItemDataRole2Str(i_iRole) + ")";
+        if (i_iRole == Qt::EditRole && (i_modelIdx.column() == EColumnXVal || i_modelIdx.column() == EColumnYVal)) {
+            strMthInArgs += ", Data: " + i_varData.value<CPhysVal>().toString();
+        }
+        else {
+            strMthInArgs += ", Data: " + i_varData.toString();
+        }
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -600,36 +700,106 @@ bool CModelGraphObjGeometry::setData(
     if (m_pGraphObj != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
-        if ((iRow >= 0) && (iRow < m_arDataRows.size())) {
-            SDataRow dataRow = m_arDataRows[iRow];
+        if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
+            QVector<bool> arbColumnsChanged(EColumnCount, false);
+            SLabelSettings labelSettings = m_arLabelSettings[iRow];
+            CPhysValLine physValLine = m_physValLine;
             switch (iClm) {
                 case EColumnName: {
                     break;
                 }
                 case EColumnXVal: {
                     if (i_iRole == Qt::EditRole) {
-                        dataRow.m_physValX = i_varData.toString();
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP1) {
+                            CPhysValPoint physValP1 = physValLine.p1();
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValP1.setX(physVal);
+                            physValLine.setP1(physValP1);
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP2) {
+                            CPhysValPoint physValP2 = physValLine.p2();
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValP2.setX(physVal);
+                            physValLine.setP2(physValP2);
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameCenter) {
+                            CPhysValPoint physValPtCenter = physValLine.center();
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValPtCenter.setX(physVal);
+                            physValLine.setCenter(physValPtCenter);
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValLine.setWidth(physVal);
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameLength) {
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValLine.setLength(physVal);
+                            arbColumnsChanged[EColumnXVal] = true;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameAngle) {
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValLine.setAngle(physVal);
+                            arbColumnsChanged[EColumnXVal] = true;
+                        }
                         bDataSet = true;
                     }
                     break;
                 }
                 case EColumnYVal: {
                     if (i_iRole == Qt::EditRole) {
-                        dataRow.m_physValY = i_varData.toString();
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP1) {
+                            CPhysValPoint physValP1 = physValLine.p1();
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValP1.setY(physVal);
+                            physValLine.setP1(physValP1);
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP2) {
+                            CPhysValPoint physValP2 = physValLine.p2();
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValP2.setY(physVal);
+                            physValLine.setP2(physValP2);
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameCenter) {
+                            CPhysValPoint physValPtCenter = physValLine.center();
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValPtCenter.setY(physVal);
+                            physValLine.setCenter(physValPtCenter);
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValLine.setHeight(physVal);
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
+                        }
                         bDataSet = true;
                     }
                     break;
                 }
                 case EColumnShowVals: {
                     if (i_iRole == Qt::EditRole) {
-                        dataRow.m_bVisible = i_varData.toBool();
+                        labelSettings.m_bVisible = i_varData.toBool();
                         bDataSet = true;
                     }
                     break;
                 }
                 case EColumnShowLine: {
                     if (i_iRole == Qt::EditRole) {
-                        dataRow.m_bLineVisible = i_varData.toBool();
+                        labelSettings.m_bLineVisible = i_varData.toBool();
                         bDataSet = true;
                     }
                     break;
@@ -638,8 +808,27 @@ bool CModelGraphObjGeometry::setData(
                     break;
                 }
             }
-            if (m_arDataRows[iRow] != dataRow) {
-                m_arDataRows[iRow] = dataRow;
+            bool bContentChanged = false;
+            if (m_physValLine != physValLine) {
+                m_physValLine = physValLine;
+                bContentChanged = true;
+            }
+            if (m_arLabelSettings[iRow] != labelSettings) {
+                m_arLabelSettings[iRow] = labelSettings;
+                bContentChanged = true;
+            }
+            if (bContentChanged) {
+                for (int idxRow = 0; idxRow < m_arLabelSettings.size(); ++idxRow) {
+                    for (int idxClm = 0; idxClm < arbColumnsChanged.size(); ++idxClm) {
+                        if (arbColumnsChanged[idxClm]) {
+                            if (idxClm != iClm || idxRow != iRow) {
+                                QModelIndex modelIdxTL = index(idxRow, idxClm);
+                                QModelIndex modelIdxBR = index(idxRow, idxClm);
+                                emit_dataChanged(modelIdxTL, modelIdxBR);
+                            }
+                        }
+                    }
+                }
                 if (m_iContentChangedSignalBlockedCounter > 0) {
                     m_bContentChanged = true;
                 }
@@ -736,18 +925,46 @@ Qt::ItemFlags CModelGraphObjGeometry::flags(const QModelIndex& i_modelIdx) const
     if (m_pGraphObj != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
-        if ((iRow >= 0) && (iRow < m_arDataRows.size())) {
-            SDataRow dataRow = m_arDataRows[iRow];
+        if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
+            SLabelSettings labelSettings = m_arLabelSettings[iRow];
             switch (i_modelIdx.column()) {
                 case EColumnName: {
                     break;
                 }
                 case EColumnXVal: {
-                    uFlags = uFlags | Qt::ItemIsEditable;
+                    if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP1) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP2) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameCenter) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameLength) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameAngle) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
                     break;
                 }
                 case EColumnYVal: {
-                    uFlags = uFlags | Qt::ItemIsEditable;
+                    if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP1) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameP2) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameCenter) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                    }
                     break;
                 }
                 case EColumnShowVals: {
@@ -796,7 +1013,54 @@ void CModelGraphObjGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            m_bContentChanged = true;
+            CGraphObjLine* pGraphObjLine = nullptr;
+            if (m_pGraphObj != nullptr) {
+                pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+            }
+            if (pGraphObjLine != nullptr) {
+                QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObj);
+                if (arLabelSettings.size() != m_arLabelSettings.size()) {
+                    throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+                }
+                bool bContentChanged = false;
+                QVector<bool> arbRowsChanged(arLabelSettings.size(), false);
+                for (int iRow = 0; iRow < arLabelSettings.size(); ++iRow) {
+                    if (arLabelSettings[iRow] != m_arLabelSettings[iRow]) {
+                        m_arLabelSettings[iRow] = arLabelSettings[iRow];
+                        arbRowsChanged[iRow] = true;
+                        bContentChanged = true;
+                    }
+                }
+                const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+                CPhysValLine physValLine = pGraphObjLine->getLine(drawingSize.unit());
+                if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+                    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+                        // No simple unit conversion is possible here. The Y Scale Axis may
+                        // be oriented from top to bottom or bottom to top.
+                        // To get the correct scene coordinates we must let the drawing scene
+                        // convert the coordinates into pixel values.
+                        physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
+                    }
+                }
+                if (physValLine != m_physValLine) {
+                    m_physValLine = physValLine;
+                    arbRowsChanged.fill(true);
+                    bContentChanged = true;
+                }
+                if (bContentChanged) {
+                    for (int iRow = 0; iRow < arbRowsChanged.size(); ++iRow) {
+                        QModelIndex modelIdxTL = index(iRow, 0);
+                        QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
+                        emit_dataChanged(modelIdxTL, modelIdxBR);
+                    }
+                    if (m_iContentChangedSignalBlockedCounter > 0) {
+                        m_bContentChanged = true;
+                    }
+                    else {
+                        emit_contentChanged();
+                    }
+                }
+            }
         }
 
         // If the "contentChanged" signal is no longer blocked and the content of
@@ -805,7 +1069,6 @@ void CModelGraphObjGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
             // .. emit the contentChanged signal and update the enabled state
             // of the Apply and Reset buttons.
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
 }
@@ -830,10 +1093,88 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QList<CModelGraphObjGeometry::SDataRow> CModelGraphObjGeometry::getDataRows(CGraphObj* i_pGraphObj) const
+void CModelGraphObjGeometry::clearModel()
 //------------------------------------------------------------------------------
 {
-    QList<SDataRow> arDataRows;
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "clearModel",
+        /* strMethodInArgs    */ "" );
+
+    if (m_arLabelSettings.size() > 0) {
+        _beginRemoveRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
+        m_arLabelSettings.clear();
+        _endRemoveRows();
+        if (m_iContentChangedSignalBlockedCounter > 0) {
+            m_bContentChanged = true;
+        }
+        else {
+            emit_contentChanged();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjGeometry::fillModel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "fillModel",
+        /* strMethodInArgs    */ "" );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+
+    CGraphObjLine* pGraphObjLine = nullptr;
+    if (m_pGraphObj != nullptr) {
+        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+    }
+
+    if (pGraphObjLine == nullptr) {
+        m_physValLine = CPhysValLine(drawingSize.unit());
+    }
+    else {
+        m_physValLine = pGraphObjLine->getLine(drawingSize.unit());
+    }
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+            // No simple unit conversion is possible here. The Y Scale Axis may
+            // be oriented from top to bottom or bottom to top.
+            // To get the correct scene coordinates we must let the drawing scene
+            // convert the coordinates into pixel values.
+            m_physValLine = m_pDrawingScene->convert(m_physValLine, Units.Length.px);
+        }
+    }
+
+    if (m_arLabelSettings.size() > 0) {
+        clearModel();
+    }
+    if (m_pGraphObj != nullptr) {
+        m_arLabelSettings = getLabelSettings(m_pGraphObj);
+        if (m_arLabelSettings.size() > 0) {
+            _beginInsertRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
+            _endInsertRows();
+            if (m_iContentChangedSignalBlockedCounter > 0) {
+                m_bContentChanged = true;
+            }
+            else {
+                emit_contentChanged();
+            }
+        }
+    }
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QList<CModelGraphObjGeometry::SLabelSettings> CModelGraphObjGeometry::getLabelSettings(CGraphObj* i_pGraphObj) const
+//------------------------------------------------------------------------------
+{
+    QList<SLabelSettings> arLabelSettings;
     CUnit unit = m_pDrawingScene->drawingSize().unit();
     if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
         unit = Units.Length.px;
@@ -842,12 +1183,12 @@ QList<CModelGraphObjGeometry::SDataRow> CModelGraphObjGeometry::getDataRows(CGra
         QStringList strlstValueNames = i_pGraphObj->getValueNames();
         if (strlstValueNames.size() > 0) {
             for (const QString& strName : strlstValueNames) {
-                arDataRows.append(
-                    SDataRow::fromGraphObj(i_pGraphObj, strName, unit, arDataRows.size()));
+                arLabelSettings.append(
+                    SLabelSettings::fromGraphObj(i_pGraphObj, strName, arLabelSettings.size()));
             }
         }
     }
-    return arDataRows;
+    return arLabelSettings;
 }
 
 /*==============================================================================
@@ -855,6 +1196,8 @@ protected: // instance methods (tracing emitting signals)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Emits the contentChanged signal and resets the content changed flags.
+*/
 void CModelGraphObjGeometry::emit_contentChanged()
 //------------------------------------------------------------------------------
 {
@@ -863,7 +1206,7 @@ void CModelGraphObjGeometry::emit_contentChanged()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_contentChanged",
         /* strAddInfo   */ "" );
-
+    m_bContentChanged = false;
     emit contentChanged();
 }
 

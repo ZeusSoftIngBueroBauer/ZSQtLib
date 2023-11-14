@@ -78,13 +78,12 @@ signals:
     void contentChanged();
 public: // instance methods
     bool setKeyInTree(const QString& i_strKeyInTree);
+    QString getKeyInTree() const;
 public: // instance methods
     bool hasErrors() const;
     bool hasChanges() const;
-    void applySettings();
-public: // instance methods
-    void clearModel();
-    void fillModel();
+    void acceptChanges();
+    void rejectChanges();
 public: // instance methods
     int getValueRowIndex(const QString& i_strValueName) const;
     QStringList valueNames() const;
@@ -96,20 +95,19 @@ public: // overridables of base class QAbstractItemModel
     QVariant headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole = Qt::DisplayRole) const override;
     Qt::ItemFlags flags(const QModelIndex& i_modelIdx) const override;
 protected: // type definitions and constants
-    struct SDataRow {
+    struct SLabelSettings {
     public:
-        static SDataRow fromGraphObj(
-            CGraphObj* i_pGraphObj, const QString& i_strValueName,
-            const ZS::PhysVal::CUnit& i_unit, int i_iRowIdx = -1);
+        static SLabelSettings fromGraphObj(
+            CGraphObj* i_pGraphObj, const QString& i_strValueName, int i_iRowIdx = -1);
     public: // ctors
-        SDataRow();
-        SDataRow(
+        SLabelSettings();
+        SLabelSettings(
             const QString& i_strValueName, int i_iRowIdx,
             const ZS::PhysVal::CPhysVal& i_physValX, const ZS::PhysVal::CPhysVal& i_physValY,
             bool i_bVisible, bool i_bLineVisible);
     public: // operators
-        bool operator == (const SDataRow& i_other) const;
-        bool operator != (const SDataRow& i_other) const;
+        bool operator == (const SLabelSettings& i_other) const;
+        bool operator != (const SLabelSettings& i_other) const;
     public: // struct members
         /*!< Name of the value as retrieved from the graphical object.
              Possible names could be "P1", "Center", "Size", "Length", "Angle".
@@ -118,12 +116,6 @@ protected: // type definitions and constants
         QString m_strValueName;
         /*!< Index in the row of labels. */
         int m_iRowIdx;
-        /*!< X Value. For "Size" this is the width of the object's bounding rectangle.
-             Also used for "Length" and "Angle". */
-        ZS::PhysVal::CPhysVal m_physValX;
-        /*!< Y Value. For "Size" this is the height of the object's bounding rectangle.
-             Not used (set invalid) for "Length" and "Angle". */
-        ZS::PhysVal::CPhysVal m_physValY;
         /*!< True if the value should be shown. */
         bool m_bVisible;
         /*!< True if a line should be drawn from the label showing the value and the
@@ -133,12 +125,13 @@ protected: // type definitions and constants
         bool m_bLineVisible;
     };
 protected slots:
-    //void onGraphObjShapePointAdded(CGraphObj* i_pGraphObj, const QString& i_strName);
-    //void onGraphObjShapePointRemoved(CGraphObj* i_pGraphObj, const QString& i_strName);
     void onGraphObjGeometryChanged(CGraphObj* i_pGraphObj);
     void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // instance methods
-    QList<SDataRow> getDataRows(CGraphObj* i_pGraphObj) const;
+    void clearModel();
+    void fillModel();
+protected: // auxiliary instance methods
+    QList<SLabelSettings> getLabelSettings(CGraphObj* i_pGraphObj) const;
 protected: // instance methods (tracing emitting signals)
     void emit_contentChanged();
     void _beginInsertRows(const QModelIndex& i_modelIdxParent, int i_iRowFirst, int i_iRowLast);
@@ -156,11 +149,13 @@ protected: // instance members
     /*!< If the unique key is set the drawing scene is queried to get the pointer to
          the graphical object which should be edited. */
     CGraphObj* m_pGraphObj;
-    /*!< Cached geometry settings of the graphical object.
-         The order is defined by the graphical object returning the list of values.
-         The relation between the row index and the value names (which must be unique)
-         is stored in a separate hash. */
-    QList<SDataRow> m_arDataRows;
+    /*!< Cached coordinates of the graphical object.
+         The values are stored in the unit of the drawing size.
+         If the drawing size changes the coordinates are updated and converted if necessary. */
+    CPhysValLine m_physValLine;
+    /*!< Cached value label settings of the graphical object.
+         The order is defined by the graphical object returning the list of value names. */
+    QList<SLabelSettings> m_arLabelSettings;
     /*!< Flag to indicate that the content of a data row has been changed while the "contentChanged"
          signal was blocked by the "contentChanged" counter. */
     bool m_bContentChanged;

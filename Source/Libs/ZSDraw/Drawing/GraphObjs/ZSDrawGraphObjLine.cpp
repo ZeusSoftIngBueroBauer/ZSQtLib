@@ -103,16 +103,16 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    m_strlstPredefinedLabelNames.append("Name");
-    m_strlstPredefinedLabelNames.append("P1");
-    m_strlstPredefinedLabelNames.append("P2");
+    m_strlstPredefinedLabelNames.append(c_strLabelName);
+    m_strlstPredefinedLabelNames.append(c_strValueNameP1);
+    m_strlstPredefinedLabelNames.append(c_strValueNameP2);
 
     for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
         if (!m_hshpLabels.contains(strLabelName)) {
-            if (strLabelName == "P1") {
+            if (strLabelName == c_strValueNameP1) {
                 addLabel(strLabelName, strLabelName, 0);
             }
-            else if (strLabelName == "P2") {
+            else if (strLabelName == c_strValueNameP2) {
                 addLabel(strLabelName, strLabelName, 1);
             }
             else {
@@ -121,33 +121,38 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         }
     }
 
-    m_strlstGeometryLabelNames.append("P1");
-    m_strlstGeometryLabelNames.append("P2");
-    m_strlstGeometryLabelNames.append("Center");
-    m_strlstGeometryLabelNames.append("Length");
-    m_strlstGeometryLabelNames.append("Angle");
+    m_strlstGeometryLabelNames.append(c_strValueNameP1);
+    m_strlstGeometryLabelNames.append(c_strValueNameP2);
+    m_strlstGeometryLabelNames.append(c_strValueNameCenter);
+    m_strlstGeometryLabelNames.append(c_strValueNameSize);
+    m_strlstGeometryLabelNames.append(c_strValueNameLength);
+    m_strlstGeometryLabelNames.append(c_strValueNameAngle);
 
     const CUnit& unit = m_pDrawingScene->drawingSize().unit();
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
         //m_hshpGeometryLabels[strLabelName] = ;
         QString strText;
-        if (strLabelName == "P1") {
+        if (strLabelName == c_strValueNameP1) {
             strText = getP1(unit).toString();
             addValueLabel(strLabelName, strText, 0);
         }
-        else if (strLabelName == "P2") {
+        else if (strLabelName == c_strValueNameP2) {
             strText = getP2(unit).toString();
             addValueLabel(strLabelName, strText, 1);
         }
-        else if (strLabelName == "Center") {
+        else if (strLabelName == c_strValueNameCenter) {
             strText = getCenter(unit).toString();
             addValueLabel(strLabelName, strText, ESelectionPoint::Center);
         }
-        else if (strLabelName == "Length") {
+        else if (strLabelName == c_strValueNameSize) {
+            strText = getSize(unit).toString();
+            addValueLabel(strLabelName, strText, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strValueNameLength) {
             strText = getLength(unit).toString();
             addValueLabel(strLabelName, strText, ESelectionPoint::Center);
         }
-        else if (strLabelName == "Angle") {
+        else if (strLabelName == c_strValueNameAngle) {
             strText = getAngle(Units.Angle.Degree).toString();
             addValueLabel(strLabelName, strText, ESelectionPoint::Center);
         }
@@ -990,9 +995,9 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const
 //------------------------------------------------------------------------------
 {
     static const QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined = {
-        { "Name", {ESelectionPoint::Center} },
-        { "P1", {0} },
-        { "P2", {1} }
+        { c_strLabelName, {ESelectionPoint::Center} },
+        { c_strValueNameP1, {0} },
+        { c_strValueNameP2, {1} }
     };
     static const QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined = {
         ESelectionPoint::Center,
@@ -1014,103 +1019,10 @@ QStringList CGraphObjLine::getValueNames() const
 //------------------------------------------------------------------------------
 {
     static const QStringList s_strlstValueNames = {
-        "P1", "P2", "Center", "Length", "Angle"
+        c_strValueNameP1, c_strValueNameP2, c_strValueNameCenter,
+        c_strValueNameSize, c_strValueNameLength, c_strValueNameAngle
     };
     return s_strlstValueNames;
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjLine::setXValue(const QString& i_strName, const CPhysVal& i_physValX)
-//------------------------------------------------------------------------------
-{
-    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
-    if (i_strName == "P1") {
-        setP1(i_physValX.getVal(unit), getP1(unit).y().getVal(), unit);
-    }
-    else if (i_strName == "P2") {
-        setP2(i_physValX.getVal(unit), getP2(unit).y().getVal(), unit);
-    }
-    else if (i_strName == "Center") {
-        setCenter(i_physValX.getVal(unit), getCenter(unit).x().getVal(), unit);
-    }
-    else if (i_strName == "Length") {
-        setLength(i_physValX);
-    }
-    else if (i_strName == "Angle") {
-        setAngle(i_physValX);
-    }
-}
-
-//------------------------------------------------------------------------------
-CPhysVal CGraphObjLine::getXValue(const QString& i_strName, const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physVal;
-    if (i_strName == "P1") {
-        physVal = getP1(i_unit).x();
-        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
-    }
-    else if (i_strName == "P2") {
-        physVal = getP2(i_unit).x();
-        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
-    }
-    else if (i_strName == "Center") {
-        physVal = getCenter(i_unit).x();
-        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
-    }
-    else if (i_strName == "Length") {
-        // The resolution is already set by getLength.
-        physVal = getLength(i_unit);
-    }
-    else if (i_strName == "Angle") {
-        // The resolution is already set by getAngle.
-        // The unit is always either Angle (default) or Rad.
-        if (Units.Angle.findPhysUnit(i_unit.symbol()) == nullptr) {
-            physVal = getAngle(Units.Angle.Degree);
-        }
-        else {
-            physVal = getAngle(i_unit);
-        }
-    }
-    return physVal;
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjLine::setYValue(const QString& i_strName, const CPhysVal& i_physValY)
-//------------------------------------------------------------------------------
-{
-    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
-    if (i_strName == "P1") {
-        setP1(getP1(unit).x().getVal(), i_physValY.getVal(unit), unit);
-    }
-    else if (i_strName == "P2") {
-        setP2(getP2(unit).x().getVal(), i_physValY.getVal(unit), unit);
-    }
-    else if (i_strName == "Center") {
-        setCenter(getCenter(unit).x().getVal(), i_physValY.getVal(unit), unit);
-    }
-}
-
-//------------------------------------------------------------------------------
-CPhysVal CGraphObjLine::getYValue(const QString& i_strName, const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physVal;
-    if (i_strName == "P1") {
-        physVal = getP1(i_unit).y();
-        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
-    }
-    else if (i_strName == "P2") {
-        physVal = getP2(i_unit).y();
-        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
-    }
-    else if (i_strName == "Center") {
-        physVal = getCenter(i_unit).y();
-        physVal.setRes(drawingSize.imageCoorsResolution(i_unit));
-    }
-    return physVal;
 }
 
 /*==============================================================================

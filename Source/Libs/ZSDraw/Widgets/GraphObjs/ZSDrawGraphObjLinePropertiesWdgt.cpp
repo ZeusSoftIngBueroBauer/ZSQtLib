@@ -112,12 +112,12 @@ CWdgtGraphObjLineProperties::CWdgtGraphObjLineProperties(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    m_pWdgtLabels = new CWdgtGraphObjPropertiesLabels(
+    m_pWdgtLabels = new CWdgtGraphObjLabelsProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
         "StandardShapes::Line", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLabels);
     QObject::connect(
-        m_pWdgtLabels, &CWdgtGraphObjPropertiesLabels::contentChanged,
+        m_pWdgtLabels, &CWdgtGraphObjLabelsProperties::contentChanged,
         this, &CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged);
 
     m_pWdgtGeometry = new CWdgtGraphObjLineGeometryProperties(
@@ -211,10 +211,14 @@ bool CWdgtGraphObjLineProperties::setKeyInTree(const QString& i_strKeyInTree)
     bool bObjectChanged = false;
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
-        CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
-        m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
-        m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
-        m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
+        // Fill the content of the edit controls.
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+            CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
+            m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
+            m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
+            m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
+        }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bObjectChanged);
@@ -311,14 +315,19 @@ void CWdgtGraphObjLineProperties::acceptChanges()
                 // This is not a problem as the method does nothing. But the method is not
                 // expected to be called so we avoid it for the sake of clarification
                 // (and to have a clear method trace output where the unexpected call is not listed).
-                m_pWdgtLabels->applySettings();
-                m_pWdgtGeometry->applySettings();
-                m_pWdgtLineStyle->applySettings();
+                m_pWdgtLabels->acceptChanges();
+                m_pWdgtGeometry->acceptChanges();
+                m_pWdgtLineStyle->acceptChanges();
             }
 
-            // After the changes have been applied the enabled state of the Apply and
-            // Reset buttons got to be updated.
-            updateButtonsEnabled();
+            // If the "contentChanged" signal is no longer blocked and the content of
+            // properties widget has been changed ...
+            if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+                // .. emit the contentChanged signal and update the enabled state
+                // of the Apply and Reset buttons.
+                updateButtonsEnabled();
+                emit_contentChanged();
+            }
         }
     }
 }
@@ -333,11 +342,21 @@ void CWdgtGraphObjLineProperties::rejectChanges()
         /* strMethod    */ "rejectChanges",
         /* strAddInfo   */ "" );
 
-    m_pWdgtLabels->rejectChanges();
-    m_pWdgtGeometry->rejectChanges();
-    m_pWdgtLineStyle->rejectChanges();
+    {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-    updateButtonsEnabled();
+        m_pWdgtLabels->rejectChanges();
+        m_pWdgtGeometry->rejectChanges();
+        m_pWdgtLineStyle->rejectChanges();
+    }
+
+    // If the "contentChanged" signal is no longer blocked and the content of
+    // properties widget has been changed ...
+    if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+        // .. emit the contentChanged signal and update the enabled state
+        // of the Apply and Reset buttons.
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
 }
 
 /*==============================================================================
@@ -354,8 +373,10 @@ void CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged()
         /* strMethod    */ "onWdgtLabelsContentChanged",
         /* strAddInfo   */ "" );
 
-    updateButtonsEnabled();
-    emit_contentChanged();
+    if (m_iContentChangedSignalBlockedCounter == 0) {
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -368,8 +389,10 @@ void CWdgtGraphObjLineProperties::onWdgtGeometryContentChanged()
         /* strMethod    */ "onWdgtGeometryContentChanged",
         /* strAddInfo   */ "" );
 
-    updateButtonsEnabled();
-    emit_contentChanged();
+    if (m_iContentChangedSignalBlockedCounter == 0) {
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -382,6 +405,8 @@ void CWdgtGraphObjLineProperties::onWdgtLineStyleContentChanged()
         /* strMethod    */ "onWdgtLineStyleContentChanged",
         /* strAddInfo   */ "" );
 
-    updateButtonsEnabled();
-    emit_contentChanged();
+    if (m_iContentChangedSignalBlockedCounter == 0) {
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
 }

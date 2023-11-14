@@ -28,7 +28,7 @@ may result in using the software modules.
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
-#include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
+#include "ZSPhysValGUI/ZSPhysValEditWdgt.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcMethod.h"

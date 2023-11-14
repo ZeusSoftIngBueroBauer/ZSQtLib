@@ -24,7 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
+#include "ZSPhysValGUI/ZSPhysValEditItemDelegate.h"
+#include "ZSPhysValGUI/ZSPhysValEditWdgt.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -42,11 +43,11 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
-using namespace ZS::System::GUI;
+using namespace ZS::PhysVal::GUI;
 
 
 /*******************************************************************************
-class CComboBoxItemDelegate : public QStyledItemDelegate
+class CEditPhysValtemDelegate : public QStyledItemDelegate
 *******************************************************************************/
 
 /*==============================================================================
@@ -54,11 +55,10 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CComboBoxItemDelegate::CComboBoxItemDelegate(QAbstractItemModel* i_pModel, QWidget* i_pWdgtParent) :
+CEditPhysValtemDelegate::CEditPhysValtemDelegate(QAbstractItemModel* i_pModel, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QStyledItemDelegate(i_pWdgtParent),
     m_pModel(i_pModel),
-    m_iItemDataRole(Qt::AccessibleTextRole),
     m_modelIdxEditorCreated(),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjNoisyMethods(nullptr)
@@ -79,7 +79,7 @@ CComboBoxItemDelegate::CComboBoxItemDelegate(QAbstractItemModel* i_pModel, QWidg
 } // ctor
 
 //------------------------------------------------------------------------------
-CComboBoxItemDelegate::~CComboBoxItemDelegate()
+CEditPhysValtemDelegate::~CEditPhysValtemDelegate()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -97,7 +97,6 @@ CComboBoxItemDelegate::~CComboBoxItemDelegate()
     }
 
     m_pModel = nullptr;
-    m_iItemDataRole = 0;
     //m_modelIdxEditorCreated;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjNoisyMethods = nullptr;
@@ -105,79 +104,11 @@ CComboBoxItemDelegate::~CComboBoxItemDelegate()
 } // dtor
 
 /*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CComboBoxItemDelegate::setItemDataRole(int i_iRole)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qItemDataRole2Str(i_iRole);
-    }
-    CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "setItemDataRole",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    m_iItemDataRole = i_iRole;
-}
-
-//------------------------------------------------------------------------------
-int CComboBoxItemDelegate::itemDataRole() const
-//------------------------------------------------------------------------------
-{
-    return m_iItemDataRole;
-}
-
-/*==============================================================================
-public: // overridables of base class QObject
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-bool CComboBoxItemDelegate::eventFilter(QObject* i_pObjSrc, QEvent* i_pEv)
-//------------------------------------------------------------------------------
-{
-    if (i_pEv->type() == QEvent::FocusIn) {
-        QComboBox* pCmb = dynamic_cast<QComboBox*>(i_pObjSrc);
-        if (pCmb != nullptr) {
-            pCmb->showPopup();
-            // Important to handle it only the first time,
-            // otherwise will result in focus glitches
-            pCmb->removeEventFilter(this);
-        }
-    }
-    return QStyledItemDelegate::eventFilter(i_pObjSrc, i_pEv);
-}
-
-/*==============================================================================
 public: // overridables of base class QStyledItemDelegate
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CComboBoxItemDelegate::paint(
-    QPainter* i_pPainter, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "paint",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    QStyleOptionViewItem option = i_option;
-    option.text = i_modelIdx.data(Qt::DisplayRole).toString();
-    QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &option, i_pPainter);
-}
-
-//------------------------------------------------------------------------------
-QWidget* CComboBoxItemDelegate::createEditor(
+QWidget* CEditPhysValtemDelegate::createEditor(
     QWidget* i_pWdgtParent, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
@@ -191,35 +122,26 @@ QWidget* CComboBoxItemDelegate::createEditor(
         /* strMethod          */ "createEditor",
         /* strMethodInArgs    */ strMthInArgs );
 
-    QComboBox* pCmb = new QComboBox(i_pWdgtParent);
-    pCmb->installEventFilter(const_cast<CComboBoxItemDelegate*>(this));
+    CWdgtEditPhysVal* pWdgt = new CWdgtEditPhysVal(objectName(), i_pWdgtParent);
     m_modelIdxEditorCreated = i_modelIdx;
     QObject::connect(
-        pCmb, &QComboBox::currentTextChanged,
-        this, &CComboBoxItemDelegate::onCmbCurrentTextChanged);
-    QList<SComboBoxItem> arItems = i_modelIdx.data(m_iItemDataRole).value<QList<SComboBoxItem>>();
-    for(const SComboBoxItem& item : arItems) {
-        if (!item.m_icon.isNull()) {
-            pCmb->addItem(item.m_icon, item.m_strText, item.m_userData);
-        }
-        else {
-            pCmb->addItem(item.m_strText, item.m_userData);
-        }
-    }
+        pWdgt, &CWdgtEditPhysVal::valueChanged,
+        this, &CEditPhysValtemDelegate::onEditPhysValValueChanged);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(QString(pCmb == nullptr ? "null" : "Cmb"));
+        mthTracer.setMethodReturn(QString(pWdgt == nullptr ? "null" : "CWdgtEditPhysVal"));
     }
-    return pCmb;
+    return pWdgt;
 }
 
 //------------------------------------------------------------------------------
-void CComboBoxItemDelegate::setEditorData(
+void CEditPhysValtemDelegate::setEditorData(
     QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}" +
+            ", " + i_modelIdx.model()->data(i_modelIdx, Qt::EditRole).value<CPhysVal>().toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -227,19 +149,29 @@ void CComboBoxItemDelegate::setEditorData(
         /* strMethod          */ "setEditorData",
         /* strMethodInArgs    */ strMthInArgs );
 
-    QComboBox* pCmb = dynamic_cast<QComboBox*>(i_pWdgtEditor);
-    QString strText = i_modelIdx.model()->data(i_modelIdx, Qt::EditRole).toString();
-    pCmb->setCurrentText(strText);
+    CWdgtEditPhysVal* pWdgt = dynamic_cast<CWdgtEditPhysVal*>(i_pWdgtEditor);
+    QObject::disconnect(
+        pWdgt, &CWdgtEditPhysVal::valueChanged,
+        this, &CEditPhysValtemDelegate::onEditPhysValValueChanged);
+    CPhysVal physVal = i_modelIdx.model()->data(i_modelIdx, Qt::EditRole).value<CPhysVal>();
+    pWdgt->setUnit(physVal.unit());
+    pWdgt->setResolution(physVal.getRes().getVal());
+    pWdgt->setValue(physVal.getVal());
+    QObject::connect(
+        pWdgt, &CWdgtEditPhysVal::valueChanged,
+        this, &CEditPhysValtemDelegate::onEditPhysValValueChanged);
 }
 
 //------------------------------------------------------------------------------
-void CComboBoxItemDelegate::setModelData(
+void CEditPhysValtemDelegate::setModelData(
     QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
+    CWdgtEditPhysVal* pWdgt = dynamic_cast<CWdgtEditPhysVal*>(i_pWdgtEditor);
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}" +
+         ", " + QVariant::fromValue(pWdgt->value()).toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -249,12 +181,11 @@ void CComboBoxItemDelegate::setModelData(
     if (i_pModel != m_pModel) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
-    QComboBox* pCmb = dynamic_cast<QComboBox*>(i_pWdgtEditor);
-    i_pModel->setData(i_modelIdx, pCmb->currentText(), Qt::EditRole);
+    i_pModel->setData(i_modelIdx, QVariant::fromValue(pWdgt->value()), Qt::EditRole);
 }
 
 //------------------------------------------------------------------------------
-void CComboBoxItemDelegate::updateEditorGeometry(
+void CEditPhysValtemDelegate::updateEditorGeometry(
     QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
@@ -276,18 +207,18 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CComboBoxItemDelegate::onCmbCurrentTextChanged(const QString& i_strText)
+void CEditPhysValtemDelegate::onEditPhysValValueChanged(const CPhysVal& i_physVal)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strText;
+        strMthInArgs = i_physVal.toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "onCmbCurrentTextChanged",
+        /* strMethod          */ "onEditPhysValValueChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
-    m_pModel->setData(m_modelIdxEditorCreated, i_strText, Qt::EditRole);
+    m_pModel->setData(m_modelIdxEditorCreated, QVariant::fromValue(i_physVal), Qt::EditRole);
 }

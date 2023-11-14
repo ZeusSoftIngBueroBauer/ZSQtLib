@@ -113,10 +113,6 @@ public: // overridables of base class CGraphObj (text labels)
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
     virtual QStringList getValueNames() const override;
-    virtual void setXValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValX) override;
-    virtual ZS::PhysVal::CPhysVal getXValue(const QString& i_strName, const ZS::PhysVal::CUnit& i_unit) const override;
-    virtual void setYValue(const QString& i_strName, const ZS::PhysVal::CPhysVal& i_physValY) override;
-    virtual ZS::PhysVal::CPhysVal getYValue(const QString& i_strName, const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;

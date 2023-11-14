@@ -37,7 +37,7 @@ class CDrawingScene;
 class CGraphObjLine;
 class CWdgtGraphObjLineGeometryProperties;
 class CWdgtGraphObjLineStyleProperties;
-class CWdgtGraphObjPropertiesLabels;
+class CWdgtGraphObjLabelsProperties;
 
 //******************************************************************************
 class ZSDRAWDLL_API CWdgtGraphObjLineProperties : public CWdgtGraphObjPropertiesAbstract
@@ -74,7 +74,7 @@ protected slots:
     void onWdgtGeometryContentChanged();
     void onWdgtLineStyleContentChanged();
 protected: // instance members
-    CWdgtGraphObjPropertiesLabels* m_pWdgtLabels;
+    CWdgtGraphObjLabelsProperties* m_pWdgtLabels;
     CWdgtGraphObjLineGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
 

@@ -178,10 +178,12 @@ CModelGraphObjLabels::CModelGraphObjLabels(
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjNoisyMethods(nullptr)
 {
+    setObjectName(i_strObjName);
+
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::" + i_strGraphObjType, ClassName(), i_strObjName);
+        i_strNameSpace + "::" + i_strGraphObjType, ClassName(), objectName());
     m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
-        i_strNameSpace + "::" + i_strGraphObjType, ClassName() + "::NoisyMethods", i_strObjName);
+        i_strNameSpace + "::" + i_strGraphObjType, ClassName() + "::NoisyMethods", objectName());
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "DrawingScene: " + QString(i_pDrawingScene == nullptr ? "nullptr" : i_pDrawingScene->objectName());
@@ -368,20 +370,23 @@ bool CModelGraphObjLabels::hasChanges() const
 /*! @brief This method is called by acceptChanges to apply the settings from
            the model at the graphical object.
 
-    The ContentChangedSignalBlocked counter has been incrememented by the
-    acceptChanges method as on changing properties of the graphical object
-    the on<Properties>Changed slots are called as reentries when applying the
-    changes at the graphical object. The on<Properties>Changed slots should
-    not call fillModel when applying the changes at the graphical object
-    as that would overwrite current settings with old setting.
+    The values from the model are applied one after another at the graphical object.
+
+    For each changed property the method "onGraphObjChanged" is called as an reentry.
+    "onGraphObjChanged" is also used to fill the model with the current values of the
+    graphical object if a new graphical object has been set or if the settings got to be reset.
+
+    To avoid that "onGraphObjChanged" overwrites settings in the model which haven't been
+    applied yet the m_iContentChangedSignalBlockedCounter is incremented before applying
+    the changes from the model.
 */
-void CModelGraphObjLabels::applySettings()
+void CModelGraphObjLabels::acceptChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "applySettings",
+        /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
     if (m_pGraphObj != nullptr && !hasErrors())
@@ -425,48 +430,41 @@ void CModelGraphObjLabels::applySettings()
     }
 }
 
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-void CModelGraphObjLabels::clearModel()
+/*! @brief Resets the current settings of the edit controls to the current values
+           of the graphical object.
+
+    Resetting is done be invoking "onGraphObjChanged", which fills the edit
+    controls with the current property values of the graphical object.
+*/
+void CModelGraphObjLabels::rejectChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "clearModel",
-        /* strMethodInArgs    */ "" );
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "rejectChanges",
+        /* strAddInfo   */ "" );
 
-    if (m_arLabelSettings.size() > 0) {
-        _beginRemoveRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
-        m_arLabelSettings.clear();
-        _endRemoveRows();
+    // "fillModel" is used to fill the model with the current settings of the
+    // graphical object. To avoid that the signal "contentChanged" is emitted
+    // for each value of the graphical object set in the model the
+    // ContentChangedSignalBlockedCounter is incremented. After fillModel has
+    // been executed the contentChanged flag is checked and the contentChanged
+    // signal is emitted if necessary.
+
+    {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+        // Fill the content of the edit controls.
+        fillModel();
+    }
+
+    // If the "contentChanged" signal is no longer blocked and the content of
+    // properties widget has been changed ...
+    if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+        // .. emit the contentChanged signal and update the enabled state
+        // of the Apply and Reset buttons.
         emit_contentChanged();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CModelGraphObjLabels::fillModel()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "fillModel",
-        /* strMethodInArgs    */ "" );
-
-    if (m_arLabelSettings.size() > 0) {
-        clearModel();
-    }
-    if (m_pGraphObj != nullptr) {
-        m_arLabelSettings = getLabelSettings(m_pGraphObj);
-        if (m_arLabelSettings.size() > 0) {
-            _beginInsertRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
-            _endInsertRows();
-            emit_contentChanged();
-        }
     }
 }
 
@@ -572,7 +570,12 @@ QString CModelGraphObjLabels::addLabel()
     _beginInsertRows(QModelIndex(), iRow, iRow);
     m_arLabelSettings.append(SLabelSettings(strName, iRow, false, strName, selPt, false, false));
     _endInsertRows();
-    emit_contentChanged();
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        m_bContentChanged = true;
+    }
+    else {
+        emit_contentChanged();
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(strName);
     }
@@ -604,7 +607,12 @@ void CModelGraphObjLabels::removeLabel(const QString& i_strName)
             m_arLabelSettings[iRow].m_iRowIdx = iRow;
         }
         _endRemoveRows();
-        emit_contentChanged();
+        if (m_iContentChangedSignalBlockedCounter > 0) {
+            m_bContentChanged = true;
+        }
+        else {
+            emit_contentChanged();
+        }
     }
 }
 
@@ -664,7 +672,12 @@ void CModelGraphObjLabels::removeSelectedLabels()
                 _endRemoveRows();
             }
         }
-        emit_contentChanged();
+        if (m_iContentChangedSignalBlockedCounter > 0) {
+            m_bContentChanged = true;
+        }
+        else {
+            emit_contentChanged();
+        }
     }
 }
 
@@ -1151,7 +1164,6 @@ void CModelGraphObjLabels::onGraphObjLabelAdded(
             // .. emit the contentChanged signal and update the enabled state
             // of the Apply and Reset buttons.
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
 }
@@ -1197,7 +1209,6 @@ void CModelGraphObjLabels::onGraphObjLabelRemoved(
             // .. emit the contentChanged signal and update the enabled state
             // of the Apply and Reset buttons.
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
 }
@@ -1244,7 +1255,6 @@ void CModelGraphObjLabels::onGraphObjLabelRenamed(
             // .. emit the contentChanged signal and update the enabled state
             // of the Apply and Reset buttons.
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
 }
@@ -1291,7 +1301,6 @@ void CModelGraphObjLabels::onGraphObjLabelChanged(
             // .. emit the contentChanged signal and update the enabled state
             // of the Apply and Reset buttons.
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
 }
@@ -1313,6 +1322,61 @@ void CModelGraphObjLabels::onGraphObjAboutToBeDestroyed(CGraphObj*)
 
 /*==============================================================================
 protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CModelGraphObjLabels::clearModel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "clearModel",
+        /* strMethodInArgs    */ "" );
+
+    if (m_arLabelSettings.size() > 0) {
+        _beginRemoveRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
+        m_arLabelSettings.clear();
+        _endRemoveRows();
+        if (m_iContentChangedSignalBlockedCounter > 0) {
+            m_bContentChanged = true;
+        }
+        else {
+            emit_contentChanged();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjLabels::fillModel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "fillModel",
+        /* strMethodInArgs    */ "" );
+
+    if (m_arLabelSettings.size() > 0) {
+        clearModel();
+    }
+    if (m_pGraphObj != nullptr) {
+        m_arLabelSettings = getLabelSettings(m_pGraphObj);
+        if (m_arLabelSettings.size() > 0) {
+            _beginInsertRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
+            _endInsertRows();
+            if (m_iContentChangedSignalBlockedCounter > 0) {
+                m_bContentChanged = true;
+            }
+            else {
+                emit_contentChanged();
+            }
+        }
+    }
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1356,6 +1420,8 @@ protected: // instance methods (tracing emitting signals)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Emits the contentChanged signal and resets the content changed flags.
+*/
 void CModelGraphObjLabels::emit_contentChanged()
 //------------------------------------------------------------------------------
 {
@@ -1365,6 +1431,7 @@ void CModelGraphObjLabels::emit_contentChanged()
         /* strMethod    */ "emit_contentChanged",
         /* strAddInfo   */ "" );
 
+    m_bContentChanged = false;
     emit contentChanged();
 }
 

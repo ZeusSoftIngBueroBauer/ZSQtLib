@@ -62,7 +62,7 @@ may result in using the software modules.
 #include "ZSDraw/Widgets/ObjFactories/ZSDrawObjFactoriesModel.h"
 #include "ZSDraw/Widgets/TreeView/ZSDrawGraphObjsWdgt.h"
 #include "ZSPhysValGUI/ZSPhysUnitsDlg.h"
-#include "ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h"
+#include "ZSPhysValGUI/ZSPhysValEditDlg.h"
 #include "ZSIpcTraceGUI/ZSIpcTrcServerDlg.h"
 #include "ZSTestGUI/ZSTestDlg.h"
 #include "ZSTest/ZSTest.h"

@@ -235,7 +235,7 @@ public: // overridables
 //------------------------------------------------------------------------------
 /*! @brief Selects the object to be indicated and edited in the widget.
 
-    "onGraphObjChanged" is called to fill the edit controls with the settings
+    "fillEditControls" is called to fill the edit controls with the settings
     of the graphical object.
 
     @param i_strKeyInTree [in]
@@ -478,10 +478,13 @@ void CWdgtGraphObjPropertiesAbstract::acceptChanges()
             applySettings();
         }
 
-        // After the changes have been applied the enabled state of the Apply and
-        // Reset buttons got to be updated.
+        // If the "contentChanged" signal is no longer blocked and the content of
+        // properties widget has been changed ...
         if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+            // .. emit the contentChanged signal and update the enabled state
+            // of the Apply and Reset buttons.
             updateButtonsEnabled();
+            emit_contentChanged();
         }
     }
 }
@@ -522,7 +525,6 @@ void CWdgtGraphObjPropertiesAbstract::rejectChanges()
         // of the Apply and Reset buttons.
         updateButtonsEnabled();
         emit_contentChanged();
-        m_bContentChanged = false;
     }
 }
 
@@ -726,7 +728,6 @@ void CWdgtGraphObjPropertiesAbstract::onDrawingSceneDrawingSizeChanged(const CDr
             // of the Apply and Reset buttons.
             updateButtonsEnabled();
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
     #endif
@@ -791,7 +792,6 @@ void CWdgtGraphObjPropertiesAbstract::onDrawingSceneDrawSettingsChanged(const CD
             // of the Apply and Reset buttons.
             updateButtonsEnabled();
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
     #endif
@@ -853,7 +853,6 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged()
             // of the Apply and Reset buttons.
             updateButtonsEnabled();
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
 }
@@ -897,7 +896,6 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged()
             // of the Apply and Reset buttons.
             updateButtonsEnabled();
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
 }
@@ -941,7 +939,6 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjDrawSettingsChanged()
             // of the Apply and Reset buttons.
             updateButtonsEnabled();
             emit_contentChanged();
-            m_bContentChanged = false;
         }
     }
 }
@@ -966,6 +963,8 @@ protected: // instance methods (tracing emitting signals)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Emits the contentChanged signal and resets the content changed flags.
+*/
 void CWdgtGraphObjPropertiesAbstract::emit_contentChanged()
 //------------------------------------------------------------------------------
 {
@@ -974,6 +973,6 @@ void CWdgtGraphObjPropertiesAbstract::emit_contentChanged()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::emit_contentChanged",
         /* strAddInfo   */ "" );
-
+    m_bContentChanged = false;
     emit contentChanged();
 }

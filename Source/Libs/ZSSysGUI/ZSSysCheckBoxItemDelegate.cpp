@@ -55,14 +55,16 @@ CCheckBoxItemDelegate::CCheckBoxItemDelegate(QAbstractItemModel* i_pModel, QWidg
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjNoisyMethods(nullptr)
 {
+    setObjectName(i_pModel->objectName());
+
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName());
+        NameSpace(), ClassName(), objectName());
     m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::NoisyMethods");
+        NameSpace(), ClassName() + "::NoisyMethods", objectName());
+
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ "" );
 
@@ -75,7 +77,6 @@ CCheckBoxItemDelegate::~CCheckBoxItemDelegate()
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ "" );
 
@@ -109,7 +110,6 @@ void CCheckBoxItemDelegate::paint(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName         */ objectName(),
         /* strMethod          */ "paint",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -151,7 +151,6 @@ bool CCheckBoxItemDelegate::editorEvent(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName         */ objectName(),
         /* strMethod          */ "editorEvent",
         /* strMethodInArgs    */ strMthInArgs );
 
