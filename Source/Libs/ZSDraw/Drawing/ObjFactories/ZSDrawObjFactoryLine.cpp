@@ -275,7 +275,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                      || (strElemName == CDrawingScene::c_strXmlElemNameShapePointP2)) {
                         QString strElemText = i_xmlStreamReader.readElementText();
                         bool bConverted = false;
-                        CPhysValPoint physValPointTmp(i_pDrawingScene->drawingSize().unit());
+                        CPhysValPoint physValPointTmp(*i_pDrawingScene);
                         try {
                             physValPointTmp = strElemText;
                             bConverted = true;

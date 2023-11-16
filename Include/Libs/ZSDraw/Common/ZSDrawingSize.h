@@ -72,9 +72,12 @@ public: // instance methods
 public: // instance methods
     void setScreenResolutionInPxPerMM(double i_fRes_px_mm);
     double screenResolutionInPxPerMM() const;
+    ZS::PhysVal::CPhysVal screenPixelWidth() const;
     ZS::PhysVal::CPhysVal screenPixelWidth(const ZS::PhysVal::CUnit& i_unit) const;
     void setMetricImageCoorsDecimals(int i_iDecimals);
     int metricImageCoorsDecimals() const;
+    double imageCoorsResolutionInPx() const;
+    ZS::PhysVal::CPhysValRes imageCoorsResolution() const;
     ZS::PhysVal::CPhysValRes imageCoorsResolution(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods
     void setMetricUnit(const ZS::PhysVal::CUnit& i_unit);
@@ -93,7 +96,9 @@ public: // instance methods
     int imageWidthInPixels() const;
     int imageHeightInPixels() const;
     ZS::PhysVal::CPhysVal metricImageWidth() const;
+    ZS::PhysVal::CPhysVal metricImageWidth(const ZS::PhysVal::CUnit& i_unit) const;
     ZS::PhysVal::CPhysVal metricImageHeight() const;
+    ZS::PhysVal::CPhysVal metricImageHeight(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // instance methods
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();

@@ -481,13 +481,12 @@ CPhysValPoint CDrawingScene::toPhysValPoint(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
     if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        return CPhysValPoint(i_pt, Units.Length.px);
+        return CPhysValPoint(i_pt, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     }
-    else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
-        double fXVal = m_divLinesMetricsX.getVal(i_pt.x());
-        double fYVal = m_divLinesMetricsY.getVal(i_pt.y());
-        return CPhysValPoint(fXVal, fYVal, m_drawingSize.unit());
-    }
+    /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/
+    double fXVal = m_divLinesMetricsX.getVal(i_pt.x());
+    double fYVal = m_divLinesMetricsY.getVal(i_pt.y());
+    return CPhysValPoint(fXVal, fYVal, m_drawingSize.imageCoorsResolution().getVal(), m_drawingSize.unit());
 }
 
 ////------------------------------------------------------------------------------
@@ -513,6 +512,19 @@ CPhysValPoint CDrawingScene::toPhysValPoint(const QPointF& i_pt) const
 //}
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given point value into the current unit of the drawing scene.
+
+    @param [in] i_physValPoint
+
+    @return Converted value.
+*/
+CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint) const
+//------------------------------------------------------------------------------
+{
+    return convert(i_physValPoint, m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Converts the given point value into the desired unit.
 
     @param [in] i_physValPoint
@@ -529,32 +541,39 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
             CPhysVal physValX = i_physValPoint.x();
             CPhysVal physValY = i_physValPoint.y();
             physValX.convertValue(i_unitDst);
-            physValX.convertValue(i_unitDst);
-            physValPoint.setUnit(i_unitDst);
-            physValPoint.setX(physValX);
-            physValPoint.setY(physValY);
+            physValY.convertValue(i_unitDst);
+            physValPoint = CPhysValPoint(physValX, physValY);
         }
         else if ((i_physValPoint.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             QPointF pt = i_physValPoint.toQPointF();
-            CPhysVal physValX(m_divLinesMetricsX.getVal(pt.x()), m_drawingSize.unit());
-            CPhysVal physValY(m_divLinesMetricsY.getVal(pt.y()), m_drawingSize.unit());
+            CPhysVal physValX(m_divLinesMetricsX.getVal(pt.x()), m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
+            CPhysVal physValY(m_divLinesMetricsY.getVal(pt.y()), m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
             physValX.convertValue(i_unitDst);
-            physValX.convertValue(i_unitDst);
-            physValPoint.setUnit(i_unitDst);
-            physValPoint.setX(physValX);
-            physValPoint.setY(physValY);
+            physValY.convertValue(i_unitDst);
+            physValPoint = CPhysValPoint(physValX, physValY);
         }
         else if (Units.Length.isMetricUnit(i_physValPoint.unit()) && (i_unitDst == Units.Length.px)) {
             CPhysVal physValX = i_physValPoint.x();
             CPhysVal physValY = i_physValPoint.y();
             double fX_px = m_divLinesMetricsX.getValInPix(physValX.getVal(m_drawingSize.unit()));
             double fY_px = m_divLinesMetricsY.getValInPix(physValY.getVal(m_drawingSize.unit()));
-            physValPoint.setUnit(i_unitDst);
-            physValPoint.setX(CPhysVal(fX_px, i_unitDst));
-            physValPoint.setY(CPhysVal(fY_px, i_unitDst));
+            physValPoint = CPhysValPoint(fX_px, fY_px, m_drawingSize.imageCoorsResolutionInPx(), i_unitDst);
         }
     }
     return physValPoint;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given size into the current unit of the drawing scene.
+
+    @param [in] i_physValPoint
+
+    @return Converted value.
+*/
+CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize) const
+//------------------------------------------------------------------------------
+{
+    return convert(i_physValSize, m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
@@ -575,9 +594,7 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
             CPhysVal physValHeight = i_physValSize.width();
             physValWidth.convertValue(i_unitDst);
             physValHeight.convertValue(i_unitDst);
-            physValSize.setUnit(i_unitDst);
-            physValSize.setWidth(physValWidth);
-            physValSize.setHeight(physValHeight);
+            physValSize = CPhysValSize(physValWidth, physValHeight);
         }
         else if ((i_physValSize.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             QSizeF size = i_physValSize.toQSizeF();
@@ -585,21 +602,31 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
             CPhysVal physValHeight(m_divLinesMetricsY.getVal(size.height()), m_drawingSize.unit());
             physValWidth.convertValue(i_unitDst);
             physValHeight.convertValue(i_unitDst);
-            physValSize.setUnit(i_unitDst);
-            physValSize.setWidth(physValWidth);
-            physValSize.setHeight(physValHeight);
+            physValSize = CPhysValSize(physValWidth, physValHeight);
         }
         else if (Units.Length.isMetricUnit(i_physValSize.unit()) && (i_unitDst == Units.Length.px)) {
             CPhysVal physValWidth = i_physValSize.width();
             CPhysVal physValHeight = i_physValSize.height();
-            double fX_px = m_divLinesMetricsX.getValInPix(physValWidth.getVal(m_drawingSize.unit()));
-            double fY_px = m_divLinesMetricsY.getValInPix(physValWidth.getVal(m_drawingSize.unit()));
-            physValSize.setUnit(i_unitDst);
-            physValSize.setWidth(CPhysVal(fX_px, i_unitDst));
-            physValSize.setHeight(CPhysVal(fY_px, i_unitDst));
+            physValWidth.convertValue(i_unitDst);
+            physValHeight.convertValue(i_unitDst);
+            physValSize = CPhysValSize(physValWidth, physValHeight);
+            physValSize.setResolution(m_drawingSize.imageCoorsResolutionInPx());
         }
     }
     return physValSize;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given size into the current unit of the drawing scene.
+
+    @param [in] i_physValPoint
+
+    @return Converted value.
+*/
+CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine) const
+//------------------------------------------------------------------------------
+{
+    return convert(i_physValLine, m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
@@ -2390,7 +2417,7 @@ int CDrawingScene::groupGraphObjsSelected()
 
             m_pGraphObjCreating = pObjFactoryGroup->createGraphObj(
                 /* pDrawingScene */ this,
-                /* ptItemPos     */ CPhysValPoint(QPointF(0.0, 0.0), m_drawingSize.unit()),
+                /* ptItemPos     */ CPhysValPoint(*this),
                 /* drawSettings  */ m_drawSettings );
 
             m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);

@@ -25,8 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
-#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -48,24 +48,39 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect() :
 //------------------------------------------------------------------------------
-    m_unit(),
-    m_rect()
+    m_rect(),
+    m_fRes(0.0),
+    m_unit()
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const CUnit& i_unit) :
+/*! @brief Creates a physical rectangle on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
-    m_unit(i_unit),
-    m_rect()
+    m_rect(),
+    m_fRes(i_drawingScene.drawingSize().imageCoorsResolution().getVal()),
+    m_unit(i_drawingScene.drawingSize().unit())
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const QRectF& i_rect, const CUnit& i_unit) :
+CPhysValRect::CPhysValRect(const CUnit& i_unit, double i_fRes) :
 //------------------------------------------------------------------------------
-    m_unit(i_unit),
-    m_rect(i_rect)
+    m_rect(),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(const QRectF& i_rect, double i_fRes, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_rect(i_rect),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
 {
 }
 
@@ -73,10 +88,14 @@ CPhysValRect::CPhysValRect(const QRectF& i_rect, const CUnit& i_unit) :
 CPhysValRect::CPhysValRect(
     const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight) :
 //------------------------------------------------------------------------------
-    m_unit(i_physValTopLeft.unit()),
-    m_rect(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF())
+    m_rect(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()),
+    m_fRes(i_physValTopLeft.resolution()),
+    m_unit(i_physValTopLeft.unit())
 {
     if (i_physValTopLeft.unit() != i_physValBottomRight.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (i_physValTopLeft.resolution() != i_physValBottomRight.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
 }
@@ -84,8 +103,9 @@ CPhysValRect::CPhysValRect(
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
 //------------------------------------------------------------------------------
-    m_unit(i_physValRectOther.m_unit),
-    m_rect(i_physValRectOther.m_rect)
+    m_rect(i_physValRectOther.m_rect),
+    m_fRes(i_physValRectOther.m_fRes),
+    m_unit(i_physValRectOther.m_unit)
 {
 }
 
@@ -93,8 +113,9 @@ CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
 CPhysValRect::~CPhysValRect()
 //------------------------------------------------------------------------------
 {
-    //m_unit;
     //m_rect;
+    m_fRes = 0.0;
+    //m_unit;
 }
 
 /*==============================================================================
@@ -105,8 +126,9 @@ public: // operators
 CPhysValRect& CPhysValRect::operator = ( const CPhysValRect& i_physValRectOther )
 //------------------------------------------------------------------------------
 {
-    m_unit = i_physValRectOther.m_unit;
     m_rect = i_physValRectOther.m_rect;
+    m_fRes = i_physValRectOther.m_fRes;
+    m_unit = i_physValRectOther.m_unit;
     return *this;
 }
 
@@ -145,6 +167,9 @@ bool CPhysValRect::operator == ( const CPhysValRect& i_physValRectOther ) const
          || fWidth != m_rect.width() || fHeight != m_rect.height()) {
             bEqual = false;
         }
+        else if (m_fRes != i_physValRectOther.m_fRes) {
+            bEqual = false;
+        }
     }
     return bEqual;
 }
@@ -161,85 +186,99 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnit CPhysValRect::unit() const
-//------------------------------------------------------------------------------
-{
-    return m_unit;
-}
-
-//------------------------------------------------------------------------------
 CPhysVal CPhysValRect::top() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.top(), m_unit);
+    return CPhysVal(m_rect.top(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::bottom() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.bottom(), m_unit);
+    return CPhysVal(m_rect.bottom(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::left() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.left(), m_unit);
+    return CPhysVal(m_rect.left(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::right() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.right(), m_unit);
+    return CPhysVal(m_rect.right(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::width() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.width(), m_unit);
+    return CPhysVal(m_rect.width(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::height() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.height(), m_unit);
+    return CPhysVal(m_rect.height(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::topLeft() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.left(), m_rect.top());
+    return CPhysValPoint(m_rect.left(), m_rect.top(), m_fRes, m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::topRight() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.right(), m_rect.top());
+    return CPhysValPoint(m_rect.right(), m_rect.top(), m_fRes, m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::bottomLeft() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.left(), m_rect.bottom());
+    return CPhysValPoint(m_rect.left(), m_rect.bottom(), m_fRes, m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::bottomRight() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.right(), m_rect.bottom());
+    return CPhysValPoint(m_rect.right(), m_rect.bottom(), m_fRes, m_unit);
+}
+
+//------------------------------------------------------------------------------
+double CPhysValRect::resolution() const
+//------------------------------------------------------------------------------
+{
+    return m_fRes;
+}
+
+//------------------------------------------------------------------------------
+CUnit CPhysValRect::unit() const
+//------------------------------------------------------------------------------
+{
+    return m_unit;
 }
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setResolution( double i_fRes )
+//------------------------------------------------------------------------------
+{
+    m_fRes = i_fRes;
+}
 
 //------------------------------------------------------------------------------
 void CPhysValRect::setUnit( const CUnit& i_unit )

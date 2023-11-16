@@ -39,7 +39,7 @@ class CPhysVal;
 }
 namespace Draw
 {
-class CDrawingSize;
+class CDrawingScene;
 
 //******************************************************************************
 /*! @brief Corresponds to QSizeF but providing a physical unit and a resolution.
@@ -61,9 +61,10 @@ public: // class methods
     static QString ClassName() { return "CPhysValSize"; }
 public: // ctors and dtor
     CPhysValSize();
-    CPhysValSize(const ZS::PhysVal::CUnit& i_unit);
-    CPhysValSize(double i_fWidth, double i_fHeight, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValSize(const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(const CDrawingScene& i_drawingScene);
+    CPhysValSize(const ZS::PhysVal::CUnit& i_unit, double i_fRes);
+    CPhysValSize(double i_fWidth, double i_fHeight, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(const QSizeF& i_size, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
     CPhysValSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     CPhysValSize(const CPhysValSize& i_physValSizeOther);
     virtual ~CPhysValSize();
@@ -74,20 +75,27 @@ public: // operators
     bool operator == (const CPhysValSize& i_physValSizeOther) const;
     bool operator != (const CPhysValSize& i_physValSizeOther) const;
 public: // instance methods
-    ZS::PhysVal::CUnit unit() const;
     ZS::PhysVal::CPhysVal width() const;
     ZS::PhysVal::CPhysVal height() const;
+    double resolution() const;
+    ZS::PhysVal::CUnit unit() const;
     bool isValid() const;
 public: // instance methods
-    void setUnit(const ZS::PhysVal::CUnit& unit);
     void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    void setResolution(double i_fRes);
+    void setUnit(const ZS::PhysVal::CUnit& unit);
 public: // instance methods (to convert the values into another unit)
     QSizeF toQSizeF() const;
     QString toString() const;
 protected: // instance members
-    ZS::PhysVal::CUnit m_unit;
+    /*!< The size in width and height in the unit 'm_unit'. */
     QSizeF m_size;
+    /*!< Resolution of both the width and height value.
+         Defines the number of decimals when converting the coordinates into a string. */
+    double m_fRes;
+    /*!< Unit (either metric or pixels) in which the size values are in 'm_size'. */
+    ZS::PhysVal::CUnit m_unit;
 
 }; // class CPhysValSize
 

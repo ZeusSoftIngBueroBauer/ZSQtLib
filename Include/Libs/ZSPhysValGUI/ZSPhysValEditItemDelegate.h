@@ -46,6 +46,8 @@ namespace PhysVal
 {
 namespace GUI
 {
+class CWdgtEditPhysVal;
+
 //******************************************************************************
 struct SComboBoxItem
 //******************************************************************************
@@ -91,16 +93,32 @@ public: // class methods
 public: // ctors and dtor
     CEditPhysValtemDelegate(QAbstractItemModel* i_pModel, QWidget* i_pWdgtParent = nullptr);
     virtual ~CEditPhysValtemDelegate();
+public: // instance methods
+    void setItemDataRoleMinimumValue(int i_iRole);
+    int itemDataRoleMinimumValue() const;
+    void setItemDataRoleMaximumValue(int i_iRole);
+    int itemDataRoleMaximumValue() const;
 public: // overridables of base class QStyledItemDelegate
     QWidget* createEditor(QWidget* i_pWdgtParent, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
     void setEditorData(QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx) const override;
     void setModelData(QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx) const override;
+    QSize sizeHint(const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
     void updateEditorGeometry(QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const override;
 protected slots:
+    void onCloseEditor(QWidget* i_pWdgtEditor, QAbstractItemDelegate::EndEditHint i_hint = NoHint);
     void onEditPhysValValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
 protected: // instance members
     /*!< Pointer to the model the delegate is assigned to. Passed by the constructor. */
     QAbstractItemModel* m_pModel;
+    /*!< Item data role to query the minimum value from the model.
+         Defaults to Qt::UserRole. */
+    int m_iItemDataRoleMinVal;
+    /*!< Item data role to query the maximum value from the model.
+         Defaults to Qt::UserRole + 1. */
+    int m_iItemDataRoleMaxVal;
+    /*!< Widget to edit the physical value. Created by "createEditor" method.
+         Stored in member variable for the sizeHint method. */
+    mutable CWdgtEditPhysVal* m_pWdgtEditPhysVal;
     /*!< Model index at which the editor was created.
          Needed to set the model data if the current value is changed. */
     mutable QModelIndex m_modelIdxEditorCreated;

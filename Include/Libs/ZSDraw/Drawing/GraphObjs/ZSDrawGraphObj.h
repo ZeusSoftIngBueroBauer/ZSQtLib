@@ -47,6 +47,7 @@ class CMethodTracer;
 namespace Draw
 {
 class CDrawingScene;
+class CDrawingSize;
 class CGraphObj;
 class CGraphObjLabel;
 class CGraphObjSelectionPoint;
@@ -806,6 +807,12 @@ protected: // instance members
     QRectF m_rctOnMousePressEvent;
     /*!< In scene's coordinate system (for rotation by mouse move events). */
     QPointF m_ptRotOriginOnMousePressEvent;
+    /*!< Counts how ofter the "itemChange" method has been blocked from updating
+         the original object coordinates. A value greater than 0 for the counter means
+         that the itemChange method must not update the original coordinates as they
+         have been expliticely set by a method call whereupon the objects, transformed
+         item coordinates in pixels should be updated by itemChange. */
+    int m_iItemChangeUpdateOriginalCoorsBlockedCounter;
     /*!< Simulation Functions. */
     QList<SGraphObjMouseEventFct> m_arMousePressEventFunctions;
     QList<SGraphObjMouseEventFct> m_arMouseReleaseEventFunctions;

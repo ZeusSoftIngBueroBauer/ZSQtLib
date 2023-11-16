@@ -37,6 +37,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -95,7 +96,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
         /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsLineItem(),
-    m_physValLine(i_pDrawingScene->drawingSize().unit()),
+    m_physValLine(*i_pDrawingScene),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
@@ -357,12 +358,6 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsLineItem::prepareGeometryChange();
 
-        // Please note that the original, untransformed line coordinates m_physValLine
-        // kept in the unit of the drawing scene is update in the "itemChange" method.
-        // The line may be moved or transformed by other methods. "itemChange" is a
-        // central point to update the coordinates upon those changes.
-        //setPhysValLine(i_physValLine);
-
         // The line coordinates are passed relative to the parent item
         // (usually the scene coordinates or a group item).
         // But the graphics item expects the coordinates based on the
@@ -384,18 +379,32 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         QPointF p1 = lineF.p1() - ptPos;
         QPointF p2 = lineF.p2() - ptPos;
 
-        // Set the line in local coordinate system.
-        QGraphicsLineItem_setLine(QLineF(p1, p2));
+        {   CRefCountGuard refCountGuard(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
 
-        // GraphicsLineItem::setLine does not update the position.
-        // This has to be done "manually" afterwards.
+            // Update original line value in unit of drawing scene.
+            // Please note that the original, untransformed line coordinates m_physValLine
+            // kept in the unit of the drawing scene is also updated in the "itemChange" method.
+            // The line may be moved or transformed by other methods. "itemChange" is a
+            // central point to update the coordinates upon those changes.
+            // When explicitly setting the line coordinates the itemChange method must not
+            // overwrite the current line value.
+            setPhysValLine(i_physValLine);
 
-        // Move the object to the parent position.
-        // This has to be done after resizing the line as this will trigger
-        // an itemChange call which will update the position of the selection
-        // points. And to position the selection points the local coordinate
-        // system must be up-to-date.
-        QGraphicsItem_setPos(ptPos);
+            // Set the line in local coordinate system.
+            // itemChange will be called which must not overwrite the current line value.
+            QGraphicsLineItem_setLine(QLineF(p1, p2));
+
+            // GraphicsLineItem::setLine does not update the position.
+            // This has to be done "manually" afterwards.
+
+            // Move the object to the parent position.
+            // This has to be done after resizing the line as this will trigger
+            // an itemChange call which will update the position of the selection
+            // points. And to position the selection points the local coordinate
+            // system must be up-to-date.
+            // itemChange also must not overwrite the current line value.
+            QGraphicsItem_setPos(ptPos);
+        }
     }
 }
 
@@ -410,14 +419,16 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         X coordinate of point 2 passed by the given unit.
     @param [in] i_fY2
         y coordinate of point 2 passed by the given unit.
+    @param [in] i_fRes
+        Resolution of the line coordinates.
     @param [in] i_unit
         Unit in which the coordinates are passed.
 */
 void CGraphObjLine::setLine(
-    double i_fX1, double i_fY1, double i_fX2, double i_fY2, const CUnit& i_unit)
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2, double i_fRes, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
-    setLine(CPhysValLine(i_fX1, i_fY1, i_fX2, i_fY2, i_unit));
+    setLine(CPhysValLine(i_fX1, i_fY1, i_fX2, i_fY2, i_fRes, i_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -427,14 +438,16 @@ void CGraphObjLine::setLine(
         X and Y coordinates of point 1 passed by the given unit.
     @param [in] i_p2
         X and Y coordinates of point 2 passed by the given unit.
+    @param [in] i_fRes
+        Resolution of the line coordinates.
     @param [in] i_unit
         Unit in which the coordinates are passed.
 */
 void CGraphObjLine::setLine(
-    const QPointF& i_p1, const QPointF& i_p2, const CUnit& i_unit)
+    const QPointF& i_p1, const QPointF& i_p2, double i_fRes, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
-    setLine(CPhysValLine(i_p1, i_p2, i_unit));
+    setLine(CPhysValLine(i_p1, i_p2, i_fRes, i_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -442,13 +455,15 @@ void CGraphObjLine::setLine(
 
     @param [in] i_line
         Line coordinates passed by the given unit.
+    @param [in] i_fRes
+        Resolution of the line coordinates.
     @param [in] i_unit
         Unit in which the coordinates are passed.
 */
-void CGraphObjLine::setLine(const QLineF& i_line, const CUnit& i_unit)
+void CGraphObjLine::setLine(const QLineF& i_line, double i_fRes, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
-    setLine(CPhysValLine(i_line, i_unit));
+    setLine(CPhysValLine(i_line, i_fRes, i_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -473,6 +488,15 @@ void CGraphObjLine::setLine(
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the item's line in the current unit.
+*/
+CPhysValLine CGraphObjLine::getLine() const
+//------------------------------------------------------------------------------
+{
+    return m_physValLine;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the item's line in the given unit.
 
     @param [in] i_unit
@@ -481,8 +505,6 @@ void CGraphObjLine::setLine(
 CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    double fRes = drawingSize.imageCoorsResolution(i_unit).getVal();
     CPhysValLine physValLine = m_physValLine;
     if (i_unit != physValLine.unit()) {
         physValLine = m_pDrawingScene->convert(physValLine, i_unit);
@@ -491,23 +513,51 @@ CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the coordinates of P1 in the given unit.
+/*! @brief Sets the coordinates of P1.
 
     Point 2 remains unchanged.
 
-    @param [in] i_fX
-        X coordinate of point 1 passed by the given unit.
-    @param [in] i_fY
-        Y coordinate of point 1 passed by the given unit.
-    @param [in] i_unit
-        Unit in which the coordinates are passed.
+    @param [in] i_p1
+        X and Y coordinate of point 1.
+        The coordinates must be passed in the current unit of the line.
 */
-void CGraphObjLine::setP1(double i_fX, double i_fY, const CUnit& i_unit)
+void CGraphObjLine::setP1(const QPointF& i_p1)
+//------------------------------------------------------------------------------
+{
+    setP1(CPhysValPoint(i_p1, m_physValLine.resolution(), m_physValLine.unit()));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the coordinates of P1.
+
+    Point 2 remains unchanged.
+
+    @param [in] i_physValP1
+        X and Y coordinate of point 1. If the unit of the passed point is
+        different from the current unit of the line, the point coordinates
+        will be converted to the lines current unit.
+*/
+void CGraphObjLine::setP1(const CPhysValPoint& i_physValP1)
 //------------------------------------------------------------------------------
 {
     CPhysValLine physValLine = m_physValLine;
-    physValLine.setP1(CPhysValPoint(i_fX, i_fY, i_unit));
+    if (i_physValP1.unit() != m_physValLine.unit()) {
+        CPhysValPoint physValP1 = m_pDrawingScene->convert(i_physValP1, m_physValLine.unit());
+        physValLine.setP1(physValP1);
+    }
+    else {
+        physValLine.setP1(i_physValP1);
+    }
     setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's point 1 in the current unit.
+*/
+CPhysValPoint CGraphObjLine::getP1() const
+//------------------------------------------------------------------------------
+{
+    return getLine().p1();
 }
 
 //------------------------------------------------------------------------------
@@ -523,23 +573,51 @@ CPhysValPoint CGraphObjLine::getP1(const CUnit& i_unit) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the coordinates of P2 in the given unit.
+/*! @brief Sets the coordinates of P2.
 
     Point 1 remains unchanged.
 
-    @param [in] i_fX
-        X coordinate of point 2 passed by the given unit.
-    @param [in] i_fY
-        y coordinate of point 2 passed by the given unit.
-    @param [in] i_unit
-        Unit in which the coordinates are passed.
+    @param [in] i_p1
+        X and Y coordinate of point 2.
+        The coordinates must be passed in the current unit of the line.
 */
-void CGraphObjLine::setP2(double i_fX, double i_fY, const CUnit& i_unit)
+void CGraphObjLine::setP2(const QPointF& i_p2)
+//------------------------------------------------------------------------------
+{
+    setP1(CPhysValPoint(i_p2, m_physValLine.resolution(), m_physValLine.unit()));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the coordinates of P2.
+
+    Point 1 remains unchanged.
+
+    @param [in] i_physValP2
+        X and Y coordinate of point 2. If the unit of the passed point is
+        different from the current unit of the line, the point coordinates
+        will be converted to the lines current unit.
+*/
+void CGraphObjLine::setP2(const CPhysValPoint& i_physValP2)
 //------------------------------------------------------------------------------
 {
     CPhysValLine physValLine = m_physValLine;
-    physValLine.setP2(CPhysValPoint(i_fX, i_fY, i_unit));
+    if (i_physValP2.unit() != m_physValLine.unit()) {
+        CPhysValPoint physValP2 = m_pDrawingScene->convert(i_physValP2, m_physValLine.unit());
+        physValLine.setP1(physValP2);
+    }
+    else {
+        physValLine.setP1(i_physValP2);
+    }
     setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's point 2 in the current unit.
+*/
+CPhysValPoint CGraphObjLine::getP2() const
+//------------------------------------------------------------------------------
+{
+    return getLine().p2();
 }
 
 //------------------------------------------------------------------------------
@@ -555,24 +633,55 @@ CPhysValPoint CGraphObjLine::getP2(const CUnit& i_unit) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the center of the line in the given unit.
+/*! @brief Sets the center of the line.
 
     Both point 1 and point 2 are updated correspondingly.
     The length and the angle remain the same.
 
-    @param [in] i_fX
-        X coordinate of center point passed by the given unit.
-    @param [in] i_fY
-        y coordinate of center point passed by the given unit.
-    @param [in] i_unit
-        Unit in which the coordinates are passed.
+    @param [in] i_pCenter
+        X and Y coordinate of point 1.
+        The coordinates must be passed in the current unit of the line.
 */
-void CGraphObjLine::setCenter(double i_fX, double i_fY, const CUnit& i_unit)
+void CGraphObjLine::setCenter(const QPointF& i_pCenter)
 //------------------------------------------------------------------------------
 {
-    CPhysValLine physValLine = getLine(i_unit);
-    physValLine.setCenter(CPhysValPoint(i_fX, i_fY, i_unit));
+    CPhysValLine physValLine = getLine();
+    physValLine.setCenter(CPhysValPoint(i_pCenter, physValLine.resolution(), physValLine.unit()));
     setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the center of the line.
+
+    Both point 1 and point 2 are updated correspondingly.
+    The length and the angle remain the same.
+
+    @param [in] i_physValCenter
+        X and Y coordinate of the center point. If the unit of the passed point is
+        different from the current unit of the line, the point coordinates
+        will be converted to the lines current unit.
+*/
+void CGraphObjLine::setCenter(const CPhysValPoint& i_physValCenter)
+//------------------------------------------------------------------------------
+{
+    CPhysValLine physValLine = m_physValLine;
+    if (i_physValCenter.unit() != m_physValLine.unit()) {
+        CPhysValPoint physValCenter = m_pDrawingScene->convert(i_physValCenter, m_physValLine.unit());
+        physValLine.setCenter(physValCenter);
+    }
+    else {
+        physValLine.setCenter(i_physValCenter);
+    }
+    setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's center point in the current unit.
+*/
+CPhysValPoint CGraphObjLine::getCenter() const
+//------------------------------------------------------------------------------
+{
+    return getLine().center();
 }
 
 //------------------------------------------------------------------------------
@@ -596,12 +705,43 @@ CPhysValPoint CGraphObjLine::getCenter(const CUnit& i_unit) const
     @param [in] i_physValLength
         Length to be set.
 */
+void CGraphObjLine::setLength(double i_fLength)
+//------------------------------------------------------------------------------
+{
+    setLength(CPhysVal(i_fLength, m_physValLine.unit(), m_physValLine.resolution()));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the length of the line in the given unit.
+
+    Point 1 remains unchanged. Point 2 is updated correspondingly.
+    The angle remains the same.
+
+    @param [in] i_physValLength
+        Length to be set.
+*/
 void CGraphObjLine::setLength(const CPhysVal& i_physValLength)
 //------------------------------------------------------------------------------
 {
-    CPhysValLine physValLine = getLine(i_physValLength.unit());
-    physValLine.setLength(i_physValLength);
+    CPhysValLine physValLine = m_physValLine;
+    if (i_physValLength.unit() != m_physValLine.unit()) {
+        CPhysVal physValLength(i_physValLength);
+        physValLength.convertValue(m_physValLine.unit());
+        physValLine.setLength(physValLength);
+    }
+    else {
+        physValLine.setLength(i_physValLength);
+    }
     setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's length in the current unit.
+*/
+CPhysVal CGraphObjLine::getLength() const
+//------------------------------------------------------------------------------
+{
+    return getLine().length();
 }
 
 //------------------------------------------------------------------------------
@@ -613,10 +753,22 @@ void CGraphObjLine::setLength(const CPhysVal& i_physValLength)
 CPhysVal CGraphObjLine::getLength(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    double fRes = drawingSize.imageCoorsResolution(i_unit).getVal();
-    CPhysValLine physValLine = getLine(i_unit);
-    return CPhysVal(physValLine.length().getVal(), i_unit, fRes);
+    return getLine(i_unit).length();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the angle of the line in degrees.
+
+    Point 1 remains unchanged. Point 2 is updated correspondingly.
+    The length remains the same.
+
+    @param [in] i_physValLength
+        Length to be set.
+*/
+void CGraphObjLine::setAngle(double i_fAngle_degree)
+//------------------------------------------------------------------------------
+{
+    setAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
 }
 
 //------------------------------------------------------------------------------
@@ -634,6 +786,15 @@ void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
     CPhysValLine physValLine = m_physValLine;
     physValLine.setAngle(i_physValAngle);
     setLine(physValLine);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the item's angle in degrees.
+*/
+double CGraphObjLine::getAngleInDegrees() const
+//------------------------------------------------------------------------------
+{
+    return m_physValLine.angle().getVal(Units.Angle.Degree);
 }
 
 //------------------------------------------------------------------------------
@@ -1669,16 +1830,17 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
           || i_change == ItemTransformOriginPointHasChanged)
     {
         QLineF lineF = line();
-        QPointF ptPos = pos();
 
         // Update the original, untransformed line coordinates kept in the unit of
         // the drawing scene. The line may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
-        QPointF p1 = mapToParent(lineF.p1());
-        QPointF p2 = mapToParent(lineF.p2());
-        CPhysValPoint physValP1 = m_pDrawingScene->toPhysValPoint(p1);
-        CPhysValPoint physValP2 = m_pDrawingScene->toPhysValPoint(p2);
-        setPhysValLine(CPhysValLine(physValP1, physValP2));
+        if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
+            QPointF p1 = mapToParent(lineF.p1());
+            QPointF p2 = mapToParent(lineF.p2());
+            CPhysValPoint physValP1 = m_pDrawingScene->toPhysValPoint(p1);
+            CPhysValPoint physValP2 = m_pDrawingScene->toPhysValPoint(p2);
+            setPhysValLine(CPhysValLine(physValP1, physValP2));
+        }
 
         QPolygonF plg;
         plg.append(lineF.p1());
@@ -1869,6 +2031,11 @@ protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the original physical line coordinates.
+
+    If the given lines unit is different from the drawing scenes current unit
+    the line coordinates will be converted into the drawing scenes unit.
+*/
 void CGraphObjLine::setPhysValLine(const CPhysValLine& i_physValLine)
 //------------------------------------------------------------------------------
 {
@@ -1883,7 +2050,13 @@ void CGraphObjLine::setPhysValLine(const CPhysValLine& i_physValLine)
         /* strMethod    */ "setPhysValLine",
         /* strAddInfo   */ strMthInArgs );
 
-    m_physValLine = i_physValLine;
+    if (m_pDrawingScene->drawingSize().unit() == i_physValLine.unit()) {
+        m_physValLine = i_physValLine;
+    }
+    else {
+        CPhysValLine physValLine = m_pDrawingScene->convert(i_physValLine);
+        m_physValLine = i_physValLine;
+    }
 }
 
 //------------------------------------------------------------------------------

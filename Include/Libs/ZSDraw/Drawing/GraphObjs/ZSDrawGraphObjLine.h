@@ -71,26 +71,38 @@ public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 public: // instance methods
     void setLine(const CPhysValLine& i_physValLine);
-    void setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit);
-    void setLine(const QPointF& i_p1, const QPointF& i_p2, const ZS::PhysVal::CUnit& i_unit);
-    void setLine(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unit);
+    void setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
+    void setLine(const QPointF& i_p1, const QPointF& i_p2, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
+    void setLine(const QLineF& i_line, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
     void setLine(const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2);
+    CPhysValLine getLine() const;
     CPhysValLine getLine(const ZS::PhysVal::CUnit& i_unit) const;
-    void setP1(double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
+    void setP1(const QPointF& i_p1);
+    void setP1(const CPhysValPoint& i_physValP1);
+    CPhysValPoint getP1() const;
     CPhysValPoint getP1(const ZS::PhysVal::CUnit& i_unit) const;
-    void setP2(double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
+    void setP2(const QPointF& i_p2);
+    void setP2(const CPhysValPoint& i_physValP2);
+    CPhysValPoint getP2() const;
     CPhysValPoint getP2(const ZS::PhysVal::CUnit& i_unit) const;
-    void setCenter(double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
+    void setCenter(const QPointF& i_pCenter);
+    void setCenter(const CPhysValPoint& i_physValCenter);
+    CPhysValPoint getCenter() const;
     CPhysValPoint getCenter(const ZS::PhysVal::CUnit& i_unit) const;
+    void setLength(double i_fLength);
     void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
+    ZS::PhysVal::CPhysVal getLength() const;
     ZS::PhysVal::CPhysVal getLength(const ZS::PhysVal::CUnit& i_unit) const;
+    void setAngle(double i_fAngle_degree);
     void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
+    double getAngleInDegrees() const;
     ZS::PhysVal::CPhysVal getAngle(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
     virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) override;
     virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) override;
     virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight) override;
     virtual void setSize(const CPhysValSize& i_physValSize) override;
+public: // must overridables of base class CGraphObj
     virtual bool hasBoundingRect() const override;
     virtual bool hasLineShapePoints() const override;
     virtual bool hasRotationSelectionPoints() const override;

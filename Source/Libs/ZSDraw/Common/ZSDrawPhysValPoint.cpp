@@ -25,8 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
-#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -46,18 +46,36 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Default constructor for a phyiscal point.
+*/
 CPhysValPoint::CPhysValPoint() :
 //------------------------------------------------------------------------------
     m_unit(),
+    m_fRes(0.0),
     m_pt()
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint::CPhysValPoint(const CUnit& i_unit) :
+/*! @brief Creates a physical point on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
-    m_unit(i_unit),
-    m_pt()
+    m_pt(),
+    m_fRes(i_drawingScene.drawingSize().imageCoorsResolution().getVal()),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a physical point with the given unit and resolution.
+*/
+CPhysValPoint::CPhysValPoint(const CUnit& i_unit, double i_fRes) :
+//------------------------------------------------------------------------------
+    m_pt(),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
 {
 }
 
@@ -69,10 +87,11 @@ CPhysValPoint::CPhysValPoint(const CUnit& i_unit) :
     @param [in] i_unit
         Unit the coordinates are passed.
 */
-CPhysValPoint::CPhysValPoint(double i_fX, double i_fY, const CUnit& i_unit) :
+CPhysValPoint::CPhysValPoint(double i_fX, double i_fY, double i_fRes, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    m_unit(i_unit),
-    m_pt(i_fX, i_fY)
+    m_pt(i_fX, i_fY),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
 {
 }
 
@@ -84,20 +103,25 @@ CPhysValPoint::CPhysValPoint(double i_fX, double i_fY, const CUnit& i_unit) :
     @param [in] i_unit
         Unit the coordinates are passed.
 */
-CPhysValPoint::CPhysValPoint(const QPointF& i_pt, const CUnit& i_unit) :
+CPhysValPoint::CPhysValPoint(const QPointF& i_pt, double i_fRes, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    m_unit(i_unit),
-    m_pt(i_pt)
+    m_pt(i_pt),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint::CPhysValPoint(const CPhysVal& i_physValX, const CPhysVal& i_physValY) :
 //------------------------------------------------------------------------------
-    m_unit(i_physValX.unit()),
-    m_pt(i_physValX.getVal(), i_physValY.getVal())
+    m_pt(i_physValX.getVal(), i_physValY.getVal()),
+    m_fRes(i_physValX.getRes().getVal()),
+    m_unit(i_physValX.unit())
 {
     if (i_physValX.unit() != i_physValY.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (i_physValX.getRes() != i_physValY.getRes()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
 }
@@ -105,8 +129,9 @@ CPhysValPoint::CPhysValPoint(const CPhysVal& i_physValX, const CPhysVal& i_physV
 //------------------------------------------------------------------------------
 CPhysValPoint::CPhysValPoint( const CPhysValPoint& i_physValPointOther ) :
 //------------------------------------------------------------------------------
-    m_unit(i_physValPointOther.m_unit),
-    m_pt(i_physValPointOther.m_pt)
+    m_pt(i_physValPointOther.m_pt),
+    m_fRes(i_physValPointOther.m_fRes),
+    m_unit(i_physValPointOther.m_unit)
 {
 }
 
@@ -114,8 +139,9 @@ CPhysValPoint::CPhysValPoint( const CPhysValPoint& i_physValPointOther ) :
 CPhysValPoint::~CPhysValPoint()
 //------------------------------------------------------------------------------
 {
-    //m_unit;
     //m_pt;
+    m_fRes = 0.0;
+    //m_unit;
 }
 
 /*==============================================================================
@@ -126,8 +152,9 @@ public: // operators
 CPhysValPoint& CPhysValPoint::operator = ( const CPhysValPoint& i_physValPointOther )
 //------------------------------------------------------------------------------
 {
-    m_unit = i_physValPointOther.m_unit;
     m_pt = i_physValPointOther.m_pt;
+    m_fRes = i_physValPointOther.m_fRes;
+    m_unit = i_physValPointOther.m_unit;
     return *this;
 }
 
@@ -142,11 +169,14 @@ CPhysValPoint& CPhysValPoint::operator = ( const QPointF& i_ptOther )
 //------------------------------------------------------------------------------
 /*! @brief Assigns the string containing a physical point definition to this.
 
+    The current resolution remains unchanged.
+    If no unit is defined in the input string
+        - the current unit remains unchanged or is
+        - is set to "px" if no current unit has been assigned yet.
+
     @param [in] i_strValOther
         String containing the physical point definition in the following format:
         "X [unit] / Y [unit]".
-        If [unit] is omitted the current unit of the instance is kept unchanged.
-        If no current unit has been assigned to this yet, the unit "px" is used.
 
     @return New physical point value.
 
@@ -161,8 +191,8 @@ CPhysValPoint& CPhysValPoint::operator = ( const QString& i_strValOther )
             __FILE__, __LINE__, EResultArgOutOfRange, i_strValOther);
     }
 
-    CPhysVal physValX(m_unit);
-    CPhysVal physValY(m_unit);
+    CPhysVal physValX(m_unit, m_fRes);
+    CPhysVal physValY(m_unit, m_fRes);
     physValX = strlst[0];
     physValY = strlst[1];
     if (!m_unit.isValid()) {
@@ -207,6 +237,9 @@ bool CPhysValPoint::operator == ( const CPhysValPoint& i_physValPointOther ) con
         if (fXOther != m_pt.x() || fYOther != m_pt.y()) {
             bEqual = false;
         }
+        else if (m_fRes != i_physValPointOther.m_fRes) {
+            bEqual = false;
+        }
     }
     return bEqual;
 }
@@ -223,36 +256,36 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnit CPhysValPoint::unit() const
-//------------------------------------------------------------------------------
-{
-    return m_unit;
-}
-
-//------------------------------------------------------------------------------
 CPhysVal CPhysValPoint::x() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_pt.x(), m_unit);
+    return CPhysVal(m_pt.x(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValPoint::y() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_pt.y(), m_unit);
+    return CPhysVal(m_pt.y(), m_unit, m_fRes);
+}
+
+//------------------------------------------------------------------------------
+double CPhysValPoint::resolution() const
+//------------------------------------------------------------------------------
+{
+    return m_fRes;
+}
+
+//------------------------------------------------------------------------------
+CUnit CPhysValPoint::unit() const
+//------------------------------------------------------------------------------
+{
+    return m_unit;
 }
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CPhysValPoint::setUnit( const CUnit& i_unit )
-//------------------------------------------------------------------------------
-{
-    m_unit = i_unit;
-}
 
 //------------------------------------------------------------------------------
 void CPhysValPoint::setX( const CPhysVal& i_physValX )
@@ -266,6 +299,20 @@ void CPhysValPoint::setY( const CPhysVal& i_physValY )
 //------------------------------------------------------------------------------
 {
     m_pt.setY(i_physValY.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPoint::setResolution( double i_fRes )
+//------------------------------------------------------------------------------
+{
+    m_fRes = i_fRes;
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPoint::setUnit( const CUnit& i_unit )
+//------------------------------------------------------------------------------
+{
+    m_unit = i_unit;
 }
 
 /*==============================================================================

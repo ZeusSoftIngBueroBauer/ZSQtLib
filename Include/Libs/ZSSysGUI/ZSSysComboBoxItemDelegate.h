@@ -104,7 +104,8 @@ protected slots:
 protected: // instance members
     /*!< Pointer to the model the delegate is assigned to. Passed by the constructor. */
     QAbstractItemModel* m_pModel;
-    /*!< Item data role to query the list of available combo box items from the model. */
+    /*!< Item data role to query the list of available combo box items from the model.
+         Defaults to Qt::AccessibleTextRole. */
     int m_iItemDataRole;
     /*!< Model index at which the editor was created.
          Needed to set the model data if the current text is changed. */

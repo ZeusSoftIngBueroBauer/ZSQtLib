@@ -448,6 +448,16 @@ CPhysVal::CPhysVal( const CUnit& i_unit, EResType i_resType ) :
 }
 
 //------------------------------------------------------------------------------
+CPhysVal::CPhysVal( const CUnit& i_unitVal, double i_fResVal, EResType i_resType ) :
+//------------------------------------------------------------------------------
+    m_unit(i_unitVal),
+    m_validity(EValueValidity::Invalid),
+    m_fVal(0.0),
+    m_physValRes(i_fResVal, i_unitVal, i_resType)
+{
+}
+
+//------------------------------------------------------------------------------
 CPhysVal::CPhysVal( const CUnit& i_unitVal, const CUnit& i_unitRes, EResType i_resType ) :
 //------------------------------------------------------------------------------
     m_unit(i_unitVal),

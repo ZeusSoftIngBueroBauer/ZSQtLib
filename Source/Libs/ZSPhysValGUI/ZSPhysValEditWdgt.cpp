@@ -107,6 +107,8 @@ CWdgtEditPhysVal::CWdgtEditPhysVal(const QString& i_strName, QWidget* i_pWdgtPar
     m_physValMin(),
     m_physValMax(),
     m_physValRes(),
+    m_strForSizeHint(),
+    m_sizeHint(),
     m_iValueChangedSignalsBlocked(0)
 {
     if (!m_strName.isEmpty()) {
@@ -124,6 +126,7 @@ CWdgtEditPhysVal::CWdgtEditPhysVal(const QString& i_strName, QWidget* i_pWdgtPar
         pSpinBox->setObjectName(i_strName);
         pSpinBox->lineEdit()->setObjectName(i_strName);
     }
+    m_pEdt->setAlignment(Qt::AlignRight);
 
     m_pEdt->setMinimum(DBL_MIN);
     m_pEdt->setMaximum(DBL_MAX);
@@ -155,6 +158,8 @@ CWdgtEditPhysVal::~CWdgtEditPhysVal()
     //m_physValMin;
     //m_physValMax;
     //m_physValRes;
+    //m_strForSizeHint;
+    //m_sizeHint;
     m_iValueChangedSignalsBlocked = 0;
 
 } // dtor
@@ -187,6 +192,9 @@ void CWdgtEditPhysVal::clear()
     m_pEdt->setMinimum(DBL_MIN);
     m_pEdt->setMaximum(DBL_MAX);
     m_pEdt->setDecimals(DBL_DIG);
+
+    m_strForSizeHint = "";
+    m_sizeHint = QSize();
 }
 
 /*==============================================================================
@@ -285,78 +293,79 @@ void CWdgtEditPhysVal::setUnit(const CUnit& i_unit)
     QString strTextPrev = m_pEdt->text();
     double fValPrev = m_pEdt->value();
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    {   CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
 
-    // Before setting the value the constraints are set.
-    // If the aggregated double spin box intermediately corrects
-    // the value the cached value is not affected as processing
-    // the valueChanged and textChanged signals is suppressed
-    // by setting the ValueChangedSignalsBlocked flag.
+        // Before setting the value the constraints are set.
+        // If the aggregated double spin box intermediately corrects
+        // the value the cached value is not affected as processing
+        // the valueChanged and textChanged signals is suppressed
+        // by setting the ValueChangedSignalsBlocked flag.
 
-    if (m_physVal.isValid()) {
-        if (areOfSameUnitGroup(m_physVal.unit(), i_unit)) {
-            m_physVal.convertValue(i_unit);
+        if (m_physVal.isValid()) {
+            if (areOfSameUnitGroup(m_physVal.unit(), i_unit)) {
+                m_physVal.convertValue(i_unit);
+            }
+            else {
+                m_physVal = CPhysVal(i_unit);
+            }
         }
         else {
-            m_physVal = CPhysVal(i_unit);
+            m_physVal.setUnit(i_unit);
         }
-    }
-    else {
-        m_physVal.setUnit(i_unit);
-    }
 
-    m_pEdt->setSuffix(" " + m_physVal.unit().symbol());
+        m_pEdt->setSuffix(" " + m_physVal.unit().symbol());
 
-    if (m_physValMin.isValid()) {
-        if (areOfSameUnitGroup(m_physValMin.unit(), i_unit)) {
-            m_physValMin.convertValue(i_unit);
-            setMinimum(m_physValMin.getVal());
-        }
-        else {
-            m_physValMin = CPhysVal(i_unit);
-        }
-    }
-    else {
-        m_physValMin.setUnit(i_unit);
-    }
-
-    if (m_physValMax.isValid()) {
-        if (areOfSameUnitGroup(m_physValMax.unit(), i_unit)) {
-            m_physValMax.convertValue(i_unit);
-            setMaximum(m_physValMax.getVal());
+        if (m_physValMin.isValid()) {
+            if (areOfSameUnitGroup(m_physValMin.unit(), i_unit)) {
+                m_physValMin.convertValue(i_unit);
+                setMinimum(m_physValMin.getVal());
+            }
+            else {
+                m_physValMin = CPhysVal(i_unit);
+            }
         }
         else {
-            m_physValMax = CPhysVal(i_unit);
+            m_physValMin.setUnit(i_unit);
         }
-    }
-    else {
-        m_physValMax.setUnit(i_unit);
-    }
 
-    if (m_physValRes.isValid()) {
-        if (areOfSameUnitGroup(m_physValRes.unit(), i_unit)) {
-            m_physValRes.convertValue(i_unit);
-            setResolution(m_physValRes.getVal());
+        if (m_physValMax.isValid()) {
+            if (areOfSameUnitGroup(m_physValMax.unit(), i_unit)) {
+                m_physValMax.convertValue(i_unit);
+                setMaximum(m_physValMax.getVal());
+            }
+            else {
+                m_physValMax = CPhysVal(i_unit);
+            }
         }
         else {
-            m_physValRes = CPhysValRes(i_unit);
+            m_physValMax.setUnit(i_unit);
         }
-    }
-    else {
-        m_physValRes.setUnit(i_unit);
-    }
 
-    if (m_physVal.isValid()) {
-        setValue(m_physVal.getVal());
-    }
+        if (m_physValRes.isValid()) {
+            if (areOfSameUnitGroup(m_physValRes.unit(), i_unit)) {
+                m_physValRes.convertValue(i_unit);
+                setResolution(m_physValRes.getVal());
+            }
+            else {
+                m_physValRes = CPhysValRes(i_unit);
+            }
+        }
+        else {
+            m_physValRes.setUnit(i_unit);
+        }
 
-    if (m_iValueChangedSignalsBlocked == 0) {
-        throw CException(
-            __FILE__, __LINE__, EResultInternalProgramError,
-            "m_iValueChangedSignalsBlocked already 0");
-    }
+        if (m_physVal.isValid()) {
+            setValue(m_physVal.getVal());
+        }
 
-    refCountGuard.decrementAndReleaseCounter();
+        if (m_iValueChangedSignalsBlocked == 0) {
+            throw CException(
+                __FILE__, __LINE__, EResultInternalProgramError,
+                "m_iValueChangedSignalsBlocked already 0");
+        }
+
+        updateSizeHint();
+    }
 
    if (m_iValueChangedSignalsBlocked == 0) {
         // Processing the signals were block. Now emit the signals
@@ -420,35 +429,36 @@ void CWdgtEditPhysVal::setMinimum( double i_fVal )
     QString strTextPrev = m_pEdt->text();
     double fValPrev = m_pEdt->value();
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    {   CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
 
-    // Before setting the value the constraints are set.
-    // If the aggregated double spin box intermediately corrects
-    // the value the cached value is not affected as processing
-    // the valueChanged and textChanged signals is suppressed
-    // by setting the ValueChangedSignalsBlocked flag.
+        // Before setting the value the constraints are set.
+        // If the aggregated double spin box intermediately corrects
+        // the value the cached value is not affected as processing
+        // the valueChanged and textChanged signals is suppressed
+        // by setting the ValueChangedSignalsBlocked flag.
 
-    m_physValMin.setVal(i_fVal);
-    if( m_physValMax.isValid() ) {
-        if( m_physValMax.getVal() < m_physValMin.getVal()) {
-            setMaximum(m_physValMin.getVal());
+        m_physValMin.setVal(i_fVal);
+        if( m_physValMax.isValid() ) {
+            if( m_physValMax.getVal() < m_physValMin.getVal()) {
+                setMaximum(m_physValMin.getVal());
+            }
         }
-    }
-    if( m_physValRes.isValid() ) {
-        if( m_physValRes.getVal() < m_physValMin.getVal()) {
-            setResolution(m_physValMin.getVal());
+        if( m_physValRes.isValid() ) {
+            if( m_physValRes.getVal() < m_physValMin.getVal()) {
+                setResolution(m_physValMin.getVal());
+            }
         }
+
+        m_pEdt->setMinimum(i_fVal);
+
+        if( m_iValueChangedSignalsBlocked == 0 ) {
+            throw CException(
+                __FILE__, __LINE__, EResultInternalProgramError,
+                "m_iValueChangedSignalsBlocked already 0");
+        }
+
+        updateSizeHint();
     }
-
-    m_pEdt->setMinimum(i_fVal);
-
-    if( m_iValueChangedSignalsBlocked == 0 ) {
-        throw CException(
-            __FILE__, __LINE__, EResultInternalProgramError,
-            "m_iValueChangedSignalsBlocked already 0");
-    }
-
-    refCountGuard.decrementAndReleaseCounter();
 
     if( m_iValueChangedSignalsBlocked == 0 ) {
         // Processing the signals were block. Now emit the signals
@@ -498,34 +508,34 @@ void CWdgtEditPhysVal::setMaximum( double i_fVal )
     QString strTextPrev = m_pEdt->text();
     double fValPrev = m_pEdt->value();
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    {   CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
 
-    // Before setting the value the constraints are set.
-    // If the aggregated double spin box intermediately corrects
-    // the value the cached value is not affected as processing
-    // the valueChanged and textChanged signals is suppressed
-    // by setting the ValueChangedSignalsBlocked flag.
+        // Before setting the value the constraints are set.
+        // If the aggregated double spin box intermediately corrects
+        // the value the cached value is not affected as processing
+        // the valueChanged and textChanged signals is suppressed
+        // by setting the ValueChangedSignalsBlocked flag.
 
-    m_physValMax.setVal(i_fVal);
-    if( m_physValMin.isValid() ) {
-        if( m_physValMin.getVal() > m_physValMax.getVal()) {
-            setMinimum(m_physValMax.getVal());
+        m_physValMax.setVal(i_fVal);
+        if( m_physValMin.isValid() ) {
+            if( m_physValMin.getVal() > m_physValMax.getVal()) {
+                setMinimum(m_physValMax.getVal());
+            }
         }
-    }
-    else if( m_physValRes.isValid() ) {
-        if( m_physValRes.getVal() > m_physValMax.getVal()) {
-            setResolution(m_physValMax.getVal());
+        else if( m_physValRes.isValid() ) {
+            if( m_physValRes.getVal() > m_physValMax.getVal()) {
+                setResolution(m_physValMax.getVal());
+            }
         }
-    }
-    m_pEdt->setMaximum(i_fVal);
+        m_pEdt->setMaximum(i_fVal);
 
-    if( m_iValueChangedSignalsBlocked == 0 ) {
-        throw CException(
-            __FILE__, __LINE__, EResultInternalProgramError,
-            "m_iValueChangedSignalsBlocked already 0");
+        if( m_iValueChangedSignalsBlocked == 0 ) {
+            throw CException(
+                __FILE__, __LINE__, EResultInternalProgramError,
+                "m_iValueChangedSignalsBlocked already 0");
+        }
+        updateSizeHint();
     }
-
-    refCountGuard.decrementAndReleaseCounter();
 
     if( m_iValueChangedSignalsBlocked == 0 ) {
         // Processing the signals were block. Now emit the signals
@@ -574,56 +584,57 @@ void CWdgtEditPhysVal::setResolution( double i_fVal )
     QString strTextPrev = m_pEdt->text();
     double fValPrev = m_pEdt->value();
 
-    CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
+    {   CRefCountGuard refCountGuard(&m_iValueChangedSignalsBlocked);
 
-    // Before setting the value the constraints are set.
-    // If the aggregated double spin box intermediately corrects
-    // the value the cached value is not affected as processing
-    // the valueChanged and textChanged signals is suppressed
-    // by setting the ValueChangedSignalsBlocked flag.
+        // Before setting the value the constraints are set.
+        // If the aggregated double spin box intermediately corrects
+        // the value the cached value is not affected as processing
+        // the valueChanged and textChanged signals is suppressed
+        // by setting the ValueChangedSignalsBlocked flag.
 
-    m_physValRes.setVal(i_fVal);
+        m_physValRes.setVal(i_fVal);
 
-    if( m_physValMin.isValid() ) {
-        if( m_physValMin.getVal() > m_physValRes.getVal()) {
-            setMinimum(m_physValRes.getVal());
-        }
-    }
-
-    int iDecimals = DBL_DIG;
-    double fStep = 1.0;
-
-    if( m_physValRes.isValid() ) {
-        QString strVal;
-        try {
-            strVal = m_physValRes.toString(EUnitFind::None, PhysValSubStr::Val);
-        }
-        catch( CPhysValException& ) {
-        }
-        if( !strVal.isEmpty() ) {
-            QLocale locale(QLocale::C);
-            QChar chDecimalPoint = locale.decimalPoint();
-            int iPosDecimalPoint = strVal.indexOf(chDecimalPoint);
-            if( iPosDecimalPoint >= 0 ) {
-                iDecimals = strVal.length() - iPosDecimalPoint - 1;
-            }
-            else {
-                iDecimals = 0;
+        if( m_physValMin.isValid() ) {
+            if( m_physValMin.getVal() > m_physValRes.getVal()) {
+                setMinimum(m_physValRes.getVal());
             }
         }
-        fStep = m_physValRes.getVal();
+
+        int iDecimals = DBL_DIG;
+        double fStep = 1.0;
+
+        if( m_physValRes.isValid() ) {
+            QString strVal;
+            try {
+                strVal = m_physValRes.toString(EUnitFind::None, PhysValSubStr::Val);
+            }
+            catch( CPhysValException& ) {
+            }
+            if( !strVal.isEmpty() ) {
+                QLocale locale(QLocale::C);
+                QChar chDecimalPoint = locale.decimalPoint();
+                int iPosDecimalPoint = strVal.indexOf(chDecimalPoint);
+                if( iPosDecimalPoint >= 0 ) {
+                    iDecimals = strVal.length() - iPosDecimalPoint - 1;
+                }
+                else {
+                    iDecimals = 0;
+                }
+            }
+            fStep = m_physValRes.getVal();
+        }
+
+        m_pEdt->setDecimals(iDecimals);
+        m_pEdt->setSingleStep(fStep);
+
+        if( m_iValueChangedSignalsBlocked == 0 ) {
+            throw CException(
+                __FILE__, __LINE__, EResultInternalProgramError,
+                "m_iValueChangedSignalsBlocked already 0");
+        }
+
+        updateSizeHint();
     }
-
-    m_pEdt->setDecimals(iDecimals);
-    m_pEdt->setSingleStep(fStep);
-
-    if( m_iValueChangedSignalsBlocked == 0 ) {
-        throw CException(
-            __FILE__, __LINE__, EResultInternalProgramError,
-            "m_iValueChangedSignalsBlocked already 0");
-    }
-
-    refCountGuard.decrementAndReleaseCounter();
 
     if( m_iValueChangedSignalsBlocked == 0 ) {
         // Processing the signals were block. Now emit the signals
@@ -744,6 +755,17 @@ CPhysVal CWdgtEditPhysVal::value() const
 }
 
 /*==============================================================================
+public: // overridables of base class QWidget
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QSize CWdgtEditPhysVal::sizeHint() const
+//------------------------------------------------------------------------------
+{
+    return m_sizeHint;
+}
+
+/*==============================================================================
 protected slots:
 ==============================================================================*/
 
@@ -790,4 +812,28 @@ void CWdgtEditPhysVal::onEdtTextChanged( const QString& i_strText )
         m_physVal = CPhysVal(fVal, strSymbol);
         emit textChanged(i_strText);
     }
+}
+
+/*==============================================================================
+private: // auxiliary instance method
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtEditPhysVal::updateSizeHint()
+//------------------------------------------------------------------------------
+{
+    QString str1 = m_physValMin.toString();
+    QString str2 = m_physValMax.toString();
+    if (str1.length() > str2.length()) {
+        m_strForSizeHint = str1;
+    }
+    else {
+        m_strForSizeHint = str2;
+    }
+    QSize size1 = QWidget::sizeHint();
+    QFont fnt = font();
+    QFontMetrics fntMetrics = m_pEdt->fontMetrics();
+    QRect rctBounding = fntMetrics.boundingRect(m_strForSizeHint);
+    m_sizeHint.setWidth(std::max(size1.width(), rctBounding.size().width()) + 20);
+    m_sizeHint.setHeight(std::max(size1.height(), rctBounding.size().height()));
 }

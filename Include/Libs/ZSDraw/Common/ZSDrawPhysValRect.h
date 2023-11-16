@@ -55,8 +55,9 @@ public: // class methods
     static QString ClassName() { return "CPhysValRect"; }
 public: // ctors and dtor
     CPhysValRect();
-    CPhysValRect(const ZS::PhysVal::CUnit& i_unit);
-    CPhysValRect(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(const CDrawingScene& i_drawingScene);
+    CPhysValRect(const ZS::PhysVal::CUnit& i_unit, double i_fRes);
+    CPhysValRect(const QRectF& i_rect, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
     CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
     CPhysValRect(const CPhysValRect& i_physValRectOther);
     virtual ~CPhysValRect();
@@ -67,7 +68,6 @@ public: // operators
     bool operator == (const CPhysValRect& i_physValRectOther) const;
     bool operator != (const CPhysValRect& i_physValRectOther) const;
 public: // instance methods
-    ZS::PhysVal::CUnit unit() const;
     ZS::PhysVal::CPhysVal top() const;
     ZS::PhysVal::CPhysVal bottom() const;
     ZS::PhysVal::CPhysVal left() const;
@@ -78,14 +78,22 @@ public: // instance methods
     CPhysValPoint topRight() const;
     CPhysValPoint bottomLeft() const;
     CPhysValPoint bottomRight() const;
+    double resolution() const;
+    ZS::PhysVal::CUnit unit() const;
 public: // instance methods
+    void setResolution(double i_fRes);
     void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)
     QRectF toQRectF() const;
     QString toString() const;
 protected: // instance members
-    ZS::PhysVal::CUnit m_unit;
+    /*!< The rectangle coordinates in the unit 'm_unit'. */
     QRectF m_rect;
+    /*!< Resolution of the rectangle coordinates.
+         Defines the number of decimals when converting the coordinates into a string. */
+    double m_fRes;
+    /*!< Unit (either metric or pixels) in which the rectangle coordinates are in 'm_rect'. */
+    ZS::PhysVal::CUnit m_unit;
 
 }; // class CPhysValRect
 

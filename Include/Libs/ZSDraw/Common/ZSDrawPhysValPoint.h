@@ -39,7 +39,7 @@ class CPhysVal;
 }
 namespace Draw
 {
-class CDrawingSize;
+class CDrawingScene;
 
 //******************************************************************************
 /*! @brief Corresponds to QPointF but providing a physical unit and a resolution.
@@ -61,9 +61,10 @@ public: // class methods
     static QString ClassName() { return "CPhysValPoint"; }
 public: // ctors and dtor
     CPhysValPoint();
-    CPhysValPoint(const ZS::PhysVal::CUnit& i_unit);
-    CPhysValPoint(double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValPoint(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPoint(const CDrawingScene& i_drawingScene);
+    CPhysValPoint(const ZS::PhysVal::CUnit& i_unit, double i_fRes);
+    CPhysValPoint(double i_fX, double i_fY, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPoint(const QPointF& i_pt, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
     CPhysValPoint(const ZS::PhysVal::CPhysVal& i_physValX, const ZS::PhysVal::CPhysVal& i_physValY);
     CPhysValPoint(const CPhysValPoint& i_physValPointOther);
     ~CPhysValPoint();
@@ -75,21 +76,26 @@ public: // operators
     bool operator == (const CPhysValPoint& i_physValPointOther) const;
     bool operator != (const CPhysValPoint& i_physValPointOther) const;
 public: // instance methods
-    ZS::PhysVal::CUnit unit() const;
     ZS::PhysVal::CPhysVal x() const;
     ZS::PhysVal::CPhysVal y() const;
+    double resolution() const;
+    ZS::PhysVal::CUnit unit() const;
 public: // instance methods
-    void setUnit(const ZS::PhysVal::CUnit& i_unit);
     void setX(const ZS::PhysVal::CPhysVal& i_physValX);
     void setY(const ZS::PhysVal::CPhysVal& i_physValY);
+    void setResolution(double i_fRes);
+    void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)
     QPointF toQPointF() const;
     QString toString() const;
 protected: // instance members
-    /*!< Unit (either metric or pixels) in which the line coordinates are internally stored in 'm_pt'. */
-    ZS::PhysVal::CUnit m_unit;
     /*!< The point coordinates stored in the unit 'm_unit'. */
     QPointF m_pt;
+    /*!< Resolution of both the X and Y value.
+         Defines the number of decimals when converting the coordinates into a string. */
+    double m_fRes;
+    /*!< Unit (either metric or pixels) in which the line coordinates are internally stored in 'm_pt'. */
+    ZS::PhysVal::CUnit m_unit;
 
 }; // class CPhysValPoint
 

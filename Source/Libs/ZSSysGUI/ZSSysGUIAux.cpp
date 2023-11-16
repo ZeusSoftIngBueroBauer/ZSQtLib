@@ -104,7 +104,30 @@ QString ZS::System::GUI::qCursor2Str(const QCursor& i_cursor)
 }
 
 /*==============================================================================
-Enum QAbstractItemView::ItemDataRole
+Enum QAbstractItemDelegate::EndEditHint
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+static const ZS::System::SEnumEntry s_arEnumStrQItemDelegateEndEditHint[] =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( QAbstractItemDelegate::NoHint,           "NoHint"           ),
+    /* 1 */ SEnumEntry( QAbstractItemDelegate::EditNextItem,     "EditNextItem"     ),
+    /* 2 */ SEnumEntry( QAbstractItemDelegate::EditPreviousItem, "EditPreviousItem" ),
+    /* 3 */ SEnumEntry( QAbstractItemDelegate::SubmitModelCache, "SubmitModelCache" ),
+    /* 4 */ SEnumEntry( QAbstractItemDelegate::RevertModelCache, "RevertModelCache" )
+};
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qItemDelegateEndEditHint2Str(QAbstractItemDelegate::EndEditHint i_hint)
+//------------------------------------------------------------------------------
+{
+    return SEnumEntry::enumerator2Str(
+        s_arEnumStrQItemDelegateEndEditHint, _ZSArrLen(s_arEnumStrQItemDelegateEndEditHint), i_hint);
+}
+
+/*==============================================================================
+Enum QAbstractItemView::DragDropMode
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

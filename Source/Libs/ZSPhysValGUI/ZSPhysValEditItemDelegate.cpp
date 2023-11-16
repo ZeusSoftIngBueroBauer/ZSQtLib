@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include "ZSPhysValGUI/ZSPhysValEditItemDelegate.h"
 #include "ZSPhysValGUI/ZSPhysValEditWdgt.h"
+#include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -43,6 +44,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
+using namespace ZS::System::GUI;
 using namespace ZS::PhysVal::GUI;
 
 
@@ -59,6 +61,9 @@ CEditPhysValtemDelegate::CEditPhysValtemDelegate(QAbstractItemModel* i_pModel, Q
 //------------------------------------------------------------------------------
     QStyledItemDelegate(i_pWdgtParent),
     m_pModel(i_pModel),
+    m_iItemDataRoleMinVal(Qt::UserRole),
+    m_iItemDataRoleMaxVal(Qt::UserRole + 1),
+    m_pWdgtEditPhysVal(nullptr),
     m_modelIdxEditorCreated(),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjNoisyMethods(nullptr)
@@ -97,11 +102,66 @@ CEditPhysValtemDelegate::~CEditPhysValtemDelegate()
     }
 
     m_pModel = nullptr;
+    m_iItemDataRoleMinVal = 0;
+    m_iItemDataRoleMaxVal = 0;
+    m_pWdgtEditPhysVal = nullptr;
     //m_modelIdxEditorCreated;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjNoisyMethods = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CEditPhysValtemDelegate::setItemDataRoleMinimumValue(int i_iRole)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qItemDataRole2Str(i_iRole);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setItemDataRoleMinimumValue",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    m_iItemDataRoleMinVal = i_iRole;
+}
+
+//------------------------------------------------------------------------------
+int CEditPhysValtemDelegate::itemDataRoleMinimumValue() const
+//------------------------------------------------------------------------------
+{
+    return m_iItemDataRoleMinVal;
+}
+
+//------------------------------------------------------------------------------
+void CEditPhysValtemDelegate::setItemDataRoleMaximumValue(int i_iRole)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qItemDataRole2Str(i_iRole);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setItemDataRoleMaximumValue",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    m_iItemDataRoleMaxVal = i_iRole;
+}
+
+//------------------------------------------------------------------------------
+int CEditPhysValtemDelegate::itemDataRoleMaximumValue() const
+//------------------------------------------------------------------------------
+{
+    return m_iItemDataRoleMaxVal;
+}
 
 /*==============================================================================
 public: // overridables of base class QStyledItemDelegate
@@ -122,15 +182,15 @@ QWidget* CEditPhysValtemDelegate::createEditor(
         /* strMethod          */ "createEditor",
         /* strMethodInArgs    */ strMthInArgs );
 
-    CWdgtEditPhysVal* pWdgt = new CWdgtEditPhysVal(objectName(), i_pWdgtParent);
+    m_pWdgtEditPhysVal = new CWdgtEditPhysVal(objectName(), i_pWdgtParent);
     m_modelIdxEditorCreated = i_modelIdx;
     QObject::connect(
-        pWdgt, &CWdgtEditPhysVal::valueChanged,
+        m_pWdgtEditPhysVal, &CWdgtEditPhysVal::valueChanged,
         this, &CEditPhysValtemDelegate::onEditPhysValValueChanged);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(QString(pWdgt == nullptr ? "null" : "CWdgtEditPhysVal"));
+        mthTracer.setMethodReturn(QString(m_pWdgtEditPhysVal == nullptr ? "null" : "CWdgtEditPhysVal"));
     }
-    return pWdgt;
+    return m_pWdgtEditPhysVal;
 }
 
 //------------------------------------------------------------------------------
@@ -150,15 +210,20 @@ void CEditPhysValtemDelegate::setEditorData(
         /* strMethodInArgs    */ strMthInArgs );
 
     CWdgtEditPhysVal* pWdgt = dynamic_cast<CWdgtEditPhysVal*>(i_pWdgtEditor);
+    if (pWdgt != m_pWdgtEditPhysVal) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pWdgtEditor != m_pWdgtEditPhysVal");
+    }
     QObject::disconnect(
-        pWdgt, &CWdgtEditPhysVal::valueChanged,
+        m_pWdgtEditPhysVal, &CWdgtEditPhysVal::valueChanged,
         this, &CEditPhysValtemDelegate::onEditPhysValValueChanged);
     CPhysVal physVal = i_modelIdx.model()->data(i_modelIdx, Qt::EditRole).value<CPhysVal>();
-    pWdgt->setUnit(physVal.unit());
-    pWdgt->setResolution(physVal.getRes().getVal());
-    pWdgt->setValue(physVal.getVal());
+    m_pWdgtEditPhysVal->setUnit(physVal.unit());
+    m_pWdgtEditPhysVal->setMinimum(i_modelIdx.model()->data(i_modelIdx, m_iItemDataRoleMinVal).toDouble());
+    m_pWdgtEditPhysVal->setMaximum(i_modelIdx.model()->data(i_modelIdx, m_iItemDataRoleMaxVal).toDouble());
+    m_pWdgtEditPhysVal->setResolution(physVal.getRes().getVal());
+    m_pWdgtEditPhysVal->setValue(physVal.getVal());
     QObject::connect(
-        pWdgt, &CWdgtEditPhysVal::valueChanged,
+        m_pWdgtEditPhysVal, &CWdgtEditPhysVal::valueChanged,
         this, &CEditPhysValtemDelegate::onEditPhysValValueChanged);
 }
 
@@ -181,7 +246,30 @@ void CEditPhysValtemDelegate::setModelData(
     if (i_pModel != m_pModel) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
-    i_pModel->setData(i_modelIdx, QVariant::fromValue(pWdgt->value()), Qt::EditRole);
+    if (pWdgt != m_pWdgtEditPhysVal) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pWdgtEditor != m_pWdgtEditPhysVal");
+    }
+    i_pModel->setData(i_modelIdx, QVariant::fromValue(m_pWdgtEditPhysVal->value()), Qt::EditRole);
+}
+
+//------------------------------------------------------------------------------
+QSize CEditPhysValtemDelegate::sizeHint(const QStyleOptionViewItem& i_option, const QModelIndex& i_modelIdx) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "sizeHint",
+        /* strMethodInArgs    */ strMthInArgs );
+    QSize size = i_modelIdx.model()->data(i_modelIdx, Qt::SizeHintRole).toSize();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qSize2Str(size));
+    }
+    return size;
 }
 
 //------------------------------------------------------------------------------
@@ -205,6 +293,23 @@ void CEditPhysValtemDelegate::updateEditorGeometry(
 /*==============================================================================
 protected slots:
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CEditPhysValtemDelegate::onCloseEditor(QWidget* i_pWdgtEditor, QAbstractItemDelegate::EndEditHint i_hint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qItemDelegateEndEditHint2Str(i_hint);
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onCloseEditor",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    m_pWdgtEditPhysVal = nullptr;
+}
 
 //------------------------------------------------------------------------------
 void CEditPhysValtemDelegate::onEditPhysValValueChanged(const CPhysVal& i_physVal)

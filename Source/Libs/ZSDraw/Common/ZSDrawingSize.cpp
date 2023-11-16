@@ -355,6 +355,17 @@ double CDrawingSize::screenResolutionInPxPerMM() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the width of a screen pixel in the current unit of the drawing size.
+
+    The width of a screen pixel is defined by the screen resolution in pixels/mm.
+*/
+CPhysVal CDrawingSize::screenPixelWidth() const
+//------------------------------------------------------------------------------
+{
+    return CPhysVal(1.0/m_fScreenResolution_px_mm, m_metricUnit);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns the width of a screen pixel in the given unit.
 
     The width of a screen pixel is defined by the screen resolution in pixels/mm.
@@ -396,7 +407,6 @@ void CDrawingSize::setMetricImageCoorsDecimals(int i_iDecimals)
     if (i_iDecimals < 0) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-
     m_iImageMetricCoorsDecimals = i_iDecimals;
 }
 
@@ -408,6 +418,27 @@ int CDrawingSize::metricImageCoorsDecimals() const
 //------------------------------------------------------------------------------
 {
     return m_iImageMetricCoorsDecimals;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current resolution in pixels. Usually 1.0.
+*/
+//------------------------------------------------------------------------------
+double CDrawingSize::imageCoorsResolutionInPx() const
+{
+    return m_fImageSizeRes_px;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current resolution in the current unit of the drawing size.
+*/
+CPhysValRes CDrawingSize::imageCoorsResolution() const
+//------------------------------------------------------------------------------
+{
+    if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+        return CPhysValRes(pow(10.0, -m_iImageMetricCoorsDecimals), m_metricUnit);
+    }
+    return CPhysValRes(m_fImageSizeRes_px, Units.Length.px);
 }
 
 //------------------------------------------------------------------------------
@@ -740,11 +771,37 @@ CPhysVal CDrawingSize::metricImageWidth() const
 }
 
 //------------------------------------------------------------------------------
+CPhysVal CDrawingSize::metricImageWidth(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (Units.Length.isMetricUnit(i_unit)) {
+        double fRes = imageCoorsResolution(m_metricUnit).getVal();
+        CPhysVal physVal(m_fImageMetricWidth, m_metricUnit, fRes);
+        physVal.convertValue(i_unit);
+        return physVal;
+    }
+    return CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px);
+}
+
+//------------------------------------------------------------------------------
 CPhysVal CDrawingSize::metricImageHeight() const
 //------------------------------------------------------------------------------
 {
     double fRes = imageCoorsResolution(m_metricUnit).getVal();
     return CPhysVal(m_fImageMetricHeight, m_metricUnit, fRes);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CDrawingSize::metricImageHeight(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (Units.Length.isMetricUnit(i_unit)) {
+        double fRes = imageCoorsResolution(m_metricUnit).getVal();
+        CPhysVal physVal(m_fImageMetricHeight, m_metricUnit, fRes);
+        physVal.convertValue(i_unit);
+        return physVal;
+    }
+    return CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px);
 }
 
 /*==============================================================================

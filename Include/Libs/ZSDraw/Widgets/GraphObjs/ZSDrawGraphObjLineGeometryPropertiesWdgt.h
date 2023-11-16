@@ -33,6 +33,13 @@ class QTableView;
 
 namespace ZS
 {
+namespace PhysVal
+{
+namespace GUI
+{
+class CEditPhysValtemDelegate;
+}
+}
 namespace Draw
 {
 class CDlgGraphObjLineGeometryEditProperty;
@@ -74,9 +81,6 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
     void acceptChanges() override;
     void rejectChanges() override;
-    void applySettings(bool i_bImmediatelyApplySettings = true) override;
-protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void fillEditControls() override;
 protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
 protected slots:
@@ -86,32 +90,11 @@ protected slots:
 protected slots:
     void onModelMetricGeometryContentChanged();
     void onModelPixelsGeometryContentChanged();
-    void onEdtMetricPt1XValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricPt1YValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricPt2XValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricPt2YValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricPtCenterXValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricPtCenterYValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricWidthValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricHeightValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricLengthValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtMetricAngleValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsPt1XValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsPt1YValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsPt2XValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsPt2YValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsPtCenterXValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsPtCenterYValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsWidthValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsHeightValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsLengthValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onEdtPixelsAngleValueChanged(const ZS::PhysVal::CPhysVal& i_physVal);
-    void onDlgEditPropertyDestroyed(QObject* i_pObj = nullptr);
+    //void onDlgEditPropertyDestroyed(QObject* i_pObj = nullptr);
 private: // auxiliary instance methods
-    void fillEditControls(const CPhysValLine& i_physValLine);
-    void registerEditPropertyDialog(ZS::PhysVal::GUI::CWdgtEditPhysVal* i_pEdtWidget);
+    //void registerEditPropertyDialog(ZS::PhysVal::GUI::CWdgtEditPhysVal* i_pEdtWidget);
 protected: // overridables of base class QObject
-    bool eventFilter(QObject* i_pObjWatched, QEvent* i_pEv) override;
+    //bool eventFilter(QObject* i_pObjWatched, QEvent* i_pEv) override;
 private: // instance members
     /*!< Cached coordinates of the graphical object.
          The values are stored in the unit of the drawing size.
@@ -140,36 +123,9 @@ private: // instance members
     QPushButton* m_pBtnMetricResizeRowsAndColumnsToContents;
     QVBoxLayout* m_pLytMetricGeometryListView;
     QTableView* m_pTableViewMetricGeometry;
+    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateMetricXVal;
+    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateMetricYVal;
     CModelGraphObjGeometry* m_pModelMetricGeometry;
-    /*!< Metric Edit Controls */
-    QHBoxLayout* m_pLytLineMetricPt1;
-    QLabel* m_pLblMetricPt1;
-    QLabel* m_pLblMetricPt1X;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricPt1X;
-    QLabel* m_pLblMetricPt1Y;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricPt1Y;
-    QHBoxLayout* m_pLytLineMetricPt2;
-    QLabel* m_pLblMetricPt2;
-    QLabel* m_pLblMetricPt2X;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricPt2X;
-    QLabel* m_pLblMetricPt2Y;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricPt2Y;
-    QHBoxLayout* m_pLytLineMetricPtCenter;
-    QLabel* m_pLblMetricPtCenter;
-    QLabel* m_pLblMetricPtCenterX;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricPtCenterX;
-    QLabel* m_pLblMetricPtCenterY;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricPtCenterY;
-    QHBoxLayout* m_pLytLineMetricSize;
-    QLabel* m_pLblMetricWidth;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricWidth;
-    QLabel* m_pLblMetricHeight;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricHeight;
-    QHBoxLayout* m_pLytLineMetricAngle;
-    QLabel* m_pLblMetricLength;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricLength;
-    QLabel* m_pLblMetricAngle;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtMetricAngle;
     /*!< Geometry in Pixels */
     QWidget* m_pWdgtPixels;
     QVBoxLayout* m_pLytWdgtPixels;
@@ -182,39 +138,12 @@ private: // instance members
     QPushButton* m_pBtnPixelsResizeRowsAndColumnsToContents;
     QVBoxLayout* m_pLytPixelsGeometryListView;
     QTableView* m_pTableViewPixelsGeometry;
+    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegatePixelsXVal;
+    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegatePixelsYVal;
     CModelGraphObjGeometry* m_pModelPixelsGeometry;
-    /*!< Pixels Edit Controls */
-    QHBoxLayout* m_pLytLinePixelsPt1;
-    QLabel* m_pLblPixelsPt1;
-    QLabel* m_pLblPixelsPt1X;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsPt1X;
-    QLabel* m_pLblPixelsPt1Y;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsPt1Y;
-    QHBoxLayout* m_pLytLinePixelsPt2;
-    QLabel* m_pLblPixelsPt2;
-    QLabel* m_pLblPixelsPt2X;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsPt2X;
-    QLabel* m_pLblPixelsPt2Y;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsPt2Y;
-    QHBoxLayout* m_pLytLinePixelsPtCenter;
-    QLabel* m_pLblPixelsPtCenter;
-    QLabel* m_pLblPixelsPtCenterX;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsPtCenterX;
-    QLabel* m_pLblPixelsPtCenterY;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsPtCenterY;
-    QHBoxLayout* m_pLytLinePixelsSize;
-    QLabel* m_pLblPixelsWidth;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsWidth;
-    QLabel* m_pLblPixelsHeight;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsHeight;
-    QHBoxLayout* m_pLytLinePixelsAngle;
-    QLabel* m_pLblPixelsLength;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsLength;
-    QLabel* m_pLblPixelsAngle;
-    ZS::PhysVal::GUI::CWdgtEditPhysVal* m_pEdtPixelsAngle;
     // Dialog to edit and immediately apply changed properties.
-    QHash<QString, QWidget*> m_hshpRegisteredEditPropertyDialogs;
-    CDlgGraphObjLineGeometryEditProperty* m_pDlgEditProperty;
+    //QHash<QString, QWidget*> m_hshpRegisteredEditPropertyDialogs;
+    //CDlgGraphObjLineGeometryEditProperty* m_pDlgEditProperty;
 
 }; // class CWdgtGraphObjLineGeometryProperties
 

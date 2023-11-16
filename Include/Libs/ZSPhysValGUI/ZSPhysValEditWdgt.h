@@ -96,10 +96,14 @@ public: // instance methods
 public: // instance methods
     void setValue(double i_fVal);
     CPhysVal value() const;
+public: // overridables of base class QWidget
+    QSize sizeHint() const override;
 protected slots:
     void onEdtEditingFinished();
     void onEdtValueChanged(double i_fVal);
     void onEdtTextChanged(const QString& i_strText);
+private: // auxiliary instance method
+    void updateSizeHint();
 private: // instance members
     /*!< Name which can be set for debugging purposes. */
     QString m_strName;
@@ -116,6 +120,12 @@ private: // instance members
     CPhysVal m_physValMax;
     /*!< The cached resolution used. */
     CPhysValRes m_physValRes;
+    /*!< String to be used to determine the result of the size hint method.
+         Depends on the resolution and the absolute minimum or maximum value. */
+    QString m_strForSizeHint;
+    /*!< Size hint calculated by the size hint string and the font used.
+         Additional space is added for the spin box arrows. */
+    QSize m_sizeHint;
     /*!< When changing the unit, the minimum, the maximum or the resolution
          the value may be corrected by the aggregated double spin box
          several times to fit the constraints. To avoid that the "valueChanged"

@@ -67,6 +67,7 @@ public auxiliary methods
 ZSSYSGUIDLL_API QString qColor2Str(const QColor& i_clr);
 ZSSYSGUIDLL_API QString qCursor2Str(const QCursor& i_cursor);
 
+ZSSYSGUIDLL_API QString qItemDelegateEndEditHint2Str(QAbstractItemDelegate::EndEditHint i_hint);
 ZSSYSGUIDLL_API QString qItemViewDragDropMode2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 ZSSYSGUIDLL_API QAbstractItemView::DragDropMode str2QItemViewDragDropMode(
     const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr);

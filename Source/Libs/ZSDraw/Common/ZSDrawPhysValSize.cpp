@@ -25,8 +25,8 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
-#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -48,42 +48,62 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CPhysValSize::CPhysValSize() :
 //------------------------------------------------------------------------------
-    m_unit(),
-    m_size()
+    m_size(),
+    m_fRes(0.0),
+    m_unit()
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(const CUnit& i_unit) :
+/*! @brief Creates a physical size on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
-    m_unit(i_unit),
-    m_size()
+    m_size(),
+    m_fRes(i_drawingScene.drawingSize().imageCoorsResolution().getVal()),
+    m_unit(i_drawingScene.drawingSize().unit())
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(double i_fWidth, double i_fHeight, const CUnit& i_unit) :
+CPhysValSize::CPhysValSize(const CUnit& i_unit, double i_fRes) :
 //------------------------------------------------------------------------------
-    m_unit(i_unit),
-    m_size(i_fWidth, i_fHeight)
+    m_size(),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(const QSizeF& i_size, const CUnit& i_unit) :
+CPhysValSize::CPhysValSize(double i_fWidth, double i_fHeight, double i_fRes, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    m_unit(i_unit),
-    m_size(i_size)
+    m_size(i_fWidth, i_fHeight),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize::CPhysValSize(const QSizeF& i_size, double i_fRes, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_size(i_size),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
 CPhysValSize::CPhysValSize(const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight) :
 //------------------------------------------------------------------------------
-    m_unit(i_physValWidth.unit()),
-    m_size(i_physValWidth.getVal(), i_physValHeight.getVal())
+    m_size(i_physValWidth.getVal(), i_physValHeight.getVal()),
+    m_fRes(i_physValWidth.getRes().getVal()),
+    m_unit(i_physValWidth.unit())
 {
     if (i_physValWidth.unit() != i_physValHeight.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (i_physValWidth.getRes() != i_physValHeight.getRes()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
 }
@@ -91,8 +111,9 @@ CPhysValSize::CPhysValSize(const CPhysVal& i_physValWidth, const CPhysVal& i_phy
 //------------------------------------------------------------------------------
 CPhysValSize::CPhysValSize(const CPhysValSize& i_physValSizeOther) :
 //------------------------------------------------------------------------------
-    m_unit(i_physValSizeOther.m_unit),
-    m_size(i_physValSizeOther.m_size)
+    m_size(i_physValSizeOther.m_size),
+    m_fRes(i_physValSizeOther.m_fRes),
+    m_unit(i_physValSizeOther.m_unit)
 {
 }
 
@@ -100,8 +121,9 @@ CPhysValSize::CPhysValSize(const CPhysValSize& i_physValSizeOther) :
 CPhysValSize::~CPhysValSize()
 //------------------------------------------------------------------------------
 {
-    //m_unit;
     //m_size;
+    m_fRes = 0.0;
+    //m_unit;
 }
 
 /*==============================================================================
@@ -112,8 +134,9 @@ public: // operators
 CPhysValSize& CPhysValSize::operator = ( const CPhysValSize& i_physValSizeOther )
 //------------------------------------------------------------------------------
 {
-    m_unit = i_physValSizeOther.m_unit;
     m_size = i_physValSizeOther.m_size;
+    m_fRes = i_physValSizeOther.m_fRes;
+    m_unit = i_physValSizeOther.m_unit;
     return *this;
 }
 
@@ -149,6 +172,9 @@ bool CPhysValSize::operator == ( const CPhysValSize& i_physValSizeOther ) const
         if (fWidth != m_size.width() || fHeight != m_size.height()) {
             bEqual = false;
         }
+        else if (m_fRes != i_physValSizeOther.m_fRes) {
+            bEqual = false;
+        }
     }
     return bEqual;
 }
@@ -165,13 +191,6 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CUnit CPhysValSize::unit() const
-//------------------------------------------------------------------------------
-{
-    return m_unit;
-}
-
-//------------------------------------------------------------------------------
 CPhysVal CPhysValSize::width() const
 //------------------------------------------------------------------------------
 {
@@ -186,6 +205,20 @@ CPhysVal CPhysValSize::height() const
 }
 
 //------------------------------------------------------------------------------
+double CPhysValSize::resolution() const
+//------------------------------------------------------------------------------
+{
+    return m_fRes;
+}
+
+//------------------------------------------------------------------------------
+CUnit CPhysValSize::unit() const
+//------------------------------------------------------------------------------
+{
+    return m_unit;
+}
+
+//------------------------------------------------------------------------------
 bool CPhysValSize::isValid() const
 //------------------------------------------------------------------------------
 {
@@ -195,13 +228,6 @@ bool CPhysValSize::isValid() const
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CPhysValSize::setUnit( const CUnit& i_unit )
-//------------------------------------------------------------------------------
-{
-    m_unit = i_unit;
-}
 
 //------------------------------------------------------------------------------
 void CPhysValSize::setWidth( const CPhysVal& i_physValWidth )
@@ -215,6 +241,20 @@ void CPhysValSize::setHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
     m_size.setHeight(i_physValHeight.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValSize::setResolution( double i_fRes )
+//------------------------------------------------------------------------------
+{
+    m_fRes = i_fRes;
+}
+
+//------------------------------------------------------------------------------
+void CPhysValSize::setUnit( const CUnit& i_unit )
+//------------------------------------------------------------------------------
+{
+    m_unit = i_unit;
 }
 
 /*==============================================================================

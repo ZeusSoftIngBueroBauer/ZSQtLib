@@ -27,10 +27,11 @@ may result in using the software modules.
 #ifndef ZSDraw_GraphObjGeometryModel_h
 #define ZSDraw_GraphObjGeometryModel_h
 
-#include <QtCore/qabstractitemmodel.h>
-
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSSys/ZSSysErrResult.h"
+
+#include <QtCore/qabstractitemmodel.h>
+#include <QtGui/qfontmetrics.h>
 
 namespace ZS
 {
@@ -64,6 +65,10 @@ public: // type definitions and constants
         EColumnCount
     };
     static QString column2Str(int i_clm);
+    enum ERole {
+        ERoleMinimumValue = Qt::UserRole,
+        ERoleMaximumValue
+    };
 public: // ctors and dtor
     CModelGraphObjGeometry(
         CDrawingScene* i_pDrawingScene,
@@ -76,6 +81,9 @@ public: // ctors and dtor
 signals:
     /*! This signal is emitted if the indicated content has been changed. */
     void contentChanged();
+public: // instance methods
+    void setFont(const QFont& i_font);
+    QFont font() const;
 public: // instance methods
     bool setKeyInTree(const QString& i_strKeyInTree);
     QString getKeyInTree() const;
@@ -125,6 +133,7 @@ protected: // type definitions and constants
         bool m_bLineVisible;
     };
 protected slots:
+    void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     void onGraphObjGeometryChanged(CGraphObj* i_pGraphObj);
     void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // instance methods
@@ -132,6 +141,7 @@ protected: // instance methods
     void fillModel();
 protected: // auxiliary instance methods
     QList<SLabelSettings> getLabelSettings(CGraphObj* i_pGraphObj) const;
+    void updateXYValueSizeHint();
 protected: // instance methods (tracing emitting signals)
     void emit_contentChanged();
     void _beginInsertRows(const QModelIndex& i_modelIdxParent, int i_iRowFirst, int i_iRowLast);
@@ -144,6 +154,10 @@ protected: // instance members
     CDrawingScene* m_pDrawingScene;
     /*!< Values may be indicated either in metrics of pixels unit. */
     ZS::System::CEnumScaleDimensionUnit m_eDimensionUnit;
+    /*!< Font used for the sizeHint role. */
+    QFont m_font;
+    /*!< Font metrics used for the sizeHint role. */
+    QFontMetrics m_fontMetrics;
     /*!< Unique key of the graphical object to be edited. */
     QString m_strKeyInTree;
     /*!< If the unique key is set the drawing scene is queried to get the pointer to
@@ -156,6 +170,13 @@ protected: // instance members
     /*!< Cached value label settings of the graphical object.
          The order is defined by the graphical object returning the list of value names. */
     QList<SLabelSettings> m_arLabelSettings;
+    /*!< String with the maximum number of characters shown by the X and Y value columns.
+         Calculated depending on the minimum and maximum values and the resolution used
+         to indicate the values which again depends on the size of the drawing scene. */
+    QString m_strXYValSizeHint;
+    /*!< Size hint calculated by the size hint string and the font used.
+         Additional space is added for the spin box arrows. */
+    QSize m_sizeXYValSizeHint;
     /*!< Flag to indicate that the content of a data row has been changed while the "contentChanged"
          signal was blocked by the "contentChanged" counter. */
     bool m_bContentChanged;

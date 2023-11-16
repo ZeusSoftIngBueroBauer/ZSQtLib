@@ -563,6 +563,7 @@ CGraphObj::CGraphObj(
     m_ptMouseEvScenePosOnMousePressEvent(),
     m_rctOnMousePressEvent(),
     m_ptRotOriginOnMousePressEvent(),
+    m_iItemChangeUpdateOriginalCoorsBlockedCounter(false),
     // Simulation Functions:
     m_arMousePressEventFunctions(),
     m_arMouseReleaseEventFunctions(),
@@ -786,6 +787,7 @@ CGraphObj::~CGraphObj()
     //m_ptMouseEvScenePosOnMousePressEvent;
     //m_rctOnMousePressEvent;
     //m_ptRotOriginOnMousePressEvent;
+    m_iItemChangeUpdateOriginalCoorsBlockedCounter = false;
     // Simulation Functions:
     //m_arMousePressEventFunctions;
     //m_arMouseReleaseEventFunctions;
@@ -3107,19 +3109,18 @@ CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_vers
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValPoint physValPoint(drawingSize.unit());
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItem == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    }
     if (i_version == ECoordinatesVersion::Original) {
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        ptPos = m_ptPosOrig;
-#endif
+        // This method may only be called if overridden by derived classes.
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
-    else {
-        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-        if (pGraphicsItem != nullptr) {
-            physValPoint = pGraphicsItem->pos();
-        }
-    }
+    QPointF ptPos_px = pGraphicsItem->pos();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValPoint physValPoint(ptPos_px, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    m_pDrawingScene->convert(physValPoint, i_unit);
     return physValPoint;
 }
 
@@ -3128,19 +3129,19 @@ CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValWidth(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()).getVal());
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItem == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    }
     if (i_version == ECoordinatesVersion::Original) {
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        fWidth = m_sizOrig.width();
-#endif
+        // This method may only be called if overridden by derived classes.
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
-    else {
-        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-        if (pGraphicsItem != nullptr) {
-            physValWidth = pGraphicsItem->boundingRect().width();
-        }
-    }
+    double fWidth_px = pGraphicsItem->boundingRect().width();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValWidth(fWidth_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+    // A value like width and height can be directly converted without the drawing size.
+    physValWidth.convertValue(i_unit);
     return physValWidth;
 }
 
@@ -3149,19 +3150,19 @@ CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_versio
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValHeight(0.0, drawingSize.unit(), drawingSize.imageCoorsResolution(drawingSize.unit()).getVal());
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItem == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    }
     if (i_version == ECoordinatesVersion::Original) {
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        fHeight = m_sizOrig.height();
-#endif
+        // This method may only be called if overridden by derived classes.
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
-    else {
-        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-        if (pGraphicsItem != nullptr) {
-            physValHeight = pGraphicsItem->boundingRect().height();
-        }
-    }
+    double fHeight_px = pGraphicsItem->boundingRect().height();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValHeight(fHeight_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+    // A value like width and height can be directly converted without the drawing size.
+    physValHeight.convertValue(i_unit);
     return physValHeight;
 }
 
@@ -3170,19 +3171,20 @@ CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_vers
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValSize physValSize(drawingSize.unit());
+    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItem == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    }
     if (i_version == ECoordinatesVersion::Original) {
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        siz = m_sizOrig;
-#endif
+        // This method may only be called if overridden by derived classes.
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
-    else {
-        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-        if (pGraphicsItem != nullptr) {
-            physValSize = pGraphicsItem->boundingRect().size();
-        }
-    }
+    QSizeF size_px = pGraphicsItem->boundingRect().size();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValSize physValSize(size_px, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    // Width and height could be directly converted without the drawing size.
+    // But the drawing scene provides a method to convert CPhysValSize which we can also use.
+    m_pDrawingScene->convert(physValSize, i_unit);
     return physValSize;
 }
 
@@ -5203,7 +5205,7 @@ void CGraphObj::addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThi
     for (int idx = 0; idx < m_arMousePressEventFunctions.size(); idx++) {
         SGraphObjMouseEventFct fctEntry = m_arMousePressEventFunctions[idx];
         if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
         }
     }
     m_arMousePressEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
@@ -5232,7 +5234,7 @@ void CGraphObj::removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pv
         }
     }
     if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
     }
     m_arMousePressEventFunctions.removeAt(idxFct);
 }
@@ -5254,7 +5256,7 @@ void CGraphObj::addMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvT
     for (int idx = 0; idx < m_arMouseReleaseEventFunctions.size(); idx++) {
         SGraphObjMouseEventFct fctEntry = m_arMouseReleaseEventFunctions[idx];
         if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
         }
     }
     m_arMouseReleaseEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
@@ -5283,7 +5285,7 @@ void CGraphObj::removeMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_
         }
     }
     if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
     }
     m_arMouseReleaseEventFunctions.removeAt(idxFct);
 }
@@ -5305,7 +5307,7 @@ void CGraphObj::addMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i
     for (int idx = 0; idx < m_arMouseDoubleClickEventFunctions.size(); idx++) {
         SGraphObjMouseEventFct fctEntry = m_arMouseDoubleClickEventFunctions[idx];
         if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
         }
     }
     m_arMouseDoubleClickEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
@@ -5334,7 +5336,7 @@ void CGraphObj::removeMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void
         }
     }
     if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
     }
     m_arMouseDoubleClickEventFunctions.removeAt(idxFct);
 }
@@ -5356,7 +5358,7 @@ void CGraphObj::addMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis
     for (int idx = 0; idx < m_arMouseMoveEventFunctions.size(); idx++) {
         SGraphObjMouseEventFct fctEntry = m_arMouseMoveEventFunctions[idx];
         if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
         }
     }
     m_arMouseMoveEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
@@ -5385,7 +5387,7 @@ void CGraphObj::removeMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvT
         }
     }
     if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
     }
     m_arMouseMoveEventFunctions.removeAt(idxFct);
 }
@@ -5407,7 +5409,7 @@ void CGraphObj::addKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, v
     for (int idx = 0; idx < m_arKeyPressEventFunctions.size(); idx++) {
         SGraphObjKeyEventFct fctEntry = m_arKeyPressEventFunctions[idx];
         if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
         }
     }
     m_arKeyPressEventFunctions.append( SGraphObjKeyEventFct(i_pFct,i_pvThis,i_pvData) );
@@ -5436,7 +5438,7 @@ void CGraphObj::removeKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis
         }
     }
     if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
     }
     m_arKeyPressEventFunctions.removeAt(idxFct);
 }
@@ -5458,7 +5460,7 @@ void CGraphObj::addKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis,
     for (int idx = 0; idx < m_arKeyReleaseEventFunctions.size(); idx++) {
         SGraphObjKeyEventFct fctEntry = m_arKeyReleaseEventFunctions[idx];
         if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function already added");
+            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
         }
     }
     m_arKeyReleaseEventFunctions.append( SGraphObjKeyEventFct(i_pFct,i_pvThis,i_pvData) );
@@ -5487,7 +5489,7 @@ void CGraphObj::removeKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvTh
         }
     }
     if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultObjAlreadyInList,"Event function not added");
+        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
     }
     m_arKeyReleaseEventFunctions.removeAt(idxFct);
 }

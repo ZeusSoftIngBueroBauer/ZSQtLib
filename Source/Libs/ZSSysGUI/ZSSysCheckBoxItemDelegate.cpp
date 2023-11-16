@@ -114,15 +114,7 @@ void CCheckBoxItemDelegate::paint(
         /* strMethodInArgs    */ strMthInArgs );
 
     QStyleOptionButton cbOpt;
-
-    // Centered as default. If this should be changed a call to i_modelIdx.data
-    // with Qt::TextAlignmentRole should be added and the model must provide the
-    // desired alignment flags.
-    cbOpt.rect = QRect(
-        /* x      */ i_option.rect.center().x() - cbOpt.rect.height() / 2 - 2,
-        /* y      */ i_option.rect.center().y() - cbOpt.rect.height() / 2 + 2,
-        /* width  */ cbOpt.rect.height() / 2 - 4,
-        /* height */ cbOpt.rect.height() / 2 - 4);
+    cbOpt.state = i_option.state;
 
     bool isChecked = i_modelIdx.data(Qt::DisplayRole).toBool();
     if (isChecked) {
@@ -131,6 +123,46 @@ void CCheckBoxItemDelegate::paint(
     else {
         cbOpt.state |= QStyle::State_Off;
     }
+
+    //cbOpt.rect = QRect(
+    //    /* x      */ i_option.rect.x(),
+    //    /* y      */ i_option.rect.y(),
+    //    /* width  */ i_option.rect.width() - 1,
+    //    /* height */ i_option.rect.height() - 1);
+    //i_pPainter->fillRect(cbOpt.rect, QBrush(Qt::red));
+
+    //cbOpt.rect = QRect(
+    //    /* x      */ i_option.rect.center().x() - i_option.rect.height() / 2 + 2,
+    //    /* y      */ i_option.rect.center().y() - i_option.rect.height() / 2 + 3,
+    //    /* width  */ i_option.rect.height() - 5,
+    //    /* height */ i_option.rect.height() - 5);
+    //i_pPainter->fillRect(cbOpt.rect, QBrush(Qt::blue));
+
+    //cbOpt.rect = QRect(
+    //    /* x      */ i_option.rect.center().x() - i_option.rect.height() / 2 - 4,
+    //    /* y      */ i_option.rect.center().y() - i_option.rect.height() / 2 + 4,
+    //    /* width  */ i_option.rect.height() / 2 - 2,
+    //    /* height */ i_option.rect.height() / 2 - 2);
+    //i_pPainter->setPen(Qt::blue);
+    //i_pPainter->drawRect(cbOpt.rect);
+
+    if (cbOpt.state & QStyle::State_Selected) {
+        cbOpt.rect = QRect(
+            /* x      */ i_option.rect.center().x() - i_option.rect.height() / 2 + 2,
+            /* y      */ i_option.rect.center().y() - i_option.rect.height() / 2 + 3,
+            /* width  */ i_option.rect.height() - 5,
+            /* height */ i_option.rect.height() - 5);
+        i_pPainter->fillRect(cbOpt.rect, cbOpt.palette.color(QPalette::Highlight));
+    }
+
+    // Centered as default. If this should be changed a call to i_modelIdx.data
+    // with Qt::TextAlignmentRole should be added and the model must provide the
+    // desired alignment flags.
+    cbOpt.rect = QRect(
+        /* x      */ i_option.rect.center().x() - i_option.rect.height() / 2 + 4,
+        /* y      */ i_option.rect.center().y() - i_option.rect.height() / 2 + 3,
+        /* width  */ i_option.rect.height() - 5,
+        /* height */ i_option.rect.height() - 5);
     QApplication::style()->drawControl(QStyle::CE_CheckBox, &cbOpt, i_pPainter);
 }
 

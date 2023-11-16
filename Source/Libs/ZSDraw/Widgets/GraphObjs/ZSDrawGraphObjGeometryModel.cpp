@@ -145,10 +145,14 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
     QAbstractTableModel(i_pObjParent),
     m_pDrawingScene(i_pDrawingScene),
     m_eDimensionUnit(i_eDimensionUnit),
+    m_font(),
+    m_fontMetrics(m_font),
     m_strKeyInTree(),
     m_pGraphObj(nullptr),
     m_physValLine(),
     m_arLabelSettings(),
+    m_strXYValSizeHint("1024 px +-"),
+    m_sizeXYValSizeHint(),
     m_bContentChanged(false),
     m_iContentChangedSignalBlockedCounter(0),
     m_pTrcAdminObj(nullptr),
@@ -192,16 +196,55 @@ CModelGraphObjGeometry::~CModelGraphObjGeometry()
 
     m_pDrawingScene = nullptr;
     m_eDimensionUnit = static_cast<EScaleDimensionUnit>(0);
+    //m_font;
+    //m_fontMetrics;
     //m_strKeyInTree;
     m_pGraphObj = nullptr;
     //m_physValLine;
     //m_arLabelSettings;
+    //m_strXYValSizeHint;
+    //m_sizeXYValSizeHint;
     m_bContentChanged = false;
     m_iContentChangedSignalBlockedCounter = 0;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjNoisyMethods = nullptr;
 
 } // dtor
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the font to be used for the sizeHint role.
+*/
+void CModelGraphObjGeometry::setFont(const QFont& i_font)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_font.family();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "setFont",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    m_font = i_font;
+    m_fontMetrics = QFontMetrics(m_font);
+
+    updateXYValueSizeHint();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the font used for the sizeHint role.
+*/
+QFont CModelGraphObjGeometry::font() const
+//------------------------------------------------------------------------------
+{
+    return m_font;
+}
 
 /*==============================================================================
 public: // instance methods
@@ -235,6 +278,9 @@ bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
 
         if (m_pGraphObj != nullptr) {
             QObject::disconnect(
+                m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
+                this, &CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged);
+            QObject::disconnect(
                 m_pGraphObj, &CGraphObj::geometryChanged,
                 this, &CModelGraphObjGeometry::onGraphObjGeometryChanged);
             QObject::disconnect(
@@ -253,12 +299,17 @@ bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
 
         if (m_pGraphObj != nullptr) {
             QObject::connect(
+                m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
+                this, &CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged);
+            QObject::connect(
                 m_pGraphObj, &CGraphObj::geometryChanged,
                 this, &CModelGraphObjGeometry::onGraphObjGeometryChanged);
             QObject::connect(
                 m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CModelGraphObjGeometry::onGraphObjAboutToBeDestroyed);
         }
+
+        updateXYValueSizeHint();
 
         // Fill the content of the edit controls.
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
@@ -545,8 +596,7 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         varData = labelSettings.m_strValueName;
                     }
                     else if (i_iRole == Qt::SizeHintRole) {
-                        QSize size(100, 20);
-                        varData = size;
+                        varData = m_fontMetrics.boundingRect(QString(labelSettings.m_strValueName + "OO000")).size();
                     }
                     break;
                 }
@@ -594,6 +644,43 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                     else if (i_iRole == Qt::TextAlignmentRole) {
                         varData = static_cast<int>(Qt::AlignRight|Qt::AlignVCenter);
                     }
+                    else if (i_iRole == Qt::SizeHintRole) {
+                        varData = m_sizeXYValSizeHint;
+                    }
+                    else if (i_iRole == ERoleMinimumValue) {
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameAngle) {
+                            varData = 360.0;
+                        }
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                            if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = -m_pDrawingScene->drawingSize().metricImageWidth().getVal();
+                            }
+                            else {
+                                varData = -m_pDrawingScene->drawingSize().imageWidthInPixels();
+                            }
+                        }
+                        else {
+                            if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = 0.0;
+                            }
+                            else {
+                                varData = 0;
+                            }
+                        }
+                    }
+                    else if (i_iRole == ERoleMaximumValue) {
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameAngle) {
+                            varData = 360.0;
+                        }
+                        else {
+                            if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = m_pDrawingScene->drawingSize().metricImageWidth().getVal();
+                            }
+                            else {
+                                varData = m_pDrawingScene->drawingSize().imageWidthInPixels();
+                            }
+                        }
+                    }
                     break;
                 }
                 case EColumnYVal: {
@@ -627,6 +714,35 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
                         varData = static_cast<int>(Qt::AlignRight|Qt::AlignVCenter);
+                    }
+                    else if (i_iRole == Qt::SizeHintRole) {
+                        varData = m_sizeXYValSizeHint;
+                    }
+                    else if (i_iRole == ERoleMinimumValue) {
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
+                            if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = -m_pDrawingScene->drawingSize().metricImageHeight().getVal();
+                            }
+                            else {
+                                varData = -m_pDrawingScene->drawingSize().imageHeightInPixels();
+                            }
+                        }
+                        else {
+                            if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = 0.0;
+                            }
+                            else {
+                                varData = 0;
+                            }
+                        }
+                    }
+                    else if (i_iRole == ERoleMaximumValue) {
+                        if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                            varData = m_pDrawingScene->drawingSize().metricImageHeight().getVal();
+                        }
+                        else {
+                            varData = m_pDrawingScene->drawingSize().imageHeightInPixels();
+                        }
                     }
                     break;
                 }
@@ -992,6 +1108,26 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Slot method connected to the drawingSizeChanged signal of the drawingScene.
+
+*/
+void CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawingSize.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingSceneDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    updateXYValueSizeHint();
+}
+
+//------------------------------------------------------------------------------
 void CModelGraphObjGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
 //------------------------------------------------------------------------------
 {
@@ -1133,7 +1269,7 @@ void CModelGraphObjGeometry::fillModel()
     }
 
     if (pGraphObjLine == nullptr) {
-        m_physValLine = CPhysValLine(drawingSize.unit());
+        m_physValLine = CPhysValLine(*m_pDrawingScene);
     }
     else {
         m_physValLine = pGraphObjLine->getLine(drawingSize.unit());
@@ -1189,6 +1325,44 @@ QList<CModelGraphObjGeometry::SLabelSettings> CModelGraphObjGeometry::getLabelSe
         }
     }
     return arLabelSettings;
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjGeometry::updateXYValueSizeHint()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "updateXYValueSizeHint",
+        /* strMethodInArgs    */ "" );
+
+    CPhysVal physValWidth;
+    CPhysVal physValHeight;
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+        physValWidth = drawingSize.metricImageWidth();
+        physValHeight = drawingSize.metricImageHeight();
+    }
+    else {
+        physValWidth = CPhysVal(drawingSize.imageWidthInPixels(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+        physValHeight = CPhysVal(drawingSize.imageHeightInPixels(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+    }
+    CPhysVal physValMax = physValWidth > physValHeight ? physValWidth : physValHeight;
+    m_strXYValSizeHint = physValMax.toString();
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        // For length and angle one decimal point is used.
+        m_strXYValSizeHint += ".0";
+    }
+
+    QSize size = m_fontMetrics.boundingRect(m_strXYValSizeHint).size();
+    size.setWidth(size.width() + 40); // Add additional space for spin box arrows
+    if (m_sizeXYValSizeHint != size) {
+        m_sizeXYValSizeHint = size;
+        QModelIndex modelIdxTL = index(0, EColumnXVal);
+        QModelIndex modelIdxBR = index(m_arLabelSettings.size()-1, EColumnYVal);
+        emit_dataChanged(modelIdxTL, modelIdxBR);
+    }
 }
 
 /*==============================================================================

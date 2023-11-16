@@ -153,8 +153,11 @@ public: // instance methods
     const CDrawingSize& drawingSize() const;
 public: // instance methods
     CPhysValPoint toPhysValPoint(const QPointF& i_pt_px) const;
+    CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
     CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValSize convert(const CPhysValSize& i_physValSize) const;
     CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine convert(const CPhysValLine& i_physValLine) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_gridSettings);
