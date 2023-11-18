@@ -78,7 +78,7 @@ CModelGraphObjGeometry::SLabelSettings CModelGraphObjGeometry::SLabelSettings::f
     SLabelSettings labelSettings;
     labelSettings.m_strValueName = i_strValueName;
     labelSettings.m_iRowIdx = i_iRowIdx;
-    labelSettings.m_bVisible = i_pGraphObj->isValueLabelAnchorLineVisible(i_strValueName);
+    labelSettings.m_bVisible = i_pGraphObj->isValueLabelVisible(i_strValueName);
     labelSettings.m_bLineVisible = i_pGraphObj->isValueLabelAnchorLineVisible(i_strValueName);
     return labelSettings;
 }
@@ -427,7 +427,7 @@ void CModelGraphObjGeometry::acceptChanges()
             if (m_pGraphObj != nullptr) {
                 pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
             }
-            if (pGraphObjLine != nullptr && !hasErrors() && hasChanges()) {
+            if (pGraphObjLine != nullptr) {
                 pGraphObjLine->setLine(m_physValLine);
                 for (const SLabelSettings& labelSettings : m_arLabelSettings) {
                     labelSettings.m_bVisible ?
@@ -1045,6 +1045,7 @@ Qt::ItemFlags CModelGraphObjGeometry::flags(const QModelIndex& i_modelIdx) const
             SLabelSettings labelSettings = m_arLabelSettings[iRow];
             switch (i_modelIdx.column()) {
                 case EColumnName: {
+                    uFlags = uFlags & ~Qt::ItemIsSelectable;
                     break;
                 }
                 case EColumnXVal: {
@@ -1080,6 +1081,12 @@ Qt::ItemFlags CModelGraphObjGeometry::flags(const QModelIndex& i_modelIdx) const
                     }
                     else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
                         uFlags = uFlags | Qt::ItemIsEditable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameLength) {
+                        uFlags = uFlags & ~Qt::ItemIsSelectable;
+                    }
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameAngle) {
+                        uFlags = uFlags & ~Qt::ItemIsSelectable;
                     }
                     break;
                 }

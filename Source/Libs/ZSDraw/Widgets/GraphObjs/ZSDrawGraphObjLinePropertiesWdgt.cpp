@@ -377,6 +377,9 @@ void CWdgtGraphObjLineProperties::onWdgtLabelsContentChanged()
         updateButtonsEnabled();
         emit_contentChanged();
     }
+    else {
+        m_bContentChanged = true;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -393,6 +396,9 @@ void CWdgtGraphObjLineProperties::onWdgtGeometryContentChanged()
         updateButtonsEnabled();
         emit_contentChanged();
     }
+    else {
+        m_bContentChanged = true;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -408,5 +414,8 @@ void CWdgtGraphObjLineProperties::onWdgtLineStyleContentChanged()
     if (m_iContentChangedSignalBlockedCounter == 0) {
         updateButtonsEnabled();
         emit_contentChanged();
+    }
+    else {
+        m_bContentChanged = true;
     }
 }
