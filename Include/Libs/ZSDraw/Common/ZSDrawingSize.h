@@ -66,8 +66,8 @@ public: // operators
     bool operator == (const CDrawingSize& i_other) const;
     bool operator != (const CDrawingSize& i_other) const;
 public: // instance methods
-    void setDimensionUnit( const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit );
-    ZS::System::CEnumScaleDimensionUnit dimensionUnit() const;
+    void setDimensionUnit( const CEnumScaleDimensionUnit& i_eDimensionUnit );
+    CEnumScaleDimensionUnit dimensionUnit() const;
     ZS::PhysVal::CUnit unit() const;
 public: // instance methods
     void setScreenResolutionInPxPerMM(double i_fRes_px_mm);
@@ -111,7 +111,7 @@ private: // instance members
     /*!< Name of the instance. Mainly introduced for debugging purposes. */
     QString m_strName;
     /*!< Either Pixels or Metric System (e.g. mm, cm, m, etc.). */
-    ZS::System::CEnumScaleDimensionUnit m_eDimensionUnit;
+    CEnumScaleDimensionUnit m_eDimensionUnit;
     /*!< If m_eDimensionUnit is Metric the metric unit (mm, cm, m, etc.) is set here. */
     ZS::PhysVal::CUnit m_metricUnit;
     /*!< Resolution of a pixel on the screen in pixels/mm.

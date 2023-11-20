@@ -142,14 +142,13 @@ int CScaleDivLines::getPrecision2ShowUniqueNumbers(
 
 //------------------------------------------------------------------------------
 /*! @brief Calculates division lines for the given scale values for pixel
-           dimensions only.
+           coordinate systems only (no world coordinate transformations).
 
-    To calculate division lines for metric systems use the getDivLines4LinSpacing
-    method with the pixel range argument.
+    To calculate division lines with world coordinate transformations use the
+    getDivLines4LinSpacing method with the pixel range argument.
 
-    For more information about how the dimension unit is used to correct the
-    conversion from pixels to metric values and vice versa see the documentation
-    of class CScaleDivLines.
+    For more information about the difference between calcuation of division lines
+    with and without world transformations see documentation of class CScaleDivLines.
 
     @param i_fScaleMinVal [in]
         Minimum scale value in world coordinates (e.g. 0.0).
@@ -189,7 +188,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
 //------------------------------------------------------------------------------
 {
     return getDivLines4LinSpacing(
-        /* eDimensionUnit        */ EScaleDimensionUnit::Pixels,
+        /* bUseWorldTransform    */ false,
         /* fScaleMinVal          */ i_fScaleMinPix,
         /* fScaleMaxVal          */ i_fScaleMaxPix,
         /* fScaleRangePix        */ 0.0,
@@ -204,15 +203,16 @@ int CScaleDivLines::getDivLines4LinSpacing(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates division lines for the given scale values for metric
-           dimensions only.
+/*! @brief Calculates division lines for the given scale values for coordinate
+           systems where pixel values got to be converted into world coordinates
+           and vice versa.
 
-    To calculate division lines for pixel systems use the getDivLines4LinSpacing
-    method without the pixel range argument.
+    To calculate division lines in systems with pure pixel coordinates without
+    world transformations use the getDivLines4LinSpacing method without the
+    pixel range argument.
 
-    For more information about how the dimension unit is used to correct the
-    conversion from pixels to metric values and vice versa see the documentation
-    of class CScaleDivLines.
+    For more information about the difference between calcuation of division lines
+    with and without world transformations see documentation of class CScaleDivLines.
 
     @param i_fScaleMinVal [in]
         Minimum scale value in world coordinates (e.g. 0.0).
@@ -255,7 +255,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
 //------------------------------------------------------------------------------
 {
     return getDivLines4LinSpacing(
-        /* eDimensionUnit        */ EScaleDimensionUnit::Metric,
+        /* bUseWorldTransform    */ true,
         /* fScaleMinVal          */ i_fScaleMinVal,
         /* fScaleMaxVal          */ i_fScaleMaxVal,
         /* fScaleRangePix        */ i_fScaleRangePix,
@@ -274,24 +274,28 @@ protected: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates division lines for the given scale values for pixel and
-           metric dimensions.
+/*! @brief Calculates division lines for the given scale values for both,
+           pure pixel coordinate systems and coordinate systems with world
+           transfomrations.
 
     The method returns false if the value did not change and true
     if the value changed and the update method need to be called afterwards
     to recalculate the division lines.
 
-    @param i_eDimensionUnit [in]
-        Range [Pixels, Metric]
-        For more information about how the dimension unit is used to correct the
-        conversion from pixels to metric values and vice versa see the documentation
-        of class CScaleDivLines.
+    @param i_bUseWorldCoordinateTransformation [in]
+        Range [false, true]
+        false for pure pixel coordinate systems.
+        true for coordinate systems where pixels got to be converted to world
+        coordinates and vice versa.
+        For more information about the difference between calcuation of division lines
+        with and without world transformations see documentation of class CScaleDivLines.
     @param i_fScaleMinVal [in]
         Minimum scale value in world coordinates (e.g. 0.0).
     @param i_fScaleMaxVal [in]
         Maximum scale value in world coordinates (e.g. 100.0).
     @param i_fScaleRangePix [in]
         Number of pixels available for the scale (e.g. 1000.0).
+        Ignored if i_bUseWorldCoordinateTransformation is false.
     @param i_fDivLineDistMinVal [in]
         Minimum distance between two division lines in world coordinates (e.g. 10.0).
     @param i_iDivLineDistMinPix [in]
@@ -313,7 +317,7 @@ protected: // class methods
     @return Number of division lines for the given scale range.
 */
 int CScaleDivLines::getDivLines4LinSpacing(
-    const CEnumScaleDimensionUnit& i_eDimensionUnit,
+    bool    i_bUseWorldCoordinateTransformation,
     double  i_fScaleMinVal,
     double  i_fScaleMaxVal,
     double  i_fScaleRangePix,
@@ -329,12 +333,14 @@ int CScaleDivLines::getDivLines4LinSpacing(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Scale {Min: " + QString::number(i_fScaleMinVal)
-                     + ", Max: " + QString::number(i_fScaleMaxVal)
-                     + ", Range: " + QString::number(i_fScaleRangePix) + " px"
-                     + ", DivLineDist {MinVal: " + QString::number(i_fDivLineDistMinVal)
-                     + ", MinPix: " + QString::number(i_iDivLineDistMinPix)
-                     + ", UseDecFactor25: " + bool2Str(i_bUseDivLineDistValDecimalFactor25) + "}";
+        strMthInArgs =
+            "UseWorldCoors: " + bool2Str(i_bUseWorldCoordinateTransformation) +
+            ", Scale {Min: " + QString::number(i_fScaleMinVal) +
+            ", Max: " + QString::number(i_fScaleMaxVal) +
+            ", Range: " + QString::number(i_fScaleRangePix) + " px" +
+            ", DivLineDist {MinVal: " + QString::number(i_fDivLineDistMinVal) +
+            ", MinPix: " + QString::number(i_iDivLineDistMinPix) +
+            ", UseDecFactor25: " + bool2Str(i_bUseDivLineDistValDecimalFactor25) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ i_pTrcAdminObj,
@@ -350,7 +356,15 @@ int CScaleDivLines::getDivLines4LinSpacing(
     if (o_pfDivLineDistFirstPix != nullptr) {
         *o_pfDivLineDistFirstPix = 0.0;
     }
-    if (i_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+    if (i_bUseWorldCoordinateTransformation) {
+        if (o_pfDivLineDistVal != nullptr) {
+            *o_pfDivLineDistVal = i_fScaleMaxVal - i_fScaleMinVal;
+        }
+        if (o_pfDivLineDistPix != nullptr) {
+            *o_pfDivLineDistPix = i_fScaleRangePix;
+        }
+    }
+    else {
         if (o_pfDivLineDistVal != nullptr) {
             *o_pfDivLineDistVal = i_fScaleMaxVal - i_fScaleMinVal + 1.0;
         }
@@ -358,18 +372,10 @@ int CScaleDivLines::getDivLines4LinSpacing(
             *o_pfDivLineDistPix = i_fScaleMaxVal - i_fScaleMinVal + 1.0;
         }
     }
-    else {
-        if (o_pfDivLineDistVal != nullptr) {
-            *o_pfDivLineDistVal = i_fScaleMaxVal - i_fScaleMinVal;
-        }
-        if (o_pfDivLineDistPix != nullptr) {
-            *o_pfDivLineDistPix = i_fScaleMaxVal - i_fScaleMinVal;
-        }
-    }
 
     double fScaleRangeVal = i_fScaleMaxVal - i_fScaleMinVal;
     double fScaleRangePix = i_fScaleRangePix;
-    if (i_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+    if (!i_bUseWorldCoordinateTransformation) {
         fScaleRangeVal += 1.0;
         fScaleRangePix = fScaleRangeVal;
     }
@@ -377,9 +383,13 @@ int CScaleDivLines::getDivLines4LinSpacing(
     if (fScaleRangeVal > 0.0 && fScaleRangePix > 1.0 && i_iDivLineDistMinPix > 1)
     {
         double fScaleRangeFacPixDivVal = fScaleRangePix / fScaleRangeVal;
+        if (i_bUseWorldCoordinateTransformation) {
+            // Scale factor for transformation from pixel coordinates into world coordinates:
+            fScaleRangeFacPixDivVal = (fScaleRangePix - 1.0) / fScaleRangeVal;
+        }
 
         // Maximum possible count of grid lines:
-        int iDivLineCountMax = static_cast<int>(fScaleRangePix/static_cast<double>(i_iDivLineDistMinPix)) + 1;
+        int iDivLineCountMax = static_cast<int>((fScaleRangePix-1.0)/static_cast<double>(i_iDivLineDistMinPix)) + 1;
 
         // On dividing the pixel range by the maximum possible count of grid lines the
         // distance between two grid lines would be:
@@ -409,10 +419,62 @@ int CScaleDivLines::getDivLines4LinSpacing(
             }
         }
 
-        // Now calculate the distance between grid lines if the current "DivLineDistVal"
-        // would be used. For this we calculate the values and pixel positions of the
-        // first and last grid lines, calculate the resulting count of grid lines and the
-        // resulting distance in pixels between two grid lines.
+        // Please note that at this point of execution "DivLineDistVal" is always less or equal
+        // to the distance between two grid lines if the pixel range would be divided by the
+        // maximum possible count of grid lines and its first valid digit is always 1
+        // (e.g. 100.0, 1.0, 0.001, etc.). So definitely "DivLineDistPix" is less or equal to
+        // "DistMinPix" (the user setting for the minimum distance in pixels between two grid lines).
+
+        // In the following loop we are going to optimize "DivLineDistVal" by increasing the value by the
+        // factors 1, 2, 2.5, and 5.0 until the "best human readable" division of the axis has been reached.
+        // E.g.:  0.0  1.0  2.0  3.0  4.0  5.0  6.0  7.0  8.0  9.0  10.0 ...
+        // or:    0.0       2.0       4.0       6.0       8.0       10.0 ...
+        // or:    0.0          2.5         5.0          7.5         10.0 ... (optional depending on i_bUseDivLineDistValDecimalFactor25)
+        // or:    0.0                      5.0                      10.0 ...
+        int iDivLineDistValDecimalFactor = 10;
+        int iDecimals = 1;
+        double fDivLineDistValDecimalFactor = 1.0;
+        double fDivLineDistValBeforeCorr = fDivLineDistVal;
+
+        // As long as the grid lines are too close to each other ...
+        double fDivLineDistPix = fScaleRangeFacPixDivVal * fDivLineDistVal;
+        while (fDivLineDistPix < i_iDivLineDistMinPix) {
+            switch (iDivLineDistValDecimalFactor)
+            {
+                case 10: {
+                    iDivLineDistValDecimalFactor = 20;
+                    fDivLineDistValDecimalFactor = iDecimals * 2.0;
+                    break;
+                }
+                case 20: {
+                    if (i_bUseDivLineDistValDecimalFactor25) {
+                        iDivLineDistValDecimalFactor = 25;
+                        fDivLineDistValDecimalFactor = iDecimals * 2.5;
+                    }
+                    else {
+                        iDivLineDistValDecimalFactor = 50;
+                        fDivLineDistValDecimalFactor = iDecimals * 5.0;
+                    }
+                    break;
+                }
+                case 25: {
+                    iDivLineDistValDecimalFactor = 50;
+                    fDivLineDistValDecimalFactor = iDecimals * 5.0;
+                    break;
+                }
+                case 50: {
+                    iDecimals *= 10;
+                    iDivLineDistValDecimalFactor = 10;
+                    fDivLineDistValDecimalFactor = iDecimals;
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+            fDivLineDistVal = fDivLineDistValDecimalFactor * fDivLineDistValBeforeCorr;
+            fDivLineDistPix = fScaleRangeFacPixDivVal * fDivLineDistVal;
+        }
 
         // The values of the first and last grid lines must be a whole number multiple of
         // the distance between two grid lines:
@@ -423,6 +485,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
             fDivLineFirstVal += fDivLineDistVal;
         }
         double fDivLineDistFirstPix = fScaleRangeFacPixDivVal * (fDivLineFirstVal - i_fScaleMinVal);
+
         double fDivLineLastVal = 0.0;
         modf(i_fScaleMaxVal / fDivLineDistVal, &fDivLineLastVal);
         fDivLineLastVal *= fDivLineDistVal;
@@ -430,77 +493,6 @@ int CScaleDivLines::getDivLines4LinSpacing(
             fDivLineLastVal -= fDivLineDistVal;
         }
         double fDivLineDistLastPix = fScaleRangeFacPixDivVal * (i_fScaleMaxVal - fDivLineLastVal);
-
-        // Range between first and last grid line:
-        double fDivLineRangeVal = fDivLineLastVal - fDivLineFirstVal;
-        double fDivLineRangePix = fScaleRangePix - fDivLineDistFirstPix - fDivLineDistLastPix;
-        iDivLineCount = static_cast<int>(fDivLineRangeVal/fDivLineDistVal) + 1;
-
-        double fDivLineDistPix = 0.0;
-
-        // Distance between two grid lines between the first and last grid line:
-        if (iDivLineCount < 2) {
-            fDivLineDistPix = 0.0;
-        }
-        else {
-            fDivLineDistPix = fDivLineDistVal * (fScaleRangePix / fScaleRangeVal);
-
-            // Please note that at this point of execution "DivLineDistVal" is always less or equal
-            // to the distance between two grid lines if the pixel range would be divided by the
-            // maximum possible count of grid lines and its first valid digit is always 1
-            // (e.g. 100.0, 1.0, 0.001, etc.). So definitely "DivLineDistPix" is less or equal to
-            // "DistMinPix" (the user setting for the minimum distance in pixels between two grid lines).
-
-            // In the following loop we are going to optimize "DivLineDistVal" by increasing the value by the
-            // factors 1, 2, 2.5, and 5.0 until the "best human readable" division of the axis has been reached.
-            // E.g.:  0.0  1.0  2.0  3.0  4.0  5.0  6.0  7.0  8.0  9.0  10.0 ...
-            // or:    0.0       2.0       4.0       6.0       8.0       10.0 ... (optional depending on i_bUseDivLineDistValDecimalFactor25)
-            // or:    0.0          2.5         5.0          7.5         10.0 ... (optional depending on i_bUseDivLineDistValDecimalFactor25)
-            // or:    0.0                      5.0                      10.0
-            int iDivLineDistValDecimalFactor = 10;
-            int iDecimals = 1;
-            double fDivLineDistValDecimalFactor = 1.0;
-            double fDivLineDistValBeforeCorr = fDivLineDistVal;
-
-            // As long as the grid lines are too close to each other ...
-            while (fDivLineDistPix < i_iDivLineDistMinPix) {
-                switch (iDivLineDistValDecimalFactor)
-                {
-                    case 10: {
-                        iDivLineDistValDecimalFactor = 20;
-                        fDivLineDistValDecimalFactor = iDecimals * 2.0;
-                        break;
-                    }
-                    case 20: {
-                        if (i_bUseDivLineDistValDecimalFactor25) {
-                            iDivLineDistValDecimalFactor = 25;
-                            fDivLineDistValDecimalFactor = iDecimals * 2.5;
-                        }
-                        else {
-                            iDivLineDistValDecimalFactor = 50;
-                            fDivLineDistValDecimalFactor = iDecimals * 5.0;
-                        }
-                        break;
-                    }
-                    case 25: {
-                        iDivLineDistValDecimalFactor = 50;
-                        fDivLineDistValDecimalFactor = iDecimals * 5.0;
-                        break;
-                    }
-                    case 50: {
-                        iDecimals *= 10;
-                        iDivLineDistValDecimalFactor = 10;
-                        fDivLineDistValDecimalFactor = iDecimals;
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-                fDivLineDistVal = fDivLineDistValDecimalFactor * fDivLineDistValBeforeCorr;
-                fDivLineDistPix = fDivLineDistVal * (fScaleRangePix / fScaleRangeVal);
-            }
-        }
 
         // The value of the first grid line must be a whole number multiple of the distance
         // between two grid lines:
@@ -510,8 +502,6 @@ int CScaleDivLines::getDivLines4LinSpacing(
             fDivLineFirstVal += fDivLineDistVal;
         }
         fDivLineDistFirstPix = fScaleRangeFacPixDivVal * (fDivLineFirstVal - i_fScaleMinVal);
-
-        // Calculate number of division lines. Algorithm could be optimized ...
 
         // If the value 0.0 is included ...
         if (i_fScaleMinVal < 0.0 && i_fScaleMaxVal > 0.0) {
@@ -523,6 +513,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
             fDivLineDistFirstPix = fDivLineOffsetPix;
         }
 
+        // Calculate number of division lines. Algorithm could be optimized ...
         iDivLineCount = 1;
         double fDivLineVal_px = fDivLineDistFirstPix; // please note that the first digit of "DivLineFirstVal" is "1".
         while (fDivLineVal_px <= fScaleRangePix) {
@@ -542,6 +533,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
         if (fDivLineVal_px >= fScaleRangePix) {
             iDivLineCount--;
         }
+
         if (o_pfDivLineFirstVal != nullptr) {
             *o_pfDivLineFirstVal = fDivLineFirstVal;
         }
@@ -555,6 +547,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
             *o_pfDivLineDistPix = fDivLineDistPix;
         }
     }
+
     if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs =
             "DivLines {FirstVal: " + QString(o_pfDivLineFirstVal == nullptr ? "null" : QString::number(*o_pfDivLineFirstVal)) +
@@ -612,7 +605,7 @@ CScaleDivLines::CScaleDivLines(
     m_strClassName(i_strClassName),
     m_strObjName(i_strObjName),
     m_scaleAxis(i_scaleAxis),
-    m_scaleDimensionUnit(EScaleDimensionUnit::Pixels),
+    m_bUseWorldCoordinateTransformation(true),
     m_yScaleAxisOrientation(EYScaleAxisOrientation::BottomUp),
     m_spacing(ESpacing::Linear),
     m_fScaleMin(0.0),
@@ -673,7 +666,7 @@ CScaleDivLines::CScaleDivLines(const QString& i_strObjName, const CScaleDivLines
     m_strClassName(i_other.m_strClassName),
     m_strObjName(i_strObjName),
     m_scaleAxis(i_other.m_scaleAxis),
-    m_scaleDimensionUnit(i_other.m_scaleDimensionUnit),
+    m_bUseWorldCoordinateTransformation(i_other.m_bUseWorldCoordinateTransformation),
     m_yScaleAxisOrientation(i_other.m_yScaleAxisOrientation),
     m_spacing(i_other.m_spacing),
     m_fScaleMin(i_other.m_fScaleMin),
@@ -712,9 +705,11 @@ CScaleDivLines::~CScaleDivLines()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    //m_strNameSpace;
+    //m_strClassName;
     //m_strObjName;
     m_scaleAxis = static_cast<EScaleAxis>(0);
-    m_scaleDimensionUnit = static_cast<EScaleDimensionUnit>(0);
+    m_bUseWorldCoordinateTransformation = false;
     m_yScaleAxisOrientation = static_cast<EYScaleAxisOrientation>(0);
     m_spacing = static_cast<ESpacing>(0);
     m_fScaleMin = 0.0;
@@ -757,7 +752,7 @@ CScaleDivLines& CScaleDivLines::operator = (const CScaleDivLines& i_other)
         /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + objectName() );
 
     m_scaleAxis = i_other.m_scaleAxis;
-    m_scaleDimensionUnit = i_other.m_scaleDimensionUnit;
+    m_bUseWorldCoordinateTransformation = i_other.m_bUseWorldCoordinateTransformation;
     m_spacing = i_other.m_spacing;
     m_fScaleMin = i_other.m_fScaleMin;
     m_fScaleMax = i_other.m_fScaleMax;
@@ -874,38 +869,40 @@ bool CScaleDivLines::setSpacing(const CEnumSpacing& i_eSpacing)
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the scale dimension unit.
+/*! @brief Sets whether world coordinate transformation should be used.
 
-    For more information about how the dimension unit is used to correct the
-    conversion from pixels to metric values and vice versa see the documentation
-    of class CScaleDivLines.
+    For more information about the difference between calcuation of division lines
+    with and without world transformations see documentation of class CScaleDivLines.
 
     The method returns false if the value did not change and true
     if the value changed and the update method need to be called afterwards
     to recalculate the division lines.
 
-    @param i_eDimensionUnit [in]
-        Range [Pixels, Metric]
+    @param i_bUseTransformation [in]
+        Range [false, true]
+        false for pure pixel coordinate systems.
+        true for coordinate systems where pixels got to be converted to world
+        coordinates and vice versa.
 
     @return true if the value has been changed and the division lines need to
             be recalculated, false otherwise.
 */
-bool CScaleDivLines::setScaleDimensionUnit(const CEnumScaleDimensionUnit& i_eDimensionUnit)
+bool CScaleDivLines::setUseWorldCoordinateTransformation(bool i_bUseTransformation)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_eDimensionUnit.toString();
+        strMthInArgs = bool2Str(i_bUseTransformation);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleDimensionUnit",
+        /* strMethod    */ "setUseWorldCoordinateTransformation",
         /* strAddInfo   */ strMthInArgs );
 
     bool bChanged = false;
-    if (m_scaleDimensionUnit != i_eDimensionUnit.enumerator()) {
-        m_scaleDimensionUnit = i_eDimensionUnit.enumerator();
+    if (m_bUseWorldCoordinateTransformation != i_bUseTransformation) {
+        m_bUseWorldCoordinateTransformation = i_bUseTransformation;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -918,16 +915,16 @@ bool CScaleDivLines::setScaleDimensionUnit(const CEnumScaleDimensionUnit& i_eDim
 //------------------------------------------------------------------------------
 /*! @brief Sets the scale values.
 
-    Before invoking this method the dimension unit (pixel or metric system)
-    must have been set.
+    Before invoking this method the instance must be setup to use either pure
+    pixel coordinate system or a coordinate system with world transformation.
 
-    If the scale division line instance is setup for pixel dimension the pixel
-    scale values are set.
-    If the scale division line instance is setup for metric dimension the world
-    coordinates are set.
+    If the scale division line instance is setup for pure pixel coordinate system
+    the pixel scale values are set.
+    If the scale division line instance is setup for world transformations the
+    the world scale values are set.
 
-    Please see the class documenation on how to correctly setup the scale
-    values for pixel and metric dimension units.
+    For more information about the difference between calcuation of division lines
+    with and without world transformations see documentation of class CScaleDivLines.
 
     The method returns false if none of the values changed and true if at
     least one value changed and the update method need to be called afterwards
@@ -966,7 +963,7 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
         /* strAddInfo   */ strMthInArgs );
 
     bool bChanged = false;
-    if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
+    if (m_bUseWorldCoordinateTransformation) {
         if (m_fScaleMin != i_fMin || m_fScaleMax != i_fMax || m_fScaleRes != i_fRes) {
             m_fScaleMin = i_fMin;
             m_fScaleMax = i_fMax;
@@ -991,16 +988,17 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets both the world coordinates (phyiscal values) and the
-           range in pixels of the scale.
+/*! @brief Sets both the world coordinates (phyiscal values) of the scale and the
+           pixel range of the scale.
 
     The method throws an exception if the instance is setup to calculate
-    division lines for pixel dimension units.
+    division lines for pixel coordinate systems only.
 
-    For pixel dimension the setScale method with three arguments must be used.
+    For a pure pixel coordinate system the setScale method with three arguments
+    must be used.
 
-    Please see the class documenation on how to correctly setup the scale
-    values for pixel and metric dimension units.
+    For more information about the difference between calcuation of division lines
+    with and without world transformations see documentation of class CScaleDivLines.
 
     The method returns false if none of the values changed and true if at
     least one value changed and the update method need to be called afterwards
@@ -1044,7 +1042,7 @@ bool CScaleDivLines::setScale(
         /* strMethod    */ "setScale",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
+    if (!m_bUseWorldCoordinateTransformation) {
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
 
@@ -1067,15 +1065,16 @@ bool CScaleDivLines::setScale(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the scale range in pixels.
+/*! @brief Sets the scale range in pixels for a coordinate system where the
+           coordinate system used world transformations.
 
     The method throws an exception if the instance is setup to calculate
     division lines for pixel dimension units.
 
     For pixel dimension the setScale methods without InPix in the name must be used.
 
-    Please see the class documenation on how to correctly setup the scale
-    values for pixel and metric dimension units.
+    For more information about the difference between calcuation of division lines
+    with and without world transformations see documentation of class CScaleDivLines.
 
     The method returns false if none of the values changed and true if at
     least one value changed and the update method need to be called afterwards
@@ -1103,7 +1102,7 @@ bool CScaleDivLines::setScaleInPix(double i_fMin_px, double i_fMax_px)
         /* strMethod    */ "setScale",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
+    if (!m_bUseWorldCoordinateTransformation) {
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
 
@@ -1233,19 +1232,24 @@ bool CScaleDivLines::isValid() const
 {
     bool bScaleValid = true;
 
-    if (scaleRangeInPix() < 0) {
-        bScaleValid = false;
-    }
-    else if (m_fScaleMax <= m_fScaleMin) {
+    if (scaleRangeInPix() <= 0) {
         bScaleValid = false;
     }
     else if (m_fScaleRes < 0.0) {
         bScaleValid = false;
     }
-    else if (m_spacing == ESpacing::Logarithmic) {
-        if (m_fScaleMin <= 0.0 || m_fScaleMax <= 0.0) {
+    else if (m_bUseWorldCoordinateTransformation) {
+        if (m_fScaleMax <= m_fScaleMin) {
             bScaleValid = false;
         }
+        else if (m_spacing == ESpacing::Logarithmic) {
+            if (m_fScaleMin <= 0.0 || m_fScaleMax <= 0.0) {
+                bScaleValid = false;
+            }
+        }
+    }
+    else if (m_spacing == ESpacing::Logarithmic) {
+        bScaleValid = false;
     }
     return bScaleValid;
 }
@@ -1285,18 +1289,21 @@ ESpacing CScaleDivLines::spacing() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the scale dimension unit which could be either Pixels or Metric.
+/*! @brief Returns whether the instance has to be setup for a pure pixel coordinate
+           system or a coordinate system with world coordinate transformations.
 
-    For more information about how the dimension unit is used to correct the
-    conversion from pixels to metric values and vice versa see the documentation
-    of class CScaleDivLines.
+    For more information about the difference between calcuation of division lines
+    with and without world transformations see documentation of class CScaleDivLines.
 
-    @return Scale Dimension Unit.
+    @return Range [false, true]
+        false for pure pixel coordinate systems.
+        true for coordinate systems where pixels got to be converted to world
+        coordinates and vice versa.
 */
-EScaleDimensionUnit CScaleDivLines::scaleDimensionUnit() const
+bool CScaleDivLines::useWorldCoordinateTransformation() const
 //------------------------------------------------------------------------------
 {
-    return m_scaleDimensionUnit;
+    return m_bUseWorldCoordinateTransformation;
 }
 
 //------------------------------------------------------------------------------
@@ -1308,10 +1315,10 @@ EScaleDimensionUnit CScaleDivLines::scaleDimensionUnit() const
 double CScaleDivLines::scaleMin() const
 //------------------------------------------------------------------------------
 {
-    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
-        return scaleMinInPix();
+    if (m_bUseWorldCoordinateTransformation) {
+        return m_fScaleMin;
     }
-    return m_fScaleMin;
+    return scaleMinInPix();
 }
 
 //------------------------------------------------------------------------------
@@ -1323,10 +1330,10 @@ double CScaleDivLines::scaleMin() const
 double CScaleDivLines::scaleMax() const
 //------------------------------------------------------------------------------
 {
-    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
-        return scaleMaxInPix();
+    if (m_bUseWorldCoordinateTransformation) {
+        return m_fScaleMax;
     }
-    return m_fScaleMax;
+    return scaleMaxInPix();
 }
 
 //------------------------------------------------------------------------------
@@ -1337,10 +1344,10 @@ double CScaleDivLines::scaleMax() const
 double CScaleDivLines::scaleRange() const
 //------------------------------------------------------------------------------
 {
-    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
-        return scaleRangeInPix();
+    if (m_bUseWorldCoordinateTransformation) {
+        return fabs(m_fScaleMax - m_fScaleMin);
     }
-    return fabs(m_fScaleMax - m_fScaleMin);
+    return scaleRangeInPix();
 }
 
 //------------------------------------------------------------------------------
@@ -1586,7 +1593,11 @@ double CScaleDivLines::getDivLineVal(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const
 //------------------------------------------------------------------------------
 {
-    return m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine];
+    double fVal = 0.0;
+    if (i_idxDivLine >= 0 && i_idxDivLine < m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()].size()) {
+        fVal = m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine];
+    }
+    return fVal;
 }
 
 //------------------------------------------------------------------------------
@@ -1607,7 +1618,11 @@ double CScaleDivLines::getDivLineInPix(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine) const
 //------------------------------------------------------------------------------
 {
-    return Math::round2Nearest(m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine], 0);
+    double fVal = 0.0;
+    if (i_idxDivLine >= 0 && i_idxDivLine < m_ararfDivLines_px[i_eLayer.enumeratorAsInt()].size()) {
+        fVal = Math::round2Nearest(m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine], 0);
+    }
+    return fVal;
 }
 
 //------------------------------------------------------------------------------
@@ -1630,8 +1645,13 @@ double CScaleDivLines::getDivLineDistVal(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const
 //------------------------------------------------------------------------------
 {
-    return m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
-         - m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
+    double fVal = 0.0;
+    if (i_idxDivLine1 >= 0 && i_idxDivLine1 < m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()].size()
+     && i_idxDivLine2 >= 0 && i_idxDivLine2 < m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()].size()) {
+        fVal = m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
+             - m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
+    }
+    return fVal;
 }
 
 //------------------------------------------------------------------------------
@@ -1655,10 +1675,14 @@ double CScaleDivLines::getDivLineDistInPix(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const
 //------------------------------------------------------------------------------
 {
-    double fValDist_px = 
-        m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
-      - m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
-    return Math::round2Nearest(fValDist_px, 0);
+    double fVal = 0.0;
+    if (i_idxDivLine1 >= 0 && i_idxDivLine1 < m_ararfDivLines_px[i_eLayer.enumeratorAsInt()].size()
+     && i_idxDivLine2 >= 0 && i_idxDivLine2 < m_ararfDivLines_px[i_eLayer.enumeratorAsInt()].size()) {
+        fVal = m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
+             - m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine1];
+        fVal = Math::round2Nearest(fVal, 0);
+    }
+    return fVal;
 }
 
 /*==============================================================================
@@ -1681,14 +1705,22 @@ double CScaleDivLines::getValInPix(double i_fVal) const
     if (isValid())
     {
         double fVal = i_fVal;
-        double fRange_px = scaleRangeInPix();
 
-        if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
-            fRange_px -= 1;
+        double fScaleValMin = m_fMin_px;
+        double fScaleValMax = m_fMax_px;
+        if (m_bUseWorldCoordinateTransformation) {
+            fScaleValMin = m_fScaleMin;
+            fScaleValMax = m_fScaleMax;
+        }
+
+        // Calculate range and resolution of one pixel:
+        if (m_spacing == ESpacing::Logarithmic) {
+            fScaleValMin = log10(fScaleValMin);
+            fScaleValMax = log10(fScaleValMax);
         }
 
         // At the minimum scale value ..
-        if (fVal == m_fScaleMin) {
+        if (fVal == fScaleValMin) {
             if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
                 fPix = m_fMax_px;
             }
@@ -1697,7 +1729,7 @@ double CScaleDivLines::getValInPix(double i_fVal) const
             }
         }
         // At the maximum scale value ..
-        else if (fVal == m_fScaleMax) {
+        else if (fVal == fScaleValMax) {
             if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
                 fPix = m_fMin_px;
             }
@@ -1707,17 +1739,14 @@ double CScaleDivLines::getValInPix(double i_fVal) const
         }
         // Somewhere between minimum and maximum scale ..
         else {
-            double fScaleValMin = m_fScaleMin;
-            double fScaleValMax = m_fScaleMax;
-
-            // Calculate range and resolution of one pixel:
-            if (m_spacing == ESpacing::Logarithmic) {
-                fScaleValMin = log10(fScaleValMin);
-                fScaleValMax = log10(fScaleValMax);
+            double fScaleRangeVal = fabs(fScaleValMax - fScaleValMin);
+            double fScaleRangePix = scaleRangeInPix();
+            if (!m_bUseWorldCoordinateTransformation) {
+                fScaleRangeVal += 1.0;
+                fScaleRangePix = fScaleRangeVal;
             }
 
-            double fScaleValRange = fabs(fScaleValMax - fScaleValMin);
-            double fPixRes = fRange_px / fScaleValRange;
+            double fPixRes = fScaleRangePix / fScaleRangeVal;
 
             bool bDivLineHit = false;
 
@@ -1810,8 +1839,12 @@ double CScaleDivLines::getVal(double i_fPix) const
 
     if (isValid())
     {
-        double fScaleValMin = m_fScaleMin;
-        double fScaleValMax = m_fScaleMax;
+        double fScaleValMin = m_fMin_px;
+        double fScaleValMax = m_fMax_px;
+        if (m_bUseWorldCoordinateTransformation) {
+            fScaleValMin = m_fScaleMin;
+            fScaleValMax = m_fScaleMax;
+        }
 
         // Calculate range and resolution of one pixel:
         if (m_spacing == ESpacing::Logarithmic) {
@@ -1820,7 +1853,7 @@ double CScaleDivLines::getVal(double i_fPix) const
         }
 
         double fRange_px = scaleRangeInPix();
-        if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
+        if (m_bUseWorldCoordinateTransformation) {
             fRange_px -= 1;
         }
         double fScaleValRange = fabs(fScaleValMax-fScaleValMin);
@@ -1971,8 +2004,12 @@ void CScaleDivLines::updateLinearSpacing()
 
     m_arfDivLinesDistMinVal[EDivLineLayerMain] = scaleRange();
 
-    double fDivLineDistValMin = m_fScaleMin;
-    double fDivLineDistValMax = m_fScaleMax;
+    double fDivLineDistValMin = m_fMin_px;
+    double fDivLineDistValMax = m_fMax_px;
+    if (m_bUseWorldCoordinateTransformation) {
+        fDivLineDistValMin = m_fScaleMin;
+        fDivLineDistValMax = m_fScaleMax;
+    }
 
     QVector<int> ariDivLineCount(CEnumDivLineLayer::count(), 0);
     QVector<int> ariDivLineCountTmp(CEnumDivLineLayer::count(), 0);
@@ -1981,10 +2018,10 @@ void CScaleDivLines::updateLinearSpacing()
     QVector<double> arfDivLineDistVal(CEnumDivLineLayer::count(), 0.0);
     QVector<double> arfDivLineDistPix(CEnumDivLineLayer::count(), 0.0);
 
-    double fRange_px = scaleRangeInPix();
-    //if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
-    //    fRange_px -= 1;
-    //}
+    double fRange_px = 0.0;
+    if (m_bUseWorldCoordinateTransformation) {
+        fRange_px = scaleRangeInPix();
+    }
 
     for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++)
     {
@@ -1992,7 +2029,7 @@ void CScaleDivLines::updateLinearSpacing()
         {
             // Calculate optimized distance between two grid lines:
             ariDivLineCountTmp[iLayer] = getDivLines4LinSpacing(
-                /* eDimensionUnit        */ m_scaleDimensionUnit,
+                /* bUseWorldTransform    */ m_bUseWorldCoordinateTransformation,
                 /* fScaleMinVal          */ fDivLineDistValMin,
                 /* fScaleMaxVal          */ fDivLineDistValMax,
                 /* fScaleRangePix        */ fRange_px,
@@ -2195,7 +2232,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
     }
 
     double fRange_px = scaleRangeInPix();
-    if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
+    if (m_bUseWorldCoordinateTransformation) {
         fRange_px -= 1;
     }
 
@@ -2217,7 +2254,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
 
         // Calculate optimized distance between two main grid lines:
         ariDivLineCount[EDivLineLayerMain] = getDivLines4LinSpacing(
-            /* eDimensionUnit        */ m_scaleDimensionUnit,
+            /* bUseWorldTransform    */ m_bUseWorldCoordinateTransformation,
             /* fScaleMinVal          */ fScaleMinValLog,
             /* fScaleMaxVal          */ fScaleMaxValLog,
             /* iScaleRangePix        */ fRange_px,
@@ -2260,7 +2297,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
         if (m_ariDivLinesDistMin_px[EDivLineLayerSub] > 1 && m_ariDivLinesDistMin_px[EDivLineLayerMain] > 2*m_ariDivLinesDistMin_px[EDivLineLayerSub])
         {
             ariDivLineCountTmp[EDivLineLayerSub] = getDivLines4LinSpacing(
-                /* eDimensionUnit        */ m_scaleDimensionUnit,
+                /* bUseWorldTransform    */ m_bUseWorldCoordinateTransformation,
                 /* fScaleMinVal          */ arfDivLineFirstValLog[EDivLineLayerMain],
                 /* fScaleMaxVal          */ arfDivLineFirstValLog[EDivLineLayerMain]+arfDivLineDistValLog[EDivLineLayerMain],
                 /* fScaleRangePix        */ arfDivLineDistPix[EDivLineLayerMain],

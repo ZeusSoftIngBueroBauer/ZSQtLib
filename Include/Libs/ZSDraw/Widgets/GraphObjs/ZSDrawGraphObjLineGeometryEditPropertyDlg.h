@@ -93,7 +93,7 @@ protected: // instance members
     CDrawingScene* m_pDrawingScene;
     CGraphObjLine* m_pGraphObj;
     int m_iContentChangedSignalBlockedCounter;
-    ZS::System::CEnumScaleDimensionUnit m_eDimensionUnit;
+    CEnumScaleDimensionUnit m_eDimensionUnit;
     QString m_strCoorPart1;
     QString m_strCoorPart2;
     QVBoxLayout* m_pLyt;

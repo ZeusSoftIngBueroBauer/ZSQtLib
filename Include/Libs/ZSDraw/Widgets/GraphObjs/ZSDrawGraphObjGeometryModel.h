@@ -76,7 +76,7 @@ public: // ctors and dtor
         const QString& i_strNameSpace,
         const QString& i_strGraphObjType,
         const QString& i_strObjName,
-        const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit = ZS::System::CEnumScaleDimensionUnit(),
+        const CEnumScaleDimensionUnit& i_eDimensionUnit = CEnumScaleDimensionUnit(),
         QObject* i_pObjParent = nullptr);
     virtual ~CModelGraphObjGeometry();
 signals:
@@ -162,7 +162,7 @@ protected: // instance members
          table view got to be hidden.
          If set to Pixels the values are always shown in pixel coordinates. If the drawing
          scene's unit is a metric unit the values will be converted to pixel values. */
-    ZS::System::CEnumScaleDimensionUnit m_eDimensionUnit;
+    CEnumScaleDimensionUnit m_eDimensionUnit;
     /*!< Font used for the sizeHint role. */
     QFont m_font;
     /*!< Font metrics used for the sizeHint role. */

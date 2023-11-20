@@ -600,27 +600,6 @@ typedef CEnum<EYScaleAxisOrientation> CEnumYScaleAxisOrientation;
 namespace ZS {
 namespace System {
 //==============================================================================
-/*! Dimension unit for scales.
-*/
-enum class EScaleDimensionUnit {
-//==============================================================================
-    Pixels, /*!< Dimensions defined based on pixels. */
-    Metric  /*!< Dimensions defined based on metric units.
-                 The logical pixel positions got to be calculated depending
-                 on the screen resolution given in Dots/Inch or Pixels/Inch. */
-};
-} }
-
-template class ZSSYSDLL_API ::CEnum<ZS::System::EScaleDimensionUnit>;
-namespace ZS {
-namespace System {
-typedef ::CEnum<EScaleDimensionUnit> CEnumScaleDimensionUnit;
-} }
-
-
-namespace ZS {
-namespace System {
-//==============================================================================
 /*! Spacing of scales which could be either linear or logarithmic.
 
     @see ZS::System::SEnumEntry

@@ -162,7 +162,7 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
     const QString& i_strNameSpace,
     const QString& i_strGraphObjType,
     const QString& i_strObjName,
-    const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit,
+    const CEnumScaleDimensionUnit& i_eDimensionUnit,
     QObject* i_pObjParent ) :
 //------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),

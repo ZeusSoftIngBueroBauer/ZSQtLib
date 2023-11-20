@@ -438,7 +438,6 @@ CDiagScale::CDiagScale(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    m_divLines.setScaleDimensionUnit(EScaleDimensionUnit::Metric);
     m_divLines.setScale(
         m_scale.minVal().getVal(), m_scale.maxVal().getVal(),
         m_scale.res().getVal(), 0, 0);

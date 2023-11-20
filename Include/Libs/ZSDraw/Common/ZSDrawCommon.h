@@ -187,6 +187,21 @@ typedef ::CEnum<EPrinterPaperSource> CEnumPrinterPaperSource;
 
 
 //==============================================================================
+/*! Dimension unit for scales.
+*/
+enum class EScaleDimensionUnit {
+//==============================================================================
+    Pixels, /*!< Dimensions defined based on pixels. */
+    Metric  /*!< Dimensions defined based on metric units.
+                 The logical pixel positions got to be calculated depending
+                 on the screen resolution given in Dots/Inch or Pixels/Inch. */
+};
+
+template class ZSDRAWDLL_API ::CEnum<EScaleDimensionUnit>;
+typedef ::CEnum<EScaleDimensionUnit> CEnumScaleDimensionUnit;
+
+
+//==============================================================================
 /*! enum EGraphObjType
 
     Not CEnum as the enumerators don`t start with 0 and there will be user defined

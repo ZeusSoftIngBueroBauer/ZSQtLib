@@ -90,15 +90,15 @@ protected slots:
     void onBtnGridScaleLabelsTextEffectUnderlineToggled(bool i_bChecked);
     void onBtnGridScaleLabelsTextEffectStrikeoutToggled(bool i_bChecked);
 protected: // instance methods
-    void setDimensionUnit( const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit );
+    void setDimensionUnit(const CEnumScaleDimensionUnit& i_eDimensionUnit);
     void setScreenPixelResolutionInPxPerMM(double i_fRes_px_mm);
     void setImageCoorsDecimals(int i_iDecimals);
-    void setMetricUnit( const ZS::PhysVal::CUnit& i_metricUnit );
-    void setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize );
-    void setNormedPaperOrientation( const ZS::System::CEnumOrientation& i_eOrientation );
-    void setScaleFactor( int i_iDividend, int i_iDivisor );
-    void setYScaleAxisOrientation( const ZS::System::CEnumYScaleAxisOrientation& i_eOrientation );
-    void setImageSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight );
+    void setMetricUnit(const ZS::PhysVal::CUnit& i_metricUnit);
+    void setNormedPaperSize(const CEnumNormedPaperSize& i_ePaperSize);
+    void setNormedPaperOrientation( const ZS::System::CEnumOrientation& i_eOrientation);
+    void setScaleFactor(int i_iDividend, int i_iDivisor);
+    void setYScaleAxisOrientation(const ZS::System::CEnumYScaleAxisOrientation& i_eOrientation);
+    void setImageSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
 protected: // instance methods
     void setGridLinesVisible(bool i_bVisible);
     void setGridLinesDistMin(int i_iDistMin_px);

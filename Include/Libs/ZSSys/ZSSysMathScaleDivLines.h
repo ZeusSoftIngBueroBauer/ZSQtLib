@@ -42,169 +42,193 @@ namespace Math
 
     The division lines are rounded to a whole number of a decimal power.
 
-        @Example:
+        Example:
 
-        Input:
+            Input:
 
-                      DistMinVal
-            |         |<--   -->|                             |
-            |         |<- 10.0->|                             |
-        ScaleMinVal                                      ScaleMaxVal
-           0.0                                               10.0
-            +-------------------------------------------------+
-            |<--------------------- 500 --------------------->|
-            |<-------------------ScaleRangePix -------------->|
-            |       |<50>|                                    |
-            |       |<-->|                                    |
-            |       DistMinPix                                |
+                          DistMinVal (optional = 1.0, used to calculate logarithmic spacing)
+                |         |<--  -->|                              |
+                |         |<- 1.0->|                              |
+            ScaleMinVal                                      ScaleMaxVal
+               0.0                                               10.0
+                +-------------------------------------------------+
+                |<--------------------- 500 --------------------->|
+                |<-------------------ScaleRangePix -------------->|
+                |       |<50>|                                    |
+                |       |<-->|                                    |
+                |     DistMinPix                                  |
 
-        Output:
+            Output:
 
-            |<DistVal>|
-            |<- 10.0->|
-         FirstVal
-           0.0                                                |
-            +---------|---------|---------|---------|---------+
-           0.0       10.0      20.0      30.0      40.0      50.0
-         FirstPix                                             |
-            |<- 100 ->|                                       |
-            |<DistPix>|                                       |
+                |<DistVal>|
+                |<- 10.0->|
+             FirstVal
+               0.0                                                |
+                +---------|---------|---------|---------|---------+
+               0.0       10.0      20.0      30.0      40.0      50.0
+             FirstPix                                             |
+                |<- 100 ->|                                       |
+                |<DistPix>|                                       |
 
-    Pixel dimensions:
+    Pure pixel coordinate system (no world transformation)
 
-        Min_px:         0 px
-        Max_px:        19 px
-        ScaleRange_px: Max/px - Min/px + 1 = 20 px
+        For example used by bitmap paintings.
 
-        Figure with division lines at all 10 pixels:
+        Example 1:
 
-        |<-                                   Width: 20 px                            ->|
-        |                                                                               |
-        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 | 20
-        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
-        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+            Input:
 
-        !! There will be no division line at position 20 px. !!
+                Min_px:         0 px
+                Max_px:        19 px
+                ScaleRange_px: Max/px - Min/px + 1 = 20 px
+                DistMinPix:    10 px
+    
+            Result:
+    
+                  |<-                                 Range: 20 px                          ->|
+                  |<-           DistMinPix: 10 px       ->|
+                | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 | px
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                  |<-             DistPix: 10 px        ->|<-             DistPix: 10 px        ->|
+                DivLineCount: 2
+                !! There will be no division line at position 20 px. !!
 
-        Min_px:         0 px
-        Max_px:        20 px
-        ScaleRange_px: Max/px - Min/px + 1 = 21 px
+        Example 2:
 
-        Figure with division lines at all 10 pixels:
+            Input:
 
-        |<-                                   Width: 21 px                                ->|
-        |                                                                                   |
-        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 px
-        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
-        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                Min_px:         0 px
+                Max_px:        20 px
+                ScaleRange_px: Max/px - Min/px + 1 = 21 px
+                DistMinPix:    10 px
 
-        !! There will be a division line at position 20 px. !!
+            Result:
 
-    Metric drawings (ScaleRangeVal in metric unit and ScaleRangePix in pixels):
+                  |<-                                 Range: 21 px                              ->|
+                  |<-           DistMinPix: 10 px       ->|
+                | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 | px
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                  |<-             DistPix: 10 px        ->|<-             DistPix: 10 px        ->|
+                DivLineCount: 3
+                !! There will be a division line at position 20 px. !!
 
-        ScaleMinVal:  0.0 mm
-        ScaleMaxVal: 10.0 mm
-        ScaleRange:  10.0 mm
-        Min_px:         0 px
-        Max_px:        19 px
-        ScaleRange_px: Max/px - Min/px + 1 = 20 px
+    Scalings with world transformation (screen coordinate system in pixels, resulting scale in another unit)
 
-        Theoretical figure with division lines at all 5 mm:
+        For example used by drawings in metric system or by diagrams.
 
-        |<-                                  Width: 20 px                             ->|
-        |                                                                               |
-        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 | 20 px
-        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-        X   |   |   |   |   |   |   |   |   |   X   |   |   |   |   |   |   |   |   |   X
-        X   |   |   |   |   |   |   |   |   |   X   |   |   |   |   |   |   |   |   |   X
-        X   |   |   |   |   |   |   |   |   |   X   |   |   |   |   |   |   |   |   |   X
-        X   |   |   |   |   |   |   |   |   |   X   |   |   |   |   |   |   |   |   |   X
-        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-       0.0     1.0     2.0     3.0     4.0     5.0     6.0     7.0     8.0     9.0    10.0 mm
+        Example 1:
 
-        Lines can only be drawn on whole number pixel positions but not between two pixels as
-        shown in the theoretical figure above. Pixel positions will be truncated to a whole number.
+            Input:
 
-        Conversion from mm into pixels:
+                ScaleMinVal:  0.0 mm (or any other unit like Hz)
+                ScaleMaxVal: 10.0 mm
+                ScaleRange:  10.0 mm
+                Min_px:         0 px
+                Max_px:        19 px
+                ScaleRange_px: Max/px - Min/px + 1 = 20 px
+                DistMinPix:    10 px
 
-            Val_px = Min_px + Width_px * Val_mm / ScaleRange_mm = 0 px + (Val_mm * 20 px) / 10.0 mm
+            Result:
 
-        Val_mm | Val_px
-        -------+-------
-           0.0 |    0.0
-           2.0 |    4.0
-           5.0 |   10.0
-           8.0 |   16.0
-          10.0 |   20.0   !! The division line at scale max will not be visible !!
+                  |<-                                Range: 20 px                           ->|
+                  |<-           DistMinPix: 10 px       ->|
+                | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 |
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   |   | X |
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                 0.0                                   5.0                                   10.0 mm
+                  |<-                            DistPix: 19.0 px                           ->|
+                  |<-                            DistVal: 10.0 mm                           ->|
+                DivLineCount: 2
 
-        In order to draw division lines at min and max scale the width in pixels
-        got to be extended by one pixel when using metric scales.
+            Lines can only be drawn on whole number pixel positions but not between two pixels.
+            One pixel must be truncated from the available pixel range to calculate the world coordinate.
+            Pixel positions will be rounded to a whole number.
 
-        !!! As the scale division line class doesn't know whether metric system is !!!
-        !!! used this has to be taken into account when setting the scale values.  !!!
+            Transformation from pixel coordinates into world coordinates:
 
-        ScaleMinVal:  0.0 mm
-        ScaleMaxVal: 10.0 mm
-        ScaleRange:  10.0 mm
-        Min_px:         0 px
-        Max_px:        20 px
-        Width/px:      Max/px - Min/px + 1 = 21 px
+                Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * Val_mm = 0 px + (19 px / 10.0 mm) * Val_mm
 
-        Conversion from mm into pixels using the formula above:
+                Val_mm |  0.0 |  1.0 |  2.0 |  3.0 |  4.0 |  5.0 |  6.0 |  7.0 |  8.0 |  9.0 | 10.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_px |  0.0 |  1.9 |  3.8 |  5.7 |  7.6 |  9.5 | 11.4 | 13.3 | 15.2 | 17.1 | 19.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_px |   0  |   2  |   4  |   5  |   8  |  10  |  11  |  13  |  15  |  17  |  19  |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
 
-            Val_px = Min_px + Width_px * Val_mm / ScaleRange_mm = 0 px + (Val_mm * 21 px) / 10.0 mm
+            Transformation from world coordinates into pixel coordinates:
 
-        Val_mm | Val_px
-        -------+-------
-           0.0 |    0.0
-           2.0 |    4.2
-           5.0 |   10.5
-           8.0 |   16.8
-          10.0 |   21.0   !! The division line at scale max will still NOT become visible !!
+                Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * Val_px = 0 mm + (10 mm / 19 px) * Val_px
 
-        As shown in the table above just extending the width in pixels by one pixel is not
-        sufficient to calculate the correct pixel value for the metric value. The scale
-        division line class must be aware of converting from metric dimension into pixels.
-        For this the enumeration EScaleDimensionUnit with the enumerators Pixels and Metric
-        is used which must be passed to the scale method when specifying the scale values.
-        If metric dimension is used the conversion will correct the used Width_px when converting
-        from world coordinate into the pixel position.
+                Val_px |   0  |   2  |   4  |   5  |   8  |  10  |  11  |  13  |  15  |  17  |  19  |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_mm |  0.0 | 1.05 | 2.11 | 2.63 | 4.21 | 5.26 | 5,79 | 6.84 | 7.89 | 8.95 | 10.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
 
-        Conversion from mm into pixels if dimensionUnit = Metric has been set.
+        Example 2:
 
-            if (dimensionUnit == Metric) {
-                Val_px = Min_px + (Width_px-1) * Val_mm / ScaleRange_mm = 0 px + (Val_mm * (21 - 1) px) / 10.0 mm
-            }
-            else (dimensionUnit == Pixels) {
-                see formula in pixel systems above
-            }
+            Input:
 
-        Val_mm | Val_px
-        -------+-------
-           0.0 |    0.0
-           2.0 |    4.0
-           5.0 |   10.0
-           8.0 |   16.0
-          10.0 |   20.0   !! The division line at scale max will become visible !!
+                ScaleMinVal:  0.0 mm (or any other unit like Hz)
+                ScaleMaxVal: 10.0 mm
+                ScaleRange:  10.0 mm
+                Min_px:         0 px
+                Max_px:        20 px
+                ScaleRange_px: Max/px - Min/px + 1 = 21 px
+                DistMinPix:    10 px
 
-        |<-                                  Width: 21 px                                 ->|
-        |                                                                                   |
-        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 | px
-        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
-        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
-        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
-         0.0     1.0     2.0     3.0     4.0     5.0     6.0     7.0     8.0     9.0     10.0 mm
+            Result:
+
+                  |<-                                   Range: 21 px                              ->|
+                  |<-           DistMinPix: 10 px       ->|
+                | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 |
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                 0.0                                     5.0                                     10.0 mm
+                  |<-                               DistPix: 10.0 px                            ->|
+                  |<-                               DistVal:  5.0 mm                            ->|
+                DivLineCount: 3
+
+            Lines can only be drawn on whole number pixel positions but not between two pixels.
+            One pixel must be truncated from the available pixel range to calculate the world coordinate.
+            Pixel positions will be rounded to a whole number.
+
+            Transformation from pixel coordinates into world coordinates:
+
+                Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * Val_mm = 0 px + (20 px / 10.0 mm) * Val_mm
+
+                Val_mm |  0.0 |  1.0 |  2.0 |  3.0 |  4.0 |  5.0 |  6.0 |  7.0 |  8.0 |  9.0 | 10.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_px |  0.0 |  2.0 |  4.0 |  6.0 |  8.0 | 10.0 | 12.0 | 14.0 | 16.0 | 18.0 | 20.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_px |   0  |   2  |   4  |   6  |   8  |  10  |  12  |  14  |  16  |  18  |  20  |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+
+            Transformation from world coordinates into pixel coordinates:
+
+                Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * Val_px = 0 mm + (10 mm / 19 px) * Val_px
+
+                Val_px |   0  |   2  |   4  |   6  |   8  |  10  |  12  |  14  |  16  |  18  |  20  |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_mm |  0.0 |  1.0 |  2.0 |  3.0 |  4.0 |  5.0 |  6.0 |  7.0 |  8.0 |  9.0 | 10.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
 */
 class ZSSYSDLL_API CScaleDivLines
 //******************************************************************************
@@ -244,7 +268,7 @@ public: // class methods
         CTrcAdminObj* i_pTrcAdminObj = nullptr);
 protected: // class methods
     static int getDivLines4LinSpacing(
-        const CEnumScaleDimensionUnit& i_eDimensionUnit,
+        bool    i_bUseWorldCoordinateTransformation,
         double  i_fScaleMinVal,
         double  i_fScaleMaxVal,
         double  i_fScaleRangePix,
@@ -271,7 +295,7 @@ public: // instance methods
 public: // instance methods (setting properties)
     bool setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& i_eOrientation);
     bool setSpacing(const CEnumSpacing& i_eSpacing);
-    bool setScaleDimensionUnit(const CEnumScaleDimensionUnit& i_eDimensionUnit);
+    bool setUseWorldCoordinateTransformation(bool i_bUseTransformation);
     bool setScale(double i_fMin, double i_fMax, double i_fRes);
     bool setScale(double i_fMin, double i_fMax, double i_fRes, double i_fMin_px, double i_fMax_px);
     bool setScaleInPix(double i_fMin_px, double i_fMax_px);
@@ -283,7 +307,7 @@ public: // instance methods (getting properties)
     EScaleAxis scaleAxis() const;
     EYScaleAxisOrientation yScaleAxisOrientation() const;
     ESpacing spacing() const;
-    EScaleDimensionUnit scaleDimensionUnit() const;
+    bool useWorldCoordinateTransformation() const;
     double scaleMin() const;
     double scaleMax() const;
     double scaleRange() const;
@@ -328,17 +352,18 @@ protected: // instance members (config values)
     QString m_strObjName;
     /*!< Scale axis (X or Y). Set by the constructor. Not changeable during runtime. */
     EScaleAxis m_scaleAxis;
-    /*!< Scale dimension unit. Defaults to "Pixels". */
-    EScaleDimensionUnit m_scaleDimensionUnit;
+    /*!< Defines whether pixel coordinates need to be converted to world coordinates
+         and vice versa. Defaults to true. */
+    bool m_bUseWorldCoordinateTransformation;
     /*!< Y scale axis orientation. Defaults to "BottomUp". */
     EYScaleAxisOrientation m_yScaleAxisOrientation;
     /*!< Spacing of the scale (either linear or logarithmic). */
     ESpacing m_spacing;
-    /*!< Minimum scale value. Only used for metric dimension unit. */
+    /*!< Minimum scale value. Only used if the scale is setup for world coordinate transformation. */
     double m_fScaleMin;
-    /*!< Maximum scale value. Only used for metric dimension unit. */
+    /*!< Maximum scale value.  Only used if the scale is setup for world coordinate transformation. */
     double m_fScaleMax;
-    /*!< Resolution of minimum and maximum scale values. */
+    /*!< Resolution of minimum and maximum scale values. For pure pixel coordinate system usually 1.0. */
     double m_fScaleRes;
     /*!< Minimum scale value in pixels. */
     double m_fMin_px;

@@ -350,7 +350,12 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
 
-        m_divLinesMetricsX.setScaleDimensionUnit(m_drawingSize.dimensionUnit());
+        if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+            m_divLinesMetricsX.setUseWorldCoordinateTransformation(false);
+        }
+        else {
+            m_divLinesMetricsX.setUseWorldCoordinateTransformation(true);
+        }
 
         if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
             // Just a small note about pixel range and min and max values:

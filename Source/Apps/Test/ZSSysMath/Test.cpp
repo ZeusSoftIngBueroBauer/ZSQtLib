@@ -538,162 +538,287 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "GetDivLines4LinSpacing",
+        /* strName         */ "GetDivLines4LinSpacing-Pixels",
         /* strOperation    */ "getDivLines4LinSpacing",
         /* pGrpParent      */ pGrpDivLines,
         /* szDoTestStepFct */ SLOT(doTestDivLines4LinSpacing(ZS::Test::CTestStep*)) );
-#if 0
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
+        {"UseWorldTransformation", false},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 0.0},
         {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 0}, {"UseDivLineDistValDecimalFactor25", false},
         {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 1.0}, {"DivLineDistPix", 1.0},
         {"DivLinesCount", 0}});
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
+        {"UseWorldTransformation", false},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0},
         {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 10}, {"UseDivLineDistValDecimalFactor25", false},
         {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 10.0},
         {"DivLinesCount", 2}});
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
+        {"UseWorldTransformation", false},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0},
         {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 10}, {"UseDivLineDistValDecimalFactor25", false},
         {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 10.0},
         {"DivLinesCount", 3}});
-#endif
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 1000.0},
-        {"DivLineDistMinVal", 10.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 999.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
         {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 50.0}, {"DivLineDistPix", 50.0},
         {"DivLinesCount", 20}});
-#if 0
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 1001.0},
-        {"DivLineDistMinVal", 10.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 1000.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
         {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 50.0}, {"DivLineDistPix", 50.0},
         {"DivLinesCount", 21}});
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "GetDivLines4LinSpacing-WorldCoors",
+        /* strOperation    */ "getDivLines4LinSpacing",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestDivLines4LinSpacing(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Metric).toString()},
+        {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 0.0}, {"ScaleRangePix", 0},
         {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 0}, {"UseDivLineDistValDecimalFactor25", false},
         {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 0.0}, {"DivLineDistPix", 0.0},
         {"DivLinesCount", 0}});
-#endif
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Metric).toString()},
+        {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRangePix", 20},
-        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 8}, {"UseDivLineDistValDecimalFactor25", false},
-        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 10.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 10}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 19.0},
         {"DivLinesCount", 2}});
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Metric).toString()},
+        {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRangePix", 21},
-        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 8}, {"UseDivLineDistValDecimalFactor25", false},
-        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 10.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 10}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 5.0}, {"DivLineDistPix", 10.0},
         {"DivLinesCount", 3}});
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Metric).toString()},
+        {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 100.0}, {"ScaleRangePix", 1000},
-        {"DivLineDistMinVal", 10.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
-        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 5.0}, {"DivLineDistPix", 50.0},
-        {"DivLinesCount", 20}});
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 99.9},
+        {"DivLinesCount", 11}});
     pTestStep->addDataRow({
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Metric).toString()},
+        {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 100.0}, {"ScaleRangePix", 1001},
-        {"DivLineDistMinVal", 10.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
         {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 5.0}, {"DivLineDistPix", 50.0},
         {"DivLinesCount", 21}});
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "DivisionLineValues",
+        /* strName         */ "DivisionLineValues-Pixels",
         /* strOperation    */ "getValues",
         /* pGrpParent      */ pGrpDivLines,
         /* szDoTestStepFct */ SLOT(doTestStepDivLinesGetVal(ZS::Test::CTestStep*)) );
+
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"ScaleRes", 1.0},
-        {"ScaleMinInPix", 0}, {"ScaleMaxInPix", 19}, {"DivLineDistMinPix", 8},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
-        {"IdxDivLine", 0}, {"IdxDivLine1", 0}, {"IdxDivLine2", 1},
-        {"DivLinesCount", 2}, {"DivLinesDistMin", 10}, {"DivLineVal", 0}, {"DivLineInPix", 0},
-        {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0}, {"ValInPix", 0.0}, {"Val", 0.0}});
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"ScaleRes", 1.0},
-        {"ScaleMinInPix", 0}, {"ScaleMaxInPix", 19}, {"DivLineDistMinPix", 8},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
-        {"IdxDivLine", 0}, {"IdxDivLine1", 0}, {"IdxDivLine2", 1},
-        {"DivLinesCount", 2}, {"DivLinesDistMin", 10}, {"DivLineVal", 0}, {"DivLineInPix", 0},
-        {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0}, {"ValInPix", 0.0}, {"Val", 0.0}});
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 5.0}, {"ValExpected", 5.0},
+        {"Val", 5.0}, {"ValInPixExpected", 5.0}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"ScaleRes", 1.0},
-        {"ScaleMinInPix", 0}, {"ScaleMaxInPix", 19}, {"DivLineDistMinPix", 8},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
-        {"IdxDivLine", 0}, {"IdxDivLine1", 0}, {"IdxDivLine2", 1},
-        {"DivLinesCount", 3}, {"DivLinesDistMin", 10}, {"DivLineVal", 0}, {"DivLineInPix", 0},
-        {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0}, {"ValInPix", 0.0}, {"Val", 0.0}});
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 10.0}, {"ValExpected", 10.0},
+        {"Val", 10.0}, {"ValInPixExpected", 10.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 15.0}, {"ValExpected", 15.0},
+        {"Val", 15.0}, {"ValInPixExpected", 15.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 20.0}, {"ValExpected", 20.0},
+        {"Val", 20.0}, {"ValInPixExpected", 20.0}});
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 5.0}, {"ValExpected", 5.0},
+        {"Val", 5.0}, {"ValInPixExpected", 5.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 2}, {"DivLineVal", 20}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 10.0}, {"ValExpected", 10.0},
+        {"Val", 10.0}, {"ValInPixExpected", 10.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 2}, {"DivLineVal", 20}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 15.0}, {"ValExpected", 15.0},
+        {"Val", 15.0}, {"ValInPixExpected", 15.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 2}, {"DivLineVal", 20}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 20.0}, {"ValExpected", 20.0},
+        {"Val", 20.0}, {"ValInPixExpected", 20.0}});
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "DivisionLineValues-WorldCoors",
+        /* strOperation    */ "getValues",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestStepDivLinesGetVal(ZS::Test::CTestStep*)) );
 
 #if 0
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"ScaleRes", 1.0}, {"ScaleRangePix", 20},
-        {"ScaleMinInPix", 0}, {"ScaleMaxInPix", 19}, {"DivLineDistMinPix", 8},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.01},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
-        {"IdxDivLine", 0}, {"IdxDivLine1", 0}, {"IdxDivLine2", 1},
-        {"DivLinesCount", 1}, {"DivLinesDistMin", 10}, {"DivLineVal", 0}, {"DivLineInPix", 0},
-        {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0}, {"ValInPix", 0.0}, {"Val", 0.0}});
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+#endif
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.01},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 19},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 5.0}, {"ValExpected", 2.6},
+        {"Val", 5.0}, {"ValInPixExpected", 10.0}});
+#if 0
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.01},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 19},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 10.0}, {"ValExpected", 5.3},
+        {"Val", 10.0}, {"ValInPixExpected", 19.0}});
 
     pTestStep->addDataRow({
-        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 100.0}, {"ScaleRes", 0.01}, {"ScaleRangePix", 100},
-        {"ScaleMinInPix", 0}, {"ScaleMaxInPix", 100}, {"DivLineDistMinPix", 20},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.01},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
-        {"IdxDivLine", 0}, {"IdxDivLine1", 0}, {"IdxDivLine2", 1},
-        {"DivLinesCount", 11}, {"DivLinesDistMin", 11}, {"DivLineVal", 11}, {"DivLineInPix", 11},
-        {"DivLineDistVal", 11}, {"DivLineDistInPix", 11}, {"ValInPix", 11}, {"Val", 11}});
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.01},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 5.0}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 5.0}, {"ValExpected", 2.5},
+        {"Val", 5.0}, {"ValInPixExpected", 10.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.01},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 2}, {"DivLineVal", 10.0}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 2}, {"IdxDivLine2", 3}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 10.0}, {"ValExpected", 5.0},
+        {"Val", 10.0}, {"ValInPixExpected", 20.0}});
+#endif
+#if 0
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
         {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 100.0}, {"ScaleRes", 0.01}, {"ScaleRangePix", 100},
-        {"ScaleMinInPix", 0}, {"ScaleMaxInPix", 100}, {"DivLineDistMinPix", 20},
-        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
-        {"IdxDivLine", 0}, {"IdxDivLine1", 0}, {"IdxDivLine2", 1},
-        {"DivLinesCount", 11}, {"DivLinesDistMin", 11}, {"DivLineVal", 11}, {"DivLineInPix", 11},
-        {"DivLineDistVal", 11}, {"DivLineDistInPix", 11}, {"ValInPix", 11}, {"Val", 11}});
-    pTestStep->addDataRow({
-        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
-        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
-        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 100.0}, {"ScaleRes", 0.01}, {"ScaleRangePix", 100},
-        {"ScaleMinInPix", 0}, {"ScaleMaxInPix", 100}, {"DivLineDistMinPix", 20},
-        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
-        {"IdxDivLine", 0}, {"IdxDivLine1", 0}, {"IdxDivLine2", 1},
-        {"DivLinesCount", 11}, {"DivLinesDistMin", 11}, {"DivLineVal", 11}, {"DivLineInPix", 11},
-        {"DivLineDistVal", 11}, {"DivLineDistInPix", 11}, {"ValInPix", 11}, {"Val", 11}});
-    pTestStep->addDataRow({
-        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
-        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
-        {"ScaleDimensionUnit", CEnumScaleDimensionUnit(EScaleDimensionUnit::Pixels).toString()},
+        {"UseWorldTransformation", false},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 100.0}, {"ScaleRes", 0.01}, {"ScaleRangePix", 100},
         {"ScaleMinInPix", 0}, {"ScaleMaxInPix", 100}, {"DivLineDistMinPix", 20},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
@@ -1167,18 +1292,18 @@ void CTest::doTestDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep )
 
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
     {
-        CEnumScaleDimensionUnit eScaleDimensionUnit = EScaleDimensionUnit::Pixels;
-        double  fScaleMinVal = 0.0;
-        double  fScaleMaxVal = 0.0;
-        int     iScaleRangePix = 0;
-        double  fDivLineDistMinVal = 0.0;
-        int     iDivLineDistMinPix = 0;
-        bool    bUseDivLineDistValDecimalFactor25 = false;
-        double  fDivLineFirstValExpected = 0.0;
-        double  fDivLineDistFirstPixExpected = 0.0;
-        double  fDivLineDistValExpected = 0.0;
-        double  fDivLineDistPixExpected = 0.0;
-        int     iDivLineCountExpected = 0;
+        bool   bUseWorldTransformation = false;
+        double fScaleMinVal = 0.0;
+        double fScaleMaxVal = 0.0;
+        int    iScaleRangePix = 0;
+        double fDivLineDistMinVal = 0.0;
+        int    iDivLineDistMinPix = 0;
+        bool   bUseDivLineDistValDecimalFactor25 = false;
+        double fDivLineFirstValExpected = 0.0;
+        double fDivLineDistFirstPixExpected = 0.0;
+        double fDivLineDistValExpected = 0.0;
+        double fDivLineDistPixExpected = 0.0;
+        int    iDivLineCountExpected = 0;
 
         QMap<QString, QString> mapExpectedValues;
         QMap<QString, QString> mapResultValues;
@@ -1187,8 +1312,8 @@ void CTest::doTestDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep )
 
         for (const QString& strKey : dataRow.keys())
         {
-            if (strKey == "ScaleDimensionUnit") {
-                eScaleDimensionUnit = dataRow["ScaleDimensionUnit"].toString();
+            if (strKey == "UseWorldTransformation") {
+                bUseWorldTransformation = dataRow["UseWorldTransformation"].toBool();
             }
             else if (strKey == "ScaleMinVal") {
                 fScaleMinVal = dataRow["ScaleMinVal"].toDouble();
@@ -1236,10 +1361,11 @@ void CTest::doTestDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep )
         double fDivLineDistValResult = 0.0;
         double fDivLineDistPixResult = 0.0;
 
-        if (eScaleDimensionUnit == EScaleDimensionUnit::Pixels) {
+        if (bUseWorldTransformation) {
             iDivLineCountResult = ZS::System::Math::CScaleDivLines::getDivLines4LinSpacing(
                 /* fScaleMinVal          */ fScaleMinVal,
                 /* fScaleMaxVal          */ fScaleMaxVal,
+                /* iScaleRangePix        */ iScaleRangePix,
                 /* fDivLineDistMinVal    */ fDivLineDistMinVal,
                 /* iDivLineDistMinPix    */ iDivLineDistMinPix,
                 /* bUseDivLineFactor25   */ bUseDivLineDistValDecimalFactor25,
@@ -1252,7 +1378,6 @@ void CTest::doTestDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep )
             iDivLineCountResult = ZS::System::Math::CScaleDivLines::getDivLines4LinSpacing(
                 /* fScaleMinVal          */ fScaleMinVal,
                 /* fScaleMaxVal          */ fScaleMaxVal,
-                /* iScaleRangePix        */ iScaleRangePix,
                 /* fDivLineDistMinVal    */ fDivLineDistMinVal,
                 /* iDivLineDistMinPix    */ iDivLineDistMinPix,
                 /* bUseDivLineFactor25   */ bUseDivLineDistValDecimalFactor25,
@@ -1304,10 +1429,10 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
         CEnumScaleAxis eScaleAxis = EScaleAxis::X;
         CEnumYScaleAxisOrientation eYScaleAxisOrientation;
         CEnumSpacing eSpacing = ESpacing::Linear;
-        CEnumScaleDimensionUnit eScaleDimensionUnit = EScaleDimensionUnit::Pixels;
+        bool bUseWorldTransformation = false;
         double fScaleMinVal = 0.0;
         double fScaleMaxVal = 0.0;
-        double fScaleRes = 0.1;
+        double fScaleRes = 1.0;
         int iScaleMin_px = 0;
         int iScaleMax_px = 0;
         int iDivLineDistMinPix = 0;
@@ -1319,9 +1444,9 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
         double fVal = 0.0;
 
         int iDivLinesCountExpected = 0;
-        double fDivLinesDistMinExpected = 0.0;
         double fDivLineValExpected = 0.0;
         double fDivLineInPixExpected = 0.0;
+        double fDivLinesDistMinExpected = 0.0;
         double fDivLineDistValExpected = 0.0;
         double fDivLineDistPixExpected = 0.0;
         double fValInPixExpected = 0.0;
@@ -1343,8 +1468,8 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
             else if (strKey == "Spacing") {
                 eSpacing = dataRow["Spacing"].toString();
             }
-            else if (strKey == "ScaleDimensionUnit") {
-                eScaleDimensionUnit = dataRow["ScaleDimensionUnit"].toString();
+            else if (strKey == "UseWorldTransformation") {
+                bUseWorldTransformation = dataRow["UseWorldTransformation"].toBool();
             }
             else if (strKey == "ScaleMinVal") {
                 fScaleMinVal = dataRow["ScaleMinVal"].toDouble();
@@ -1402,13 +1527,17 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
             }
             else if (strKey == "ValInPix") {
                 fValInPix = dataRow["ValInPix"].toDouble();
-                fValInPixExpected = dataRow["ValInPix"].toDouble();
-                mapExpectedValues[strKey] = dataRow["ValInPix"].toString();
+            }
+            else if (strKey == "ValExpected") {
+                fValExpected = dataRow["ValExpected"].toDouble();
+                mapExpectedValues["Val"] = dataRow["ValExpected"].toString();
             }
             else if (strKey == "Val") {
                 fVal = dataRow["Val"].toDouble();
-                fValExpected = dataRow["Val"].toDouble();
-                mapExpectedValues[strKey] = dataRow["Val"].toString();
+            }
+            else if (strKey == "ValInPixExpected") {
+                fValInPixExpected = dataRow["ValInPixExpected"].toDouble();
+                mapExpectedValues["ValInPix"] = dataRow["ValInPixExpected"].toString();
             }
         }
 
@@ -1418,12 +1547,12 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
             divLines.setYScaleAxisOrientation(eYScaleAxisOrientation);
         }
         divLines.setSpacing(eSpacing);
-        divLines.setScaleDimensionUnit(eScaleDimensionUnit);
-        if (eScaleDimensionUnit == EScaleDimensionUnit::Pixels) {
-            divLines.setScale(fScaleMinVal, fScaleMaxVal, fScaleRes);
+        divLines.setUseWorldCoordinateTransformation(bUseWorldTransformation);
+        if (bUseWorldTransformation) {
+            divLines.setScale(fScaleMinVal, fScaleMaxVal, fScaleRes, iScaleMin_px, iScaleMax_px);
         }
         else {
-            divLines.setScale(fScaleMinVal, fScaleMaxVal, fScaleRes, iScaleMin_px, iScaleMax_px);
+            divLines.setScale(fScaleMinVal, fScaleMaxVal, fScaleRes);
         }
         divLines.setDivLinesDistMinInPix(eDivLineLayer, iDivLineDistMinPix);
 
