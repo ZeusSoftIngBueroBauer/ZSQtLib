@@ -883,9 +883,11 @@ bool CWdgtDrawingViewProperties::hasChanges() const
         /* strMethod    */ "hasChanges",
         /* strAddInfo   */ "" );
 
-    bool bHasChanges = (m_drawingSize != m_pDrawingView->drawingSize());
+    const CDrawingSize& drawingSize = m_pDrawingView->drawingSize();
+    bool bHasChanges = (m_drawingSize != drawingSize);
     if (!bHasChanges) {
-        bHasChanges = (m_gridSettings != m_pDrawingView->gridSettings());
+        const CDrawGridSettings& gridSettings = m_pDrawingView->gridSettings();
+        bHasChanges = (m_gridSettings != gridSettings);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);

@@ -124,28 +124,6 @@ void CCheckBoxItemDelegate::paint(
         cbOpt.state |= QStyle::State_Off;
     }
 
-    //cbOpt.rect = QRect(
-    //    /* x      */ i_option.rect.x(),
-    //    /* y      */ i_option.rect.y(),
-    //    /* width  */ i_option.rect.width() - 1,
-    //    /* height */ i_option.rect.height() - 1);
-    //i_pPainter->fillRect(cbOpt.rect, QBrush(Qt::red));
-
-    //cbOpt.rect = QRect(
-    //    /* x      */ i_option.rect.center().x() - i_option.rect.height() / 2 + 2,
-    //    /* y      */ i_option.rect.center().y() - i_option.rect.height() / 2 + 3,
-    //    /* width  */ i_option.rect.height() - 5,
-    //    /* height */ i_option.rect.height() - 5);
-    //i_pPainter->fillRect(cbOpt.rect, QBrush(Qt::blue));
-
-    //cbOpt.rect = QRect(
-    //    /* x      */ i_option.rect.center().x() - i_option.rect.height() / 2 - 4,
-    //    /* y      */ i_option.rect.center().y() - i_option.rect.height() / 2 + 4,
-    //    /* width  */ i_option.rect.height() / 2 - 2,
-    //    /* height */ i_option.rect.height() / 2 - 2);
-    //i_pPainter->setPen(Qt::blue);
-    //i_pPainter->drawRect(cbOpt.rect);
-
     if (cbOpt.state & QStyle::State_Selected) {
         cbOpt.rect = QRect(
             /* x      */ i_option.rect.center().x() - i_option.rect.height() / 2 + 2,

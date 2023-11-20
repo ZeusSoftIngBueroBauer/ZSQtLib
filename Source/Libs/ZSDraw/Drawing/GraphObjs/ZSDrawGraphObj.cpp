@@ -5060,6 +5060,8 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
     m_bForceConversionToSceneCoors = true;
 
     // Here add code in your derived class to convert and recalculate the coordinates.
+    // In the derived class the signal "geometryValuesUnitChanged" has to be emitted
+    // if the unit of the drawing scene's size has been changed.
 
     m_bForceConversionToSceneCoors = false;
 }
@@ -5648,6 +5650,19 @@ void CGraphObj::emit_geometryChanged()
         /* strMethod    */ "CGraphObj::emit_geometryChanged",
         /* strAddInfo   */ "" );
     emit geometryChanged(this);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::emit_geometryValuesUnitChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::emit_geometryValuesUnitChanged",
+        /* strAddInfo   */ "" );
+    emit geometryValuesUnitChanged(this);
 }
 
 //------------------------------------------------------------------------------

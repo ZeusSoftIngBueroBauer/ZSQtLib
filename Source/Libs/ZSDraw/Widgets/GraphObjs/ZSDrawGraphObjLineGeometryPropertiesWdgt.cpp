@@ -101,7 +101,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
         i_strObjName, i_pWdgtParent),
     // Caching values
     m_physValLine(),
-    // Edit Controls
+    // Headline with collapse button.
     m_pWdgtHeadline(nullptr),
     m_pLytWdgtHeadline(nullptr),
     m_pxmBtnDown(":/ZS/Button/ButtonArrowDown.png"),
@@ -110,34 +110,16 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLblHeadlineIcon(nullptr),
     m_pLblHeadline(nullptr),
     m_pSepHeadline(nullptr),
+    // Table View Widget
     m_pWdgtGeometry(nullptr),
     m_pLytWdgtGeometry(nullptr),
-    // Geometry in Metric System
-    m_pWdgtMetric(nullptr),
-    m_pLytWdgtMetric(nullptr),
-    m_pWdgtSepLineMetricGeometry(nullptr),
-    m_pLytSepLineMetricGeometry(nullptr),
-    m_pLblSepLineMetricGeometry(nullptr),
-    m_pSepLineMetricGeometry(nullptr),
-    // Metric Table View
-    m_pLytLineMetricTableViewButtons(nullptr),
-    m_pBtnMetricResizeRowsAndColumnsToContents(nullptr),
-    m_pLytMetricGeometryListView(nullptr),
-    m_pTableViewMetricGeometry(nullptr),
-    m_pModelMetricGeometry(nullptr),
-    // Geometry in Pixels
-    m_pWdgtPixels(nullptr),
-    m_pLytWdgtPixels(nullptr),
-    m_pWdgtSepLinePixelsGeometry(nullptr),
-    m_pLytSepLinePixelsGeometry(nullptr),
-    m_pLblSepLinePixelsGeometry(nullptr),
-    m_pSepLinePixelsGeometry(nullptr),
-    // Pixels Table View
-    m_pLytLinePixelsTableViewButtons(nullptr),
-    m_pBtnPixelsResizeRowsAndColumnsToContents(nullptr),
-    m_pLytPixelsGeometryListView(nullptr),
-    m_pTableViewPixelsGeometry(nullptr),
-    m_pModelPixelsGeometry(nullptr)
+    m_pLytLineTableViewButtons(nullptr),
+    m_pBtnResizeRowsAndColumnsToContents(nullptr),
+    m_pLytGeometryTableView(nullptr),
+    m_pTableViewGeometry(nullptr),
+    m_pEdtPhysValDelegateXVal(nullptr),
+    m_pEdtPhysValDelegateYVal(nullptr),
+    m_pModelGeometry(nullptr)
     // Edit dialog
     //m_hshpRegisteredEditPropertyDialogs(),
     //m_pDlgEditProperty(nullptr)
@@ -199,146 +181,56 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pWdgtGeometry->setLayout(m_pLytWdgtGeometry);
     m_pLyt->addWidget(m_pWdgtGeometry);
 
-    // <Section> Geometry in Metric System
-    //====================================
-
-    m_pWdgtMetric = new QWidget();
-    m_pLytWdgtMetric = new QVBoxLayout();
-    m_pLytWdgtMetric->setContentsMargins(0, 0, 0, 0);
-    m_pWdgtMetric->setLayout(m_pLytWdgtMetric);
-    m_pLytWdgtGeometry->addWidget(m_pWdgtMetric);
-    m_pWdgtMetric->hide();
-
-    m_pWdgtSepLineMetricGeometry = new QWidget();
-    m_pLytSepLineMetricGeometry = new QHBoxLayout();
-    m_pLytSepLineMetricGeometry->setContentsMargins(0, 5, 0, 0);
-    m_pWdgtSepLineMetricGeometry->setLayout(m_pLytSepLineMetricGeometry);
-    m_pLblSepLineMetricGeometry = new QLabel("Metric Values");
-    QFont font = m_pLblSepLineMetricGeometry->font();
-    font.setBold(true);
-    font.setUnderline(true);
-    m_pLblSepLineMetricGeometry->setFont(font);
-    m_pLytSepLineMetricGeometry->addWidget(m_pLblSepLineMetricGeometry);
-    m_pLytWdgtMetric->addWidget(m_pWdgtSepLineMetricGeometry);
-
     // <Line> Table View Buttons
     //--------------------------
+
+    m_pLytLineTableViewButtons = new QHBoxLayout();
+    m_pLytWdgtGeometry->addLayout(m_pLytLineTableViewButtons);
 
     QPixmap pxmResizeToContents(":/ZS/TreeView/TreeViewResizeToContents.png");
-    m_pBtnMetricResizeRowsAndColumnsToContents = new QPushButton();
-    m_pBtnMetricResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
-    m_pBtnMetricResizeRowsAndColumnsToContents->setFixedSize(QSize(24, 24));
-    m_pBtnMetricResizeRowsAndColumnsToContents->setToolTip("Press to resize the rows and columns to their contents");
-    m_pLytSepLineMetricGeometry->addSpacing(10);
-    m_pLytSepLineMetricGeometry->addWidget(m_pBtnMetricResizeRowsAndColumnsToContents);
-    m_pLytSepLineMetricGeometry->addStretch();
+    m_pBtnResizeRowsAndColumnsToContents = new QPushButton();
+    m_pBtnResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
+    m_pBtnResizeRowsAndColumnsToContents->setFixedSize(QSize(24, 24));
+    m_pBtnResizeRowsAndColumnsToContents->setToolTip("Press to resize the rows and columns to their contents");
+    m_pLytLineTableViewButtons->addWidget(m_pBtnResizeRowsAndColumnsToContents);
+    m_pLytLineTableViewButtons->addStretch();
     QObject::connect(
-        m_pBtnMetricResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtGraphObjLineGeometryProperties::onBtnMetricResizeRowsAndColumnsToContentsClicked );
+        m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
+        this, &CWdgtGraphObjLineGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked );
 
-    // <Line> Table View
+    // Table View
     //------------------
 
-    m_pLytMetricGeometryListView = new QVBoxLayout();
-    m_pLytWdgtMetric->addLayout(m_pLytMetricGeometryListView, 1);
+    m_pLytGeometryTableView = new QVBoxLayout();
+    m_pLytWdgtGeometry->addLayout(m_pLytGeometryTableView, 1);
 
-    m_pModelMetricGeometry = new CModelGraphObjGeometry(
+    m_pModelGeometry = new CModelGraphObjGeometry(
         m_pDrawingScene, i_strNameSpace, "StandardShapes::Line",
-        i_strObjName, EScaleDimensionUnit::Metric, this);
-    m_pTableViewMetricGeometry = new QTableView();
-    m_pTableViewMetricGeometry->setModel(m_pModelMetricGeometry);
-    m_pEdtPhysValDelegateMetricXVal =
-        new CEditPhysValtemDelegate(m_pModelMetricGeometry, m_pTableViewMetricGeometry);
-    m_pTableViewMetricGeometry->setItemDelegateForColumn(
-        CModelGraphObjGeometry::EColumnXVal, m_pEdtPhysValDelegateMetricXVal);
-    m_pEdtPhysValDelegateMetricYVal =
-        new CEditPhysValtemDelegate(m_pModelMetricGeometry, m_pTableViewMetricGeometry);
-    m_pTableViewMetricGeometry->setItemDelegateForColumn(
-        CModelGraphObjGeometry::EColumnYVal, m_pEdtPhysValDelegateMetricYVal);
-    m_pTableViewMetricGeometry->setItemDelegateForColumn(
+        i_strObjName, CEnumScaleDimensionUnit(), this);
+    m_pTableViewGeometry = new QTableView();
+    m_pTableViewGeometry->setModel(m_pModelGeometry);
+    m_pEdtPhysValDelegateXVal =
+        new CEditPhysValtemDelegate(m_pModelGeometry, m_pTableViewGeometry);
+    m_pTableViewGeometry->setItemDelegateForColumn(
+        CModelGraphObjGeometry::EColumnXVal, m_pEdtPhysValDelegateXVal);
+    m_pEdtPhysValDelegateYVal =
+        new CEditPhysValtemDelegate(m_pModelGeometry, m_pTableViewGeometry);
+    m_pTableViewGeometry->setItemDelegateForColumn(
+        CModelGraphObjGeometry::EColumnYVal, m_pEdtPhysValDelegateYVal);
+    m_pTableViewGeometry->setItemDelegateForColumn(
         CModelGraphObjGeometry::EColumnShowVals,
-        new CCheckBoxItemDelegate(m_pModelMetricGeometry, m_pTableViewMetricGeometry));
-    m_pTableViewMetricGeometry->setItemDelegateForColumn(
+        new CCheckBoxItemDelegate(m_pModelGeometry, m_pTableViewGeometry));
+    m_pTableViewGeometry->setItemDelegateForColumn(
         CModelGraphObjGeometry::EColumnShowLine,
-        new CCheckBoxItemDelegate(m_pModelMetricGeometry, m_pTableViewMetricGeometry));
-    m_pTableViewMetricGeometry->setEditTriggers(QAbstractItemView::AllEditTriggers);
-    m_pTableViewMetricGeometry->resizeColumnsToContents();
-    m_pTableViewMetricGeometry->resizeRowsToContents();
-    m_pLytMetricGeometryListView->addWidget(m_pTableViewMetricGeometry);
+        new CCheckBoxItemDelegate(m_pModelGeometry, m_pTableViewGeometry));
+    m_pTableViewGeometry->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    m_pTableViewGeometry->resizeColumnsToContents();
+    m_pTableViewGeometry->resizeRowsToContents();
+    m_pLytGeometryTableView->addWidget(m_pTableViewGeometry);
 
     QObject::connect(
-        m_pModelMetricGeometry, &CModelGraphObjGeometry::contentChanged,
-        this, &CWdgtGraphObjLineGeometryProperties::onModelMetricGeometryContentChanged);
-
-    // <Section> Geometry in Pixels
-    //=============================
-
-    m_pWdgtPixels = new QWidget();
-    m_pLytWdgtPixels = new QVBoxLayout();
-    m_pLytWdgtPixels->setContentsMargins(0, 0, 0, 0);
-    m_pWdgtPixels->setLayout(m_pLytWdgtPixels);
-    m_pLytWdgtGeometry->addWidget(m_pWdgtPixels);
-    m_pWdgtPixels->show();
-
-    m_pWdgtSepLinePixelsGeometry = new QWidget();
-    m_pLytSepLinePixelsGeometry = new QHBoxLayout();
-    m_pLytSepLinePixelsGeometry->setContentsMargins(0, 5, 0, 0);
-    m_pWdgtSepLinePixelsGeometry->setLayout(m_pLytSepLinePixelsGeometry);
-    m_pLblSepLinePixelsGeometry = new QLabel("Pixel Values");
-    font = m_pLblSepLinePixelsGeometry->font();
-    font.setBold(true);
-    font.setUnderline(true);
-    m_pLblSepLinePixelsGeometry->setFont(font);
-    m_pLytSepLinePixelsGeometry->addWidget(m_pLblSepLinePixelsGeometry);
-    m_pLytWdgtPixels->addWidget(m_pWdgtSepLinePixelsGeometry);
-
-    // <Line> Table View Buttons
-    //--------------------------
-
-    m_pBtnPixelsResizeRowsAndColumnsToContents = new QPushButton();
-    m_pBtnPixelsResizeRowsAndColumnsToContents->setIcon(pxmResizeToContents);
-    m_pBtnPixelsResizeRowsAndColumnsToContents->setFixedSize(QSize(24, 24));
-    m_pBtnPixelsResizeRowsAndColumnsToContents->setToolTip("Press to resize the rows and columns to their contents");
-    m_pLytSepLinePixelsGeometry->addSpacing(10);
-    m_pLytSepLinePixelsGeometry->addWidget(m_pBtnPixelsResizeRowsAndColumnsToContents);
-    m_pLytSepLinePixelsGeometry->addStretch();
-    QObject::connect(
-        m_pBtnPixelsResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtGraphObjLineGeometryProperties::onBtnPixelsResizeRowsAndColumnsToContentsClicked );
-
-    // <Line> Table View
-    //------------------
-
-    m_pLytPixelsGeometryListView = new QVBoxLayout();
-    m_pLytWdgtPixels->addLayout(m_pLytPixelsGeometryListView, 1);
-
-    m_pModelPixelsGeometry = new CModelGraphObjGeometry(
-        m_pDrawingScene, i_strNameSpace, "StandardShapes::Line",
-        i_strObjName, EScaleDimensionUnit::Pixels, this);
-    m_pTableViewPixelsGeometry = new QTableView();
-    m_pTableViewPixelsGeometry->setModel(m_pModelPixelsGeometry);
-    m_pEdtPhysValDelegatePixelsXVal =
-        new CEditPhysValtemDelegate(m_pModelPixelsGeometry, m_pTableViewPixelsGeometry);
-    m_pTableViewPixelsGeometry->setItemDelegateForColumn(
-        CModelGraphObjGeometry::EColumnXVal, m_pEdtPhysValDelegatePixelsXVal);
-    m_pEdtPhysValDelegatePixelsYVal =
-        new CEditPhysValtemDelegate(m_pModelPixelsGeometry, m_pTableViewPixelsGeometry);
-    m_pTableViewPixelsGeometry->setItemDelegateForColumn(
-        CModelGraphObjGeometry::EColumnYVal, m_pEdtPhysValDelegatePixelsYVal);
-    m_pTableViewPixelsGeometry->setItemDelegateForColumn(
-        CModelGraphObjGeometry::EColumnShowVals,
-        new CCheckBoxItemDelegate(m_pModelPixelsGeometry, m_pTableViewPixelsGeometry));
-    m_pTableViewPixelsGeometry->setItemDelegateForColumn(
-        CModelGraphObjGeometry::EColumnShowLine,
-        new CCheckBoxItemDelegate(m_pModelPixelsGeometry, m_pTableViewPixelsGeometry));
-    m_pTableViewPixelsGeometry->setEditTriggers(QAbstractItemView::AllEditTriggers);
-    m_pTableViewPixelsGeometry->resizeColumnsToContents();
-    m_pTableViewPixelsGeometry->resizeRowsToContents();
-    m_pLytPixelsGeometryListView->addWidget(m_pTableViewPixelsGeometry);
-
-    QObject::connect(
-        m_pModelPixelsGeometry, &CModelGraphObjGeometry::contentChanged,
-        this, &CWdgtGraphObjLineGeometryProperties::onModelPixelsGeometryContentChanged);
+        m_pModelGeometry, &CModelGraphObjGeometry::contentChanged,
+        this, &CWdgtGraphObjLineGeometryProperties::onModelGeometryContentChanged);
 
     // Update controls depending on drawing size (dimension unit etc.)
     //----------------------------------------------------------------
@@ -374,7 +266,9 @@ CWdgtGraphObjLineGeometryProperties::~CWdgtGraphObjLineGeometryProperties()
     //    }
     //}
 
+    // Cached values
     //m_physValLine;
+    // Headline with collapse button.
     m_pWdgtHeadline = nullptr;
     m_pLytWdgtHeadline = nullptr;
     //m_pxmBtnDown;
@@ -383,34 +277,19 @@ CWdgtGraphObjLineGeometryProperties::~CWdgtGraphObjLineGeometryProperties()
     m_pLblHeadlineIcon = nullptr;
     m_pLblHeadline = nullptr;
     m_pSepHeadline = nullptr;
+    // Table View Widget.
     m_pWdgtGeometry = nullptr;
     m_pLytWdgtGeometry = nullptr;
-    // Geometry in Metric System
-    m_pWdgtMetric = nullptr;
-    m_pLytWdgtMetric = nullptr;
-    m_pWdgtSepLineMetricGeometry = nullptr;
-    m_pLytSepLineMetricGeometry = nullptr;
-    m_pLblSepLineMetricGeometry = nullptr;
-    m_pSepLineMetricGeometry = nullptr;
-    // Metric Table View
-    m_pLytLineMetricTableViewButtons = nullptr;
-    m_pBtnMetricResizeRowsAndColumnsToContents = nullptr;
-    m_pLytMetricGeometryListView = nullptr;
-    m_pTableViewMetricGeometry = nullptr;
-    m_pModelMetricGeometry = nullptr;
-    // Geometry in Pixels
-    m_pWdgtPixels = nullptr;
-    m_pLytWdgtPixels = nullptr;
-    m_pWdgtSepLinePixelsGeometry = nullptr;
-    m_pLytSepLinePixelsGeometry = nullptr;
-    m_pLblSepLinePixelsGeometry = nullptr;
-    m_pSepLinePixelsGeometry = nullptr;
-    // Pixels Table View
-    m_pLytLinePixelsTableViewButtons = nullptr;
-    m_pBtnPixelsResizeRowsAndColumnsToContents = nullptr;
-    m_pLytPixelsGeometryListView = nullptr;
-    m_pTableViewPixelsGeometry = nullptr;
-    m_pModelPixelsGeometry =nullptr;
+    m_pLytLineTableViewButtons = nullptr;
+    m_pBtnResizeRowsAndColumnsToContents = nullptr;
+    m_pLytGeometryTableView = nullptr;
+    m_pTableViewGeometry = nullptr;
+    m_pEdtPhysValDelegateXVal = nullptr;
+    m_pEdtPhysValDelegateYVal = nullptr;
+    m_pModelGeometry = nullptr;
+    // Edit dialog
+    //m_hshpRegisteredEditPropertyDialogs;
+    //m_pDlgEditProperty = nullptr;
 }
 
 /*==============================================================================
@@ -467,15 +346,10 @@ bool CWdgtGraphObjLineGeometryProperties::setKeyInTree(const QString& i_strKeyIn
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
         CWdgtGraphObjPropertiesAbstract::setKeyInTree(i_strKeyInTree);
-        if (m_pModelMetricGeometry != nullptr) {
-            m_pModelMetricGeometry->setKeyInTree(i_strKeyInTree);
-            m_pTableViewMetricGeometry->resizeColumnsToContents();
-            m_pTableViewMetricGeometry->resizeRowsToContents();
-        }
-        if (m_pModelPixelsGeometry != nullptr) {
-            m_pModelPixelsGeometry->setKeyInTree(i_strKeyInTree);
-            m_pTableViewPixelsGeometry->resizeColumnsToContents();
-            m_pTableViewPixelsGeometry->resizeRowsToContents();
+        if (m_pModelGeometry != nullptr) {
+            m_pModelGeometry->setKeyInTree(i_strKeyInTree);
+            m_pTableViewGeometry->resizeColumnsToContents();
+            m_pTableViewGeometry->resizeRowsToContents();
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -498,11 +372,8 @@ bool CWdgtGraphObjLineGeometryProperties::hasErrors() const
         /* strMethod    */ "hasErrors",
         /* strAddInfo   */ "" );
     bool bHasErrors = false;
-    if (!bHasErrors && m_pModelMetricGeometry != nullptr) {
-        bHasErrors = m_pModelMetricGeometry->hasErrors();
-    }
-    if (!bHasErrors && m_pModelPixelsGeometry != nullptr) {
-        bHasErrors = m_pModelPixelsGeometry->hasErrors();
+    if (!bHasErrors && m_pModelGeometry != nullptr) {
+        bHasErrors = m_pModelGeometry->hasErrors();
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasErrors);
@@ -520,11 +391,8 @@ bool CWdgtGraphObjLineGeometryProperties::hasChanges() const
         /* strMethod    */ "hasChanges",
         /* strAddInfo   */ "" );
     bool bHasChanges = false;
-    if (!bHasChanges && m_pModelMetricGeometry != nullptr) {
-        bHasChanges = m_pModelMetricGeometry->hasChanges();
-    }
-    if (!bHasChanges && m_pModelPixelsGeometry != nullptr) {
-        bHasChanges = m_pModelPixelsGeometry->hasChanges();
+    if (!bHasChanges && m_pModelGeometry != nullptr) {
+        bHasChanges = m_pModelGeometry->hasChanges();
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
@@ -546,11 +414,8 @@ void CWdgtGraphObjLineGeometryProperties::acceptChanges()
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            if (m_pModelMetricGeometry != nullptr) {
-                m_pModelMetricGeometry->acceptChanges();
-            }
-            if (m_pModelPixelsGeometry != nullptr) {
-                m_pModelPixelsGeometry->acceptChanges();
+            if (m_pModelGeometry != nullptr) {
+                m_pModelGeometry->acceptChanges();
             }
         }
 
@@ -576,11 +441,8 @@ void CWdgtGraphObjLineGeometryProperties::rejectChanges()
 
     {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-        if (m_pModelMetricGeometry != nullptr) {
-            m_pModelMetricGeometry->rejectChanges();
-        }
-        if (m_pModelPixelsGeometry != nullptr) {
-            m_pModelPixelsGeometry->rejectChanges();
+        if (m_pModelGeometry != nullptr) {
+            m_pModelGeometry->rejectChanges();
         }
     }
 
@@ -590,62 +452,6 @@ void CWdgtGraphObjLineGeometryProperties::rejectChanges()
         // .. emit the contentChanged signal and update the enabled state
         // of the Apply and Reset buttons.
         emit_contentChanged();
-    }
-}
-
-/*==============================================================================
-protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_drawingSize.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onDrawingSceneDrawingSizeChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    { CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
-
-        if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)
-        {
-            //m_pEdtMetricPt1X->setUnit(i_drawingSize.metricUnit());
-            //m_pEdtMetricPt1X->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
-            //m_pEdtMetricPt1X->setMaximum(i_drawingSize.metricImageWidth().getVal());
-
-            //m_pEdtMetricWidth->setUnit(i_drawingSize.metricUnit());
-            //m_pEdtMetricWidth->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
-            //m_pEdtMetricWidth->setMinimum(-i_drawingSize.metricImageWidth().getVal());
-            //m_pEdtMetricWidth->setMaximum(i_drawingSize.metricImageWidth().getVal());
-
-            //m_pEdtMetricLength->setUnit(i_drawingSize.metricUnit());
-            //m_pEdtMetricLength->setResolution(i_drawingSize.metricImageWidth().getRes().getVal());
-            //double fWidthMetricImageDiagonale = ZS::System::Math::sqrt(
-            //    ZS::System::Math::sqr(i_drawingSize.metricImageWidth().getVal())
-            //    + ZS::System::Math::sqr(i_drawingSize.metricImageHeight().getVal()));
-            //m_pEdtMetricLength->setMaximum(fWidthMetricImageDiagonale);
-
-            m_pWdgtMetric->show();
-        }
-        else // if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels)
-        {
-            m_pWdgtMetric->hide();
-        }
-
-        //m_pEdtPixelsPtCenterX->setMaximum(i_drawingSize.imageWidthInPixels());
-        //m_pEdtPixelsPtCenterY->setMaximum(i_drawingSize.imageHeightInPixels());
-        //m_pEdtPixelsWidth->setMinimum(-i_drawingSize.imageWidthInPixels());
-        //m_pEdtPixelsWidth->setMaximum(i_drawingSize.imageWidthInPixels());
-        //double fWidthPixelsImageDiagonale = ZS::System::Math::sqrt(
-        //    ZS::System::Math::sqr(i_drawingSize.imageWidthInPixels())
-        //    + ZS::System::Math::sqr(i_drawingSize.imageHeightInPixels()));
-        //m_pEdtPixelsLength->setMaximum(fWidthPixelsImageDiagonale);
     }
 }
 
@@ -672,31 +478,17 @@ void CWdgtGraphObjLineGeometryProperties::onBtnCollapseClicked(bool /*i_bChecked
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::onBtnMetricResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjLineGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onBtnMetricResizeRowsAndColumnsToContentsClicked",
+        /* strMethod    */ "onBtnResizeRowsAndColumnsToContentsClicked",
         /* strAddInfo   */ "" );
 
-    m_pTableViewMetricGeometry->resizeColumnsToContents();
-    m_pTableViewMetricGeometry->resizeRowsToContents();
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::onBtnPixelsResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onBtnPixelsResizeRowsAndColumnsToContentsClicked",
-        /* strAddInfo   */ "" );
-
-    m_pTableViewPixelsGeometry->resizeColumnsToContents();
-    m_pTableViewPixelsGeometry->resizeRowsToContents();
+    m_pTableViewGeometry->resizeColumnsToContents();
+    m_pTableViewGeometry->resizeRowsToContents();
 }
 
 /*==============================================================================
@@ -704,26 +496,13 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::onModelMetricGeometryContentChanged()
+void CWdgtGraphObjLineGeometryProperties::onModelGeometryContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onModelMetricGeometryContentChanged",
-        /* strAddInfo   */ "" );
-
-    emit_contentChanged();
-}
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::onModelPixelsGeometryContentChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onModelPixelsGeometryContentChanged",
+        /* strMethod    */ "onModelGeometryContentChanged",
         /* strAddInfo   */ "" );
 
     emit_contentChanged();

@@ -2018,7 +2018,17 @@ static const ZS::System::SEnumEntry s_arEnumStrQItemDataRole[] =
 QString ZS::System::qItemDataRole2Str( int i_role )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrQItemDataRole, _ZSArrLen(s_arEnumStrQItemDataRole), i_role );
+    QString str;
+    if (i_role >= 0 && i_role < _ZSArrLen(s_arEnumStrQItemDataRole)) {
+        str = SEnumEntry::enumerator2Str( s_arEnumStrQItemDataRole, _ZSArrLen(s_arEnumStrQItemDataRole), i_role );
+    }
+    else if (i_role < Qt::UserRole) {
+        str = "? (" + QString::number(i_role) + ")";
+    }
+    else if (i_role >= Qt::UserRole) {
+        str = "UserRole (" + QString::number(i_role) + ")";
+    }
+    return str;
 }
 
 /*==============================================================================

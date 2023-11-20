@@ -1972,9 +1972,12 @@ void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
         /* strMethod    */ "onDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    m_bForceConversionToSceneCoors = true;
-    setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
-    m_bForceConversionToSceneCoors = false;
+    if (m_physValLine.unit() != i_drawingSize.unit()) {
+        m_bForceConversionToSceneCoors = true;
+        setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
+        m_bForceConversionToSceneCoors = false;
+        emit_geometryValuesUnitChanged();
+    }
 }
 
 //------------------------------------------------------------------------------

@@ -1712,9 +1712,8 @@ void CDiagObjAxisLabel::updateLayout()
     {
         CScale scale = m_pDiagScale->getScale();
         scale.setUnit(m_unitLabels);
-        m_divLinesMetrics.setScaleMin(scale.minVal().getVal());
-        m_divLinesMetrics.setScaleMax(scale.maxVal().getVal());
-        m_divLinesMetrics.setScaleRes(scale.res().getVal());
+        m_divLinesMetrics.setScale(
+            scale.minVal().getVal(), scale.maxVal().getVal(), scale.res().getVal());
     }
 
     // If the unit string should be indicated in the area of the division line labels

@@ -384,6 +384,10 @@ signals:
     void selectedChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the geometry of the object has been changed. */
     void geometryChanged(CGraphObj* i_pGraphObj);
+    /*!< This signal is emitted if the physical unit of the drawing scene's size has been changed
+         and the geometry values of the graphical object are converted into a new unit and
+         viewers need to update the value strings correspondingly. */
+    void geometryValuesUnitChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the Z-value (stacking order) of the object has been changed. */
     void zValueChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the drawing settings (pen style, etc.) of the object has been changed. */
@@ -644,6 +648,7 @@ protected: // auxiliary instance methods
 protected: // auxiliary instance methods (method tracing)
     void emit_selectedChanged();
     void emit_geometryChanged();
+    void emit_geometryValuesUnitChanged();
     void emit_zValueChanged();
     void emit_drawSettingsChanged();
     void emit_labelAdded(const QString& i_strName);

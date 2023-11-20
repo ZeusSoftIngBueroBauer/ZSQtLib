@@ -101,7 +101,7 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     //Units.Length.setDpis(physicalDpiX(), physicalDpiY());
 
     CDrawingSize drawingSize("DrawingScene");
-    drawingSize.setImageSize(CPhysVal(1024, Units.Length.px), CPhysVal(768, Units.Length.px));
+    drawingSize.setImageSize(CPhysVal(800, Units.Length.px), CPhysVal(600, Units.Length.px));
     m_pDrawingScene->setDrawingSize(drawingSize);
 
     setMouseTracking(true);

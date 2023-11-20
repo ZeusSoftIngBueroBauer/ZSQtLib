@@ -141,17 +141,83 @@ int CScaleDivLines::getPrecision2ShowUniqueNumbers(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates division lines for the given scale values.
+/*! @brief Calculates division lines for the given scale values for pixel
+           dimensions only.
+
+    To calculate division lines for metric systems use the getDivLines4LinSpacing
+    method with the pixel range argument.
+
+    For more information about how the dimension unit is used to correct the
+    conversion from pixels to metric values and vice versa see the documentation
+    of class CScaleDivLines.
 
     @param i_fScaleMinVal [in]
         Minimum scale value in world coordinates (e.g. 0.0).
     @param i_fScaleMaxVal [in]
         Maximum scale value in world coordinates (e.g. 100.0).
-    @param i_dimensionUnit [in]
-        Range [Pixels, Metric]
-        For more information about how the dimension unit is used to correct the
-        conversion from pixels to metric values and vice versa see the documentation
-        of class CScaleDivLines.
+    @param i_fDivLineDistMinVal [in]
+        Minimum distance between two division lines in world coordinates (e.g. 10.0).
+    @param i_iDivLineDistMinPix [in]
+        Minimum distance between two division lines in pixels (e.g. 50).
+    @param i_bUseDivLineDistValDecimalFactor25 [in]
+        If false the division lines will be decimal factors at 10, 20, 50.
+        If true also the decimall factor 25 is allowed.
+    @param o_pfDivLineFirstVal [out]
+        If != nullptr contains the world coordinate of the first division line.
+    @param o_pfDivLineDistFirstPix [out]
+        If != nullptr contains the pixel coordinate of the first division line.
+    @param o_pfDivLineDistVal [out]
+        If != nullptr contains the distance in world coordinate between two division lines.
+    @param o_pfDivLineDistPix [out]
+        If != nullptr contains the distance in pixels between two division lines.
+    @param i_pTrcAdminObj [in]
+        If != nullptr the admin object is used to trace the method call.
+
+    @return Number of division lines for the given scale range.
+*/
+int CScaleDivLines::getDivLines4LinSpacing(
+    double  i_fScaleMinPix,
+    double  i_fScaleMaxPix,
+    double  i_fDivLineDistMinVal,
+    int     i_iDivLineDistMinPix,
+    bool    i_bUseDivLineDistValDecimalFactor25,
+    double* o_pfDivLineFirstVal,
+    double* o_pfDivLineDistFirstPix,
+    double* o_pfDivLineDistVal,
+    double* o_pfDivLineDistPix,
+    CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    return getDivLines4LinSpacing(
+        /* eDimensionUnit        */ EScaleDimensionUnit::Pixels,
+        /* fScaleMinVal          */ i_fScaleMinPix,
+        /* fScaleMaxVal          */ i_fScaleMaxPix,
+        /* fScaleRangePix        */ 0.0,
+        /* fDivLineDistMinVal    */ i_fDivLineDistMinVal,
+        /* iDivLineDistMinPix    */ i_iDivLineDistMinPix,
+        /* bUseDivLineDecFac25   */ i_bUseDivLineDistValDecimalFactor25,
+        /* pfDivLineFirstVal     */ o_pfDivLineFirstVal,
+        /* pfDivLineDistFirstPix */ o_pfDivLineDistFirstPix,
+        /* pfDivLineDistVal      */ o_pfDivLineDistVal,
+        /* pfDivLineDistPix      */ o_pfDivLineDistPix,
+        /* pTrcAdminObj          */ i_pTrcAdminObj );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates division lines for the given scale values for metric
+           dimensions only.
+
+    To calculate division lines for pixel systems use the getDivLines4LinSpacing
+    method without the pixel range argument.
+
+    For more information about how the dimension unit is used to correct the
+    conversion from pixels to metric values and vice versa see the documentation
+    of class CScaleDivLines.
+
+    @param i_fScaleMinVal [in]
+        Minimum scale value in world coordinates (e.g. 0.0).
+    @param i_fScaleMaxVal [in]
+        Maximum scale value in world coordinates (e.g. 100.0).
     @param i_fScaleRangePix [in]
         Number of pixels available for the scale (e.g. 1000.0).
     @param i_fDivLineDistMinVal [in]
@@ -188,11 +254,84 @@ int CScaleDivLines::getDivLines4LinSpacing(
     CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
+    return getDivLines4LinSpacing(
+        /* eDimensionUnit        */ EScaleDimensionUnit::Metric,
+        /* fScaleMinVal          */ i_fScaleMinVal,
+        /* fScaleMaxVal          */ i_fScaleMaxVal,
+        /* fScaleRangePix        */ i_fScaleRangePix,
+        /* fDivLineDistMinVal    */ i_fDivLineDistMinVal,
+        /* iDivLineDistMinPix    */ i_iDivLineDistMinPix,
+        /* bUseDivLineDecFac25   */ i_bUseDivLineDistValDecimalFactor25,
+        /* pfDivLineFirstVal     */ o_pfDivLineFirstVal,
+        /* pfDivLineDistFirstPix */ o_pfDivLineDistFirstPix,
+        /* pfDivLineDistVal      */ o_pfDivLineDistVal,
+        /* pfDivLineDistPix      */ o_pfDivLineDistPix,
+        /* pTrcAdminObj          */ i_pTrcAdminObj );
+}
+
+/*==============================================================================
+protected: // class methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates division lines for the given scale values for pixel and
+           metric dimensions.
+
+    The method returns false if the value did not change and true
+    if the value changed and the update method need to be called afterwards
+    to recalculate the division lines.
+
+    @param i_eDimensionUnit [in]
+        Range [Pixels, Metric]
+        For more information about how the dimension unit is used to correct the
+        conversion from pixels to metric values and vice versa see the documentation
+        of class CScaleDivLines.
+    @param i_fScaleMinVal [in]
+        Minimum scale value in world coordinates (e.g. 0.0).
+    @param i_fScaleMaxVal [in]
+        Maximum scale value in world coordinates (e.g. 100.0).
+    @param i_fScaleRangePix [in]
+        Number of pixels available for the scale (e.g. 1000.0).
+    @param i_fDivLineDistMinVal [in]
+        Minimum distance between two division lines in world coordinates (e.g. 10.0).
+    @param i_iDivLineDistMinPix [in]
+        Minimum distance between two division lines in pixels (e.g. 50).
+    @param i_bUseDivLineDistValDecimalFactor25 [in]
+        If false the division lines will be decimal factors at 10, 20, 50.
+        If true also the decimall factor 25 is allowed.
+    @param o_pfDivLineFirstVal [out]
+        If != nullptr contains the world coordinate of the first division line.
+    @param o_pfDivLineDistFirstPix [out]
+        If != nullptr contains the pixel coordinate of the first division line.
+    @param o_pfDivLineDistVal [out]
+        If != nullptr contains the distance in world coordinate between two division lines.
+    @param o_pfDivLineDistPix [out]
+        If != nullptr contains the distance in pixels between two division lines.
+    @param i_pTrcAdminObj [in]
+        If != nullptr the admin object is used to trace the method call.
+
+    @return Number of division lines for the given scale range.
+*/
+int CScaleDivLines::getDivLines4LinSpacing(
+    const CEnumScaleDimensionUnit& i_eDimensionUnit,
+    double  i_fScaleMinVal,
+    double  i_fScaleMaxVal,
+    double  i_fScaleRangePix,
+    double  i_fDivLineDistMinVal,
+    int     i_iDivLineDistMinPix,
+    bool    i_bUseDivLineDistValDecimalFactor25,
+    double* o_pfDivLineFirstVal,
+    double* o_pfDivLineDistFirstPix,
+    double* o_pfDivLineDistVal,
+    double* o_pfDivLineDistPix,
+    CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
     QString strMthInArgs;
     if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Scale {Min: " + QString::number(i_fScaleMinVal)
                      + ", Max: " + QString::number(i_fScaleMaxVal)
-                     + ", RangePix: " + QString::number(i_fScaleRangePix)
+                     + ", Range: " + QString::number(i_fScaleRangePix) + " px"
                      + ", DivLineDist {MinVal: " + QString::number(i_fDivLineDistMinVal)
                      + ", MinPix: " + QString::number(i_iDivLineDistMinPix)
                      + ", UseDecFactor25: " + bool2Str(i_bUseDivLineDistValDecimalFactor25) + "}";
@@ -211,21 +350,36 @@ int CScaleDivLines::getDivLines4LinSpacing(
     if (o_pfDivLineDistFirstPix != nullptr) {
         *o_pfDivLineDistFirstPix = 0.0;
     }
-    if (o_pfDivLineDistVal != nullptr) {
-        *o_pfDivLineDistVal = i_fScaleMaxVal - i_fScaleMinVal;
+    if (i_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        if (o_pfDivLineDistVal != nullptr) {
+            *o_pfDivLineDistVal = i_fScaleMaxVal - i_fScaleMinVal + 1.0;
+        }
+        if (o_pfDivLineDistPix != nullptr) {
+            *o_pfDivLineDistPix = i_fScaleMaxVal - i_fScaleMinVal + 1.0;
+        }
     }
-    if (o_pfDivLineDistPix != nullptr) {
-        *o_pfDivLineDistPix = i_fScaleRangePix;
+    else {
+        if (o_pfDivLineDistVal != nullptr) {
+            *o_pfDivLineDistVal = i_fScaleMaxVal - i_fScaleMinVal;
+        }
+        if (o_pfDivLineDistPix != nullptr) {
+            *o_pfDivLineDistPix = i_fScaleMaxVal - i_fScaleMinVal;
+        }
     }
 
     double fScaleRangeVal = i_fScaleMaxVal - i_fScaleMinVal;
+    double fScaleRangePix = i_fScaleRangePix;
+    if (i_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        fScaleRangeVal += 1.0;
+        fScaleRangePix = fScaleRangeVal;
+    }
 
-    if (fScaleRangeVal > 0.0 && i_fScaleRangePix > 1.0 && i_iDivLineDistMinPix > 1)
+    if (fScaleRangeVal > 0.0 && fScaleRangePix > 1.0 && i_iDivLineDistMinPix > 1)
     {
-        double fScaleRangeFacPixDivVal = i_fScaleRangePix / fScaleRangeVal;
+        double fScaleRangeFacPixDivVal = fScaleRangePix / fScaleRangeVal;
 
         // Maximum possible count of grid lines:
-        int iDivLineCountMax = static_cast<int>(i_fScaleRangePix/static_cast<double>(i_iDivLineDistMinPix)) + 1;
+        int iDivLineCountMax = static_cast<int>(fScaleRangePix/static_cast<double>(i_iDivLineDistMinPix)) + 1;
 
         // On dividing the pixel range by the maximum possible count of grid lines the
         // distance between two grid lines would be:
@@ -279,7 +433,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
 
         // Range between first and last grid line:
         double fDivLineRangeVal = fDivLineLastVal - fDivLineFirstVal;
-        double fDivLineRangePix = i_fScaleRangePix - fDivLineDistFirstPix - fDivLineDistLastPix;
+        double fDivLineRangePix = fScaleRangePix - fDivLineDistFirstPix - fDivLineDistLastPix;
         iDivLineCount = static_cast<int>(fDivLineRangeVal/fDivLineDistVal) + 1;
 
         double fDivLineDistPix = 0.0;
@@ -289,7 +443,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
             fDivLineDistPix = 0.0;
         }
         else {
-            fDivLineDistPix = fDivLineRangePix / (iDivLineCount - 1);
+            fDivLineDistPix = fDivLineDistVal * (fScaleRangePix / fScaleRangeVal);
 
             // Please note that at this point of execution "DivLineDistVal" is always less or equal
             // to the distance between two grid lines if the pixel range would be divided by the
@@ -297,42 +451,46 @@ int CScaleDivLines::getDivLines4LinSpacing(
             // (e.g. 100.0, 1.0, 0.001, etc.). So definitely "DivLineDistPix" is less or equal to
             // "DistMinPix" (the user setting for the minimum distance in pixels between two grid lines).
 
-            // In the following loop we are going to optimize "DivLineDistVal" by increasing the value
-            // and the distance between by the factor of 2, 2.5, 4.0, and 5.0 until the "best human readable"
-            // division of the axis has been reached.
+            // In the following loop we are going to optimize "DivLineDistVal" by increasing the value by the
+            // factors 1, 2, 2.5, and 5.0 until the "best human readable" division of the axis has been reached.
+            // E.g.:  0.0  1.0  2.0  3.0  4.0  5.0  6.0  7.0  8.0  9.0  10.0 ...
+            // or:    0.0       2.0       4.0       6.0       8.0       10.0 ... (optional depending on i_bUseDivLineDistValDecimalFactor25)
+            // or:    0.0          2.5         5.0          7.5         10.0 ... (optional depending on i_bUseDivLineDistValDecimalFactor25)
+            // or:    0.0                      5.0                      10.0
             int iDivLineDistValDecimalFactor = 10;
+            int iDecimals = 1;
             double fDivLineDistValDecimalFactor = 1.0;
             double fDivLineDistValBeforeCorr = fDivLineDistVal;
-            double fDivLineDistPixBeforeCorr = fDivLineDistPix;
 
             // As long as the grid lines are too close to each other ...
             while (fDivLineDistPix < i_iDivLineDistMinPix) {
-                switch( iDivLineDistValDecimalFactor )
+                switch (iDivLineDistValDecimalFactor)
                 {
                     case 10: {
                         iDivLineDistValDecimalFactor = 20;
-                        fDivLineDistValDecimalFactor *= (20.0/10.0);
+                        fDivLineDistValDecimalFactor = iDecimals * 2.0;
                         break;
                     }
                     case 20: {
                         if (i_bUseDivLineDistValDecimalFactor25) {
                             iDivLineDistValDecimalFactor = 25;
-                            fDivLineDistValDecimalFactor *= (25.0/20.0);
+                            fDivLineDistValDecimalFactor = iDecimals * 2.5;
                         }
                         else {
                             iDivLineDistValDecimalFactor = 50;
-                            fDivLineDistValDecimalFactor *= (50.0/25.0);
+                            fDivLineDistValDecimalFactor = iDecimals * 5.0;
                         }
                         break;
                     }
                     case 25: {
                         iDivLineDistValDecimalFactor = 50;
-                        fDivLineDistValDecimalFactor *= (50.0/25.0);
+                        fDivLineDistValDecimalFactor = iDecimals * 5.0;
                         break;
                     }
                     case 50: {
+                        iDecimals *= 10;
                         iDivLineDistValDecimalFactor = 10;
-                        fDivLineDistValDecimalFactor *= (100.0/50.0);
+                        fDivLineDistValDecimalFactor = iDecimals;
                         break;
                     }
                     default: {
@@ -340,7 +498,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
                     }
                 }
                 fDivLineDistVal = fDivLineDistValDecimalFactor * fDivLineDistValBeforeCorr;
-                fDivLineDistPix = fDivLineDistValDecimalFactor * fDivLineDistPixBeforeCorr;
+                fDivLineDistPix = fDivLineDistVal * (fScaleRangePix / fScaleRangeVal);
             }
         }
 
@@ -365,23 +523,23 @@ int CScaleDivLines::getDivLines4LinSpacing(
             fDivLineDistFirstPix = fDivLineOffsetPix;
         }
 
-        iDivLineCount = 0;
-        double fDivLineVal = fDivLineFirstVal; // please note that the first digit of "DivLineFirstVal" is "1".
-        if (fDivLineVal >= i_fScaleMinVal) {
+        iDivLineCount = 1;
+        double fDivLineVal_px = fDivLineDistFirstPix; // please note that the first digit of "DivLineFirstVal" is "1".
+        while (fDivLineVal_px <= fScaleRangePix) {
             iDivLineCount++;
-        }
-        while (fDivLineVal <= i_fScaleMaxVal) {
-            iDivLineCount++;
-            fDivLineVal += fDivLineDistVal;
+            fDivLineVal_px += fDivLineDistPix;
 
             // If DivLineDistVal is very small (but still greater than DBL_EPSILON),
             // adding fDivLineDistVal to fDivLineVal may not change the value of fDivLineVal
             // (maybe bug in floating point library?). To avoid an endless loop ...
-            if (fDivLineFirstVal + iDivLineCount*fDivLineDistVal > i_fScaleMaxVal) {
+            // And note that the pixel value at ScaleRangePix (which is ScaleMaxPix + 1)
+            // does not have visible division line.
+            if (fDivLineDistFirstPix + iDivLineCount*fDivLineDistPix >= fScaleRangePix) {
                 break;
             }
         }
-        if (fDivLineVal > i_fScaleMaxVal) {
+        // The pixel value at ScaleRangePix (which is ScaleMaxPix + 1) does not have visible division line.
+        if (fDivLineVal_px >= fScaleRangePix) {
             iDivLineCount--;
         }
         if (o_pfDivLineFirstVal != nullptr) {
@@ -397,7 +555,6 @@ int CScaleDivLines::getDivLines4LinSpacing(
             *o_pfDivLineDistPix = fDivLineDistPix;
         }
     }
-
     if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs =
             "DivLines {FirstVal: " + QString(o_pfDivLineFirstVal == nullptr ? "null" : QString::number(*o_pfDivLineFirstVal)) +
@@ -717,11 +874,133 @@ bool CScaleDivLines::setSpacing(const CEnumSpacing& i_eSpacing)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the scale dimension unit.
+
+    For more information about how the dimension unit is used to correct the
+    conversion from pixels to metric values and vice versa see the documentation
+    of class CScaleDivLines.
+
+    The method returns false if the value did not change and true
+    if the value changed and the update method need to be called afterwards
+    to recalculate the division lines.
+
+    @param i_eDimensionUnit [in]
+        Range [Pixels, Metric]
+
+    @return true if the value has been changed and the division lines need to
+            be recalculated, false otherwise.
+*/
+bool CScaleDivLines::setScaleDimensionUnit(const CEnumScaleDimensionUnit& i_eDimensionUnit)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_eDimensionUnit.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScaleDimensionUnit",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bChanged = false;
+    if (m_scaleDimensionUnit != i_eDimensionUnit.enumerator()) {
+        m_scaleDimensionUnit = i_eDimensionUnit.enumerator();
+        bChanged = true;
+        m_bDivLinesCalculated = false;
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bChanged);
+    }
+    return bChanged;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scale values.
+
+    Before invoking this method the dimension unit (pixel or metric system)
+    must have been set.
+
+    If the scale division line instance is setup for pixel dimension the pixel
+    scale values are set.
+    If the scale division line instance is setup for metric dimension the world
+    coordinates are set.
+
+    Please see the class documenation on how to correctly setup the scale
+    values for pixel and metric dimension units.
+
+    The method returns false if none of the values changed and true if at
+    least one value changed and the update method need to be called afterwards
+    to recalculate the division lines.
+
+    @param i_fMin [in]
+        Minimum scale value (either in pixels or world coordinates).
+    @param i_fMax [in]
+        Maximum scale value (either in pixels or world coordinates)
+    @param i_fRes [in]
+        Resolution of the scale values in pixels.
+        The resolution defines the number of leading and trailing digits to indicate
+        the minimum and maximum values.
+        For pixels the resolution is usually 1.0.
+        - A resolution of 0.001 sets the number of leading digits to 1
+          and the trailing digits to 3.
+        - A resolution of 10.0 sets the number of leading digits to 2
+          and the trailing digits to 1.
+
+    @return true if the value has been changed and the division lines need to
+            be recalculated, false otherwise.
+*/
+bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Min: " + QString::number(i_fMin) +
+                     ", Max: " + QString::number(i_fMax) +
+                     ", Res: " + QString::number(i_fRes);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setScale",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bChanged = false;
+    if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
+        if (m_fScaleMin != i_fMin || m_fScaleMax != i_fMax || m_fScaleRes != i_fRes) {
+            m_fScaleMin = i_fMin;
+            m_fScaleMax = i_fMax;
+            m_fScaleRes = i_fRes;
+            bChanged = true;
+            m_bDivLinesCalculated = false;
+        }
+    }
+    else {
+        if (m_fMin_px != i_fMin || m_fMax_px != i_fMax || m_fScaleRes != i_fRes) {
+            m_fMin_px = i_fMin;
+            m_fMax_px = i_fMax;
+            m_fScaleRes = i_fRes;
+            bChanged = true;
+            m_bDivLinesCalculated = false;
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bChanged);
+    }
+    return bChanged;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets both the world coordinates (phyiscal values) and the
            range in pixels of the scale.
 
+    The method throws an exception if the instance is setup to calculate
+    division lines for pixel dimension units.
+
+    For pixel dimension the setScale method with three arguments must be used.
+
     Please see the class documenation on how to correctly setup the scale
-    values in metric systems.
+    values for pixel and metric dimension units.
 
     The method returns false if none of the values changed and true if at
     least one value changed and the update method need to be called afterwards
@@ -743,28 +1022,21 @@ bool CScaleDivLines::setSpacing(const CEnumSpacing& i_eSpacing)
         Minimum of the scale in pixels.
     @param i_fMax_px [in]
         Maximum of the scale in pixels.
-    @param i_eDimensionUnit [in] (default: Pixels)
-        Range [Pixels, Metric]
-        For more information about how the dimension unit is used to correct the
-        conversion from pixels to metric values and vice versa see the documentation
-        of class CScaleDivLines.
 
     @return true if the value has been changed and the division lines need to
             be recalculated, false otherwise.
 */
 bool CScaleDivLines::setScale(
-    double i_fScaleMin, double i_fScaleMax, double i_fScaleRes,
-    double i_fMin_px, double i_fMax_px, const CEnumScaleDimensionUnit& i_eDimensionUnit)
+    double i_fMin, double i_fMax, double i_fRes, double i_fMin_px, double i_fMax_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ScaleMin: " + QString::number(i_fScaleMin) +
-                     ", ScaleMax: " + QString::number(i_fScaleMax) +
-                     ", ScaleRes: " + QString::number(i_fScaleRes) +
+        strMthInArgs = "Min: " + QString::number(i_fMin) +
+                     ", Max: " + QString::number(i_fMax) +
+                     ", Res: " + QString::number(i_fRes) +
                      ", Min: " + QString::number(i_fMin_px) + " px" +
-                     ", Max: " + QString::number(i_fMax_px) + " px" +
-                     ", DimUnit: " + i_eDimensionUnit.toString();
+                     ", Max: " + QString::number(i_fMax_px) + " px";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -772,55 +1044,19 @@ bool CScaleDivLines::setScale(
         /* strMethod    */ "setScale",
         /* strAddInfo   */ strMthInArgs );
 
+    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+    }
+
     bool bChanged = false;
-    if (m_fScaleMin != i_fScaleMin || m_fScaleMax != i_fScaleMax || m_fScaleRes != i_fScaleRes
-     || m_fMax_px != i_fMax_px || m_fMin_px != i_fMin_px
-     || m_scaleDimensionUnit != i_eDimensionUnit.enumerator())
+    if (m_fScaleMin != i_fMin || m_fScaleMax != i_fMax || m_fScaleRes != i_fRes
+     || m_fMin_px != i_fMin_px || m_fMax_px != i_fMax_px)
     {
-        m_fScaleMin = i_fScaleMin;
-        m_fScaleMax = i_fScaleMax;
-        m_fScaleRes = i_fScaleRes;
-        m_fMax_px = i_fMax_px;
-        m_fMin_px = i_fMin_px;
-        m_scaleDimensionUnit = i_eDimensionUnit.enumerator();
-        bChanged = true;
-        m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
-    }
-    return bChanged;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the minimum scale value in world coordinates (phyiscal values).
-
-    The method returns false if the value did not change and true
-    if the value changed and the update method need to be called afterwards
-    to recalculate the division lines.
-
-    @param i_fMin [in]
-        Minimum scale value.
-
-    @return true if the value has been changed and the division lines need to
-            be recalculated, false otherwise.
-*/
-bool CScaleDivLines::setScaleMin(double i_fMin)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fMin);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleMin",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bChanged = false;
-    if (m_fScaleMin != i_fMin) {
         m_fScaleMin = i_fMin;
+        m_fScaleMax = i_fMax;
+        m_fScaleRes = i_fRes;
+        m_fMin_px = i_fMin_px;
+        m_fMax_px = i_fMax_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -831,34 +1067,51 @@ bool CScaleDivLines::setScaleMin(double i_fMin)
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the maximum scale value in world coordinates (phyiscal values).
+/*! @brief Sets the scale range in pixels.
 
-    The method returns false if the value did not change and true
-    if the value changed and the update method need to be called afterwards
+    The method throws an exception if the instance is setup to calculate
+    division lines for pixel dimension units.
+
+    For pixel dimension the setScale methods without InPix in the name must be used.
+
+    Please see the class documenation on how to correctly setup the scale
+    values for pixel and metric dimension units.
+
+    The method returns false if none of the values changed and true if at
+    least one value changed and the update method need to be called afterwards
     to recalculate the division lines.
 
-    @param i_fMax [in]
-        Maximum scale value.
+    @param i_fMin_px [in]
+        Minimum of the scale in pixels.
+    @param i_fMax_px [in]
+        Maximum of the scale in pixels.
 
     @return true if the value has been changed and the division lines need to
             be recalculated, false otherwise.
 */
-bool CScaleDivLines::setScaleMax(double i_fMax)
+bool CScaleDivLines::setScaleInPix(double i_fMin_px, double i_fMax_px)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fMax);
+        strMthInArgs = "Min: " + QString::number(i_fMin_px) + " px" +
+                     ", Max: " + QString::number(i_fMax_px) + " px";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleMax",
+        /* strMethod    */ "setScale",
         /* strAddInfo   */ strMthInArgs );
 
+    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+    }
+
     bool bChanged = false;
-    if (m_fScaleMax != i_fMax) {
-        m_fScaleMax = i_fMax;
+    if (m_fMin_px != i_fMin_px || m_fMax_px != i_fMax_px)
+    {
+        m_fMin_px = i_fMin_px;
+        m_fMax_px = i_fMax_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -903,164 +1156,6 @@ bool CScaleDivLines::setScaleRes(double i_fRes)
     bool bChanged = false;
     if (m_fScaleRes != i_fRes) {
         m_fScaleRes = i_fRes;
-        bChanged = true;
-        m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
-    }
-    return bChanged;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the scale dimension unit.
-
-    For more information about how the dimension unit is used to correct the
-    conversion from pixels to metric values and vice versa see the documentation
-    of class CScaleDivLines.
-
-    The method returns false if the value did not change and true
-    if the value changed and the update method need to be called afterwards
-    to recalculate the division lines.
-
-    @param i_eDimensionUnit [in]
-        Range [Pixels, Metric]
-
-    @return true if the value has been changed and the division lines need to
-            be recalculated, false otherwise.
-*/
-bool CScaleDivLines::setScaleDimensionUnit(const CEnumScaleDimensionUnit& i_eDimensionUnit)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_eDimensionUnit.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleDimensionUnit",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bChanged = false;
-    if (m_scaleDimensionUnit != i_eDimensionUnit.enumerator()) {
-        m_scaleDimensionUnit = i_eDimensionUnit.enumerator();
-        bChanged = true;
-        m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
-    }
-    return bChanged;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the minimum value the scale in pixels.
-
-    The method returns false if the value did not change and true
-    if the value changed and the update method need to be called afterwards
-    to recalculate the division lines.
-
-    @param i_fMin_px [in]
-        Minimum scale in pixels.
-
-    @return true if the value has been changed and the division lines need to
-            be recalculated, false otherwise.
-*/
-bool CScaleDivLines::setScaleMinInPix(double i_fMin_px)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fMin_px);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleMinInPix",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bChanged = false;
-    if (m_fMin_px != i_fMin_px) {
-        m_fMin_px = i_fMin_px;
-        bChanged = true;
-        m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
-    }
-    return bChanged;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the maximum value the scale in pixels.
-
-    The method returns false if the value did not change and true
-    if the value changed and the update method need to be called afterwards
-    to recalculate the division lines.
-
-    @param i_fMax_px [in]
-        Maximum scale in pixels.
-
-    @return true if the value has been changed and the division lines need to
-            be recalculated, false otherwise.
-*/
-bool CScaleDivLines::setScaleMaxInPix(double i_fMax_px)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fMax_px);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleMaxInPix",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bChanged = false;
-    if (m_fMax_px != i_fMax_px) {
-        m_fMax_px = i_fMax_px;
-        bChanged = true;
-        m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
-    }
-    return bChanged;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the range of the scale in pixels by changing the maximum scale
-           in pixels (the minimum scale in pixels remains unchanged).
-
-    The method returns false if the value did not change and true
-    if the value changed and the update method need to be called afterwards
-    to recalculate the division lines.
-
-    @param i_fRange_px [in]
-        Range of the scale in pixels.
-
-    @return true if the value has been changed and the division lines need to
-            be recalculated, false otherwise.
-*/
-bool CScaleDivLines::setScaleRangeInPix(double i_fRange_px)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fRange_px);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleRangeInPix",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bChanged = false;
-    double fRangePrev_px = scaleRangeInPix();
-    if (fRangePrev_px != i_fRange_px) {
-        m_fMax_px = m_fMin_px + i_fRange_px - 1;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -1205,24 +1300,32 @@ EScaleDimensionUnit CScaleDivLines::scaleDimensionUnit() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the minimum scale value (world coordinates).
+/*! @brief Returns the minimum scale value (either pixel or world coordinates
+           depending on the dimension unit the scale division line instance is setup).
 
     @return Minimum scale value.
 */
 double CScaleDivLines::scaleMin() const
 //------------------------------------------------------------------------------
 {
+    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
+        return scaleMinInPix();
+    }
     return m_fScaleMin;
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the maximum scale value (world coordinates).
+/*! @brief Returns the maxim scale value (either pixel or world coordinates
+           depending on the dimension unit the scale division line instance is setup).
 
     @return Maximum scale value.
 */
 double CScaleDivLines::scaleMax() const
 //------------------------------------------------------------------------------
 {
+    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
+        return scaleMaxInPix();
+    }
     return m_fScaleMax;
 }
 
@@ -1234,6 +1337,9 @@ double CScaleDivLines::scaleMax() const
 double CScaleDivLines::scaleRange() const
 //------------------------------------------------------------------------------
 {
+    if (m_scaleDimensionUnit == EScaleDimensionUnit::Pixels) {
+        return scaleRangeInPix();
+    }
     return fabs(m_fScaleMax - m_fScaleMin);
 }
 
@@ -1357,9 +1463,9 @@ bool CScaleDivLines::update()
         //--------------------------------------
 
         double fRange_px = scaleRangeInPix();
-        if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
-            fRange_px -= 1;
-        }
+        //if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
+        //    fRange_px -= 1;
+        //}
 
         if (fRange_px <= 1.0 || m_ariDivLinesDistMin_px[EDivLineLayerMain] < 2) {
         }
@@ -1876,9 +1982,9 @@ void CScaleDivLines::updateLinearSpacing()
     QVector<double> arfDivLineDistPix(CEnumDivLineLayer::count(), 0.0);
 
     double fRange_px = scaleRangeInPix();
-    if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
-        fRange_px -= 1;
-    }
+    //if (m_scaleDimensionUnit == EScaleDimensionUnit::Metric) {
+    //    fRange_px -= 1;
+    //}
 
     for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++)
     {
@@ -1886,6 +1992,7 @@ void CScaleDivLines::updateLinearSpacing()
         {
             // Calculate optimized distance between two grid lines:
             ariDivLineCountTmp[iLayer] = getDivLines4LinSpacing(
+                /* eDimensionUnit        */ m_scaleDimensionUnit,
                 /* fScaleMinVal          */ fDivLineDistValMin,
                 /* fScaleMaxVal          */ fDivLineDistValMax,
                 /* fScaleRangePix        */ fRange_px,
@@ -2110,6 +2217,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
 
         // Calculate optimized distance between two main grid lines:
         ariDivLineCount[EDivLineLayerMain] = getDivLines4LinSpacing(
+            /* eDimensionUnit        */ m_scaleDimensionUnit,
             /* fScaleMinVal          */ fScaleMinValLog,
             /* fScaleMaxVal          */ fScaleMaxValLog,
             /* iScaleRangePix        */ fRange_px,
@@ -2152,6 +2260,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
         if (m_ariDivLinesDistMin_px[EDivLineLayerSub] > 1 && m_ariDivLinesDistMin_px[EDivLineLayerMain] > 2*m_ariDivLinesDistMin_px[EDivLineLayerSub])
         {
             ariDivLineCountTmp[EDivLineLayerSub] = getDivLines4LinSpacing(
+                /* eDimensionUnit        */ m_scaleDimensionUnit,
                 /* fScaleMinVal          */ arfDivLineFirstValLog[EDivLineLayerMain],
                 /* fScaleMaxVal          */ arfDivLineFirstValLog[EDivLineLayerMain]+arfDivLineDistValLog[EDivLineLayerMain],
                 /* fScaleRangePix        */ arfDivLineDistPix[EDivLineLayerMain],

@@ -81,15 +81,11 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     bool hasChanges() const override;
     void acceptChanges() override;
     void rejectChanges() override;
-protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
-    void onBtnMetricResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
-    void onBtnPixelsResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
+    void onBtnResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
 protected slots:
-    void onModelMetricGeometryContentChanged();
-    void onModelPixelsGeometryContentChanged();
+    void onModelGeometryContentChanged();
     //void onDlgEditPropertyDestroyed(QObject* i_pObj = nullptr);
 private: // auxiliary instance methods
     //void registerEditPropertyDialog(ZS::PhysVal::GUI::CWdgtEditPhysVal* i_pEdtWidget);
@@ -100,7 +96,7 @@ private: // instance members
          The values are stored in the unit of the drawing size.
          If the drawing size changes the coordinates are updated and converted if necessary. */
     CPhysValLine m_physValLine;
-    /*!< Edit controls. */
+    /*!< Headline with collapse button. */
     QWidget* m_pWdgtHeadline;
     QHBoxLayout* m_pLytWdgtHeadline;
     QPixmap m_pxmBtnDown;
@@ -109,38 +105,16 @@ private: // instance members
     QLabel* m_pLblHeadlineIcon;
     QLabel* m_pLblHeadline;
     ZS::System::GUI::CSepLine* m_pSepHeadline;
+    /*!< Table View Widget. */
     QWidget* m_pWdgtGeometry;
     QVBoxLayout* m_pLytWdgtGeometry;
-    /*!< Geometry in Metric System */
-    QWidget* m_pWdgtMetric;
-    QVBoxLayout* m_pLytWdgtMetric;
-    QWidget* m_pWdgtSepLineMetricGeometry;
-    QHBoxLayout* m_pLytSepLineMetricGeometry;
-    QLabel* m_pLblSepLineMetricGeometry;
-    ZS::System::GUI::CSepLine* m_pSepLineMetricGeometry;
-    /*!< Metric Table View */
-    QHBoxLayout* m_pLytLineMetricTableViewButtons;
-    QPushButton* m_pBtnMetricResizeRowsAndColumnsToContents;
-    QVBoxLayout* m_pLytMetricGeometryListView;
-    QTableView* m_pTableViewMetricGeometry;
-    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateMetricXVal;
-    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateMetricYVal;
-    CModelGraphObjGeometry* m_pModelMetricGeometry;
-    /*!< Geometry in Pixels */
-    QWidget* m_pWdgtPixels;
-    QVBoxLayout* m_pLytWdgtPixels;
-    QWidget* m_pWdgtSepLinePixelsGeometry;
-    QHBoxLayout* m_pLytSepLinePixelsGeometry;
-    QLabel* m_pLblSepLinePixelsGeometry;
-    ZS::System::GUI::CSepLine* m_pSepLinePixelsGeometry;
-    /*!< Pixels Table View */
-    QHBoxLayout* m_pLytLinePixelsTableViewButtons;
-    QPushButton* m_pBtnPixelsResizeRowsAndColumnsToContents;
-    QVBoxLayout* m_pLytPixelsGeometryListView;
-    QTableView* m_pTableViewPixelsGeometry;
-    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegatePixelsXVal;
-    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegatePixelsYVal;
-    CModelGraphObjGeometry* m_pModelPixelsGeometry;
+    QHBoxLayout* m_pLytLineTableViewButtons;
+    QPushButton* m_pBtnResizeRowsAndColumnsToContents;
+    QVBoxLayout* m_pLytGeometryTableView;
+    QTableView* m_pTableViewGeometry;
+    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateXVal;
+    ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateYVal;
+    CModelGraphObjGeometry* m_pModelGeometry;
     // Dialog to edit and immediately apply changed properties.
     //QHash<QString, QWidget*> m_hshpRegisteredEditPropertyDialogs;
     //CDlgGraphObjLineGeometryEditProperty* m_pDlgEditProperty;

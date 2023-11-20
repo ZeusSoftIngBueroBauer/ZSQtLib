@@ -134,6 +134,29 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Model for the geometry values of a line.
+
+    @param [in] i_pDrawingScene
+        Pointer to drawing scene.
+    @param [in] i_strNameSpace
+        Namespace to be used for the class in the trace admin object tree
+        (e.g. "ZS::Draw::Widgets::GraphObjs").
+    @param [in] i_strGraphObjType
+        Graphical object type to be used for the class in the trace admin object tree.
+        (e.g. "StandardShapes::Line").
+    @param [in] i_strObjName
+        Identifies the usage of the model (e.g. in a dialog or in the objects widget stack).
+    @param [in] i_eDimensionUnit
+        If not set (invalid) the values are indicated in the current dimension
+        unit of the drawing scene.
+        If set to Metric the values are always shown in metrics unit. If the drawing
+        scene's unit is set to pixel the model cannot be used and the corresponding
+        table view got to be hidden.
+        If set to Pixels the values are always shown in pixel coordinates. If the drawing
+        scene's unit is a metric unit the values will be converted to pixel values.
+    @param [in] i_pObjParent
+        Parent object.
+*/
 CModelGraphObjGeometry::CModelGraphObjGeometry(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strNameSpace,
@@ -149,6 +172,7 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
     m_fontMetrics(m_font),
     m_strKeyInTree(),
     m_pGraphObj(nullptr),
+    m_drawingSize(i_pDrawingScene->drawingSize()),
     m_physValLine(),
     m_arLabelSettings(),
     m_strXYValSizeHint("1024 px +-"),
@@ -158,7 +182,7 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjNoisyMethods(nullptr)
 {
-    setObjectName(i_strObjName + m_eDimensionUnit.toString());
+    setObjectName(i_strObjName + QString(m_eDimensionUnit.isValid() ? m_eDimensionUnit.toString() : ""));
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         i_strNameSpace + "::" + i_strGraphObjType, ClassName(), objectName());
@@ -173,6 +197,10 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ strMthInArgs );
+
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
+        this, &CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged);
 
 } // ctor
 
@@ -200,6 +228,7 @@ CModelGraphObjGeometry::~CModelGraphObjGeometry()
     //m_fontMetrics;
     //m_strKeyInTree;
     m_pGraphObj = nullptr;
+    //m_drawingSize;
     //m_physValLine;
     //m_arLabelSettings;
     //m_strXYValSizeHint;
@@ -278,11 +307,14 @@ bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
 
         if (m_pGraphObj != nullptr) {
             QObject::disconnect(
-                m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
-                this, &CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged);
-            QObject::disconnect(
                 m_pGraphObj, &CGraphObj::geometryChanged,
                 this, &CModelGraphObjGeometry::onGraphObjGeometryChanged);
+            QObject::disconnect(
+                m_pGraphObj, &CGraphObj::geometryValuesUnitChanged,
+                this, &CModelGraphObjGeometry::onGraphObjGeometryValuesUnitChanged);
+            QObject::disconnect(
+                m_pGraphObj, &CGraphObj::geometryLabelChanged,
+                this, &CModelGraphObjGeometry::onGraphObjGeometryLabelChanged);
             QObject::disconnect(
                 m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CModelGraphObjGeometry::onGraphObjAboutToBeDestroyed);
@@ -299,11 +331,14 @@ bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
 
         if (m_pGraphObj != nullptr) {
             QObject::connect(
-                m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
-                this, &CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged);
-            QObject::connect(
                 m_pGraphObj, &CGraphObj::geometryChanged,
                 this, &CModelGraphObjGeometry::onGraphObjGeometryChanged);
+            QObject::connect(
+                m_pGraphObj, &CGraphObj::geometryValuesUnitChanged,
+                this, &CModelGraphObjGeometry::onGraphObjGeometryValuesUnitChanged);
+            QObject::connect(
+                m_pGraphObj, &CGraphObj::geometryLabelChanged,
+                this, &CModelGraphObjGeometry::onGraphObjGeometryLabelChanged);
             QObject::connect(
                 m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
                 this, &CModelGraphObjGeometry::onGraphObjAboutToBeDestroyed);
@@ -498,7 +533,7 @@ public: // instance methods
 
     @return Row index of the label with the given current name, -1 otherwise.
 */
-int CModelGraphObjGeometry::getValueRowIndex(const QString& i_strName) const
+int CModelGraphObjGeometry::getLabelRowIndex(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     int iRowIdx = -1;
@@ -514,7 +549,7 @@ int CModelGraphObjGeometry::getValueRowIndex(const QString& i_strName) const
 //------------------------------------------------------------------------------
 /*! @brief Returns a list with the current names of the labels.
 */
-QStringList CModelGraphObjGeometry::valueNames() const
+QStringList CModelGraphObjGeometry::labelNames() const
 //------------------------------------------------------------------------------
 {
     QStringList strlstNames;
@@ -589,6 +624,7 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
+            const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
             const SLabelSettings& labelSettings = m_arLabelSettings[iRow];
             switch (iClm) {
                 case EColumnName: {
@@ -653,6 +689,12 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = -drawingSize.metricImageWidth().getVal();
+                            }
+                            else if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+                                varData = -drawingSize.imageWidthInPixels();
+                            }
+                            else if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
                                 varData = -m_pDrawingScene->drawingSize().metricImageWidth().getVal();
                             }
                             else {
@@ -661,6 +703,12 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         }
                         else {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = 0.0;
+                            }
+                            else if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+                                varData = 0;
+                            }
+                            else if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
                                 varData = 0.0;
                             }
                             else {
@@ -674,6 +722,12 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         }
                         else {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = m_pDrawingScene->drawingSize().metricImageWidth().getVal();
+                            }
+                            else if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+                                varData = m_pDrawingScene->drawingSize().imageWidthInPixels();
+                            }
+                            else if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
                                 varData = m_pDrawingScene->drawingSize().metricImageWidth().getVal();
                             }
                             else {
@@ -721,14 +775,26 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                     else if (i_iRole == ERoleMinimumValue) {
                         if (labelSettings.m_strValueName == CGraphObjLine::c_strValueNameSize) {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
-                                varData = -m_pDrawingScene->drawingSize().metricImageHeight().getVal();
+                                varData = -drawingSize.metricImageHeight().getVal();
+                            }
+                            else if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+                                varData = -drawingSize.imageHeightInPixels();
+                            }
+                            else if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+                                varData = -drawingSize.metricImageHeight().getVal();
                             }
                             else {
-                                varData = -m_pDrawingScene->drawingSize().imageHeightInPixels();
+                                varData = -drawingSize.imageHeightInPixels();
                             }
                         }
                         else {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                                varData = 0.0;
+                            }
+                            else if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+                                varData = 0;
+                            }
+                            else if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
                                 varData = 0.0;
                             }
                             else {
@@ -738,10 +804,16 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                     }
                     else if (i_iRole == ERoleMaximumValue) {
                         if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
-                            varData = m_pDrawingScene->drawingSize().metricImageHeight().getVal();
+                            varData = drawingSize.metricImageHeight().getVal();
+                        }
+                        else if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+                            varData = drawingSize.imageHeightInPixels();
+                        }
+                        else if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+                            varData = drawingSize.metricImageHeight().getVal();
                         }
                         else {
-                            varData = m_pDrawingScene->drawingSize().imageHeightInPixels();
+                            varData = drawingSize.imageHeightInPixels();
                         }
                     }
                     break;
@@ -1131,7 +1203,78 @@ void CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged(const CDrawingSize
         /* strMethod    */ "onDrawingSceneDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    updateXYValueSizeHint();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    if (m_drawingSize != drawingSize) {
+        m_drawingSize = drawingSize;
+        updateXYValueSizeHint();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjGeometry::onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pGraphObj)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObj->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onGraphObjGeometryValuesUnitChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    // When applying the changes from the model by invoking "applySettings"
+    // the ContentChangedSignalBlockedCounter is incremented to avoid that the
+    // "onGraphObj<Signal>" slots overwrite settings in the model which haven't been
+    // applied yet.
+    if (m_iContentChangedSignalBlockedCounter == 0)
+    {
+        bool bContentChanged = false;
+
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+            CGraphObjLine* pGraphObjLine = nullptr;
+            if (m_pGraphObj != nullptr) {
+                pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+            }
+            if (pGraphObjLine != nullptr) {
+                // The strings to indicate pixel values are always the same.
+                // When changing from pixel to metric dimension or if the metric dimension unit changes,
+                // the indicated value strings need to be updated to show the values in the new unit.
+                if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+                    CPhysValLine physValLine = pGraphObjLine->getLine(Units.Length.px);
+                    if (physValLine != m_physValLine) {
+                        bContentChanged = true;
+                        m_physValLine = physValLine;
+                    }
+                }
+                else {
+                    CPhysValLine physValLine = pGraphObjLine->getLine();
+                    if (physValLine != m_physValLine) {
+                        bContentChanged = true;
+                        m_physValLine = physValLine;
+                    }
+                }
+                if (bContentChanged) {
+                    QModelIndex modelIdxTL = index(0, EColumnXVal);
+                    QModelIndex modelIdxBR = index(m_arLabelSettings.size(), EColumnYVal);
+                    emit_dataChanged(modelIdxTL, modelIdxBR);
+                }
+            }
+        }
+
+        // If the "contentChanged" signal is no longer blocked and the content of
+        // properties widget has been changed ...
+        if (m_iContentChangedSignalBlockedCounter == 0 && bContentChanged) {
+            // .. emit the contentChanged signal and update the enabled state
+            // of the Apply and Reset buttons.
+            emit_contentChanged();
+        }
+        else {
+            m_bContentChanged = true;
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1161,19 +1304,6 @@ void CModelGraphObjGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
                 pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
             }
             if (pGraphObjLine != nullptr) {
-                QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObj);
-                if (arLabelSettings.size() != m_arLabelSettings.size()) {
-                    throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-                }
-                bool bContentChanged = false;
-                QVector<bool> arbRowsChanged(arLabelSettings.size(), false);
-                for (int iRow = 0; iRow < arLabelSettings.size(); ++iRow) {
-                    if (arLabelSettings[iRow] != m_arLabelSettings[iRow]) {
-                        m_arLabelSettings[iRow] = arLabelSettings[iRow];
-                        arbRowsChanged[iRow] = true;
-                        bContentChanged = true;
-                    }
-                }
                 const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
                 CPhysValLine physValLine = pGraphObjLine->getLine(drawingSize.unit());
                 if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
@@ -1185,23 +1315,67 @@ void CModelGraphObjGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
                         physValLine = m_pDrawingScene->convert(physValLine, Units.Length.px);
                     }
                 }
+                bool bContentChanged = false;
                 if (physValLine != m_physValLine) {
                     m_physValLine = physValLine;
-                    arbRowsChanged.fill(true);
                     bContentChanged = true;
                 }
                 if (bContentChanged) {
-                    for (int iRow = 0; iRow < arbRowsChanged.size(); ++iRow) {
-                        QModelIndex modelIdxTL = index(iRow, 0);
-                        QModelIndex modelIdxBR = index(iRow, EColumnCount-1);
-                        emit_dataChanged(modelIdxTL, modelIdxBR);
-                    }
-                    if (m_iContentChangedSignalBlockedCounter > 0) {
-                        m_bContentChanged = true;
-                    }
-                    else {
-                        emit_contentChanged();
-                    }
+                    QModelIndex modelIdxTL = index(0, EColumnXVal);
+                    QModelIndex modelIdxBR = index(m_arLabelSettings.size(), EColumnYVal);
+                    emit_dataChanged(modelIdxTL, modelIdxBR);
+                }
+                if (m_iContentChangedSignalBlockedCounter > 0) {
+                    m_bContentChanged = true;
+                }
+                else {
+                    emit_contentChanged();
+                }
+            }
+        }
+
+        // If the "contentChanged" signal is no longer blocked and the content of
+        // properties widget has been changed ...
+        if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
+            // .. emit the contentChanged signal and update the enabled state
+            // of the Apply and Reset buttons.
+            emit_contentChanged();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CModelGraphObjGeometry::onGraphObjGeometryLabelChanged(
+    CGraphObj* i_pGraphObj, const QString& i_strName)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObj->keyInTree() + ", " + i_strName;
+    }
+    CMethodTracer mthTracer(
+        /* pTrcAdminObj       */ m_pTrcAdminObj,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod          */ "onGraphObjGeometryLabelChanged",
+        /* strMethodInArgs    */ strMthInArgs );
+
+    // When applying the changes from the model by invoking "applySettings"
+    // the ContentChangedSignalBlockedCounter is incremented to avoid that the
+    // "onGraphObj<Signal>" slots overwrite settings in the model which haven't been
+    // applied yet.
+    if (m_iContentChangedSignalBlockedCounter == 0)
+    {
+        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+            int iRow = getLabelRowIndex(i_strName);
+            if (iRow >= 0 && iRow < m_arLabelSettings.size()) {
+                SLabelSettings labelSettings = SLabelSettings::fromGraphObj(m_pGraphObj, i_strName, iRow);
+                if (m_arLabelSettings[iRow] != labelSettings) {
+                    m_arLabelSettings[iRow] = labelSettings;
+                    QModelIndex modelIdxTL = index(iRow, EColumnShowVals);
+                    QModelIndex modelIdxBR = index(iRow, EColumnShowLine);
+                    emit_dataChanged(modelIdxTL, modelIdxBR);
+                    m_bContentChanged = true;
                 }
             }
         }
@@ -1351,13 +1525,27 @@ void CModelGraphObjGeometry::updateXYValueSizeHint()
         physValWidth = drawingSize.metricImageWidth();
         physValHeight = drawingSize.metricImageHeight();
     }
+    else if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        physValWidth = CPhysVal(drawingSize.imageWidthInPixels(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+        physValHeight = CPhysVal(drawingSize.imageHeightInPixels(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+    }
+    else if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+        physValWidth = drawingSize.metricImageWidth();
+        physValHeight = drawingSize.metricImageHeight();
+    }
     else {
         physValWidth = CPhysVal(drawingSize.imageWidthInPixels(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
         physValHeight = CPhysVal(drawingSize.imageHeightInPixels(), Units.Length.px, drawingSize.imageCoorsResolutionInPx());
     }
     CPhysVal physValMax = physValWidth > physValHeight ? physValWidth : physValHeight;
     m_strXYValSizeHint = physValMax.toString();
-    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+    if (m_eDimensionUnit.isValid()) {
+        if( m_eDimensionUnit == EScaleDimensionUnit::Pixels ) {
+            // For length and angle one decimal point is used.
+            m_strXYValSizeHint += ".0";
+        }
+    }
+    else if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
         // For length and angle one decimal point is used.
         m_strXYValSizeHint += ".0";
     }

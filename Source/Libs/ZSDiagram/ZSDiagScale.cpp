@@ -438,6 +438,7 @@ CDiagScale::CDiagScale(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
+    m_divLines.setScaleDimensionUnit(EScaleDimensionUnit::Metric);
     m_divLines.setScale(
         m_scale.minVal().getVal(), m_scale.maxVal().getVal(),
         m_scale.res().getVal(), 0, 0);
@@ -633,9 +634,8 @@ void CDiagScale::setScale( const CScale& i_scale )
     {
         m_scale = i_scale;
 
-        m_divLines.setScaleMin(m_scale.minVal().getVal());
-        m_divLines.setScaleMax(m_scale.maxVal().getVal());
-        m_divLines.setScaleRes(m_scale.res().getVal());
+        m_divLines.setScale(
+            m_scale.minVal().getVal(), m_scale.maxVal().getVal(), m_scale.res().getVal());
 
         if (m_pDiagram != nullptr)
         {
@@ -684,7 +684,8 @@ void CDiagScale::setScaleMinVal( const CPhysVal& i_physVal )
     {
         m_scale.setMinVal(i_physVal);
 
-        m_divLines.setScaleMin(m_scale.minVal().getVal());
+        m_divLines.setScale(
+            m_scale.minVal().getVal(), m_scale.maxVal().getVal(), m_scale.res().getVal());
 
         if (m_pDiagram != nullptr)
         {
@@ -762,7 +763,8 @@ void CDiagScale::setScaleMaxVal( const CPhysVal& i_physVal )
     {
         m_scale.setMaxVal(i_physVal);
 
-        m_divLines.setScaleMax(m_scale.maxVal().getVal());
+        m_divLines.setScale(
+            m_scale.minVal().getVal(), m_scale.maxVal().getVal(), m_scale.res().getVal());
 
         if (m_pDiagram != nullptr)
         {
@@ -846,7 +848,8 @@ void CDiagScale::setScaleRangeVal( const CPhysVal& i_physVal )
     {
         m_scale.setRangeVal(i_physVal);
 
-        m_divLines.setScaleMax(m_scale.maxVal().getVal());
+        m_divLines.setScale(
+            m_scale.minVal().getVal(), m_scale.maxVal().getVal(), m_scale.res().getVal());
 
         if (m_pDiagram != nullptr)
         {
@@ -932,9 +935,8 @@ void CDiagScale::setScaleUnit(const CUnit& i_unit)
     {
         m_scale.setUnit(i_unit);
 
-        m_divLines.setScaleMin(m_scale.minVal().getVal());
-        m_divLines.setScaleMax(m_scale.maxVal().getVal());
-        m_divLines.setScaleRes(m_scale.res().getVal());
+        m_divLines.setScale(
+            m_scale.minVal().getVal(), m_scale.maxVal().getVal(), m_scale.res().getVal());
 
         if (m_pDiagram != nullptr)
         {
@@ -1037,8 +1039,7 @@ void CDiagScale::setGeometry( int i_iMinVal_px, int i_iMaxVal_px )
 
     if ((m_divLines.scaleMinInPix() != i_iMinVal_px) || (m_divLines.scaleMaxInPix() != i_iMaxVal_px))
     {
-        m_divLines.setScaleMinInPix(i_iMinVal_px);
-        m_divLines.setScaleMaxInPix(i_iMaxVal_px);
+        m_divLines.setScaleInPix(i_iMinVal_px, i_iMaxVal_px);
 
         if (m_pDiagram != nullptr)
         {

@@ -350,6 +350,8 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
         setSceneRect(rect);
 
+        m_divLinesMetricsX.setScaleDimensionUnit(m_drawingSize.dimensionUnit());
+
         if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
             // Just a small note about pixel range and min and max values:
             // If you don't use a metric system like in drawings and define
@@ -362,18 +364,12 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             m_divLinesMetricsX.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.imageWidthInPixels() - 1,
-                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal(),
-                /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1,
-                /* scaleDimUnit */ m_drawingSize.dimensionUnit());
+                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal());
             // The Y scale direction is from top to bottom.
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels() - 1,
-                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal(),
-                /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1,
-                /* scaleDimUnit */ m_drawingSize.dimensionUnit());
+                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal());
             m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
         }
         else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
@@ -393,15 +389,13 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
                 /* fScaleMaxVal */ m_drawingSize.metricImageWidth().getVal(),
                 /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1,
-                /* scaleDimUnit */ m_drawingSize.dimensionUnit());
+                /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1);
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
                 /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1,
-                /* scaleDimUnit */ m_drawingSize.dimensionUnit());
+                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
             m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
         }
         m_divLinesMetricsX.update();

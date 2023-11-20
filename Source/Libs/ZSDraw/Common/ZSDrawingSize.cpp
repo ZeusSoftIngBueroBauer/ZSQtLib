@@ -852,13 +852,13 @@ void CDrawingSize::updateImageSizeInPixels()
     m_fImageSizeWidth_px = m_fScreenResolution_px_mm * fScaledWidth_mm;
     m_fImageSizeHeight_px = m_fScreenResolution_px_mm * fScaledHeight_mm;
 
-    //// In order to draw division lines at min and max scale the width
-    //// in pixels got to be extended by one pixel when using metric scales
-    //// (see also documentation at class CScaleDivLines).
-    //if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
-    //    m_fImageSizeWidth_px += 1;
-    //    m_fImageSizeHeight_px += 1;
-    //}
+    // In order to draw division lines at min and max scale the width
+    // in pixels got to be extended by one pixel when using metric scales
+    // (see also documentation at class CScaleDivLines).
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        m_fImageSizeWidth_px += 1;
+        m_fImageSizeHeight_px += 1;
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);
@@ -898,11 +898,19 @@ void CDrawingSize::updateImageSizeMetrics()
         fImageSizeHeight_px -= 1;
     }
 
-    double fWidth_mm = fImageSizeWidth_px / m_fScreenResolution_px_mm;
-    double fHeight_mm = fImageSizeHeight_px / m_fScreenResolution_px_mm;
+    double fImageMetricWidth_mm = fImageSizeWidth_px / m_fScreenResolution_px_mm;
+    double fImageMetricHeight_mm = fImageSizeHeight_px / m_fScreenResolution_px_mm;
 
-    CPhysVal physValWidth(fWidth_mm, Units.Length.mm);
-    CPhysVal physValHeight(fHeight_mm, Units.Length.mm);
+    // In order to draw division lines at min and max scale the width
+    // in pixels got to be extended by one pixel when using metric scales
+    // (see also documentation at class CScaleDivLines).
+    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+        fImageMetricWidth_mm -= 1.0 / m_fScreenResolution_px_mm;
+        fImageMetricHeight_mm -= 1.0 / m_fScreenResolution_px_mm;
+    }
+
+    CPhysVal physValWidth(fImageMetricWidth_mm, Units.Length.mm);
+    CPhysVal physValHeight(fImageMetricHeight_mm, Units.Length.mm);
 
     physValWidth.convertValue(m_metricUnit);
     physValHeight.convertValue(m_metricUnit);

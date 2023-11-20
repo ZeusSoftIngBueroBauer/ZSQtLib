@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_GraphObjGeometryModel_h
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSSys/ZSSysErrResult.h"
 
 #include <QtCore/qabstractitemmodel.h>
@@ -75,7 +76,7 @@ public: // ctors and dtor
         const QString& i_strNameSpace,
         const QString& i_strGraphObjType,
         const QString& i_strObjName,
-        const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit,
+        const ZS::System::CEnumScaleDimensionUnit& i_eDimensionUnit = ZS::System::CEnumScaleDimensionUnit(),
         QObject* i_pObjParent = nullptr);
     virtual ~CModelGraphObjGeometry();
 signals:
@@ -93,8 +94,8 @@ public: // instance methods
     void acceptChanges();
     void rejectChanges();
 public: // instance methods
-    int getValueRowIndex(const QString& i_strValueName) const;
-    QStringList valueNames() const;
+    int getLabelRowIndex(const QString& i_strValueName) const;
+    QStringList labelNames() const;
 public: // overridables of base class QAbstractItemModel
     int rowCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
     int columnCount(const QModelIndex& i_modelIdxParent = QModelIndex()) const override;
@@ -135,6 +136,8 @@ protected: // type definitions and constants
 protected slots:
     void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     void onGraphObjGeometryChanged(CGraphObj* i_pGraphObj);
+    void onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pGraphObj);
+    void onGraphObjGeometryLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
     void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // instance methods
     void clearModel();
@@ -152,7 +155,13 @@ protected: // instance methods (tracing emitting signals)
 protected: // instance members
     /*!< Pointer to drawing scene. */
     CDrawingScene* m_pDrawingScene;
-    /*!< Values may be indicated either in metrics of pixels unit. */
+    /*!< If m_eDimensionUnit is not set (invalid) the values are indicated
+         in the current dimension unit of the drawing scene.
+         If set to Metric the values are always shown in metrics unit. If the drawing
+         scene's unit is set to pixel the model cannot be used and the corresponding
+         table view got to be hidden.
+         If set to Pixels the values are always shown in pixel coordinates. If the drawing
+         scene's unit is a metric unit the values will be converted to pixel values. */
     ZS::System::CEnumScaleDimensionUnit m_eDimensionUnit;
     /*!< Font used for the sizeHint role. */
     QFont m_font;
@@ -163,6 +172,9 @@ protected: // instance members
     /*!< If the unique key is set the drawing scene is queried to get the pointer to
          the graphical object which should be edited. */
     CGraphObj* m_pGraphObj;
+    /*!< Cached drawing size.
+         If the scale dimension or the unit changes, all indicated geometry values need to be updated. */
+    CDrawingSize m_drawingSize;
     /*!< Cached coordinates of the graphical object.
          The values are stored in the unit of the drawing size.
          If the drawing size changes the coordinates are updated and converted if necessary. */

@@ -50,7 +50,7 @@ namespace Math
             |         |<--   -->|                             |
             |         |<- 10.0->|                             |
         ScaleMinVal                                      ScaleMaxVal
-           0.0                                              100.0
+           0.0                                               10.0
             +-------------------------------------------------+
             |<--------------------- 500 --------------------->|
             |<-------------------ScaleRangePix -------------->|
@@ -70,20 +70,17 @@ namespace Math
             |<- 100 ->|                                       |
             |<DistPix>|                                       |
 
-    Pixel dimensions (both ScaleRangeVal and ScaleRangePix are in pixels):
+    Pixel dimensions:
 
-        ScaleMinVal:    0 px
-        ScaleMaxVal:   20 px
-        ScaleRange:    20 px
         Min_px:         0 px
         Max_px:        19 px
-        Width/px:      Max/px - Min/px + 1 = 20 px
+        ScaleRange_px: Max/px - Min/px + 1 = 20 px
 
         Figure with division lines at all 10 pixels:
 
-        |<-                                  Width: 20 px                             ->|
+        |<-                                   Width: 20 px                            ->|
         |                                                                               |
-        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 px
+        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 | 20
         +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
         | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
         | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   |
@@ -93,6 +90,24 @@ namespace Math
 
         !! There will be no division line at position 20 px. !!
 
+        Min_px:         0 px
+        Max_px:        20 px
+        ScaleRange_px: Max/px - Min/px + 1 = 21 px
+
+        Figure with division lines at all 10 pixels:
+
+        |<-                                   Width: 21 px                                ->|
+        |                                                                                   |
+        | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 px
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+        | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+        +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+
+        !! There will be a division line at position 20 px. !!
+
     Metric drawings (ScaleRangeVal in metric unit and ScaleRangePix in pixels):
 
         ScaleMinVal:  0.0 mm
@@ -100,7 +115,7 @@ namespace Math
         ScaleRange:  10.0 mm
         Min_px:         0 px
         Max_px:        19 px
-        Width/px:      Max/px - Min/px + 1 = 20 px
+        ScaleRange_px: Max/px - Min/px + 1 = 20 px
 
         Theoretical figure with division lines at all 5 mm:
 
@@ -143,7 +158,7 @@ namespace Math
         Max_px:        20 px
         Width/px:      Max/px - Min/px + 1 = 21 px
 
-        Conversion from mm into pixels:
+        Conversion from mm into pixels using the formula above:
 
             Val_px = Min_px + Width_px * Val_mm / ScaleRange_mm = 0 px + (Val_mm * 21 px) / 10.0 mm
 
@@ -165,7 +180,12 @@ namespace Math
 
         Conversion from mm into pixels if dimensionUnit = Metric has been set.
 
-            Val_px = Min_px + (Width_px-1) * Val_mm / ScaleRange_mm = 0 px + (Val_mm * (21 - 1) px) / 10.0 mm
+            if (dimensionUnit == Metric) {
+                Val_px = Min_px + (Width_px-1) * Val_mm / ScaleRange_mm = 0 px + (Val_mm * (21 - 1) px) / 10.0 mm
+            }
+            else (dimensionUnit == Pixels) {
+                see formula in pixel systems above
+            }
 
         Val_mm | Val_px
         -------+-------
@@ -193,6 +213,23 @@ public: // class methods
     static QString NameSpace() { return "ZS::System::Math"; }
     static QString ClassName() { return "CScaleDivLines"; }
 public: // class methods
+    static int getPrecision2ShowUniqueNumbers(
+        const QVector<double> i_arfVals,
+        int i_iExponentDigits,
+        int i_iPrecisionMin = 1,
+        int i_iPrecisionMax = 10,
+        CTrcAdminObj* i_pTrcAdminObj = nullptr);
+    static int getDivLines4LinSpacing(
+        double  i_fScaleMinVal,
+        double  i_fScaleMaxVal,
+        double  i_fDivLineDistMinVal,
+        int     i_iDivLineDistMinPix,
+        bool    i_bUseDivLineDistValDecimalFactor25,
+        double* o_pfDivLineFirstVal,
+        double* o_pfDivLineDistFirstPix,
+        double* o_pfDivLineDistVal,
+        double* o_pfDivLineDistPix,
+        CTrcAdminObj* i_pTrcAdminObj = nullptr);
     static int getDivLines4LinSpacing(
         double  i_fScaleMinVal,
         double  i_fScaleMaxVal,
@@ -205,11 +242,19 @@ public: // class methods
         double* o_pfDivLineDistVal,
         double* o_pfDivLineDistPix,
         CTrcAdminObj* i_pTrcAdminObj = nullptr);
-    static int getPrecision2ShowUniqueNumbers(
-        const QVector<double> i_arfVals,
-        int i_iExponentDigits,
-        int i_iPrecisionMin = 1,
-        int i_iPrecisionMax = 10,
+protected: // class methods
+    static int getDivLines4LinSpacing(
+        const CEnumScaleDimensionUnit& i_eDimensionUnit,
+        double  i_fScaleMinVal,
+        double  i_fScaleMaxVal,
+        double  i_fScaleRangePix,
+        double  i_fDivLineDistMinVal,
+        int     i_iDivLineDistMinPix,
+        bool    i_bUseDivLineDistValDecimalFactor25,
+        double* o_pfDivLineFirstVal,
+        double* o_pfDivLineDistFirstPix,
+        double* o_pfDivLineDistVal,
+        double* o_pfDivLineDistPix,
         CTrcAdminObj* i_pTrcAdminObj = nullptr);
 public: // ctors and dtor
     CScaleDivLines(const QString& i_strObjName, EScaleAxis i_scaleAxis);
@@ -226,16 +271,11 @@ public: // instance methods
 public: // instance methods (setting properties)
     bool setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& i_eOrientation);
     bool setSpacing(const CEnumSpacing& i_eSpacing);
-    bool setScale(
-        double i_fScaleMin, double i_fScaleMax, double i_fScaleRes,
-        double i_fMin_px, double i_fMax_px, const CEnumScaleDimensionUnit& i_eDimensionUnit = EScaleDimensionUnit::Pixels);
-    bool setScaleMin(double i_fMin);
-    bool setScaleMax(double i_fMax);
-    bool setScaleRes(double i_fRes);
     bool setScaleDimensionUnit(const CEnumScaleDimensionUnit& i_eDimensionUnit);
-    bool setScaleMinInPix(double i_fMin_px);
-    bool setScaleMaxInPix(double i_fMax_px);
-    bool setScaleRangeInPix(double i_fRange_px);
+    bool setScale(double i_fMin, double i_fMax, double i_fRes);
+    bool setScale(double i_fMin, double i_fMax, double i_fRes, double i_fMin_px, double i_fMax_px);
+    bool setScaleInPix(double i_fMin_px, double i_fMax_px);
+    bool setScaleRes(double i_fRes);
 public: // instance methods (setting properties)
     bool setDivLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer, int i_iDist_px);
 public: // instance methods (getting properties)
@@ -294,9 +334,9 @@ protected: // instance members (config values)
     EYScaleAxisOrientation m_yScaleAxisOrientation;
     /*!< Spacing of the scale (either linear or logarithmic). */
     ESpacing m_spacing;
-    /*!< Minimum scale value. */
+    /*!< Minimum scale value. Only used for metric dimension unit. */
     double m_fScaleMin;
-    /*!< Maximum scale value. */
+    /*!< Maximum scale value. Only used for metric dimension unit. */
     double m_fScaleMax;
     /*!< Resolution of minimum and maximum scale values. */
     double m_fScaleRes;
