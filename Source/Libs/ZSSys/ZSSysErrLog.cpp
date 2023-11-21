@@ -479,9 +479,9 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
 #endif
 //------------------------------------------------------------------------------
 {
-    CErrLog* pModelErrLog = CErrLog::GetInstance();
+    CErrLog* pErrLog = CErrLog::GetInstance();
 
-    if( pModelErrLog != nullptr )
+    if( pErrLog != nullptr )
     {
         switch( i_msgType )
         {
@@ -523,7 +523,7 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
                         /* result     */ EResultUndefined,
                         /* severity   */ EResultSeverityWarning,
                         /* strAddInfo */ i_strMsg );
-                    pModelErrLog->addEntry(errResultInfo);
+                    pErrLog->addEntry(errResultInfo);
                 }
                 else
                 {
@@ -532,7 +532,7 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
                         /* result     */ EResultUndefined,
                         /* severity   */ EResultSeverityWarning,
                         /* strAddInfo */ i_strMsg );
-                    pModelErrLog->addEntry(errResultInfo);
+                    pErrLog->addEntry(errResultInfo);
                 }
                 break;
             }
@@ -543,7 +543,7 @@ void CErrLog::QtMsgHandler( QtMsgType i_msgType, const QMessageLogContext& i_con
                     /* result     */ EResultUndefined,
                     /* severity   */ EResultSeverityError,
                     /* strAddInfo */ i_strMsg );
-                pModelErrLog->addEntry(errResultInfo);
+                pErrLog->addEntry(errResultInfo);
                 break;
             }
             case QtFatalMsg:
@@ -594,30 +594,30 @@ void CErrLog::TerminateHandler()
     }
     catch(const std::exception& e)
     {
-        CErrLog* pModelErrLog = CErrLog::GetInstance();
+        CErrLog* pErrLog = CErrLog::GetInstance();
 
-        if( pModelErrLog != nullptr )
+        if( pErrLog != nullptr )
         {
             SErrResultInfo errResultInfo(
                 /* errSource  */ "", "", "", "Caught Unexpected Exception",
                 /* result     */ EResultUndefined,
                 /* severity   */ EResultSeverityCritical,
                 /* strAddInfo */ e.what() );
-            pModelErrLog->addEntry(errResultInfo);
+            pErrLog->addEntry(errResultInfo);
         }
     }
     catch(...)
     {
-        CErrLog* pModelErrLog = CErrLog::GetInstance();
+        CErrLog* pErrLog = CErrLog::GetInstance();
 
-        if( pModelErrLog != nullptr )
+        if( pErrLog != nullptr )
         {
             SErrResultInfo errResultInfo(
                 /* errSource  */ "", "", "", "Caught Unknown Exception",
                 /* result     */ EResultUndefined,
                 /* severity   */ EResultSeverityCritical,
                 /* strAddInfo */ "" );
-            pModelErrLog->addEntry(errResultInfo);
+            pErrLog->addEntry(errResultInfo);
         }
     }
 }
@@ -653,18 +653,18 @@ void CErrLog::TerminateHandler()
 long CErrLog::ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers)
 //------------------------------------------------------------------------------
 {
-    System::CErrLog* pModelErrLog = System::CErrLog::GetInstance();
+    System::CErrLog* pErrLog = System::CErrLog::GetInstance();
 
-    if( pModelErrLog != nullptr )
+    if( pErrLog != nullptr )
     {
-        QString strDumpFileName = pModelErrLog->generateDump(i_pExceptionPointers);
+        QString strDumpFileName = pErrLog->generateDump(i_pExceptionPointers);
 
         System::SErrResultInfo errResultInfo(
             /* errSource  */ "", "", "", "ExceptionHandler",
             /* result     */ System::EResultUndefined,
             /* severity   */ System::EResultSeverityCritical,
             /* strAddInfo */ "Crash Dump Info available in " + strDumpFileName );
-        pModelErrLog->addEntry(errResultInfo);
+        pErrLog->addEntry(errResultInfo);
     }
     return EXCEPTION_EXECUTE_HANDLER;
 }

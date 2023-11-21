@@ -351,13 +351,6 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         setSceneRect(rect);
 
         if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-            m_divLinesMetricsX.setUseWorldCoordinateTransformation(false);
-        }
-        else {
-            m_divLinesMetricsX.setUseWorldCoordinateTransformation(true);
-        }
-
-        if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
             // Just a small note about pixel range and min and max values:
             // If you don't use a metric system like in drawings and define
             // a 500 pixel range, min is at 0, max is at 499. To have min
@@ -366,11 +359,13 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             // XScaleMin = XMin_px, XScaleMax = XMax_px
             // YScaleMin = XMin_px, YScaleMax = XMax_px
             // The greater the value, the greater the pixel coordinate on the screen.
+            m_divLinesMetricsX.setUseWorldCoordinateTransformation(false);
             m_divLinesMetricsX.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.imageWidthInPixels() - 1,
                 /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal());
             // The Y scale direction is from top to bottom.
+            m_divLinesMetricsY.setUseWorldCoordinateTransformation(false);
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels() - 1,
@@ -389,19 +384,21 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
             // XScaleMin = XMin_px, XScaleMax = XMax_px
             // YScaleMin = XMax_px, YScaleMax = XMin_px
             // The greater the value, the less the pixel coordinate on the screen.
+            m_divLinesMetricsX.setUseWorldCoordinateTransformation(true);
             m_divLinesMetricsX.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.metricImageWidth().getVal(),
                 /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1);
+            m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
+            m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
                 /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
-            m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
         }
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();

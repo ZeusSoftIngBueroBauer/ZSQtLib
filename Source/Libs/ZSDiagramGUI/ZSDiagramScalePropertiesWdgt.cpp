@@ -1025,7 +1025,7 @@ void CWdgtDiagramScaleProperties::setScaleAxis( const CEnumScaleAxis& i_scaleAxi
             m_pLblRange_px->setText("Width:");
         }
         else if (m_scaleAxis == EScaleAxis::Y) {
-            m_pLblRange_px->setText("Height;");
+            m_pLblRange_px->setText("Height:");
         }
         else {
             m_pLblRange_px->setText("Range:");

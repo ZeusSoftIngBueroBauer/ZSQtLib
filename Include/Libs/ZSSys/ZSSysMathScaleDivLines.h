@@ -158,7 +158,7 @@ namespace Math
             One pixel must be truncated from the available pixel range to calculate the world coordinate.
             Pixel positions will be rounded to a whole number.
 
-            Transformation from pixel coordinates into world coordinates:
+            Transformation from world coordinates into pixel coordinates:
 
                 Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * Val_mm = 0 px + (19 px / 10.0 mm) * Val_mm
 
@@ -169,7 +169,7 @@ namespace Math
                 Val_px |   0  |   2  |   4  |   5  |   8  |  10  |  11  |  13  |  15  |  17  |  19  |
                 -------+------+------+------+------+------+------+------+------+------+------+------+
 
-            Transformation from world coordinates into pixel coordinates:
+            Transformation from pixel coordinates into world coordinates:
 
                 Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * Val_px = 0 mm + (10 mm / 19 px) * Val_px
 
@@ -210,9 +210,9 @@ namespace Math
             One pixel must be truncated from the available pixel range to calculate the world coordinate.
             Pixel positions will be rounded to a whole number.
 
-            Transformation from pixel coordinates into world coordinates:
+            Transformation from world coordinates into pixel coordinates:
 
-                Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * Val_mm = 0 px + (20 px / 10.0 mm) * Val_mm
+                Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * (Val_mm - ScaleMin_mm) = 0 px + (20 px / 10.0 mm) * (Val_mm - 0.0)
 
                 Val_mm |  0.0 |  1.0 |  2.0 |  3.0 |  4.0 |  5.0 |  6.0 |  7.0 |  8.0 |  9.0 | 10.0 |
                 -------+------+------+------+------+------+------+------+------+------+------+------+
@@ -221,9 +221,9 @@ namespace Math
                 Val_px |   0  |   2  |   4  |   6  |   8  |  10  |  12  |  14  |  16  |  18  |  20  |
                 -------+------+------+------+------+------+------+------+------+------+------+------+
 
-            Transformation from world coordinates into pixel coordinates:
+            Transformation from pixel coordinates into world coordinates:
 
-                Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * Val_px = 0 mm + (10 mm / 19 px) * Val_px
+                Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Min_px) = 0 mm + (10 mm / 19 px) * (Val_px - 0)
 
                 Val_px |   0  |   2  |   4  |   6  |   8  |  10  |  12  |  14  |  16  |  18  |  20  |
                 -------+------+------+------+------+------+------+------+------+------+------+------+

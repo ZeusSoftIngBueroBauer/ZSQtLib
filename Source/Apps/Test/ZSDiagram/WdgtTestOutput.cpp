@@ -124,9 +124,11 @@ CWdgtTestOutput::~CWdgtTestOutput()
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
-    QObject::disconnect(
-        m_pDiagram, &QObject::destroyed,
-        this, &CWdgtTestOutput::onDiagramDestroyed);
+    if (m_pDiagram != nullptr) {
+        QObject::disconnect(
+            m_pDiagram, &QObject::destroyed,
+            this, &CWdgtTestOutput::onDiagramDestroyed);
+    }
 
     m_pLyt = nullptr;
     m_pLytLineHeader = nullptr;
