@@ -80,7 +80,6 @@ CGraphObjPolygon::CGraphObjPolygon(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
         /* type                */ EGraphObjTypePolygon,
-        /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypePolygon),
         /* strObjName          */ i_strObjName.isEmpty() ? "Polygon" + QString::number(s_iInstCount) : i_strObjName)
 {
     // Just incremented by the ctor but not decremented by the dtor.
@@ -106,8 +105,6 @@ CGraphObjPolygon::CGraphObjPolygon(
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     m_ptRotOriginCurr = rctBounding.center();
 #endif
-
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
     //onDrawSettingsChanged();
 

@@ -37,16 +37,8 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
-class CDrawSettings;
-class CGraphObjSelectionPoint;
-
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjPolyline : public CGraphObj, public QGraphicsPolygonItem
 //******************************************************************************
@@ -63,7 +55,6 @@ protected: // ctor (used by derived classes, e.g. CGraphObjPolygon)
         CDrawingScene* i_pDrawingScene,
         const QString& i_strFactoryGroupName,
         EGraphObjType i_type,
-        const QString& i_strType,
         const QString& i_strObjName);
 public: // dtor
     virtual ~CGraphObjPolyline();

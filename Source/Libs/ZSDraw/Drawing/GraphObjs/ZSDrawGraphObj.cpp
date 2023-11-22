@@ -26,7 +26,9 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelAngle.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelLength.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelPosition.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
@@ -465,12 +467,13 @@ public: // type definitions and constants
 ==============================================================================*/
 
 const QString CGraphObj::c_strLabelName = "Name";
-const QString CGraphObj::c_strValueNameP1 = "P1";
-const QString CGraphObj::c_strValueNameP2 = "P2";
-const QString CGraphObj::c_strValueNameCenter = "Center";
-const QString CGraphObj::c_strValueNameSize = "Size";
-const QString CGraphObj::c_strValueNameLength = "Length";
-const QString CGraphObj::c_strValueNameAngle = "Angle";
+const QString CGraphObj::c_strGeometryLabelNameP1 = "P1";
+const QString CGraphObj::c_strGeometryLabelNameP2 = "P2";
+const QString CGraphObj::c_strGeometryLabelNameCenter = "Center";
+const QString CGraphObj::c_strGeometryLabelNameWidth = "Width";
+const QString CGraphObj::c_strGeometryLabelNameHeight = "Height";
+const QString CGraphObj::c_strGeometryLabelNameLength = "Length";
+const QString CGraphObj::c_strGeometryLabelNameAngle = "Angle";
 
 /*==============================================================================
 protected: // ctor
@@ -3642,14 +3645,14 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the coordinates of the selection point in item's coordinate system.
+/*! @brief Returns the coordinates of the selection point in scene coordinates.
 
     @note If the selection point is linked to a polyogon shape point the default
           implementation returns the center of the bounding rectangle.
           For polygon shapes the method got to be overridden and should return
           the corresponding coordinates of the polygon point.
 */
-QPointF CGraphObj::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
+CPhysValPoint CGraphObj::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF pt;
@@ -3662,7 +3665,10 @@ QPointF CGraphObj::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selP
             pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), ESelectionPoint::Center);
         }
     }
-    return pt;
+    QPointF ptScenePos = pGraphicsItem->mapToScene(pt);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValPoint physValPoint(ptScenePos, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    return m_pDrawingScene->convert(physValPoint);
 }
 
 /*==============================================================================
@@ -4711,7 +4717,7 @@ public: // geometry labels
 
     @return Supported value names.
 */
-QStringList CGraphObj::getValueNames() const
+QStringList CGraphObj::getGeometryLabelNames() const
 //------------------------------------------------------------------------------
 {
     return m_strlstGeometryLabelNames;
@@ -4725,7 +4731,7 @@ QStringList CGraphObj::getValueNames() const
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
 */
-void CGraphObj::showValueLabel(const QString& i_strName)
+void CGraphObj::showGeometryLabel(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4736,7 +4742,7 @@ void CGraphObj::showValueLabel(const QString& i_strName)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::showValueLabel",
+        /* strMethod    */ "CGraphObj::showGeometryLabel",
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -4770,7 +4776,7 @@ void CGraphObj::showValueLabel(const QString& i_strName)
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
 */
-void CGraphObj::hideValueLabel(const QString& i_strName)
+void CGraphObj::hideGeometryLabel(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4781,7 +4787,7 @@ void CGraphObj::hideValueLabel(const QString& i_strName)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::hideValueLabel",
+        /* strMethod    */ "CGraphObj::hideGeometryLabel",
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -4809,7 +4815,7 @@ void CGraphObj::hideValueLabel(const QString& i_strName)
 
     @return true, if the label is visible. false otherwise.
 */
-bool CGraphObj::isValueLabelVisible(const QString& i_strName) const
+bool CGraphObj::isGeometryLabelVisible(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -4828,7 +4834,7 @@ bool CGraphObj::isValueLabelVisible(const QString& i_strName) const
     @param [in] i_size
         Distance to the linked selection point.
 */
-void CGraphObj::setValueLabelDistance(const QString& i_strName, const QSizeF& i_size)
+void CGraphObj::setGeometryLabelDistance(const QString& i_strName, const QSizeF& i_size)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4839,7 +4845,7 @@ void CGraphObj::setValueLabelDistance(const QString& i_strName, const QSizeF& i_
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setValueLabelDistance",
+        /* strMethod    */ "CGraphObj::setGeometryLabelDistance",
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -4865,7 +4871,7 @@ void CGraphObj::setValueLabelDistance(const QString& i_strName, const QSizeF& i_
 
     @return Distance to the linked selection point.
 */
-QSizeF CGraphObj::valueLabelDistance(const QString& i_strName) const
+QSizeF CGraphObj::geometryLabelDistance(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -4881,7 +4887,7 @@ QSizeF CGraphObj::valueLabelDistance(const QString& i_strName) const
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
 */
-void CGraphObj::showValueLabelAnchorLine(const QString& i_strName)
+void CGraphObj::showGeometryLabelAnchorLine(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4892,7 +4898,7 @@ void CGraphObj::showValueLabelAnchorLine(const QString& i_strName)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::showValueLabelAnchorLine",
+        /* strMethod    */ "CGraphObj::showGeometryLabelAnchorLine",
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -4917,7 +4923,7 @@ void CGraphObj::showValueLabelAnchorLine(const QString& i_strName)
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
 */
-void CGraphObj::hideValueLabelAnchorLine(const QString& i_strName)
+void CGraphObj::hideGeometryLabelAnchorLine(const QString& i_strName)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4928,7 +4934,7 @@ void CGraphObj::hideValueLabelAnchorLine(const QString& i_strName)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::hideValueLabelAnchorLine",
+        /* strMethod    */ "CGraphObj::hideGeometryLabelAnchorLine",
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -4954,7 +4960,7 @@ void CGraphObj::hideValueLabelAnchorLine(const QString& i_strName)
 
     @return true, if the anchor line is visible, false otherwise.
 */
-bool CGraphObj::isValueLabelAnchorLineVisible(const QString& i_strName) const
+bool CGraphObj::isGeometryLabelAnchorLineVisible(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
@@ -4981,44 +4987,53 @@ protected: // overridables
 
     @param [in] i_strName
         Name of the label. The name must be unique otherwise no label is created.
-    @param [in] i_strText (optional)
+    @param [in] i_labelType
+        Range [EGraphObjTypeLabelPosition, EGraphObjTypeLabelLength, EGraphObjTypeLabelAngle]
         If not empty defines the text to be shown.
     @param [in] i_selPt
         Selection point the label should be anchored to.
 
     @return true, if the label has been created and added, false otherwise.
 */
-bool CGraphObj::addValueLabel(
-    const QString& i_strName, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt)
+bool CGraphObj::addGeometryLabel(
+    const QString& i_strName, EGraphObjType i_labelType, const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + i_strText + ", " + i_selPt.toString();
+        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType) + ", " + i_selPt.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addValueLabel",
+        /* strMethod    */ "CGraphObj::addGeometryLabel",
         /* strAddInfo   */ strMthInArgs );
 
     bool bCanAdd = !m_hshpGeometryLabels.contains(i_strName);
     if (bCanAdd) {
-        QString strText = i_strText;
-        if (i_strName == c_strLabelName) {
-            strText = m_strName;
+        CGraphObjLabel* pGraphObjLabel = nullptr;
+        if (i_labelType == EGraphObjTypeLabelPosition) {
+            pGraphObjLabel = new CGraphObjLabelPosition(
+                m_pDrawingScene, this, i_strName, i_selPt);
         }
-        CGraphObjLabel* pGraphObjLabel = new CGraphObjLabel(
-            m_pDrawingScene, this, i_strName, strText, i_selPt);
-        pGraphObjLabel->setVisible(false);
-        m_hshpGeometryLabels.insert(i_strName, pGraphObjLabel);
-        QObject::connect(
-            pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
-            this, &CGraphObj::onLabelAboutToBeDestroyed);
-        emit_labelAdded(i_strName);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
+        else if (i_labelType == EGraphObjTypeLabelLength) {
+            pGraphObjLabel = new CGraphObjLabelLength(
+                m_pDrawingScene, this, i_strName, i_selPt);
+        }
+        else if (i_labelType == EGraphObjTypeLabelAngle) {
+            pGraphObjLabel = new CGraphObjLabelAngle(
+                m_pDrawingScene, this, i_strName, i_selPt);
+        }
+        if (pGraphObjLabel != nullptr) {
+            pGraphObjLabel->setVisible(false);
+            m_hshpGeometryLabels.insert(i_strName, pGraphObjLabel);
+            QObject::connect(
+                pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
+                this, &CGraphObj::onLabelAboutToBeDestroyed);
+            if (m_pTree != nullptr) {
+                m_pTree->onTreeEntryChanged(this);
+            }
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

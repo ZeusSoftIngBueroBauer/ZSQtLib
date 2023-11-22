@@ -39,9 +39,7 @@ namespace ZS
 {
 namespace Draw
 {
-class CDrawSettings;
 class CGraphObjConnectionPoint;
-class CGraphObjSelectionPoint;
 
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjConnectionLine : public CGraphObj, public QGraphicsPolygonItem

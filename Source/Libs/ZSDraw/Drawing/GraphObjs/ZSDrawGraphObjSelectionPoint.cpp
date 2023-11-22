@@ -1147,8 +1147,9 @@ void CGraphObjSelectionPoint::updatePosition()
             m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
 
-    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
-    QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
+    CPhysValPoint physValSelPointParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
+    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
+
     if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
         if (m_selPt == ESelectionPoint::RotateTop) {
             ptSelScenePosParent.setY(ptSelScenePosParent.y() - getSelectionPointRotateDistance());

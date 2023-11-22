@@ -329,8 +329,14 @@ QPointF CPhysValPoint::toQPointF() const
 }
 
 //------------------------------------------------------------------------------
-QString CPhysValPoint::toString() const
+QString CPhysValPoint::toString(bool i_bAddUnit, const QString& i_strSeparator) const
 //------------------------------------------------------------------------------
 {
-    return x().toString() + ", " + y().toString();
+    QString str = x().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + y().toString(EUnitFind::None, PhysValSubStr::Val);
+    if (i_bAddUnit) {
+        str += " " + m_unit.symbol();
+    }
+    return str;
 }

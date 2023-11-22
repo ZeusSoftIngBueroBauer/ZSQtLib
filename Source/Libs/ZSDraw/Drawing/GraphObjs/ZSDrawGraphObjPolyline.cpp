@@ -136,14 +136,13 @@ CGraphObjPolyline::CGraphObjPolyline(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strFactoryGroupName,
     EGraphObjType i_type,
-    const QString& i_strType,
     const QString& i_strObjName) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ i_strFactoryGroupName,
         /* type                */ i_type,
-        /* strType             */ i_strType,
+        /* strType             */ ZS::Draw::graphObjType2Str(i_type),
         /* strObjName          */ i_strObjName),
     QGraphicsPolygonItem(),
     m_bCoorsDirty(true),
@@ -153,6 +152,8 @@ CGraphObjPolyline::CGraphObjPolyline(
     m_plgLineEnd(),
     m_plgOnMousePressEvent()
 {
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
+
 } // ctor
 
 /*==============================================================================

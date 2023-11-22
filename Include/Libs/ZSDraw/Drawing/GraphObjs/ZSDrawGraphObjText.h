@@ -37,16 +37,8 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
-class CDrawSettings;
-class CGraphObjSelectionPoint;
-
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjText : public CGraphObj, public QGraphicsTextItem
 //******************************************************************************

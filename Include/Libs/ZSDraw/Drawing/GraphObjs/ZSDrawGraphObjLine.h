@@ -37,16 +37,8 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
-class CDrawSettings;
-class CGraphObjSelectionPoint;
-
 //******************************************************************************
 class ZSDRAWDLL_API CGraphObjLine : public CGraphObj, public QGraphicsLineItem
 //******************************************************************************
@@ -118,13 +110,13 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
-    virtual QPointF getSelectionPointCoors(const SGraphObjSelectionPoint& i_selPt) const override;
+    virtual CPhysValPoint getSelectionPointCoors(const SGraphObjSelectionPoint& i_selPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
-    virtual QStringList getValueNames() const override;
+    virtual QStringList getGeometryLabelNames() const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;

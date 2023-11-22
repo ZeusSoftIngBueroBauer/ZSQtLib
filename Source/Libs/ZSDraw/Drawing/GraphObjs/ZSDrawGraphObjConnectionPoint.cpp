@@ -754,10 +754,11 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QPointF CGraphObjConnectionPoint::getSelectionPointCoors(const SGraphObjSelectionPoint& i_selPt ) const
+CPhysValPoint CGraphObjConnectionPoint::getSelectionPointCoors(const SGraphObjSelectionPoint& i_selPt ) const
 //------------------------------------------------------------------------------
 {
-    return QPointF(0.0, 0.0);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysValPoint(QPointF(0.0, 0.0), 1.0, drawingSize.unit());
 }
 
 /*==============================================================================

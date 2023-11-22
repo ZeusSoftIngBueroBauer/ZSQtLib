@@ -37,15 +37,8 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
-class CDrawSettings;
-
 //******************************************************************************
 /*! @brief Selection points of graphical objects.
 

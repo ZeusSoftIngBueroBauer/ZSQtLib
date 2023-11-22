@@ -37,15 +37,8 @@ may result in using the software modules.
 
 namespace ZS
 {
-namespace System
-{
-class CTrcAdminObj;
-}
-
 namespace Draw
 {
-class CDrawSettings;
-
 //******************************************************************************
 /*! @brief Labels are used to indicate a descriptive text or coordinates of
            the object they are linked to.
@@ -71,6 +64,15 @@ public: // ctors and dtor
         const QString& i_strKey,
         const QString& i_strText,
         const SGraphObjSelectionPoint& i_selPt);
+protected: // ctor (used by derived classes, e.g. CGraphObjLabelPosition)
+    CGraphObjLabel(
+        CDrawingScene* i_pDrawingScene,
+        CGraphObj* i_pGraphObjParent,
+        const QString& i_strKey,
+        const QString& i_strText,
+        const SGraphObjSelectionPoint& i_selPt,
+        EGraphObjType i_type);
+public: // dtor
     virtual ~CGraphObjLabel();
 public: // overridables of base class QGraphicsItem
     int type() const override;
@@ -131,10 +133,10 @@ public slots: // overridables of base class CGraphObj
     void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
-protected: // auxiliary instance methods
-    void updatePosition();
-    void updateDistanceToLinkedSelPt();
-    void updateAnchorLine();
+protected: // overridable auxiliary instance methods
+    virtual void updatePosition();
+    virtual void updateDistanceToLinkedSelPt();
+    virtual void updateAnchorLine();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,

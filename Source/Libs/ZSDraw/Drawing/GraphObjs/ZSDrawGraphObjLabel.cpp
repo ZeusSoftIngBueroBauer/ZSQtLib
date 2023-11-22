@@ -110,6 +110,43 @@ CGraphObjLabel::CGraphObjLabel(
 
 } // ctor
 
+/*==============================================================================
+protected: // ctor (used by derived classes, e.g. CGraphObjLabelPosition)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CGraphObjLabel::CGraphObjLabel(
+    CDrawingScene* i_pDrawingScene,
+    CGraphObj* i_pGraphObjParent,
+    const QString& i_strKey,
+    const QString& i_strText,
+    const SGraphObjSelectionPoint& i_selPt,
+    EGraphObjType i_type) :
+//------------------------------------------------------------------------------
+    CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
+        /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
+        /* type                */ i_type,
+        /* strType             */ ZS::Draw::graphObjType2Str(i_type),
+        /* strObjName          */ i_strKey,
+        /* idxTreeEntryType    */ EEntryType::Leave ),
+    QGraphicsSimpleTextItem(i_strText),
+    m_strKey(i_strKey),
+    m_selPt(i_selPt),
+    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_bShowAnchorLine(false),
+    m_anchorLine(),
+    m_bUpdatePositionInProgress(false)
+{
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
+
+    setParentGraphObj(i_pGraphObjParent);
+}
+
+/*==============================================================================
+public: // dtor
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 CGraphObjLabel::~CGraphObjLabel()
 //------------------------------------------------------------------------------
@@ -1014,9 +1051,8 @@ void CGraphObjLabel::updatePosition()
             m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
 
-    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
-    QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
-    QPointF ptScenePosThis = ptSelScenePosParent;
+    CPhysValPoint physValSelPointParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
+    QPointF ptScenePosThis = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
 
@@ -1064,8 +1100,8 @@ void CGraphObjLabel::updateDistanceToLinkedSelPt()
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
-    QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
+    CPhysValPoint physValSelPointParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
+    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
 
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
@@ -1118,8 +1154,15 @@ void CGraphObjLabel::updateDistanceToLinkedSelPt()
 //------------------------------------------------------------------------------
 void CGraphObjLabel::updateAnchorLine()
 {
-    QPointF ptSelPosParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
-    QPointF ptSelScenePosParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(ptSelPosParent);
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updateAnchorLine",
+        /* strAddInfo   */ "" );
+
+    CPhysValPoint physValSelPointParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
+    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
 

@@ -164,7 +164,7 @@ SValueFormatProvider::SValueFormatProvider() :
 //------------------------------------------------------------------------------
     m_pUnitVal(nullptr),
     m_unitFindVal(EUnitFind::None),
-    m_iValSubStrVisibility(PhysValSubStr::UnitSymbol),
+    m_iValSubStrVisibility(PhysValSubStr::Val|PhysValSubStr::UnitSymbol),
     m_iDigitsMantissa(0),
     m_iDigitsExponent(0),
     m_bUseEngineeringFormat(false),

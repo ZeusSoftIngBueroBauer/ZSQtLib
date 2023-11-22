@@ -353,12 +353,13 @@ class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 public: // type definitions and constants
     static const QString c_strLabelName;
 public: // type definitions and constants
-    static const QString c_strValueNameP1;
-    static const QString c_strValueNameP2;
-    static const QString c_strValueNameCenter;
-    static const QString c_strValueNameSize;
-    static const QString c_strValueNameLength;
-    static const QString c_strValueNameAngle;
+    static const QString c_strGeometryLabelNameP1;
+    static const QString c_strGeometryLabelNameP2;
+    static const QString c_strGeometryLabelNameCenter;
+    static const QString c_strGeometryLabelNameWidth;
+    static const QString c_strGeometryLabelNameHeight;
+    static const QString c_strGeometryLabelNameLength;
+    static const QString c_strGeometryLabelNameAngle;
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
@@ -565,7 +566,7 @@ public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
 public: // overridables
-    virtual QPointF getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const;
+    virtual CPhysValPoint getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const;
 protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
@@ -598,17 +599,17 @@ public: // overridables (text labels)
     virtual void hideLabelAnchorLine(const QString& i_strName);
     virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;
 public: // overridables (geometry labels)
-    virtual QStringList getValueNames() const;
-    virtual void showValueLabel(const QString& i_strName);
-    virtual void hideValueLabel(const QString& i_strName);
-    virtual bool isValueLabelVisible(const QString& i_strName) const;
-    virtual void setValueLabelDistance(const QString& i_strName, const QSizeF& i_size);
-    virtual QSizeF valueLabelDistance(const QString& i_strName) const;
-    virtual void showValueLabelAnchorLine(const QString& i_strName);
-    virtual void hideValueLabelAnchorLine(const QString& i_strName);
-    virtual bool isValueLabelAnchorLineVisible(const QString& i_strName) const;
+    virtual QStringList getGeometryLabelNames() const;
+    virtual void showGeometryLabel(const QString& i_strName);
+    virtual void hideGeometryLabel(const QString& i_strName);
+    virtual bool isGeometryLabelVisible(const QString& i_strName) const;
+    virtual void setGeometryLabelDistance(const QString& i_strName, const QSizeF& i_size);
+    virtual QSizeF geometryLabelDistance(const QString& i_strName) const;
+    virtual void showGeometryLabelAnchorLine(const QString& i_strName);
+    virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
+    virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;
 protected: // overridables (geometry labels)
-    virtual bool addValueLabel(const QString& i_strName, const QString& i_strText = "", const SGraphObjSelectionPoint& i_selPt = ESelectionPoint::Center);
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, const SGraphObjSelectionPoint& i_selPt = ESelectionPoint::Center);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
 public slots: // overridables

@@ -226,6 +226,9 @@ typedef enum {
     EGraphObjTypeUserDefined,
     EGraphObjTypeSelectionPoint,
     EGraphObjTypeLabel,
+    EGraphObjTypeLabelPosition,
+    EGraphObjTypeLabelLength,
+    EGraphObjTypeLabelAngle,
     EGraphObjTypeUndefined = -1
 }   EGraphObjType;
 

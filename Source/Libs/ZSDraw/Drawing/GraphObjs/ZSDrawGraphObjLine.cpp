@@ -26,7 +26,6 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
@@ -105,15 +104,15 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     s_iInstCount++;
 
     m_strlstPredefinedLabelNames.append(c_strLabelName);
-    m_strlstPredefinedLabelNames.append(c_strValueNameP1);
-    m_strlstPredefinedLabelNames.append(c_strValueNameP2);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameP1);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameP2);
 
     for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
         if (!m_hshpLabels.contains(strLabelName)) {
-            if (strLabelName == c_strValueNameP1) {
+            if (strLabelName == c_strGeometryLabelNameP1) {
                 addLabel(strLabelName, strLabelName, 0);
             }
-            else if (strLabelName == c_strValueNameP2) {
+            else if (strLabelName == c_strGeometryLabelNameP2) {
                 addLabel(strLabelName, strLabelName, 1);
             }
             else {
@@ -122,40 +121,44 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         }
     }
 
-    m_strlstGeometryLabelNames.append(c_strValueNameP1);
-    m_strlstGeometryLabelNames.append(c_strValueNameP2);
-    m_strlstGeometryLabelNames.append(c_strValueNameCenter);
-    m_strlstGeometryLabelNames.append(c_strValueNameSize);
-    m_strlstGeometryLabelNames.append(c_strValueNameLength);
-    m_strlstGeometryLabelNames.append(c_strValueNameAngle);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameP1);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameP2);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameLength);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
     const CUnit& unit = m_pDrawingScene->drawingSize().unit();
     for (const QString& strLabelName : m_strlstGeometryLabelNames) {
-        //m_hshpGeometryLabels[strLabelName] = ;
         QString strText;
-        if (strLabelName == c_strValueNameP1) {
+        if (strLabelName == c_strGeometryLabelNameP1) {
             strText = getP1(unit).toString();
-            addValueLabel(strLabelName, strText, 0);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelPosition, 0);
         }
-        else if (strLabelName == c_strValueNameP2) {
+        else if (strLabelName == c_strGeometryLabelNameP2) {
             strText = getP2(unit).toString();
-            addValueLabel(strLabelName, strText, 1);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelPosition, 1);
         }
-        else if (strLabelName == c_strValueNameCenter) {
+        else if (strLabelName == c_strGeometryLabelNameCenter) {
             strText = getCenter(unit).toString();
-            addValueLabel(strLabelName, strText, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelPosition, ESelectionPoint::Center);
         }
-        else if (strLabelName == c_strValueNameSize) {
+        else if (strLabelName == c_strGeometryLabelNameWidth) {
             strText = getSize(unit).toString();
-            addValueLabel(strLabelName, strText, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelLength, ESelectionPoint::Center);
         }
-        else if (strLabelName == c_strValueNameLength) {
+        else if (strLabelName == c_strGeometryLabelNameHeight) {
+            strText = getSize(unit).toString();
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelLength, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strGeometryLabelNameLength) {
             strText = getLength(unit).toString();
-            addValueLabel(strLabelName, strText, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelLength, ESelectionPoint::Center);
         }
-        else if (strLabelName == c_strValueNameAngle) {
+        else if (strLabelName == c_strGeometryLabelNameAngle) {
             strText = getAngle(Units.Angle.Degree).toString();
-            addValueLabel(strLabelName, strText, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelAngle, ESelectionPoint::Center);
         }
     }
 
@@ -1088,17 +1091,19 @@ public: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Returns coordinates of selection point in item's coordinate system.
 */
-QPointF CGraphObjLine::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
+CPhysValPoint CGraphObjLine::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
 //------------------------------------------------------------------------------
 {
-    QPointF pt;
-    if (i_selPt.m_idxPt == 0) {
-        pt = line().p1();
+    CPhysValPoint physValPoint = m_physValLine.center();
+    if (i_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        if (i_selPt.m_idxPt == 0) {
+            physValPoint = m_physValLine.p1();
+        }
+        else if (i_selPt.m_idxPt == 1) {
+            physValPoint = m_physValLine.p2();
+        }
     }
-    else if (i_selPt.m_idxPt == 1) {
-        pt = line().p2();
-    }
-    return pt;
+    return physValPoint;
 }
 
 /*==============================================================================
@@ -1157,8 +1162,8 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const
 {
     static const QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined = {
         { c_strLabelName, {ESelectionPoint::Center} },
-        { c_strValueNameP1, {0} },
-        { c_strValueNameP2, {1} }
+        { c_strGeometryLabelNameP1, {0} },
+        { c_strGeometryLabelNameP2, {1} }
     };
     static const QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined = {
         ESelectionPoint::Center,
@@ -1176,12 +1181,13 @@ public: // overridables of base class CGraphObj (geometry labels)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QStringList CGraphObjLine::getValueNames() const
+QStringList CGraphObjLine::getGeometryLabelNames() const
 //------------------------------------------------------------------------------
 {
     static const QStringList s_strlstValueNames = {
-        c_strValueNameP1, c_strValueNameP2, c_strValueNameCenter,
-        c_strValueNameSize, c_strValueNameLength, c_strValueNameAngle
+        c_strGeometryLabelNameP1, c_strGeometryLabelNameP2, c_strGeometryLabelNameCenter,
+        c_strGeometryLabelNameWidth, c_strGeometryLabelNameHeight, c_strGeometryLabelNameLength,
+        c_strGeometryLabelNameAngle
     };
     return s_strlstValueNames;
 }

@@ -24,51 +24,46 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjPolygon_h
-#define ZSDraw_GraphObjPolygon_h
+#ifndef ZSDraw_GraphObjLabelAngle_h
+#define ZSDraw_GraphObjLabelAngle_h
 
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 
 namespace ZS
 {
 namespace Draw
 {
 //******************************************************************************
-class ZSDRAWDLL_API CGraphObjPolygon : public CGraphObjPolyline
+/*! @brief
+*/
+class ZSDRAWDLL_API CGraphObjLabelAngle : public CGraphObjLabel
 //******************************************************************************
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjPolygon"; }
+    static QString ClassName() { return "CGraphObjLabelAngle"; }
 public: // ctors and dtor
-    CGraphObjPolygon(CDrawingScene* i_pDrawingScene, const QString& i_strObjName = "");
-    virtual ~CGraphObjPolygon();
+    CGraphObjLabelAngle(
+        CDrawingScene* i_pDrawingScene,
+        CGraphObj* i_pGraphObjParent,
+        const QString& i_strKey,
+        const SGraphObjSelectionPoint& i_selPt);
+    virtual ~CGraphObjLabelAngle();
+public: // overridables of base class QGraphicsItem
+    int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
-public: // overridables of base class CGraphObj
-    virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
-public: // overridables of base class CGraphObj
-    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
-public: // reimplementing methods of base class QGraphicItem
-    void setCursor( const QCursor& cursor );
-public: // overridables of base class QGraphicsItem
-    virtual int type() const override;
-public: // must overridables of base class QGraphicsItem
-    virtual QRectF boundingRect() const override;
-    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
-public: // class members
-    /*!< Needed to set an initial unique name when creating a new instance.
-         Incremented by the ctor but not decremented by the dtor.
-         Used to create a unique name for newly created objects of this type.
-         public, so that the test can reset the instance counter to 0. */
-    static qint64 s_iInstCount;
+protected: // overridable auxiliary instance methods of base class CGraphObjLabel
+    virtual void updatePosition() override;
+    virtual void updateDistanceToLinkedSelPt() override;
+    virtual void updateAnchorLine() override;
 
-}; // class CGraphObjPolygon
+}; // class CGraphObjLabelAngle
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjPolygon_h
+#endif // #ifndef ZSDraw_GraphObjLabelAngle_h

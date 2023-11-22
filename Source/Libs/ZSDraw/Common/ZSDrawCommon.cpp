@@ -157,6 +157,15 @@ QString ZS::Draw::graphObjType2Str( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabel) {
         str = "Label";
     }
+    else if (i_graphObjType == EGraphObjTypeLabelPosition) {
+        str = "LabelPosition";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelLength) {
+        str = "LabelLength";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelAngle) {
+        str = "LabelAngle";
+    }
     else if (i_graphObjType == EGraphObjTypeUndefined) {
         str = "Undefined";
     }
@@ -194,6 +203,15 @@ QString ZS::Draw::graphObjType2ClassName( int i_graphObjType )
     }
     else if (i_graphObjType == EGraphObjTypeLabel) {
         str = "CGraphObjLabel";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelPosition) {
+        str = "CGraphObjLabelPosition";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelLength) {
+        str = "CGraphObjLabelLength";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelAngle) {
+        str = "CGraphObjLabelAngle";
     }
     else {
         str = SEnumEntry::enumerator2Str(
