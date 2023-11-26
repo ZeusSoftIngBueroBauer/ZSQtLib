@@ -134,31 +134,31 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         QString strText;
         if (strLabelName == c_strGeometryLabelNameP1) {
             strText = getP1(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelPosition, 0);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, 0);
         }
         else if (strLabelName == c_strGeometryLabelNameP2) {
             strText = getP2(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelPosition, 1);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameCenter) {
             strText = getCenter(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelPosition, ESelectionPoint::Center);
-        }
-        else if (strLabelName == c_strGeometryLabelNameWidth) {
-            strText = getSize(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelLength, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameHeight) {
             strText = getSize(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelLength, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryHeight, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strGeometryLabelNameWidth) {
+            strText = getSize(unit).toString();
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryWidth, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameLength) {
             strText = getLength(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelLength, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             strText = getAngle(Units.Angle.Degree).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelAngle, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::Center);
         }
     }
 
@@ -1089,21 +1089,24 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns coordinates of selection point in item's coordinate system.
+/*! @brief Returns coordinates of selection point in scene coordinates.
 */
-CPhysValPoint CGraphObjLine::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
+CPhysValPoint CGraphObjLine::getSelectionPointCoors( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
-    CPhysValPoint physValPoint = m_physValLine.center();
-    if (i_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        if (i_selPt.m_idxPt == 0) {
-            physValPoint = m_physValLine.p1();
-        }
-        else if (i_selPt.m_idxPt == 1) {
-            physValPoint = m_physValLine.p2();
-        }
+    return m_physValLine.center();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns coordinates of selection point in scene coordinates.
+*/
+CPhysValPoint CGraphObjLine::getSelectionPointCoors( int i_idxPt ) const
+//------------------------------------------------------------------------------
+{
+    if (i_idxPt == 0) {
+        return m_physValLine.p1();
     }
-    return physValPoint;
+    return m_physValLine.p2();
 }
 
 /*==============================================================================
@@ -1160,18 +1163,26 @@ public: // overridables of base class CGraphObj (text labels)
 QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    static const QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined = {
-        { c_strLabelName, {ESelectionPoint::Center} },
-        { c_strGeometryLabelNameP1, {0} },
-        { c_strGeometryLabelNameP2, {1} }
-    };
-    static const QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined = {
-        ESelectionPoint::Center,
-        0,   // P1, Start point of the line
-        1    // P2, End point of the line
-    };
+    static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
+    if (s_arSelPtsUserDefined.isEmpty()) {
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), ESelectionPoint::Center));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), 0)); // P1, Start point of the line
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), 1)); // P2, End point of the line
+    }
+    static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
+    if (s_hshSelPtsPredefined.isEmpty()) {
+        QList<SGraphObjSelectionPoint> arSelPts;
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), ESelectionPoint::Center));
+        s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
+        arSelPts.clear();
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), 0));
+        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameP1, arSelPts);
+        arSelPts.clear();
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjLine*>(this), 1));
+        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameP2, arSelPts);
+    }
     if (s_hshSelPtsPredefined.contains(i_strName)) {
-        return s_hshSelPtsPredefined[i_strName];
+        return s_hshSelPtsPredefined.value(i_strName);
     }
     return s_arSelPtsUserDefined;
 }

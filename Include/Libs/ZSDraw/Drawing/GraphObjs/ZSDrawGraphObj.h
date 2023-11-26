@@ -53,29 +53,31 @@ class CGraphObjLabel;
 class CGraphObjSelectionPoint;
 
 
-//==============================================================================
+//******************************************************************************
 /*!
 */
 struct ZSDRAWDLL_API SGraphObjSelectionPoint
-//==============================================================================
+//******************************************************************************
 {
 public: // struct methods
-    static SGraphObjSelectionPoint fromString(const QString& i_str, bool* i_pbOk = nullptr);
+    static SGraphObjSelectionPoint fromString(CGraphObj* i_pGraphObj, const QString& i_str, bool* i_pbOk = nullptr);
 public: // ctors
     SGraphObjSelectionPoint();
-    SGraphObjSelectionPoint(ESelectionPoint i_selPt);
-    SGraphObjSelectionPoint(int idxPt);
+    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj);
+    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPoint i_selPt);
+    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, int idxPt);
     SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other);
 public: // operators
     SGraphObjSelectionPoint& operator = (const SGraphObjSelectionPoint& i_other);
-    SGraphObjSelectionPoint& operator = (ESelectionPoint i_selPt);
-    SGraphObjSelectionPoint& operator = (int i_idxPt);
     bool operator == (const SGraphObjSelectionPoint& i_other) const;
     bool operator != (const SGraphObjSelectionPoint& i_other) const;
 public: // struct methods
     QString name() const;
-    QString toString() const;
+    QString toString(bool i_bIncludeGraphObj) const;
 public: // struct members
+    /*!< Graphical object the selection point belongs to.
+         nullptr, if the selection point is not used (undefined). */
+    CGraphObj* m_pGraphObj;
     /*!< Type of the selection point. Selection points are differentiated into
          selection points on the bounding rectangle around the graphical object
          or into polygon shape points. */
@@ -91,11 +93,63 @@ public: // struct members
 }; // struct SGraphObjSelectionPoint
 
 
-//==============================================================================
+//******************************************************************************
+/*! @brief Struct defining the properties of a label.
+
+    As long as a label is not added to the graphics scene the label objects are
+    not created but the descriptors are kept in the parent object so that the
+    labels can be created with the desired properties on demand.
+*/
+struct ZSDRAWDLL_API SLabelDscr
+//******************************************************************************
+{
+public: // ctors
+    SLabelDscr();
+    SLabelDscr(const QString& i_strKey);
+    SLabelDscr(const QString& i_strKey, EGraphObjType i_labelType);
+    SLabelDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
+    SLabelDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SLabelDscr(const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
+    SLabelDscr(const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+public: // struct members
+    /*!< Key of the label within the list of labels of the graphical objects. */
+    QString m_strKey;
+    /*!< Type of the label.
+         Range [EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
+    EGraphObjType m_labelType;
+    /*!< For text labels or geometry labels (like position) selPt1 defines the
+         selection point the label is linked to.
+         For geometry labels using two selection points like length, width or height,
+         selPt1 defines the first selection point the label is linked to. */
+    SGraphObjSelectionPoint m_selPt1;
+    /*!< For text labels or geometry labels (like position) selPt2 is not used and set to Undefined.
+         For geometry labels using two selection points like length, width or height,
+         selPt2 defines the second selection point the label is linked to. */
+    SGraphObjSelectionPoint m_selPt2;
+    /*!< Text to be indicated by text labels.
+         For geometry labels the "text" is calculated during runtime. */
+    QString m_strText;
+    /*!< Distance to the selection point the label is aligned to. Calculated as follows:
+         - width = this.center.x - LinkedSelPt.x
+         - height = this.center.y - LinkedSelPt.y
+         This means if the label is right of the parent items selection point the width is positive.
+         If the label is above of the parent items selection point the height is positive.
+         How the distance is interpreted depends on the type of label. For length geometry labels
+         the distance defines the distance between the center of the label and the center of the
+         line for which the length should be indicated. */
+    QSizeF m_distanceToLinkedSelPt;
+    /*!< Flag to indicate whether the anchor line (line from label to parent's selection point the
+         label is linked to) should always be visible. */
+    bool m_bShowAnchorLine;
+
+}; // struct SLabelDscr
+
+
+//******************************************************************************
 /*!
 */
 struct ZSDRAWDLL_API SGraphObjHitInfo
-//==============================================================================
+//******************************************************************************
 {
 public: // ctor
     SGraphObjHitInfo();
@@ -120,9 +174,9 @@ public: // struct members
 }; // struct SGraphObjHitInfo
 
 
-//==============================================================================
+//******************************************************************************
 struct ZSDRAWDLL_API SGraphObjAlignment
-//==============================================================================
+//******************************************************************************
 {
 public: // ctor
     SGraphObjAlignment() :
@@ -566,7 +620,8 @@ public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
 public: // overridables
-    virtual CPhysValPoint getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const;
+    virtual CPhysValPoint getSelectionPointCoors( ESelectionPoint i_selPt ) const;
+    virtual CPhysValPoint getSelectionPointCoors( int i_idxPt ) const;
 protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
@@ -580,15 +635,17 @@ public: // overridables (text labels)
     QStringList getLabelNames() const;
     virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
-    const CGraphObjLabel* getLabel(const QString& i_strName) const;
+    SLabelDscr getLabel(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
-    virtual bool addLabel(const QString& i_strName, const QString& i_strText = "", const SGraphObjSelectionPoint& i_selPt = ESelectionPoint::Center);
+    virtual bool addLabel(const QString& i_strName, const QString& i_strText, ESelectionPoint i_selPt);
+    virtual bool addLabel(const QString& i_strName, const QString& i_strText, int i_idxPt);
     virtual bool removeLabel(const QString& i_strName);
     virtual bool renameLabel(const QString& i_strName, const QString& i_strNameNew);
     virtual void setLabelText(const QString& i_strName, const QString& i_strText);
     virtual QString labelText(const QString& i_strName) const;
-    virtual void setLabelAnchorPoint(const QString& i_strName, const SGraphObjSelectionPoint& i_selPt);
+    virtual void setLabelAnchorPoint(const QString& i_strName, ESelectionPoint i_selPt);
+    virtual void setLabelAnchorPoint(const QString& i_strName, int i_idxPt);
     virtual SGraphObjSelectionPoint labelAnchorPoint(const QString& i_strName) const;
     virtual void showLabel(const QString& i_strName);
     virtual void hideLabel(const QString& i_strName);
@@ -609,7 +666,8 @@ public: // overridables (geometry labels)
     virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
     virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;
 protected: // overridables (geometry labels)
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, const SGraphObjSelectionPoint& i_selPt = ESelectionPoint::Center);
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
 public slots: // overridables
@@ -689,12 +747,7 @@ protected: // instance members
     /*!< Type of the graphical object. */
     QString m_strType;
     /*!< Graphical parent object.
-         nullptr, if the object is neither a selection point, a label or is not
-         added as a child to a group.
-         For selection points this is the object creating the selection points and
-         to which the selection points are linked to.
-         For labels this is also the object creating the labels and to which the
-         labels are linked to.
+         nullptr, if the object is not added as a child to a group.
          If the object is added as a child to a group the parent is the group object. */
     CGraphObj* m_pGraphObjParent;
     /*!< Draw settings like pen and brush used to draw the graphical object.
@@ -753,7 +806,7 @@ protected: // instance members
          "P1" and "P2" in its constructor. If user defined labels got to be added the reserved
          names may not be used. */
     QStringList m_strlstPredefinedLabelNames;
-    /*!< Labels which may be assigned to and indicated by the graphical object.
+    /*!< Hash with descriptors for labels which may be assigned to and indicated by the graphical object.
          For each label a unique name has to be assigned.
          Some names are reserved for internal use. E.g. "Name" is used to indicate
          the name of the object. The value of the "Name" label is not editable but is
@@ -762,16 +815,27 @@ protected: // instance members
          uses "P1" and "P2" to address the line end points. The names for "P1" and "P2" is
          editable but are defaulting to "P1" and "P2".
          In addition to those predefined labels additional labels may be added by defining a
-         unique name and assigning a text. Both the name and the text are stored in the Label object. */
+         unique name and assigning a text. Both the name and the text are stored in the Label object.
+         When showing labels (adding them to the graphics scene) the desriptors are used to set
+         the properties of the label objects. */
+    QHash<QString, SLabelDscr> m_hshLabelDscrs;
+    /*!< Hash with text labels which may be assigned to and indicated by the graphical object.
+         Created on demand from the label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpLabels;
-    /*!< List with the value names. Got to be initialised in the constructor of derived classes
-         in addition to the hash with geometry values. Keeping the values names also a string list
+    /*!< List with the geometry label names. Got to be initialised in the constructor of derived classes
+         in addition to the hash with geometry labels. Keeping the geometry label names also a string list
          should verify that the returned value names are always in the same order as the order
          in a hash is arbitrary. */
     QStringList m_strlstGeometryLabelNames;
-    /*!< Hash with geometry values which may be indicated. The number of value label depend on
-         the object type. E.g. for the Line object the positions "P1", "P2" and "Center" as well as
-         the "Size" (width and height), "Length" and "Angle" may be shown. */
+    /*!< Hash with descriptors for geometry labels which may be indicated by the graphical object.
+         The number of geometry labels depend on the object type.
+         E.g. for the Line object the positions "P1", "P2" and "Center" as well as the "Width" and "Height",
+         "Length" and "Angle" may be shown.
+         When showing labels (adding them to the graphics scene) the desriptors are used to set
+         the properties of the label objects. */
+    QHash<QString, SLabelDscr> m_hshGeometryLabelDscrs;
+    /*!< Hash with geometry labels which may be indicated by the graphical object.
+         Created on demand from the geometry label descriptors if the labels are added to the graphics scene. */
     QHash<QString, CGraphObjLabel*> m_hshpGeometryLabels;
     /*!< The tool tip contains various interesting information about the graphical object like the name,
          the position and the dimension. But also other information which depends on the type of the object. */

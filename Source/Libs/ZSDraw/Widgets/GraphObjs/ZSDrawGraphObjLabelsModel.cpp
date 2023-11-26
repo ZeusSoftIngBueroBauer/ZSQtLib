@@ -94,7 +94,7 @@ CModelGraphObjLabels::SLabelSettings CModelGraphObjLabels::SLabelSettings::fromG
 CModelGraphObjLabels::SLabelSettings::SLabelSettings() :
 //------------------------------------------------------------------------------
     m_strNameOrig(), m_strNameCurr(), m_iRowIdx(-1), m_bIsPredefinedLabelName(false),
-    m_strText(), m_selPt(ESelectionPoint::None), m_bVisible(false), m_bAnchorLineVisible(false),
+    m_strText(), m_selPt(), m_bVisible(false), m_bAnchorLineVisible(false),
     m_bSelected(false), m_errResultInfo()
 {
 }
@@ -414,11 +414,25 @@ void CModelGraphObjLabels::acceptChanges()
             // Last add or change labels which have been added or changed.
             for (const SLabelSettings& labelSettings : m_arLabelSettings) {
                 if (!m_pGraphObj->isLabelAdded(labelSettings.m_strNameCurr)) {
-                    m_pGraphObj->addLabel(labelSettings.m_strNameCurr);
+                    if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                        m_pGraphObj->addLabel(
+                            labelSettings.m_strNameCurr, labelSettings.m_strText, labelSettings.m_selPt.m_selPt);
+                    }
+                    else if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                        m_pGraphObj->addLabel(
+                            labelSettings.m_strNameCurr, labelSettings.m_strText, labelSettings.m_selPt.m_idxPt);
+                    }
                     m_arLabelSettings[labelSettings.m_iRowIdx].m_strNameOrig = labelSettings.m_strNameCurr;
                 }
-                m_pGraphObj->setLabelText(labelSettings.m_strNameCurr, labelSettings.m_strText);
-                m_pGraphObj->setLabelAnchorPoint(labelSettings.m_strNameCurr, labelSettings.m_selPt);
+                else {
+                    m_pGraphObj->setLabelText(labelSettings.m_strNameCurr, labelSettings.m_strText);
+                    if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                        m_pGraphObj->setLabelAnchorPoint(labelSettings.m_strNameCurr, labelSettings.m_selPt.m_selPt);
+                    }
+                    else if (labelSettings.m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                        m_pGraphObj->setLabelAnchorPoint(labelSettings.m_strNameCurr, labelSettings.m_selPt.m_idxPt);
+                    }
+                }
                 labelSettings.m_bVisible ?
                     m_pGraphObj->showLabel(labelSettings.m_strNameCurr) :
                     m_pGraphObj->hideLabel(labelSettings.m_strNameCurr);
@@ -940,12 +954,14 @@ bool CModelGraphObjLabels::setData(
                         bool bIsBoundingRectPoint = false;
                         CEnumSelectionPoint selPt = CEnumSelectionPoint::fromString(strData, &bIsBoundingRectPoint);
                         if (bIsBoundingRectPoint) {
-                            labelSettings.m_selPt = selPt.enumerator();
+                            labelSettings.m_selPt.m_selPtType = ESelectionPointType::BoundingRectangle;
+                            labelSettings.m_selPt.m_selPt = selPt.enumerator();
                         }
                         else if (strData.startsWith("P")) {
                             QString strShapePoint = i_varData.toString().remove("P");
                             // Convert P1 to P0 and so on ...
-                            labelSettings.m_selPt = strShapePoint.toInt() - 1;
+                            labelSettings.m_selPt.m_selPtType = ESelectionPointType::PolygonShapePoint;
+                            labelSettings.m_selPt.m_idxPt = strShapePoint.toInt() - 1;
                         }
                         bDataSet = true;
                     }

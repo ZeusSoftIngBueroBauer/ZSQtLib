@@ -1354,6 +1354,56 @@ CGraphObj* CDrawingScene::findGraphObj( const QString& i_strKeyInTree )
 }
 
 /*==============================================================================
+public: // instance methods (replacing methods of QGraphicScene)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the item from the graphics scene by invoking the method
+           of the base class QGraphicsScene.
+
+    Some objects like selection points and labels are not part of the index
+    tree of graphical objects and are directly added to the scene and
+    the drawing scene will not be informed if the objects are about to be
+    destroyed (the onGraphObjAboutToBeDestroyed slot is not connected to the
+    aboutToBeDestroyed signal of the graphical object).
+
+    When selecting the labels or selection points they become part of some
+    internal lists of the drawing scene (e.g. in the list of objects temporarily
+    accepting hover events). If the graphical object is removed from the scene
+    the item must also be removed from those internal lists. For this the labels
+    and selection points need to call the removeItem method of the drawing scene.
+
+    @param [in] i_pGraphicsItem
+        Pointer to item which is going to be removed from the graphics scene.
+*/
+void CDrawingScene::removeItem(QGraphicsItem* i_pGraphicsItem)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "removeItem",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_pGraphicsItem != nullptr && i_pGraphicsItem->scene() != nullptr) {
+        QGraphicsScene::removeItem(i_pGraphicsItem);
+    }
+    if (i_pGraphicsItem != nullptr && m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
+        invalidateItemInAcceptingHoverEventsList(i_pGraphicsItem);
+        for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+            if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
+                m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
+            }
+        }
+    }
+}
+
+/*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
@@ -4941,14 +4991,6 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
         m_pGraphicsItemAddingShapePoints = nullptr;
         m_pGraphObjAddingShapePoints = nullptr;
     }
-    if (pGraphicsItem != nullptr && m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
-        invalidateItemInAcceptingHoverEventsList(i_pGraphObj);
-        for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
-            if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
-                m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
-            }
-        }
-    }
 
     // The children will be recursively deleted by the CGraphObj destructor.
     /*
@@ -4976,8 +5018,6 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
             pGraphObjChild = nullptr;
         }
     }
-    delete i_pGraphObj;
-    i_pGraphObj = nullptr;
     */
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -5211,7 +5251,7 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
     to the list of items accepting hover events.
 
     If a graphical object emits the aboutToBeDestroyed signal its selection points
-    got to be removed from the list of items acceptiong hover events.
+    got to be removed from the list of items accepting hover events.
     This internal method sets the element of the given graphics item and all its
     child to nullptr. After invoking the method the list got to be cleared by
     removing all nullptr elements.
@@ -5219,13 +5259,12 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
     @note Labels and selection points are not added as childs to the graphic item
           they belong to. They are only linked to its parent via the parent member.
 */
-void CDrawingScene::invalidateItemInAcceptingHoverEventsList(CGraphObj* i_pGraphObj)
+void CDrawingScene::invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem)
 //------------------------------------------------------------------------------
 {
     for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
         QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-        if (pGraphObj != nullptr && (pGraphObj == i_pGraphObj || pGraphObj->parentGraphObj() == i_pGraphObj)) {
+        if (pGraphicsItem != nullptr && (pGraphicsItem == i_pGraphicsItem || pGraphicsItem->parentItem() == i_pGraphicsItem)) {
             m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] = nullptr;
         }
     }

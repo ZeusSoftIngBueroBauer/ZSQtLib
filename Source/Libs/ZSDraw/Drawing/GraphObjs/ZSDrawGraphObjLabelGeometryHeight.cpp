@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelPosition.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryHeight.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
@@ -58,7 +58,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CGraphObjLabelPosition : public CGraphObjLabel
+class CGraphObjLabelGeometryHeight : public CGraphObjLabel
 *******************************************************************************/
 
 /*==============================================================================
@@ -66,28 +66,27 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CGraphObjLabelPosition::CGraphObjLabelPosition(
+CGraphObjLabelGeometryHeight::CGraphObjLabelGeometryHeight(
     CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjParent,
     const QString& i_strKey,
-    const SGraphObjSelectionPoint& i_selPt) :
+    const SGraphObjSelectionPoint& i_selPt1,
+    const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     CGraphObjLabel(
         /* pDrawingScene   */ i_pDrawingScene,
-        /* pGraphObjParent */ i_pGraphObjParent,
         /* strKey          */ i_strKey,
-        /* strText         */ "Position",
-        /* selPt           */ i_selPt,
-        /* type            */ EGraphObjTypeLabelPosition)
+        /* strText         */ "Height",
+        /* type            */ EGraphObjTypeLabelGeometryHeight,
+        /* selPt           */ i_selPt1,
+        /* selPt           */ i_selPt2)
 {
     createTraceAdminObjs("Labels::" + ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs =
-            "Parent: " + QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree()) +
-            ", Key: " + i_strKey +
-            ", SelPt: " + i_selPt.toString();
+        strMthInArgs = "Key: " + i_strKey +
+            ", SelPt1 {" + i_selPt1.toString(true) + "}" +
+            ", SelPt2 {" + i_selPt2.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -99,7 +98,7 @@ CGraphObjLabelPosition::CGraphObjLabelPosition(
 } // ctor
 
 //------------------------------------------------------------------------------
-CGraphObjLabelPosition::~CGraphObjLabelPosition()
+CGraphObjLabelGeometryHeight::~CGraphObjLabelGeometryHeight()
 //------------------------------------------------------------------------------
 {
     m_bDtorInProgress = true;
@@ -122,10 +121,10 @@ public: // overridables of base class QGraphicsItem
 //------------------------------------------------------------------------------
 /*! @brief Overrides the type method of QGraphicsItem.
 */
-int CGraphObjLabelPosition::type() const
+int CGraphObjLabelGeometryHeight::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeLabelPosition;
+    return QGraphicsItem::UserType + EGraphObjTypeLabelGeometryHeight;
 }
 
 /*==============================================================================
@@ -133,7 +132,7 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CGraphObj* CGraphObjLabelPosition::clone()
+CGraphObj* CGraphObjLabelGeometryHeight::clone()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -143,7 +142,7 @@ CGraphObj* CGraphObjLabelPosition::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabelPosition* pGraphObj = nullptr;
+    CGraphObjLabelGeometryHeight* pGraphObj = nullptr;
     return pGraphObj;
 }
 
@@ -160,7 +159,7 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
     any other geometry change) the label must be moved so that the distance remains
     the same.
 */
-void CGraphObjLabelPosition::updatePosition()
+void CGraphObjLabelGeometryHeight::updatePosition()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -173,17 +172,6 @@ void CGraphObjLabelPosition::updatePosition()
     CGraphObjLabel::updatePosition();
 
     m_bUpdatePositionInProgress = true;
-
-    CPhysValPoint physValSelPointParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
-    QString strText = physValSelPointParent.toString();
-
-    if (QGraphicsSimpleTextItem::text() != strText) {
-        QGraphicsSimpleTextItem::setText(strText);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-
     m_bUpdatePositionInProgress = false;
 }
 
@@ -196,7 +184,7 @@ void CGraphObjLabelPosition::updatePosition()
     any other geometry change) the label must be moved so that the distance remains
     the same.
 */
-void CGraphObjLabelPosition::updateDistanceToLinkedSelPt()
+void CGraphObjLabelGeometryHeight::updateDistanceToLinkedSelPt()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -250,7 +238,7 @@ void CGraphObjLabelPosition::updateDistanceToLinkedSelPt()
     the anchor line.
 */
 //------------------------------------------------------------------------------
-void CGraphObjLabelPosition::updateAnchorLine()
+void CGraphObjLabelGeometryHeight::updateAnchorLine()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,

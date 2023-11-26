@@ -368,18 +368,18 @@ void CObjFactory::saveGraphObjLabels(
     QStringList strlstPredefinedLabelNames = i_pGraphObj->getPredefinedLabelNames();
     QSet<QString> strlstLabelNamesAdded;
     for (const QString& strName : strlstPredefinedLabelNames) {
-        const CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getLabel(strName);
+        SLabelDscr labelDscr = i_pGraphObj->getLabel(strName);
         i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameLabel);
         // To keep the XML file as short as possible the properties of
         // the labels are stored as attributes and not as text elements.
-        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrKey, pGraphObjLabel->key());
-        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrText, pGraphObjLabel->text());
-        SGraphObjSelectionPoint selPt = pGraphObjLabel->selectionPoint();
-        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrSelPt, selPt.toString());
-        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, size2Str(pGraphObjLabel->distanceToLinkedSelPt()));
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrKey, labelDscr.m_strKey);
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrText, labelDscr.m_strText);
+        SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrSelPt, selPt.toString(false));
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, size2Str(labelDscr.m_distanceToLinkedSelPt));
         i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
-        if (pGraphObjLabel->isAnchorLineVisible()) { // don't write default for this property
-            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(pGraphObjLabel->isAnchorLineVisible()));
+        if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
         }
         i_xmlStreamWriter.writeEndElement();
         strlstLabelNamesAdded.insert(strName);
@@ -388,18 +388,18 @@ void CObjFactory::saveGraphObjLabels(
     // Add those after the predefined labels.
     for (const QString& strName : strlstLabelNames) {
         if (!strlstLabelNamesAdded.contains(strName)) {
-            const CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getLabel(strName);
+            SLabelDscr labelDscr = i_pGraphObj->getLabel(strName);
             i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
             // the labels are stored as attributes and not as text elements.
-            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrKey, pGraphObjLabel->key());
-            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrText, pGraphObjLabel->text());
-            SGraphObjSelectionPoint selPt = pGraphObjLabel->selectionPoint();
-            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrSelPt, selPt.toString());
-            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, size2Str(pGraphObjLabel->distanceToLinkedSelPt()));
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrKey, labelDscr.m_strKey);
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrText, labelDscr.m_strText);
+            SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrSelPt, selPt.toString(false));
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, size2Str(labelDscr.m_distanceToLinkedSelPt));
             i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
-            if (pGraphObjLabel->isAnchorLineVisible()) { // don't write default for this property
-                i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(pGraphObjLabel->isAnchorLineVisible()));
+            if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
+                i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
             }
             i_xmlStreamWriter.writeEndElement();
             strlstLabelNamesAdded.insert(strName);
@@ -450,7 +450,7 @@ void CObjFactory::loadGraphObjLabels(
                     }
                     if (xmlStreamAttrs.hasAttribute(CDrawingScene::c_strXmlAttrSelPt)) {
                         strAttr = xmlStreamAttrs.value(CDrawingScene::c_strXmlAttrSelPt).toString();
-                        SGraphObjSelectionPoint selPtTmp = SGraphObjSelectionPoint::fromString(strAttr, &bConverted);
+                        SGraphObjSelectionPoint selPtTmp = SGraphObjSelectionPoint::fromString(i_pGraphObj, strAttr, &bConverted);
                         if (bConverted) {
                             selPt = selPtTmp;
                         }
@@ -474,10 +474,22 @@ void CObjFactory::loadGraphObjLabels(
 
                     if (!strKey.isEmpty()) {
                         if (!i_pGraphObj->isLabelAdded(strKey)) {
-                            i_pGraphObj->addLabel(strKey);
+                            if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                                i_pGraphObj->addLabel(strKey, strText, selPt.m_selPt);
+                            }
+                            else if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                                i_pGraphObj->addLabel(strKey, strText, selPt.m_idxPt);
+                            }
                         }
-                        i_pGraphObj->setLabelText(strKey, strText);
-                        i_pGraphObj->setLabelAnchorPoint(strKey, selPt);
+                        else {
+                            i_pGraphObj->setLabelText(strKey, strText);
+                            if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                                i_pGraphObj->setLabelAnchorPoint(strKey, selPt.m_selPt);
+                            }
+                            else if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                                i_pGraphObj->setLabelAnchorPoint(strKey, selPt.m_idxPt);
+                            }
+                        }
                         bVisible ? i_pGraphObj->showLabel(strKey) : i_pGraphObj->hideLabel(strKey);
                         i_pGraphObj->setLabelDistanceToLinkedSelPt(strKey, distanceToSelPt);
                         bAnchorLineVisible ? i_pGraphObj->showLabelAnchorLine(strKey) : i_pGraphObj->hideLabelAnchorLine(strKey);

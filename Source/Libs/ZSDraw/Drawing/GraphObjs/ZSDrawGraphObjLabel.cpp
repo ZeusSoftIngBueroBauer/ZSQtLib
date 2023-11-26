@@ -68,7 +68,6 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CGraphObjLabel::CGraphObjLabel(
     CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjParent,
     const QString& i_strKey,
     const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt) :
@@ -81,10 +80,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_strKey(i_strKey),
-    m_selPt(i_selPt),
-    m_distanceToLinkedSelPt(0.0, 0.0),
-    m_bShowAnchorLine(false),
+    m_labelDscr(i_strKey, i_selPt),
     m_anchorLine(),
     m_bUpdatePositionInProgress(false)
 {
@@ -92,10 +88,7 @@ CGraphObjLabel::CGraphObjLabel(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Key: " + i_strKey + ", Text: " + i_strText +
-            ", Parent: " + QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree()) +
-            ", Text: " + i_strText +
-            ", SelPt: " + i_selPt.toString();
+        strMthInArgs = "Key: " + i_strKey + ", Text: " + i_strText + ", SelPt: " + i_selPt.toString(true);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -106,22 +99,34 @@ CGraphObjLabel::CGraphObjLabel(
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    setParentGraphObj(i_pGraphObjParent);
+    if (i_selPt.m_pGraphObj == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
 
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
+        this, &CGraphObj::onGraphObjParentGeometryChanged);
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
+        this, &CGraphObj::onGraphObjParentZValueChanged);
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        traceInternalStates(mthTracer, EMethodDir::Undefined,
+            m_pTrcAdminObjCtorsAndDtor->getRuntimeInfoTraceDetailLevel());
+    }
 } // ctor
 
 /*==============================================================================
-protected: // ctor (used by derived classes, e.g. CGraphObjLabelPosition)
+protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 CGraphObjLabel::CGraphObjLabel(
     CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjParent,
     const QString& i_strKey,
     const QString& i_strText,
-    const SGraphObjSelectionPoint& i_selPt,
-    EGraphObjType i_type) :
+    EGraphObjType i_type,
+    const SGraphObjSelectionPoint& i_selPt1) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
@@ -131,16 +136,63 @@ CGraphObjLabel::CGraphObjLabel(
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_strKey(i_strKey),
-    m_selPt(i_selPt),
-    m_distanceToLinkedSelPt(0.0, 0.0),
-    m_bShowAnchorLine(false),
+    m_labelDscr(i_strKey, i_selPt1),
     m_anchorLine(),
     m_bUpdatePositionInProgress(false)
 {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    setParentGraphObj(i_pGraphObjParent);
+    if (i_selPt1.m_pGraphObj == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
+        this, &CGraphObj::onGraphObjParentGeometryChanged);
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
+        this, &CGraphObj::onGraphObjParentZValueChanged);
+}
+
+//------------------------------------------------------------------------------
+CGraphObjLabel::CGraphObjLabel(
+    CDrawingScene* i_pDrawingScene,
+    const QString& i_strKey,
+    const QString& i_strText,
+    EGraphObjType i_type,
+    const SGraphObjSelectionPoint& i_selPt1,
+    const SGraphObjSelectionPoint& i_selPt2) :
+//------------------------------------------------------------------------------
+    CGraphObj(
+        /* pDrawingScene       */ i_pDrawingScene,
+        /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
+        /* type                */ i_type,
+        /* strType             */ ZS::Draw::graphObjType2Str(i_type),
+        /* strObjName          */ i_strKey,
+        /* idxTreeEntryType    */ EEntryType::Leave ),
+    QGraphicsSimpleTextItem(i_strText),
+    m_labelDscr(i_strKey, i_selPt1, i_selPt2),
+    m_anchorLine(),
+    m_bUpdatePositionInProgress(false)
+{
+    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
+
+    if (i_selPt1.m_pGraphObj == nullptr || i_selPt2.m_pGraphObj == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
+        this, &CGraphObj::onGraphObjParentGeometryChanged);
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
+        this, &CGraphObj::onGraphObjParentZValueChanged);
+    QObject::connect(
+        m_labelDscr.m_selPt2.m_pGraphObj, &CGraphObj::geometryChanged,
+        this, &CGraphObj::onGraphObjParentGeometryChanged);
+    QObject::connect(
+        m_labelDscr.m_selPt2.m_pGraphObj, &CGraphObj::zValueChanged,
+        this, &CGraphObj::onGraphObjParentZValueChanged);
 }
 
 /*==============================================================================
@@ -165,14 +217,12 @@ CGraphObjLabel::~CGraphObjLabel()
     // Labels have been "directly" added to the graphics scene and have not by
     // invoking CDrawingScene::addGraphObj so that they don't appear in the index tree.
     // For this selection points "directly" remove themselves from the graphics scene.
-    if (scene() != nullptr) {
-        scene()->removeItem(this);
+    if (m_pDrawingScene != nullptr) {
+        m_pDrawingScene->removeItem(this);
     }
 
-    //m_strKey;
-    //m_selPt;
+    //m_labelDscr;
     //m_distanceToLinkedSelPt;
-    m_bShowAnchorLine = false;
     //m_anchorLine;
     m_bUpdatePositionInProgress = false;
 
@@ -229,8 +279,8 @@ void CGraphObjLabel::setKey(const QString& i_strKey)
         /* strMethod    */ "setKey",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_strKey != i_strKey) {
-        m_strKey = i_strKey;
+    if (m_labelDscr.m_strKey != i_strKey) {
+        m_labelDscr.m_strKey = i_strKey;
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
@@ -241,7 +291,7 @@ void CGraphObjLabel::setKey(const QString& i_strKey)
 QString CGraphObjLabel::key() const
 //------------------------------------------------------------------------------
 {
-    return m_strKey;
+    return m_labelDscr.m_strKey;
 }
 
 /*==============================================================================
@@ -263,7 +313,8 @@ void CGraphObjLabel::setText( const QString& i_strText )
         /* strMethod    */ "setText",
         /* strAddInfo   */ strMthInArgs );
 
-    if (QGraphicsSimpleTextItem::text() != i_strText) {
+    if (m_labelDscr.m_strText != i_strText) {
+        m_labelDscr.m_strText = i_strText;
         QGraphicsSimpleTextItem::setText(i_strText);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -283,23 +334,23 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::setSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
+void CGraphObjLabel::setSelectionPoint1(const SGraphObjSelectionPoint& i_selPt)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_selPt.toString();
+        strMthInArgs = i_selPt.toString(true);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setSelectionPoint",
+        /* strMethod    */ "setSelectionPoint1",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_selPt != i_selPt)
+    if (m_labelDscr.m_selPt1 != i_selPt)
     {
-        m_selPt = i_selPt;
+        m_labelDscr.m_selPt1 = i_selPt;
         updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -313,10 +364,47 @@ void CGraphObjLabel::setSelectionPoint(const SGraphObjSelectionPoint& i_selPt)
     Selection points are differentiated into selection points on the bounding
     rectangle around the graphical object or into polygon shape points.
 */
-SGraphObjSelectionPoint CGraphObjLabel::selectionPoint() const
+SGraphObjSelectionPoint CGraphObjLabel::selectionPoint1() const
 //------------------------------------------------------------------------------
 {
-    return m_selPt;
+    return m_labelDscr.m_selPt1;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabel::setSelectionPoint2(const SGraphObjSelectionPoint& i_selPt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_selPt.toString(true);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setSelectionPoint2",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_labelDscr.m_selPt2 != i_selPt)
+    {
+        m_labelDscr.m_selPt2 = i_selPt;
+        updatePosition();
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the type of the selection point.
+
+    Selection points are differentiated into selection points on the bounding
+    rectangle around the graphical object or into polygon shape points.
+*/
+SGraphObjSelectionPoint CGraphObjLabel::selectionPoint2() const
+//------------------------------------------------------------------------------
+{
+    return m_labelDscr.m_selPt2;
 }
 
 /*==============================================================================
@@ -338,8 +426,8 @@ void CGraphObjLabel::setDistanceToLinkedSelPt(const QSizeF& i_size)
         /* strMethod    */ "setDistanceToLinkedSelPt",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_distanceToLinkedSelPt != i_size) {
-        m_distanceToLinkedSelPt = i_size;
+    if (m_labelDscr.m_distanceToLinkedSelPt != i_size) {
+        m_labelDscr.m_distanceToLinkedSelPt = i_size;
         updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -351,7 +439,7 @@ void CGraphObjLabel::setDistanceToLinkedSelPt(const QSizeF& i_size)
 QSizeF CGraphObjLabel::distanceToLinkedSelPt() const
 //------------------------------------------------------------------------------
 {
-    return m_distanceToLinkedSelPt;
+    return m_labelDscr.m_distanceToLinkedSelPt;
 }
 
 /*==============================================================================
@@ -369,8 +457,8 @@ void CGraphObjLabel::showAnchorLine()
         /* strMethod    */ "showAnchorLine",
         /* strAddInfo   */ "" );
 
-    if (!m_bShowAnchorLine) {
-        m_bShowAnchorLine = true;
+    if (!m_labelDscr.m_bShowAnchorLine) {
+        m_labelDscr.m_bShowAnchorLine = true;
         if (scene() != nullptr) {
             QRectF rctBounding = boundingRect();
             rctBounding = mapToScene(rctBounding).boundingRect();
@@ -393,15 +481,15 @@ void CGraphObjLabel::hideAnchorLine()
         /* strMethod    */ "hideAnchorLine",
         /* strAddInfo   */ "" );
 
-    if (m_bShowAnchorLine) {
+    if (m_labelDscr.m_bShowAnchorLine) {
         if (scene() != nullptr) {
             QRectF rctBounding = boundingRect();
             rctBounding = mapToScene(rctBounding).boundingRect();
-            m_bShowAnchorLine = false;
+            m_labelDscr.m_bShowAnchorLine = false;
             scene()->update(rctBounding);
         }
         else {
-            m_bShowAnchorLine = false;
+            m_labelDscr.m_bShowAnchorLine = false;
         }
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -413,7 +501,7 @@ void CGraphObjLabel::hideAnchorLine()
 bool CGraphObjLabel::isAnchorLineVisible() const
 //------------------------------------------------------------------------------
 {
-    return m_bShowAnchorLine;
+    return m_labelDscr.m_bShowAnchorLine;
 }
 
 /*==============================================================================
@@ -526,8 +614,8 @@ void CGraphObjLabel::setIsHit( bool i_bHit )
 
         QRectF rctUpd = QGraphicsSimpleTextItem::boundingRect();
         QPolygonF plgLabel = mapToScene(rctUpd);
-        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_pGraphObjParent->getSize(Units.Length.px).toQSizeF());
-        QPolygonF plgGraphObj = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent)->mapToScene(rctGraphObj);
+        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_labelDscr.m_selPt1.m_pGraphObj->getSize(Units.Length.px).toQSizeF());
+        QPolygonF plgGraphObj = dynamic_cast<QGraphicsItem*>(m_labelDscr.m_selPt1.m_pGraphObj)->mapToScene(rctGraphObj);
 
         rctUpd = plgLabel.boundingRect();
         rctGraphObj = plgGraphObj.boundingRect();
@@ -577,16 +665,6 @@ bool CGraphObjLabel::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) 
         o_pHitInfo->m_idxLineSegment = -1;
         o_pHitInfo->m_ptSelected = rctBounding.center();
     }
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    if (bIsHit && o_pHitInfo != nullptr) {
-        double fRotAngleCurr_deg = m_fRotAngleCurr_deg;
-        if (m_pGraphObjParent != nullptr) {
-            fRotAngleCurr_deg = m_pGraphObjParent->getRotationAngleInDegree();
-        }
-        o_pHitInfo->setCursor( Math::deg2Rad(fRotAngleCurr_deg) );
-    }
-#endif
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs;
@@ -653,7 +731,7 @@ QRectF CGraphObjLabel::boundingRect() const
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
 
     // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (m_bIsHit || isSelected() || m_bShowAnchorLine) {
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
         QRectF rctBoundingAnchorLine(m_anchorLine.p1(), m_anchorLine.p2());
         rctBounding |= rctBoundingAnchorLine;
     }
@@ -710,7 +788,7 @@ void CGraphObjLabel::paint(
     // Draw anchor line to selection point of linked object if the label is hit by
     // mouse move (hover) or if the label is selected.
     // If the anchor line is set to be visible draw the anchor line in solid style.
-    if (m_bIsHit || isSelected() || m_bShowAnchorLine) {
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
         // P1 of the anchor line is on one of the center points of the
         // bounding rectangle of this label.
         // P2 is on the selection point of the linked parent item.
@@ -951,7 +1029,7 @@ void CGraphObjLabel::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
         /* strMethod    */ "onGraphObjParentZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_pGraphObjParent);
+    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_labelDscr.m_selPt1.m_pGraphObj);
     setZValue(pGraphicsItemParent->zValue() + 0.1);
 }
 
@@ -1051,7 +1129,13 @@ void CGraphObjLabel::updatePosition()
             m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
 
-    CPhysValPoint physValSelPointParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
+    CPhysValPoint physValSelPointParent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
     QPointF ptScenePosThis = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
@@ -1063,8 +1147,8 @@ void CGraphObjLabel::updatePosition()
     ptScenePosThis.setY(ptScenePosThis.y() - rctBoundingThis.height()/2.0);
 
     // Move the label keeping the distance.
-    ptScenePosThis.setX(ptScenePosThis.x() + m_distanceToLinkedSelPt.width());
-    ptScenePosThis.setY(ptScenePosThis.y() + m_distanceToLinkedSelPt.height());
+    ptScenePosThis.setX(ptScenePosThis.x() + m_labelDscr.m_distanceToLinkedSelPt.width());
+    ptScenePosThis.setY(ptScenePosThis.y() + m_labelDscr.m_distanceToLinkedSelPt.height());
 
     setPos(ptScenePosThis);
 
@@ -1100,15 +1184,21 @@ void CGraphObjLabel::updateDistanceToLinkedSelPt()
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
 
-    CPhysValPoint physValSelPointParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
+    CPhysValPoint physValSelPointParent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
     QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
 
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
 
-    m_distanceToLinkedSelPt.setWidth(ptScenePosCenterThis.x() - ptSelScenePosParent.x());
-    m_distanceToLinkedSelPt.setHeight(ptScenePosCenterThis.y() - ptSelScenePosParent.y());
+    m_labelDscr.m_distanceToLinkedSelPt.setWidth(ptScenePosCenterThis.x() - ptSelScenePosParent.x());
+    m_labelDscr.m_distanceToLinkedSelPt.setHeight(ptScenePosCenterThis.y() - ptSelScenePosParent.y());
 }
 
 //------------------------------------------------------------------------------
@@ -1161,7 +1251,13 @@ void CGraphObjLabel::updateAnchorLine()
         /* strMethod    */ "updateAnchorLine",
         /* strAddInfo   */ "" );
 
-    CPhysValPoint physValSelPointParent = m_pGraphObjParent->getSelectionPointCoors(m_selPt);
+    CPhysValPoint physValSelPointParent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
     QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
@@ -1207,16 +1303,16 @@ void CGraphObjLabel::traceInternalStates(
         else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
         else strTrcInfo = "";
         strTrcInfo +=
-            "Key: " + m_strKey + ", Parent: " + m_pGraphObjParent->path() +
-            ", LinkedTo: " + m_selPt.toString() +
+            "Key: " + m_labelDscr.m_strKey +
+            ", LinkedTo {" + m_labelDscr.m_selPt1.toString(true) + ", " + m_labelDscr.m_selPt2.toString(true) + "}" +
             ", Visible: " + QString(isVisible() ? "true" : "false") +
-            ", ShowAnchorLine: " + QString(m_bShowAnchorLine ? "true" : "false");
+            ", ShowAnchorLine: " + QString(m_labelDscr.m_bShowAnchorLine ? "true" : "false");
         i_mthTracer.trace(strTrcInfo);
         if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
         else strTrcInfo = "";
         strTrcInfo +=
-            "DistanceToParent {" + qSize2Str(m_distanceToLinkedSelPt) + "}" +
+            "DistanceToParent {" + qSize2Str(m_labelDscr.m_distanceToLinkedSelPt) + "}" +
             ", AnchorLine {" + qLine2Str(m_anchorLine) + "}";
         i_mthTracer.trace(strTrcInfo);
         i_mthTracer.trace(strTrcInfo);

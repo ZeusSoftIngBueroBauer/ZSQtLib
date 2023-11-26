@@ -40,9 +40,10 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-/*! @brief Labels are used to indicate a descriptive text or coordinates of
-           the object they are linked to.
+/*! @brief Class to indicate text labels.
 
+    Labels are used to indicate a descriptive text or coordinates of the object they
+    are linked to. This class is also used as the base class for all geometry labels.
 
     @note Labels should not belong as child to the graphics items for which the
           selection points are created. Otherwise the "boundingRect" call of groups
@@ -60,18 +61,23 @@ public: // class methods
 public: // ctors and dtor
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjParent,
         const QString& i_strKey,
         const QString& i_strText,
         const SGraphObjSelectionPoint& i_selPt);
-protected: // ctor (used by derived classes, e.g. CGraphObjLabelPosition)
+protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition)
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjParent,
         const QString& i_strKey,
         const QString& i_strText,
-        const SGraphObjSelectionPoint& i_selPt,
-        EGraphObjType i_type);
+        EGraphObjType i_type,
+        const SGraphObjSelectionPoint& i_selPt1);
+    CGraphObjLabel(
+        CDrawingScene* i_pDrawingScene,
+        const QString& i_strKey,
+        const QString& i_strText,
+        EGraphObjType i_type,
+        const SGraphObjSelectionPoint& i_selPt1,
+        const SGraphObjSelectionPoint& i_selPt2);
 public: // dtor
     virtual ~CGraphObjLabel();
 public: // overridables of base class QGraphicsItem
@@ -85,8 +91,10 @@ public: // replacing methods of QGraphicsSimpleTextItem
     void setText( const QString& i_strText );
     QString text() const;
 public: // instance methods
-    void setSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
-    SGraphObjSelectionPoint selectionPoint() const;
+    void setSelectionPoint1( const SGraphObjSelectionPoint& i_selPt );
+    SGraphObjSelectionPoint selectionPoint1() const;
+    void setSelectionPoint2( const SGraphObjSelectionPoint& i_selPt );
+    SGraphObjSelectionPoint selectionPoint2() const;
 public: // instance methods
     void setDistanceToLinkedSelPt(const QSizeF& i_size);
     QSizeF distanceToLinkedSelPt() const;
@@ -143,19 +151,8 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // instance members
-    /*!< Key of the label within the list of labels of the graphical objects. */
-    QString m_strKey;
-    /*!< Defines the selection point the label is linked to. */
-    SGraphObjSelectionPoint m_selPt;
-    /*!< Distance to the selection point the label is aligned to. Calculated as follows:
-         - width = this.center.x - LinkedSelPt.x
-         - height = this.center.y - LinkedSelPt.y
-         This means if the label is right of the parent items selection point the width is positive.
-         If the label is above of the parent items selection point the height is positive. */
-    QSizeF m_distanceToLinkedSelPt;
-    /*!< Flag to indicate whether the anchor line (line from label to parent's selection point the
-         label is linked to) should always be visible. */
-    bool m_bShowAnchorLine;
+    /*!< Key and selection point(s) of the label. */
+    SLabelDscr m_labelDscr;
     /*!< Coordindates of the anchor line in local coordinates drawn from the label to the
          selection point of the parent. The start point of the line at the label depend on
          the position of the label relative to the selection point of the parent

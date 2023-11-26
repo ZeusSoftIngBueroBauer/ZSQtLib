@@ -157,14 +157,20 @@ QString ZS::Draw::graphObjType2Str( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabel) {
         str = "Label";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelPosition) {
-        str = "LabelPosition";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryPosition) {
+        str = "LabelGeometryPosition";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelLength) {
-        str = "LabelLength";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryHeight) {
+        str = "LabelGeometryHeight";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelAngle) {
-        str = "LabelAngle";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryWidth) {
+        str = "LabelGeometryWidth";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryLength) {
+        str = "LabelGeometryLength";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryAngle) {
+        str = "LabelGeometryAngle";
     }
     else if (i_graphObjType == EGraphObjTypeUndefined) {
         str = "Undefined";
@@ -204,14 +210,20 @@ QString ZS::Draw::graphObjType2ClassName( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabel) {
         str = "CGraphObjLabel";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelPosition) {
-        str = "CGraphObjLabelPosition";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryPosition) {
+        str = "CGraphObjLabelGeometryPosition";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelLength) {
-        str = "CGraphObjLabelLength";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryHeight) {
+        str = "CGraphObjLabelGeometryHeight";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelAngle) {
-        str = "CGraphObjLabelAngle";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryWidth) {
+        str = "CGraphObjLabelGeometryWidth";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryLength) {
+        str = "CGraphObjLabelGeometryLength";
+    }
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryAngle) {
+        str = "CGraphObjLabelGeometryAngle";
     }
     else {
         str = SEnumEntry::enumerator2Str(
@@ -320,9 +332,10 @@ template<> QVector<QHash<QString, int>> CEnum<ESelectionPointType>::s_armapsStr2
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<ESelectionPointType>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                                            Name,      Symbol, Text,  SCIPShort, SCPILong, Value
-    /* 0 */ SEnumEntry( static_cast<int>(ESelectionPointType::BoundingRectangle), "BoundingRect"      ),
-    /* 1 */ SEnumEntry( static_cast<int>(ESelectionPointType::PolygonShapePoint), "PolygonShapePoint" )
+{
+    /* 0 */ SEnumEntry( static_cast<int>(ESelectionPointType::Undefined),         "Undefined"         ),
+    /* 1 */ SEnumEntry( static_cast<int>(ESelectionPointType::BoundingRectangle), "BoundingRect"      ),
+    /* 2 */ SEnumEntry( static_cast<int>(ESelectionPointType::PolygonShapePoint), "PolygonShapePoint" )
 };
 
 

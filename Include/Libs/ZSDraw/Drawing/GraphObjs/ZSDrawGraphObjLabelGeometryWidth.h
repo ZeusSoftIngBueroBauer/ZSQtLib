@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjLabelPosition_h
-#define ZSDraw_GraphObjLabelPosition_h
+#ifndef ZSDraw_GraphObjLabelGeometryWidth_h
+#define ZSDraw_GraphObjLabelGeometryWidth_h
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 
@@ -36,21 +36,21 @@ namespace Draw
 //******************************************************************************
 /*! @brief 
 */
-class ZSDRAWDLL_API CGraphObjLabelPosition : public CGraphObjLabel
+class ZSDRAWDLL_API CGraphObjLabelGeometryWidth : public CGraphObjLabel
 //******************************************************************************
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjLabelPosition"; }
+    static QString ClassName() { return "CGraphObjLabelGeometryWidth"; }
 public: // ctors and dtor
-    CGraphObjLabelPosition(
+    CGraphObjLabelGeometryWidth(
         CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjParent,
         const QString& i_strKey,
-        const SGraphObjSelectionPoint& i_selPt);
-    virtual ~CGraphObjLabelPosition();
+        const SGraphObjSelectionPoint& i_selPt1,
+        const SGraphObjSelectionPoint& i_selPt2);
+    virtual ~CGraphObjLabelGeometryWidth();
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
@@ -60,10 +60,10 @@ protected: // overridable auxiliary instance methods of base class CGraphObjLabe
     virtual void updateDistanceToLinkedSelPt() override;
     virtual void updateAnchorLine() override;
 
-}; // class CGraphObjLabelPosition
+}; // class CGraphObjLabelGeometryWidth
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjLabelPosition_h
+#endif // #ifndef ZSDraw_GraphObjLabelGeometryWidth_h

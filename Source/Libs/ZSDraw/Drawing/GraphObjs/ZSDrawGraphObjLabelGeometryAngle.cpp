@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelAngle.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
@@ -58,7 +58,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CGraphObjLabelAngle : public CGraphObjLabel
+class CGraphObjLabelGeometryAngle : public CGraphObjLabel
 *******************************************************************************/
 
 /*==============================================================================
@@ -66,28 +66,27 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CGraphObjLabelAngle::CGraphObjLabelAngle(
+CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
     CDrawingScene* i_pDrawingScene,
-    CGraphObj* i_pGraphObjParent,
     const QString& i_strKey,
-    const SGraphObjSelectionPoint& i_selPt) :
+    const SGraphObjSelectionPoint& i_selPt1,
+    const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     CGraphObjLabel(
         /* pDrawingScene   */ i_pDrawingScene,
-        /* pGraphObjParent */ i_pGraphObjParent,
         /* strKey          */ i_strKey,
         /* strText         */ "Angle",
-        /* selPt           */ i_selPt,
-        /* type            */ EGraphObjTypeLabelAngle)
+        /* type            */ EGraphObjTypeLabelGeometryAngle,
+        /* selPt           */ i_selPt1,
+        /* selPt           */ i_selPt2)
 {
     createTraceAdminObjs("Labels::" + ClassName());
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs =
-            "Parent: " + QString(i_pGraphObjParent == nullptr ? "null" : i_pGraphObjParent->keyInTree()) +
-            ", Key: " + i_strKey +
-            ", SelPt: " + i_selPt.toString();
+        strMthInArgs = "Key: " + i_strKey +
+            ", SelPt1 {" + i_selPt1.toString(true) + "}" +
+            ", SelPt2 {" + i_selPt2.toString(true) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
@@ -99,7 +98,7 @@ CGraphObjLabelAngle::CGraphObjLabelAngle(
 } // ctor
 
 //------------------------------------------------------------------------------
-CGraphObjLabelAngle::~CGraphObjLabelAngle()
+CGraphObjLabelGeometryAngle::~CGraphObjLabelGeometryAngle()
 //------------------------------------------------------------------------------
 {
     m_bDtorInProgress = true;
@@ -122,10 +121,10 @@ public: // overridables of base class QGraphicsItem
 //------------------------------------------------------------------------------
 /*! @brief Overrides the type method of QGraphicsItem.
 */
-int CGraphObjLabelAngle::type() const
+int CGraphObjLabelGeometryAngle::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeLabelAngle;
+    return QGraphicsItem::UserType + EGraphObjTypeLabelGeometryAngle;
 }
 
 /*==============================================================================
@@ -133,7 +132,7 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CGraphObj* CGraphObjLabelAngle::clone()
+CGraphObj* CGraphObjLabelGeometryAngle::clone()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -143,7 +142,7 @@ CGraphObj* CGraphObjLabelAngle::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabelAngle* pGraphObj = nullptr;
+    CGraphObjLabelGeometryAngle* pGraphObj = nullptr;
     return pGraphObj;
 }
 
@@ -160,7 +159,7 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
     any other geometry change) the label must be moved so that the distance remains
     the same.
 */
-void CGraphObjLabelAngle::updatePosition()
+void CGraphObjLabelGeometryAngle::updatePosition()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -185,7 +184,7 @@ void CGraphObjLabelAngle::updatePosition()
     any other geometry change) the label must be moved so that the distance remains
     the same.
 */
-void CGraphObjLabelAngle::updateDistanceToLinkedSelPt()
+void CGraphObjLabelGeometryAngle::updateDistanceToLinkedSelPt()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -239,7 +238,7 @@ void CGraphObjLabelAngle::updateDistanceToLinkedSelPt()
     the anchor line.
 */
 //------------------------------------------------------------------------------
-void CGraphObjLabelAngle::updateAnchorLine()
+void CGraphObjLabelGeometryAngle::updateAnchorLine()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,

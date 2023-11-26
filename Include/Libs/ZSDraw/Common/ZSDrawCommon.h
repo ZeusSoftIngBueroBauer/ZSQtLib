@@ -226,9 +226,11 @@ typedef enum {
     EGraphObjTypeUserDefined,
     EGraphObjTypeSelectionPoint,
     EGraphObjTypeLabel,
-    EGraphObjTypeLabelPosition,
-    EGraphObjTypeLabelLength,
-    EGraphObjTypeLabelAngle,
+    EGraphObjTypeLabelGeometryPosition,
+    EGraphObjTypeLabelGeometryHeight,
+    EGraphObjTypeLabelGeometryWidth,
+    EGraphObjTypeLabelGeometryLength,
+    EGraphObjTypeLabelGeometryAngle,
     EGraphObjTypeUndefined = -1
 }   EGraphObjType;
 
@@ -317,8 +319,9 @@ typedef ::CEnum<EEditResizeMode> CEnumEditResizeMode;
 enum class ESelectionPointType
 //==============================================================================
 {
-    BoundingRectangle = 0,  /*!< The selection point is at the bounding rectangle. */
-    PolygonShapePoint = 1   /*!< The selection point is one of the points of a polygon. */
+    Undefined = 0,  /*!< The selection point is not defined (invalid). */
+    BoundingRectangle = 1,  /*!< The selection point is at the bounding rectangle. */
+    PolygonShapePoint = 2   /*!< The selection point is one of the points of a polygon. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<ESelectionPointType>;

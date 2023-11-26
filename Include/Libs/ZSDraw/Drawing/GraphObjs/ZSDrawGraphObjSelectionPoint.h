@@ -61,10 +61,7 @@ public: // class methods
 public: // class methods
     static double GetDefaultRadiusInPx();
 public: // ctors and dtor
-    CGraphObjSelectionPoint(
-        CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjParent,
-        const SGraphObjSelectionPoint& i_selPt);
+    CGraphObjSelectionPoint(CDrawingScene* i_pDrawingScene, const SGraphObjSelectionPoint& i_selPt);
     virtual ~CGraphObjSelectionPoint();
 public: // overridables of base class QGraphicsItem
     int type() const override;
@@ -72,7 +69,7 @@ public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // instance methods
     SGraphObjSelectionPoint getSelectionPoint() const;
-    void setSelectionPoint( const SGraphObjSelectionPoint& i_selPt );
+    void setShapePoint( int i_idxPt );
 public: // instance methods
     void setRadiusInPx( double i_fRadius_px );
     double getRadiusInPx() const;

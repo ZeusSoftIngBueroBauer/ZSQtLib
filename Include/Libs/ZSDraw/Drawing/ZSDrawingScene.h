@@ -177,6 +177,8 @@ public: // instance methods
     void addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjParent = nullptr );
     QGraphicsItem* findGraphicsItem( const QString& i_strKeyInTree );
     CGraphObj* findGraphObj( const QString& i_strKeyInTree );
+public: // instance methods (replacing methods of QGraphicScene)
+    void removeItem(QGraphicsItem* i_pGraphicsItem);
 public: // instance methods
     void setMode(
         const ZS::System::CEnumMode& i_mode,
@@ -287,7 +289,7 @@ protected slots:
 protected: // auxiliary instance methods
     void forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsSceneMouseEvent* i_pEv);
     void forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv);
-    void invalidateItemInAcceptingHoverEventsList(CGraphObj* i_pGraphObj);
+    void invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem);
     void paintGridLines(QPainter* i_pPainter);
 protected: // auxiliary instance methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;

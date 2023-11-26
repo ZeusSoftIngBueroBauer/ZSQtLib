@@ -472,17 +472,6 @@ void CGraphObjPoint::setCursor( const QCursor& i_cursor )
 } // setCursor
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysValPoint CGraphObjPoint::getSelectionPointCoors( const SGraphObjSelectionPoint& i_selPt ) const
-//------------------------------------------------------------------------------
-{
-    return CPhysValPoint(*m_pDrawingScene);
-}
-
-/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 

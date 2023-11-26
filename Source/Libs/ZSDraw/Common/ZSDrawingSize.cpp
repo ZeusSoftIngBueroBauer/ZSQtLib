@@ -83,9 +83,9 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
 //------------------------------------------------------------------------------
 /*! Creates an instance of the class.
 */
-CDrawingSize::CDrawingSize(const QString& i_strName, const CDrawingSize& i_other) :
+CDrawingSize::CDrawingSize(const CDrawingSize& i_other) :
 //------------------------------------------------------------------------------
-    m_strName(i_strName),
+    m_strName(i_other.m_strName),
     m_eDimensionUnit(i_other.m_eDimensionUnit),
     m_metricUnit(i_other.m_metricUnit),
     m_fScreenResolution_px_mm(i_other.m_fScreenResolution_px_mm),
@@ -102,14 +102,15 @@ CDrawingSize::CDrawingSize(const QString& i_strName, const CDrawingSize& i_other
     m_fImageSizeHeight_px(i_other.m_fImageSizeHeight_px),
     m_pTrcAdminObj(nullptr)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing", ClassName(), m_strName);
-
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_other.toString();
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
 } // copy ctor
 

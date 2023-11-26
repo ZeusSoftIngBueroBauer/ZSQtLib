@@ -58,7 +58,7 @@ public: // class methods
     static QString ClassName() { return "CDrawingSize"; }
 public: // ctors and dtor
     CDrawingSize(const QString& i_strName);
-    CDrawingSize(const QString& i_strName, const CDrawingSize& i_other);
+    CDrawingSize(const CDrawingSize& i_other);
     ~CDrawingSize();
 public: // operators
     CDrawingSize& operator = (const CDrawingSize& i_other);

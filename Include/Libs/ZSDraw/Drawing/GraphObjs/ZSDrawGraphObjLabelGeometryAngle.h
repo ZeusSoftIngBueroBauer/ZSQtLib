@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjLabelAngle_h
-#define ZSDraw_GraphObjLabelAngle_h
+#ifndef ZSDraw_GraphObjLabelGeometryAngle_h
+#define ZSDraw_GraphObjLabelGeometryAngle_h
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 
@@ -36,21 +36,21 @@ namespace Draw
 //******************************************************************************
 /*! @brief
 */
-class ZSDRAWDLL_API CGraphObjLabelAngle : public CGraphObjLabel
+class ZSDRAWDLL_API CGraphObjLabelGeometryAngle : public CGraphObjLabel
 //******************************************************************************
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjLabelAngle"; }
+    static QString ClassName() { return "CGraphObjLabelGeometryAngle"; }
 public: // ctors and dtor
-    CGraphObjLabelAngle(
+    CGraphObjLabelGeometryAngle(
         CDrawingScene* i_pDrawingScene,
-        CGraphObj* i_pGraphObjParent,
         const QString& i_strKey,
-        const SGraphObjSelectionPoint& i_selPt);
-    virtual ~CGraphObjLabelAngle();
+        const SGraphObjSelectionPoint& i_selPt1,
+        const SGraphObjSelectionPoint& i_selPt2);
+    virtual ~CGraphObjLabelGeometryAngle();
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
@@ -60,10 +60,10 @@ protected: // overridable auxiliary instance methods of base class CGraphObjLabe
     virtual void updateDistanceToLinkedSelPt() override;
     virtual void updateAnchorLine() override;
 
-}; // class CGraphObjLabelAngle
+}; // class CGraphObjLabelGeometryAngle
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjLabelAngle_h
+#endif // #ifndef ZSDraw_GraphObjLabelGeometryAngle_h

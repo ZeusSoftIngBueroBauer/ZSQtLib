@@ -1432,13 +1432,13 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         QPolygonF plg = polygon();
 
         CGraphObjSelectionPoint* pGraphObjSelPt;
-        QPointF                  ptSel;
+        QPointF ptSel;
 
         while( plg.size() < 2 )
         {
             plg.append( QPointF(0.0,0.0) );
 
-            pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, plg.size()-1);
+            pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, SGraphObjSelectionPoint(this, plg.size()-1));
             m_arpSelPtsPolygon.append(pGraphObjSelPt);
             QObject::connect(
                 pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -1484,7 +1484,8 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             plg.append(ptMouseItemPos);
             m_idxSelPtSelectedPolygon = plg.size()-1;
 
-            pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, m_idxSelPtSelectedPolygon);
+            pGraphObjSelPt = new CGraphObjSelectionPoint(
+                m_pDrawingScene, SGraphObjSelectionPoint(this, m_idxSelPtSelectedPolygon));
             m_arpSelPtsPolygon.append(pGraphObjSelPt);
             QObject::connect(
                 pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -1593,7 +1594,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                         m_arpSelPtsPolygon.insert(idxSelPt,nullptr);
                         m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt =
-                            new CGraphObjSelectionPoint(m_pDrawingScene, this, idxSelPt);
+                            new CGraphObjSelectionPoint(m_pDrawingScene, SGraphObjSelectionPoint(this, idxSelPt));
                         m_pDrawingScene->addGraphObj(pGraphObjSelPt);
 
                         //pGraphObjSelPt->setParentItem(this); see comment in header file of class CGraphObjSelectionPoint
@@ -1615,7 +1616,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 if( pGraphObjSelPt != nullptr )
                 {
-                    pGraphObjSelPt->setSelectionPoint(idxSelPt);
+                    pGraphObjSelPt->setShapePoint(idxSelPt);
 
                     if( idxSelPt == m_idxSelPtSelectedPolygon )
                     {
@@ -1809,7 +1810,8 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
                     {
                         plg.insert(0,ptMouseItemPos);
 
-                        pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, m_idxSelPtSelectedPolygon);
+                        pGraphObjSelPt = new CGraphObjSelectionPoint(
+                            m_pDrawingScene, SGraphObjSelectionPoint(this, m_idxSelPtSelectedPolygon));
                         m_arpSelPtsPolygon.insert(0, pGraphObjSelPt);
                         QObject::connect(
                             pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -1820,7 +1822,8 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
                         plg.append(ptMouseItemPos);
                         m_idxSelPtSelectedPolygon = plg.size()-1;
 
-                        pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, m_idxSelPtSelectedPolygon);
+                        pGraphObjSelPt = new CGraphObjSelectionPoint(
+                            m_pDrawingScene, SGraphObjSelectionPoint(this, m_idxSelPtSelectedPolygon));
                         m_arpSelPtsPolygon.append(pGraphObjSelPt);
                         QObject::connect(
                             pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -1845,7 +1848,7 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 
                         if( pGraphObjSelPt != nullptr )
                         {
-                            pGraphObjSelPt->setSelectionPoint(idxSelPt);
+                            pGraphObjSelPt->setShapePoint(idxSelPt);
 
                             if( idxSelPt == m_idxSelPtSelectedPolygon )
                             {
@@ -2106,7 +2109,8 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 
                             plg.insert(0,ptMouseItemPos);
 
-                            pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, idxSelPtSelectedPolygon);
+                            pGraphObjSelPt = new CGraphObjSelectionPoint(
+                                m_pDrawingScene, SGraphObjSelectionPoint(this, idxSelPtSelectedPolygon));
                             m_arpSelPtsPolygon.insert(0, pGraphObjSelPt);
                             QObject::connect(
                                 pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -2124,7 +2128,8 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 
                             plg.insert(0,ptMouseItemPos);
 
-                            pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, idxSelPtSelectedPolygon);
+                            pGraphObjSelPt = new CGraphObjSelectionPoint(
+                                m_pDrawingScene, SGraphObjSelectionPoint(this, idxSelPtSelectedPolygon));
                             m_arpSelPtsPolygon.insert(0, pGraphObjSelPt);
                             QObject::connect(
                                 pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -2149,7 +2154,8 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                             plg.append(ptMouseItemPos);
                             idxSelPtSelectedPolygon = plg.size()-1;
 
-                            pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, idxSelPtSelectedPolygon);
+                            pGraphObjSelPt = new CGraphObjSelectionPoint(
+                                m_pDrawingScene, SGraphObjSelectionPoint(this, idxSelPtSelectedPolygon));
                             m_arpSelPtsPolygon.append(pGraphObjSelPt);
                             QObject::connect(
                                 pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -2168,7 +2174,8 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                             plg.append(ptMouseItemPos);
                             idxSelPtSelectedPolygon = plg.size()-1;
 
-                            pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, this, idxSelPtSelectedPolygon);
+                            pGraphObjSelPt = new CGraphObjSelectionPoint(
+                                m_pDrawingScene, SGraphObjSelectionPoint(this, idxSelPtSelectedPolygon));
                             m_arpSelPtsPolygon.append(pGraphObjSelPt);
                             QObject::connect(
                                 pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
@@ -2214,7 +2221,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 
                             if( pGraphObjSelPt != nullptr )
                             {
-                                pGraphObjSelPt->setSelectionPoint(idxSelPt);
+                                pGraphObjSelPt->setShapePoint(idxSelPt);
 
                                 if( idxSelPt == idxSelPtSelectedPolygon )
                                 {

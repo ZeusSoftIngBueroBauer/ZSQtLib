@@ -750,18 +750,6 @@ bool CGraphObjConnectionPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_p
 }
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysValPoint CGraphObjConnectionPoint::getSelectionPointCoors(const SGraphObjSelectionPoint& i_selPt ) const
-//------------------------------------------------------------------------------
-{
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    return CPhysValPoint(QPointF(0.0, 0.0), 1.0, drawingSize.unit());
-}
-
-/*==============================================================================
 public: // reimplementing methods of base class QGraphicItem
 ==============================================================================*/
 
