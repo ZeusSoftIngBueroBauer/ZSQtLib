@@ -28,6 +28,9 @@ may result in using the software modules.
 Description
 -----------
 
+Because the python script 'RemoveIfDefBlockFromFile' is imported, you must call
+this python script from the directory where the imported python script is located.
+
 This script walks through the directory passed with argument '--gitRepoDir',
 searches for all '*.cpp', '*.h' and '*.qml' files and removes the code blocks starting
 with '#ifdef <directive>' (in qml files with '//#ifdef <directive>') to the next line
@@ -66,6 +69,7 @@ python RemoveIfDefBlocks.py --gitRepoDir='/home/devel/display_application' --git
 '''
 
 import fnmatch, getopt, os, sys, subprocess, zipfile
+import RemoveIfDefBlocksFromFile
 
 def getGitRevisionHash(repoRootDir) -> str:
     print('')
@@ -188,71 +192,8 @@ def removeDirectiveFromFiles(filePaths, directive):
     print('')
     print('-> removeDirectiveFromFiles(' + directive + ')')
     for sourceFilePath in filePaths:
-        print('  Processing File: ', sourceFilePath)
-        lines = []
-        try:
-            with open(sourceFilePath, 'r', newline='') as f:
-                try:
-                    lines = f.readlines()
-                except:
-                    print('    Cannot read: ', sourceFilePath)
-        except:
-            print('    Cannot open: ', sourceFilePath)
-        if len(lines) > 0:
-            newLines = []
-            inIfBlock = False
-            inElseBlock = False
-            blockLeft = False
-            for idxLine in range(len(lines)):
-                prevLine = ''
-                nextLine = ''
-                newLine = ''
-                if idxLine > 0:
-                    prevLine = line
-                if idxLine < len(lines) - 1:
-                    nextLine = lines[idxLine+1]
-                line = lines[idxLine]
-                isSpaceLine = line.isspace()
-                #print('-----------------------------')
-                #print('Line: ', idxLine)
-                #print('Line     [{}]: {}'.format(len(line), line))
-                #print('PrevLine [{}]: {}'.format(len(prevLine), prevLine))
-                #print('NextLine [{}]: {}'.format(len(nextLine), nextLine))
-                #print('-> isSpaceLine:     ', isSpaceLine)
-                #print('-> inIfBlock:       ', inIfBlock)
-                #print('-> inElseBlock:     ', inElseBlock)
-                #print('-> blockLeft:       ', blockLeft)
-                if directive in line:
-                    inIfBlock = True
-                    blockLeft = False
-                elif inIfBlock and '#else' in line:
-                    inElseBlock = True
-                    blockLeft = False
-                elif inIfBlock and '#endif' in line:
-                    inIfBlock = False
-                    inElseBlock = False
-                    blockLeft = True
-                elif inElseBlock:
-                    newLine = line
-                    blockLeft = False
-                elif not inIfBlock:
-                    if isSpaceLine:
-                        if not blockLeft: # or directive in nextLine):
-                            newLine = line
-                    else:
-                        newLine = line
-                    blockLeft = False
-                #print('')
-                #print('<- inIfBlock:       ', inIfBlock)
-                #print('<- inElseBlock:     ', inElseBlock)
-                #print('<- blockLeft:       ', blockLeft)
-                #print('newLine [{}]: {}'.format(len(newLine), newLine))
-                if len(newLine) > 0:
-                    newLines.append(line)
-            targetFile = sourceFilePath # + '.tst'
-            with open(targetFile, 'w', newline='') as f:
-                for line in newLines:
-                    f.write(line)
+        RemoveIfDefBlocksFromFile.removeDirectiveFromFile(sourceFilePath, directive)
+    print('<- removeDirectiveFromFiles')
 
 def main():
     gitRepoDir = ''
@@ -281,6 +222,8 @@ def main():
     if not '#ifdef' in directive:
         directive = '#ifdef ' + directive
     print('directive = ' + directive)
+    if len(gitHashBase) == 0:
+        gitHashBase = gitHashCurrent
     print('gitHashBase = ' + gitHashBase)
     print('gitHashCurrent = ' + gitHashCurrent)
     print('')
