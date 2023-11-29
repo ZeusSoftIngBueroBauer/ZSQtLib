@@ -146,19 +146,19 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         }
         else if (strLabelName == c_strGeometryLabelNameHeight) {
             strText = getSize(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryHeight, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryHeight, 0, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameWidth) {
             strText = getSize(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryWidth, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryWidth, 0, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameLength) {
             strText = getLength(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, 0, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             strText = getAngle(Units.Angle.Degree).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::Center);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, 0, 1);
         }
     }
 

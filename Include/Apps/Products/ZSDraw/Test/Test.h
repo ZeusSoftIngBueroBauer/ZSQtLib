@@ -92,15 +92,23 @@ protected: // instance methods
     ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsCreateObject(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         ZS::Draw::EGraphObjType i_graphObjType, const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
-    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsResizeObject(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
-    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsMoveObject(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
     ZS::Test::CTestStepGroup* createTestGroupShowLabels(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strObjName);
+        ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strObjName,
+        const QStringList& i_strlstLabelNames);
+    ZS::Test::CTestStepGroup* createTestGroupMoveLabels(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strObjName,
+        const QStringList& i_strlstLabelNames,
+        const QList<QPoint>& i_arptMousePress, const QList<QPoint>& i_arptMouseRelease);
+    ZS::Test::CTestStepGroup* createTestGroupShowGeometryLabels(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strObjName,
+        const QStringList& i_strlstLabelNames);
+    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsMovePressMoveRelease(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const QString& i_strGroupName, bool i_bSkipFirstMove,
+        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
 protected slots:
     void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
@@ -110,10 +118,11 @@ protected slots:
     void doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepShowGeometryLabel( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseReleaseEvent( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep );
 public: // instance members
     CMainWindow* m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;

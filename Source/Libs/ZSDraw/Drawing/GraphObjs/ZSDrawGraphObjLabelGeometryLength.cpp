@@ -169,9 +169,53 @@ void CGraphObjLabelGeometryLength::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabel::updatePosition();
-
     m_bUpdatePositionInProgress = true;
+
+    CPhysValPoint physValSelPoint1Parent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
+
+    CPhysValPoint physValSelPoint2Parent;
+    if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+    }
+
+    CPhysValLine physValLine(physValSelPoint1Parent, physValSelPoint2Parent);
+
+    QPointF ptScenePosThis = m_pDrawingScene->convert(physValLine.center(), Units.Length.px).toQPointF();
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+
+    // As default the labels bottom left point is on the parent items selection point.
+    // The position of the text item on the scene is the top left corner. So we
+    // got to move the item correspondingly.
+    ptScenePosThis.setX(ptScenePosThis.x() - rctBoundingThis.width()/2.0);
+    ptScenePosThis.setY(ptScenePosThis.y() - rctBoundingThis.height()/2.0);
+
+    // Move the label keeping the distance.
+    ptScenePosThis.setX(ptScenePosThis.x() + m_labelDscr.m_distanceToLinkedSelPt.width());
+    ptScenePosThis.setY(ptScenePosThis.y() + m_labelDscr.m_distanceToLinkedSelPt.height());
+
+    setPos(ptScenePosThis);
+
+    QString strText = physValLine.length().toString(EUnitFind::None, PhysValSubStr::Val);
+
+    if (QGraphicsSimpleTextItem::text() != strText) {
+        QGraphicsSimpleTextItem::setText(strText);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+
+    // Update coordinates of the anchor line.
+    updateAnchorLine();
+
     m_bUpdatePositionInProgress = false;
 }
 
@@ -194,7 +238,32 @@ void CGraphObjLabelGeometryLength::updateDistanceToLinkedSelPt()
         /* strMethod    */ "updateDistanceToLinkedSelPt",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabel::updateDistanceToLinkedSelPt();
+    CPhysValPoint physValSelPoint1Parent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
+
+    CPhysValPoint physValSelPoint2Parent;
+    if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+    }
+
+    CPhysValLine physValLine(physValSelPoint1Parent, physValSelPoint2Parent);
+
+    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValLine.center(), Units.Length.px).toQPointF();
+
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QPointF ptCenterThis = rctBoundingThis.center();
+    QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
+
+    m_labelDscr.m_distanceToLinkedSelPt.setWidth(ptScenePosCenterThis.x() - ptSelScenePosParent.x());
+    m_labelDscr.m_distanceToLinkedSelPt.setHeight(ptScenePosCenterThis.y() - ptSelScenePosParent.y());
 }
 
 //------------------------------------------------------------------------------
@@ -247,5 +316,56 @@ void CGraphObjLabelGeometryLength::updateAnchorLine()
         /* strMethod    */ "updateAnchorLine",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabel::updateAnchorLine();
+    CPhysValPoint physValSelPoint1Parent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
+    QPointF ptSelScenePos1Parent = m_pDrawingScene->convert(physValSelPoint1Parent, Units.Length.px).toQPointF();
+
+    CPhysValPoint physValSelPoint2Parent;
+    if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+    }
+    QPointF ptSelScenePos2Parent = m_pDrawingScene->convert(physValSelPoint2Parent, Units.Length.px).toQPointF();
+
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QPointF ptCenterThis = rctBoundingThis.center();
+
+    if (m_anchorLines.isEmpty()) {
+        m_anchorLines.append(QLineF());
+        m_anchorLines.append(QLineF());
+    }
+
+    // To calculate the angle, set anchor lines to world coordinates.
+    m_anchorLines[0] = QLineF(mapToScene(ptCenterThis), ptSelScenePos1Parent);
+    m_anchorLines[1] = QLineF(mapToScene(ptCenterThis), ptSelScenePos2Parent);
+
+    for (QLineF& anchorLine : m_anchorLines) {
+        double fAngle = anchorLine.angle();
+        // Map anchor line to local coordinates.
+        if (fAngle >= 45.0 && fAngle <= 135.0) {
+            anchorLine.setP1(
+                ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::TopCenter));
+        }
+        else if (fAngle >= 225.0 && fAngle <= 315.0) {
+            anchorLine.setP1(
+                ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::BottomCenter));
+        }
+        else if (fAngle > 135.0 && fAngle < 225.0) {
+            anchorLine.setP1(
+                ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::LeftCenter));
+        }
+        else if ((fAngle > 315.0 && fAngle <= 360.0) || (fAngle >= 0.0 && fAngle < 45.0)) {
+            anchorLine.setP1(
+                ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::RightCenter));
+        }
+    }
+    m_anchorLines[0].setP2(mapFromScene(ptSelScenePos1Parent));
+    m_anchorLines[1].setP2(mapFromScene(ptSelScenePos2Parent));
 }

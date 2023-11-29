@@ -184,7 +184,6 @@ void CGraphObjLabelGeometryPosition::updatePosition()
             m_pTree->onTreeEntryChanged(this);
         }
     }
-
     m_bUpdatePositionInProgress = false;
 }
 

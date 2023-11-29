@@ -81,7 +81,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
     m_labelDscr(i_strKey, i_selPt),
-    m_anchorLine(),
+    m_anchorLines(),
     m_bUpdatePositionInProgress(false)
 {
     createTraceAdminObjs("Labels::" + ClassName());
@@ -137,7 +137,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
     m_labelDscr(i_strKey, i_selPt1),
-    m_anchorLine(),
+    m_anchorLines(),
     m_bUpdatePositionInProgress(false)
 {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
@@ -172,7 +172,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
     m_labelDscr(i_strKey, i_selPt1, i_selPt2),
-    m_anchorLine(),
+    m_anchorLines(),
     m_bUpdatePositionInProgress(false)
 {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
@@ -732,8 +732,10 @@ QRectF CGraphObjLabel::boundingRect() const
 
     // If the object is hit and the anchor line is visible also this area need to be updated.
     if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
-        QRectF rctBoundingAnchorLine(m_anchorLine.p1(), m_anchorLine.p2());
-        rctBounding |= rctBoundingAnchorLine;
+        for (const QLineF& anchorLine : m_anchorLines) {
+            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
+            rctBounding |= rctBoundingAnchorLine;
+        }
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -787,7 +789,8 @@ void CGraphObjLabel::paint(
 
     // Draw anchor line to selection point of linked object if the label is hit by
     // mouse move (hover) or if the label is selected.
-    // If the anchor line is set to be visible draw the anchor line in solid style.
+    // If the anchor line is set to be visible draw the anchor line in a different
+    // color (blue) than if the line is just hit (gray).
     if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
         // P1 of the anchor line is on one of the center points of the
         // bounding rectangle of this label.
@@ -795,17 +798,19 @@ void CGraphObjLabel::paint(
         // If P2 is within the bounding rectangle or very close to the label
         // (length of line < 5.0 pixels) the anchor line will not be drawn.
         QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-        if (!rctBounding.contains(m_anchorLine.p2())) {
-            if ((fabs(m_anchorLine.dx()) >= 5.0) || (fabs(m_anchorLine.dy() >= 5.0))) {
-                if (m_bIsHit || isSelected()) {
-                    pn.setColor(Qt::blue);
+        for (const QLineF& anchorLine : m_anchorLines) {
+            if (!rctBounding.contains(anchorLine.p2())) {
+                if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy() >= 5.0))) {
+                    if (m_bIsHit || isSelected()) {
+                        pn.setColor(Qt::blue);
+                    }
+                    else {
+                        pn.setColor(Qt::gray);
+                    }
+                    pn.setStyle(Qt::DotLine);
+                    i_pPainter->setPen(pn);
+                    i_pPainter->drawLine(anchorLine);
                 }
-                else {
-                    pn.setColor(Qt::gray);
-                }
-                pn.setStyle(Qt::DotLine);
-                i_pPainter->setPen(pn);
-                i_pPainter->drawLine(m_anchorLine);
             }
         }
     }
@@ -1136,9 +1141,9 @@ void CGraphObjLabel::updatePosition()
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
         physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
+
     QPointF ptScenePosThis = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
-    QPointF ptCenterThis = rctBoundingThis.center();
 
     // As default the labels bottom left point is on the parent items selection point.
     // The position of the text item on the scene is the top left corner. So we
@@ -1259,31 +1264,39 @@ void CGraphObjLabel::updateAnchorLine()
         physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
     QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
+
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
 
-    m_anchorLine.setP1(mapToScene(ptCenterThis));
-    m_anchorLine.setP2(ptSelScenePosParent);
-    double fAngle = m_anchorLine.angle();
+    QLineF anchorLine(mapToScene(ptCenterThis), ptSelScenePosParent);
+
+    double fAngle = anchorLine.angle();
 
     // Map anchor line to local coordinates.
     if (fAngle >= 45.0 && fAngle <= 135.0) {
-        m_anchorLine.setP1(
+        anchorLine.setP1(
             ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::TopCenter));
     }
     else if (fAngle >= 225.0 && fAngle <= 315.0) {
-        m_anchorLine.setP1(
+        anchorLine.setP1(
             ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::BottomCenter));
     }
     else if (fAngle > 135.0 && fAngle < 225.0) {
-        m_anchorLine.setP1(
+        anchorLine.setP1(
             ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::LeftCenter));
     }
     else if ((fAngle > 315.0 && fAngle <= 360.0) || (fAngle >= 0.0 && fAngle < 45.0)) {
-        m_anchorLine.setP1(
+        anchorLine.setP1(
             ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::RightCenter));
     }
-    m_anchorLine.setP2(mapFromScene(ptSelScenePosParent));
+    anchorLine.setP2(mapFromScene(ptSelScenePosParent));
+
+    if (m_anchorLines.isEmpty()) {
+        m_anchorLines.append(anchorLine);
+    }
+    else {
+        m_anchorLines[0] = anchorLine;
+    }
 }
 
 /*==============================================================================
@@ -1313,7 +1326,15 @@ void CGraphObjLabel::traceInternalStates(
         else strTrcInfo = "";
         strTrcInfo +=
             "DistanceToParent {" + qSize2Str(m_labelDscr.m_distanceToLinkedSelPt) + "}" +
-            ", AnchorLine {" + qLine2Str(m_anchorLine) + "}";
+            ", AnchorLines [" + QString::number(m_anchorLines.size()) + "]";
+        if (m_anchorLines.size() > 0) {
+            strTrcInfo += "(";
+            for (const QLineF& anchorLine : m_anchorLines) {
+                if (!strTrcInfo.endsWith("(")) strTrcInfo += ", ";
+                strTrcInfo += "{" + qLine2Str(anchorLine) + "}";
+            }
+            strTrcInfo += ")";
+        }
         i_mthTracer.trace(strTrcInfo);
         i_mthTracer.trace(strTrcInfo);
         CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
