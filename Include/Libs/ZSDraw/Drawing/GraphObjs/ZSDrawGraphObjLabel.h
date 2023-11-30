@@ -144,7 +144,7 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridable auxiliary instance methods
     virtual void updatePosition();
     virtual void updateDistanceToLinkedSelPt();
-    virtual void updateAnchorLine();
+    virtual void updateAnchorLines();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceInternalStates(
         ZS::System::CMethodTracer& i_mthTracer,

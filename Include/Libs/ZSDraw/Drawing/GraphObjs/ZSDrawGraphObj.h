@@ -622,6 +622,9 @@ public: // overridables
 public: // overridables
     virtual CPhysValPoint getSelectionPointCoors( ESelectionPoint i_selPt ) const;
     virtual CPhysValPoint getSelectionPointCoors( int i_idxPt ) const;
+public: // overridables
+    virtual QLineF getAnchorLineToSelectionPointFromPolar(double i_fLength_px, double i_fAngle_degrees, ESelectionPoint i_selPt) const;
+    virtual QLineF getAnchorLineToSelectionPointFromPolar(double i_fLength_px, double i_fAngle_degrees, int i_idxPt) const;
 protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
@@ -676,6 +679,7 @@ public slots: // overridables
 protected slots: // overridables
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
+    virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
 public: // instance methods (simulation methods)
     void addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
     void removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );

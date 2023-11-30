@@ -1698,15 +1698,22 @@ bool ZS::Draw::isPolygonHit(
 } // isPolygonHit
 
 //------------------------------------------------------------------------------
-double ZS::Draw::getDist( const QPointF& i_pt1, const QPointF& i_pt2 )
+/*! @brief Returns the shortest distance from the given point to the given line.
+*/
 //------------------------------------------------------------------------------
+double ZS::Draw::getDistance( const QPointF& i_pt, const QLineF& i_line )
 {
-    double fXDistPow_px = pow( i_pt2.x() - i_pt1.x(), 2.0 );
-    double fYDistPow_px = pow( i_pt2.y() - i_pt1.y(), 2.0 );
-    double fRadius_px   = sqrt( fXDistPow_px + fYDistPow_px );
-    return fRadius_px;
-
-} // getDist
+    // Get a parallel line to the line to which the distance has to be
+    // calculated with the given point as the start point.
+    QPointF ptOffset = i_pt - i_line.p1();
+    QLineF parallelLine = i_line.translated(ptOffset);
+    // Get perpendicular line of the parallel line and determine
+    // the intersection point with the linked line.
+    QLineF perpendicularLine = parallelLine.normalVector();
+    QPointF ptIntersection;
+    perpendicularLine.intersects(i_line, &ptIntersection);
+    return QLineF(i_pt, ptIntersection).length();
+}
 
 //------------------------------------------------------------------------------
 double ZS::Draw::getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 )
@@ -1741,7 +1748,7 @@ double ZS::Draw::getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 )
     else
     {
         double fWidth_px  = i_pt2.x() - i_pt1.x();
-        double fRadius_px = getDist(i_pt1,i_pt2);
+        double fRadius_px = QLineF(i_pt1, i_pt2).length();
 
         fAngle_rad = acos(fWidth_px/fRadius_px);
 
@@ -1760,65 +1767,47 @@ QPointF ZS::Draw::rotatePoint( const QPointF& i_ptCenter, const QPointF& i_pt, d
 //------------------------------------------------------------------------------
 {
     QPointF ptRes = i_pt;
-
-    if( i_fAngle_rad != 0.0 )
-    {
-        double fRadius_px     = getDist(i_ptCenter,i_pt);
-        double fAnglePt_rad   = getAngleRad(i_ptCenter,i_pt);
-        double fAngleRes_rad  = fAnglePt_rad + i_fAngle_rad;
-
+    if (i_fAngle_rad != 0.0) {
+        double fRadius_px = QLineF(i_ptCenter, i_pt).length();
+        double fAnglePt_rad = getAngleRad(i_ptCenter,i_pt);
+        double fAngleRes_rad = fAnglePt_rad + i_fAngle_rad;
         ptRes.setX( i_ptCenter.x() + fRadius_px * cos(fAngleRes_rad) );
         ptRes.setY( i_ptCenter.y() - fRadius_px * sin(fAngleRes_rad) );
     }
-
     return ptRes;
-
-} // rotatePoint
+}
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::rotateRect( const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad )
 //------------------------------------------------------------------------------
 {
     QPolygonF polygonRect;
-
     polygonRect.resize(4);
-
-    polygonRect[0] = rotatePoint( i_ptCenter, i_rct.topLeft(), i_fAngle_rad );
-    polygonRect[1] = rotatePoint( i_ptCenter, i_rct.topRight(), i_fAngle_rad );
-    polygonRect[2] = rotatePoint( i_ptCenter, i_rct.bottomRight(), i_fAngle_rad );
-    polygonRect[3] = rotatePoint( i_ptCenter, i_rct.bottomLeft(), i_fAngle_rad );
-
+    polygonRect[0] = rotatePoint(i_ptCenter, i_rct.topLeft(), i_fAngle_rad);
+    polygonRect[1] = rotatePoint(i_ptCenter, i_rct.topRight(), i_fAngle_rad);
+    polygonRect[2] = rotatePoint(i_ptCenter, i_rct.bottomRight(), i_fAngle_rad);
+    polygonRect[3] = rotatePoint(i_ptCenter, i_rct.bottomLeft(), i_fAngle_rad);
     return polygonRect;
-
-} // rotateRect
+}
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::rotatePolygon( const QPointF& i_ptCenter, const QPolygonF& i_polygon, double i_fAngle_rad )
 //------------------------------------------------------------------------------
 {
     QPolygonF polygon;
-
-    if( i_polygon.size() > 0 )
-    {
+    if (i_polygon.size() > 0) {
         polygon.resize(i_polygon.size());
-
-        int idxPt;
-
-        for( idxPt = 0; idxPt < i_polygon.size(); idxPt++ )
-        {
-            if( i_fAngle_rad != 0.0 )
-            {
-                polygon[idxPt] = rotatePoint( i_ptCenter, i_polygon[idxPt], i_fAngle_rad );
+        for (int idxPt = 0; idxPt < i_polygon.size(); idxPt++) {
+            if (i_fAngle_rad != 0.0) {
+                polygon[idxPt] = rotatePoint(i_ptCenter, i_polygon[idxPt], i_fAngle_rad);
             }
-            else
-            {
+            else {
                 polygon[idxPt] = i_polygon[idxPt];
             }
         }
     }
     return polygon;
-
-} // rotatePolygon
+}
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::normalizePolygon( const QPolygonF& i_plg, int i_iPrecision )
@@ -1925,7 +1914,7 @@ QPolygonF ZS::Draw::normalizePolygon( const QPolygonF& i_plg, int i_iPrecision )
 //    {
 //        double fAngle_rad = getAngleRad( i_polygonRectSelectionPoints[ESelectionPoint::TopLeft], i_polygonRectSelectionPoints[ESelectionPoint::TopRight] );
 //
-//        double fDistPtRotate2TopCenter = getDist(i_polygonRectSelectionPoints[ESelectionPointRotate],i_polygonRectSelectionPoints[ESelectionPoint::TopCenter]);
+//        double fDistPtRotate2TopCenter = QLineF(i_polygonRectSelectionPoints[ESelectionPointRotate], i_polygonRectSelectionPoints[ESelectionPoint::TopCenter]).length();
 //
 //        polygonRectSelectionPoints[ESelectionPoint::TopLeft] = rotatePoint( i_ptCenter, i_polygonRectSelectionPoints[ESelectionPoint::TopLeft], -fAngle_rad );
 //        polygonRectSelectionPoints[ESelectionPoint::BottomRight] = rotatePoint( i_ptCenter, i_polygonRectSelectionPoints[ESelectionPoint::BottomRight], -fAngle_rad );
@@ -2146,6 +2135,236 @@ QPolygonF ZS::Draw::getBoundingRectPolygon( const QPolygonF& i_polygon )
     return polygonBoundingRect;
 
 } // getBoundingRectPolygon
+
+//------------------------------------------------------------------------------
+QPolygonF ZS::Draw::getEllipseFocusPoints( const QRectF& i_rct )
+//------------------------------------------------------------------------------
+{
+    QPolygonF plgFocusPoints(2);
+
+    QPointF ptC = i_rct.center();
+
+    if( i_rct.width() == i_rct.height() )
+    {
+        plgFocusPoints[0] = ptC;
+        plgFocusPoints[1] = ptC;
+    }
+    else if( i_rct.width() > i_rct.height() )
+    {
+        double fe = getEllipseCenterFocusDist(i_rct);
+        plgFocusPoints[0] = QPointF( ptC.x() - fe, ptC.y() );
+        plgFocusPoints[1] = QPointF( ptC.x() + fe, ptC.y() );
+    }
+    else // if( i_rct.width() < i_rct.height() )
+    {
+        double fe = getEllipseCenterFocusDist(i_rct);
+        plgFocusPoints[0] = QPointF( ptC.x(), ptC.y() - fe );
+        plgFocusPoints[1] = QPointF( ptC.x(), ptC.y() + fe );
+    }
+    return plgFocusPoints;
+
+} // getEllipseFocusPoints
+
+//------------------------------------------------------------------------------
+double ZS::Draw::getEllipseCenterFocusDist( const QRectF& i_rct )
+//------------------------------------------------------------------------------
+{
+    double fa = i_rct.width();
+    double fb = i_rct.height();
+
+    if( fa < fb )
+    {
+        double fTmp = fb;
+        fb = fa;
+        fa = fTmp;
+    }
+
+    double fe = sqrt( Math::sqr(fa) - Math::sqr(fb) );
+
+    return fe;
+
+} // getEllipseCenterFocusDist
+
+//------------------------------------------------------------------------------
+QPointF ZS::Draw::getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint i_selPt )
+//------------------------------------------------------------------------------
+{
+    QPointF pt = i_lin.center();
+    if (i_selPt == ESelectionPoint::Center) {
+    }
+    else if (i_selPt == ESelectionPoint::TopLeft) {
+        pt = i_lin.p1();
+    }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        pt = i_lin.p2();
+    }
+    return pt;
+}
+
+//------------------------------------------------------------------------------
+QPointF ZS::Draw::getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i_selPt )
+//------------------------------------------------------------------------------
+{
+    QPointF pt = i_rct.center();
+    if (i_selPt == ESelectionPoint::Center) {
+    }
+    else if (i_selPt == ESelectionPoint::TopLeft) {
+        pt = i_rct.topLeft();
+    }
+    else if (i_selPt == ESelectionPoint::TopRight) {
+        pt = i_rct.topRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        pt = i_rct.bottomRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomLeft) {
+        pt = i_rct.bottomLeft();
+    }
+    else if (i_selPt == ESelectionPoint::TopCenter) {
+        pt = QPointF(i_rct.center().x(), i_rct.top());
+    }
+    else if (i_selPt == ESelectionPoint::RightCenter) {
+        pt = QPointF(i_rct.right(), i_rct.center().y());
+    }
+    else if (i_selPt == ESelectionPoint::BottomCenter) {
+        pt = QPointF(i_rct.center().x(), i_rct.bottom());
+    }
+    else if (i_selPt == ESelectionPoint::LeftCenter) {
+        pt = QPointF(i_rct.left(), i_rct.center().y());
+    }
+    else if (i_selPt == ESelectionPoint::RotateTop) {
+        pt = QPointF(i_rct.center().x(), i_rct.top()-getSelectionPointRotateDistance());
+    }
+    else if (i_selPt == ESelectionPoint::RotateBottom) {
+        pt = QPointF(i_rct.center().x(), i_rct.bottom()+getSelectionPointRotateDistance());
+    }
+    return pt;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the best position at the given rectangle to connect a line.
+
+    The best position is one of the center points at the given rectangle.
+
+    "QLineF::angle" is used to calculate the angle of the line between the two anchor points.
+
+    From Qts documentation:
+    -----------------------
+    The return value will be in the range of values from 0.0 up
+    to but not including 360.0. The angles are measured counter-clockwise from
+    a point on the x-axis to the right of the origin (x > 0).
+    The following diagram should also clarify whats been returned by "QLineF::angle":
+
+                     90°
+       135°    16     1     2    45°
+            15        |        3
+          14      +---+---+      4
+    180° 13-------| Label |-------5   0°  (360°)
+          12      +---+---+      6
+            11        |        7
+       225°    10     9     8   315°
+                     270°
+
+    Selection Point Position | clockwise | Selectoin Point
+    of "Parent Item"         |           | of Label
+    -------------------------+-----------+-----------------
+    16, 1, 2                 | 135°-45°  | TopCenter
+    3, 4, 5, 6, 7            |  45°-315° | RightCenter
+    8, 9, 10                 | 315°-225° | BottomCenter
+    11, 12, 13, 14, 15       | 225°-135° | LeftCenter
+
+    If the angle is calculated the distance between the linked selection point
+    of the parent item to the anchor line will also be taken into account.
+    E.g. if the label is very close to the parent item it is better not to draw
+    the anchor line.
+
+    @param [in] i_line
+    @param [in] i_rct
+    @param [out] o_pSelPt
+
+    @return Coorindates of the selection points on the bounding rectangle.
+*/
+QPointF ZS::Draw::getSelectionPointCoors(
+    const QLineF& i_lin, const QRectF& i_rct, ESelectionPoint* o_pSelPt )
+//------------------------------------------------------------------------------
+{
+    double fAngle = i_lin.angle();
+    ESelectionPoint selPt = ESelectionPoint::None;
+    if (fAngle >= 45.0 && fAngle <= 135.0) {
+        selPt = ESelectionPoint::TopCenter;
+    }
+    else if (fAngle >= 225.0 && fAngle <= 315.0) {
+        selPt = ESelectionPoint::BottomCenter;
+    }
+    else if (fAngle > 135.0 && fAngle < 225.0) {
+        selPt = ESelectionPoint::LeftCenter;
+    }
+    else if ((fAngle > 315.0 && fAngle <= 360.0) || (fAngle >= 0.0 && fAngle < 45.0)) {
+        selPt = ESelectionPoint::RightCenter;
+    }
+    if (o_pSelPt != nullptr) {
+        *o_pSelPt = selPt;
+    }
+    return ZS::Draw::getSelectionPointCoors(i_rct, selPt);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the first point at
+           the given point and the end point at the first point of the given line.
+
+                X Point to be calculated
+                |
+            90° | Length
+                +----------Line-----------+
+                P1                        P2
+
+            If rotated by -90 (or +270) degrees:
+
+                 Length
+             P1 +------- X Point to be calculated
+                | 90°
+                |
+               Line
+                |
+                |
+             P2 +
+*/
+QLineF ZS::Draw::getLineFromPolar(
+    double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line)
+//------------------------------------------------------------------------------
+{
+    double fAngle_degrees = i_line.angle() + i_fAngle_degrees;
+    QLineF line = QLineF::fromPolar(i_fLength_px, fAngle_degrees);
+    QPointF ptOffset = i_line.p1();
+    line.translate(ptOffset);
+    return line;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the perpendicular line to the given line intersecting
+           starting at the given point.
+
+    @param [in] i_line
+    @param [in] i_pt Start point from which the perpendicular line starts.
+
+    @return Perpendicular line with the given length whose start point is
+            at the given point.
+*/
+QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    // Find parallel line to the given line that passes through the given point.
+    QPointF ptOffset = i_pt - i_line.p1();
+    QLineF parallelLine = i_line.translated(ptOffset);
+    // Returns a line that is perpendicular to this line with
+    // the same starting point and length.
+    QLineF perpendicularLine = parallelLine.normalVector();
+    // Now get the intersection point of the perpendicular line with the given line.
+    QPointF ptIntersection;
+    perpendicularLine.intersects(i_line, &ptIntersection);
+    // Return the line from the given point to the intersection point.
+    return QLineF(i_pt, ptIntersection);
+}
 
 //------------------------------------------------------------------------------
 QString ZS::Draw::point2Str( const QPoint& i_pt )
@@ -2459,8 +2678,8 @@ QString ZS::Draw::rect2Str( const QPolygon& i_rct, bool i_bAddWidthAndHeight )
             str += point2Str(i_rct[idxPt]);
         }
         if (i_bAddWidthAndHeight) {
-            double w = getDist(i_rct[0],i_rct[1]);
-            double h = getDist(i_rct[1],i_rct[2]);
+            double w = QLineF(i_rct[0], i_rct[1]).length();
+            double h = QLineF(i_rct[1], i_rct[2]).length();
             QSize  siz( static_cast<int>(w), static_cast<int>(h) );
             str += ", " + size2Str(siz);
         }
@@ -2479,8 +2698,8 @@ QString ZS::Draw::rect2Str( const QPolygonF& i_rct, char i_cF, int i_iPrecision,
             str += point2Str(i_rct[idxPt], i_cF, i_iPrecision, i_bRound2Nearest);
         }
         if (i_bAddWidthAndHeight) {
-            double w = getDist(i_rct[0],i_rct[1]);
-            double h = getDist(i_rct[1],i_rct[2]);
+            double w = QLineF(i_rct[0], i_rct[1]).length();
+            double h = QLineF(i_rct[1], i_rct[2]).length();
             QSize  siz( static_cast<int>(w), static_cast<int>(h) );
             str += ", " + size2Str(siz);
         }
@@ -2655,52 +2874,3 @@ QPolygonF ZS::Draw::str2PolygonF( const QString& i_str, bool* i_pbConverted )
     return plg;
 
 } // str2PolygonF
-
-//------------------------------------------------------------------------------
-QPolygonF ZS::Draw::getEllipseFocusPoints( const QRectF& i_rct )
-//------------------------------------------------------------------------------
-{
-    QPolygonF plgFocusPoints(2);
-
-    QPointF ptC = i_rct.center();
-
-    if( i_rct.width() == i_rct.height() )
-    {
-        plgFocusPoints[0] = ptC;
-        plgFocusPoints[1] = ptC;
-    }
-    else if( i_rct.width() > i_rct.height() )
-    {
-        double fe = getEllipseCenterFocusDist(i_rct);
-        plgFocusPoints[0] = QPointF( ptC.x() - fe, ptC.y() );
-        plgFocusPoints[1] = QPointF( ptC.x() + fe, ptC.y() );
-    }
-    else // if( i_rct.width() < i_rct.height() )
-    {
-        double fe = getEllipseCenterFocusDist(i_rct);
-        plgFocusPoints[0] = QPointF( ptC.x(), ptC.y() - fe );
-        plgFocusPoints[1] = QPointF( ptC.x(), ptC.y() + fe );
-    }
-    return plgFocusPoints;
-
-} // getEllipseFocusPoints
-
-//------------------------------------------------------------------------------
-double ZS::Draw::getEllipseCenterFocusDist( const QRectF& i_rct )
-//------------------------------------------------------------------------------
-{
-    double fa = i_rct.width();
-    double fb = i_rct.height();
-
-    if( fa < fb )
-    {
-        double fTmp = fb;
-        fb = fa;
-        fa = fTmp;
-    }
-
-    double fe = sqrt( Math::sqr(fa) - Math::sqr(fb) );
-
-    return fe;
-
-} // getEllipseCenterFocusDist

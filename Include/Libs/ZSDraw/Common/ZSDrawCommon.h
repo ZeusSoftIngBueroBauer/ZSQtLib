@@ -400,10 +400,8 @@ const int ESelectionPointRotateMax = static_cast<int>(ESelectionPoint::RotateBot
 
 ZSDRAWDLL_API void setSelectionPointRotateDistance( double i_fDist_px );
 ZSDRAWDLL_API double getSelectionPointRotateDistance();
-ZSDRAWDLL_API QPointF getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint i_selPt );
-ZSDRAWDLL_API QPointF getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i_selPt );
-ZSDRAWDLL_API QPointF getSelectionPointOpposite( const QRectF& i_rct, ESelectionPoint i_selPt );
-ZSDRAWDLL_API ESelectionPoint getSelectionPointOpposite( ESelectionPoint i_selPt );
+ZSDRAWDLL_API QPointF getOppositeSelectionPoint( const QRectF& i_rct, ESelectionPoint i_selPt );
+ZSDRAWDLL_API ESelectionPoint getOppositeSelectionPoint( ESelectionPoint i_selPt );
 ZSDRAWDLL_API CEnumEditMode selectionPoint2EditMode( ESelectionPoint i_selPt );
 ZSDRAWDLL_API CEnumEditResizeMode selectionPoint2EditResizeMode( ESelectionPoint i_selPt );
 ZSDRAWDLL_API Qt::CursorShape selectionPoint2CursorShape( ESelectionPoint i_selPt );

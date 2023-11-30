@@ -58,7 +58,7 @@ public: // must overridables of base class CGraphObj
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
     virtual void updatePosition() override;
     virtual void updateDistanceToLinkedSelPt() override;
-    virtual void updateAnchorLine() override;
+    virtual void updateAnchorLines() override;
 
 }; // class CGraphObjLabelGeometryAngle
 

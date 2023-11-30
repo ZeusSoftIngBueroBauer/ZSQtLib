@@ -1110,6 +1110,67 @@ CPhysValPoint CGraphObjLine::getSelectionPointCoors( int i_idxPt ) const
 }
 
 /*==============================================================================
+public: // overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the first point at
+           the given point and the end point at the given selection point.
+
+    This method must be reimplemented by derived classes to ensure that labels
+    linked to the selection point are always at the same relative position
+    no matter how the object will be rotated.
+
+    This behaviour can only be managed if the labels save the length and the
+    angle of the anchor lines to the selection point. But how the angle for
+    a selectio point is interpreted depends on the graphical object type.
+    The example below shows how a line would interprete the angle to the
+    line end points.
+                                  +-------+
+                                  | Label |
+                                  +---|---+
+                                   90°| Length (Anchor line to be calculated)
+            +-----LineObject----------+
+            P1                        P2
+
+            If rotated by -90 (or +270) degrees:
+
+                 P1 +
+                    |
+                   Line
+                    |
+                    | 90° +-------+
+                 P2 +-----|-Label |
+                   Length +-------+
+              (Anchor line to be calculated)
+*/
+QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolar(
+    double i_fLength_px, double i_fAngle_degrees, ESelectionPoint i_selPt) const
+//------------------------------------------------------------------------------
+{
+    #pragma message(__TODO_"Ich bin muede")
+    return ZS::Draw::getLineFromPolar(i_fLength_px, i_fAngle_degrees, line());
+    #pragma message(__TODO_"Ich bin muede")
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the first point at
+           the given point and the end point at the given selection point.
+
+    See above for more details.
+*/
+QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolar(
+    double i_fLength_px, double i_fAngle_degrees, int i_idxPt) const
+//------------------------------------------------------------------------------
+{
+    QLineF anchorLine = ZS::Draw::getLineFromPolar(i_fLength_px, i_fAngle_degrees, line());
+    if (i_idxPt == 1) {
+        anchorLine.translate(line().p2() - line().p1());
+    }
+    return anchorLine;
+}
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 

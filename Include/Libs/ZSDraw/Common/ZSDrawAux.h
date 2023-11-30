@@ -118,7 +118,7 @@ ZSDRAWDLL_API bool isLineHit( const QLineF& i_lin, const QPointF& i_pt, double i
 ZSDRAWDLL_API bool isRectHit( const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
 ZSDRAWDLL_API bool isEllipseHit( const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
 ZSDRAWDLL_API bool isPolygonHit( const QPolygonF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
-ZSDRAWDLL_API double getDist( const QPointF& i_pt1, const QPointF& i_pt2 );
+ZSDRAWDLL_API double getDistance( const QPointF& i_pt, const QLineF& i_line );
 ZSDRAWDLL_API double getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 );
 ZSDRAWDLL_API QPointF rotatePoint( const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad );
 ZSDRAWDLL_API QPolygonF rotateRect( const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad );
@@ -130,6 +130,11 @@ ZSDRAWDLL_API QPointF getMassCenterPointOfPolygon( const QPolygonF& i_plg );
 ZSDRAWDLL_API QPolygonF getBoundingRectPolygon( const QPolygonF& i_plg );
 ZSDRAWDLL_API QPolygonF getEllipseFocusPoints( const QRectF& i_rct );
 ZSDRAWDLL_API double getEllipseCenterFocusDist( const QRectF& i_rct );
+ZSDRAWDLL_API QPointF getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint i_selPt );
+ZSDRAWDLL_API QPointF getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i_selPt );
+ZSDRAWDLL_API QPointF getSelectionPointCoors( const QLineF& i_lin, const QRectF& i_rct, ESelectionPoint* o_pSelPt = nullptr );
+ZSDRAWDLL_API QLineF getLineFromPolar(double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line);
+ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt);
 
 // Format: x/y (e.g. "2.3/4.5")
 ZSDRAWDLL_API QString point2Str( const QPoint& i_pt );

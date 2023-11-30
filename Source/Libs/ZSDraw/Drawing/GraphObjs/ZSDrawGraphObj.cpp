@@ -3812,6 +3812,60 @@ CPhysValPoint CGraphObj::getSelectionPointCoors( int i_idxPt ) const
     return m_pDrawingScene->convert(physValPoint);
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the first point at
+           the given point and the end point at the given selection point.
+
+    This method must be reimplemented by derived classes to ensure that labels
+    linked to the selection point are always at the same relative position
+    no matter how the object will be rotated.
+
+    This behaviour can only be managed if the labels save the length and the
+    angle of the anchor lines to the selection point. But how the angle for
+    a selectio point is interpreted depends on the graphical object type.
+    The example below shows how a line would interprete the angle to the
+    line end points.
+                                  +-------+
+                                  | Label |
+                                  +---|---+
+                                   90°| Length
+            +-- Line -----------------+
+            P1                        P2
+
+            If rotated by -90 (or +270) degrees:
+
+                 P1 +
+                    |
+                   Line
+                    |
+                    | 90° +-------+
+                 P2 +-----|-Label |
+                   Length +-------+
+*/
+QLineF CGraphObj::getAnchorLineToSelectionPointFromPolar(
+    double i_fLength_px, double i_fAngle_degrees, ESelectionPoint i_selPt) const
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"pure virtual")
+    QLineF anchorLine;
+    return anchorLine;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the first point at
+           the given point and the end point at the given selection point.
+
+    See above for more details.
+*/
+QLineF CGraphObj::getAnchorLineToSelectionPointFromPolar(
+    double i_fLength_px, double i_fAngle_degrees, int i_idxPt) const
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"pure virtual")
+    QLineF anchorLine;
+    return anchorLine;
+}
+
 /*==============================================================================
 protected: // overridables
 ==============================================================================*/
@@ -5043,7 +5097,7 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
             m_hshpGeometryLabels.insert(i_strName, pGraphObjLabel);
             QObject::connect(
                 pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
-                this, &CGraphObj::onLabelAboutToBeDestroyed);
+                this, &CGraphObj::onGeometryLabelAboutToBeDestroyed);
             if (m_pTree != nullptr) {
                 m_pTree->onTreeEntryChanged(this);
             }
@@ -5097,7 +5151,7 @@ void CGraphObj::hideGeometryLabel(const QString& i_strName)
             throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
         }
 
-        // "onLabelAboutToBeDestroyed" is called which removes the label from the hash.
+        // "onGeometryLabelAboutToBeDestroyed" is called which removes the label from the hash.
         // The destructor also removes the label from the graphics scene.
         delete pGraphObjLabel;
         pGraphObjLabel = nullptr;
@@ -5551,7 +5605,35 @@ void CGraphObj::onLabelAboutToBeDestroyed(CGraphObj* i_pLabel)
     if( m_hshpLabels.contains(pGraphObjLabel->key())) {
         m_hshpLabels.remove(pGraphObjLabel->key());
     }
-    else if (m_hshpGeometryLabels.contains(pGraphObjLabel->key())) {
+}
+
+//------------------------------------------------------------------------------
+/*! Informs the graphical object that one of its labels is going to be destroyed.
+
+    On clearing the drawing scene all graphical objects will be destroyed.
+    Labels may be destroyed before its parent object the labels belong to.
+    The parent object got to be informed if the label will be destroyed by
+    someone else.
+
+    @param i_pLabel [in]
+        Pointer to label which will be destroyed.
+*/
+void CGraphObj::onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pLabel == nullptr ? "nullptr" : i_pLabel->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::onGeometryLabelAboutToBeDestroyed",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel* pGraphObjLabel = dynamic_cast<CGraphObjLabel*>(i_pLabel);
+    if (m_hshpGeometryLabels.contains(pGraphObjLabel->key())) {
         m_hshpGeometryLabels.remove(pGraphObjLabel->key());
     }
 }

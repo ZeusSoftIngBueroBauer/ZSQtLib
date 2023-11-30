@@ -151,13 +151,7 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the position of the label and the
-           coordinates (start and end point) of the anchor line.
-
-    On moving the label the current distance to the parent item is stored.
-    If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the label must be moved so that the distance remains
-    the same.
+/*! @brief 
 */
 void CGraphObjLabelGeometryHeight::updatePosition()
 //------------------------------------------------------------------------------
@@ -176,13 +170,7 @@ void CGraphObjLabelGeometryHeight::updatePosition()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the distance between the labels center
-           point and the selection point of the parent item the label is linked to.
-
-    On moving the label the current distance to the parent item is stored.
-    If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the label must be moved so that the distance remains
-    the same.
+/*! @brief 
 */
 void CGraphObjLabelGeometryHeight::updateDistanceToLinkedSelPt()
 //------------------------------------------------------------------------------
@@ -198,54 +186,17 @@ void CGraphObjLabelGeometryHeight::updateDistanceToLinkedSelPt()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the coordinates (start and end point)
-           of the anchor line.
-
-    The anchor line will be drawn to one of the center points at the bounding rectangle.
-    Which line of the labels bounding rectangle should be used depends on the relative
-    position of the label to the selection point of the graph object the label is linked to.
-
-    "QLineF::angle" is used to calculate the angle of the line between the two anchor points.
-
-    From Qts documentation:
-    -----------------------
-    The return value will be in the range of values from 0.0 up
-    to but not including 360.0. The angles are measured counter-clockwise from
-    a point on the x-axis to the right of the origin (x > 0).
-    The following diagram should also clarify whats been returned by "QLineF::angle":
-
-                     90°
-       135°    16     1     2    45°
-            15        |        3
-          14      +---+---+      4
-    180° 13-------| Label |-------5   0°  (360°)
-          12      +---+---+      6
-            11        |        7
-       225°    10     9     8   315°
-                     270°
-
-    Selection Point Position | clockwise | Selectoin Point
-    of "Parent Item"         |           | of Label
-    -------------------------+-----------+-----------------
-    16, 1, 2                 | 135°-45°  | TopCenter
-    3, 4, 5, 6, 7            |  45°-315° | RightCenter
-    8, 9, 10                 | 315°-225° | BottomCenter
-    11, 12, 13, 14, 15       | 225°-135° | LeftCenter
-
-    If the angle is calculated the distance between the linked selection point
-    of the parent item to the anchor line will also be taken into account.
-    E.g. if the label is very close to the parent item it is better not to draw
-    the anchor line.
+/*! @brief 
 */
+void CGraphObjLabelGeometryHeight::updateAnchorLines()
 //------------------------------------------------------------------------------
-void CGraphObjLabelGeometryHeight::updateAnchorLine()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateAnchorLine",
+        /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabel::updateAnchorLine();
+    CGraphObjLabel::updateAnchorLines();
 }

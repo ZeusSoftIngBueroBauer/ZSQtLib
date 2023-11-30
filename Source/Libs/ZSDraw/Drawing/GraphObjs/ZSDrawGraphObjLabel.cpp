@@ -1080,7 +1080,7 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
     }
     else if (i_change == ItemPositionHasChanged) {
         updateDistanceToLinkedSelPt();
-        updateAnchorLine();
+        updateAnchorLines();
     }
 
     if (bTreeEntryChanged && m_pTree != nullptr) {
@@ -1158,7 +1158,7 @@ void CGraphObjLabel::updatePosition()
     setPos(ptScenePosThis);
 
     // Update coordinates of the anchor line.
-    updateAnchorLine();
+    updateAnchorLines();
 
     m_bUpdatePositionInProgress = false;
 
@@ -1213,47 +1213,15 @@ void CGraphObjLabel::updateDistanceToLinkedSelPt()
     The anchor line will be drawn to one of the center points at the bounding rectangle.
     Which line of the labels bounding rectangle should be used depends on the relative
     position of the label to the selection point of the graph object the label is linked to.
-
-    "QLineF::angle" is used to calculate the angle of the line between the two anchor points.
-
-    From Qts documentation:
-    -----------------------
-    The return value will be in the range of values from 0.0 up
-    to but not including 360.0. The angles are measured counter-clockwise from
-    a point on the x-axis to the right of the origin (x > 0).
-    The following diagram should also clarify whats been returned by "QLineF::angle":
-
-                     90°
-       135°    16     1     2    45°
-            15        |        3
-          14      +---+---+      4
-    180° 13-------| Label |-------5   0°  (360°)
-          12      +---+---+      6
-            11        |        7
-       225°    10     9     8   315°
-                     270°
-
-    Selection Point Position | clockwise | Selectoin Point
-    of "Parent Item"         |           | of Label
-    -------------------------+-----------+-----------------
-    16, 1, 2                 | 135°-45°  | TopCenter
-    3, 4, 5, 6, 7            |  45°-315° | RightCenter
-    8, 9, 10                 | 315°-225° | BottomCenter
-    11, 12, 13, 14, 15       | 225°-135° | LeftCenter
-
-    If the angle is calculated the distance between the linked selection point
-    of the parent item to the anchor line will also be taken into account.
-    E.g. if the label is very close to the parent item it is better not to draw
-    the anchor line.
 */
+void CGraphObjLabel::updateAnchorLines()
 //------------------------------------------------------------------------------
-void CGraphObjLabel::updateAnchorLine()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateAnchorLine",
+        /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
 
     CPhysValPoint physValSelPointParent;
@@ -1270,25 +1238,7 @@ void CGraphObjLabel::updateAnchorLine()
 
     QLineF anchorLine(mapToScene(ptCenterThis), ptSelScenePosParent);
 
-    double fAngle = anchorLine.angle();
-
-    // Map anchor line to local coordinates.
-    if (fAngle >= 45.0 && fAngle <= 135.0) {
-        anchorLine.setP1(
-            ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::TopCenter));
-    }
-    else if (fAngle >= 225.0 && fAngle <= 315.0) {
-        anchorLine.setP1(
-            ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::BottomCenter));
-    }
-    else if (fAngle > 135.0 && fAngle < 225.0) {
-        anchorLine.setP1(
-            ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::LeftCenter));
-    }
-    else if ((fAngle > 315.0 && fAngle <= 360.0) || (fAngle >= 0.0 && fAngle < 45.0)) {
-        anchorLine.setP1(
-            ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::RightCenter));
-    }
+    anchorLine.setP1(ZS::Draw::getSelectionPointCoors(anchorLine, rctBoundingThis));
     anchorLine.setP2(mapFromScene(ptSelScenePosParent));
 
     if (m_anchorLines.isEmpty()) {

@@ -95,6 +95,10 @@ CGraphObjLabelGeometryLength::CGraphObjLabelGeometryLength(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
+    m_anchorLines.append(QLineF());
+    m_anchorLines.append(QLineF());
+    m_anchorLines.append(QLineF());
+
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -151,13 +155,7 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the position of the label and the
-           coordinates (start and end point) of the anchor line.
-
-    On moving the label the current distance to the parent item is stored.
-    If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the label must be moved so that the distance remains
-    the same.
+/*! @brief 
 */
 void CGraphObjLabelGeometryLength::updatePosition()
 //------------------------------------------------------------------------------
@@ -204,6 +202,19 @@ void CGraphObjLabelGeometryLength::updatePosition()
 
     setPos(ptScenePosThis);
 
+    #pragma message(__TODO_"Ich bin muede")
+    QLineF anchorLineP1_0 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 0, 0);
+    QLineF anchorLineP2_0 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 0, 1);
+    QLineF anchorLineP1_90 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 90, 0);
+    QLineF anchorLineP2_90 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 90, 1);
+    QLineF anchorLineP1_180 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 180, 0);
+    QLineF anchorLineP2_180 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 180, 1);
+    QLineF anchorLineP1_270 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 270, 0);
+    QLineF anchorLineP2_270 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 270, 1);
+    QLineF anchorLineP1_360 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 360, 0);
+    QLineF anchorLineP2_360 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 360, 1);
+    #pragma message(__TODO_"Ich bin muede")
+
     QString strText = physValLine.length().toString(EUnitFind::None, PhysValSubStr::Val);
 
     if (QGraphicsSimpleTextItem::text() != strText) {
@@ -214,19 +225,13 @@ void CGraphObjLabelGeometryLength::updatePosition()
     }
 
     // Update coordinates of the anchor line.
-    updateAnchorLine();
+    updateAnchorLines();
 
     m_bUpdatePositionInProgress = false;
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the distance between the labels center
-           point and the selection point of the parent item the label is linked to.
-
-    On moving the label the current distance to the parent item is stored.
-    If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the label must be moved so that the distance remains
-    the same.
+/*! @brief 
 */
 void CGraphObjLabelGeometryLength::updateDistanceToLinkedSelPt()
 //------------------------------------------------------------------------------
@@ -267,53 +272,16 @@ void CGraphObjLabelGeometryLength::updateDistanceToLinkedSelPt()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the coordinates (start and end point)
-           of the anchor line.
-
-    The anchor line will be drawn to one of the center points at the bounding rectangle.
-    Which line of the labels bounding rectangle should be used depends on the relative
-    position of the label to the selection point of the graph object the label is linked to.
-
-    "QLineF::angle" is used to calculate the angle of the line between the two anchor points.
-
-    From Qts documentation:
-    -----------------------
-    The return value will be in the range of values from 0.0 up
-    to but not including 360.0. The angles are measured counter-clockwise from
-    a point on the x-axis to the right of the origin (x > 0).
-    The following diagram should also clarify whats been returned by "QLineF::angle":
-
-                     90°
-       135°    16     1     2    45°
-            15        |        3
-          14      +---+---+      4
-    180° 13-------| Label |-------5   0°  (360°)
-          12      +---+---+      6
-            11        |        7
-       225°    10     9     8   315°
-                     270°
-
-    Selection Point Position | clockwise | Selectoin Point
-    of "Parent Item"         |           | of Label
-    -------------------------+-----------+-----------------
-    16, 1, 2                 | 135°-45°  | TopCenter
-    3, 4, 5, 6, 7            |  45°-315° | RightCenter
-    8, 9, 10                 | 315°-225° | BottomCenter
-    11, 12, 13, 14, 15       | 225°-135° | LeftCenter
-
-    If the angle is calculated the distance between the linked selection point
-    of the parent item to the anchor line will also be taken into account.
-    E.g. if the label is very close to the parent item it is better not to draw
-    the anchor line.
+/*! @brief 
 */
+void CGraphObjLabelGeometryLength::updateAnchorLines()
 //------------------------------------------------------------------------------
-void CGraphObjLabelGeometryLength::updateAnchorLine()
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateAnchorLine",
+        /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
 
     CPhysValPoint physValSelPoint1Parent;
@@ -323,8 +291,6 @@ void CGraphObjLabelGeometryLength::updateAnchorLine()
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
         physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
-    QPointF ptSelScenePos1Parent = m_pDrawingScene->convert(physValSelPoint1Parent, Units.Length.px).toQPointF();
-
     CPhysValPoint physValSelPoint2Parent;
     if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
         physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
@@ -332,40 +298,27 @@ void CGraphObjLabelGeometryLength::updateAnchorLine()
     else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
         physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
-    QPointF ptSelScenePos2Parent = m_pDrawingScene->convert(physValSelPoint2Parent, Units.Length.px).toQPointF();
 
+    CPhysValLine physValLine = CPhysValLine(physValSelPoint1Parent, physValSelPoint2Parent);
+    QLineF line = m_pDrawingScene->convert(physValLine, Units.Length.px).toQLineF();
+
+    // The distances to the parent's selection points must be calculated in scene coordinates.
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
-    QPointF ptCenterThis = rctBoundingThis.center();
+    QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
+    // The shortest distance to the line from the labels center point is the perpendicular line
+    // which goes through the center of the labels bounding rectangle.
+    QLineF perpendicularLine = getPerpendicularLine(line, ptCenterScenePosThis);
 
-    if (m_anchorLines.isEmpty()) {
-        m_anchorLines.append(QLineF());
-        m_anchorLines.append(QLineF());
-    }
+    // We need two perpendicular lines at the start and end point of the line.
+    // Create those two liney by moving the perpendicular line correspondingly.
+    QPointF ptOffset1 = line.p1() - perpendicularLine.p2();
+    QPointF ptOffset2 = line.p2() - perpendicularLine.p2();
+    QLineF perpendicularLine1 = perpendicularLine.translated(ptOffset1);
+    QLineF perpendicularLine2 = perpendicularLine.translated(ptOffset2);
 
-    // To calculate the angle, set anchor lines to world coordinates.
-    m_anchorLines[0] = QLineF(mapToScene(ptCenterThis), ptSelScenePos1Parent);
-    m_anchorLines[1] = QLineF(mapToScene(ptCenterThis), ptSelScenePos2Parent);
-
-    for (QLineF& anchorLine : m_anchorLines) {
-        double fAngle = anchorLine.angle();
-        // Map anchor line to local coordinates.
-        if (fAngle >= 45.0 && fAngle <= 135.0) {
-            anchorLine.setP1(
-                ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::TopCenter));
-        }
-        else if (fAngle >= 225.0 && fAngle <= 315.0) {
-            anchorLine.setP1(
-                ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::BottomCenter));
-        }
-        else if (fAngle > 135.0 && fAngle < 225.0) {
-            anchorLine.setP1(
-                ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::LeftCenter));
-        }
-        else if ((fAngle > 315.0 && fAngle <= 360.0) || (fAngle >= 0.0 && fAngle < 45.0)) {
-            anchorLine.setP1(
-                ZS::Draw::getSelectionPointCoors(rctBoundingThis, ESelectionPoint::RightCenter));
-        }
-    }
-    m_anchorLines[0].setP2(mapFromScene(ptSelScenePos1Parent));
-    m_anchorLines[1].setP2(mapFromScene(ptSelScenePos2Parent));
+    // But the anchor lines are painted by this object. For this they have to be
+    // translated into local coordinates.
+    m_anchorLines[0] = QLineF(mapFromScene(perpendicularLine1.p1()), mapFromScene(perpendicularLine1.p2()));
+    m_anchorLines[1] = QLineF(mapFromScene(perpendicularLine2.p1()), mapFromScene(perpendicularLine2.p2()));
+    m_anchorLines[2] = QLineF(mapFromScene(perpendicularLine1.p1()), mapFromScene(perpendicularLine2.p1()));
 }

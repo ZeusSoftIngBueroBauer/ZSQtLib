@@ -435,63 +435,7 @@ double ZS::Draw::getSelectionPointRotateDistance()
 }
 
 //------------------------------------------------------------------------------
-QPointF ZS::Draw::getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint i_selPt )
-//------------------------------------------------------------------------------
-{
-    QPointF pt = i_lin.center();
-    if (i_selPt == ESelectionPoint::Center) {
-    }
-    else if (i_selPt == ESelectionPoint::TopLeft) {
-        pt = i_lin.p1();
-    }
-    else if (i_selPt == ESelectionPoint::BottomRight) {
-        pt = i_lin.p2();
-    }
-    return pt;
-}
-
-//------------------------------------------------------------------------------
-QPointF ZS::Draw::getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i_selPt )
-//------------------------------------------------------------------------------
-{
-    QPointF pt = i_rct.center();
-    if (i_selPt == ESelectionPoint::Center) {
-    }
-    else if (i_selPt == ESelectionPoint::TopLeft) {
-        pt = i_rct.topLeft();
-    }
-    else if (i_selPt == ESelectionPoint::TopRight) {
-        pt = i_rct.topRight();
-    }
-    else if (i_selPt == ESelectionPoint::BottomRight) {
-        pt = i_rct.bottomRight();
-    }
-    else if (i_selPt == ESelectionPoint::BottomLeft) {
-        pt = i_rct.bottomLeft();
-    }
-    else if (i_selPt == ESelectionPoint::TopCenter) {
-        pt = QPointF(i_rct.center().x(), i_rct.top());
-    }
-    else if (i_selPt == ESelectionPoint::RightCenter) {
-        pt = QPointF(i_rct.right(), i_rct.center().y());
-    }
-    else if (i_selPt == ESelectionPoint::BottomCenter) {
-        pt = QPointF(i_rct.center().x(), i_rct.bottom());
-    }
-    else if (i_selPt == ESelectionPoint::LeftCenter) {
-        pt = QPointF(i_rct.left(), i_rct.center().y());
-    }
-    else if (i_selPt == ESelectionPoint::RotateTop) {
-        pt = QPointF(i_rct.center().x(), i_rct.top()-s_fSelectionPointRotateDistance_px);
-    }
-    else if (i_selPt == ESelectionPoint::RotateBottom) {
-        pt = QPointF(i_rct.center().x(), i_rct.bottom()+s_fSelectionPointRotateDistance_px);
-    }
-    return pt;
-}
-
-//------------------------------------------------------------------------------
-QPointF ZS::Draw::getSelectionPointOpposite( const QRectF& i_rct, ESelectionPoint i_selPt )
+QPointF ZS::Draw::getOppositeSelectionPoint( const QRectF& i_rct, ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
     QPointF ptOpp = i_rct.center();
@@ -561,10 +505,10 @@ QPointF ZS::Draw::getSelectionPointOpposite( const QRectF& i_rct, ESelectionPoin
 
     return ptOpp;
 
-} // getSelectionPointOpposite
+} // getOppositeSelectionPoint
 
 //------------------------------------------------------------------------------
-ESelectionPoint ZS::Draw::getSelectionPointOpposite( ESelectionPoint i_selPt )
+ESelectionPoint ZS::Draw::getOppositeSelectionPoint( ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
     static const ESelectionPoint s_arSelectionPointsOpposite[] =
@@ -591,7 +535,7 @@ ESelectionPoint ZS::Draw::getSelectionPointOpposite( ESelectionPoint i_selPt )
     }
     return selPtOpp;
 
-} // getSelectionPointOpposite
+} // getOppositeSelectionPoint
 
 //------------------------------------------------------------------------------
 CEnumEditMode ZS::Draw::selectionPoint2EditMode( ESelectionPoint i_selPt )
