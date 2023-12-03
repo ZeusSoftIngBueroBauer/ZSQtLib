@@ -197,23 +197,23 @@ void CGraphObjLabelGeometryLength::updatePosition()
     ptScenePosThis.setY(ptScenePosThis.y() - rctBoundingThis.height()/2.0);
 
     // Move the label keeping the distance.
-    ptScenePosThis.setX(ptScenePosThis.x() + m_labelDscr.m_distanceToLinkedSelPt.width());
-    ptScenePosThis.setY(ptScenePosThis.y() + m_labelDscr.m_distanceToLinkedSelPt.height());
+    //ptScenePosThis.setX(ptScenePosThis.x() + m_labelDscr.m_distanceToLinkedSelPt.width());
+    //ptScenePosThis.setY(ptScenePosThis.y() + m_labelDscr.m_distanceToLinkedSelPt.height());
 
     setPos(ptScenePosThis);
 
-    #pragma message(__TODO_"Ich bin muede")
-    QLineF anchorLineP1_0 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 0, 0);
-    QLineF anchorLineP2_0 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 0, 1);
-    QLineF anchorLineP1_90 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 90, 0);
-    QLineF anchorLineP2_90 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 90, 1);
-    QLineF anchorLineP1_180 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 180, 0);
-    QLineF anchorLineP2_180 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 180, 1);
-    QLineF anchorLineP1_270 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 270, 0);
-    QLineF anchorLineP2_270 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 270, 1);
-    QLineF anchorLineP1_360 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 360, 0);
-    QLineF anchorLineP2_360 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(20, 360, 1);
-    #pragma message(__TODO_"Ich bin muede")
+    #pragma message(__TODO__"Ich bin muede")
+    QLineF anchorLineP1_0 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 0), 0);
+    QLineF anchorLineP2_0 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 0), 1);
+    QLineF anchorLineP1_90 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 90), 0);
+    QLineF anchorLineP2_90 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 90), 1);
+    QLineF anchorLineP1_180 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 180), 0);
+    QLineF anchorLineP2_180 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 180), 1);
+    QLineF anchorLineP1_270 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 270), 0);
+    QLineF anchorLineP2_270 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 270), 1);
+    QLineF anchorLineP1_360 = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 360), 0);
+    QLineF anchorLineP2_360 = m_labelDscr.m_selPt2.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(SPolarCoors(20, 360), 1);
+    #pragma message(__TODO__"Ich bin muede")
 
     QString strText = physValLine.length().toString(EUnitFind::None, PhysValSubStr::Val);
 
@@ -233,14 +233,14 @@ void CGraphObjLabelGeometryLength::updatePosition()
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjLabelGeometryLength::updateDistanceToLinkedSelPt()
+void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateDistanceToLinkedSelPt",
+        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
     CPhysValPoint physValSelPoint1Parent;
@@ -267,8 +267,8 @@ void CGraphObjLabelGeometryLength::updateDistanceToLinkedSelPt()
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
 
-    m_labelDscr.m_distanceToLinkedSelPt.setWidth(ptScenePosCenterThis.x() - ptSelScenePosParent.x());
-    m_labelDscr.m_distanceToLinkedSelPt.setHeight(ptScenePosCenterThis.y() - ptSelScenePosParent.y());
+    //m_labelDscr.m_distanceToLinkedSelPt.setWidth(ptScenePosCenterThis.x() - ptSelScenePosParent.x());
+    //m_labelDscr.m_distanceToLinkedSelPt.setHeight(ptScenePosCenterThis.y() - ptSelScenePosParent.y());
 }
 
 //------------------------------------------------------------------------------

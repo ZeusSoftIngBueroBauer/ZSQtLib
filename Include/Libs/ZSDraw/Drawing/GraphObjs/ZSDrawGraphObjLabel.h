@@ -96,8 +96,8 @@ public: // instance methods
     void setSelectionPoint2( const SGraphObjSelectionPoint& i_selPt );
     SGraphObjSelectionPoint selectionPoint2() const;
 public: // instance methods
-    void setDistanceToLinkedSelPt(const QSizeF& i_size);
-    QSizeF distanceToLinkedSelPt() const;
+    void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
+    SPolarCoors polarCoorsToLinkedSelectionPoint() const;
 public: // instance methods
     void showAnchorLine();
     void hideAnchorLine();
@@ -143,7 +143,7 @@ protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // overridable auxiliary instance methods
     virtual void updatePosition();
-    virtual void updateDistanceToLinkedSelPt();
+    virtual void updatePolarCoorsToLinkedSelPt();
     virtual void updateAnchorLines();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceInternalStates(
@@ -160,6 +160,10 @@ protected: // instance members
     QList<QLineF> m_anchorLines;
     /*!< Flag used to avoid recursive calls of "updatePosition". */
     bool m_bUpdatePositionInProgress;
+    /*!< Flag used to avoid that the relative distance in polar coordinates (length and angle)
+         to the linked selection point is changed if the position is updated because the parent's
+         geometry is changed. */
+    bool m_bPositionUpdateOnParentGeometryChanged;
 
 }; // class CGraphObjLabel
 

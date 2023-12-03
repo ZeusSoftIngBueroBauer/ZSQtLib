@@ -376,7 +376,7 @@ void CObjFactory::saveGraphObjLabels(
         i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrText, labelDscr.m_strText);
         SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
         i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrSelPt, selPt.toString(false));
-        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, size2Str(labelDscr.m_distanceToLinkedSelPt));
+        i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
         i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
         if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
             i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
@@ -396,7 +396,7 @@ void CObjFactory::saveGraphObjLabels(
             i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrText, labelDscr.m_strText);
             SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
             i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrSelPt, selPt.toString(false));
-            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, size2Str(labelDscr.m_distanceToLinkedSelPt));
+            i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
             i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
             if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
                 i_xmlStreamWriter.writeAttribute(CDrawingScene::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
@@ -432,7 +432,7 @@ void CObjFactory::loadGraphObjLabels(
                     QString strKey;
                     QString strText;
                     SGraphObjSelectionPoint selPt;
-                    QSizeF distanceToSelPt;
+                    SPolarCoors polarCoorsToSelPt;
                     bool bDistValid = false;
                     bool bVisible = false;
                     bool bAnchorLineVisible = false;
@@ -457,9 +457,9 @@ void CObjFactory::loadGraphObjLabels(
                     }
                     if (xmlStreamAttrs.hasAttribute(CDrawingScene::c_strXmlAttrDistance)) {
                         strAttr = xmlStreamAttrs.value(CDrawingScene::c_strXmlAttrDistance).toString();
-                        QSizeF sizTmp = str2SizeF(strAttr, &bConverted);
+                        SPolarCoors polarCoorsTmp = SPolarCoors::fromString(strAttr, "/", &bConverted);
                         if (bConverted) {
-                            distanceToSelPt = sizTmp;
+                            polarCoorsToSelPt = polarCoorsTmp;
                             bDistValid = true;
                         }
                     }
@@ -491,7 +491,7 @@ void CObjFactory::loadGraphObjLabels(
                             }
                         }
                         bVisible ? i_pGraphObj->showLabel(strKey) : i_pGraphObj->hideLabel(strKey);
-                        i_pGraphObj->setLabelDistanceToLinkedSelPt(strKey, distanceToSelPt);
+                        i_pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(strKey, polarCoorsToSelPt);
                         bAnchorLineVisible ? i_pGraphObj->showLabelAnchorLine(strKey) : i_pGraphObj->hideLabelAnchorLine(strKey);
                     }
                 }

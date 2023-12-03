@@ -1114,60 +1114,127 @@ public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns a line with the given length and angle with the first point at
-           the given point and the end point at the given selection point.
+/*! @brief Returns the polar coordinates in length and angle of the given point
+           to the selection point of the graphical object.
 
-    This method must be reimplemented by derived classes to ensure that labels
-    linked to the selection point are always at the same relative position
-    no matter how the object will be rotated.
+    How the angle of anchor lines to selection points is interpreted depends on
+    the graphical object type and the selection point.
 
-    This behaviour can only be managed if the labels save the length and the
-    angle of the anchor lines to the selection point. But how the angle for
-    a selectio point is interpreted depends on the graphical object type.
-    The example below shows how a line would interprete the angle to the
-    line end points.
-                                  +-------+
-                                  | Label |
-                                  +---|---+
-                                   90°| Length (Anchor line to be calculated)
-            +-----LineObject----------+
-            P1                        P2
+    For the graphical object Line only the Center point is allowed for this method.
 
-            If rotated by -90 (or +270) degrees:
+    Example: Horizontal Line
 
-                 P1 +
-                    |
-                   Line
-                    |
-                    | 90° +-------+
-                 P2 +-----|-Label |
-                   Length +-------+
-              (Anchor line to be calculated)
+                        + Pt
+                       /
+                      / Calculated Angle: 60°
+        +------------x------------+
+        P1         Center         P2
+
+    @note This method is used to keep the relative position of labels to the
+          graphical object they are linked to if the linked object is resized,
+          rotated or moved.
+
+          For example if the line would be rotated by 180°:
+
+            P2         Center         P1
+            +------------x------------+
+             Angle: 60° /
+                       /
+                   Pt +
 */
-QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolar(
-    double i_fLength_px, double i_fAngle_degrees, ESelectionPoint i_selPt) const
+SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
-    #pragma message(__TODO_"Ich bin muede")
-    return ZS::Draw::getLineFromPolar(i_fLength_px, i_fAngle_degrees, line());
-    #pragma message(__TODO_"Ich bin muede")
+    QPointF ptSelPtSceneCoors(mapToScene(line().center()));
+    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
+    QLineF thisLineSceneCoors(mapToScene(line().p1()), mapToScene(line().p2()));
+    double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns a line with the given length and angle with the first point at
-           the given point and the end point at the given selection point.
+/*! @brief Returns the polar coordinates in length and angle of the given point
+           to the selection point of the graphical object.
 
-    See above for more details.
+    How the angle of anchor lines to selection points is interpreted depends on
+    the graphical object type and the selection point.
+
+    For the graphical object Line only the shape points P1 and P2 are allowed for this method.
+
+    Example: Horizontal Line
+
+           + Pt
+          /
+         / Calculated Angle: 60°
+        +------------x------------+
+        P1         Center         P2
+
+    @note This method is used to keep the relative position of labels to the
+          graphical object they are linked to if the linked object is resized,
+          rotated or moved.
+
+          For example if the line would be rotated by 180°:
+
+            P2         Center         P1
+            +------------x------------+
+                          Angle: 60° /
+                                    /
+                                Pt +
 */
-QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolar(
-    double i_fLength_px, double i_fAngle_degrees, int i_idxPt) const
+SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
-    QLineF anchorLine = ZS::Draw::getLineFromPolar(i_fLength_px, i_fAngle_degrees, line());
-    if (i_idxPt == 1) {
-        anchorLine.translate(line().p2() - line().p1());
+    QPointF ptSelPtSceneCoors;
+    QLineF thisLineSceneCoors;
+    if (i_idxPt == 0) {
+        ptSelPtSceneCoors = QPointF(mapToScene(line().p1()));
+        thisLineSceneCoors = QLineF(mapToScene(line().p1()), mapToScene(line().p2()));
     }
-    return anchorLine;
+    else {
+        ptSelPtSceneCoors = QPointF(mapToScene(line().p2()));
+        thisLineSceneCoors = QLineF(mapToScene(line().p2()), mapToScene(line().p1()));
+    }
+    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
+    double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the start point (P1)
+           at the given selection point in scene coordinates.
+
+    For the graphical object Line only the Center point is allowed for this method.
+
+    For more details see base implementation in CGraphObj.
+*/
+QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolar(
+    const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
+//------------------------------------------------------------------------------
+{
+    QLineF lineSelPtSceneCoors(mapToScene(line().center()), mapToScene(line().p2()));
+    return ZS::Draw::getLineFromPolar(
+        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the start point (P1)
+           at the given selection point in scene coordinates.
+
+    For more details see base implementation in CGraphObj.
+*/
+QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolar(
+    const SPolarCoors& i_polarCoors, int i_idxPt) const
+//------------------------------------------------------------------------------
+{
+    QLineF lineSelPtSceneCoors;
+    if (i_idxPt == 0) {
+        lineSelPtSceneCoors = QLineF(mapToScene(line().p1()), mapToScene(line().p2()));
+    }
+    else {
+        lineSelPtSceneCoors = QLineF(mapToScene(line().p2()), mapToScene(line().p1()));
+    }
+    return ZS::Draw::getLineFromPolar(
+        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
 }
 
 /*==============================================================================
@@ -1372,6 +1439,16 @@ void CGraphObjLine::paint(
 
     QLineF lineF = line();
     i_pPainter->drawLine(lineF);
+
+    #pragma message(__TODO__"To be removed")
+    i_pPainter->setPen(Qt::red);
+    QLineF lineCenterHor(lineF.center().x()-10, lineF.center().y(), lineF.center().x()+10, lineF.center().y());
+    QLineF lineCenterVer(lineF.center().x(), lineF.center().y()-10, lineF.center().x(), lineF.center().y()+10);
+    i_pPainter->drawLine(lineCenterHor);
+    i_pPainter->drawLine(lineCenterVer);
+    #pragma message(__TODO__"To be removed")
+
+    i_pPainter->setPen(pn);
 
     CEnumLineEndStyle lineEndStyleP1 = m_drawSettings.getLineEndStyle(ELinePoint::Start);
     CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.getLineEndStyle(ELinePoint::End);

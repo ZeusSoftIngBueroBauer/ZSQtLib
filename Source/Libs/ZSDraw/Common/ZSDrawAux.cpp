@@ -2309,25 +2309,29 @@ QPointF ZS::Draw::getSelectionPointCoors(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns a line with the given length and angle with the first point at
-           the given point and the end point at the first point of the given line.
+/*! @brief Returns a line with the given length and angle whose start point is at
+           the start point of the passed line.
 
-                X Point to be calculated
-                |
-            90° | Length
-                +----------Line-----------+
-                P1                        P2
+    Example: Input: Horizontal Line, Any Length, Angle = -90°
+
+                 P2 +
+                    |
+         Calculated |
+         Line       | -90°
+                 P1 +----------Line-----------+
+                    P1                        P2
 
             If rotated by -90 (or +270) degrees:
 
-                 Length
-             P1 +------- X Point to be calculated
-                | 90°
-                |
-               Line
-                |
-                |
-             P2 +
+    Example: Input: Vertical Line, Any Length, Angle = 30°
+
+                 P1 + P1
+                  / |
+      Calculated /  |
+      Line      /30°|
+               /    | Line
+           P2 +     |
+                    + P2
 */
 QLineF ZS::Draw::getLineFromPolar(
     double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line)

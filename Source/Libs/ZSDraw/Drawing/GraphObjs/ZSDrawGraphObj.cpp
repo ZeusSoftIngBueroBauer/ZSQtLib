@@ -224,6 +224,132 @@ QString SGraphObjSelectionPoint::toString(bool i_bIncludeGraphObj) const
 
 
 /*******************************************************************************
+struct SPolarCoors
+*******************************************************************************/
+
+/*==============================================================================
+public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SPolarCoors SPolarCoors::fromString(const QString& i_str, const QString& i_strSeparator, bool* i_pbOk)
+//------------------------------------------------------------------------------
+{
+    bool bOk = false;
+    SPolarCoors polarCoors;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() == 2) {
+        strlst[0]  = strlst[0].trimmed();
+        strlst[1]  = strlst[1].trimmed();
+        double fLength_px = strlst[0].toDouble(&bOk);
+        if (!bOk) {
+            CPhysVal physValLength(Units.Length.px);
+            try {
+                physValLength.setVal(strlst[0]);
+                fLength_px = physValLength.getVal(Units.Length.px);
+                bOk = true;
+            } catch (...) {
+                bOk = false;
+            }
+        }
+        if (bOk) {
+            double fAngle_degrees = strlst[1].toDouble(&bOk);
+            if (!bOk) {
+                CPhysVal physValAngle(Units.Angle.Degree);
+                try {
+                    physValAngle.setVal(strlst[0]);
+                    fAngle_degrees = physValAngle.getVal(Units.Angle.Degree);
+                    bOk = true;
+                } catch (...) {
+                    bOk = false;
+                }
+            }
+            if (bOk) {
+                polarCoors.m_fLength_px = fLength_px;
+                polarCoors.m_fAngle_degrees = fAngle_degrees;
+            }
+        }
+    }
+    if (i_pbOk != nullptr) {
+        *i_pbOk = bOk;
+    }
+    return polarCoors;
+}
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SPolarCoors::SPolarCoors() :
+//------------------------------------------------------------------------------
+    m_fLength_px(0.0),
+    m_fAngle_degrees(0.0)
+{
+}
+
+//------------------------------------------------------------------------------
+SPolarCoors::SPolarCoors(double i_fLength_px, double i_fAngle_degrees) :
+//------------------------------------------------------------------------------
+    m_fLength_px(i_fLength_px),
+    m_fAngle_degrees(i_fAngle_degrees)
+{
+}
+
+//------------------------------------------------------------------------------
+SPolarCoors::SPolarCoors(const SPolarCoors& i_other) :
+//------------------------------------------------------------------------------
+    m_fLength_px(i_other.m_fLength_px),
+    m_fAngle_degrees(i_other.m_fAngle_degrees)
+{
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool SPolarCoors::operator == (const SPolarCoors& i_other) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = true;
+    if (m_fLength_px != i_other.m_fLength_px) {
+        bEqual = false;
+    }
+    else if (m_fAngle_degrees != i_other.m_fAngle_degrees) {
+        bEqual = false;
+    }
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool SPolarCoors::operator != (const SPolarCoors& i_other) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString SPolarCoors::toString(bool i_bAddUnit, const QString& i_strSeparator) const
+//------------------------------------------------------------------------------
+{
+    QString str = QString::number(m_fLength_px);
+    if (i_bAddUnit) {
+        str += " " + Units.Length.px.symbol();
+    }
+    str += i_strSeparator + QString::number(m_fAngle_degrees);
+    if (i_bAddUnit) {
+        str += " " + Units.Angle.Degree.symbol();
+    }
+    return str;
+}
+
+
+/*******************************************************************************
 struct SLabelDscr
 *******************************************************************************/
 
@@ -239,7 +365,7 @@ SLabelDscr::SLabelDscr() :
     m_strText(),
     m_selPt1(),
     m_selPt2(),
-    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_polarCoorsToLinkedSelPt(),
     m_bShowAnchorLine(false)
 {
 }
@@ -252,7 +378,7 @@ SLabelDscr::SLabelDscr(const QString& i_strKey) :
     m_strText(),
     m_selPt1(),
     m_selPt2(),
-    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_polarCoorsToLinkedSelPt(),
     m_bShowAnchorLine(false)
 {
 }
@@ -265,7 +391,7 @@ SLabelDscr::SLabelDscr(const QString& i_strKey, EGraphObjType i_labelType) :
     m_strText(),
     m_selPt1(),
     m_selPt2(),
-    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_polarCoorsToLinkedSelPt(),
     m_bShowAnchorLine(false)
 {
 }
@@ -278,7 +404,7 @@ SLabelDscr::SLabelDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i
     m_strText(),
     m_selPt1(i_selPt),
     m_selPt2(),
-    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_polarCoorsToLinkedSelPt(),
     m_bShowAnchorLine(false)
 {
 }
@@ -294,7 +420,7 @@ SLabelDscr::SLabelDscr(
     m_strText(),
     m_selPt1(i_selPt1),
     m_selPt2(i_selPt2),
-    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_polarCoorsToLinkedSelPt(),
     m_bShowAnchorLine(false)
 {
 }
@@ -309,7 +435,7 @@ SLabelDscr::SLabelDscr(
     m_strText(i_strText),
     m_selPt1(i_selPt),
     m_selPt2(),
-    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_polarCoorsToLinkedSelPt(),
     m_bShowAnchorLine(false)
 {
 }
@@ -324,7 +450,7 @@ SLabelDscr::SLabelDscr(
     m_strText(i_strText),
     m_selPt1(i_selPt1),
     m_selPt2(i_selPt2),
-    m_distanceToLinkedSelPt(0.0, 0.0),
+    m_polarCoorsToLinkedSelPt(),
     m_bShowAnchorLine(false)
 {
 }
@@ -3242,6 +3368,7 @@ CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_vers
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
@@ -3262,6 +3389,7 @@ CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
@@ -3283,6 +3411,7 @@ CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_versio
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
@@ -3304,6 +3433,7 @@ CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_vers
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
@@ -3812,9 +3942,54 @@ CPhysValPoint CGraphObj::getSelectionPointCoors( int i_idxPt ) const
     return m_pDrawingScene->convert(physValPoint);
 }
 
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
 //------------------------------------------------------------------------------
-/*! @brief Returns a line with the given length and angle with the first point at
-           the given point and the end point at the given selection point.
+/*! @brief Returns the polar coordinates in length and angle of the given point
+           to the selection point of the graphical object.
+
+    How the angle of anchor lines to selection points is interpreted depends on
+    the graphical object type and the selection point.
+
+    This method must be reimplemented by derived classes to ensure that labels
+    linked to the selection point are always at the same relative position
+    no matter how the object will be rotated.
+
+    @param [in] i_pt
+        Point in scene coordinates to which the polar coordinates from the
+        given selection point have to be returned.
+    @param [in] i_selPt
+        Selection point on the bounding rectangle.
+*/
+SPolarCoors CGraphObj::getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"pure virtual")
+    SPolarCoors polarCoors;
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    return polarCoors;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the polar coordinates in length and angle of the given point
+           to the selection point of the graphical object.
+
+    See above for more details.
+*/
+SPolarCoors CGraphObj::getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const
+//------------------------------------------------------------------------------
+{
+#pragma message(__TODO__"pure virtual")
+    SPolarCoors polarCoors;
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    return polarCoors;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the start point (P1)
+           at the given selection point in scene coordinates.
 
     This method must be reimplemented by derived classes to ensure that labels
     linked to the selection point are always at the same relative position
@@ -3822,14 +3997,14 @@ CPhysValPoint CGraphObj::getSelectionPointCoors( int i_idxPt ) const
 
     This behaviour can only be managed if the labels save the length and the
     angle of the anchor lines to the selection point. But how the angle for
-    a selectio point is interpreted depends on the graphical object type.
+    a selection point is interpreted depends on the graphical object type.
     The example below shows how a line would interprete the angle to the
     line end points.
-                                  +-------+
-                                  | Label |
-                                  +---|---+
-                                   90°| Length
-            +-- Line -----------------+
+                                  +-------+      AnchorLine
+                                  | Label |          + P2
+                                  +---|---+          |
+                                   90°| Length       | 
+            +-- Line -----------------+              + P1
             P1                        P2
 
             If rotated by -90 (or +270) degrees:
@@ -3841,28 +4016,33 @@ CPhysValPoint CGraphObj::getSelectionPointCoors( int i_idxPt ) const
                     | 90° +-------+
                  P2 +-----|-Label |
                    Length +-------+
+
+       AnchorLine   +-----+
+                   P1     P2
 */
 QLineF CGraphObj::getAnchorLineToSelectionPointFromPolar(
-    double i_fLength_px, double i_fAngle_degrees, ESelectionPoint i_selPt) const
+    const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"pure virtual")
     QLineF anchorLine;
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     return anchorLine;
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns a line with the given length and angle with the first point at
-           the given point and the end point at the given selection point.
+/*! @brief Returns a line with the given length and angle with the start point (P1)
+           at the given selection point in scene coordinates.
 
     See above for more details.
 */
 QLineF CGraphObj::getAnchorLineToSelectionPointFromPolar(
-    double i_fLength_px, double i_fAngle_degrees, int i_idxPt) const
+    const SPolarCoors& i_polarCoors, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"pure virtual")
     QLineF anchorLine;
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     return anchorLine;
 }
 
@@ -4860,26 +5040,28 @@ bool CGraphObj::isLabelVisible(const QString& i_strName) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the distance in width and height in pixels between the labels
-           position and the linked selection point.
+/*! @brief Sets the relative position of the label in polar coordinates
+           (length in pixels, angle in degrees) of the labels position to
+           the linked selection point.
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
-    @param [in] i_size
-        Distance to the linked selection point.
+    @param [in] i_polarCoors
+        Polar coordinates (length in pixels, angle in degrees)
+        as a relative position of the label to the linked selection point.
 */
-void CGraphObj::setLabelDistanceToLinkedSelPt(const QString& i_strName, const QSizeF& i_size)
+void CGraphObj::setLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + qSize2Str(i_size);
+        strMthInArgs = i_strName + ", {" + i_polarCoors.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setLabelDistanceToLinkedSelPt",
+        /* strMethod    */ "CGraphObj::setLabelPolarCoorsToLinkedSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
     if (!m_hshLabelDscrs.contains(i_strName)) {
@@ -4887,11 +5069,11 @@ void CGraphObj::setLabelDistanceToLinkedSelPt(const QString& i_strName, const QS
     }
 
     SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
-    if (labelDscr.m_distanceToLinkedSelPt != i_size) {
-        labelDscr.m_distanceToLinkedSelPt = i_size;
+    if (labelDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
+        labelDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setDistanceToLinkedSelPt(i_size);
+            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_polarCoors);
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -4901,21 +5083,21 @@ void CGraphObj::setLabelDistanceToLinkedSelPt(const QString& i_strName, const QS
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the distance in width and height in pixels between the labels
-           position and the linked selection point.
+/*! @brief Returns the polar coordinates (length in pixels, angle in degrees)
+           as a relative position of the label to the linked selection point.
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
 
-    @return Distance to the linked selection point.
+    @return Relative position of the label to the linked selection point.
 */
-QSizeF CGraphObj::labelDistanceToLinkedSelPt(const QString& i_strName) const
+SPolarCoors CGraphObj::labelPolarCoorsToLinkedSelectionPoint(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     if (!m_hshLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    return m_hshLabelDscrs[i_strName].m_distanceToLinkedSelPt;
+    return m_hshLabelDscrs[i_strName].m_polarCoorsToLinkedSelPt;
 }
 
 //------------------------------------------------------------------------------
@@ -5180,26 +5362,28 @@ bool CGraphObj::isGeometryLabelVisible(const QString& i_strName) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the distance in width and height in pixels between the labels
-           position and the linked selection point.
+/*! @brief Sets the relative position of the label in polar coordinates
+           (length in pixels, angle in degrees) of the labels position to
+           the linked selection point.
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
-    @param [in] i_size
-        Distance to the linked selection point.
+    @param [in] i_polarCoors
+        Polar coordinates (length in pixels, angle in degrees)
+        as a relative position of the label to the linked selection point.
 */
-void CGraphObj::setGeometryLabelDistance(const QString& i_strName, const QSizeF& i_size)
+void CGraphObj::setGeometryLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + qSize2Str(i_size);
+        strMthInArgs = i_strName + ", {" + i_polarCoors.toString() + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setGeometryLabelDistance",
+        /* strMethod    */ "CGraphObj::setGeometryLabelPolarCoorsToLinkedSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
     if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
@@ -5207,11 +5391,11 @@ void CGraphObj::setGeometryLabelDistance(const QString& i_strName, const QSizeF&
     }
 
     SLabelDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
-    if (labelDscr.m_distanceToLinkedSelPt != i_size) {
-        labelDscr.m_distanceToLinkedSelPt = i_size;
+    if (labelDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
+        labelDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->setDistanceToLinkedSelPt(i_size);
+            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(i_polarCoors);
         }
         emit_geometryLabelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -5221,21 +5405,21 @@ void CGraphObj::setGeometryLabelDistance(const QString& i_strName, const QSizeF&
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the distance in width and height in pixels between the labels
-           position and the linked selection point.
+/*! @brief Returns the polar coordinates (length in pixels, angle in degrees)
+           as a relative position of the label to the linked selection point.
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.
 
-    @return Distance to the linked selection point.
+    @return Relative position of the label to the linked selection point.
 */
-QSizeF CGraphObj::geometryLabelDistance(const QString& i_strName) const
+SPolarCoors CGraphObj::geometryLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
-    return m_hshGeometryLabelDscrs[i_strName].m_distanceToLinkedSelPt;
+    return m_hshGeometryLabelDscrs[i_strName].m_polarCoorsToLinkedSelPt;
 }
 
 //------------------------------------------------------------------------------
@@ -5470,6 +5654,7 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_drawingSize.toString();

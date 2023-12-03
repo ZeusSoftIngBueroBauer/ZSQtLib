@@ -477,55 +477,63 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
 
     createTestGroupDrawMouseEventsCreateObject(
         pGrpDrawLine0, io_idxGroup, EGraphObjTypeLine,
-        QPoint(100, 100), QPoint(150, 150));
-    createTestGroupDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawLine0, io_idxGroup, "Resize " + strGraphObjName,
-        true, QPoint(150, 150), QPoint(200, 200));
-    createTestGroupDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawLine0, io_idxGroup, "Move " + strGraphObjName,
-        false, QPoint(150, 150), QPoint(200, 200));
+        QPoint(100, 100), QPoint(100, 150));
+
     createTestGroupShowLabels(
         pGrpDrawLine0, io_idxGroup, EGraphObjTypeLine, strGraphObjName, strlstLabelNames);
+
     arptMousePress.clear();
-    arptMousePress.append(QPoint(200, 200));
-    arptMousePress.append(QPoint(150, 150));
-    arptMousePress.append(QPoint(250, 250));
+    arptMousePress.append(QPoint(95, 125));
+    arptMousePress.append(QPoint(95, 100));
+    arptMousePress.append(QPoint(95, 150));
     arptMouseRelease.clear();
-    arptMouseRelease.append(QPoint(210, 190));
-    arptMouseRelease.append(QPoint(160, 140));
-    arptMouseRelease.append(QPoint(260, 240));
+    arptMouseRelease.append(QPoint(80, 125));
+    arptMouseRelease.append(QPoint(95, 90));
+    arptMouseRelease.append(QPoint(95, 160));
     createTestGroupMoveLabels(
         pGrpDrawLine0, io_idxGroup, EGraphObjTypeLine, strGraphObjName,
         strlstLabelNames, arptMousePress, arptMouseRelease);
+
     strlstGeometryLabelNames.clear();
-    strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP1);
-    strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP2);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP1);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP2);
     strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameCenter);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameWidth);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameHeight);
-    strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameAngle);
     createTestGroupShowGeometryLabels(
         pGrpDrawLine0, io_idxGroup, EGraphObjTypeLine, strGraphObjName, strlstGeometryLabelNames);
-    strlstGeometryLabelNames.clear();
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameAngle);
-    strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameHeight);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameWidth);
+
     arptMousePress.clear();
     //arptMousePress.append(QPoint(200, 200));    // Angle
-    arptMousePress.append(QPoint(200, 200));    // Length
+    //arptMousePress.append(QPoint(105, 125));    // Length
     //arptMousePress.append(QPoint(200, 200));    // Height
     //arptMousePress.append(QPoint(200, 200));    // Width
+    arptMousePress.append(QPoint(105, 125));    // Center
+    //arptMousePress.append(QPoint(105, 150));    // P2
+    //arptMousePress.append(QPoint(105, 100));    // P1
     arptMouseRelease.clear();
     //arptMouseRelease.append(QPoint(240, 180));  // Angle
-    arptMouseRelease.append(QPoint(210, 170));  // Length
+    //arptMouseRelease.append(QPoint(195, 125));  // Length
     //arptMouseRelease.append(QPoint(160, 210));  // Height
     //arptMouseRelease.append(QPoint(190, 220));  // Width
+    arptMouseRelease.append(QPoint(140, 125));  // Center
+    //arptMouseRelease.append(QPoint(130, 150));  // P2
+    //arptMouseRelease.append(QPoint(130, 100));  // P1
     createTestGroupMoveLabels(
         pGrpDrawLine0, io_idxGroup, EGraphObjTypeLine, strGraphObjName,
         strlstGeometryLabelNames, arptMousePress, arptMouseRelease);
 
+    createTestGroupDrawMouseEventsMovePressMoveRelease(
+        pGrpDrawLine0, io_idxGroup, "Resize " + strGraphObjName,
+        QPoint(100, 150), QPoint(200, 200));
+
+    createTestGroupDrawMouseEventsMovePressMoveRelease(
+        pGrpDrawLine0, io_idxGroup, "Move " + strGraphObjName,
+        QPoint(150, 150), QPoint(200, 200));
+
+#if 0
     ++iGraphObjCount;
     strGraphObjName = graphObjType2Str(EGraphObjTypeLine) + QString::number(iGraphObjCount);
 
@@ -700,6 +708,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     //    pGrpDrawLine3, io_idxGroup, EGraphObjTypeLine, strGraphObjName,
     //    strlstGeometryLabelNames, arptMousePress, arptMouseRelease);
 
+#endif
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
@@ -752,7 +761,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateObject(
 
     createTestGroupDrawMouseEventsMovePressMoveRelease(
         pGrpDrawMouseEventsCreateObject, io_idxGroup, "Create " + strGraphObjType,
-        true, i_ptMousePress, i_ptMouseRelease);
+        i_ptMousePress, i_ptMouseRelease);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -859,7 +868,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupMoveLabels(
         const QString& strLabelName = i_strlstLabelNames[idxLabel];
         createTestGroupDrawMouseEventsMovePressMoveRelease(
             pGrpMoveLabels, io_idxGroup, "Move " + strLabelName,
-            false, i_arptMousePress[idxLabel], i_arptMouseRelease[idxLabel]);
+            i_arptMousePress[idxLabel], i_arptMouseRelease[idxLabel]);
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -924,7 +933,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowGeometryLabels(
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsMovePressMoveRelease(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const QString& i_strGroupName, bool i_bSkipFirstMove,
+    const QString& i_strGroupName,
     const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease)
 //------------------------------------------------------------------------------
 {
@@ -933,7 +942,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsMovePressMoveRele
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
                        ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", GroupName: " + i_strGroupName +
-                       ", SkipFirstMove: " + bool2Str(i_bSkipFirstMove) +
                        ", MousePress {" + qPoint2Str(i_ptMousePress) + "}" +
                        ", MouseRelease {" + qPoint2Str(i_ptMouseRelease) + "}";
     }
@@ -954,16 +962,14 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsMovePressMoveRele
 
     // First move the cursor on the object so that the object is hit.
     QPoint ptMouseMovePos = i_ptMousePress;
-    //if (!i_bSkipFirstMove) {
-        pTestStep = new ZS::Test::CTestStep(
-            /* pTest           */ this,
-            /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
-            /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
-            /* pGrpParent      */ pGrpDrawMouseEventsMoveObject,
-            /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-        pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-        pTestStep->setConfigValue("MousePos", ptMouseMovePos);
-    //}
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ pGrpDrawMouseEventsMoveObject,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -974,14 +980,14 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsMovePressMoveRele
     pTestStep->setConfigValue("MousePos", ptMouseMovePos);
 
     bool bMoveRight = i_ptMouseRelease.x() > i_ptMousePress.x();
-    bool bMoveLeft = !bMoveRight;
+    bool bMoveLeft = i_ptMouseRelease.x() < i_ptMousePress.x();
     bool bMoveDown = i_ptMouseRelease.y() > i_ptMousePress.y();
-    bool bMoveUp = !bMoveDown;
+    bool bMoveUp = i_ptMouseRelease.y() < i_ptMousePress.y();
     QSize sizeMouseMoveDist = QSize(
         (i_ptMouseRelease.x() - i_ptMousePress.x()) / 2,
         (i_ptMouseRelease.y() - i_ptMousePress.y()) / 2);
     int iMoves = 0;
-    while ((ptMouseMovePos.x() != i_ptMouseRelease.x()) && iMoves < 10) {
+    while (iMoves < 10) {
         ptMouseMovePos.setX(ptMouseMovePos.x() + sizeMouseMoveDist.width());
         ptMouseMovePos.setY(ptMouseMovePos.y() + sizeMouseMoveDist.height());
         if (bMoveRight && ptMouseMovePos.x() > (i_ptMouseRelease.x()-2)) {

@@ -94,6 +94,29 @@ public: // struct members
 
 
 //******************************************************************************
+/*! @brief Struct defining a line in polar coordinates.
+*/
+struct ZSDRAWDLL_API SPolarCoors
+//******************************************************************************
+{
+public: // struct methods
+    static SPolarCoors fromString(const QString& i_str, const QString& i_strSeparator = "/", bool* i_pbOk = nullptr);
+public: // ctors
+    SPolarCoors();
+    SPolarCoors(double i_fLength_px, double i_fAngle_degrees);
+    SPolarCoors(const SPolarCoors& i_other);
+public: // operators
+    bool operator == (const SPolarCoors& i_other) const;
+    bool operator != (const SPolarCoors& i_other) const;
+public: // struct methods
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = "/") const;
+public: // struct members
+    double m_fLength_px;
+    double m_fAngle_degrees;
+};
+
+
+//******************************************************************************
 /*! @brief Struct defining the properties of a label.
 
     As long as a label is not added to the graphics scene the label objects are
@@ -129,15 +152,11 @@ public: // struct members
     /*!< Text to be indicated by text labels.
          For geometry labels the "text" is calculated during runtime. */
     QString m_strText;
-    /*!< Distance to the selection point the label is aligned to. Calculated as follows:
-         - width = this.center.x - LinkedSelPt.x
-         - height = this.center.y - LinkedSelPt.y
-         This means if the label is right of the parent items selection point the width is positive.
-         If the label is above of the parent items selection point the height is positive.
-         How the distance is interpreted depends on the type of label. For length geometry labels
-         the distance defines the distance between the center of the label and the center of the
-         line for which the length should be indicated. */
-    QSizeF m_distanceToLinkedSelPt;
+    /*!< When modifying the shape of graphical objects the relative position of labels
+         linked to the graphical objects should always be the same.
+         This can only be managed when keeping the distance and the angle to the selection point
+         after moving the labels (see also method getAnchorLineToSelectionPointFromPolar). */
+    SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag to indicate whether the anchor line (line from label to parent's selection point the
          label is linked to) should always be visible. */
     bool m_bShowAnchorLine;
@@ -623,8 +642,10 @@ public: // overridables
     virtual CPhysValPoint getSelectionPointCoors( ESelectionPoint i_selPt ) const;
     virtual CPhysValPoint getSelectionPointCoors( int i_idxPt ) const;
 public: // overridables
-    virtual QLineF getAnchorLineToSelectionPointFromPolar(double i_fLength_px, double i_fAngle_degrees, ESelectionPoint i_selPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolar(double i_fLength_px, double i_fAngle_degrees, int i_idxPt) const;
+    virtual SPolarCoors getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const;
+    virtual SPolarCoors getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const;
+    virtual QLineF getAnchorLineToSelectionPointFromPolar(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const;
+    virtual QLineF getAnchorLineToSelectionPointFromPolar(const SPolarCoors& i_polarCoors, int i_idxPt) const;
 protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
@@ -653,8 +674,8 @@ public: // overridables (text labels)
     virtual void showLabel(const QString& i_strName);
     virtual void hideLabel(const QString& i_strName);
     virtual bool isLabelVisible(const QString& i_strName) const;
-    virtual void setLabelDistanceToLinkedSelPt(const QString& i_strName, const QSizeF& i_size);
-    virtual QSizeF labelDistanceToLinkedSelPt(const QString& i_strName) const;
+    virtual void setLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors);
+    virtual SPolarCoors labelPolarCoorsToLinkedSelectionPoint(const QString& i_strName) const;
     virtual void showLabelAnchorLine(const QString& i_strName);
     virtual void hideLabelAnchorLine(const QString& i_strName);
     virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;
@@ -663,8 +684,8 @@ public: // overridables (geometry labels)
     virtual void showGeometryLabel(const QString& i_strName);
     virtual void hideGeometryLabel(const QString& i_strName);
     virtual bool isGeometryLabelVisible(const QString& i_strName) const;
-    virtual void setGeometryLabelDistance(const QString& i_strName, const QSizeF& i_size);
-    virtual QSizeF geometryLabelDistance(const QString& i_strName) const;
+    virtual void setGeometryLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName, const SPolarCoors& i_polarCoors);
+    virtual SPolarCoors geometryLabelPolarCoorsToLinkedSelectionPoint(const QString& i_strName) const;
     virtual void showGeometryLabelAnchorLine(const QString& i_strName);
     virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
     virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;

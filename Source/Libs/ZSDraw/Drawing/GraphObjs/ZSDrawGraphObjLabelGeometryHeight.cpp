@@ -172,17 +172,17 @@ void CGraphObjLabelGeometryHeight::updatePosition()
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjLabelGeometryHeight::updateDistanceToLinkedSelPt()
+void CGraphObjLabelGeometryHeight::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateDistanceToLinkedSelPt",
+        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabel::updateDistanceToLinkedSelPt();
+    CGraphObjLabel::updatePolarCoorsToLinkedSelPt();
 }
 
 //------------------------------------------------------------------------------

@@ -159,10 +159,6 @@ void CGraphObjLabelGeometryPosition::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabel::updatePosition();
-
-    m_bUpdatePositionInProgress = true;
-
     CPhysValPoint physValSelPointParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
         physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
@@ -178,23 +174,26 @@ void CGraphObjLabelGeometryPosition::updatePosition()
             m_pTree->onTreeEntryChanged(this);
         }
     }
-    m_bUpdatePositionInProgress = false;
+
+    // First set the text at the graphics item so that the
+    // bounding rectangle includes the new text.
+    CGraphObjLabel::updatePosition();
 }
 
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjLabelGeometryPosition::updateDistanceToLinkedSelPt()
+void CGraphObjLabelGeometryPosition::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateDistanceToLinkedSelPt",
+        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabel::updateDistanceToLinkedSelPt();
+    CGraphObjLabel::updatePolarCoorsToLinkedSelPt();
 }
 
 //------------------------------------------------------------------------------

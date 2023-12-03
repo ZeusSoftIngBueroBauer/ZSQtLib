@@ -110,11 +110,13 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
+    virtual SPolarCoors getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
+    virtual SPolarCoors getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const override;
     virtual CPhysValPoint getSelectionPointCoors( ESelectionPoint i_selPt ) const override;
     virtual CPhysValPoint getSelectionPointCoors( int i_idxPt ) const override;
 public: // overridables of base class CGraphObj
-    virtual QLineF getAnchorLineToSelectionPointFromPolar(double i_fLength_px, double i_fAngle_degrees, ESelectionPoint i_selPt) const override;
-    virtual QLineF getAnchorLineToSelectionPointFromPolar(double i_fLength_px, double i_fAngle_degrees, int i_idxPt) const override;
+    virtual QLineF getAnchorLineToSelectionPointFromPolar(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;
+    virtual QLineF getAnchorLineToSelectionPointFromPolar(const SPolarCoors& i_polarCoors, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)

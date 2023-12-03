@@ -107,7 +107,7 @@ protected: // instance methods
         const QStringList& i_strlstLabelNames);
     ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsMovePressMoveRelease(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const QString& i_strGroupName, bool i_bSkipFirstMove,
+        const QString& i_strGroupName,
         const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
 protected slots:
     void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );

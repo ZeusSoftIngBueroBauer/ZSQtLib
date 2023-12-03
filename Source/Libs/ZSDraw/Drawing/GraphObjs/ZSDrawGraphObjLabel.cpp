@@ -82,7 +82,8 @@ CGraphObjLabel::CGraphObjLabel(
     QGraphicsSimpleTextItem(i_strText),
     m_labelDscr(i_strKey, i_selPt),
     m_anchorLines(),
-    m_bUpdatePositionInProgress(false)
+    m_bUpdatePositionInProgress(false),
+    m_bPositionUpdateOnParentGeometryChanged(false)
 {
     createTraceAdminObjs("Labels::" + ClassName());
 
@@ -138,7 +139,8 @@ CGraphObjLabel::CGraphObjLabel(
     QGraphicsSimpleTextItem(i_strText),
     m_labelDscr(i_strKey, i_selPt1),
     m_anchorLines(),
-    m_bUpdatePositionInProgress(false)
+    m_bUpdatePositionInProgress(false),
+    m_bPositionUpdateOnParentGeometryChanged(false)
 {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
@@ -173,7 +175,8 @@ CGraphObjLabel::CGraphObjLabel(
     QGraphicsSimpleTextItem(i_strText),
     m_labelDscr(i_strKey, i_selPt1, i_selPt2),
     m_anchorLines(),
-    m_bUpdatePositionInProgress(false)
+    m_bUpdatePositionInProgress(false),
+    m_bPositionUpdateOnParentGeometryChanged(false)
 {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
@@ -225,6 +228,7 @@ CGraphObjLabel::~CGraphObjLabel()
     //m_distanceToLinkedSelPt;
     //m_anchorLine;
     m_bUpdatePositionInProgress = false;
+    m_bPositionUpdateOnParentGeometryChanged = false;
 
 } // dtor
 
@@ -412,22 +416,22 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLabel::setDistanceToLinkedSelPt(const QSizeF& i_size)
+void CGraphObjLabel::setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qSize2Str(i_size);
+        strMthInArgs = i_polarCoors.toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setDistanceToLinkedSelPt",
+        /* strMethod    */ "setPolarCoorsToLinkedSelectionPoint",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_labelDscr.m_distanceToLinkedSelPt != i_size) {
-        m_labelDscr.m_distanceToLinkedSelPt = i_size;
+    if (m_labelDscr.m_polarCoorsToLinkedSelPt != i_polarCoors) {
+        m_labelDscr.m_polarCoorsToLinkedSelPt = i_polarCoors;
         updatePosition();
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -436,10 +440,10 @@ void CGraphObjLabel::setDistanceToLinkedSelPt(const QSizeF& i_size)
 }
 
 //------------------------------------------------------------------------------
-QSizeF CGraphObjLabel::distanceToLinkedSelPt() const
+SPolarCoors CGraphObjLabel::polarCoorsToLinkedSelectionPoint() const
 //------------------------------------------------------------------------------
 {
-    return m_labelDscr.m_distanceToLinkedSelPt;
+    return m_labelDscr.m_polarCoorsToLinkedSelPt;
 }
 
 /*==============================================================================
@@ -787,6 +791,17 @@ void CGraphObjLabel::paint(
         i_pPainter->drawRect(rct);
     }
 
+    #pragma message(__TODO__"To be removed")
+    pn.setColor(Qt::black);
+    pn.setStyle(Qt::DotLine);
+    i_pPainter->setPen(pn);
+    i_pPainter->drawRect(rct);
+    QLineF lineCenterDiag1(rct.topLeft(), rct.bottomRight());
+    QLineF lineCenterDiag2(rct.bottomLeft(), rct.topRight());
+    i_pPainter->drawLine(lineCenterDiag1);
+    i_pPainter->drawLine(lineCenterDiag2);
+    #pragma message(__TODO__"To be removed")
+
     // Draw anchor line to selection point of linked object if the label is hit by
     // mouse move (hover) or if the label is selected.
     // If the anchor line is set to be visible draw the anchor line in a different
@@ -817,12 +832,14 @@ void CGraphObjLabel::paint(
 
     i_pPainter->restore();
 
-    QStyleOptionGraphicsItem styleOption = *i_pStyleOption;
+    #pragma message(__TODO__"To be added")
+    //QStyleOptionGraphicsItem styleOption = *i_pStyleOption;
 
-    styleOption.state &= ~QStyle::State_Selected;
-    styleOption.state &= ~QStyle::State_HasFocus;
+    //styleOption.state &= ~QStyle::State_Selected;
+    //styleOption.state &= ~QStyle::State_HasFocus;
 
-    QGraphicsSimpleTextItem::paint(i_pPainter, &styleOption, i_pWdgt);
+    //QGraphicsSimpleTextItem::paint(i_pPainter, &styleOption, i_pWdgt);
+    #pragma message(__TODO__"To be added")
 
 } // paint
 
@@ -1016,7 +1033,12 @@ void CGraphObjLabel::onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParen
         /* strMethod    */ "onGraphObjParentGeometryChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    // If the position is updated because the parent's geometry is changed,
+    // the relative distance in polar coordinates (length and angle) to the
+    // linked selection point must not be changed.
+    m_bPositionUpdateOnParentGeometryChanged = true;
     updatePosition();
+    m_bPositionUpdateOnParentGeometryChanged = false;
 }
 
 //------------------------------------------------------------------------------
@@ -1070,8 +1092,6 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
 
     bool bTreeEntryChanged = false;
 
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
@@ -1079,7 +1099,12 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
         }
     }
     else if (i_change == ItemPositionHasChanged) {
-        updateDistanceToLinkedSelPt();
+        // If the position is updated because the parent's geometry is changed,
+        // the relative distance in polar coordinates (length and angle) to the
+        // linked selection point must not be changed.
+        if (!m_bPositionUpdateOnParentGeometryChanged) {
+            updatePolarCoorsToLinkedSelPt();
+        }
         updateAnchorLines();
     }
 
@@ -1108,10 +1133,9 @@ protected: // auxiliary instance methods
 /*! @brief Internal auxiliary method to update the position of the label and the
            coordinates (start and end point) of the anchor line.
 
-    On moving the label the current distance to the parent item is stored.
     If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the label must be moved so that the distance remains
-    the same.
+    any other geometry change) the label must be moved so that the relative position
+    (distance and angle) of the label to the selection point remains the same.
 */
 void CGraphObjLabel::updatePosition()
 //------------------------------------------------------------------------------
@@ -1121,7 +1145,6 @@ void CGraphObjLabel::updatePosition()
     if (m_bUpdatePositionInProgress) {
         return;
     }
-    m_bUpdatePositionInProgress = true;
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -1134,28 +1157,24 @@ void CGraphObjLabel::updatePosition()
             m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
     }
 
-    CPhysValPoint physValSelPointParent;
+    m_bUpdatePositionInProgress = true;
+
+    // Get anchor line in scene coordinates.
+    QLineF anchorLine;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+        anchorLine = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(
+            m_labelDscr.m_polarCoorsToLinkedSelPt, m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+        anchorLine = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(
+            m_labelDscr.m_polarCoorsToLinkedSelPt, m_labelDscr.m_selPt1.m_idxPt);
     }
+    QPointF anchorLineP2ScenePos = anchorLine.p2();
 
-    QPointF ptScenePosThis = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
+    // The position of a QGraphicsTextItem is defined by its top left corner.
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
-
-    // As default the labels bottom left point is on the parent items selection point.
-    // The position of the text item on the scene is the top left corner. So we
-    // got to move the item correspondingly.
-    ptScenePosThis.setX(ptScenePosThis.x() - rctBoundingThis.width()/2.0);
-    ptScenePosThis.setY(ptScenePosThis.y() - rctBoundingThis.height()/2.0);
-
-    // Move the label keeping the distance.
-    ptScenePosThis.setX(ptScenePosThis.x() + m_labelDscr.m_distanceToLinkedSelPt.width());
-    ptScenePosThis.setY(ptScenePosThis.y() + m_labelDscr.m_distanceToLinkedSelPt.height());
-
-    setPos(ptScenePosThis);
+    anchorLineP2ScenePos -= rctBoundingThis.center();
+    setPos(anchorLineP2ScenePos);
 
     // Update coordinates of the anchor line.
     updateAnchorLines();
@@ -1172,38 +1191,41 @@ void CGraphObjLabel::updatePosition()
 /*! @brief Internal auxiliary method to update the distance between the labels center
            point and the selection point of the parent item the label is linked to.
 
-    On moving the label the current distance to the parent item is stored.
-    If the geometry of the parent item changes (position moved or size changed or
-    any other geometry change) the label must be moved so that the distance remains
-    the same.
+    On moving the label the distance and the angle (polar coordinates) to the
+    selection point have to be stored.
 */
-void CGraphObjLabel::updateDistanceToLinkedSelPt()
+void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
 {
+    // If the position is updated because the parent's geometry is changed,
+    // the relative distance in polar coordinates (length and angle) to the
+    // linked selection point must not be changed.
+    if (m_bPositionUpdateOnParentGeometryChanged) {
+        return;
+    }
+
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "updateDistanceToLinkedSelPt",
+        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    CPhysValPoint physValSelPointParent;
-    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
-    }
-    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
-    }
-    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
 
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
 
-    m_labelDscr.m_distanceToLinkedSelPt.setWidth(ptScenePosCenterThis.x() - ptSelScenePosParent.x());
-    m_labelDscr.m_distanceToLinkedSelPt.setHeight(ptScenePosCenterThis.y() - ptSelScenePosParent.y());
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        m_labelDscr.m_polarCoorsToLinkedSelPt = m_labelDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPoint(
+            ptScenePosCenterThis, m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        m_labelDscr.m_polarCoorsToLinkedSelPt = m_labelDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPoint(
+            ptScenePosCenterThis, m_labelDscr.m_selPt1.m_idxPt);
+    }
+
+    // Update coordinates of the anchor line.
+    updateAnchorLines();
 }
 
 //------------------------------------------------------------------------------
@@ -1275,7 +1297,7 @@ void CGraphObjLabel::traceInternalStates(
         else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
         else strTrcInfo = "";
         strTrcInfo +=
-            "DistanceToParent {" + qSize2Str(m_labelDscr.m_distanceToLinkedSelPt) + "}" +
+            "PolarCoorsToLinkedSelPt {" + m_labelDscr.m_polarCoorsToLinkedSelPt.toString() + "}" +
             ", AnchorLines [" + QString::number(m_anchorLines.size()) + "]";
         if (m_anchorLines.size() > 0) {
             strTrcInfo += "(";
