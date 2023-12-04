@@ -31,7 +31,7 @@ Description
 Because the python script 'RemoveIfDefBlockFromFile' is imported, you must call
 this python script from the directory where the imported python script is located.
 
-This script walks through the directory passed with argument '--gitRepoDir',
+This script walks through the directory passed with argument '--path',
 searches for all '*.cpp', '*.h' and '*.qml' files and removes the code blocks starting
 with '#ifdef <directive>' (in qml files with '//#ifdef <directive>') to the next line
 containing either '#else' or '#endif' (in qml either '//#else' or '//#endif').
@@ -44,19 +44,27 @@ archives including path information:
 - A zip file containing the unmodified files (still including '#ifdef <directive>') and
 - a zip file containing the modified files (without the '#ifdef <directive>' blocks).
 
-@param gitRepoDir
+@param path (optional)
+    Default: Current working directory
     Directory to be recursively scanned for files with extension '.cpp', '.h' and '.qml'.
     Pass this argument by inserting -- at the beginning.
 
-@param gitChangesSinceCommit
-    Pass this argument to not just include files including the directive but also all
-    changed files since the defined git commit hash.
+@param gitChanges (optional)
+    Default: False
+    If you pass this argument the list of changed files of the current commit is scanned.
 
-@param directive
+@param sinceCommit (optional)
+    Default: Empty string
+    If you pass this argument not only the changed files of the current commit but all
+    files changed since the defined git commit hash are scanned.
+
+@param directive (optional)
+    Default: '#ifdef USE_ZS_IPCTRACE_DLL_IF'
     Directive for the #ifdef blocks to be removed. You may omit '#ifdef'.
     Pass this argument by inserting -- at the beginning.
 
 @param zipOutDir
+Default: Current working directory
     Directory in which the zip archives have to be created. If omitted the current directory
     (the directory from which this python script is called) is used.
     Pass this argument by inserting -- at the beginning.
@@ -64,11 +72,11 @@ archives including path information:
 Usage Examples
 --------------
 
-python RemoveIfDefBlocks.py --gitRepoDir='SourcePath' --directive='USE_ZS_IPCTRACE_DLL_IF' --zipOutDir='OutputPath'
-python RemoveIfDefBlocks.py --gitRepoDir='/home/devel/display_application' --gitChangesSinceCommit='fac5073c' --directive='USE_ZS_QTLIBS' --zipOutDir='/home/devel/display_application.bak/ITS-5437-DeleteCodingData'
+python RemoveIfDefBlocks.py --path='/home/devel/display_application' --directive='USE_ZS_QTLIBS' --zipOutDir='/home/devel/display_application.bak/ITS-5711-InstanceConflict'
+python RemoveIfDefBlocks.py --path='/home/devel/display_application' --gitChanges --sinceCommit='fac5073c' --directive='USE_ZS_QTLIBS' --zipOutDir='/home/devel/display_application.bak/ITS-5437-DeleteCodingData'
 '''
 
-import fnmatch, getopt, os, sys, subprocess, zipfile
+import argparse, datetime, fnmatch, getopt, os, sys, subprocess, zipfile
 import RemoveIfDefBlocksFromFile
 
 def getGitRevisionHash(repoRootDir) -> str:
@@ -196,54 +204,55 @@ def removeDirectiveFromFiles(filePaths, directive):
     print('<- removeDirectiveFromFiles')
 
 def main():
-    gitRepoDir = ''
-    gitHashBase = ''
-    directive = '#ifdef USE_ZS_IPCTRACE_DLL_IF'
-    zipOutDir = ''
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], '', ['gitRepoDir=', 'gitChangesSinceCommit=', 'directive=', 'zipOutDir='])
-    except getopt.GetoptError:
-        print('Invalid usage')
-        print('RemoveIfDefBlocks.py --gitRepoDir=<directory> --gitChangesSinceCommit=<hash> --directive=<directive>')
-        sys.exit(2)
-    for opt, arg in opts:
-        if opt in ('-gitRepoDir', '--gitRepoDir'):
-            gitRepoDir = arg
-        elif opt in ('-gitChangesSinceCommit', '--gitChangesSinceCommit'):
-            gitHashBase = arg
-        elif opt in ('-directive', '--directive'):
-            directive = arg
-        elif opt in ('-zipOutDir', '--zipOutDir'):
-            zipOutDir = arg
-    zipOutDir = os.path.abspath(zipOutDir)
-    gitHashCurrent = getGitRevisionShortHash(gitRepoDir)
-    print('gitRepoDir = ' + gitRepoDir)
-    print('zipOutDir = ' + zipOutDir)
+    parser = argparse.ArgumentParser(description='Removes ifdef blocks from files')
+    parser.add_argument('-p', '--path', help='Directory to be recursively scanned for files with extension .cpp, .h and .qml.')
+    parser.add_argument('-g', '--gitChanges', type=bool, default=False, help='Check files changed in git commit.')
+    parser.add_argument('-s', '--sinceCommit', default=None, help='Include files since this git commit hash.')
+    parser.add_argument('-d', '--directive', default='#ifdef USE_ZS_IPCTRACE_DLL_IF', help='Directive for the #ifdef blocks to be removed.')
+    parser.add_argument('-z', '--zipOutDir', help='Directory in which the zip archives have to be created.')
+    args = parser.parse_args()
+    path = args.path
+    gitChanges = args.gitChanges
+    directive = args.directive
+    zipOutDir = args.zipOutDir
+    #zipOutDir = os.path.abspath(args.zipOutDir)
     if not '#ifdef' in directive:
         directive = '#ifdef ' + directive
-    print('directive = ' + directive)
-    if len(gitHashBase) == 0:
-        gitHashBase = gitHashCurrent
-    print('gitHashBase = ' + gitHashBase)
-    print('gitHashCurrent = ' + gitHashCurrent)
+    print('path           = ' + path)
+    print('gitChanges     = ' + str(gitChanges))
+    print('zipOutDir      = ' + zipOutDir)
+    print('directive      = ' + directive)
+    if gitChanges:
+        gitHashCurrent = getGitRevisionShortHash(path)
+        if args.sinceCommit is None:
+            gitHashBase = gitHashCurrent
+        else:
+            gitHashBase = args.sinceCommit
+        print('gitHashBase    = ' + gitHashBase)
+        print('gitHashCurrent = ' + gitHashCurrent)
     print('')
 
-    filePathsChangedSinceCommit = getFilePathsOfChangedFilesSinceCommit(gitRepoDir, gitHashBase)
-    filePathsRemovedSinceCommit = getFilePathsOfRemovedFiles(filePathsChangedSinceCommit)
+    dateTimeString = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    if gitChanges:
+        filePaths = getFilePathsOfChangedFilesSinceCommit(path, gitHashBase)
+        zipFileName = 'ChangedFiles-' + gitHashCurrent + '-' + gitHashBase
+        addToArchive(zipOutDir, zipFileName, filePaths)
+        filePathsRemovedSinceCommit = getFilePathsOfRemovedFiles(filePaths)
+        fileName = 'RemovedFiles-' + gitHashCurrent + '-' + gitHashBase
+        writeFilePathsToFile(zipOutDir, fileName, filePathsRemovedSinceCommit)
+    else:
+        zipFileName = 'ChangedFiles-' + dateTimeString
+        filePaths = getFilePathsWithDirective(path, directive)
+        addToArchive(zipOutDir, zipFileName, filePaths)
 
-    zipFileName = 'ChangedFiles-' + gitHashCurrent + '-' + gitHashBase
-    addToArchive(zipOutDir, zipFileName, filePathsChangedSinceCommit)
+    removeDirectiveFromFiles(filePaths, directive)
 
-    fileName = 'RemovedFiles-' + gitHashCurrent + '-' + gitHashBase
-    writeFilePathsToFile(zipOutDir, fileName, filePathsRemovedSinceCommit)
-
-    #filePathsWithDirective = getFilePathsWithDirective(gitRepoDir, directive)
-
-    removeDirectiveFromFiles(filePathsChangedSinceCommit, directive)
-
-    zipFileName = 'ChangedFiles-' + gitHashCurrent + '-' + gitHashBase + '-Without' + directive
+    if gitChanges:
+        zipFileName = 'ChangedFiles-' + gitHashCurrent + '-' + gitHashBase + '-Without' + directive
+    else:
+        zipFileName = 'ChangedFiles-' + dateTimeString + '-Without' + directive
     zipFileName = zipFileName.replace('#ifdef ', '')
-    addToArchive(zipOutDir, zipFileName, filePathsChangedSinceCommit)
+    addToArchive(zipOutDir, zipFileName, filePaths)
 
 if __name__ == '__main__':
     main()
