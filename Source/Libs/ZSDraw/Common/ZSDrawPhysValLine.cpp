@@ -116,8 +116,8 @@ CPhysValLine::CPhysValLine(
     if (i_physValP1.unit() != i_physValP2.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    if (i_physValP1.resolution() != i_physValP2.resolution()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    if (i_physValP2.resolution() > i_physValP2.resolution()) {
+        m_fRes = i_physValP2.resolution();
     }
 }
 

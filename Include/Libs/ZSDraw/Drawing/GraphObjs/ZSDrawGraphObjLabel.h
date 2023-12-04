@@ -153,7 +153,7 @@ protected: // overridable auxiliary instance methods of base class CGraphObj (me
 protected: // instance members
     /*!< Key and selection point(s) of the label. */
     SLabelDscr m_labelDscr;
-    /*!< Coordindates of the line segments forming the anchor line. Each line segment is stored
+    /*!< Coordindates of the line segments forming the anchor lines. Each line segment is stored
          in local coordinates drawn from the label to the selection point(s) of the parent.
          The start point of the line at the label depend on the position of the label relative
          to the selection point(s) of the parent (see "updatePosition" for more details). */

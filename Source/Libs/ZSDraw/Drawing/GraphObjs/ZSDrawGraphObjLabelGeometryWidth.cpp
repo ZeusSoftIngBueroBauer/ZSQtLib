@@ -163,26 +163,34 @@ void CGraphObjLabelGeometryWidth::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
+    CPhysValPoint physValSelPoint1Parent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
+
+    CPhysValPoint physValSelPoint2Parent;
+    if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+    }
+
+    CPhysValLine physValLine(physValSelPoint1Parent, physValSelPoint2Parent);
+    QString strText = physValLine.width().toString(EUnitFind::None, PhysValSubStr::Val);
+    if (QGraphicsSimpleTextItem::text() != strText) {
+        QGraphicsSimpleTextItem::setText(strText);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+
+    // First set the text at the graphics item so that the
+    // bounding rectangle includes the new text.
     CGraphObjLabel::updatePosition();
-
-    m_bUpdatePositionInProgress = true;
-    m_bUpdatePositionInProgress = false;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief 
-*/
-void CGraphObjLabelGeometryWidth::updatePolarCoorsToLinkedSelPt()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
-        /* strAddInfo   */ "" );
-
-    CGraphObjLabel::updatePolarCoorsToLinkedSelPt();
 }
 
 //------------------------------------------------------------------------------

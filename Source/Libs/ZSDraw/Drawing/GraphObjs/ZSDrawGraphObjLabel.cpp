@@ -769,15 +769,13 @@ void CGraphObjLabel::paint(
     }
 
     i_pPainter->save();
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    QPen pn;
+    i_pPainter->setRenderHint(QPainter::Antialiasing);
 
     QRectF rct = QGraphicsSimpleTextItem::boundingRect();
 
     // Draw bounding rectangle in dotted line style if the label is hit by
     // mouse move (hover) or if the label is selected or if no text is assigned.
+    QPen pn(Qt::SolidLine);
     if (m_bIsHit || isSelected()) {
         pn.setColor(Qt::blue);
         pn.setStyle(Qt::DotLine);
@@ -791,16 +789,16 @@ void CGraphObjLabel::paint(
         i_pPainter->drawRect(rct);
     }
 
-    #pragma message(__TODO__"To be removed")
-    pn.setColor(Qt::black);
-    pn.setStyle(Qt::DotLine);
-    i_pPainter->setPen(pn);
-    i_pPainter->drawRect(rct);
-    QLineF lineCenterDiag1(rct.topLeft(), rct.bottomRight());
-    QLineF lineCenterDiag2(rct.bottomLeft(), rct.topRight());
-    i_pPainter->drawLine(lineCenterDiag1);
-    i_pPainter->drawLine(lineCenterDiag2);
-    #pragma message(__TODO__"To be removed")
+    //#pragma message(__TODO__"To be removed")
+    //pn.setColor(Qt::black);
+    //pn.setStyle(Qt::DotLine);
+    //i_pPainter->setPen(pn);
+    //i_pPainter->drawRect(rct);
+    //QLineF lineCenterDiag1(rct.topLeft(), rct.bottomRight());
+    //QLineF lineCenterDiag2(rct.bottomLeft(), rct.topRight());
+    //i_pPainter->drawLine(lineCenterDiag1);
+    //i_pPainter->drawLine(lineCenterDiag2);
+    //#pragma message(__TODO__"To be removed")
 
     // Draw anchor line to selection point of linked object if the label is hit by
     // mouse move (hover) or if the label is selected.
@@ -822,7 +820,7 @@ void CGraphObjLabel::paint(
                     else {
                         pn.setColor(Qt::gray);
                     }
-                    pn.setStyle(Qt::DotLine);
+                    //pn.setStyle(Qt::DotLine);
                     i_pPainter->setPen(pn);
                     i_pPainter->drawLine(anchorLine);
                 }
@@ -832,14 +830,12 @@ void CGraphObjLabel::paint(
 
     i_pPainter->restore();
 
-    #pragma message(__TODO__"To be added")
-    //QStyleOptionGraphicsItem styleOption = *i_pStyleOption;
+    QStyleOptionGraphicsItem styleOption = *i_pStyleOption;
 
-    //styleOption.state &= ~QStyle::State_Selected;
-    //styleOption.state &= ~QStyle::State_HasFocus;
+    styleOption.state &= ~QStyle::State_Selected;
+    styleOption.state &= ~QStyle::State_HasFocus;
 
-    //QGraphicsSimpleTextItem::paint(i_pPainter, &styleOption, i_pWdgt);
-    #pragma message(__TODO__"To be added")
+    QGraphicsSimpleTextItem::paint(i_pPainter, &styleOption, i_pWdgt);
 
 } // paint
 
@@ -1169,11 +1165,10 @@ void CGraphObjLabel::updatePosition()
         anchorLine = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(
             m_labelDscr.m_polarCoorsToLinkedSelPt, m_labelDscr.m_selPt1.m_idxPt);
     }
-    QPointF anchorLineP2ScenePos = anchorLine.p2();
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
-    anchorLineP2ScenePos -= rctBoundingThis.center();
+    QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     setPos(anchorLineP2ScenePos);
 
     // Update coordinates of the anchor line.
@@ -1188,11 +1183,12 @@ void CGraphObjLabel::updatePosition()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Internal auxiliary method to update the distance between the labels center
-           point and the selection point of the parent item the label is linked to.
+/*! @brief Internal auxiliary method to update the relative position in polar
+           coordinates (length in pixels, angle in degress) from the labels center
+           point and the selection point the label is linked to.
 
     On moving the label the distance and the angle (polar coordinates) to the
-    selection point have to be stored.
+    selection point have to be updated and saved.
 */
 void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
@@ -1253,15 +1249,11 @@ void CGraphObjLabel::updateAnchorLines()
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
         physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
-    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
 
+    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
-
-    QLineF anchorLine(mapToScene(ptCenterThis), ptSelScenePosParent);
-
-    anchorLine.setP1(ZS::Draw::getSelectionPointCoors(anchorLine, rctBoundingThis));
-    anchorLine.setP2(mapFromScene(ptSelScenePosParent));
+    QLineF anchorLine(ptCenterThis, mapFromScene(ptSelScenePosParent));
 
     if (m_anchorLines.isEmpty()) {
         m_anchorLines.append(anchorLine);

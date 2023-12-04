@@ -91,23 +91,19 @@ protected: // instance methods
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsCreateObject(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        ZS::Draw::EGraphObjType i_graphObjType, const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
-    ZS::Test::CTestStepGroup* createTestGroupShowLabels(
+        ZS::Draw::EGraphObjType i_graphObjType,
+        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
+    ZS::Test::CTestStepGroup* createTestGroupShowAndMoveTextLabel(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strObjName,
-        const QStringList& i_strlstLabelNames);
-    ZS::Test::CTestStepGroup* createTestGroupMoveLabels(
+        const QString& i_strObjName, const QString& i_strLabelName,
+        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
+    ZS::Test::CTestStepGroup* createTestGroupShowAndMoveGeometryLabel(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strObjName,
-        const QStringList& i_strlstLabelNames,
-        const QList<QPoint>& i_arptMousePress, const QList<QPoint>& i_arptMouseRelease);
-    ZS::Test::CTestStepGroup* createTestGroupShowGeometryLabels(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strObjName,
-        const QStringList& i_strlstLabelNames);
-    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsMovePressMoveRelease(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const QString& i_strGroupName,
+        const QString& i_strObjName, const QString& i_strLabelName,
+        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
+protected: // instance methods
+    void addTestStepsDrawMouseEventsMovePressMoveRelease(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
         const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
 protected slots:
     void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );

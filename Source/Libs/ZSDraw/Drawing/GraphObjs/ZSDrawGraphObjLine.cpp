@@ -183,6 +183,14 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
            | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
 
+    //#pragma message(__TODO__"Improve performance by enabling or disabling the effect on selecting the item")
+    // Crashes when painting the line
+    //QGraphicsDropShadowEffect* pGraphicsEffect = new QGraphicsDropShadowEffect();
+    //pGraphicsEffect->setColor(Qt::blue);
+    //pGraphicsEffect->setOffset(0);
+    //pGraphicsEffect->setBlurRadius(10);
+    //setGraphicsEffect(pGraphicsEffect);
+
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Undefined,
             m_pTrcAdminObjCtorsAndDtor->getRuntimeInfoTraceDetailLevel());
@@ -203,6 +211,10 @@ CGraphObjLine::~CGraphObjLine()
         /* strAddInfo   */ "" );
 
     emit_aboutToBeDestroyed();
+
+    //m_physValLine;
+    //m_plgP1ArrowHead;
+    //m_plgP2ArrowHead;
 
 } // dtor
 
@@ -1145,9 +1157,9 @@ public: // overridables of base class CGraphObj
 SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
+    QLineF thisLineSceneCoors(mapToScene(line().p1()), mapToScene(line().p2()));
     QPointF ptSelPtSceneCoors(mapToScene(line().center()));
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
-    QLineF thisLineSceneCoors(mapToScene(line().p1()), mapToScene(line().p2()));
     double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
     return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
 }
@@ -1184,15 +1196,15 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPoint(const QPointF& i_pt, ES
 SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
-    QPointF ptSelPtSceneCoors;
     QLineF thisLineSceneCoors;
+    QPointF ptSelPtSceneCoors;
     if (i_idxPt == 0) {
-        ptSelPtSceneCoors = QPointF(mapToScene(line().p1()));
         thisLineSceneCoors = QLineF(mapToScene(line().p1()), mapToScene(line().p2()));
+        ptSelPtSceneCoors = QPointF(mapToScene(line().p1()));
     }
     else {
-        ptSelPtSceneCoors = QPointF(mapToScene(line().p2()));
         thisLineSceneCoors = QLineF(mapToScene(line().p2()), mapToScene(line().p1()));
+        ptSelPtSceneCoors = QPointF(mapToScene(line().p2()));
     }
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
     double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
@@ -1421,29 +1433,39 @@ void CGraphObjLine::paint(
     }
 
     i_pPainter->save();
+    i_pPainter->setRenderHint(QPainter::Antialiasing);
 
     QPen pn = pen();
-    pn.setColor(m_drawSettings.getPenColor());
-    pn.setWidth(m_drawSettings.getPenWidth());
-    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
-
-    if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
-        //if (m_editMode == EEditMode::Move)
-        //{
-            pn.setStyle(Qt::DotLine);
-            pn.setColor(Qt::blue);
-        //}
-    }
-
-    i_pPainter->setPen(pn);
 
     QLineF lineF = line();
+
+    if (m_pDrawingScene->getMode() == EMode::Edit && isSelected() || m_bIsHit) {
+        QPainterPath outline;
+        outline.moveTo(lineF.p1());
+        outline.lineTo(lineF.p2());
+        pn.setColor(Qt::cyan);
+        //pn.setColor(Qt::lightGray);
+        pn.setWidth(3 + m_drawSettings.getPenWidth());
+        //pn.setStyle(Qt::DotLine);
+        pn.setStyle(Qt::SolidLine);
+        i_pPainter->strokePath(outline, pn);
+
+        pn.setWidth(1 + m_drawSettings.getPenWidth());
+    }
+    else {
+        pn.setWidth(m_drawSettings.getPenWidth());
+    }
+
+    pn.setColor(m_drawSettings.getPenColor());
+    pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
+
+    i_pPainter->setPen(pn);
     i_pPainter->drawLine(lineF);
 
     #pragma message(__TODO__"To be removed")
     i_pPainter->setPen(Qt::red);
-    QLineF lineCenterHor(lineF.center().x()-10, lineF.center().y(), lineF.center().x()+10, lineF.center().y());
-    QLineF lineCenterVer(lineF.center().x(), lineF.center().y()-10, lineF.center().x(), lineF.center().y()+10);
+    QLineF lineCenterHor(lineF.center().x()-5, lineF.center().y(), lineF.center().x()+5, lineF.center().y());
+    QLineF lineCenterVer(lineF.center().x(), lineF.center().y()-5, lineF.center().x(), lineF.center().y()+5);
     i_pPainter->drawLine(lineCenterHor);
     i_pPainter->drawLine(lineCenterVer);
     #pragma message(__TODO__"To be removed")
@@ -1481,12 +1503,13 @@ void CGraphObjLine::paint(
         }
     }
 
-    if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected())) {
-        pn.setStyle(Qt::DotLine);
-        pn.setColor(Qt::blue);
-        i_pPainter->setPen(pn);
-        i_pPainter->setBrush(Qt::NoBrush);
-    }
+    // Was soll das?
+    //if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected())) {
+    //    pn.setStyle(Qt::DotLine);
+    //    pn.setColor(Qt::blue);
+    //    i_pPainter->setPen(pn);
+    //    i_pPainter->setBrush(Qt::NoBrush);
+    //}
 
     i_pPainter->restore();
 

@@ -166,8 +166,8 @@ void CGraphObjLabelGeometryPosition::updatePosition()
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
         physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
-    QString strText = physValSelPointParent.toString();
 
+    QString strText = physValSelPointParent.toString();
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {
@@ -178,36 +178,4 @@ void CGraphObjLabelGeometryPosition::updatePosition()
     // First set the text at the graphics item so that the
     // bounding rectangle includes the new text.
     CGraphObjLabel::updatePosition();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief 
-*/
-void CGraphObjLabelGeometryPosition::updatePolarCoorsToLinkedSelPt()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
-        /* strAddInfo   */ "" );
-
-    CGraphObjLabel::updatePolarCoorsToLinkedSelPt();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief 
-*/
-void CGraphObjLabelGeometryPosition::updateAnchorLines()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateAnchorLines",
-        /* strAddInfo   */ "" );
-
-    CGraphObjLabel::updateAnchorLines();
 }
