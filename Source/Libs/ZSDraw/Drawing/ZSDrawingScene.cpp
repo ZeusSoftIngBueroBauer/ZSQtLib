@@ -87,7 +87,8 @@ const QString CDrawingScene::c_strXmlElemNameShapePoints = "ShapePoints";
 const QString CDrawingScene::c_strXmlElemNameShapePointP1 = "P1";
 const QString CDrawingScene::c_strXmlElemNameShapePointP2 = "P2";
 const QString CDrawingScene::c_strXmlElemNameZValue = "ZValue";
-const QString CDrawingScene::c_strXmlElemNameLabels = "Labels";
+const QString CDrawingScene::c_strXmlElemNameTextLabels = "TextLabels";
+const QString CDrawingScene::c_strXmlElemNameGeometryLabels = "GeometryLabels";
 const QString CDrawingScene::c_strXmlElemNameLabel = "Label";
 
 /*==============================================================================

@@ -142,7 +142,7 @@ SErrResultInfo CObjFactoryPoint::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement("DrawSettings");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -153,7 +153,7 @@ SErrResultInfo CObjFactoryPoint::saveGraphObj(
     // If the item has no parent, its position is given in scene coordinates.
     QPointF ptPos = pGraphObj->pos();
 
-    i_xmlStreamWriter.writeStartElement("Geometry");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
     i_xmlStreamWriter.writeEndElement();
 
@@ -200,13 +200,15 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
     CGraphObjPoint* pGraphObj = nullptr;
 
-    QString                         strElemName;
-    QString                         strElemText;
-    bool                            bConverted;
-    CDrawSettings                   drawSettings(EGraphObjTypePoint);
-    QPointF                         ptPos;
-    bool                            bPosValid = false;
-    double                          fZValue = 0.0;
+    QString       strElemName;
+    QString       strElemText;
+    bool          bConverted;
+    CDrawSettings drawSettings(EGraphObjTypePoint);
+    QPointF       ptPos;
+    bool          bPosValid = false;
+    double        fZValue = 0.0;
+
+    QList<SLabelDscr> arTextLabels;
 
     while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
@@ -214,12 +216,12 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
         if( i_xmlStreamReader.isStartElement() )
         {
-            if( strElemName == "DrawSettings" )
+            if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
             {
                 drawSettings.load(i_xmlStreamReader);
             }
 
-            else if( strElemName == "Geometry" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
             {
             }
 
@@ -250,11 +252,11 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
 
             } // if( strElemName == "ZValue" )
 
-            else if( strElemName == "Labels" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
             {
-                loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
+                arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
 
-            } // if( strElemName == "Labels" )
+            } // if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
 
         } // if( xmlStreamReader.isStartElement() )
 

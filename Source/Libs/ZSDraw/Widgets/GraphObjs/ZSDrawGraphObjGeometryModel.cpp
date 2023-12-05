@@ -473,6 +473,7 @@ void CModelGraphObjGeometry::acceptChanges()
                         m_pGraphObj->showGeometryLabelAnchorLine(labelSettings.m_strValueName) :
                         m_pGraphObj->hideGeometryLabelAnchorLine(labelSettings.m_strValueName);
                 }
+                m_bContentChanged = true;
             }
         }
 

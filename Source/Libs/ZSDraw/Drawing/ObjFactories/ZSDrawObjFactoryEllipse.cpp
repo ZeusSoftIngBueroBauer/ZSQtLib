@@ -151,7 +151,7 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement("DrawSettings");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -162,7 +162,7 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
     QRectF  rct           = pGraphObj->rect(); // coordinates are in the objects coordinate system (LT = 0.0/0.0)
     double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
 
-    i_xmlStreamWriter.writeStartElement("Geometry");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
     i_xmlStreamWriter.writeTextElement( "Size", size2Str(rct.size()) );
     i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
@@ -205,16 +205,18 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
     CGraphObjEllipse* pGraphObj = nullptr;
 
-    QString                         strElemName;
-    QString                         strElemText;
-    bool                            bConverted;
-    CDrawSettings                   drawSettings(EGraphObjTypeEllipse);
-    QPointF                         ptPos;
-    QSizeF                          siz;
-    bool                            bPosValid = false;
-    bool                            bSizeValid = false;
-    double                          fRotAngle_deg = 0.0;
-    double                          fZValue = 0.0;
+    QString       strElemName;
+    QString       strElemText;
+    bool          bConverted;
+    CDrawSettings drawSettings(EGraphObjTypeEllipse);
+    QPointF       ptPos;
+    QSizeF        siz;
+    bool          bPosValid = false;
+    bool          bSizeValid = false;
+    double        fRotAngle_deg = 0.0;
+    double        fZValue = 0.0;
+
+    QList<SLabelDscr> arTextLabels;
 
     while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
@@ -223,12 +225,12 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
         if( i_xmlStreamReader.isStartElement() )
         {
-            if( strElemName == "DrawSettings" )
+            if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
             {
                 drawSettings.load(i_xmlStreamReader);
             }
 
-            else if( strElemName == "Geometry" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
             {
             }
 
@@ -286,11 +288,11 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
 
             } // if( strElemName == "ZValue" )
 
-            else if( strElemName == "Labels" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
             {
-                loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
+                arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
 
-            } // if( strElemName == "Labels" )
+            } // if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
 
         } // if( xmlStreamReader.isStartElement() )
 

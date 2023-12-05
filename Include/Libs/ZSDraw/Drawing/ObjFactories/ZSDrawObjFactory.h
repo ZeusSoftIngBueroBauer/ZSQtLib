@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_ObjFactory_h
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSSys/ZSSysIdxTreeEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 
@@ -130,8 +131,10 @@ public: // overridables
     virtual bool hasInitialSize() const { return false; }
     virtual QSizeF getInitialSize() const { return QSizeF(); }
 protected: // overridables
-    virtual void saveGraphObjLabels( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter );
-    virtual void loadGraphObjLabels( CGraphObj* i_pGraphObj, QXmlStreamReader& i_xmlStreamReader );
+    virtual void saveGraphObjTextLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const;
+    virtual QList<SLabelDscr> loadGraphObjTextLabels(QXmlStreamReader& i_xmlStreamReade) const;
+    virtual void saveGraphObjGeometryLabels(CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter) const;
+    virtual QList<SLabelDscr> loadGraphObjGeometryLabels(QXmlStreamReader& i_xmlStreamReader) const;
 protected: // class members
     static int s_iInstCount;
     static ZS::System::CIdxTree* s_pIdxTree;

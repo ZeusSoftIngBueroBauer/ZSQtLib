@@ -86,7 +86,8 @@ public: // type definitions and constants
     static const QString c_strXmlElemNameShapePointP1;
     static const QString c_strXmlElemNameShapePointP2;
     static const QString c_strXmlElemNameZValue;
-    static const QString c_strXmlElemNameLabels;
+    static const QString c_strXmlElemNameTextLabels;
+    static const QString c_strXmlElemNameGeometryLabels;
     static const QString c_strXmlElemNameLabel;
 public: // type definitions and constants
     static const QString c_strXmlAttrDimensionUnit;

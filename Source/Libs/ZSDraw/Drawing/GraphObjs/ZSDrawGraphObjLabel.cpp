@@ -80,7 +80,7 @@ CGraphObjLabel::CGraphObjLabel(
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_labelDscr(i_strKey, i_selPt),
+    m_labelDscr(EGraphObjTypeLabel, i_strKey, i_selPt),
     m_anchorLines(),
     m_bUpdatePositionInProgress(false),
     m_bPositionUpdateOnParentGeometryChanged(false)
@@ -126,18 +126,18 @@ CGraphObjLabel::CGraphObjLabel(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strKey,
     const QString& i_strText,
-    EGraphObjType i_type,
+    EGraphObjType i_labelType,
     const SGraphObjSelectionPoint& i_selPt1) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
-        /* type                */ i_type,
-        /* strType             */ ZS::Draw::graphObjType2Str(i_type),
+        /* type                */ i_labelType,
+        /* strType             */ ZS::Draw::graphObjType2Str(i_labelType),
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_labelDscr(i_strKey, i_selPt1),
+    m_labelDscr(i_labelType, i_strKey, i_selPt1),
     m_anchorLines(),
     m_bUpdatePositionInProgress(false),
     m_bPositionUpdateOnParentGeometryChanged(false)
@@ -161,19 +161,19 @@ CGraphObjLabel::CGraphObjLabel(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strKey,
     const QString& i_strText,
-    EGraphObjType i_type,
+    EGraphObjType i_labelType,
     const SGraphObjSelectionPoint& i_selPt1,
     const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
         /* strFactoryGroupName */ CObjFactory::c_strGroupNameStandardShapes,
-        /* type                */ i_type,
-        /* strType             */ ZS::Draw::graphObjType2Str(i_type),
+        /* type                */ i_labelType,
+        /* strType             */ ZS::Draw::graphObjType2Str(i_labelType),
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_labelDscr(i_strKey, i_selPt1, i_selPt2),
+    m_labelDscr(i_labelType, i_strKey, i_selPt1, i_selPt2),
     m_anchorLines(),
     m_bUpdatePositionInProgress(false),
     m_bPositionUpdateOnParentGeometryChanged(false)
@@ -813,7 +813,7 @@ void CGraphObjLabel::paint(
         QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
         for (const QLineF& anchorLine : m_anchorLines) {
             if (!rctBounding.contains(anchorLine.p2())) {
-                if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy() >= 5.0))) {
+                if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
                     if (m_bIsHit || isSelected()) {
                         pn.setColor(Qt::blue);
                     }
@@ -1189,6 +1189,17 @@ void CGraphObjLabel::updatePosition()
 
     On moving the label the distance and the angle (polar coordinates) to the
     selection point have to be updated and saved.
+
+    When positioniong labels the distance to selection point the label
+    is linked to should remain the same.
+    This is managed by defining the length and the angle to the line
+    the selection point is positioned.
+
+    Defining the length to the selection point with a relative size
+    as a scale factor will not lead to the desired result. If the
+    object of the selection point is resized the distance between the
+    label and the object may increase to an undesired value (far away
+    from the object or to close).
 */
 void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
@@ -1226,11 +1237,10 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
 
 //------------------------------------------------------------------------------
 /*! @brief Internal auxiliary method to update the coordinates (start and end point)
-           of the anchor line.
+           of the anchor lines.
 
-    The anchor line will be drawn to one of the center points at the bounding rectangle.
-    Which line of the labels bounding rectangle should be used depends on the relative
-    position of the label to the selection point of the graph object the label is linked to.
+    The anchor lines will be drawn to one of the selection points at the bounding rectangle
+    or to one of the polygon shape points of the linked graphical object.
 */
 void CGraphObjLabel::updateAnchorLines()
 //------------------------------------------------------------------------------

@@ -152,7 +152,7 @@ SErrResultInfo CObjFactoryRect::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement("DrawSettings");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -163,7 +163,7 @@ SErrResultInfo CObjFactoryRect::saveGraphObj(
     QRectF  rct           = pGraphObj->rect(); // coordinates are in the objects coordinate system (LT = 0.0/0.0)
     double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
 
-    i_xmlStreamWriter.writeStartElement("Geometry");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
     i_xmlStreamWriter.writeTextElement( "Size", size2Str(rct.size()) );
     i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
@@ -181,7 +181,7 @@ SErrResultInfo CObjFactoryRect::saveGraphObj(
 
     //if( arpLabels.size() > 0 )
     //{
-    //    i_xmlStreamWriter.writeStartElement("Labels");
+    //    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
     //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
     //    i_xmlStreamWriter.writeEndElement();
     //}
@@ -230,7 +230,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
     double        fRotAngle_deg = 0.0;
     double        fZValue = 0.0;
 
-    QHash<QString, CGraphObjLabel*> arpLabels;
+    QList<SLabelDscr> arTextLabels;
 
     while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
@@ -242,11 +242,11 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
 
             if( i_xmlStreamReader.isStartElement() )
             {
-                if( strElemName == "DrawSettings" )
+                if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
                 {
                     drawSettings.load(i_xmlStreamReader);
                 }
-                else if( strElemName == "Geometry" )
+                else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
                 {
                 }
                 else if( strElemName == "Pos" )
@@ -295,9 +295,9 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                         fZValue = fTmp;
                     }
                 }
-                else if( strElemName == "Labels" )
+                else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
                 {
-                    loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
+                    arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
                 }
             } // if( xmlStreamReader.isStartElement() )
 
@@ -344,24 +344,6 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
         //    pGraphObj->addLabels(arpLabels);
         //}
     } // if( bPosValid && bSizeValid )
-
-    if( arpLabels.size() > 0 )
-    {
-        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-        CGraphObjLabel* pGraphObjLabel;
-
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-
-            pGraphObjLabel = itLabels.value();
-
-            arpLabels.remove(pGraphObjLabel->key());
-
-            delete pGraphObjLabel;
-            pGraphObjLabel = nullptr;
-        }
-    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());

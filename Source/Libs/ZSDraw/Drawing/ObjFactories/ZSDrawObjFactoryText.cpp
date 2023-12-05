@@ -147,7 +147,7 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement("DrawSettings");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -157,7 +157,7 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
     QPointF ptPos         = pGraphObj->pos();
     double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
 
-    i_xmlStreamWriter.writeStartElement("Geometry");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
     i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
     i_xmlStreamWriter.writeEndElement();
@@ -174,7 +174,7 @@ SErrResultInfo CObjFactoryText::saveGraphObj(
 
     //if( arpLabels.size() > 0 )
     //{
-    //    i_xmlStreamWriter.writeStartElement("Labels");
+    //    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
     //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
     //    i_xmlStreamWriter.writeEndElement();
     //}
@@ -209,16 +209,16 @@ CGraphObj* CObjFactoryText::loadGraphObj(
 
     CGraphObjText* pGraphObj = nullptr;
 
-    QString                         strElemName;
-    QString                         strElemText;
-    bool                            bConverted;
-    CDrawSettings                   drawSettings(EGraphObjTypeText);
-    QString                         strText;
-    QPointF                         ptPos;
-    bool                            bPosValid = false;
-    double                          fRotAngle_deg = 0.0;
-    double                          fZValue = 0.0;
-    QHash<QString, CGraphObjLabel*> arpLabels;
+    QString       strElemName;
+    QString       strElemText;
+    bool          bConverted;
+    CDrawSettings drawSettings(EGraphObjTypeText);
+    QString       strText;
+    QPointF       ptPos;
+    bool          bPosValid = false;
+    double        fRotAngle_deg = 0.0;
+    double        fZValue = 0.0;
+    QList<SLabelDscr> arTextLabels;
 
     while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
     {
@@ -231,12 +231,12 @@ CGraphObj* CObjFactoryText::loadGraphObj(
                 strText = i_xmlStreamReader.readElementText();
             }
 
-            else if( strElemName == "DrawSettings" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
             {
                 drawSettings.load(i_xmlStreamReader);
             }
 
-            else if( strElemName == "Geometry" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
             {
             }
 
@@ -280,11 +280,11 @@ CGraphObj* CObjFactoryText::loadGraphObj(
 
             } // if( strElemName == "ZValue" )
 
-            else if( strElemName == "Labels" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
             {
-                loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
+                arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
 
-            } // if( strElemName == "Labels" )
+            } // if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
 
         } // if( xmlStreamReader.isStartElement() )
 
@@ -332,24 +332,6 @@ CGraphObj* CObjFactoryText::loadGraphObj(
         //    pGraphObj->addLabels(arpLabels);
         //}
     } // if( !strText.isEmpty() && bPosValid )
-
-    if( arpLabels.size() > 0 )
-    {
-        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-        CGraphObjLabel* pGraphObjLabel;
-
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-
-            pGraphObjLabel = itLabels.value();
-
-            arpLabels.remove(pGraphObjLabel->key());
-
-            delete pGraphObjLabel;
-            pGraphObjLabel = nullptr;
-        }
-    }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());

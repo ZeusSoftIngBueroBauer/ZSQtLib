@@ -131,6 +131,7 @@ CGraphObjLabelGeometryLength::~CGraphObjLabelGeometryLength()
 
     emit_aboutToBeDestroyed();
 
+    //m_drawSettingsArrowHeads;
     //m_plgP1ArrowHead;
     //m_plgP2ArrowHead;
 
@@ -191,7 +192,7 @@ void CGraphObjLabelGeometryLength::paint(
 
     CGraphObjLabel::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    if (m_labelDscr.m_bShowAnchorLine) {
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
         i_pPainter->save();
         i_pPainter->setRenderHint(QPainter::Antialiasing);
         QPen pn = pen();
@@ -205,7 +206,7 @@ void CGraphObjLabelGeometryLength::paint(
         QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
         const QLineF& anchorLine = m_anchorLines[2];
          if (!rctBounding.contains(anchorLine.p2())) {
-             if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy() >= 5.0))) {
+             if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
                 if (m_bIsHit || isSelected()) {
                     pn.setColor(Qt::blue);
                 }
@@ -311,6 +312,14 @@ void CGraphObjLabelGeometryLength::updatePosition()
 
     For Length labels the linked selection point is always the center point
     of the two shape points the label is linked to.
+
+    Example for a horizontal line:
+
+                        Label
+                           \
+                            \ Angle
+         P1 +----------------x----------------+ P2
+                          Center
 */
 void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
@@ -353,12 +362,11 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
     QPointF ptSelPtSceneCoors = lineSelPtSceneCoors.center();
 
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
-    QPointF ptCenterThis = rctBoundingThis.center();
-    QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
+    QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
 
     // The start point of the anchor line should be the center point of the line
     // for which the length has to be indicated.
-    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptScenePosCenterThis);
+    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
 
     m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
     m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineSelPtSceneCoors.angleTo(lineFromSelPtSceneCoors);
@@ -368,7 +376,24 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief 
+/*! @brief Internal auxiliary method to update the coordinates (start and end point)
+           of the anchor lines.
+
+    The anchor lines will be drawn to one of the selection points at the bounding rectangle
+    or to one of the polygon shape points of the linked graphical object.
+
+    For the Length label three anchor lines are drawn. Two perpendicular lines
+    through selection point 1 and selection point 2 and a line between the end points
+    of the perpendicular lines.
+
+    Example for a horizontal line:
+
+       AnchorLine0                       AnchorLine1
+            |<----------AnchorLine2---------->|
+            |                                 |
+            |                                 |
+         P1 +----------------x----------------+ P2
+                          Center
 */
 void CGraphObjLabelGeometryLength::updateAnchorLines()
 //------------------------------------------------------------------------------
@@ -412,8 +437,7 @@ void CGraphObjLabelGeometryLength::updateAnchorLines()
     QLineF perpendicularLine1 = perpendicularLine.translated(ptOffset1);
     QLineF perpendicularLine2 = perpendicularLine.translated(ptOffset2);
 
-    // But the anchor lines are painted by this object. For this they have to be
-    // translated into local coordinates.
+    // As the anchor lines are painted by this object, they have to be translated into local coordinates.
     m_anchorLines[0] = QLineF(mapFromScene(perpendicularLine1.p1()), mapFromScene(perpendicularLine1.p2()));
     m_anchorLines[1] = QLineF(mapFromScene(perpendicularLine2.p1()), mapFromScene(perpendicularLine2.p2()));
     m_anchorLines[2] = QLineF(mapFromScene(perpendicularLine1.p1()), mapFromScene(perpendicularLine2.p1()));

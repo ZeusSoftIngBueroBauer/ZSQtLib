@@ -140,7 +140,7 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement("DrawSettings");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement(); // DrawSettings
 
@@ -151,21 +151,25 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
     QPointF pt1 = pGraphObj->mapToParent(lin.p1());
     QPointF pt2 = pGraphObj->mapToParent(lin.p2());
 
-    i_xmlStreamWriter.writeStartElement("Geometry");
-    i_xmlStreamWriter.writeStartElement("ShapePoints");
-    i_xmlStreamWriter.writeTextElement( "P1", point2Str(pt1) );
-    i_xmlStreamWriter.writeTextElement( "P2", point2Str(pt2) );
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameShapePoints);
+    i_xmlStreamWriter.writeTextElement(CDrawingScene::c_strXmlElemNameShapePointP1, point2Str(pt1));
+    i_xmlStreamWriter.writeTextElement(CDrawingScene::c_strXmlElemNameShapePointP2, point2Str(pt2));
     i_xmlStreamWriter.writeEndElement(); // ShapePoints
     i_xmlStreamWriter.writeEndElement(); // Geometry
-    i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObj->getStackingOrderValue()) );
+    i_xmlStreamWriter.writeTextElement(CDrawingScene::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
 
     // Labels
     //----------------
 
-    QStringList strlstLabels = i_pGraphObj->getLabelNames();
-    if (!strlstLabels.isEmpty()) {
-        i_xmlStreamWriter.writeStartElement("Labels");
-        saveGraphObjLabels(i_pGraphObj, i_xmlStreamWriter);
+    if (!i_pGraphObj->getLabelNames().isEmpty()) {
+        i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
+        saveGraphObjTextLabels(i_pGraphObj, i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
+    if (!i_pGraphObj->getGeometryLabelNames().isEmpty()) {
+        i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometryLabels);
+        saveGraphObjGeometryLabels(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
     }
 
@@ -207,6 +211,8 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     bool bPt1Valid = false;
     bool bPt2Valid = false;
     double fZValue = 0.0;
+    QList<SLabelDscr> arTextLabels;
+    QList<SLabelDscr> arGeometryLabels;
 
     enum ELevel {
         ELevelGraphObj = 0,     // expecting DrawSettings, Geometry, ZValue, Labels
@@ -239,9 +245,14 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                             }
                         }
                     }
-                    else if (strElemName == CDrawingScene::c_strXmlElemNameLabels) {
+                    else if (strElemName == CDrawingScene::c_strXmlElemNameTextLabels) {
                         if (i_xmlStreamReader.isStartElement()) {
-                            loadGraphObjLabels(pGraphObj, i_xmlStreamReader);
+                            arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
+                        }
+                    }
+                    else if (strElemName == CDrawingScene::c_strXmlElemNameGeometryLabels) {
+                        if (i_xmlStreamReader.isStartElement()) {
+                            arGeometryLabels = loadGraphObjGeometryLabels(i_xmlStreamReader);
                         }
                     }
                     else {
@@ -322,6 +333,54 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
             pGraphObj->setDrawSettings(drawSettings);
             pGraphObj->setStackingOrderValue(fZValue);
             i_pDrawingScene->addGraphObj(pGraphObj);
+
+            // Labels can only be added if the graphical object got its final position, size and rotation angle
+            // as the labels position themselves depending on the position of the selection points they are linked to.
+            for (const SLabelDscr& labelDscr : arTextLabels) {
+                if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
+                    if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                        pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
+                    }
+                    else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                        pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
+                    }
+                }
+                else {
+                    pGraphObj->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
+                    if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                        pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
+                    }
+                    else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                        pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
+                    }
+                }
+                pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
+                    labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+                labelDscr.m_bLabelIsVisible ?
+                    pGraphObj->showLabel(labelDscr.m_strKey) :
+                    pGraphObj->hideLabel(labelDscr.m_strKey);
+                labelDscr.m_bShowAnchorLine ?
+                    pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
+                    pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
+            }
+
+            // Geometry Labels
+            for (const SLabelDscr& labelDscr : arGeometryLabels) {
+                if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
+                    i_xmlStreamReader.raiseError(
+                        "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
+                }
+                else {
+                    pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
+                        labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+                    labelDscr.m_bLabelIsVisible ?
+                        pGraphObj->showGeometryLabel(labelDscr.m_strKey) :
+                        pGraphObj->hideGeometryLabel(labelDscr.m_strKey);
+                    labelDscr.m_bShowAnchorLine ?
+                        pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
+                        pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
+                }
+            }
         }
     }
     else {

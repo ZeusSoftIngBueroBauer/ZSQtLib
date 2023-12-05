@@ -60,6 +60,7 @@ struct ZSDRAWDLL_API SGraphObjSelectionPoint
 //******************************************************************************
 {
 public: // struct methods
+    static SGraphObjSelectionPoint fromString(const QString& i_str, bool* i_pbOk = nullptr);
     static SGraphObjSelectionPoint fromString(CGraphObj* i_pGraphObj, const QString& i_str, bool* i_pbOk = nullptr);
 public: // ctors
     SGraphObjSelectionPoint();
@@ -128,12 +129,14 @@ struct ZSDRAWDLL_API SLabelDscr
 {
 public: // ctors
     SLabelDscr();
-    SLabelDscr(const QString& i_strKey);
-    SLabelDscr(const QString& i_strKey, EGraphObjType i_labelType);
-    SLabelDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    SLabelDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SLabelDscr(const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
-    SLabelDscr(const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    //SLabelDscr(const QString& i_strKey);
+    SLabelDscr(EGraphObjType i_labelType);
+    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey);
+    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
+    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
+    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
+    SLabelDscr(const SLabelDscr& i_other);
 public: // struct members
     /*!< Key of the label within the list of labels of the graphical objects. */
     QString m_strKey;
@@ -157,6 +160,8 @@ public: // struct members
          This can only be managed when keeping the distance and the angle to the selection point
          after moving the labels (see also method getAnchorLineToSelectionPointFromPolar). */
     SPolarCoors m_polarCoorsToLinkedSelPt;
+    /*!< Flag indicating whether the label is visible. */
+    bool m_bLabelIsVisible;
     /*!< Flag to indicate whether the anchor line (line from label to parent's selection point the
          label is linked to) should always be visible. */
     bool m_bShowAnchorLine;
@@ -659,7 +664,7 @@ public: // overridables (text labels)
     QStringList getLabelNames() const;
     virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
-    SLabelDscr getLabel(const QString& i_strName) const;
+    SLabelDscr getLabelDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
     virtual bool addLabel(const QString& i_strName, const QString& i_strText, ESelectionPoint i_selPt);
@@ -681,6 +686,8 @@ public: // overridables (text labels)
     virtual bool isLabelAnchorLineVisible(const QString& i_strName) const;
 public: // overridables (geometry labels)
     virtual QStringList getGeometryLabelNames() const;
+    virtual bool isValidGeometryLabelName(const QString& i_strName) const;
+    SLabelDscr getGeometryLabelDescriptor(const QString& i_strName) const;
     virtual void showGeometryLabel(const QString& i_strName);
     virtual void hideGeometryLabel(const QString& i_strName);
     virtual bool isGeometryLabelVisible(const QString& i_strName) const;

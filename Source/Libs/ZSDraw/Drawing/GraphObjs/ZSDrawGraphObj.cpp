@@ -60,11 +60,11 @@ struct SGraphObjSelectionPoint
 
 //------------------------------------------------------------------------------
 SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
-    CGraphObj* i_pGraphObj, const QString& i_str, bool* i_pbOk)
+    const QString& i_str, bool* i_pbOk)
 //------------------------------------------------------------------------------
 {
     bool bOk = false;
-    SGraphObjSelectionPoint selPt(i_pGraphObj);
+    SGraphObjSelectionPoint selPt;
     QStringList strlst = i_str.split(",");
     if (strlst.size() == 2) {
         strlst[0]  = strlst[0].trimmed();
@@ -86,6 +86,20 @@ SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
             }
         }
     }
+    if (i_pbOk != nullptr) {
+        *i_pbOk = bOk;
+    }
+    return selPt;
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
+    CGraphObj* i_pGraphObj, const QString& i_str, bool* i_pbOk)
+//------------------------------------------------------------------------------
+{
+    bool bOk = false;
+    SGraphObjSelectionPoint selPt = fromString(i_str, &bOk);
+    selPt.m_pGraphObj = i_pGraphObj;
     if (i_pbOk != nullptr) {
         *i_pbOk = bOk;
     }
@@ -366,25 +380,27 @@ SLabelDscr::SLabelDscr() :
     m_selPt1(),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(const QString& i_strKey) :
+SLabelDscr::SLabelDscr(EGraphObjType i_labelType) :
 //------------------------------------------------------------------------------
-    m_strKey(i_strKey),
-    m_labelType(EGraphObjTypeUndefined),
+    m_strKey(),
+    m_labelType(i_labelType),
     m_strText(),
     m_selPt1(),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(const QString& i_strKey, EGraphObjType i_labelType) :
+SLabelDscr::SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
     m_labelType(i_labelType),
@@ -392,12 +408,15 @@ SLabelDscr::SLabelDscr(const QString& i_strKey, EGraphObjType i_labelType) :
     m_selPt1(),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr::SLabelDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt) :
+SLabelDscr::SLabelDscr(
+    EGraphObjType i_labelType, const QString& i_strKey,
+    const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
     m_labelType(EGraphObjTypeUndefined),
@@ -405,13 +424,14 @@ SLabelDscr::SLabelDscr(const QString& i_strKey, const SGraphObjSelectionPoint& i
     m_selPt1(i_selPt),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
 SLabelDscr::SLabelDscr(
-    const QString& i_strKey,
+    EGraphObjType i_labelType, const QString& i_strKey,
     const SGraphObjSelectionPoint& i_selPt1,
     const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
@@ -421,13 +441,14 @@ SLabelDscr::SLabelDscr(
     m_selPt1(i_selPt1),
     m_selPt2(i_selPt2),
     m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
 SLabelDscr::SLabelDscr(
-    const QString& i_strKey, const QString& i_strText,
+    EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
@@ -436,13 +457,14 @@ SLabelDscr::SLabelDscr(
     m_selPt1(i_selPt),
     m_selPt2(),
     m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
     m_bShowAnchorLine(false)
 {
 }
 
 //------------------------------------------------------------------------------
 SLabelDscr::SLabelDscr(
-    const QString& i_strKey, const QString& i_strText,
+    EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText,
     const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
@@ -451,7 +473,22 @@ SLabelDscr::SLabelDscr(
     m_selPt1(i_selPt1),
     m_selPt2(i_selPt2),
     m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
     m_bShowAnchorLine(false)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr(const SLabelDscr& i_other) :
+//------------------------------------------------------------------------------
+    m_strKey(i_other.m_strKey),
+    m_labelType(i_other.m_labelType),
+    m_strText(i_other.m_strText),
+    m_selPt1(i_other.m_selPt1),
+    m_selPt2(i_other.m_selPt2),
+    m_polarCoorsToLinkedSelPt(i_other.m_polarCoorsToLinkedSelPt),
+    m_bLabelIsVisible(i_other.m_bLabelIsVisible),
+    m_bShowAnchorLine(i_other.m_bShowAnchorLine)
 {
 }
 
@@ -4513,10 +4550,17 @@ bool CGraphObj::isPredefinedLabelName(const QString& i_strName) const
 }
 
 //------------------------------------------------------------------------------
-SLabelDscr CGraphObj::getLabel(const QString& i_strName) const
+/*! @brief Returns the label descriptor for the given label name.
+*/
+SLabelDscr CGraphObj::getLabelDescriptor(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
-    return m_hshLabelDscrs.value(i_strName, SLabelDscr());
+    SLabelDscr labelDscr = m_hshLabelDscrs.value(i_strName, SLabelDscr());
+    CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
+    if (pGraphObjLabel != nullptr) {
+        labelDscr.m_polarCoorsToLinkedSelPt = pGraphObjLabel->polarCoorsToLinkedSelectionPoint();
+    }
+    return labelDscr;
 }
 
 //------------------------------------------------------------------------------
@@ -4606,7 +4650,7 @@ bool CGraphObj::addLabel(
         if (i_strName == c_strLabelName) {
             strText = m_strName;
         }
-        SLabelDscr labelDscr(i_strName, strText, SGraphObjSelectionPoint(this, i_selPt));
+        SLabelDscr labelDscr(EGraphObjTypeLabel, i_strName, strText, SGraphObjSelectionPoint(this, i_selPt));
         m_hshLabelDscrs.insert(i_strName, labelDscr);
         emit_labelAdded(i_strName);
         if (m_pTree != nullptr) {
@@ -4660,7 +4704,7 @@ bool CGraphObj::addLabel(
         if (i_strName == c_strLabelName) {
             strText = m_strName;
         }
-        SLabelDscr labelDscr(i_strName, strText, SGraphObjSelectionPoint(this, i_idxPt));
+        SLabelDscr labelDscr(EGraphObjTypeLabel, i_strName, strText, SGraphObjSelectionPoint(this, i_idxPt));
         m_hshLabelDscrs.insert(i_strName, labelDscr);
         emit_labelAdded(i_strName);
         if (m_pTree != nullptr) {
@@ -4953,9 +4997,10 @@ void CGraphObj::showLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    const SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
+    SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel == nullptr) {
+        labelDscr.m_bLabelIsVisible = true;
         pGraphObjLabel = new CGraphObjLabel(
             m_pDrawingScene, i_strName, labelDscr.m_strText, labelDscr.m_selPt1);
         m_hshpLabels.insert(i_strName, pGraphObjLabel);
@@ -4970,6 +5015,8 @@ void CGraphObj::showLabel(const QString& i_strName)
         // should not be indicated in the index tree.
         m_pDrawingScene->addItem(pGraphObjLabel);
         pGraphObjLabel->setVisible(true);
+        pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(labelDscr.m_polarCoorsToLinkedSelPt);
+        labelDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLine() : pGraphObjLabel->hideAnchorLine();
         QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
         pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.1);
         emit_labelChanged(i_strName);
@@ -5005,11 +5052,15 @@ void CGraphObj::hideLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
+    SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
     CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
     if (pGraphObjLabel != nullptr) {
         if (pGraphObjLabel->scene() == nullptr) {
             throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
         }
+        // Save current distance of label to selection point.
+        labelDscr = getLabelDescriptor(i_strName);
+        labelDscr.m_bLabelIsVisible = false;
 
         // "onLabelAboutToBeDestroyed" is called which removes the label from the hash.
         // The destructor also removes the label from the graphics scene.
@@ -5225,6 +5276,29 @@ QStringList CGraphObj::getGeometryLabelNames() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the label descriptor for the given label name.
+*/
+bool CGraphObj::isValidGeometryLabelName(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    return m_hshGeometryLabelDscrs.contains(i_strName);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the label descriptor for the given label name.
+*/
+SLabelDscr CGraphObj::getGeometryLabelDescriptor(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    SLabelDscr labelDscr = m_hshGeometryLabelDscrs.value(i_strName, SLabelDscr());
+    CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
+    if (pGraphObjLabel != nullptr) {
+        labelDscr.m_polarCoorsToLinkedSelPt = pGraphObjLabel->polarCoorsToLinkedSelectionPoint();
+    }
+    return labelDscr;
+}
+
+//------------------------------------------------------------------------------
 /*! Shows the label (set visible) with the given name.
 
     The label is added to the graphics scene and becomes visible.
@@ -5250,7 +5324,7 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    const SLabelDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
+    SLabelDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
     if (pGraphObjLabel == nullptr) {
         CGraphObjLabel* pGraphObjLabel = nullptr;
@@ -5275,7 +5349,10 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
                 m_pDrawingScene, i_strName, labelDscr.m_selPt1, labelDscr.m_selPt2);
         }
         if (pGraphObjLabel != nullptr) {
+            labelDscr.m_bLabelIsVisible = true;
             pGraphObjLabel->setVisible(false);
+            pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(labelDscr.m_polarCoorsToLinkedSelPt);
+            labelDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLine() : pGraphObjLabel->hideAnchorLine();
             m_hshpGeometryLabels.insert(i_strName, pGraphObjLabel);
             QObject::connect(
                 pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
@@ -5327,11 +5404,16 @@ void CGraphObj::hideGeometryLabel(const QString& i_strName)
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
+    SLabelDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
     CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
     if (pGraphObjLabel != nullptr) {
         if (pGraphObjLabel->scene() == nullptr) {
             throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
         }
+
+        // Save current distance of label to selection point.
+        labelDscr = getGeometryLabelDescriptor(i_strName);
+        labelDscr.m_bLabelIsVisible = false;
 
         // "onGeometryLabelAboutToBeDestroyed" is called which removes the label from the hash.
         // The destructor also removes the label from the graphics scene.
@@ -5565,7 +5647,7 @@ bool CGraphObj::addGeometryLabel(
 
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
-        SLabelDscr labelDscr(i_strName, i_labelType);
+        SLabelDscr labelDscr(i_labelType, i_strName);
         labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPt1);
         labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_selPt2);
         m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
@@ -5621,7 +5703,7 @@ bool CGraphObj::addGeometryLabel(
 
     bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
     if (bCanAdd) {
-        SLabelDscr labelDscr(i_strName, i_labelType);
+        SLabelDscr labelDscr(i_labelType, i_strName);
         labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_idxPt1);
         labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_idxPt2);
         m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);

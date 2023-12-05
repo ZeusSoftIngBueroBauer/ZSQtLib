@@ -512,6 +512,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
         pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameLength,
         QPoint(105, 125), QPoint(200, 115));
     createTestGroupShowAndMoveGeometryLabel(
+        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameWidth,
+        QPoint(100, 125), QPoint(75, 140));
+    createTestGroupShowAndMoveGeometryLabel(
+        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameHeight,
+        QPoint(100, 125), QPoint(80, 100));
+    createTestGroupShowAndMoveGeometryLabel(
         pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameCenter,
         QPoint(105, 125), QPoint(145, 125));
 

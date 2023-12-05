@@ -69,13 +69,13 @@ protected: // ctor (used by derived classes, e.g. CGraphObjLabelGeometryPosition
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
         const QString& i_strText,
-        EGraphObjType i_type,
+        EGraphObjType i_labelType,
         const SGraphObjSelectionPoint& i_selPt1);
     CGraphObjLabel(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
         const QString& i_strText,
-        EGraphObjType i_type,
+        EGraphObjType i_labelType,
         const SGraphObjSelectionPoint& i_selPt1,
         const SGraphObjSelectionPoint& i_selPt2);
 public: // dtor

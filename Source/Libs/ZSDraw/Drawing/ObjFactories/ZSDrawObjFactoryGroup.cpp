@@ -144,7 +144,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObjGroup->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement("DrawSettings");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -154,7 +154,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     QPointF ptPos         = pGraphObjGroup->pos();
     double  fRotAngle_deg = pGraphObjGroup->getRotationAngleInDegree();
 
-    i_xmlStreamWriter.writeStartElement("Geometry");
+    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
     i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
     i_xmlStreamWriter.writeEndElement();
@@ -171,7 +171,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
     //if( arpLabels.size() > 0 )
     //{
-    //    i_xmlStreamWriter.writeStartElement("Labels");
+    //    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
     //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
     //    i_xmlStreamWriter.writeEndElement();
     //}
@@ -334,12 +334,12 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
         if( i_xmlStreamReader.isStartElement() )
         {
-            if( strElemName == "DrawSettings" )
+            if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
             {
                 drawSettings.load(i_xmlStreamReader);
             }
 
-            else if( strElemName == "Geometry" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
             {
             }
 
@@ -383,11 +383,11 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
             } // if( strElemName == "ZValue" )
 
-            else if( strElemName == "Labels" )
+            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
             {
                 arpLabels = loadGraphObjLabels(i_xmlStreamReader);
 
-            } // if( strElemName == "Labels" )
+            } // if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
 
             //--------------------------------
             else if( strElemName == "GraphObj" )
