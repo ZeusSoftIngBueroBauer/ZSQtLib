@@ -160,11 +160,11 @@ QString ZS::Draw::graphObjType2Str( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabelGeometryPosition) {
         str = "LabelGeometryPosition";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelGeometryHeight) {
-        str = "LabelGeometryHeight";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryDX) {
+        str = "LabelGeometryDX";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelGeometryWidth) {
-        str = "LabelGeometryWidth";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryDY) {
+        str = "LabelGeometryDY";
     }
     else if (i_graphObjType == EGraphObjTypeLabelGeometryLength) {
         str = "LabelGeometryLength";
@@ -213,11 +213,11 @@ QString ZS::Draw::graphObjType2ClassName( int i_graphObjType )
     else if (i_graphObjType == EGraphObjTypeLabelGeometryPosition) {
         str = "CGraphObjLabelGeometryPosition";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelGeometryHeight) {
-        str = "CGraphObjLabelGeometryHeight";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryDX) {
+        str = "CGraphObjLabelGeometryDX";
     }
-    else if (i_graphObjType == EGraphObjTypeLabelGeometryWidth) {
-        str = "CGraphObjLabelGeometryWidth";
+    else if (i_graphObjType == EGraphObjTypeLabelGeometryDY) {
+        str = "CGraphObjLabelGeometryDY";
     }
     else if (i_graphObjType == EGraphObjTypeLabelGeometryLength) {
         str = "CGraphObjLabelGeometryLength";

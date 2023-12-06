@@ -199,6 +199,7 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_pGraphObjsIdxTree(nullptr),
     m_pGraphObjsIdxTreeClipboard(nullptr),
     m_arpGraphicsItemsAcceptingHoverEvents(),
+    m_arpGraphicsItemsBroughtToFront(),
     m_fRotAngleRes_degree(1.0),
     m_fHitTolerance_px(2.0),
     m_bMouseDoubleClickEventInProcess(false),
@@ -312,6 +313,7 @@ CDrawingScene::~CDrawingScene()
     m_pGraphObjsIdxTree = nullptr;
     m_pGraphObjsIdxTreeClipboard = nullptr;
     //m_arpGraphicsItemsAcceptingHoverEvents;
+    //m_arpGraphicsItemsBroughtToFront;
     m_fRotAngleRes_degree = 0.0;
     m_fHitTolerance_px = 0.0;
     m_bMouseDoubleClickEventInProcess = false;
@@ -1245,6 +1247,7 @@ void CDrawingScene::clear()
     QGraphicsScene::clear();
 
     m_arpGraphicsItemsAcceptingHoverEvents.clear();
+    m_arpGraphicsItemsBroughtToFront.clear();
 
 } // clear
 
@@ -1399,6 +1402,14 @@ void CDrawingScene::removeItem(QGraphicsItem* i_pGraphicsItem)
         for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
             if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
                 m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
+            }
+        }
+    }
+    if (i_pGraphicsItem != nullptr && m_arpGraphicsItemsBroughtToFront.size() > 0) {
+        invalidateItemInBroughtToFrontList(i_pGraphicsItem);
+        for (int idxGraphObj = m_arpGraphicsItemsBroughtToFront.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+            if (m_arpGraphicsItemsBroughtToFront[idxGraphObj] == nullptr) {
+                m_arpGraphicsItemsBroughtToFront.removeAt(idxGraphObj);
             }
         }
     }
@@ -1974,14 +1985,11 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
         strMthInArgs += ", ScenePos:" + point2Str(i_ptScenePos);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1989,24 +1997,19 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
         /* strAddInfo   */ strMthInArgs );
 
     QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
-
-    return bringToFront( i_pGraphicsItem, arpGraphicsItems );
-
-} // bringToFront
+    return bringToFront(i_pGraphicsItem, arpGraphicsItems);
+}
 
 //------------------------------------------------------------------------------
 double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF& i_ptScenePos )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
         strMthInArgs += ", ScenePos:" + point2Str(i_ptScenePos);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2014,10 +2017,8 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF&
         /* strAddInfo   */ strMthInArgs );
 
     QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
-
-    return sendToBack( i_pGraphicsItem, arpGraphicsItems );
-
-} // sendToBack
+    return sendToBack(i_pGraphicsItem, arpGraphicsItems);
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2043,13 +2044,10 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2057,39 +2055,34 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
         /* strAddInfo   */ strMthInArgs );
 
     QList<QGraphicsItem*> arpGraphicsItems;
-    QGraphicsItem*        pGraphicsItem;
-    int                   idxGraphObj;
-
-    qreal fZValue = 0.0;
-
-    if( i_arpGraphicsItems.size() == 0 )
-    {
+    if (i_arpGraphicsItems.size() == 0) {
         arpGraphicsItems = items();
     }
-    else
-    {
+    else {
         arpGraphicsItems = i_arpGraphicsItems;
     }
-
-    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItems.size(); idxGraphObj++ )
-    {
-        pGraphicsItem = arpGraphicsItems[idxGraphObj];
-
-        if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
-         && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel) )
-        {
-            if( pGraphicsItem->zValue() >= fZValue )
-            {
+    double fZValue = 0.0;
+    for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+            if (pGraphicsItem->zValue() >= fZValue) {
                 fZValue = pGraphicsItem->zValue() + 0.1;
             }
         }
     }
-
-    i_pGraphicsItem->setZValue(fZValue);
-
+    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
+    if (pGraphObj != nullptr) {
+        // The zValue of Selection points and Labels are updated if the
+        // zValue of their parent object is changed.
+        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+            pGraphObj->setStackingOrderValue(fZValue);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString::number(fZValue));
+    }
     return fZValue;
-
-} // bringToFront
+}
 
 //------------------------------------------------------------------------------
 /*! Sends the given graphic item into back of the given list of graphic items.
@@ -2111,13 +2104,10 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QG
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -2125,39 +2115,34 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QG
         /* strAddInfo   */ strMthInArgs );
 
     QList<QGraphicsItem*> arpGraphicsItems;
-    QGraphicsItem*        pGraphicsItem;
-    int                   idxGraphObj;
-
-    qreal fZValue = 0.0;
-
-    if( i_arpGraphicsItems.size() == 0 )
-    {
+    if (i_arpGraphicsItems.size() == 0) {
         arpGraphicsItems = items();
     }
-    else
-    {
+    else {
         arpGraphicsItems = i_arpGraphicsItems;
     }
-
-    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItems.size(); idxGraphObj++ )
-    {
-        pGraphicsItem = arpGraphicsItems[idxGraphObj];
-
-        if( pGraphicsItem->type() != static_cast<int>(EGraphObjTypeSelectionPoint)
-         && pGraphicsItem->type() != static_cast<int>(EGraphObjTypeLabel) )
-        {
-            if( pGraphicsItem->zValue() <= fZValue )
-            {
+    double fZValue = 0.0;
+    for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+            if (pGraphicsItem->zValue() <= fZValue) {
                 fZValue = pGraphicsItem->zValue() - 0.1;
             }
         }
     }
-
-    i_pGraphicsItem->setZValue(fZValue);
-
+    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
+    if (pGraphObj != nullptr) {
+        // The zValue of Selection points and Labels are updated if the
+        // zValue of their parent object is changed.
+        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+            pGraphObj->setStackingOrderValue(fZValue);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString::number(fZValue));
+    }
     return fZValue;
-
-} // sendToBack
+}
 
 /*==============================================================================
 public: // to be called by graphical objects (as graphical objects are not derived from QObject and cannot emit signals)
@@ -3996,8 +3981,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 // Create array with objects which have been hit by mouse cursor.
                 if (arpGraphicsItemsIntersected.size() > 0) {
-                    for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsIntersected.size(); idxGraphObj++) {
-                        QGraphicsItem* pGraphicsItem = arpGraphicsItemsIntersected[idxGraphObj];
+                    for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsIntersected) {
                         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                         if (pGraphicsItem != nullptr && pGraphObj != nullptr) {
                             bool bCheckIsHit = false;
@@ -4022,8 +4006,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
 
                 // Objects which have been hit by mouse cursor temporarily accept hover events.
-                for (int idxGraphObjHit = 0; idxGraphObjHit < arpGraphicsItemsHit.size(); idxGraphObjHit++) {
-                    QGraphicsItem* pGraphicsItemHit = arpGraphicsItemsHit[idxGraphObjHit];
+                for (QGraphicsItem* pGraphicsItemHit : arpGraphicsItemsHit) {
                     CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
                     if (pGraphicsItemHit != nullptr && pGraphObjHit != nullptr) {
                         #if QT_VERSION < 0x050000
@@ -4031,22 +4014,22 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                         #else
                         if (!pGraphicsItemHit->acceptHoverEvents()) {
                         #endif
-                            bool bGraphObjFound = false;
                             pGraphicsItemHit->setAcceptHoverEvents(true);
                             pGraphicsItemHit->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
                             pGraphObjHit->setIsHit(true);
                             // Append object hit by mouse cursor to list of objects temporarily accepting hover events (if not yet already part of that list).
+                            bool bGraphObjAcceptingHoverEventsFound = false;
                             for (int idxGraphObj = 0; idxGraphObj < m_arpGraphicsItemsAcceptingHoverEvents.size(); idxGraphObj++) {
                                 QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
                                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                                 // If already part of list ...
                                 if (pGraphObjHit == pGraphObj) {
-                                    bGraphObjFound = true;
+                                    bGraphObjAcceptingHoverEventsFound = true;
                                     break;
                                 }
                             }
                             // If not already part of list ...
-                            if (!bGraphObjFound) {
+                            if (!bGraphObjAcceptingHoverEventsFound) {
                                 m_arpGraphicsItemsAcceptingHoverEvents.append(pGraphicsItemHit);
                             }
                         }
@@ -4057,18 +4040,18 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 // must be removed from the list and are no longer accepting hover events.
                 if (m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
                     for (int idxGraphObj = 0; idxGraphObj < m_arpGraphicsItemsAcceptingHoverEvents.size(); idxGraphObj++) {
-                        bool bGraphObjFound = false;
+                        bool bGraphObjHitFound = false;
                         QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
                         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                         for (int idxGraphObjHit = 0; idxGraphObjHit < arpGraphicsItemsHit.size(); idxGraphObjHit++) {
                             QGraphicsItem* pGraphicsItemHit = arpGraphicsItemsHit[idxGraphObjHit];
                             CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
                             if (pGraphObjHit == pGraphObj) {
-                                bGraphObjFound = true;
+                                bGraphObjHitFound = true;
                                 break;
                             }
                         }
-                        if (!bGraphObjFound) {
+                        if (!bGraphObjHitFound) {
                             #if QT_VERSION < 0x050000
                             if (pGraphicsItem->acceptsHoverEvents()) {
                             #else
@@ -4081,6 +4064,12 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                             if (/*!pGraphicsItem->isSelected() &&*/ pGraphObj->isHit()) {
                                 pGraphObj->setIsHit(false);
                             }
+                            m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] = nullptr;
+                        }
+                    }
+                    for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+                        if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
+                            m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
                         }
                     }
                 }
@@ -5112,7 +5101,6 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
     QList<QGraphicsItem*> arpGraphicsItemsIntersected =
         items(rctToCheck, Qt::IntersectsItemShape, Qt::AscendingOrder);
     QList<QGraphicsItem*> arpGraphicsItemsHit;
-    QStringList strlstKeysInTreeGraphicsItemsBroughtToFront;
     if (arpGraphicsItemsIntersected.size() > 0) {
         for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsIntersected.size(); idxGraphObj++) {
             QGraphicsItem* pGraphicsItem = arpGraphicsItemsIntersected[idxGraphObj];
@@ -5133,7 +5121,7 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
 
     /*  Temporarily bring all objects to front which have been hit so that
         Qt dispatches the mouse press events to those objects.
-        We use a double nested loo to achieve the following order:
+        We use a double nested loop to achieve the following order:
 
         1. Not selected objects
             1.1. Graphics items which are not groups, connection points, labels or selection points.
@@ -5166,28 +5154,43 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
             EGraphObjTypeConnectionPoint,
             EGraphObjTypeGroup
         };
-
         for (bool bSelected : c_arbSelected) {
             for (EGraphObjType graphObjType : c_arGraphObjTypes) {
-                for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsHit) {
+                for (QGraphicsItem* pGraphicsItemHit : arpGraphicsItemsHit) {
                     bool bBringToFront = false;
-                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                    if (pGraphicsItem != nullptr && pGraphObj != nullptr) {
-                        if (bSelected == pGraphicsItem->isSelected()) {
+                    CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
+                    if (pGraphicsItemHit != nullptr && pGraphObjHit != nullptr) {
+                        if (bSelected == pGraphicsItemHit->isSelected()) {
                             if (graphObjType == EGraphObjTypeUndefined) {
-                                if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()
-                                    && !pGraphObj->isConnectionPoint() && !pGraphObj->isGroup()) {
+                                if (!pGraphObjHit->isSelectionPoint() && !pGraphObjHit->isLabel()
+                                    && !pGraphObjHit->isConnectionPoint() && !pGraphObjHit->isGroup()) {
                                     bBringToFront = true;
                                 }
                             }
+                            else if (graphObjType == EGraphObjTypeLabel) {
+                                bBringToFront = pGraphObjHit->isLabel();
+                            }
                             else {
-                                bBringToFront = (graphObjType == pGraphObj->type());
+                                bBringToFront = (graphObjType == pGraphObjHit->type());
                             }
                         }
                         if (bBringToFront) {
-                            bringToFront(pGraphicsItem, arpGraphicsItemsIntersected);
-                            pGraphicsItem->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
-                            strlstKeysInTreeGraphicsItemsBroughtToFront.append(pGraphObj->keyInTree());
+                            bringToFront(pGraphicsItemHit, arpGraphicsItemsIntersected);
+                            pGraphicsItemHit->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
+                            // Append object hit by mouse cursor to list of objects temporarily brought to front.
+                            bool bGraphObjBroughtToFrontFound = false;
+                            for (QGraphicsItem* pGraphicsItem : m_arpGraphicsItemsBroughtToFront) {
+                                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                                // If already part of list ...
+                                if (pGraphObjHit == pGraphObj) {
+                                    bGraphObjBroughtToFrontFound = true;
+                                    break;
+                                }
+                            }
+                            // If not already part of list ...
+                            if (!bGraphObjBroughtToFrontFound) {
+                                m_arpGraphicsItemsBroughtToFront.append(pGraphicsItemHit);
+                            }
                         }
                     }
                 } // for (int idxGraphObj = arpGraphicsItemsHit.size()-1; idxGraphObj >= 0; idxGraphObj--)
@@ -5198,17 +5201,16 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
     // Dispatch mouse press event to objects which have been hit.
     QGraphicsScene::mousePressEvent(i_pEv);
 
-    // After the mouse event has been dispatched the Z-order of the objects temporarily brought to front must be restored.
-    // Because while dispatching the mouse press event to the graphics scene objects some of the object may have been destroyed
-    // (e.g. selection points or labels) not the pointer to the objects but their keys (object ids) have been stored.
-    // The dtor of CGraphObj will remove themselves from the index tree and they cannot be found anymore.
-    for (const auto& strKeyInTree : strlstKeysInTreeGraphicsItemsBroughtToFront) {
-        CGraphObj* pGraphObj = findGraphObj(strKeyInTree);
+    // After the mouse event has been dispatched the Z-order of the objects temporarily brought to front
+    // must be restored. While dispatching the mouse press event to the graphics scene objects some of the
+    // objects may be destroyed (e.g. selection points or labels).
+    for (QGraphicsItem* pGraphicsItem : m_arpGraphicsItemsBroughtToFront) {
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
         if (pGraphObj != nullptr) {
-            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-            pGraphicsItem->setZValue(pGraphObj->getStackingOrderValue());
+            pGraphObj->resetStackingOrderValueToOriginalValue();
         }
     }
+    m_arpGraphicsItemsBroughtToFront.clear();
 
     // In edit mode ..
     if (m_mode == EMode::Edit) {
@@ -5267,6 +5269,23 @@ void CDrawingScene::invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pG
         QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
         if (pGraphicsItem != nullptr && (pGraphicsItem == i_pGraphicsItem || pGraphicsItem->parentItem() == i_pGraphicsItem)) {
             m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] = nullptr;
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the item and all its childs recursively from the list of 
+           items temporarily brought to front.
+
+    see invalidateItemInAcceptingHoverEventsList
+*/
+void CDrawingScene::invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem)
+//------------------------------------------------------------------------------
+{
+    for (int idxGraphObj = m_arpGraphicsItemsBroughtToFront.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+        QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsBroughtToFront[idxGraphObj];
+        if (pGraphicsItem != nullptr && (pGraphicsItem == i_pGraphicsItem || pGraphicsItem->parentItem() == i_pGraphicsItem)) {
+            m_arpGraphicsItemsBroughtToFront[idxGraphObj] = nullptr;
         }
     }
 }

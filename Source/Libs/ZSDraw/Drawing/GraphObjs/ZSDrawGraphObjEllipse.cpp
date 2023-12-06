@@ -153,7 +153,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjEllipse::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeEllipse;
+    return EGraphObjTypeEllipse;
 }
 
 /*==============================================================================
@@ -687,17 +687,9 @@ void CGraphObjEllipse::paint(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Selected:" + bool2Str(isSelected());
-        strMthInArgs += ", EditMode:" + m_editMode.toString();
-        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
-        strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strMthInArgs += ", Rect(x,y,w,h):(" + QString::number(rect().x()) + "," + QString::number(rect().y());
-        strMthInArgs += "," + QString::number(rect().width()) + "," + QString::number(rect().height()) + ")";
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1581,7 +1573,7 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
         else {
             setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
-            setZValue(m_fZValue); // restore ZValue as before selecting the object
+            resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             m_editMode = EEditMode::None;
             m_editResizeMode = EEditResizeMode::None;
             m_selPtSelectedBoundingRect = ESelectionPoint::None;

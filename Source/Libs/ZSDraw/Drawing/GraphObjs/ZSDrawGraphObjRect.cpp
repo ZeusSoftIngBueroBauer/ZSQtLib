@@ -151,7 +151,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjRect::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeRect;
+    return EGraphObjTypeRect;
 }
 
 /*==============================================================================
@@ -696,24 +696,16 @@ void CGraphObjRect::paint(
     QWidget*                        /*i_pWdgt*/ )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Rect(x,y,w,h):(" + QString::number(rect().x()) + "," + QString::number(rect().y());
-        strAddTrcInfo += "," + QString::number(rect().width()) + "," + QString::number(rect().height()) + ")";
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     i_pPainter->save();
 
@@ -1593,7 +1585,7 @@ QVariant CGraphObjRect::itemChange( GraphicsItemChange i_change, const QVariant&
         else {
             setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
-            setZValue(m_fZValue); // restore ZValue as before selecting the object
+            resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             m_editMode = EEditMode::None;
             m_editResizeMode = EEditResizeMode::None;
             m_selPtSelectedBoundingRect = ESelectionPoint::None;

@@ -161,7 +161,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjConnectionLine::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeConnectionLine;
+    return EGraphObjTypeConnectionLine;
 }
 
 /*==============================================================================
@@ -1452,7 +1452,6 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             ptSel = QPointF(0.0,0.0);
             ptSel = mapToScene(ptSel);
             pGraphObjSelPt->setPos(ptSel);
-            pGraphObjSelPt->setZValue( zValue()+0.05 );
         }
 
         // If there was no polygon shape point selected ..
@@ -1499,7 +1498,6 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             ptSel = plg[m_idxSelPtSelectedPolygon];
             ptSel = mapToScene(ptSel);
             pGraphObjSelPt->setPos(ptSel);
-            pGraphObjSelPt->setZValue( zValue()+0.05 );
         }
 
         QGraphicsPolygonItem::setPolygon(plg);
@@ -1603,7 +1601,6 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                         ptSel = plg[idxSelPt];
                         ptSel = mapToScene(ptSel);
                         pGraphObjSelPt->setPos(ptSel);
-                        pGraphObjSelPt->setZValue( zValue()+0.05 );
                     }
                 }
             } // if( m_editMode == EEditMode::Move )
@@ -1838,7 +1835,6 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
                     ptSel = plg[m_idxSelPtSelectedPolygon];
                     ptSel = mapToScene(ptSel);
                     pGraphObjSelPt->setPos(ptSel);
-                    pGraphObjSelPt->setZValue( zValue()+0.05 );
 
                     QGraphicsPolygonItem::setPolygon(plg);
 
@@ -2124,7 +2120,6 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                             ptSel = plg[idxSelPtSelectedPolygon];
                             ptSel = mapToScene(ptSel);
                             pGraphObjSelPt->setPos(ptSel);
-                            pGraphObjSelPt->setZValue( zValue()+0.05 );
 
                             plg.insert(0,ptMouseItemPos);
 
@@ -2143,7 +2138,6 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                             ptSel = plg[idxSelPtSelectedPolygon];
                             ptSel = mapToScene(ptSel);
                             pGraphObjSelPt->setPos(ptSel);
-                            pGraphObjSelPt->setZValue( zValue()+0.05 );
 
                         } // if( idxSelPtSelectedPolygon == 0 )
 
@@ -2169,7 +2163,6 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                             ptSel = plg[idxSelPtSelectedPolygon];
                             ptSel = mapToScene(ptSel);
                             pGraphObjSelPt->setPos(ptSel);
-                            pGraphObjSelPt->setZValue( zValue()+0.05 );
 
                             plg.append(ptMouseItemPos);
                             idxSelPtSelectedPolygon = plg.size()-1;
@@ -2189,7 +2182,6 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                             ptSel = plg[idxSelPtSelectedPolygon];
                             ptSel = mapToScene(ptSel);
                             pGraphObjSelPt->setPos(ptSel);
-                            pGraphObjSelPt->setZValue( zValue()+0.05 );
                         }
 
                         QPointF ptItemPosOld = pos();
@@ -2371,7 +2363,7 @@ QVariant CGraphObjConnectionLine::itemChange( GraphicsItemChange i_change, const
         else {
             setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
-            setZValue(m_fZValue); // restore ZValue as before selecting the object
+            resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             m_editMode = EEditMode::None;
             m_editResizeMode = EEditResizeMode::None;
             m_selPtSelectedBoundingRect = ESelectionPoint::None;

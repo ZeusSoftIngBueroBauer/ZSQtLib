@@ -34,7 +34,26 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-/*! @brief 
+/*! @brief Label to show the length of the line between two shape points.
+
+    The length label also has to be used to indicate the width and height
+    of the objects.
+
+    - To indicate the width of a rectangle for example the length label got
+      to be linked to the selection points LeftCenter and RightCenter of the
+      bounding rectangle.
+    - To indicate the height of a rectangle the length label got to be linked
+      to the selection points TopCenter and BottomCenter of the bounding rectangle.
+
+    The label uses three anchor lines to indicate the length as shown in the
+    example below.
+
+       AnchorLine0                       AnchorLine1
+            |<----------AnchorLine2---------->|
+            |                                 |
+            |                                 |
+         P1 +----------------x----------------+ P2
+                          Center
 */
 class ZSDRAWDLL_API CGraphObjLabelGeometryLength : public CGraphObjLabel
 //******************************************************************************
@@ -56,12 +75,15 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // must overridables of base class QGraphicsItem
+    virtual QRectF boundingRect() const override;
+    virtual QPainterPath shape() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
     virtual void updatePosition() override;
     virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
 protected: // instance members
+    /*!< Draw settings used to draw the arrow heads at the ends of anchor line 2. */
     CDrawSettings m_drawSettingsArrowHeads;
     /*!< Polygon points for arrow head at P1 (line start) */
     QPolygonF m_plgP1ArrowHead;

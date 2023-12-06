@@ -36,26 +36,28 @@ namespace Draw
 //******************************************************************************
 /*! @brief 
 */
-class ZSDRAWDLL_API CGraphObjLabelGeometryWidth : public CGraphObjLabel
+class ZSDRAWDLL_API CGraphObjLabelGeometryDX : public CGraphObjLabel
 //******************************************************************************
 {
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CGraphObjLabelGeometryWidth"; }
+    static QString ClassName() { return "CGraphObjLabelGeometryDX"; }
 public: // ctors and dtor
-    CGraphObjLabelGeometryWidth(
+    CGraphObjLabelGeometryDX(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strKey,
         const SGraphObjSelectionPoint& i_selPt1,
         const SGraphObjSelectionPoint& i_selPt2);
-    virtual ~CGraphObjLabelGeometryWidth();
+    virtual ~CGraphObjLabelGeometryDX();
 public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // must overridables of base class QGraphicsItem
+    virtual QRectF boundingRect() const override;
+    virtual QPainterPath shape() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
     virtual void updatePosition() override;
@@ -69,7 +71,7 @@ protected: // instance members
     /*!< Polygon points for arrow head at P2 (line end) */
     QPolygonF m_plgP2ArrowHead;
 
-}; // class CGraphObjLabelGeometryWidth
+}; // class CGraphObjLabelGeometryDX
 
 } // namespace Draw
 

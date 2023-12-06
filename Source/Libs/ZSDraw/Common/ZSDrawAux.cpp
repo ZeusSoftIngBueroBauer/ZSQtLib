@@ -1007,14 +1007,23 @@ QPolygonF ZS::Draw::resizePolygon(
 } // resizePolygon
 
 //------------------------------------------------------------------------------
-QRectF ZS::Draw::boundingRect( const QPointF& i_pt, double i_fRadius )
+QRectF ZS::Draw::boundingRect(const QPointF& i_pt, double i_fRadius)
 //------------------------------------------------------------------------------
 {
     return QRectF( i_pt.x()-i_fRadius,  i_pt.y()-i_fRadius, 2.0*i_fRadius, 2.0*i_fRadius );
 }
 
 //------------------------------------------------------------------------------
-QPolygonF ZS::Draw::rect2Polygon( const QRectF& i_rct, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts )
+QPolygonF ZS::Draw::line2Polygon(const QLineF& i_line)
+//------------------------------------------------------------------------------
+{
+    QPolygonF plg;
+    plg << i_line.p1() << i_line.p2();
+    return plg;
+}
+
+//------------------------------------------------------------------------------
+QPolygonF ZS::Draw::rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts)
 //------------------------------------------------------------------------------
 {
     static const ESelectionPoint s_arSelPts[] = {
@@ -1024,80 +1033,62 @@ QPolygonF ZS::Draw::rect2Polygon( const QRectF& i_rct, int i_iSelPtsCount, const
         ESelectionPoint::BottomLeft
     };
 
-    const ESelectionPoint*  pSelPts = i_pSelPts;
-    int                     iSelPtsCount = i_iSelPtsCount;
+    const ESelectionPoint* pSelPts = i_pSelPts;
+    int iSelPtsCount = i_iSelPtsCount;
 
-    if( pSelPts == nullptr )
-    {
+    if (pSelPts == nullptr) {
         iSelPtsCount = _ZSArrLen(s_arSelPts);
         pSelPts = s_arSelPts;
     }
 
     QPolygonF plg(iSelPtsCount);
 
-    ESelectionPoint selPt;
-    int             idxSelPt;
-
-    for( idxSelPt = 0; idxSelPt < 4 && idxSelPt < plg.size(); idxSelPt++ )
-    {
-        selPt = pSelPts[idxSelPt];
-
-        switch( selPt )
-        {
-            case ESelectionPoint::TopLeft:
-            {
+    for (int idxSelPt = 0; idxSelPt < 4 && idxSelPt < plg.size(); idxSelPt++) {
+        ESelectionPoint selPt = pSelPts[idxSelPt];
+        switch (selPt) {
+            case ESelectionPoint::TopLeft: {
                 plg[idxSelPt] = i_rct.topLeft();
                 break;
             }
-            case ESelectionPoint::TopRight:
-            {
+            case ESelectionPoint::TopRight: {
                 plg[idxSelPt] = i_rct.topRight();
                 break;
             }
-            case ESelectionPoint::BottomRight:
-            {
+            case ESelectionPoint::BottomRight: {
                 plg[idxSelPt] = i_rct.bottomRight();
                 break;
             }
-            case ESelectionPoint::BottomLeft:
-            {
+            case ESelectionPoint::BottomLeft: {
                 plg[idxSelPt] = i_rct.bottomLeft();
                 break;
             }
-            case ESelectionPoint::BottomCenter:
-            {
+            case ESelectionPoint::BottomCenter: {
                 plg[idxSelPt] = getCenterPoint( QLineF(i_rct.bottomLeft(),i_rct.bottomRight()) );
                 break;
             }
-            case ESelectionPoint::TopCenter:
-            {
+            case ESelectionPoint::TopCenter: {
                 plg[idxSelPt] = getCenterPoint( QLineF(i_rct.topLeft(),i_rct.topRight()) );
                 break;
             }
-            case ESelectionPoint::RightCenter:
-            {
+            case ESelectionPoint::RightCenter: {
                 plg[idxSelPt] = getCenterPoint( QLineF(i_rct.topRight(),i_rct.bottomRight()) );
                 break;
             }
-            case ESelectionPoint::LeftCenter:
-            {
+            case ESelectionPoint::LeftCenter: {
                 plg[idxSelPt] = getCenterPoint( QLineF(i_rct.topLeft(),i_rct.bottomLeft()) );
                 break;
             }
-            case ESelectionPoint::Center:
-            {
+            case ESelectionPoint::Center: {
                 plg[idxSelPt] = i_rct.center();
                 break;
             }
             case ESelectionPoint::RotateTop:
             case ESelectionPoint::RotateBottom:
-            default:
-            {
+            default: {
                 break;
             }
         }
     }
-
     return plg;
 
 } // rect2Polygon
@@ -2345,16 +2336,31 @@ QLineF ZS::Draw::getLineFromPolar(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates the perpendicular line to the given line intersecting
-           starting at the given point.
+/*! @brief Calculates the perpendicular line to the given line.
+           The start point of the resulting line is at the passed point.
+           The end point of the result line is on the given line.
+
+                i_pt
+                 x
+                 | Perpendicular line through i_pt
+                 |
+        P1 +-----x-------------------------+ P2 i_line
 
     @param [in] i_line
-    @param [in] i_pt Start point from which the perpendicular line starts.
+        Line for which the perpendicular should be calculated.
+    @param [in] i_pt
+        Start point from which the perpendicular line starts.
+    @param [in] i_fMinLength_px
+        Minimum length of the returned perpendicular line.
+        Ignored if set to value <= 0.0.
+        For values > 0.0 the returned perpendiculars length is of this
+        minimum length. Useful if the passed line is on the given line
+        as in this case the resulting line would have zero length.
 
     @return Perpendicular line with the given length whose start point is
             at the given point.
 */
-QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt)
+QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px)
 //------------------------------------------------------------------------------
 {
     // Find parallel line to the given line that passes through the given point.
@@ -2362,12 +2368,17 @@ QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt)
     QLineF parallelLine = i_line.translated(ptOffset);
     // Returns a line that is perpendicular to this line with
     // the same starting point and length.
-    QLineF perpendicularLine = parallelLine.normalVector();
+    QLineF perpendicularLineTmp = parallelLine.normalVector();
     // Now get the intersection point of the perpendicular line with the given line.
     QPointF ptIntersection;
-    perpendicularLine.intersects(i_line, &ptIntersection);
+    perpendicularLineTmp.intersects(i_line, &ptIntersection);
     // Return the line from the given point to the intersection point.
-    return QLineF(i_pt, ptIntersection);
+    QLineF perpendicularLine(i_pt, ptIntersection);
+    if (i_fMinLength_px > 0.0 && perpendicularLine.length() < i_fMinLength_px) {
+        perpendicularLine = perpendicularLineTmp.translated(perpendicularLineTmp.p1()-ptIntersection);
+        perpendicularLine.setLength(i_fMinLength_px);
+    }
+    return perpendicularLine;
 }
 
 //------------------------------------------------------------------------------

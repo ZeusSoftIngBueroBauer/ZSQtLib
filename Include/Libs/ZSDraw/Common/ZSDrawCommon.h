@@ -225,12 +225,14 @@ typedef enum {
     EGraphObjTypeCount           = (EGraphObjTypeMax - EGraphObjTypeMin + 1),
     EGraphObjTypeUserDefined,
     EGraphObjTypeSelectionPoint,
-    EGraphObjTypeLabel,
+    EGraphObjTypeLabelMin,
+    EGraphObjTypeLabel = EGraphObjTypeLabelMin,
     EGraphObjTypeLabelGeometryPosition,
-    EGraphObjTypeLabelGeometryHeight,
-    EGraphObjTypeLabelGeometryWidth,
+    EGraphObjTypeLabelGeometryDY,
+    EGraphObjTypeLabelGeometryDX,
     EGraphObjTypeLabelGeometryLength,
     EGraphObjTypeLabelGeometryAngle,
+    EGraphObjTypeLabelMax = EGraphObjTypeLabelGeometryAngle,
     EGraphObjTypeUndefined = -1
 }   EGraphObjType;
 

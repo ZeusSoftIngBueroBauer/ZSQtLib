@@ -34,7 +34,55 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-/*! @brief
+/*! @brief Label to show the angle of the line between two shape points.
+
+    Examples for a Lines:
+
+                        P2
+                        +
+                        |
+               Anchor   |<--
+               Line1    |  90\°  AnchorLine2 (circle segment)
+               (end of  |     |
+               circle   x-----------AnchorLine0 (horizontal Line for 0°)
+               segment) |
+                        |
+                        |
+                        |
+                        +
+                        P1
+
+                       P1
+                       +
+                        \
+                      ---\--------\ AnchorLine2 (circle segment)
+                     /    \         \
+                  315°     \          \
+                   |        \           |
+                   |         x--------------AnchorLine0 (horizontal Line for 0°)
+                    |         \
+                     \         \AnchorLine1 (end of circle segment to center)
+                       \------ >\
+                                 \
+                                  \
+                                   +
+                                   P2
+
+    Example for a Rectangle (rotated by 90°):
+
+                 TopRight        BottomRight
+                    +-----------------+
+                    |                 |
+                    | Anchor  |<---   |
+                    | Line1   |  90\° AnchorLine2 (circle segment)
+                    | (end of |     | |
+                    x circle  x-------x--AnchorLine0 (horizontal Line for 0°)
+                    | segment)        |
+                    |                 |
+                    |                 |
+                    |                 |
+                    +-----------------+
+                 TopLeft         BottomLeft
 */
 class ZSDRAWDLL_API CGraphObjLabelGeometryAngle : public CGraphObjLabel
 //******************************************************************************
@@ -55,9 +103,25 @@ public: // overridables of base class QGraphicsItem
     int type() const override;
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
+public: // must overridables of base class QGraphicsItem
+    virtual QRectF boundingRect() const override;
+    virtual QPainterPath shape() const override;
+    virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridable auxiliary instance methods of base class CGraphObjLabel
     virtual void updatePosition() override;
+    virtual void updatePolarCoorsToLinkedSelPt() override;
     virtual void updateAnchorLines() override;
+protected: // instance members
+    /*!< Rectangle to draw the circle segment. */
+    QRectF m_rectAnchorLine2CircleSegment;
+    /*!< Rotation angle of the line between the two selection points. */
+    double m_fAnchorLine2Angle_degrees;
+    /*!< Draw settings used to draw the arrow heads at the ends of the circle segment. */
+    CDrawSettings m_drawSettingsArrowHeads;
+    /*!< Polygon points for arrow head at P1 (line start) */
+    QPolygonF m_plgP1ArrowHead;
+    /*!< Polygon points for arrow head at P2 (line end) */
+    QPolygonF m_plgP2ArrowHead;
 
 }; // class CGraphObjLabelGeometryAngle
 

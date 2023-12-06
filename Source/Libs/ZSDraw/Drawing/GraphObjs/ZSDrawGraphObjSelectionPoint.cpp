@@ -125,6 +125,9 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
 
+    double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
+    setStackingOrderValue(fZValueParent + 0.1, ERowVersion::Original);
+
     QObject::connect(
         m_selPt.m_pGraphObj, &CGraphObj::geometryChanged,
         this, &CGraphObj::onGraphObjParentGeometryChanged);
@@ -132,10 +135,6 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
         m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
         this, &CGraphObj::onGraphObjParentZValueChanged);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Undefined,
-            m_pTrcAdminObjCtorsAndDtor->getRuntimeInfoTraceDetailLevel());
-    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -177,7 +176,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjSelectionPoint::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeSelectionPoint;
+    return EGraphObjTypeSelectionPoint;
 }
 
 /*==============================================================================
@@ -623,17 +622,16 @@ void CGraphObjSelectionPoint::paint(
     QWidget* /*i_pWdgt*/ )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
-        /* strAddInfo   */ "" );
-
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjPaint->getRuntimeInfoTraceDetailLevel());
-    }
+        /* strAddInfo   */ strMthInArgs );
 
     i_pPainter->save();
 
@@ -1062,8 +1060,9 @@ void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphO
         /* strMethod    */ "onGraphObjParentZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_selPt.m_pGraphObj);
-    setZValue(pGraphicsItemParent->zValue() + 0.05);
+    // The selectin point should be drawn after the parent object is drawn.
+    double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
+    setStackingOrderValue(fZValueParent + 0.05);
 }
 
 /*==============================================================================
@@ -1088,10 +1087,6 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
         /* strObjName   */ m_strName,
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 
     QVariant valChanged = i_value;
 
@@ -1110,10 +1105,6 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
 
     valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
@@ -1150,10 +1141,6 @@ void CGraphObjSelectionPoint::updatePosition()
         /* strObjName   */ m_strName,
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 
     CPhysValPoint physValSelPointParent;
     if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
@@ -1175,11 +1162,6 @@ void CGraphObjSelectionPoint::updatePosition()
     setPos(ptSelScenePosParent);
 
     m_bUpdatePositionInProgress = false;
-
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 }
 
 /*==============================================================================

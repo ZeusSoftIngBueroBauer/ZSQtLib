@@ -172,7 +172,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjConnectionPoint::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeConnectionPoint;
+    return EGraphObjTypeConnectionPoint;
 }
 
 /*==============================================================================
@@ -885,17 +885,9 @@ void CGraphObjConnectionPoint::paint(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Selected:" + bool2Str(isSelected());
-        strMthInArgs += ", EditMode:" + m_editMode.toString();
-        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
-        strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strMthInArgs += ", Rect(x,y,w,h):(" + QString::number(rect().x()) + "," + QString::number(rect().y());
-        strMthInArgs += "," + QString::number(rect().width()) + "," + QString::number(rect().height()) + ")";
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1736,7 +1728,7 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         }
         else {
             setAcceptedMouseButtons(Qt::NoButton);
-            setZValue(m_fZValue); // restore ZValue as before selecting the object
+            resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
         }
         updateEditInfo();
         updateToolTip();

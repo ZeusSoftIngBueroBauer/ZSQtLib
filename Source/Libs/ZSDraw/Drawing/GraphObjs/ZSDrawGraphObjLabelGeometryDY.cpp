@@ -24,7 +24,7 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryWidth.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDY.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
@@ -58,7 +58,7 @@ using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
-class CGraphObjLabelGeometryWidth : public CGraphObjLabel
+class CGraphObjLabelGeometryDY : public CGraphObjLabel
 *******************************************************************************/
 
 /*==============================================================================
@@ -66,19 +66,19 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CGraphObjLabelGeometryWidth::CGraphObjLabelGeometryWidth(
+CGraphObjLabelGeometryDY::CGraphObjLabelGeometryDY(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strKey,
     const SGraphObjSelectionPoint& i_selPt1,
     const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     CGraphObjLabel(
-        /* pDrawingScene   */ i_pDrawingScene,
-        /* strKey          */ i_strKey,
-        /* strText         */ "Width",
-        /* type            */ EGraphObjTypeLabelGeometryWidth,
-        /* selPt           */ i_selPt1,
-        /* selPt           */ i_selPt2),
+        /* pDrawingScene */ i_pDrawingScene,
+        /* strKey        */ i_strKey,
+        /* strText       */ "dY",
+        /* type          */ EGraphObjTypeLabelGeometryDY,
+        /* selPt         */ i_selPt1,
+        /* selPt         */ i_selPt2),
     m_drawSettingsArrowHeads(EGraphObjTypeLine),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
@@ -117,7 +117,7 @@ CGraphObjLabelGeometryWidth::CGraphObjLabelGeometryWidth(
 } // ctor
 
 //------------------------------------------------------------------------------
-CGraphObjLabelGeometryWidth::~CGraphObjLabelGeometryWidth()
+CGraphObjLabelGeometryDY::~CGraphObjLabelGeometryDY()
 //------------------------------------------------------------------------------
 {
     m_bDtorInProgress = true;
@@ -144,10 +144,10 @@ public: // overridables of base class QGraphicsItem
 //------------------------------------------------------------------------------
 /*! @brief Overrides the type method of QGraphicsItem.
 */
-int CGraphObjLabelGeometryWidth::type() const
+int CGraphObjLabelGeometryDY::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeLabelGeometryWidth;
+    return EGraphObjTypeLabelGeometryDY;
 }
 
 /*==============================================================================
@@ -155,7 +155,7 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CGraphObj* CGraphObjLabelGeometryWidth::clone()
+CGraphObj* CGraphObjLabelGeometryDY::clone()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -165,7 +165,7 @@ CGraphObj* CGraphObjLabelGeometryWidth::clone()
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabelGeometryWidth* pGraphObj = nullptr;
+    CGraphObjLabelGeometryDY* pGraphObj = nullptr;
     return pGraphObj;
 }
 
@@ -174,21 +174,107 @@ public: // must overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjLabelGeometryWidth::paint(
+/*! Returns the bounding rectangle for the label.
+
+    This method is called by the graphics scene to detect the area to be updated
+    and for some other reasons (dispatching mouse events, ...).
+
+    If the label is hit, selected or if the anchor line to the linked grapical
+    object is visible the area to be updated on changing the items graphical
+    representation also includes the anchor line.
+
+    To get the rectangle around the labels text the base implementation of
+    QGraphicsSimpleTextItem need to be called directly.
+
+    @return Bounding rectangle.
+*/
+QRectF CGraphObjLabelGeometryDY::boundingRect() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "boundingRect",
+        /* strAddInfo   */ "" );
+
+    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+
+    // If the object is hit and the anchor line is visible also this area need to be updated.
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
+            rctBounding |= rctBoundingAnchorLine;
+        }
+    }
+    if (m_plgP1ArrowHead.size() > 0) {
+        rctBounding |= m_plgP1ArrowHead.boundingRect();
+    }
+    if (m_plgP2ArrowHead.size() > 0) {
+        rctBounding |= m_plgP2ArrowHead.boundingRect();
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - m_drawSettings.getPenWidth()/2,
+        rctBounding.top() - m_drawSettings.getPenWidth()/2,
+        rctBounding.width() + m_drawSettings.getPenWidth(),
+        rctBounding.height() + m_drawSettings.getPenWidth() );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qRect2Str(rctBounding));
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Called internally by QGraphicsItem::boundingRect.
+*/
+QPainterPath CGraphObjLabelGeometryDY::shape() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "shape",
+        /* strAddInfo   */ "" );
+
+    QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
+        }
+    }
+    if (m_plgP1ArrowHead.size() > 0) {
+        painterPath.addPolygon(m_plgP1ArrowHead);
+    }
+    if (m_plgP2ArrowHead.size() > 0) {
+        painterPath.addPolygon(m_plgP2ArrowHead);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
+        QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
+        QString strMthRet = qPainterPath2Str(pVThis, painterPath);
+        mthTracer.setMethodReturn(strMthRet);
+    }
+    return painterPath;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryDY::paint(
     QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* i_pStyleOption,
     QWidget* i_pWdgt )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
-        /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer);
-    }
+        /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
@@ -207,13 +293,9 @@ void CGraphObjLabelGeometryWidth::paint(
         const QLineF& anchorLine = m_anchorLines[2];
          if (!rctBounding.contains(anchorLine.p2())) {
              if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
-                if (m_bIsHit || isSelected()) {
-                    pn.setColor(Qt::blue);
-                }
-                else {
-                    pn.setColor(Qt::gray);
-                }
-                //pn.setStyle(Qt::DotLine);
+                QColor color = m_bIsHit || isSelected() ? Qt::blue : Qt::lightGray;
+                color.setAlpha(192);
+                pn.setColor(color);
                 i_pPainter->setPen(pn);
                 QBrush brsh(pn.color());
                 i_pPainter->setBrush(brsh);
@@ -233,7 +315,7 @@ protected: // auxiliary overridable instance methods of base class CGraphObjLabe
 //------------------------------------------------------------------------------
 /*! @brief 
 */
-void CGraphObjLabelGeometryWidth::updatePosition()
+void CGraphObjLabelGeometryDY::updatePosition()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -242,10 +324,6 @@ void CGraphObjLabelGeometryWidth::updatePosition()
         /* strObjName   */ m_strName,
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 
     CPhysValPoint physValSelPoint1Parent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
@@ -264,7 +342,7 @@ void CGraphObjLabelGeometryWidth::updatePosition()
     }
 
     CPhysValLine physValLine(physValSelPoint1Parent, physValSelPoint2Parent);
-    QString strText = physValLine.width().toString(EUnitFind::None, PhysValSubStr::Val);
+    QString strText = physValLine.height().toString(EUnitFind::None, PhysValSubStr::Val);
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {
@@ -295,11 +373,6 @@ void CGraphObjLabelGeometryWidth::updatePosition()
     updateAnchorLines();
 
     m_bUpdatePositionInProgress = false;
-
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -310,7 +383,7 @@ void CGraphObjLabelGeometryWidth::updatePosition()
     On moving the label the distance and the angle (polar coordinates) to the
     selection point have to be updated and saved.
 
-    For Width labels the linked selection point is always the center point
+    For Height labels the linked selection point is always the center point
     of the two shape points the label is linked to.
 
     Example for a horizontal line:
@@ -321,7 +394,7 @@ void CGraphObjLabelGeometryWidth::updatePosition()
          P1 +----------------x----------------+ P2
                           Center
 */
-void CGraphObjLabelGeometryWidth::updatePolarCoorsToLinkedSelPt()
+void CGraphObjLabelGeometryDY::updatePolarCoorsToLinkedSelPt()
 //------------------------------------------------------------------------------
 {
     // If the position is updated because the parent's geometry is changed,
@@ -382,25 +455,25 @@ void CGraphObjLabelGeometryWidth::updatePolarCoorsToLinkedSelPt()
     The anchor lines will be drawn to one of the selection points at the bounding rectangle
     or to one of the polygon shape points of the linked graphical object.
 
-    For the Width label three anchor lines are drawn. Two vertical lines through
-    selection point 1 and selection point 2 and a horizontal between the end points
+    For the Height label three anchor lines are drawn. Two hjorizontal lines through
+    selection point 1 and selection point 2 and a vertical between the end points
     of the vertical lines.
 
     Example for a diagonal line:
 
              P1
-              +
-       Anchor |\
-       Line0  | \
-              |  \ AnchorLine2
-              |<--x-->|
-                   \  |
-                    \ | Anchor
-                     \| Line1
-                      +
+              +-----------------+ AnchorLine0
+               \                |
+                \               |
+                 \              |
+                  x        AnchorLine2
+                   \            |
+                    \           |
+                     \          |
+                      +---------+ AnchorLine1
                       P2
 */
-void CGraphObjLabelGeometryWidth::updateAnchorLines()
+void CGraphObjLabelGeometryDY::updateAnchorLines()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -432,10 +505,10 @@ void CGraphObjLabelGeometryWidth::updateAnchorLines()
     QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
     QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
 
-    // Vertical lines.
-    QPointF ptLineP1End(lineSelPtSceneCoors.p1().x(), ptCenterScenePosThis.y());
+    // Horizontal lines.
+    QPointF ptLineP1End(ptCenterScenePosThis.x(), lineSelPtSceneCoors.p1().y());
     QLineF lineP1(lineSelPtSceneCoors.p1(), ptLineP1End);
-    QPointF ptLineP2End(lineSelPtSceneCoors.p2().x(), ptCenterScenePosThis.y());
+    QPointF ptLineP2End(ptCenterScenePosThis.x(), lineSelPtSceneCoors.p2().y());
     QLineF lineP2(lineSelPtSceneCoors.p2(), ptLineP2End);
 
     // As the anchor lines are painted by this object, they have to be translated into local coordinates.

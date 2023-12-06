@@ -291,6 +291,7 @@ protected: // auxiliary instance methods
     void forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsSceneMouseEvent* i_pEv);
     void forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv);
     void invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem);
+    void invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem);
     void paintGridLines(QPainter* i_pPainter);
 protected: // auxiliary instance methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
@@ -357,6 +358,7 @@ protected: // instance members
     ZS::System::CIdxTree* m_pGraphObjsIdxTree;
     ZS::System::CIdxTree* m_pGraphObjsIdxTreeClipboard;
     QList<QGraphicsItem*> m_arpGraphicsItemsAcceptingHoverEvents;
+    QList<QGraphicsItem*> m_arpGraphicsItemsBroughtToFront;
     double m_fRotAngleRes_degree;
     double m_fHitTolerance_px;
     bool m_bMouseDoubleClickEventInProcess;

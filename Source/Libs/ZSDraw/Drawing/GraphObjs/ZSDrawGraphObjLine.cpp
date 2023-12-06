@@ -124,8 +124,8 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameP1);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameP2);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
-    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameDX);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameDY);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameLength);
     m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
 
@@ -144,13 +144,13 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
             strText = getCenter(unit).toString();
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
         }
-        else if (strLabelName == c_strGeometryLabelNameHeight) {
+        else if (strLabelName == c_strGeometryLabelNameDY) {
             strText = getSize(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryHeight, 0, 1);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryDY, 0, 1);
         }
-        else if (strLabelName == c_strGeometryLabelNameWidth) {
+        else if (strLabelName == c_strGeometryLabelNameDX) {
             strText = getSize(unit).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryWidth, 0, 1);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryDX, 0, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameLength) {
             strText = getLength(unit).toString();
@@ -158,7 +158,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
             strText = getAngle(Units.Angle.Degree).toString();
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, 0, 1);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, 0 ,1);
         }
     }
 
@@ -191,10 +191,6 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     //pGraphicsEffect->setBlurRadius(10);
     //setGraphicsEffect(pGraphicsEffect);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Undefined,
-            m_pTrcAdminObjCtorsAndDtor->getRuntimeInfoTraceDetailLevel());
-    }
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -228,7 +224,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjLine::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeLine;
+    return EGraphObjTypeLine;
 }
 
 /*==============================================================================
@@ -1337,7 +1333,7 @@ QStringList CGraphObjLine::getGeometryLabelNames() const
 {
     static const QStringList s_strlstValueNames = {
         c_strGeometryLabelNameP1, c_strGeometryLabelNameP2, c_strGeometryLabelNameCenter,
-        c_strGeometryLabelNameWidth, c_strGeometryLabelNameHeight, c_strGeometryLabelNameLength,
+        c_strGeometryLabelNameDX, c_strGeometryLabelNameDY, c_strGeometryLabelNameLength,
         c_strGeometryLabelNameAngle
     };
     return s_strlstValueNames;
@@ -1379,8 +1375,7 @@ QRectF CGraphObjLine::boundingRect() const
         rctBounding.width() + m_drawSettings.getPenWidth(),
         rctBounding.height() + m_drawSettings.getPenWidth() );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthRet = qRect2Str(rctBounding);
-        mthTracer.setMethodReturn(strMthRet);
+        mthTracer.setMethodReturn(qRect2Str(rctBounding));
     }
     return rctBounding;
 }
@@ -1421,16 +1416,16 @@ void CGraphObjLine::paint(
     QWidget* /*i_pWdgt*/ )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
-        /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjPaint->getRuntimeInfoTraceDetailLevel());
-    }
+        /* strAddInfo   */ strMthInArgs );
 
     i_pPainter->save();
     i_pPainter->setRenderHint(QPainter::Antialiasing);
@@ -1733,10 +1728,6 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ m_strName,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjMouseClickEvents->getRuntimeInfoTraceDetailLevel());
-    }
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
     CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
@@ -1774,10 +1765,6 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             updateToolTip();
         }
     }
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjMouseClickEvents->getRuntimeInfoTraceDetailLevel());
-    }
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
@@ -1794,10 +1781,6 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjMouseMoveEvents->getRuntimeInfoTraceDetailLevel());
-    }
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
@@ -1830,10 +1813,6 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         else if (m_editMode == EEditMode::EditText) {
         }
     }
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjMouseMoveEvents->getRuntimeInfoTraceDetailLevel());
-    }
 } // mouseMoveEvent
 
 //------------------------------------------------------------------------------
@@ -1850,10 +1829,6 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjMouseClickEvents->getRuntimeInfoTraceDetailLevel());
-    }
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
@@ -1895,10 +1870,6 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if (bIsSelectableReset) {
         setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
-    }
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjMouseClickEvents->getRuntimeInfoTraceDetailLevel());
     }
 } // mouseReleaseEvent
 
@@ -1954,10 +1925,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         /* strObjName   */ m_strName,
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 
     QVariant valChanged = i_value;
 
@@ -1988,7 +1955,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         else {
             setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
-            setZValue(m_fZValue); // restore ZValue as before selecting the object
+            resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             m_editMode = EEditMode::None;
             m_editResizeMode = EEditResizeMode::None;
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
@@ -2050,10 +2017,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 
     valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);

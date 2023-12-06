@@ -108,12 +108,13 @@ ZSDRAWDLL_API QRectF resizeRect(
     CEnumSelectionPoint*       o_pSelPt = nullptr );
 
 ZSDRAWDLL_API QPolygonF resizePolygon(
-    const QPolygonF& i_plg,                         // Resize from old bounding rect of this polygon
-    const QRectF&    i_rctBoundingNew,              // to the new bounding rectangle.
-    const QRectF&    i_rctBoundingOld = QRectF() ); // (optional if already known)
+    const QPolygonF& i_plg,
+    const QRectF&    i_rctBoundingNew,
+    const QRectF&    i_rctBoundingOld = QRectF() );
 
 ZSDRAWDLL_API QRectF boundingRect( const QPointF& i_pt, double i_fRadius );
-ZSDRAWDLL_API QPolygonF rect2Polygon( const QRectF& i_rct, int i_iSelPtsCount = -1, const ESelectionPoint* i_pSelPts = nullptr ); // if != nullptr must contain exactly 4 elements (for each corner)
+ZSDRAWDLL_API QPolygonF line2Polygon( const QLineF& i_rct);
+ZSDRAWDLL_API QPolygonF rect2Polygon( const QRectF& i_rct, int i_iSelPtsCount = -1, const ESelectionPoint* i_pSelPts = nullptr );
 ZSDRAWDLL_API bool isLineHit( const QLineF& i_lin, const QPointF& i_pt, double i_fTolerance );
 ZSDRAWDLL_API bool isRectHit( const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
 ZSDRAWDLL_API bool isEllipseHit( const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo );
@@ -124,8 +125,8 @@ ZSDRAWDLL_API QPointF rotatePoint( const QPointF& i_ptCenter, const QPointF& i_p
 ZSDRAWDLL_API QPolygonF rotateRect( const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad );
 ZSDRAWDLL_API QPolygonF rotatePolygon( const QPointF& i_ptCenter, const QPolygonF& i_plg, double i_fAngle_rad );
 ZSDRAWDLL_API QPolygonF normalizePolygon( const QPolygonF& i_plg, int i_iPrecision = 0 );
-ZSDRAWDLL_API QPointF getCenterPoint( const QLineF& i_line ); // polygonRect must contain exactly 4 elements
-ZSDRAWDLL_API QPointF getCenterPointOfPolygonRect( const QPolygonF& i_plgRect ); // plgRect must contain exactly 4 elements
+ZSDRAWDLL_API QPointF getCenterPoint( const QLineF& i_line );
+ZSDRAWDLL_API QPointF getCenterPointOfPolygonRect( const QPolygonF& i_plgRect );
 ZSDRAWDLL_API QPointF getMassCenterPointOfPolygon( const QPolygonF& i_plg );
 ZSDRAWDLL_API QPolygonF getBoundingRectPolygon( const QPolygonF& i_plg );
 ZSDRAWDLL_API QPolygonF getEllipseFocusPoints( const QRectF& i_rct );
@@ -134,7 +135,7 @@ ZSDRAWDLL_API QPointF getSelectionPointCoors( const QLineF& i_lin, ESelectionPoi
 ZSDRAWDLL_API QPointF getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i_selPt );
 ZSDRAWDLL_API QPointF getSelectionPointCoors( const QLineF& i_lin, const QRectF& i_rct, ESelectionPoint* o_pSelPt = nullptr );
 ZSDRAWDLL_API QLineF getLineFromPolar(double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line);
-ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt);
+ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px = 0.0);
 
 // Format: x/y (e.g. "2.3/4.5")
 ZSDRAWDLL_API QString point2Str( const QPoint& i_pt );

@@ -104,6 +104,9 @@ CGraphObjLabel::CGraphObjLabel(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
 
+    double fZValueParent = i_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
+    setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);
+
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
         this, &CGraphObj::onGraphObjParentGeometryChanged);
@@ -111,10 +114,6 @@ CGraphObjLabel::CGraphObjLabel(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
         this, &CGraphObj::onGraphObjParentZValueChanged);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Undefined,
-            m_pTrcAdminObjCtorsAndDtor->getRuntimeInfoTraceDetailLevel());
-    }
 } // ctor
 
 /*==============================================================================
@@ -127,7 +126,7 @@ CGraphObjLabel::CGraphObjLabel(
     const QString& i_strKey,
     const QString& i_strText,
     EGraphObjType i_labelType,
-    const SGraphObjSelectionPoint& i_selPt1) :
+    const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     CGraphObj(
         /* pDrawingScene       */ i_pDrawingScene,
@@ -137,16 +136,19 @@ CGraphObjLabel::CGraphObjLabel(
         /* strObjName          */ i_strKey,
         /* idxTreeEntryType    */ EEntryType::Leave ),
     QGraphicsSimpleTextItem(i_strText),
-    m_labelDscr(i_labelType, i_strKey, i_selPt1),
+    m_labelDscr(i_labelType, i_strKey, i_selPt),
     m_anchorLines(),
     m_bUpdatePositionInProgress(false),
     m_bPositionUpdateOnParentGeometryChanged(false)
 {
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
-    if (i_selPt1.m_pGraphObj == nullptr) {
+    if (i_selPt.m_pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
+
+    double fZValueParent = i_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
+    setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);
 
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
@@ -183,6 +185,9 @@ CGraphObjLabel::CGraphObjLabel(
     if (i_selPt1.m_pGraphObj == nullptr || i_selPt2.m_pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
+
+    double fZValueParent = i_selPt1.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
+    setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);
 
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
@@ -242,7 +247,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjLabel::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeLabel;
+    return EGraphObjTypeLabel;
 }
 
 /*==============================================================================
@@ -741,14 +746,43 @@ QRectF CGraphObjLabel::boundingRect() const
             rctBounding |= rctBoundingAnchorLine;
         }
     }
-
+    rctBounding = QRectF(
+        rctBounding.left() - m_drawSettings.getPenWidth()/2,
+        rctBounding.top() - m_drawSettings.getPenWidth()/2,
+        rctBounding.width() + m_drawSettings.getPenWidth(),
+        rctBounding.height() + m_drawSettings.getPenWidth() );
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthReturn =
-            "CenterPos {" + point2Str(rctBounding.center()) + "}" +
-            ", Rect {" + qRect2Str(rctBounding) + "}";
-        mthTracer.setMethodReturn(strMthReturn);
+        mthTracer.setMethodReturn(qRect2Str(rctBounding));
     }
     return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Called internally by QGraphicsItem::boundingRect.
+*/
+QPainterPath CGraphObjLabel::shape() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "shape",
+        /* strAddInfo   */ "" );
+
+    QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
+        QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
+        QString strMthRet = qPainterPath2Str(pVThis, painterPath);
+        mthTracer.setMethodReturn(strMthRet);
+    }
+    return painterPath;
 }
 
 //------------------------------------------------------------------------------
@@ -758,15 +792,16 @@ void CGraphObjLabel::paint(
     QWidget* i_pWdgt )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
-        /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer);
-    }
+        /* strAddInfo   */ strMthInArgs );
 
     i_pPainter->save();
     i_pPainter->setRenderHint(QPainter::Antialiasing);
@@ -800,10 +835,9 @@ void CGraphObjLabel::paint(
     //i_pPainter->drawLine(lineCenterDiag2);
     //#pragma message(__TODO__"To be removed")
 
-    // Draw anchor line to selection point of linked object if the label is hit by
-    // mouse move (hover) or if the label is selected.
-    // If the anchor line is set to be visible draw the anchor line in a different
-    // color (blue) than if the line is just hit (gray).
+    // Draw anchor line to selection point of linked object if the label is hit,
+    // hovered, selected or if the anchor line is set to be visible.
+    // Use a different color if the line is hit, hovered or selected.
     if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
         // P1 of the anchor line is on one of the center points of the
         // bounding rectangle of this label.
@@ -814,13 +848,9 @@ void CGraphObjLabel::paint(
         for (const QLineF& anchorLine : m_anchorLines) {
             if (!rctBounding.contains(anchorLine.p2())) {
                 if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
-                    if (m_bIsHit || isSelected()) {
-                        pn.setColor(Qt::blue);
-                    }
-                    else {
-                        pn.setColor(Qt::gray);
-                    }
-                    //pn.setStyle(Qt::DotLine);
+                    QColor color = m_bIsHit || isSelected() ? Qt::blue : Qt::lightGray;
+                    color.setAlpha(192);
+                    pn.setColor(color);
                     i_pPainter->setPen(pn);
                     i_pPainter->drawLine(anchorLine);
                 }
@@ -1052,8 +1082,10 @@ void CGraphObjLabel::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
         /* strMethod    */ "onGraphObjParentZValueChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(m_labelDscr.m_selPt1.m_pGraphObj);
-    setZValue(pGraphicsItemParent->zValue() + 0.1);
+    // The labels anchor line should be drawn before the parent object is drawn.
+    // Otherwise the anchor lines may cover the painting of the parent object.
+    double fZValueParent = m_labelDscr.m_selPt1.m_pGraphObj->getStackingOrderValue();
+    setStackingOrderValue(fZValueParent - 0.1);
 }
 
 /*==============================================================================
@@ -1079,10 +1111,6 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
         /* strObjName   */ m_strName,
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 
     QVariant valChanged = i_value;
 
@@ -1110,10 +1138,6 @@ QVariant CGraphObjLabel::itemChange( GraphicsItemChange i_change, const QVariant
 
     valChanged = QGraphicsItem::itemChange(i_change, i_value);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthRet = qGraphicsItemChange2Str(i_change, valChanged, false);
         mthTracer.setMethodReturn(strMthRet);
@@ -1148,10 +1172,6 @@ void CGraphObjLabel::updatePosition()
         /* strObjName   */ m_strName,
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 
     m_bUpdatePositionInProgress = true;
 
@@ -1175,11 +1195,6 @@ void CGraphObjLabel::updatePosition()
     updateAnchorLines();
 
     m_bUpdatePositionInProgress = false;
-
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 }
 
 //------------------------------------------------------------------------------

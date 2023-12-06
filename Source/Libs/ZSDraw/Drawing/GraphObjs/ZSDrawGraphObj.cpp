@@ -27,10 +27,10 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryHeight.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDY.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryWidth.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
@@ -753,8 +753,8 @@ const QString CGraphObj::c_strLabelName = "Name";
 const QString CGraphObj::c_strGeometryLabelNameP1 = "P1";
 const QString CGraphObj::c_strGeometryLabelNameP2 = "P2";
 const QString CGraphObj::c_strGeometryLabelNameCenter = "Center";
-const QString CGraphObj::c_strGeometryLabelNameWidth = "Width";
-const QString CGraphObj::c_strGeometryLabelNameHeight = "Height";
+const QString CGraphObj::c_strGeometryLabelNameDX = "dX";
+const QString CGraphObj::c_strGeometryLabelNameDY = "dY";
 const QString CGraphObj::c_strGeometryLabelNameLength = "Length";
 const QString CGraphObj::c_strGeometryLabelNameAngle = "Angle";
 
@@ -820,7 +820,7 @@ CGraphObj::CGraphObj(
     m_bIsHit(false),
     m_editMode(EEditMode::None),
     m_editResizeMode(EEditResizeMode::None),
-    m_fZValue(0.0),
+    m_arfZValues(CEnumRowVersion::count(), 0.0),
     m_bBoundRectVisible(false),
     m_idxSelPtSelectedPolygon(-1),
     m_arpSelPtsPolygon(),
@@ -1046,7 +1046,7 @@ CGraphObj::~CGraphObj()
     m_bIsHit = false;
     m_editMode = static_cast<EEditMode>(0);
     m_editResizeMode = static_cast<EEditResizeMode>(0);
-    m_fZValue = 0.0;
+    //m_arfZValues.clear();
     m_bBoundRectVisible = false;
     m_idxSelPtSelectedPolygon = 0;
     //m_arpSelPtsPolygon;
@@ -1317,7 +1317,7 @@ bool CGraphObj::isSelectionPoint() const
 bool CGraphObj::isLabel() const
 //------------------------------------------------------------------------------
 {
-    return m_type == EGraphObjTypeLabel;
+    return ((m_type >= EGraphObjTypeLabelMin) && (m_type <= EGraphObjTypeLabelMax));
 }
 
 /*==============================================================================
@@ -3744,7 +3744,7 @@ double CGraphObj::bringToFront()
         /* strMethod    */ "CGraphObj::bringToFront",
         /* strAddInfo   */ "" );
 
-    double fZValue = m_fZValue;
+    double fZValue = 0.0;
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
         QRectF rctBounding = pGraphicsItem->boundingRect();
@@ -3752,6 +3752,7 @@ double CGraphObj::bringToFront()
         QList<QGraphicsItem*> arpGraphicsItemsIntersected = m_pDrawingScene->items(rctBounding);
         m_pDrawingScene->bringToFront(pGraphicsItem, arpGraphicsItemsIntersected);
         fZValue = pGraphicsItem->zValue();
+        m_arfZValues[static_cast<int>(ERowVersion::Current)] = fZValue;
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(QString::number(fZValue));
@@ -3760,16 +3761,27 @@ double CGraphObj::bringToFront()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief
+/*! @brief Sets the stacking order value (zValue) of the graphical object.
 
     You must call this method instead of setZValue of QGraphicsItem.
+
+    @param [in] i_fZValue
+    @param [in] i_version
+         Two values are stored. The original version is the ZValue which
+         will be initially used and if resetStackingOrderValueToOriginalValue
+         is called. The current version is the ZValue which is currently set
+         at the graphics item. The current and original versions are mainly
+         used to temporarily modify the ZValue to bring the object in front
+         and back again.
+
+    @return zValue which was set before at the graphics item
 */
-void CGraphObj::setStackingOrderValue( double i_fZValue )
+double CGraphObj::setStackingOrderValue(double i_fZValue, ERowVersion i_version)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fZValue, 'f', 1);
+        strMthInArgs = QString::number(i_fZValue, 'f', 1) + ", " + CEnumRowVersion(i_version).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3778,18 +3790,65 @@ void CGraphObj::setStackingOrderValue( double i_fZValue )
         /* strMethod    */ "CGraphObj::setStackingOrderValue",
         /* strAddInfo   */ strMthInArgs );
 
+    double fZValuePrev = 0.0;
+    m_arfZValues[static_cast<int>(i_version)] = i_fZValue;
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
-        m_fZValue = i_fZValue;
-        pGraphicsItem->setZValue(m_fZValue);
+        fZValuePrev = pGraphicsItem->zValue();
+        pGraphicsItem->setZValue(i_fZValue);
     }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString::number(fZValuePrev, 'f', 1));
+    }
+    return fZValuePrev;
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getStackingOrderValue() const
+double CGraphObj::getStackingOrderValue(ERowVersion i_version) const
 //------------------------------------------------------------------------------
 {
-    return m_fZValue;
+    return m_arfZValues[static_cast<int>(i_version)];
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the stacking order value (zValue) of the graphical object
+           to the original value.
+
+    Two values are stored. The original version is the ZValue which
+    will be initially used and if resetStackingOrderValueToOriginalValue
+    is called. The current version is the ZValue which is currently set
+    at the graphics item. The current and original versions are mainly
+    used to temporarily modify the ZValue to bring the object in front
+    and back again.
+
+    @return zValue which was set before at the graphics item
+*/
+double CGraphObj::resetStackingOrderValueToOriginalValue()
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(m_arfZValues[static_cast<int>(ERowVersion::Original)], 'f', 1);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::resetStackingOrderValueToOriginalValue",
+        /* strAddInfo   */ strMthInArgs );
+
+    double fZValuePrev = 0.0;
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+    if (pGraphicsItem != nullptr) {
+        fZValuePrev = pGraphicsItem->zValue();
+        m_arfZValues[static_cast<int>(ERowVersion::Current)] =
+            m_arfZValues[static_cast<int>(ERowVersion::Original)];
+        pGraphicsItem->setZValue(m_arfZValues[static_cast<int>(ERowVersion::Original)]);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString::number(fZValuePrev, 'f', 1));
+    }
+    return fZValuePrev;
 }
 
 /*==============================================================================
@@ -4300,7 +4359,6 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                     // In addition selection points must be directly added to the graphics scene as they
                     // should not be indicated in the index tree.
                     m_pDrawingScene->addItem(pGraphObjSelPt);
-                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
 
                     // Event filters can only be installed on items in a scene.
                     pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
@@ -4370,7 +4428,6 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
 //                        ptSel = pGraphicsItem->mapToScene(ptSel);
 //                    }
 //                    pGraphObjSelPt->setPos(ptSel);
-//                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
 //                }
 //            }
 //        }
@@ -4432,7 +4489,6 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 // In addition selection points must be directly added to the graphics scene as they
                 // should not be indicated in the index tree.
                 m_pDrawingScene->addItem(pGraphObjSelPt);
-                pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
 
                 // Event filters can only be installed on items in a scene.
                 pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
@@ -4465,7 +4521,6 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 //                    QPointF ptSel = i_plg[idxSelPt];
 //                    ptSel = pGraphicsItem->mapToScene(ptSel);
 //                    pGraphObjSelPt->setPos(ptSel);
-//                    pGraphObjSelPt->setZValue(pGraphicsItem->zValue() + 0.05);
 //                }
 //            }
 //        }
@@ -5017,8 +5072,8 @@ void CGraphObj::showLabel(const QString& i_strName)
         pGraphObjLabel->setVisible(true);
         pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(labelDscr.m_polarCoorsToLinkedSelPt);
         labelDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLine() : pGraphObjLabel->hideAnchorLine();
-        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-        pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.1);
+        // The labels anchor line should be drawn before the object is drawn.
+        // Otherwise the anchor lines may cover the painting of this object.
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -5332,12 +5387,12 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
             pGraphObjLabel = new CGraphObjLabelGeometryPosition(
                 m_pDrawingScene, i_strName, labelDscr.m_selPt1);
         }
-        else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryHeight) {
-            pGraphObjLabel = new CGraphObjLabelGeometryHeight(
+        else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryDY) {
+            pGraphObjLabel = new CGraphObjLabelGeometryDY(
                 m_pDrawingScene, i_strName, labelDscr.m_selPt1, labelDscr.m_selPt2);
         }
-        else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryWidth) {
-            pGraphObjLabel = new CGraphObjLabelGeometryWidth(
+        else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryDX) {
+            pGraphObjLabel = new CGraphObjLabelGeometryDX(
                 m_pDrawingScene, i_strName, labelDscr.m_selPt1, labelDscr.m_selPt2);
         }
         else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryLength) {
@@ -5369,8 +5424,8 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
         // should not be indicated in the index tree.
         m_pDrawingScene->addItem(pGraphObjLabel);
         pGraphObjLabel->setVisible(true);
-        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-        pGraphObjLabel->setZValue(pGraphicsItem->zValue() + 0.1);
+        // The labels anchor line should be drawn before the object is drawn.
+        // Otherwise the anchor lines may cover the painting of this object.
         emit_geometryLabelChanged(i_strName);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
@@ -5615,7 +5670,7 @@ protected: // overridables
         Name of the label. The name must be unique otherwise no label is created.
     @param [in] i_labelType
         Range [EGraphObjTypeLabelGeometryPosition,
-               EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
+               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
                EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
         If not empty defines the text to be shown.
     @param [in] i_selPt1
@@ -5672,7 +5727,7 @@ bool CGraphObj::addGeometryLabel(
         Name of the label. The name must be unique otherwise no label is created.
     @param [in] i_labelType
         Range [EGraphObjTypeLabelGeometryPosition,
-               EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
+               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
                EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
         If not empty defines the text to be shown.
     @param [in] i_idxPt1

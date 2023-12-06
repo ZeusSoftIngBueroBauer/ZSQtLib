@@ -649,10 +649,10 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameCenter) {
                             varData = m_physValLine.center().x().toString();
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameWidth) {
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
                             varData = m_physValLine.width().toString();
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameHeight) {
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
                             varData = m_physValLine.height().toString();
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameLength) {
@@ -672,10 +672,10 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameCenter) {
                             varData = QVariant::fromValue(m_physValLine.center().x());
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameWidth) {
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
                             varData = QVariant::fromValue(m_physValLine.width());
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameHeight) {
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
                             varData = QVariant::fromValue(m_physValLine.height());
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameLength) {
@@ -695,7 +695,7 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                         if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameAngle) {
                             varData = 360.0;
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameWidth) {
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
                                 varData = -drawingSize.metricImageWidth().getVal();
                             }
@@ -710,7 +710,7 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                                 varData = -drawingSize.imageWidthInPixels();
                             }
                         }
-                        if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameHeight) {
+                        if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
                                 varData = -drawingSize.metricImageHeight().getVal();
                             }
@@ -928,13 +928,13 @@ bool CModelGraphObjGeometry::setData(
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameWidth) {
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValLine.setWidth(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
-                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameHeight) {
+                        else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValLine.setHeight(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
@@ -1136,10 +1136,10 @@ Qt::ItemFlags CModelGraphObjGeometry::flags(const QModelIndex& i_modelIdx) const
                     else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameCenter) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
-                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameWidth) {
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
-                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameHeight) {
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
                     else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameLength) {
@@ -1160,10 +1160,10 @@ Qt::ItemFlags CModelGraphObjGeometry::flags(const QModelIndex& i_modelIdx) const
                     else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameCenter) {
                         uFlags = uFlags | Qt::ItemIsEditable;
                     }
-                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameWidth) {
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
                         uFlags = uFlags & ~Qt::ItemIsSelectable;
                     }
-                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameHeight) {
+                    else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
                         uFlags = uFlags & ~Qt::ItemIsSelectable;
                     }
                     else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameLength) {

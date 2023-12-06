@@ -171,7 +171,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjGroup::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeGroup;
+    return EGraphObjTypeGroup;
 }
 
 /*==============================================================================
@@ -2827,27 +2827,15 @@ void CGraphObjGroup::paint(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
 
     i_pPainter->save();
 
@@ -3888,7 +3876,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         else {
             setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
-            setZValue(m_fZValue); // restore ZValue as before selecting the object
+            resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
             m_editMode = EEditMode::None;
             m_editResizeMode = EEditResizeMode::None;
             m_selPtSelectedBoundingRect = ESelectionPoint::None;

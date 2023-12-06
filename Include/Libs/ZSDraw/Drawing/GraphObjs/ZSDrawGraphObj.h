@@ -434,8 +434,8 @@ public: // type definitions and constants
     static const QString c_strGeometryLabelNameP1;
     static const QString c_strGeometryLabelNameP2;
     static const QString c_strGeometryLabelNameCenter;
-    static const QString c_strGeometryLabelNameWidth;
-    static const QString c_strGeometryLabelNameHeight;
+    static const QString c_strGeometryLabelNameDX;
+    static const QString c_strGeometryLabelNameDY;
     static const QString c_strGeometryLabelNameLength;
     static const QString c_strGeometryLabelNameAngle;
 public: // class methods
@@ -634,8 +634,9 @@ public: // overridables
     virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
 public: // overridables
     virtual double bringToFront();
-    virtual void setStackingOrderValue( double i_fZValue );
-    double getStackingOrderValue() const;
+    virtual double setStackingOrderValue(double i_fZValue, ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current);
+    double getStackingOrderValue(ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current) const;
+    double resetStackingOrderValueToOriginalValue();
 public: // overridables
     virtual void showBoundingRect();
     virtual void hideBoundingRect();
@@ -816,8 +817,12 @@ protected: // instance members
          will be resized. */
     CEnumEditResizeMode m_editResizeMode;
     /*!< Defines the Z-Value which again defines the drawing order within the list
-         of graphics item of the drawing scene. */
-    double m_fZValue;
+         of graphics item of the drawing scene.
+         Two values are stored. The original version is the ZValue which will be initially used
+         and if resetStackingOrderValueToOriginalValue is called. The current version is the ZValue
+         which is currently set at the graphics item. The current and original versions are mainly
+         used to temporarily modify the ZValue to bring the object in front and back again. */
+    QVector<double> m_arfZValues;
     /*!< Flag indicating whether the bounding rectangle is drawn and visible. */
     bool m_bBoundRectVisible;
     /*!< Currently selected selection point of the items polygon. */

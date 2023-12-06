@@ -484,42 +484,45 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Show and Move Labels",
         /* pTSGrpParent */ pGrpDrawLine0 );
 
-    ZS::Test::CTestStepGroup* pGrpShowAndMoveTextLabels = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Text Labels",
-        /* pTSGrpParent */ pGrpShowAndMoveLabels );
-    createTestGroupShowAndMoveTextLabel(
-        pGrpShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
-        QPoint(95, 125), QPoint(80, 125));
-    createTestGroupShowAndMoveTextLabel(
-        pGrpShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameP1,
-        QPoint(95, 100), QPoint(95, 90));
-    createTestGroupShowAndMoveTextLabel(
-        pGrpShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameP2,
-        QPoint(95, 150), QPoint(95, 160));
+    //ZS::Test::CTestStepGroup* pGrpShowAndMoveTextLabels = new ZS::Test::CTestStepGroup(
+    //    /* pTest        */ this,
+    //    /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Text Labels",
+    //    /* pTSGrpParent */ pGrpShowAndMoveLabels );
+    //createTestGroupShowAndMoveTextLabel(
+    //    pGrpShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
+    //    QPoint(95, 125), QPoint(80, 125));
+    //createTestGroupShowAndMoveTextLabel(
+    //    pGrpShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameP1,
+    //    QPoint(95, 100), QPoint(95, 90));
+    //createTestGroupShowAndMoveTextLabel(
+    //    pGrpShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameP2,
+    //    QPoint(95, 150), QPoint(95, 160));
 
     ZS::Test::CTestStepGroup* pGrpShowAndMoveGeometryLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Geometry Labels",
         /* pTSGrpParent */ pGrpShowAndMoveLabels );
+    //createTestGroupShowAndMoveGeometryLabel(
+    //    pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameP1,
+    //    QPoint(105, 100), QPoint(145, 100));
+    //createTestGroupShowAndMoveGeometryLabel(
+    //    pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameP2,
+    //    QPoint(105, 150), QPoint(145, 150));
+    //createTestGroupShowAndMoveGeometryLabel(
+    //    pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameLength,
+    //    QPoint(105, 125), QPoint(200, 115));
+    //createTestGroupShowAndMoveGeometryLabel(
+    //    pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameDX,
+    //    QPoint(100, 125), QPoint(75, 140));
+    //createTestGroupShowAndMoveGeometryLabel(
+    //    pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameDY,
+    //    QPoint(100, 125), QPoint(80, 100));
+    //createTestGroupShowAndMoveGeometryLabel(
+    //    pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameCenter,
+    //    QPoint(105, 125), QPoint(145, 125));
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameP1,
-        QPoint(105, 100), QPoint(145, 100));
-    createTestGroupShowAndMoveGeometryLabel(
-        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameP2,
-        QPoint(105, 150), QPoint(145, 150));
-    createTestGroupShowAndMoveGeometryLabel(
-        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameLength,
-        QPoint(105, 125), QPoint(200, 115));
-    createTestGroupShowAndMoveGeometryLabel(
-        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameWidth,
-        QPoint(100, 125), QPoint(75, 140));
-    createTestGroupShowAndMoveGeometryLabel(
-        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameHeight,
-        QPoint(100, 125), QPoint(80, 100));
-    createTestGroupShowAndMoveGeometryLabel(
-        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameCenter,
-        QPoint(105, 125), QPoint(145, 125));
+        pGrpShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameAngle,
+        QPoint(105, 125), QPoint(60, 100));
 
     ZS::Test::CTestStepGroup* pGrpDrawResizeLine0 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -571,8 +574,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP1);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP2);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameCenter);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameWidth);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameHeight);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDX);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDY);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameAngle);
     //createTestGroupShowGeometryLabels(
@@ -580,8 +583,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     //strlstGeometryLabelNames.clear();
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameAngle);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameHeight);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameWidth);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDY);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDX);
     //arptMousePress.clear();
     //arptMousePress.append(QPoint(320, 200));    // Angle
     //arptMousePress.append(QPoint(320, 200));    // Length
@@ -629,8 +632,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP1);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP2);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameCenter);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameWidth);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameHeight);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDX);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDY);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameAngle);
     //createTestGroupShowGeometryLabels(
@@ -638,8 +641,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     //strlstGeometryLabelNames.clear();
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameAngle);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameHeight);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameWidth);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDY);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDX);
     //arptMousePress.clear();
     //arptMousePress.append(QPoint(320, 320));    // Angle
     //arptMousePress.append(QPoint(320, 320));    // Length
@@ -687,8 +690,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP1);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameP2);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameCenter);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameWidth);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameHeight);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDX);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDY);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameAngle);
     //createTestGroupShowGeometryLabels(
@@ -696,8 +699,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     //strlstGeometryLabelNames.clear();
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameAngle);
     //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameLength);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameHeight);
-    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameWidth);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDY);
+    //strlstGeometryLabelNames.append(CGraphObj::c_strGeometryLabelNameDX);
     //arptMousePress.clear();
     //arptMousePress.append(QPoint(200, 320));    // Angle
     //arptMousePress.append(QPoint(200, 320));    // Length

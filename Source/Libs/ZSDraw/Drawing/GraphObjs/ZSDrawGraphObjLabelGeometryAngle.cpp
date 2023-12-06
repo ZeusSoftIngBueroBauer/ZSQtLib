@@ -73,12 +73,17 @@ CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
     const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     CGraphObjLabel(
-        /* pDrawingScene   */ i_pDrawingScene,
-        /* strKey          */ i_strKey,
-        /* strText         */ "Angle",
-        /* type            */ EGraphObjTypeLabelGeometryAngle,
-        /* selPt           */ i_selPt1,
-        /* selPt           */ i_selPt2)
+        /* pDrawingScene */ i_pDrawingScene,
+        /* strKey        */ i_strKey,
+        /* strText       */ "Angle",
+        /* type          */ EGraphObjTypeLabelGeometryAngle,
+        /* selPt1        */ i_selPt1,
+        /* selPt2        */ i_selPt2),
+    m_fAnchorLine2Angle_degrees(0.0),
+    m_rectAnchorLine2CircleSegment(),
+    m_drawSettingsArrowHeads(EGraphObjTypeLine),
+    m_plgP1ArrowHead(),
+    m_plgP2ArrowHead()
 {
     createTraceAdminObjs("Labels::" + ClassName());
 
@@ -94,6 +99,21 @@ CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
         /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
+
+    m_drawSettingsArrowHeads.setLineEndStyle(ELinePoint::Start, ELineEndStyle::ArrowHead);
+    m_drawSettingsArrowHeads.setArrowHeadBaseLineType(ELinePoint::Start, EArrowHeadBaseLineType::Normal);
+    m_drawSettingsArrowHeads.setArrowHeadFillStyle(ELinePoint::Start, EArrowHeadFillStyle::SolidPattern);
+    m_drawSettingsArrowHeads.setArrowHeadWidth(ELinePoint::Start, EArrowHeadWidth::Thin);
+    m_drawSettingsArrowHeads.setArrowHeadLength(ELinePoint::Start, EArrowHeadLength::Short);
+
+    m_drawSettingsArrowHeads.setLineEndStyle(ELinePoint::End, ELineEndStyle::ArrowHead);
+    m_drawSettingsArrowHeads.setArrowHeadBaseLineType(ELinePoint::End, EArrowHeadBaseLineType::Normal);
+    m_drawSettingsArrowHeads.setArrowHeadFillStyle(ELinePoint::End, EArrowHeadFillStyle::SolidPattern);
+    m_drawSettingsArrowHeads.setArrowHeadWidth(ELinePoint::End, EArrowHeadWidth::Thin);
+    m_drawSettingsArrowHeads.setArrowHeadLength(ELinePoint::End, EArrowHeadLength::Short);
+
+    m_anchorLines.append(QLineF());
+    m_anchorLines.append(QLineF());
 
 } // ctor
 
@@ -112,6 +132,12 @@ CGraphObjLabelGeometryAngle::~CGraphObjLabelGeometryAngle()
 
     emit_aboutToBeDestroyed();
 
+    //m_rectAnchorLine2CircleSegment;
+    m_fAnchorLine2Angle_degrees = 0.0;
+    //m_drawSettingsArrowHeads;
+    //m_plgP1ArrowHead;
+    //m_plgP2ArrowHead;
+
 } // dtor
 
 /*==============================================================================
@@ -124,7 +150,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjLabelGeometryAngle::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeLabelGeometryAngle;
+    return EGraphObjTypeLabelGeometryAngle;
 }
 
 /*==============================================================================
@@ -145,6 +171,141 @@ CGraphObj* CGraphObjLabelGeometryAngle::clone()
     CGraphObjLabelGeometryAngle* pGraphObj = nullptr;
     return pGraphObj;
 }
+
+/*==============================================================================
+public: // must overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! Returns the bounding rectangle for the label.
+
+    This method is called by the graphics scene to detect the area to be updated
+    and for some other reasons (dispatching mouse events, ...).
+
+    If the label is hit, selected or if the anchor line to the linked grapical
+    object is visible the area to be updated on changing the items graphical
+    representation also includes the anchor line.
+
+    To get the rectangle around the labels text the base implementation of
+    QGraphicsSimpleTextItem need to be called directly.
+
+    @return Bounding rectangle.
+*/
+QRectF CGraphObjLabelGeometryAngle::boundingRect() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "boundingRect",
+        /* strAddInfo   */ "" );
+
+    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+
+    // If the object is hit and the anchor line is visible also this area need to be updated.
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
+            rctBounding |= rctBoundingAnchorLine;
+        }
+    }
+    rctBounding |= m_rectAnchorLine2CircleSegment;
+    if (m_plgP1ArrowHead.size() > 0) {
+        rctBounding |= m_plgP1ArrowHead.boundingRect();
+    }
+    if (m_plgP2ArrowHead.size() > 0) {
+        rctBounding |= m_plgP2ArrowHead.boundingRect();
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - m_drawSettings.getPenWidth()/2,
+        rctBounding.top() - m_drawSettings.getPenWidth()/2,
+        rctBounding.width() + m_drawSettings.getPenWidth(),
+        rctBounding.height() + m_drawSettings.getPenWidth() );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qRect2Str(rctBounding));
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Called internally by QGraphicsItem::boundingRect.
+*/
+QPainterPath CGraphObjLabelGeometryAngle::shape() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "shape",
+        /* strAddInfo   */ "" );
+
+    QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
+        }
+    }
+    painterPath.addEllipse(m_rectAnchorLine2CircleSegment);
+    if (m_plgP1ArrowHead.size() > 0) {
+        painterPath.addPolygon(m_plgP1ArrowHead);
+    }
+    if (m_plgP2ArrowHead.size() > 0) {
+        painterPath.addPolygon(m_plgP2ArrowHead);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
+        QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
+        QString strMthRet = qPainterPath2Str(pVThis, painterPath);
+        mthTracer.setMethodReturn(strMthRet);
+    }
+    return painterPath;
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLabelGeometryAngle::paint(
+    QPainter* i_pPainter,
+    const QStyleOptionGraphicsItem* i_pStyleOption,
+    QWidget* i_pWdgt )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaint,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "paint",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjLabel::paint(i_pPainter, i_pStyleOption, i_pWdgt);
+
+    // Draw anchor line 2 (circle segment) to indicate the angle if the label is hit,
+    // hovered, selected or if the anchor line is set to be visible.
+    // Use a different color if the line is hit, hovered or selected.
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        i_pPainter->save();
+        i_pPainter->setRenderHint(QPainter::Antialiasing);
+        QPen pn = pen();
+        pn.setWidth(1);
+        pn.setStyle(Qt::SolidLine);
+        if (fabs(m_rectAnchorLine2CircleSegment.width()) >= 20.0) {
+            QColor color = m_bIsHit || isSelected() ? Qt::blue : Qt::lightGray;
+            color.setAlpha(192);
+            pn.setColor(color);
+            i_pPainter->setPen(pn);
+            i_pPainter->drawPie(m_rectAnchorLine2CircleSegment, 0.0, 16.0 * m_fAnchorLine2Angle_degrees);
+            QBrush brsh(pn.color());
+            i_pPainter->setBrush(brsh);
+            i_pPainter->drawPolygon(m_plgP1ArrowHead);
+            i_pPainter->drawPolygon(m_plgP2ArrowHead);
+        }
+        i_pPainter->restore();
+    }
+} // paint
 
 /*==============================================================================
 protected: // auxiliary overridable instance methods of base class CGraphObjLabel
@@ -180,7 +341,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     }
 
     CPhysValLine physValLine(physValSelPoint1Parent, physValSelPoint2Parent);
-    QString strText = physValLine.angle().toString(EUnitFind::None, PhysValSubStr::Val);
+    QString strText = physValLine.angle().toString();
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {
@@ -190,11 +351,156 @@ void CGraphObjLabelGeometryAngle::updatePosition()
 
     // First set the text at the graphics item so that the
     // bounding rectangle includes the new text.
-    CGraphObjLabel::updatePosition();
+    m_bUpdatePositionInProgress = true;
+
+    // Get anchor line in scene coordinates.
+    // The start point of the anchor line should be the center point of the line
+    // for which the angle has to be indicated.
+    CPhysValLine physValLinePolarBase(physValLine.center(), physValLine.p2());
+    QLineF lineSelPtSceneCoors = m_pDrawingScene->convert(physValLinePolarBase, Units.Length.px).toQLineF();
+    QLineF anchorLine = ZS::Draw::getLineFromPolar(
+        m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px,
+        m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
+        lineSelPtSceneCoors);
+
+    // The position of a QGraphicsTextItem is defined by its top left corner.
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
+    setPos(anchorLineP2ScenePos);
+
+    // Update coordinates of the anchor line.
+    updateAnchorLines();
+
+    m_bUpdatePositionInProgress = false;
 }
 
 //------------------------------------------------------------------------------
-/*! @brief 
+/*! @brief Internal auxiliary method to update the relative position in polar
+           coordinates (length in pixels, angle in degress) from the labels center
+           point and the selection point the label is linked to.
+
+    On moving the label the distance and the angle (polar coordinates) to the
+    selection point have to be updated and saved.
+
+    For Length labels the linked selection point is always the center point
+    of the two shape points the label is linked to.
+
+    Example for a vertical line:
+
+                        P2
+                        |
+                        |  Label
+                        |  /
+                        | / Angle (to Label, not angle value to be indicated)
+                        x--------
+                        |
+                        |
+                        |
+                        |
+                        P1
+*/
+void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
+//------------------------------------------------------------------------------
+{
+    // If the position is updated because the parent's geometry is changed,
+    // the relative distance in polar coordinates (length and angle) to the
+    // linked selection point must not be changed.
+    if (m_bPositionUpdateOnParentGeometryChanged) {
+        return;
+    }
+
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
+        /* strAddInfo   */ "" );
+
+    // Get anchor line in scene coordinates.
+    // The start point of the anchor line should be the center point of the line
+    // for which the length has to be indicated.
+    CPhysValPoint physValSelPoint1Parent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
+
+    CPhysValPoint physValSelPoint2Parent;
+    if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+    }
+
+    CPhysValLine physValLine(physValSelPoint1Parent, physValSelPoint2Parent);
+    QLineF lineSelPtSceneCoors = m_pDrawingScene->convert(physValLine, Units.Length.px).toQLineF();
+    QPointF ptSelPtSceneCoors = lineSelPtSceneCoors.center();
+
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
+
+    // The start point of the anchor line should be the center point of the line
+    // for which the length has to be indicated.
+    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, ptCenterScenePosThis);
+
+    m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px = lineFromSelPtSceneCoors.length();
+    m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees = lineSelPtSceneCoors.angleTo(lineFromSelPtSceneCoors);
+
+    // Update coordinates of the anchor line.
+    updateAnchorLines();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal auxiliary method to update the coordinates (start and end point)
+           of the anchor lines.
+
+    The anchor lines will be drawn to one of the selection points at the bounding rectangle
+    or to one of the polygon shape points of the linked graphical object.
+
+    For the Angle label three anchor lines are drawn:
+    
+    - An anchor line to indicate the horiuontal 0° degree line.
+    - A line from the center point of the line between the two selection points the label
+      is linked to and in the angle to be indicated.
+    - A circle segment between the two end points of the anchor lines above.
+      The radius for the circle segment is the distance of the label to the center point
+      of the line between the two selection points the label is linked to and in the angle
+      to be indicated
+
+    Example for a vertical line:
+
+                        P2 (SelPt2)
+                        +
+                        |
+                Anchor  |<--    AnchorLine2 (circle segment)
+                Line1   |  90\°
+                (end of |     |
+                circle  x----------- AnchorLine0 (0° line)
+                segment)|
+                        |
+                        |
+                        |
+                        +
+                        P1 (SelPt1)
+
+    Example for a Rectangle (rotated by 90°):
+
+                 TopRight          BottomRight
+                    +---------x---------+
+                    |      SelPt2       |
+                    | Anchor  |<---     |
+                    | Line1   |  90\° AnchorLine2 (circle segment)
+                    | (end of |     |   |
+                    x circle  x---------x--AnchorLine0 (horizontal Line for 0°)
+                    | segment)          |
+                    |                   |
+                    |                   |
+                    |      SelPt1       |
+                    +---------x---------+
+                 TopLeft           BottomLeft
 */
 void CGraphObjLabelGeometryAngle::updateAnchorLines()
 //------------------------------------------------------------------------------
@@ -206,5 +512,60 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
         /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
 
-    CGraphObjLabel::updateAnchorLines();
+    CPhysValPoint physValSelPoint1Parent;
+    if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+    }
+    CPhysValPoint physValSelPoint2Parent;
+    if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+    }
+    else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+    }
+
+    CPhysValLine physValLine = CPhysValLine(physValSelPoint1Parent, physValSelPoint2Parent);
+    QLineF lineSelPtSceneCoors = m_pDrawingScene->convert(physValLine, Units.Length.px).toQLineF();
+    QPointF ptCenterLineSelPtScenePos = lineSelPtSceneCoors.center();
+    QLineF lineSelPt = QLineF(mapFromScene(lineSelPtSceneCoors.p1()), mapFromScene(lineSelPtSceneCoors.p2()));
+    QPointF ptCenterLineSelPtPos = lineSelPt.center();
+
+    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QPointF ptCenterThis = rctBoundingThis.center();
+
+    // AnchorLine0 (horizontal Line for 0°) in local coordinates
+    QPointF ptHorLine0DegreesP1(ptCenterLineSelPtPos.x(), ptCenterLineSelPtPos.y());
+    QPointF ptHorLine0DegreesP2(ptCenterLineSelPtPos.x() + m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px, ptCenterLineSelPtPos.y());
+    m_anchorLines[0] = QLineF(ptHorLine0DegreesP1, ptHorLine0DegreesP2);
+
+    // AnchorLine1 (end of circle segment) in local coordinates
+    QLineF lineEndOfSegment(ptCenterLineSelPtPos, mapFromScene(lineSelPtSceneCoors.p2()));
+    lineEndOfSegment.setLength(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
+    m_anchorLines[1] = lineEndOfSegment;
+
+    // AnchorLine1 (circle segment) in local coordinates
+    m_rectAnchorLine2CircleSegment.setWidth(2.0 * m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
+    m_rectAnchorLine2CircleSegment.setHeight(2.0 * m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
+    m_rectAnchorLine2CircleSegment.moveCenter(ptCenterLineSelPtPos);
+    m_fAnchorLine2Angle_degrees = lineSelPtSceneCoors.angle();
+
+    QLineF perpendicularLineHorLine =
+        QLineF(ptHorLine0DegreesP2, QPointF(ptHorLine0DegreesP2.x(), ptHorLine0DegreesP2.y() - 20.0));
+    QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
+        QLineF(lineSelPt.p2(), lineSelPt.p1()), lineEndOfSegment.p2(), 10.0);
+
+    getLineEndPolygons(
+        /* line          */ perpendicularLineHorLine,
+        /* drawSetings   */ m_drawSettingsArrowHeads,
+        /* pplgLineStart */ &m_plgP1ArrowHead,
+        /* pplgLineEnd   */ nullptr);
+
+    getLineEndPolygons(
+        /* line          */ perpendicularLineEndOfSegment,
+        /* drawSetings   */ m_drawSettingsArrowHeads,
+        /* pplgLineStart */ &m_plgP2ArrowHead,
+        /* pplgLineEnd   */ nullptr);
 }

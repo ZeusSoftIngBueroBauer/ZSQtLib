@@ -147,7 +147,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjLabelGeometryLength::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeLabelGeometryLength;
+    return EGraphObjTypeLabelGeometryLength;
 }
 
 /*==============================================================================
@@ -174,21 +174,107 @@ public: // must overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! Returns the bounding rectangle for the label.
+
+    This method is called by the graphics scene to detect the area to be updated
+    and for some other reasons (dispatching mouse events, ...).
+
+    If the label is hit, selected or if the anchor line to the linked grapical
+    object is visible the area to be updated on changing the items graphical
+    representation also includes the anchor line.
+
+    To get the rectangle around the labels text the base implementation of
+    QGraphicsSimpleTextItem need to be called directly.
+
+    @return Bounding rectangle.
+*/
+QRectF CGraphObjLabelGeometryLength::boundingRect() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "boundingRect",
+        /* strAddInfo   */ "" );
+
+    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+
+    // If the object is hit and the anchor line is visible also this area need to be updated.
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
+            rctBounding |= rctBoundingAnchorLine;
+        }
+    }
+    if (m_plgP1ArrowHead.size() > 0) {
+        rctBounding |= m_plgP1ArrowHead.boundingRect();
+    }
+    if (m_plgP2ArrowHead.size() > 0) {
+        rctBounding |= m_plgP2ArrowHead.boundingRect();
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - m_drawSettings.getPenWidth()/2,
+        rctBounding.top() - m_drawSettings.getPenWidth()/2,
+        rctBounding.width() + m_drawSettings.getPenWidth(),
+        rctBounding.height() + m_drawSettings.getPenWidth() );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qRect2Str(rctBounding));
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Called internally by QGraphicsItem::boundingRect.
+*/
+QPainterPath CGraphObjLabelGeometryLength::shape() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "shape",
+        /* strAddInfo   */ "" );
+
+    QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
+        }
+    }
+    if (m_plgP1ArrowHead.size() > 0) {
+        painterPath.addPolygon(m_plgP1ArrowHead);
+    }
+    if (m_plgP2ArrowHead.size() > 0) {
+        painterPath.addPolygon(m_plgP2ArrowHead);
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
+        QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
+        QString strMthRet = qPainterPath2Str(pVThis, painterPath);
+        mthTracer.setMethodReturn(strMthRet);
+    }
+    return painterPath;
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjLabelGeometryLength::paint(
     QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* i_pStyleOption,
     QWidget* i_pWdgt )
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ZValue: " + QString::number(zValue());
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "paint",
-        /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer);
-    }
+        /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLabel::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
@@ -205,15 +291,11 @@ void CGraphObjLabelGeometryLength::paint(
         // (length of line < 5.0 pixels) the anchor line will not be drawn.
         QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
         const QLineF& anchorLine = m_anchorLines[2];
-         if (!rctBounding.contains(anchorLine.p2())) {
-             if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
-                if (m_bIsHit || isSelected()) {
-                    pn.setColor(Qt::blue);
-                }
-                else {
-                    pn.setColor(Qt::gray);
-                }
-                //pn.setStyle(Qt::DotLine);
+        if (!rctBounding.contains(anchorLine.p2())) {
+            if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
+                QColor color = m_bIsHit || isSelected() ? Qt::blue : Qt::lightGray;
+                color.setAlpha(192);
+                pn.setColor(color);
                 i_pPainter->setPen(pn);
                 QBrush brsh(pn.color());
                 i_pPainter->setBrush(brsh);
@@ -221,8 +303,7 @@ void CGraphObjLabelGeometryLength::paint(
                 i_pPainter->drawPolygon(m_plgP2ArrowHead);
             }
         }
-
-       i_pPainter->restore();
+        i_pPainter->restore();
     }
 } // paint
 
@@ -242,10 +323,6 @@ void CGraphObjLabelGeometryLength::updatePosition()
         /* strObjName   */ m_strName,
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 
     CPhysValPoint physValSelPoint1Parent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
@@ -295,11 +372,6 @@ void CGraphObjLabelGeometryLength::updatePosition()
     updateAnchorLines();
 
     m_bUpdatePositionInProgress = false;
-
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave,
-            m_pTrcAdminObjItemChange->getRuntimeInfoTraceDetailLevel());
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -428,7 +500,7 @@ void CGraphObjLabelGeometryLength::updateAnchorLines()
     QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
     // The shortest distance to the line from the labels center point is the perpendicular line
     // which goes through the center of the labels bounding rectangle.
-    QLineF perpendicularLine = getPerpendicularLine(lineSelPtSceneCoors, ptCenterScenePosThis);
+    QLineF perpendicularLine = ZS::Draw::getPerpendicularLine(lineSelPtSceneCoors, ptCenterScenePosThis);
 
     // We need two perpendicular lines at the start and end point of the line.
     // Create those two liney by moving the perpendicular line correspondingly.

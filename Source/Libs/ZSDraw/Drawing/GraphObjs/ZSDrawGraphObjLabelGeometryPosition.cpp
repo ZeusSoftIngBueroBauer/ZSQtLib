@@ -72,11 +72,11 @@ CGraphObjLabelGeometryPosition::CGraphObjLabelGeometryPosition(
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     CGraphObjLabel(
-        /* pDrawingScene   */ i_pDrawingScene,
-        /* strKey          */ i_strKey,
-        /* strText         */ "Position",
-        /* type            */ EGraphObjTypeLabelGeometryPosition,
-        /* selPt           */ i_selPt)
+        /* pDrawingScene */ i_pDrawingScene,
+        /* strKey        */ i_strKey,
+        /* strText       */ "Position",
+        /* type          */ EGraphObjTypeLabelGeometryPosition,
+        /* selPt         */ i_selPt)
 {
     createTraceAdminObjs("Labels::" + ClassName());
 
@@ -120,7 +120,7 @@ public: // overridables of base class QGraphicsItem
 int CGraphObjLabelGeometryPosition::type() const
 //------------------------------------------------------------------------------
 {
-    return QGraphicsItem::UserType + EGraphObjTypeLabelGeometryPosition;
+    return EGraphObjTypeLabelGeometryPosition;
 }
 
 /*==============================================================================
