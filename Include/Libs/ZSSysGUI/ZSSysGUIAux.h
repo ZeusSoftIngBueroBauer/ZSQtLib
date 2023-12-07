@@ -27,6 +27,8 @@ may result in using the software modules.
 #ifndef ZSSysGUI_Aux_h
 #define ZSSysGUI_Aux_h
 
+#include "ZSSysGUI/ZSSysGUIDllMain.h"
+
 #include <QtCore/qglobal.h>
 #include <QtCore/qnamespace.h>
 #include <QtGui/qevent.h>
@@ -35,15 +37,6 @@ may result in using the software modules.
 #include <QtGui/qabstractitemview.h>
 #else
 #include <QtWidgets/qabstractitemview.h>
-#endif
-
-#include "ZSSysGUI/ZSSysGUIDllMain.h"
-
-#ifdef _WINDOWS
-// As "min" will be defined as a macro with two arguments and qdatetime uses "min"
-// as a function with no arguments "windows.h" must be included after qdatetime
-// (which is included by ZSSysTime (which again is included by ZSSysAux)).
-#include <windows.h>
 #endif
 
 class QCursor;
@@ -71,12 +64,12 @@ ZSSYSGUIDLL_API QString qItemDelegateEndEditHint2Str(QAbstractItemDelegate::EndE
 ZSSYSGUIDLL_API QString qItemViewDragDropMode2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 ZSSYSGUIDLL_API QAbstractItemView::DragDropMode str2QItemViewDragDropMode(
     const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr);
-ZSSYSGUIDLL_API QString qDropAction2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 ZSSYSGUIDLL_API QString qItemViewCursorAction2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 
 ZSSYSGUIDLL_API QString qDockWidgetArea2Str(Qt::DockWidgetAreas i_areas, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 ZSSYSGUIDLL_API Qt::DockWidgetArea str2QDockWidgetArea(const QString& i_str);
 
+ZSSYSGUIDLL_API QString qDropAction2Str(int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 ZSSYSGUIDLL_API QString qDragEnterEvent2Str(QDragEnterEvent* i_pEv);
 ZSSYSGUIDLL_API QString qDragLeaveEvent2Str(QDragLeaveEvent* i_pEv);
 ZSSYSGUIDLL_API QString qDragMoveEvent2Str(QDragMoveEvent* i_pEv);
@@ -89,6 +82,9 @@ ZSSYSGUIDLL_API QString qResizeEvent2Str(QResizeEvent* i_pEv);
 
 ZSSYSGUIDLL_API QString qPolygon2Str(const QPolygon& i_plg);
 ZSSYSGUIDLL_API QString qPolygon2Str(const QPolygonF& i_plg);
+
+ZSSYSGUIDLL_API QString qSpinBoxStepType2Str(QAbstractSpinBox::StepType i_stepType, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
+ZSSYSGUIDLL_API QString qValidatorState2Str(QValidator::State i_state, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 
 } // namespace GUI
 

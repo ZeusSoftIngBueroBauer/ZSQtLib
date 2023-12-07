@@ -73,6 +73,7 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestSequencerModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysRequestSequencerWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysSepLine.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTableView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTextEdit.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeModel.h
@@ -120,6 +121,7 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestSequencerModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysRequestSequencerWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysSepLine.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTableView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTextEdit.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeModel.cpp

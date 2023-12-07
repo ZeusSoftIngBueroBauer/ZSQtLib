@@ -49,25 +49,6 @@ namespace GUI
 class CWdgtEditPhysVal;
 
 //******************************************************************************
-struct SComboBoxItem
-//******************************************************************************
-{
-    SComboBoxItem() {}
-    SComboBoxItem(const QString& i_strText, const QVariant& i_userData = QVariant()) :
-        m_strText(i_strText), m_icon(), m_userData(i_userData)
-    {}
-    SComboBoxItem(const QIcon& i_icon, const QString& i_strText, const QVariant& i_userData = QVariant()) :
-        m_strText(i_strText), m_icon(i_icon), m_userData(i_userData)
-    {}
-    QString m_strText;
-    QIcon m_icon;
-    QVariant m_userData;
-};
-
-Q_DECLARE_METATYPE(SComboBoxItem);
-Q_DECLARE_METATYPE(QList<SComboBoxItem>);
-
-//******************************************************************************
 /*! @brief Delegate for a combo box in an item view.
 
     To use this delegate the model assigned to the item view must return the
@@ -122,6 +103,7 @@ protected: // instance members
     /*!< Model index at which the editor was created.
          Needed to set the model data if the current value is changed. */
     mutable QModelIndex m_modelIdxEditorCreated;
+protected: // instance members
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     /*!< Trace admin object for noisy methods like "paint". */

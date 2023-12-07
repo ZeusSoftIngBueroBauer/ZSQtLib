@@ -53,18 +53,19 @@ CCheckBoxItemDelegate::CCheckBoxItemDelegate(QAbstractItemModel* i_pModel, QWidg
     QStyledItemDelegate(i_pWdgtParent),
     m_pModel(i_pModel),
     m_pTrcAdminObj(nullptr),
-    m_pTrcAdminObjNoisyMethods(nullptr)
+    m_pTrcAdminObjPaint(nullptr)
 {
     setObjectName(i_pModel->objectName());
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
-    m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::NoisyMethods", objectName());
+        NameSpace(), ClassName());
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Paint");
 
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ "" );
 
@@ -77,6 +78,7 @@ CCheckBoxItemDelegate::~CCheckBoxItemDelegate()
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ "" );
 
@@ -84,13 +86,13 @@ CCheckBoxItemDelegate::~CCheckBoxItemDelegate()
         mthTracer.onAdminObjAboutToBeReleased();
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     }
-    if( m_pTrcAdminObjNoisyMethods != nullptr ) {
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
+    if( m_pTrcAdminObjPaint != nullptr ) {
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
     }
 
     m_pModel = nullptr;
     m_pTrcAdminObj = nullptr;
-    m_pTrcAdminObjNoisyMethods = nullptr;
+    m_pTrcAdminObjPaint = nullptr;
 
 } // dtor
 
@@ -104,12 +106,13 @@ void CCheckBoxItemDelegate::paint(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* pTrcAdminObj       */ m_pTrcAdminObjPaint,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "paint",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -161,6 +164,7 @@ bool CCheckBoxItemDelegate::editorEvent(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "editorEvent",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -172,6 +176,16 @@ bool CCheckBoxItemDelegate::editorEvent(
         bool bVal = i_modelIdx.data(Qt::DisplayRole).toBool();
         // invert checkbox state
         bDataSet = i_pModel->setData(i_modelIdx, !bVal, Qt::EditRole);
+    }
+    else if (i_pEv->type() == QEvent::KeyPress) {
+        QKeyEvent* pKeyEvent = dynamic_cast<QKeyEvent*>(i_pEv);
+        if (pKeyEvent != nullptr) {
+            if ((pKeyEvent->key() == Qt::Key_Return) || (pKeyEvent->key() == Qt::Key_Enter)) {
+                bool bVal = i_modelIdx.data(Qt::DisplayRole).toBool();
+                // invert checkbox state
+                bDataSet = i_pModel->setData(i_modelIdx, !bVal, Qt::EditRole);
+            }
+        }
     }
     else {
         bDataSet = QStyledItemDelegate::editorEvent(i_pEv, i_pModel, i_option, i_modelIdx);

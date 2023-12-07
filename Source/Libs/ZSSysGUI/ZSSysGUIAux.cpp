@@ -191,31 +191,6 @@ Enum Qt::DropAction
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString ZS::System::GUI::qDropAction2Str( int i_iVal, EEnumEntryAliasStr /*i_alias*/ )
-//------------------------------------------------------------------------------
-{
-    QString str;
-    if (i_iVal == Qt::IgnoreAction) {
-        str = "Ignore";
-    }
-    else {
-        if (i_iVal & Qt::CopyAction) {
-            if( !str.isEmpty() ) str += "|";
-            str += "Copy";
-        }
-        if (i_iVal & Qt::MoveAction) {
-            if( !str.isEmpty() ) str += "|";
-            str += "Move";
-        }
-        if (i_iVal & Qt::LinkAction) {
-            if( !str.isEmpty() ) str += "|";
-            str += "Link";
-        }
-    }
-    return str;
-}
-
-//------------------------------------------------------------------------------
 QString ZS::System::GUI::qItemViewCursorAction2Str( int i_iVal, EEnumEntryAliasStr i_alias )
 //------------------------------------------------------------------------------
 {
@@ -278,6 +253,31 @@ Qt::DockWidgetArea ZS::System::GUI::str2QDockWidgetArea( const QString& i_str )
 /*==============================================================================
 QEvents
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qDropAction2Str( int i_iVal, EEnumEntryAliasStr /*i_alias*/ )
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_iVal == Qt::IgnoreAction) {
+        str = "Ignore";
+    }
+    else {
+        if (i_iVal & Qt::CopyAction) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Copy";
+        }
+        if (i_iVal & Qt::MoveAction) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Move";
+        }
+        if (i_iVal & Qt::LinkAction) {
+            if( !str.isEmpty() ) str += "|";
+            str += "Link";
+        }
+    }
+    return str;
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qDragEnterEvent2Str(QDragEnterEvent* i_pEv)
@@ -494,6 +494,51 @@ QString ZS::System::GUI::qPolygon2Str(const QPolygonF& i_plg)
             str += "{" + qPoint2Str(i_plg.at(idxPt)) + "}";
         }
         str += ")";
+    }
+    return str;
+}
+
+/*==============================================================================
+QAbstractSpinBox
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qSpinBoxStepType2Str(QAbstractSpinBox::StepType i_stepType, EEnumEntryAliasStr i_alias)
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_stepType == QAbstractSpinBox::DefaultStepType) {
+        str = "Default";
+    }
+    else if (i_stepType == QAbstractSpinBox::AdaptiveDecimalStepType) {
+        str = "AdaptiveDecimalStepType";
+    }
+    else {
+        str = "? (" + QString::number(i_stepType) + ")";
+    }
+    return str;
+}
+
+/*==============================================================================
+QValidator
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString ZS::System::GUI::qValidatorState2Str(QValidator::State i_state, EEnumEntryAliasStr i_alias)
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_state == QValidator::Invalid) {
+        str = "Invalid";
+    }
+    else if (i_state == QValidator::Intermediate) {
+        str = "Intermediate";
+    }
+    else if (i_state == QValidator::Acceptable) {
+        str = "Acceptable";
+    }
+    else {
+        str = "? (" + QString::number(i_state) + ")";
     }
     return str;
 }

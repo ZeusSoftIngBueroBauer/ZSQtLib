@@ -71,13 +71,14 @@ CEditPhysValtemDelegate::CEditPhysValtemDelegate(QAbstractItemModel* i_pModel, Q
     setObjectName(i_pModel->objectName());
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
+        NameSpace(), ClassName());
     m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::NoisyMethods", objectName());
+        NameSpace(), ClassName() + "::NoisyMethods");
 
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ "" );
 
@@ -90,6 +91,7 @@ CEditPhysValtemDelegate::~CEditPhysValtemDelegate()
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ "" );
 
@@ -126,6 +128,7 @@ void CEditPhysValtemDelegate::setItemDataRoleMinimumValue(int i_iRole)
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "setItemDataRoleMinimumValue",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -150,6 +153,7 @@ void CEditPhysValtemDelegate::setItemDataRoleMaximumValue(int i_iRole)
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "setItemDataRoleMaximumValue",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -179,10 +183,12 @@ QWidget* CEditPhysValtemDelegate::createEditor(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "createEditor",
         /* strMethodInArgs    */ strMthInArgs );
 
     m_pWdgtEditPhysVal = new CWdgtEditPhysVal(objectName(), i_pWdgtParent);
+    m_pWdgtEditPhysVal->setButtonSymbols(QAbstractSpinBox::NoButtons);
     m_modelIdxEditorCreated = i_modelIdx;
     QObject::connect(
         m_pWdgtEditPhysVal, &CWdgtEditPhysVal::valueChanged,
@@ -206,6 +212,7 @@ void CEditPhysValtemDelegate::setEditorData(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "setEditorData",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -241,6 +248,7 @@ void CEditPhysValtemDelegate::setModelData(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "setModelData",
         /* strMethodInArgs    */ strMthInArgs );
     if (i_pModel != m_pModel) {
@@ -263,6 +271,7 @@ QSize CEditPhysValtemDelegate::sizeHint(const QStyleOptionViewItem& i_option, co
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "sizeHint",
         /* strMethodInArgs    */ strMthInArgs );
     QSize size = i_modelIdx.model()->data(i_modelIdx, Qt::SizeHintRole).toSize();
@@ -284,6 +293,7 @@ void CEditPhysValtemDelegate::updateEditorGeometry(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "updateEditorGeometry",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -322,6 +332,7 @@ void CEditPhysValtemDelegate::onEditPhysValValueChanged(const CPhysVal& i_physVa
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "onEditPhysValValueChanged",
         /* strMethodInArgs    */ strMthInArgs );
 

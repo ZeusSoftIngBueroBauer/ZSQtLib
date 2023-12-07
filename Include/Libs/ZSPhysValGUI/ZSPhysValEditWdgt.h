@@ -31,22 +31,21 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysVal.h"
 
 #if QT_VERSION < 0x050000
-#include <QtGui/qwidget.h>
+#include <QtGui/qspinbox.h>
 #else
-#include <QtWidgets/qwidget.h>
+#include <QtWidgets/qspinbox.h>
 #endif
-
-class QDoubleSpinBox;
-class QHBoxLayout;
 
 namespace ZS
 {
+namespace System
+{
+class CTrcAdminObj;
+}
 namespace PhysVal
 {
 namespace GUI
 {
-class CDoubleSpinBox;
-
 //******************************************************************************
 /*! @brief Wrapper around a double spin box to edit a physical value indicating
            the symbol of the unit as a suffix.
@@ -56,7 +55,7 @@ class CDoubleSpinBox;
           applies when changing the maximum value or the resolution value whereupon
           the other properties constraining the value to be edited may be adjusted.
 */
-class ZSPHYSVALGUIDLL_API CWdgtEditPhysVal : public QWidget
+class ZSPHYSVALGUIDLL_API CWdgtEditPhysVal : public QDoubleSpinBox
 //******************************************************************************
 {
     Q_OBJECT
@@ -82,22 +81,30 @@ public: // instance methods
 public: // instance methods
     void setUnit( const CUnit& i_unit );
     CUnit unit() const;
-public: // instance methods
-    void setMinimum(double i_fVal);
-    CPhysVal minimum() const;
-    void setMaximum(double i_fVal);
-    CPhysVal maximum() const;
     void setResolution(double i_fVal);
     CPhysValRes resolution() const;
-    void setDecimals(int i_iPrecision);
-    int decimals() const;
-    void setSingleStep(double i_fVal);
-    double singleStep() const;
-public: // instance methods
-    void setValue(double i_fVal);
+    CPhysVal minimum() const;
+    CPhysVal maximum() const;
     CPhysVal value() const;
+public: // reimplemented instance methods of QDoubleSpinBox
+    void setRange(double i_fMinVal, double i_fMaxVal);
+    void setMinimum(double i_fVal);
+    void setMaximum(double i_fVal);
+    void setDecimals(int i_iPrecision);
+    void setStepType(QAbstractSpinBox::StepType i_stepType);
+    void setSingleStep(double i_fVal);
+public: // reimplemented slots of base class QDoubleSpinBox
+    void setValue(double i_fVal);
+public: // overridables of base class QDoubleSpinBox
+    QString textFromValue(double i_fVal) const override;
+    double valueFromText(const QString& i_strText) const override;
+    void fixup(QString& io_strInput) const override;
+    QValidator::State validate(QString& io_strText, int& i_iPos) const override;
 public: // overridables of base class QWidget
     QSize sizeHint() const override;
+protected: // overridables of base class QAbstractSpinBox
+    void keyPressEvent(QKeyEvent* i_pEv) override;
+    void keyReleaseEvent(QKeyEvent* i_pEv) override;
 protected slots:
     void onEdtEditingFinished();
     void onEdtValueChanged(double i_fVal);
@@ -107,11 +114,6 @@ private: // auxiliary instance method
 private: // instance members
     /*!< Name which can be set for debugging purposes. */
     QString m_strName;
-    /*!< The layout of the widget. */
-    QHBoxLayout* m_pLyt;
-    /*!< The value is edited by the double spin box.
-         The suffix is set to the symbol of the unit to be used. */
-    QDoubleSpinBox* m_pEdt;
     /*!< The cached current value. */
     CPhysVal m_physVal;
     /*!< The cached mimimum value. */
@@ -138,6 +140,11 @@ private: // instance members
          As the methods may be recursively called the flag is realized as
          a counter counting the number of blocks. */
     int m_iValueChangedSignalsBlocked;
+protected: // instance members
+    /*!< Trace admin object for method tracing. */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    /*!< Trace admin object for noisy methods like "sizeHint". */
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjSizeHint;
 
 }; // class CWdgtEditPhysVal
 

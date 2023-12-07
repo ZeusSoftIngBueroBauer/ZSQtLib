@@ -25,13 +25,13 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h"
-//#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGeometryModel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysValGUI/ZSPhysValEditItemDelegate.h"
 #include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
+#include "ZSSysGUI/ZSSysTableView.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
@@ -207,23 +207,37 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pModelGeometry = new CModelGraphObjGeometry(
         m_pDrawingScene, i_strNameSpace, "StandardShapes::Line",
         i_strObjName, CEnumScaleDimensionUnit(), this);
-    m_pTableViewGeometry = new QTableView();
+    m_pTableViewGeometry = new CTableView(i_strObjName);
     m_pTableViewGeometry->setModel(m_pModelGeometry);
+
     m_pEdtPhysValDelegateXVal =
         new CEditPhysValtemDelegate(m_pModelGeometry, m_pTableViewGeometry);
     m_pTableViewGeometry->setItemDelegateForColumn(
         CModelGraphObjGeometry::EColumnXVal, m_pEdtPhysValDelegateXVal);
+    m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
+        CModelGraphObjGeometry::EColumnXVal, CTableView::SEditTriggerKey(Qt::Key_Return));
+
     m_pEdtPhysValDelegateYVal =
         new CEditPhysValtemDelegate(m_pModelGeometry, m_pTableViewGeometry);
     m_pTableViewGeometry->setItemDelegateForColumn(
         CModelGraphObjGeometry::EColumnYVal, m_pEdtPhysValDelegateYVal);
+    m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
+        CModelGraphObjGeometry::EColumnYVal, CTableView::SEditTriggerKey(Qt::Key_Return));
+
     m_pTableViewGeometry->setItemDelegateForColumn(
         CModelGraphObjGeometry::EColumnShowVals,
         new CCheckBoxItemDelegate(m_pModelGeometry, m_pTableViewGeometry));
+    m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
+        CModelGraphObjGeometry::EColumnShowVals, CTableView::SEditTriggerKey(Qt::Key_Return));
+
     m_pTableViewGeometry->setItemDelegateForColumn(
         CModelGraphObjGeometry::EColumnShowLine,
         new CCheckBoxItemDelegate(m_pModelGeometry, m_pTableViewGeometry));
-    m_pTableViewGeometry->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
+        CModelGraphObjGeometry::EColumnShowLine, CTableView::SEditTriggerKey(Qt::Key_Return));
+
+    m_pTableViewGeometry->setEditTriggers(
+        QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
     m_pTableViewGeometry->resizeColumnsToContents();
     m_pTableViewGeometry->resizeRowsToContents();
     m_pLytGeometryTableView->addWidget(m_pTableViewGeometry);

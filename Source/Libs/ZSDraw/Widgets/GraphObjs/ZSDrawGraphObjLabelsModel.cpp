@@ -898,8 +898,8 @@ bool CModelGraphObjLabels::setData(
                     if (i_iRole == Qt::EditRole) {
                         if (!m_pGraphObj->isPredefinedLabelName(labelSettings.m_strNameOrig)) {
                             labelSettings.m_bSelected = i_varData.toBool();
-                            bDataSet = true;
                         }
+                        bDataSet = true;
                     }
                     break;
                 }

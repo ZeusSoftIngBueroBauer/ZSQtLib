@@ -29,10 +29,15 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
-class QTableView;
-
 namespace ZS
 {
+namespace System
+{
+namespace GUI
+{
+class CTableView;
+}
+}
 namespace PhysVal
 {
 namespace GUI
@@ -111,7 +116,7 @@ private: // instance members
     QHBoxLayout* m_pLytLineTableViewButtons;
     QPushButton* m_pBtnResizeRowsAndColumnsToContents;
     QVBoxLayout* m_pLytGeometryTableView;
-    QTableView* m_pTableViewGeometry;
+    ZS::System::GUI::CTableView* m_pTableViewGeometry;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateXVal;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateYVal;
     CModelGraphObjGeometry* m_pModelGeometry;

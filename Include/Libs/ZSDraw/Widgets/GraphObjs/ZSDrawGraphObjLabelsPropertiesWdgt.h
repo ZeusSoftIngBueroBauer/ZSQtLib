@@ -29,10 +29,15 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
-class QTableView;
-
 namespace ZS
 {
+namespace System
+{
+namespace GUI
+{
+class CTableView;
+}
+}
 namespace Draw
 {
 class CModelGraphObjLabels;
@@ -88,7 +93,7 @@ private: // instance members
     QPushButton* m_pBtnAddLabel;
     QPushButton* m_pBtnRemoveLabels;
     QVBoxLayout* m_pLytListView;
-    QTableView* m_pTableView;
+    ZS::System::GUI::CTableView* m_pTableView;
     CModelGraphObjLabels* m_pModel;
 
 }; // class CWdgtGraphObjLabelsProperties

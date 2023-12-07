@@ -113,7 +113,7 @@ protected: // instance members
     /*!< Trace admin object for method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     /*!< Trace admin object for noisy methods like "paint". */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
 
 }; // class ComboBoxItemDelegate
 

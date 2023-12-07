@@ -61,18 +61,19 @@ CComboBoxItemDelegate::CComboBoxItemDelegate(QAbstractItemModel* i_pModel, QWidg
     m_iItemDataRole(Qt::AccessibleTextRole),
     m_modelIdxEditorCreated(),
     m_pTrcAdminObj(nullptr),
-    m_pTrcAdminObjNoisyMethods(nullptr)
+    m_pTrcAdminObjPaint(nullptr)
 {
     setObjectName(i_pModel->objectName());
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
-    m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::NoisyMethods", objectName());
+        NameSpace(), ClassName());
+    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
+        NameSpace(), ClassName() + "::Pain");
 
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMethodInArgs    */ "" );
 
@@ -85,6 +86,7 @@ CComboBoxItemDelegate::~CComboBoxItemDelegate()
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMethodInArgs    */ "" );
 
@@ -92,15 +94,15 @@ CComboBoxItemDelegate::~CComboBoxItemDelegate()
         mthTracer.onAdminObjAboutToBeReleased();
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
     }
-    if( m_pTrcAdminObjNoisyMethods != nullptr ) {
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjNoisyMethods);
+    if( m_pTrcAdminObjPaint != nullptr ) {
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
     }
 
     m_pModel = nullptr;
     m_iItemDataRole = 0;
     //m_modelIdxEditorCreated;
     m_pTrcAdminObj = nullptr;
-    m_pTrcAdminObjNoisyMethods = nullptr;
+    m_pTrcAdminObjPaint = nullptr;
 
 } // dtor
 
@@ -119,6 +121,7 @@ void CComboBoxItemDelegate::setItemDataRole(int i_iRole)
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "setItemDataRole",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -162,12 +165,13 @@ void CComboBoxItemDelegate::paint(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
+    if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
     }
     CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
+        /* pTrcAdminObj       */ m_pTrcAdminObjPaint,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "paint",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -188,6 +192,7 @@ QWidget* CComboBoxItemDelegate::createEditor(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "createEditor",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -224,6 +229,7 @@ void CComboBoxItemDelegate::setEditorData(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "setEditorData",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -244,6 +250,7 @@ void CComboBoxItemDelegate::setModelData(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "setModelData",
         /* strMethodInArgs    */ strMthInArgs );
     if (i_pModel != m_pModel) {
@@ -265,6 +272,7 @@ void CComboBoxItemDelegate::updateEditorGeometry(
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "updateEditorGeometry",
         /* strMethodInArgs    */ strMthInArgs );
 
@@ -286,6 +294,7 @@ void CComboBoxItemDelegate::onCmbCurrentTextChanged(const QString& i_strText)
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName         */ objectName(),
         /* strMethod          */ "onCmbCurrentTextChanged",
         /* strMethodInArgs    */ strMthInArgs );
 

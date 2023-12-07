@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
 #include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
+#include "ZSSysGUI/ZSSysTableView.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
@@ -206,17 +207,34 @@ CWdgtGraphObjLabelsProperties::CWdgtGraphObjLabelsProperties(
 
     m_pModel = new CModelGraphObjLabels(
         m_pDrawingScene, i_strNameSpace, i_strGraphObjType, i_strObjName, this);
-    m_pTableView = new QTableView();
+    m_pTableView = new CTableView(i_strObjName);
     m_pTableView->setModel(m_pModel);
+
     m_pTableView->setItemDelegateForColumn(
         CModelGraphObjLabels::EColumnSelected, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
+    m_pTableView->addKeyAsEditTriggerForColumn(
+        CModelGraphObjLabels::EColumnSelected, CTableView::SEditTriggerKey(Qt::Key_Return));
+
+    m_pTableView->addKeyAsEditTriggerForColumn(
+        CModelGraphObjLabels::EColumnText, CTableView::SEditTriggerKey(Qt::Key_Return));
+
     m_pTableView->setItemDelegateForColumn(
         CModelGraphObjLabels::EColumnShow, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
+    m_pTableView->addKeyAsEditTriggerForColumn(
+        CModelGraphObjLabels::EColumnShow, CTableView::SEditTriggerKey(Qt::Key_Return));
+
     m_pTableView->setItemDelegateForColumn(
         CModelGraphObjLabels::EColumnAnchor, new CComboBoxItemDelegate(m_pModel, m_pTableView));
+    m_pTableView->addKeyAsEditTriggerForColumn(
+        CModelGraphObjLabels::EColumnAnchor, CTableView::SEditTriggerKey(Qt::Key_Return));
+
     m_pTableView->setItemDelegateForColumn(
         CModelGraphObjLabels::EColumnShowAnchorLine, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
-    m_pTableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    m_pTableView->addKeyAsEditTriggerForColumn(
+        CModelGraphObjLabels::EColumnShowAnchorLine, CTableView::SEditTriggerKey(Qt::Key_Return));
+
+    m_pTableView->setEditTriggers(
+        QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
     m_pTableView->resizeColumnsToContents();
     m_pTableView->resizeRowsToContents();
     m_pLytListView->addWidget(m_pTableView);
