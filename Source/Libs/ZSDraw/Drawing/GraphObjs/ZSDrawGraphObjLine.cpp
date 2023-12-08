@@ -1055,6 +1055,7 @@ bool CGraphObjLine::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) c
                 o_pHitInfo->m_idxPolygonShapePoint = -1;
                 o_pHitInfo->m_idxLineSegment = 0;
                 o_pHitInfo->m_ptSelected = i_pt;
+                o_pHitInfo->m_cursor = Qt::SizeAllCursor;
             }
         }
     }
@@ -1644,21 +1645,16 @@ void CGraphObjLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QPointF ptItemPos = i_pEv->pos();
-
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    if (modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select) {
+    if (m_pDrawingScene->getMode() == EMode::Edit &&  m_pDrawingScene->getEditTool() == EEditTool::Select) {
         SGraphObjHitInfo hitInfo;
-        bool bIsHit = isHit(ptItemPos, &hitInfo);
+        bool bIsHit = isHit(i_pEv->pos(), &hitInfo);
         if (bIsHit) {
             if (cursor().shape() != hitInfo.m_cursor.shape()) {
                 setCursor(hitInfo.m_cursor);
             }
         }
     }
-} // hoverEnterEvent
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
@@ -1675,21 +1671,16 @@ void CGraphObjLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QPointF ptItemPos = i_pEv->pos();
-
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    if (modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select) {
+    if (m_pDrawingScene->getMode() == EMode::Edit &&  m_pDrawingScene->getEditTool() == EEditTool::Select) {
         SGraphObjHitInfo hitInfo;
-        bool bIsHit = isHit(ptItemPos, &hitInfo);
+        bool bIsHit = isHit(i_pEv->pos(), &hitInfo);
         if (bIsHit) {
             if (cursor().shape() != hitInfo.m_cursor.shape()) {
                 setCursor(hitInfo.m_cursor);
             }
         }
     }
-} // hoverMoveEvent
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )

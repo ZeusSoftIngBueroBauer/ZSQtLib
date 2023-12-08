@@ -118,8 +118,6 @@ protected: // instance members
     double m_fAnchorLine2Angle_degrees;
     /*!< Draw settings used to draw the arrow heads at the ends of the circle segment. */
     CDrawSettings m_drawSettingsArrowHeads;
-    /*!< Polygon points for arrow head at P1 (line start) */
-    QPolygonF m_plgP1ArrowHead;
     /*!< Polygon points for arrow head at P2 (line end) */
     QPolygonF m_plgP2ArrowHead;
 

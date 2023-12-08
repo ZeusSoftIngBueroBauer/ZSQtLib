@@ -1713,12 +1713,10 @@ void CDrawingScene::setCurrentDrawingTool(
     if (m_mode != EMode::Edit) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
-
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_strFactoryGrpName, i_strGraphObjType);
     if (pObjFactory == nullptr) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotRegistered, "pObjFactory == nullptr");
     }
-
     setCurrentDrawingTool(pObjFactory);
 }
 
@@ -1753,27 +1751,15 @@ CGraphObjConnectionPoint* CDrawingScene::getConnectionPoint( const QPointF& i_pt
 //------------------------------------------------------------------------------
 {
     CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
-
-    QList<QGraphicsItem*> arpGraphicsItems;
-    QGraphicsItem*        pGraphicsItem;
-    int                   idxGraphObj;
-
-    arpGraphicsItems = items(i_ptScenePos);
-
-    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItems.size(); idxGraphObj++ )
-    {
-        pGraphicsItem = arpGraphicsItems[idxGraphObj];
-
-        if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint) )
-        {
+    QList<QGraphicsItem*> arpGraphicsItems = items(i_ptScenePos);
+    for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
+        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
             pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(pGraphicsItem);
             break;
         }
     }
-
     return pGraphObjCnctPt;
-
-} // getConnectionPoint
+}
 
 /*==============================================================================
 public: // instance methods
@@ -1785,7 +1771,8 @@ public: // instance methods
     The mouse cursor shape depends on the graphic item at the given position
     and the currently selected edit tool and edit mode.
 
-    @param i_ptPos [in] Scene coordinates to be checked.
+    @param i_ptPos [in]
+        Scene coordinates to be checked.
 
     @return Proposed cursor shape.
 */
@@ -1802,179 +1789,48 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
         /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
 
-    int iObjFactoryType = getCurrentDrawingToolGraphObjType();
-
     QCursor cursor = Qt::ArrowCursor;
 
-    if( m_mode == EMode::View )
-    {
-        cursor = Qt::ArrowCursor;
-    }
-    else if( m_mode == EMode::Edit )
-    {
+    if (m_mode == EMode::Edit) {
         QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_ptPos);
-        QGraphicsItem*        pGraphicsItem;
-        int                   idxGraphObj;
-
-        switch( m_editTool.enumerator() )
-        {
-            case EEditTool::Select:
-            {
-                switch( m_editMode.enumerator() )
-                {
-                    case EEditMode::Move:
-                    {
-                        cursor = Qt::ArrowCursor;
-                        break;
-                    }
-                    case EEditMode::Resize:
-                    {
-                        switch( m_editResizeMode.enumerator() )
-                        {
-                            case EEditResizeMode::ResizeAll:
-                            {
-                                break;
-                            }
-                            case EEditResizeMode::ResizeHor:
-                            {
-                                break;
-                            }
-                            case EEditResizeMode::ResizeVer:
-                            {
-                                break;
-                            }
-                            case EEditResizeMode::None:
-                            default:
-                            {
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case EEditMode::Rotate:
-                    {
-                        break;
-                    }
-                    case EEditMode::MoveShapePoint:
-                    {
-                        break;
-                    }
-                    case EEditMode::EditText:
-                    {
-                        cursor = Qt::IBeamCursor;
-                        break;
-                    }
-                    case EEditMode::Creating: // this mode is only used by graphical object but not by the scene
-                    case EEditMode::None:
-                    default:
-                    {
-                        cursor = Qt::ArrowCursor;
-                        break;
-                    }
-                } // switch( m_editMode )
-                break;
-            } // case EEditTool::Select:
-
-            case EEditTool::CreateObjects:
-            {
-                switch( m_editMode.enumerator() )
-                {
-                    case EEditMode::Move:
-                    {
-                        break;
-                    }
-                    case EEditMode::Resize:
-                    {
-                        switch( m_editResizeMode.enumerator() )
-                        {
-                            case EEditResizeMode::ResizeAll:
-                            {
-                                break;
-                            }
-                            case EEditResizeMode::ResizeHor:
-                            {
-                                break;
-                            }
-                            case EEditResizeMode::ResizeVer:
-                            {
-                                break;
-                            }
-                            case EEditResizeMode::None:
-                            default:
-                            {
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                    case EEditMode::Rotate:
-                    {
-                        break;
-                    }
-                    case EEditMode::MoveShapePoint:
-                    {
-                        if( iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
-                        {
-                            cursor = Qt::CrossCursor;
-                        }
-                        break;
-                    }
-                    case EEditMode::EditText:
-                    {
-                        cursor = Qt::IBeamCursor;
-                        break;
-                    }
-                    case EEditMode::Creating: // this mode is only used by graphical object but not by the scene
-                    case EEditMode::None:
-                    default:
-                    {
-                        if( iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined) )
-                        {
-                            // Special case for connection lines which may only be created on connection points.
-                            if( iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine) )
-                            {
-                                cursor = Qt::ArrowCursor;
-
-                                for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++ )
-                                {
-                                    pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
-
-                                    if( pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint) )
-                                    {
-                                        QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
-                                        cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                cursor = Qt::CrossCursor;
-                            }
-                        }
-                        break;
-                    }
-                } // switch( m_editMode )
-                break;
-            } // case EEditTool::CreateObjects
-
-            case EEditTool::None:
-            default:
-            {
-                cursor = Qt::ArrowCursor;
-                break;
+        if (m_editTool == EEditTool::Select) {
+            if (m_editMode == EEditMode::EditText) {
+                cursor = Qt::IBeamCursor;
             }
-        } // switch( m_editTool )
-    } // if( m_mode == EMode::Edit )
-
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+        }
+        else if (m_editTool == EEditTool::CreateObjects) {
+            int iObjFactoryType = getCurrentDrawingToolGraphObjType();
+            if (m_editMode == EEditMode::MoveShapePoint) {
+                if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+                    cursor = Qt::CrossCursor;
+                }
+            }
+            else if (m_editMode == EEditMode::EditText) {
+                cursor = Qt::IBeamCursor;
+            }
+            else if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+                // Special case for connection lines which may only be created on connection points.
+                if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
+                    cursor = Qt::ArrowCursor;
+                    for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
+                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
+                            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                            cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    cursor = Qt::CrossCursor;
+                }
+            }
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
     }
-
     return cursor;
-
-} // getProposedCursor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2033,10 +1889,12 @@ public: // instance methods
     the zValue of the given graphic is 0.1. higher than the highest zValue of the
     given list of graphic items.
 
-    @param i_pGraphicsItem [in] Pointer to item which should be pushed to front
-    @param i_arpGraphicsItems [in] List of graphic items the item should be pushed into front.
-                                   If the list is empty the item will be pushed into front of
-                                   all items currently in the scene.
+    @param i_pGraphicsItem [in]
+        Pointer to item which should be pushed to front
+    @param i_arpGraphicsItems [in]
+        List of graphic items the item should be pushed into front.
+        If the list is empty the item will be pushed into front of
+        all items currently in the scene.
 
     @return Resulting zValue assigned to the given graphic item.
 */
@@ -2093,10 +1951,12 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
     the zValue of the given graphic is 0.1. lower than the lowest zValue of the
     given list of graphic items.
 
-    @param i_pGraphicsItem [in] Pointer to item which should be pushed to back.
-    @param i_arpGraphicsItems [in] List of graphic items the item should be pushed to back.
-                                   If the list is empty the item will be pushed behind
-                                   all items currently in the scene.
+    @param i_pGraphicsItem [in]
+        Pointer to item which should be pushed to back.
+    @param i_arpGraphicsItems [in]
+        List of graphic items the item should be pushed to back.
+        If the list is empty the item will be pushed behind
+        all items currently in the scene.
 
     @return Resulting zValue assigned to the given graphic item.
 */

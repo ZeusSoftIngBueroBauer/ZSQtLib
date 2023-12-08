@@ -82,7 +82,6 @@ CGraphObjLabelGeometryAngle::CGraphObjLabelGeometryAngle(
     m_fAnchorLine2Angle_degrees(0.0),
     m_rectAnchorLine2CircleSegment(),
     m_drawSettingsArrowHeads(EGraphObjTypeLine),
-    m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
     createTraceAdminObjs("Labels::" + ClassName());
@@ -135,7 +134,6 @@ CGraphObjLabelGeometryAngle::~CGraphObjLabelGeometryAngle()
     //m_rectAnchorLine2CircleSegment;
     m_fAnchorLine2Angle_degrees = 0.0;
     //m_drawSettingsArrowHeads;
-    //m_plgP1ArrowHead;
     //m_plgP2ArrowHead;
 
 } // dtor
@@ -211,9 +209,6 @@ QRectF CGraphObjLabelGeometryAngle::boundingRect() const
         }
     }
     rctBounding |= m_rectAnchorLine2CircleSegment;
-    if (m_plgP1ArrowHead.size() > 0) {
-        rctBounding |= m_plgP1ArrowHead.boundingRect();
-    }
     if (m_plgP2ArrowHead.size() > 0) {
         rctBounding |= m_plgP2ArrowHead.boundingRect();
     }
@@ -248,9 +243,6 @@ QPainterPath CGraphObjLabelGeometryAngle::shape() const
         }
     }
     painterPath.addEllipse(m_rectAnchorLine2CircleSegment);
-    if (m_plgP1ArrowHead.size() > 0) {
-        painterPath.addPolygon(m_plgP1ArrowHead);
-    }
     if (m_plgP2ArrowHead.size() > 0) {
         painterPath.addPolygon(m_plgP2ArrowHead);
     }
@@ -300,7 +292,6 @@ void CGraphObjLabelGeometryAngle::paint(
             i_pPainter->drawPie(m_rectAnchorLine2CircleSegment, 0.0, 16.0 * m_fAnchorLine2Angle_degrees);
             QBrush brsh(pn.color());
             i_pPainter->setBrush(brsh);
-            i_pPainter->drawPolygon(m_plgP1ArrowHead);
             i_pPainter->drawPolygon(m_plgP2ArrowHead);
         }
         i_pPainter->restore();
@@ -556,12 +547,6 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
         QLineF(ptHorLine0DegreesP2, QPointF(ptHorLine0DegreesP2.x(), ptHorLine0DegreesP2.y() - 20.0));
     QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
         QLineF(lineSelPt.p2(), lineSelPt.p1()), lineEndOfSegment.p2(), 10.0);
-
-    getLineEndPolygons(
-        /* line          */ perpendicularLineHorLine,
-        /* drawSetings   */ m_drawSettingsArrowHeads,
-        /* pplgLineStart */ &m_plgP1ArrowHead,
-        /* pplgLineEnd   */ nullptr);
 
     getLineEndPolygons(
         /* line          */ perpendicularLineEndOfSegment,

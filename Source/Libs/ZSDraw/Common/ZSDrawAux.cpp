@@ -1101,11 +1101,10 @@ bool ZS::Draw::isLineHit( const QLineF& i_lineF, const QPointF& i_point, double 
     // For each side we are going to check whether the border line inteferes
     // with the given input line.
 
-    bool   bIsHit = false;
-    double fTolerance = i_fTolerance;
+    bool bIsHit = false;
 
-    if( fTolerance <= 0.0 )
-    {
+    double fTolerance = i_fTolerance;
+    if (fTolerance <= 0.0) {
         fTolerance = 2.0;
     }
 
@@ -1114,56 +1113,31 @@ bool ZS::Draw::isLineHit( const QLineF& i_lineF, const QPointF& i_point, double 
     double fXRight  = i_point.x() + fTolerance;
     double fYBottom = i_point.y() + fTolerance;
 
-    QRectF rctPt( QPointF(fXLeft,fYTop), QPointF(fXRight,fYBottom) );
+    QRectF rctPt(QPointF(fXLeft,fYTop), QPointF(fXRight,fYBottom));
     QLineF lineRctPt;
-    int    idx;
 
-    for( idx = 0; idx < 4; idx++ )
-    {
-        switch( idx )
-        {
-            // Rectangle line numbers surrounding the point to be tested:
-            //        +-- 0 --+
-            //        |       |
-            //        3   X   1
-            //        |       |
-            //        +-- 2 --+
-            case 0:
-            {
-                lineRctPt.setP1( QPointF(rctPt.left(),rctPt.top()) );
-                lineRctPt.setP2( QPointF(rctPt.right(),rctPt.top()) );
-                break;
-            }
-            case 1:
-            {
-                lineRctPt.setP1( QPointF(rctPt.right(),rctPt.top()) );
-                lineRctPt.setP2( QPointF(rctPt.right(),rctPt.bottom()) );
-                break;
-            }
-            case 2:
-            {
-                lineRctPt.setP1( QPointF(rctPt.left(),rctPt.bottom()) );
-                lineRctPt.setP2( QPointF(rctPt.right(),rctPt.bottom()) );
-                break;
-            }
-            case 3:
-            {
-                lineRctPt.setP1( QPointF(rctPt.left(),rctPt.top()) );
-                lineRctPt.setP2( QPointF(rctPt.left(),rctPt.bottom()) );
-                break;
-            }
-            default:
-            {
-                break;
-            }
+    for (int idx = 0; idx < 4; idx++) {
+        if (idx == 0) {
+            lineRctPt.setP1(QPointF(rctPt.left(), rctPt.top()));
+            lineRctPt.setP2(QPointF(rctPt.right(), rctPt.top()));
         }
-        if (lineRctPt.intersects(i_lineF, nullptr) == QLineF::BoundedIntersection)
-        {
+        else if (idx == 1) {
+            lineRctPt.setP1(QPointF(rctPt.right(), rctPt.top()));
+            lineRctPt.setP2(QPointF(rctPt.right(), rctPt.bottom()));
+        }
+        else if (idx == 2) {
+            lineRctPt.setP1(QPointF(rctPt.left(), rctPt.bottom()));
+            lineRctPt.setP2(QPointF(rctPt.right(), rctPt.bottom()));
+        }
+        else if (idx == 3) {
+            lineRctPt.setP1(QPointF(rctPt.left(), rctPt.top()));
+            lineRctPt.setP2(QPointF(rctPt.left(), rctPt.bottom()));
+        }
+        if (lineRctPt.intersects(i_lineF, nullptr) == QLineF::BoundedIntersection) {
             bIsHit = true;
             break;
         }
     }
-
     return bIsHit;
 
 } // isLineHit
@@ -1191,16 +1165,13 @@ bool ZS::Draw::isRectHit(
         ESelectionPoint::TopCenter
     };
 
-    bool   bIsHit = false;
-    double fTolerance = i_fTolerance;
+    bool bIsHit = false;
 
-    if( fTolerance <= 0.0 )
-    {
+    double fTolerance = i_fTolerance;
+    if (fTolerance <= 0.0) {
         fTolerance = 2.0;
     }
-
-    if( o_pHitInfo != nullptr )
-    {
+    if (o_pHitInfo != nullptr) {
         o_pHitInfo->m_editMode = EEditMode::None;
         o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
@@ -1211,37 +1182,20 @@ bool ZS::Draw::isRectHit(
     }
 
     QRectF rctBndTmp = i_rct;
-
     rctBndTmp.setLeft( i_rct.left() - fTolerance );
     rctBndTmp.setTop( i_rct.top() - fTolerance );
     rctBndTmp.setRight( i_rct.right() + fTolerance );
     rctBndTmp.setBottom( i_rct.bottom() + fTolerance );
 
-    if( rctBndTmp.contains(i_pt) )
-    {
-        QPolygonF       plg;
-        QRectF          rct;
-        QLineF          lin;
-        QPointF         pt;
-        ESelectionPoint selPt;
-        int             idxPt;
-
-        plg = rect2Polygon( i_rct, _ZSArrLen(s_arSelPtsCorners), s_arSelPtsCorners );
-
-        for( idxPt = 0; idxPt < plg.size(); idxPt++ )
-        {
-            selPt = s_arSelPtsCorners[idxPt];
-
-            pt = plg[idxPt];
-
-            rct = boundingRect(pt,fTolerance);
-
-            if( rct.contains(i_pt) )
-            {
+    if (rctBndTmp.contains(i_pt)) {
+        QPolygonF plg = rect2Polygon(i_rct, _ZSArrLen(s_arSelPtsCorners), s_arSelPtsCorners);
+        for (int idxPt = 0; idxPt < plg.size(); ++idxPt) {
+            const QPointF& pt = plg[idxPt];
+            ESelectionPoint selPt = s_arSelPtsCorners[idxPt];
+            QRectF rct = boundingRect(pt, fTolerance);
+            if (rct.contains(i_pt)) {
                 bIsHit = true;
-
-                if( o_pHitInfo != nullptr )
-                {
+                if (o_pHitInfo != nullptr) {
                     o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
                     o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
                     o_pHitInfo->m_selPtBoundingRect = selPt;
@@ -1253,25 +1207,15 @@ bool ZS::Draw::isRectHit(
                 break;
             }
         }
-
-        if( !bIsHit )
-        {
-            plg = rect2Polygon( i_rct, _ZSArrLen(s_arSelPtsLineCenters), s_arSelPtsLineCenters );
-
-            for( idxPt = 0; idxPt < plg.size(); idxPt++ )
-            {
-                selPt = s_arSelPtsLineCenters[idxPt];
-
-                pt = plg[idxPt];
-
-                rct = boundingRect(pt,fTolerance);
-
-                if( rct.contains(i_pt) )
-                {
+        if (!bIsHit) {
+            plg = rect2Polygon(i_rct, _ZSArrLen(s_arSelPtsLineCenters), s_arSelPtsLineCenters);
+            for (int idxPt = 0; idxPt < plg.size(); idxPt++) {
+                const QPointF& pt = plg[idxPt];
+                ESelectionPoint selPt = s_arSelPtsLineCenters[idxPt];
+                QRectF rct = boundingRect(pt, fTolerance);
+                if (rct.contains(i_pt)) {
                     bIsHit = true;
-
-                    if( o_pHitInfo != nullptr )
-                    {
+                    if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
                         o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
                         o_pHitInfo->m_selPtBoundingRect = selPt;
@@ -1284,22 +1228,13 @@ bool ZS::Draw::isRectHit(
                 }
             }
         }
-
-        if( !bIsHit )
-        {
+        if (!bIsHit) {
             plg = i_rct; // this cast return 5 points (left top corner twice)
-
-            for( idxPt = 0; idxPt < plg.size()-1; idxPt++ )
-            {
-                lin.setP1(plg[idxPt]);
-                lin.setP2(plg[idxPt+1]);
-
-                if( isLineHit(lin,i_pt,fTolerance) )
-                {
+            for (int idxPt = 0; idxPt < plg.size()-1; idxPt++) {
+                QLineF lin(plg[idxPt], plg[idxPt+1]);
+                if (isLineHit(lin, i_pt, fTolerance)) {
                     bIsHit = true;
-
-                    if( o_pHitInfo != nullptr )
-                    {
+                    if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_editMode = EEditMode::Move;
                         o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
@@ -1312,15 +1247,10 @@ bool ZS::Draw::isRectHit(
                 }
             }
         }
-
-        if( !bIsHit )
-        {
-            if( i_fillStyle == EFillStyle::SolidPattern )
-            {
+        if (!bIsHit) {
+            if (i_fillStyle == EFillStyle::SolidPattern) {
                 bIsHit = true;
-
-                if( o_pHitInfo != nullptr )
-                {
+                if (o_pHitInfo != nullptr) {
                     o_pHitInfo->m_editMode = EEditMode::Move;
                     o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
@@ -1331,9 +1261,7 @@ bool ZS::Draw::isRectHit(
                 }
             }
         }
-
-    } // if( rctBndTmp.contains(i_pt) )
-
+    }
     return bIsHit;
 
 } // isRectHit
@@ -1354,14 +1282,12 @@ bool ZS::Draw::isEllipseHit(
         ESelectionPoint::TopCenter
     };
 
-    bool   bIsHit = false;
-    double fTolerance = i_fTolerance;
+    bool bIsHit = false;
 
-    if( fTolerance <= 0.0 )
-    {
+    double fTolerance = i_fTolerance;
+    if (fTolerance <= 0.0) {
         fTolerance = 2.0;
     }
-
     if( o_pHitInfo != nullptr )
     {
         o_pHitInfo->m_editMode = EEditMode::None;
@@ -1374,38 +1300,28 @@ bool ZS::Draw::isEllipseHit(
     }
 
     QRectF rctBndTmp = i_rct;
-
     rctBndTmp.setLeft( i_rct.left() - fTolerance );
     rctBndTmp.setTop( i_rct.top() - fTolerance );
     rctBndTmp.setRight( i_rct.right() + fTolerance );
     rctBndTmp.setBottom( i_rct.bottom() + fTolerance );
 
-    if( rctBndTmp.contains(i_pt) )
-    {
+    if (rctBndTmp.contains(i_pt)) {
         QPointF ptC = i_rct.center();
 
-        QPolygonF       plg;
-        QRectF          rct;
-        QPointF         pt;
-        ESelectionPoint selPt;
-        int             idxPt;
+        //QPolygonF       plg;
+        //QRectF          rct;
+        //QPointF         pt;
+        //ESelectionPoint selPt;
+        //int             idxPt;
 
-        plg = rect2Polygon( i_rct, _ZSArrLen(s_arSelPtsLineCenters), s_arSelPtsLineCenters );
-
-        for( idxPt = 0; idxPt < plg.size(); idxPt++ )
-        {
-            selPt = s_arSelPtsLineCenters[idxPt];
-
-            pt = plg[idxPt];
-
-            rct = boundingRect(pt,fTolerance);
-
-            if( rct.contains(i_pt) )
-            {
+        QPolygonF plg = rect2Polygon(i_rct, _ZSArrLen(s_arSelPtsLineCenters), s_arSelPtsLineCenters);
+        for (int idxPt = 0; idxPt < plg.size(); idxPt++) {
+            const QPointF& pt = plg[idxPt];
+            ESelectionPoint selPt = s_arSelPtsLineCenters[idxPt];
+            QRectF rct = boundingRect(pt, fTolerance);
+            if (rct.contains(i_pt)) {
                 bIsHit = true;
-
-                if( o_pHitInfo != nullptr )
-                {
+                if (o_pHitInfo != nullptr) {
                     o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
                     o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
                     o_pHitInfo->m_selPtBoundingRect = selPt;
@@ -1417,143 +1333,90 @@ bool ZS::Draw::isEllipseHit(
                 break;
             }
         }
-
-        if( !bIsHit )
-        {
+        if (!bIsHit) {
             double fa = i_rct.width() / 2.0;
             double fb = i_rct.height() / 2.0;
             double fx = i_pt.x() - ptC.x();
             double fy = i_pt.y() - ptC.y();
 
             // Ellipse as vertical line ..
-            if( fa == 0.0 )
-            {
-                if( fabs(fx) <= fTolerance )
-                {
+            if (fa == 0.0) {
+                if (fabs(fx) <= fTolerance) {
                     bIsHit = true;
-
-                    if( o_pHitInfo != nullptr )
-                    {
-                        selPt = ESelectionPoint::RightCenter;
+                    if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_editMode = EEditMode::Resize;
                         o_pHitInfo->m_editResizeMode = EEditResizeMode::ResizeHor;
-                        o_pHitInfo->m_selPtBoundingRect = selPt;
+                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::RightCenter;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
-                        o_pHitInfo->m_ptSelected = pt;
-                        o_pHitInfo->m_cursor = selectionPoint2CursorShape(selPt);
+                        o_pHitInfo->m_ptSelected = i_pt;
+                        o_pHitInfo->m_cursor = selectionPoint2CursorShape(ESelectionPoint::RightCenter);
                     }
                 }
-            } // if( fa == 0.0 )
-
+            }
             // Ellipse as horizontal line ..
-            else if( fb == 0.0 )
-            {
-                if( fabs(fy) <= fTolerance )
-                {
+            else if (fb == 0.0) {
+                if (fabs(fy) <= fTolerance) {
                     bIsHit = true;
-
-                    if( o_pHitInfo != nullptr )
-                    {
-                        selPt = ESelectionPoint::BottomCenter;
+                    if (o_pHitInfo != nullptr) {
                         o_pHitInfo->m_editMode = EEditMode::Resize;
                         o_pHitInfo->m_editResizeMode = EEditResizeMode::ResizeVer;
-                        o_pHitInfo->m_selPtBoundingRect = selPt;
+                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::BottomCenter;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
-                        o_pHitInfo->m_ptSelected = pt;
-                        o_pHitInfo->m_cursor = selectionPoint2CursorShape(selPt);
+                        o_pHitInfo->m_ptSelected = i_pt;
+                        o_pHitInfo->m_cursor = selectionPoint2CursorShape(ESelectionPoint::BottomCenter);
                     }
                 }
-            } // if( fb == 0.0 )
-
+            }
             // Ellipse is a circle ..
-            else if( fa == fb )
-            {
+            else if (fa == fb) {
                 // Circle equation:
                 //   x² + y² = r²
                 //   y = sqrt(r² - x²)
-
-                double fyTmp = sqrt( Math::sqr(fa) - Math::sqr(fx) );
-
-                if( (fy + fTolerance >= fyTmp) && (fy - fTolerance <= fyTmp) )
-                {
+                double fyTmp = sqrt(Math::sqr(fa) - Math::sqr(fx));
+                if ((fy + fTolerance >= fyTmp) && (fy - fTolerance <= fyTmp)) {
                     bIsHit = true;
                 }
-                else if( (fy + fTolerance >= -fyTmp) && (fy - fTolerance <= -fyTmp) )
-                {
+                else if ((fy + fTolerance >= -fyTmp) && (fy - fTolerance <= -fyTmp)) {
                     bIsHit = true;
                 }
-                if( bIsHit && o_pHitInfo != nullptr )
-                {
+                if (bIsHit && o_pHitInfo != nullptr) {
                     o_pHitInfo->m_editMode = EEditMode::Move;
                     o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
-                    o_pHitInfo->m_ptSelected = pt;
+                    o_pHitInfo->m_ptSelected = i_pt;
                     o_pHitInfo->m_cursor = Qt::SizeAllCursor;
                 }
-            } // if( fa == fb )
-
-            else // if( fa != 0.0 && fb != 0.0 && fa != fb )
-            {
+            }
+            else  {
                 // Ellipse equation:
                 //   x²/a² + y²/b² = 1
                 //   y²/b² = 1 - x²/a²
                 //   y² = b² * (1 - x²/a²)
                 //   y = b * sqrt(1 - x²/a²)
-
-                if( fx == fa )
-                {
-                    if( fabs(fy) <= fTolerance )
-                    {
+                if (fx == fa) {
+                    if (fabs(fy) <= fTolerance) {
                         bIsHit = true;
                     }
                 }
-                else if( fy == fb )
-                {
-                    if( fabs(fx) <= fTolerance )
-                    {
+                else if (fy == fb) {
+                    if (fabs(fx) <= fTolerance) {
                         bIsHit = true;
                     }
                 }
-                else
-                {
-                    double fyTmp = fb * sqrt( 1.0 - Math::sqr(fx/fa) );
-
-                    if( (fy + fTolerance >= fyTmp) && (fy - fTolerance <= fyTmp) )
-                    {
+                else {
+                    double fyTmp = fb * sqrt(1.0 - Math::sqr(fx/fa));
+                    if ((fy + fTolerance >= fyTmp) && (fy - fTolerance <= fyTmp)) {
                         bIsHit = true;
                     }
-                    else if( (fy + fTolerance >= -fyTmp) && (fy - fTolerance <= -fyTmp) )
-                    {
+                    else if ((fy + fTolerance >= -fyTmp) && (fy - fTolerance <= -fyTmp)) {
                         bIsHit = true;
                     }
                 }
-
-                if( bIsHit && o_pHitInfo != nullptr )
-                {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-                    o_pHitInfo->m_idxPolygonShapePoint = -1;
-                    o_pHitInfo->m_idxLineSegment = -1;
-                    o_pHitInfo->m_ptSelected = pt;
-                    o_pHitInfo->m_cursor = Qt::SizeAllCursor;
-                }
-            } // if( fa != 0.0 && fb != 0.0 && fa != fb )
-
-        } // if( !bIsHit )
-
-        if( !bIsHit )
-        {
-            if( i_fillStyle == EFillStyle::SolidPattern )
-            {
-                bIsHit = true;
-
-                if( o_pHitInfo != nullptr )
-                {
+                if (bIsHit && o_pHitInfo != nullptr) {
                     o_pHitInfo->m_editMode = EEditMode::Move;
                     o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
@@ -1564,9 +1427,21 @@ bool ZS::Draw::isEllipseHit(
                 }
             }
         }
-
-    } // if( rctBndTmp.contains(i_pt) )
-
+        if (!bIsHit) {
+            if (i_fillStyle == EFillStyle::SolidPattern) {
+                bIsHit = true;
+                if (o_pHitInfo != nullptr) {
+                    o_pHitInfo->m_editMode = EEditMode::Move;
+                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+                    o_pHitInfo->m_idxPolygonShapePoint = -1;
+                    o_pHitInfo->m_idxLineSegment = -1;
+                    o_pHitInfo->m_ptSelected = i_pt;
+                    o_pHitInfo->m_cursor = Qt::SizeAllCursor;
+                }
+            }
+        }
+    }
     return bIsHit;
 
 } // isEllipseHit
@@ -1583,13 +1458,10 @@ bool ZS::Draw::isPolygonHit(
     bool   bIsHit = false;
     double fTolerance = i_fTolerance;
 
-    if( fTolerance <= 0.0 )
-    {
+    if (fTolerance <= 0.0) {
         fTolerance = 2.0;
     }
-
-    if( o_pHitInfo != nullptr )
-    {
+    if (o_pHitInfo != nullptr) {
         o_pHitInfo->m_editMode = EEditMode::None;
         o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
@@ -1600,31 +1472,18 @@ bool ZS::Draw::isPolygonHit(
     }
 
     QRectF rctBndTmp = i_plg.boundingRect();
+    rctBndTmp.setLeft(rctBndTmp.left() - fTolerance);
+    rctBndTmp.setTop(rctBndTmp.top() - fTolerance);
+    rctBndTmp.setRight(rctBndTmp.right() + fTolerance);
+    rctBndTmp.setBottom(rctBndTmp.bottom() + fTolerance);
 
-    rctBndTmp.setLeft( rctBndTmp.left() - fTolerance );
-    rctBndTmp.setTop( rctBndTmp.top() - fTolerance );
-    rctBndTmp.setRight( rctBndTmp.right() + fTolerance );
-    rctBndTmp.setBottom( rctBndTmp.bottom() + fTolerance );
-
-    if( rctBndTmp.contains(i_pt) )
-    {
-        QRectF  rct;
-        QLineF  lin;
-        QPointF pt;
-        int     idxPt;
-
-        for( idxPt = 0; idxPt < i_plg.size(); idxPt++ )
-        {
-            pt = i_plg[idxPt];
-
-            rct = boundingRect(pt,fTolerance);
-
-            if( rct.contains(i_pt) )
-            {
+    if (rctBndTmp.contains(i_pt)) {
+        for (int idxPt = 0; idxPt < i_plg.size(); idxPt++) {
+            const QPointF& pt = i_plg[idxPt];
+            QRectF rct = boundingRect(pt, fTolerance);
+            if (rct.contains(i_pt)) {
                 bIsHit = true;
-
-                if( o_pHitInfo != nullptr )
-                {
+                if (o_pHitInfo != nullptr) {
                     o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
                     o_pHitInfo->m_idxPolygonShapePoint = idxPt;
                     o_pHitInfo->m_ptSelected = pt;
@@ -1633,22 +1492,13 @@ bool ZS::Draw::isPolygonHit(
                 break;
             }
         }
-
-        if( !bIsHit )
-        {
-            if( i_plg.size() > 1 )
-            {
-                for( idxPt = 0; idxPt < i_plg.size()-1; idxPt++ )
-                {
-                    lin.setP1(i_plg[idxPt]);
-                    lin.setP2(i_plg[idxPt+1]);
-
-                    if( isLineHit(lin,i_pt,fTolerance) )
-                    {
+        if (!bIsHit) {
+            if (i_plg.size() > 1) {
+                for (int idxPt = 0; idxPt < i_plg.size()-1; idxPt++) {
+                    QLineF lin(i_plg[idxPt], i_plg[idxPt+1]);
+                    if (isLineHit(lin, i_pt, fTolerance)) {
                         bIsHit = true;
-
-                        if( o_pHitInfo != nullptr )
-                        {
+                        if (o_pHitInfo != nullptr) {
                             o_pHitInfo->m_editMode = EEditMode::Move;
                             o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                             o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
@@ -1662,15 +1512,10 @@ bool ZS::Draw::isPolygonHit(
                 }
             }
         }
-
-        if( !bIsHit )
-        {
-            if( i_fillStyle == EFillStyle::SolidPattern )
-            {
+        if (!bIsHit) {
+            if (i_fillStyle == EFillStyle::SolidPattern) {
                 bIsHit = true;
-
-                if( o_pHitInfo != nullptr )
-                {
+                if (o_pHitInfo != nullptr) {
                     o_pHitInfo->m_editMode = EEditMode::Move;
                     o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
@@ -1681,9 +1526,7 @@ bool ZS::Draw::isPolygonHit(
                 }
             }
         }
-
-    } // if( rctBndTmp.contains(i_pt) )
-
+    }
     return bIsHit;
 
 } // isPolygonHit

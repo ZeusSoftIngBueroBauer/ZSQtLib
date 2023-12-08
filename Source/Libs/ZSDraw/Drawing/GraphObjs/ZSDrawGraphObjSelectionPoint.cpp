@@ -692,107 +692,13 @@ void CGraphObjSelectionPoint::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    if (editToolDrawing == EEditTool::Select)
-    {
-        QCursor cursor = Qt::CustomCursor;
-
-        double fRotAngleCurr_rad = 0.0;
-        double fCursorAngle_rad  = 0.0;
-        bool   bSetResizeCursor  = false;
-
-        if (m_selPt.m_pGraphObj != nullptr) {
-            fRotAngleCurr_rad = Math::deg2Rad(m_selPt.m_pGraphObj->getRotationAngleInDegree());
-        }
-
-        if (m_selPtSelectedBoundingRect != ESelectionPoint::None) {
-            switch (m_selPtSelectedBoundingRect.enumerator()) {
-                case ESelectionPoint::TopLeft:
-                case ESelectionPoint::BottomRight:
-                {
-                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f135Degrees_rad; // 2nd quadrant: arrow from right/bottom -> top/left
-                    cursor = Qt::SizeFDiagCursor; /*  \  */
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case ESelectionPoint::TopRight:
-                case ESelectionPoint::BottomLeft:
-                {
-                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f45Degrees_rad; // 1st quadrant: arrow from bottom/left -> top/right
-                    cursor = Qt::SizeBDiagCursor; /*  /  */
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case ESelectionPoint::LeftCenter:
-                case ESelectionPoint::RightCenter:
-                {
-                    fCursorAngle_rad = fRotAngleCurr_rad;
-                    cursor = Qt::SizeHorCursor;
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case ESelectionPoint::TopCenter:
-                case ESelectionPoint::BottomCenter:
-                {
-                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f90Degrees_rad;
-                    cursor = Qt::SizeVerCursor;
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case ESelectionPoint::Center:
-                {
-                    cursor = Qt::SizeAllCursor;
-                    break;
-                }
-                case ESelectionPoint::RotateTop:
-                case ESelectionPoint::RotateBottom:
-                {
-                    QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
-                    cursor = QCursor(bmpCursor);
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
-            }
-
-            if (bSetResizeCursor) {
-                // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
-                while (fCursorAngle_rad >= Math::c_f180Degrees_rad) {
-                    fCursorAngle_rad -= Math::c_f180Degrees_rad;
-                }
-                while (fCursorAngle_rad < 0.0) {
-                    fCursorAngle_rad += Math::c_f180Degrees_rad;
-                }
-                if (fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0) { // 0.0 .. 22.5°
-                    cursor = Qt::SizeHorCursor;
-                }
-                else if (fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0) { // 22.5° .. 67.5°
-                    cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
-                }
-                else if (fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0) { // 67.5° .. 112.5°
-                    cursor = Qt::SizeVerCursor;
-                }
-                else if (fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0) { // 112.5° .. 157.5°
-                    cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
-                }
-                else if (fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad) { // 157.5° .. 180.0°
-                    cursor = Qt::SizeHorCursor;
-                }
-            } // if( bSetResizeCursor )
-        } // if( m_selPtSelectedBoundingRect != ESelectionPoint::None )
-
-        else if (m_idxSelPtSelectedPolygon >= 0) {
-            cursor = Qt::CrossCursor;
-        }
-
+    if (m_pDrawingScene->getEditTool() == EEditTool::Select) {
+        QCursor cursor = getProposedCursor();
         if (cursor.shape() != Qt::CustomCursor) {
             setCursor(cursor);
         }
-    } // if( editToolDrawing == EEditTool::Select )
-} // hoverEnterEvent
+    }
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
@@ -809,108 +715,13 @@ void CGraphObjSelectionPoint::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    if (editToolDrawing == EEditTool::Select)
-    {
-        QCursor cursor = Qt::CustomCursor;
-
-        double fRotAngleCurr_rad = 0.0;
-        double fCursorAngle_rad  = 0.0;
-        bool   bSetResizeCursor  = false;
-
-        if (m_selPt.m_pGraphObj != nullptr) {
-            fRotAngleCurr_rad = Math::deg2Rad(m_selPt.m_pGraphObj->getRotationAngleInDegree());
-        }
-
-        if (m_selPtSelectedBoundingRect != ESelectionPoint::None) {
-            switch (m_selPtSelectedBoundingRect.enumerator())
-            {
-                case ESelectionPoint::TopLeft:
-                case ESelectionPoint::BottomRight:
-                {
-                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f135Degrees_rad; // 2nd quadrant: arrow from right/bottom -> top/left
-                    cursor = Qt::SizeFDiagCursor; /*  \  */
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case ESelectionPoint::TopRight:
-                case ESelectionPoint::BottomLeft:
-                {
-                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f45Degrees_rad; // 1st quadrant: arrow from bottom/left -> top/right
-                    cursor = Qt::SizeBDiagCursor; /*  /  */
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case ESelectionPoint::LeftCenter:
-                case ESelectionPoint::RightCenter:
-                {
-                    fCursorAngle_rad = fRotAngleCurr_rad;
-                    cursor = Qt::SizeHorCursor;
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case ESelectionPoint::TopCenter:
-                case ESelectionPoint::BottomCenter:
-                {
-                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f90Degrees_rad;
-                    cursor = Qt::SizeVerCursor;
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case ESelectionPoint::Center:
-                {
-                    cursor = Qt::SizeAllCursor;
-                    break;
-                }
-                case ESelectionPoint::RotateTop:
-                case ESelectionPoint::RotateBottom:
-                {
-                    QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
-                    cursor = QCursor(bmpCursor);
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
-            }
-
-            if (bSetResizeCursor) {
-                // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
-                while (fCursorAngle_rad >= Math::c_f180Degrees_rad) {
-                    fCursorAngle_rad -= Math::c_f180Degrees_rad;
-                }
-                while (fCursorAngle_rad < 0.0) {
-                    fCursorAngle_rad += Math::c_f180Degrees_rad;
-                }
-                if (fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0) { // 0.0 .. 22.5°
-                    cursor = Qt::SizeHorCursor;
-                }
-                else if (fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0) { // 22.5° .. 67.5°
-                    cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
-                }
-                else if (fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0) { // 67.5° .. 112.5°
-                    cursor = Qt::SizeVerCursor;
-                }
-                else if (fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0) { // 112.5° .. 157.5°
-                    cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
-                }
-                else if (fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad) { // 157.5° .. 180.0°
-                    cursor = Qt::SizeHorCursor;
-                }
-            } // if( bSetResizeCursor )
-        } // if( m_selPtSelectedBoundingRect != ESelectionPoint::None )
-
-        else if (m_idxSelPtSelectedPolygon >= 0) {
-            cursor = Qt::CrossCursor;
-        }
-
+    if (m_pDrawingScene->getEditTool() == EEditTool::Select) {
+        QCursor cursor = getProposedCursor();
         if (cursor.shape() != Qt::CustomCursor) {
             setCursor(cursor);
         }
-    } // if( editToolDrawing == EEditTool::Select )
-} // hoverMoveEvent
+    }
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
@@ -1115,6 +926,126 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
 /*==============================================================================
 protected: // auxiliary instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the cursor to be shown if the mouse is hovered over the
+           selection point.
+*/
+QCursor CGraphObjSelectionPoint::getProposedCursor() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "getProposedCursor",
+        /* strAddInfo   */ "" );
+
+    QCursor cursor = Qt::CustomCursor;
+
+    if (m_pDrawingScene->getEditTool() == EEditTool::Select)
+    {
+        double fRotAngleCurr_rad = 0.0;
+        double fCursorAngle_rad  = 0.0;
+        bool   bSetResizeCursor  = false;
+
+        if (m_selPt.m_pGraphObj != nullptr) {
+            fRotAngleCurr_rad = Math::deg2Rad(m_selPt.m_pGraphObj->getRotationAngleInDegree());
+        }
+
+        if (m_selPtSelectedBoundingRect != ESelectionPoint::None) {
+            switch (m_selPtSelectedBoundingRect.enumerator()) {
+                case ESelectionPoint::TopLeft:
+                case ESelectionPoint::BottomRight:
+                {
+                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f135Degrees_rad; // 2nd quadrant: arrow from right/bottom -> top/left
+                    cursor = Qt::SizeFDiagCursor; /*  \  */
+                    bSetResizeCursor = true;
+                    break;
+                }
+                case ESelectionPoint::TopRight:
+                case ESelectionPoint::BottomLeft:
+                {
+                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f45Degrees_rad; // 1st quadrant: arrow from bottom/left -> top/right
+                    cursor = Qt::SizeBDiagCursor; /*  /  */
+                    bSetResizeCursor = true;
+                    break;
+                }
+                case ESelectionPoint::LeftCenter:
+                case ESelectionPoint::RightCenter:
+                {
+                    fCursorAngle_rad = fRotAngleCurr_rad;
+                    cursor = Qt::SizeHorCursor;
+                    bSetResizeCursor = true;
+                    break;
+                }
+                case ESelectionPoint::TopCenter:
+                case ESelectionPoint::BottomCenter:
+                {
+                    fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f90Degrees_rad;
+                    cursor = Qt::SizeVerCursor;
+                    bSetResizeCursor = true;
+                    break;
+                }
+                case ESelectionPoint::Center:
+                {
+                    cursor = Qt::SizeAllCursor;
+                    break;
+                }
+                case ESelectionPoint::RotateTop:
+                case ESelectionPoint::RotateBottom:
+                {
+                    QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+                    cursor = QCursor(bmpCursor);
+                    break;
+                }
+                case ESelectionPoint::PolygonPoint:
+                {
+                    cursor = Qt::CrossCursor;
+                    break;
+                }
+                default:
+                {
+                    break;
+                }
+            }
+
+            if (bSetResizeCursor) {
+                // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
+                while (fCursorAngle_rad >= Math::c_f180Degrees_rad) {
+                    fCursorAngle_rad -= Math::c_f180Degrees_rad;
+                }
+                while (fCursorAngle_rad < 0.0) {
+                    fCursorAngle_rad += Math::c_f180Degrees_rad;
+                }
+                if (fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0) { // 0.0 .. 22.5°
+                    cursor = Qt::SizeHorCursor;
+                }
+                else if (fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0) { // 22.5° .. 67.5°
+                    cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
+                }
+                else if (fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0) { // 67.5° .. 112.5°
+                    cursor = Qt::SizeVerCursor;
+                }
+                else if (fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0) { // 112.5° .. 157.5°
+                    cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
+                }
+                else if (fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad) { // 157.5° .. 180.0°
+                    cursor = Qt::SizeHorCursor;
+                }
+            } // if( bSetResizeCursor )
+        } // if( m_selPtSelectedBoundingRect != ESelectionPoint::None )
+
+        else if (m_idxSelPtSelectedPolygon >= 0) {
+            cursor = Qt::CrossCursor;
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
+    }
+    return cursor;
+
+} // getProposedCursor
 
 //------------------------------------------------------------------------------
 /*! @brief Internal auxiliary method to update the position of the label and the

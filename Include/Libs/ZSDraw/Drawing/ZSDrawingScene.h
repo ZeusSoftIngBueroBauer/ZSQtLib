@@ -206,8 +206,8 @@ public: // instance methods
     double bringToFront( QGraphicsItem* i_pGraphicsItem, const QPointF& i_ptScenePos );
     double sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF& i_ptScenePos );
 public: // instance methods
-    double bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<QGraphicsItem*>& i_arpGraphicsItems = QList<QGraphicsItem*>() ); // usually list of items under mouse cursor, if list is empty all scene's items will be checked
-    double sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QGraphicsItem*>& i_arpGraphicsItems = QList<QGraphicsItem*>() );   // usually list of items under mouse cursor, if list is empty all scene's items will be checked
+    double bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<QGraphicsItem*>& i_arpGraphicsItems = QList<QGraphicsItem*>() );
+    double sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QGraphicsItem*>& i_arpGraphicsItems = QList<QGraphicsItem*>() );
 public: // to be called by graphical objects
     void onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj );
     void onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj );

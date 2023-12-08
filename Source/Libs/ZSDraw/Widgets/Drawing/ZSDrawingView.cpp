@@ -479,11 +479,20 @@ protected: // auxiliary methods
 void CDrawingView::adjustCursor(QMouseEvent* i_pEv)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qMouseEvent2Str(i_pEv);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "adjustCursor",
+        /* strAddInfo   */ strMthInArgs );
+
     QCursor crsor;
     bool bGraphicsItemHasCursor = false;
 
     QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
-    //QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_pEv->pos());
     for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++) {
         QGraphicsItem* pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
         if (pGraphicsItem->hasCursor()) {
@@ -492,20 +501,19 @@ void CDrawingView::adjustCursor(QMouseEvent* i_pEv)
             break;
         }
     }
-
     if (bGraphicsItemHasCursor) {
-        if (cursor() != crsor) {
+        //if (cursor() != crsor) {
             setCursor(crsor);
-        }
+        //}
     }
     else {
         QPointF ptScenePos = mapToScene(i_pEv->pos());
         QRectF  rctScene = m_pDrawingScene->sceneRect();
         if (rctScene.contains(ptScenePos)) {
             crsor = m_pDrawingScene->getProposedCursor(ptScenePos);
-            if (cursor() != crsor) {
+            //if (cursor() != crsor) {
                 setCursor(crsor);
-            }
+            //}
         }
         else {
             unsetCursor();

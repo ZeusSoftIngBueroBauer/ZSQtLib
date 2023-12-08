@@ -116,6 +116,7 @@ protected slots: // overridables of base class CGraphObj
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // auxiliary instance methods
+    QCursor getProposedCursor() const;
     void updatePosition();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     void traceInternalStates(
