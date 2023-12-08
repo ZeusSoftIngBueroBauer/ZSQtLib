@@ -1458,13 +1458,13 @@ void CGraphObjLine::paint(
     i_pPainter->setPen(pn);
     i_pPainter->drawLine(lineF);
 
-    #pragma message(__TODO__"To be removed")
-    i_pPainter->setPen(Qt::red);
-    QLineF lineCenterHor(lineF.center().x()-5, lineF.center().y(), lineF.center().x()+5, lineF.center().y());
-    QLineF lineCenterVer(lineF.center().x(), lineF.center().y()-5, lineF.center().x(), lineF.center().y()+5);
-    i_pPainter->drawLine(lineCenterHor);
-    i_pPainter->drawLine(lineCenterVer);
-    #pragma message(__TODO__"To be removed")
+    //#pragma message(__TODO__"To be removed")
+    //i_pPainter->setPen(Qt::red);
+    //QLineF lineCenterHor(lineF.center().x()-5, lineF.center().y(), lineF.center().x()+5, lineF.center().y());
+    //QLineF lineCenterVer(lineF.center().x(), lineF.center().y()-5, lineF.center().x(), lineF.center().y()+5);
+    //i_pPainter->drawLine(lineCenterHor);
+    //i_pPainter->drawLine(lineCenterVer);
+    //#pragma message(__TODO__"To be removed")
 
     i_pPainter->setPen(pn);
 
@@ -1498,14 +1498,6 @@ void CGraphObjLine::paint(
             }
         }
     }
-
-    // Was soll das?
-    //if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected())) {
-    //    pn.setStyle(Qt::DotLine);
-    //    pn.setColor(Qt::blue);
-    //    i_pPainter->setPen(pn);
-    //    i_pPainter->setBrush(Qt::NoBrush);
-    //}
 
     i_pPainter->restore();
 
