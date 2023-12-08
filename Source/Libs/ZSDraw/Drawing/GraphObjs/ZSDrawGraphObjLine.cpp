@@ -183,14 +183,6 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
            | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
 
-    //#pragma message(__TODO__"Improve performance by enabling or disabling the effect on selecting the item")
-    // Crashes when painting the line
-    //QGraphicsDropShadowEffect* pGraphicsEffect = new QGraphicsDropShadowEffect();
-    //pGraphicsEffect->setColor(Qt::blue);
-    //pGraphicsEffect->setOffset(0);
-    //pGraphicsEffect->setBlurRadius(10);
-    //setGraphicsEffect(pGraphicsEffect);
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -825,6 +817,15 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the position of the item relative to its parent item.
+*/
+CPhysValPoint CGraphObjLine::getPos( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
+//------------------------------------------------------------------------------
+{
+    return getLine(i_unit).center();
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjLine::setWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
@@ -843,6 +844,14 @@ void CGraphObjLine::setWidth( const CPhysVal& i_physValWidth )
 }
 
 //------------------------------------------------------------------------------
+CPhysVal CGraphObjLine::getWidth( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
+//------------------------------------------------------------------------------
+{
+    CPhysValLine physValLine = getLine(i_unit);
+    return physValLine.p2().x() - physValLine.p1().x();
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjLine::setHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
@@ -858,6 +867,14 @@ void CGraphObjLine::setHeight( const CPhysVal& i_physValHeight )
         /* strAddInfo   */ strMthInArgs );
 
     setSize(getWidth(i_physValHeight.unit()), i_physValHeight);
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CGraphObjLine::getHeight( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
+//------------------------------------------------------------------------------
+{
+    CPhysValLine physValLine = getLine(i_unit);
+    return physValLine.p2().y() - physValLine.p1().y();
 }
 
 //------------------------------------------------------------------------------
@@ -927,6 +944,17 @@ void CGraphObjLine::setSize( const CPhysValSize& i_physValSize )
 }
 
 //------------------------------------------------------------------------------
+CPhysValSize CGraphObjLine::getSize( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
+//------------------------------------------------------------------------------
+{
+    return CPhysValSize(getWidth(i_unit), getHeight(i_unit));
+}
+
+/*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 bool CGraphObjLine::hasBoundingRect() const
 //------------------------------------------------------------------------------
 {
@@ -945,42 +973,6 @@ bool CGraphObjLine::hasRotationSelectionPoints() const
 //------------------------------------------------------------------------------
 {
     return false;
-}
-
-/*==============================================================================
-public: // overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the position of the item relative to its parent item.
-*/
-CPhysValPoint CGraphObjLine::getPos( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
-//------------------------------------------------------------------------------
-{
-    return getLine(i_unit).center();
-}
-
-//------------------------------------------------------------------------------
-CPhysVal CGraphObjLine::getWidth( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
-//------------------------------------------------------------------------------
-{
-    CPhysValLine physValLine = getLine(i_unit);
-    return physValLine.p2().x() - physValLine.p1().x();
-}
-
-//------------------------------------------------------------------------------
-CPhysVal CGraphObjLine::getHeight( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
-//------------------------------------------------------------------------------
-{
-    CPhysValLine physValLine = getLine(i_unit);
-    return physValLine.p2().y() - physValLine.p1().y();
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize CGraphObjLine::getSize( const CUnit& i_unit, ECoordinatesVersion /*i_version*/ ) const
-//------------------------------------------------------------------------------
-{
-    return CPhysValSize(getWidth(i_unit), getHeight(i_unit));
 }
 
 /*==============================================================================

@@ -362,7 +362,7 @@ void CWdgtGraphObjTextStyleProperties::expand(bool i_bExpand)
         m_pWdgtTextStyleSettings->hide();
         s_bWdgtLineStyleVisible = false;
     }
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtLineStyleVisible));
     }
 }

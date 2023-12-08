@@ -675,7 +675,7 @@ QRectF CGraphObjRect::boundingRect() const
     //    }
     //}
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "Rect(x,y,w,h):(";
         strAddTrcInfo += QString::number(rctBounding.x(),'f',1);

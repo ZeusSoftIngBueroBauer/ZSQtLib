@@ -197,7 +197,7 @@ SErrResultInfo CObjFactoryCapacitor::saveGraphObj(
     //    i_xmlStreamWriter.writeEndElement();
     //}
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

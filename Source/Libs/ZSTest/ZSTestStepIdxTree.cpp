@@ -299,7 +299,7 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -588,7 +588,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

@@ -100,44 +100,33 @@ CGraphObj* CObjFactoryGroup::createGraphObj(
     drawSettings.setGraphObjType(EGraphObjTypeGroup);
     CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene);
     pGraphObj->setDrawSettings(drawSettings);
-
     return pGraphObj;
-
-} // createGraphObj
+}
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryGroup::saveGraphObj(
-    CGraphObj*        i_pGraphObj,
-    QXmlStreamWriter& i_xmlStreamWriter )
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter )
 //------------------------------------------------------------------------------
 {
-    if( i_pGraphObj == nullptr )
-    {
+    if (i_pGraphObj == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
     }
 
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->NameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->ClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->name();
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObj->path();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "saveGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     SErrResultInfo errResultInfo;
 
     CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(i_pGraphObj);
-
-    if( pGraphObjGroup == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr" );
+    if (pGraphObjGroup == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
     }
 
     // Draw Attributes
@@ -151,26 +140,24 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     // Geometry
     //-------------
 
-    QPointF ptPos         = pGraphObjGroup->pos();
+    QPointF ptPos = pGraphObjGroup->pos();
     double  fRotAngle_deg = pGraphObjGroup->getRotationAngleInDegree();
 
     i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
-    i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
+    i_xmlStreamWriter.writeTextElement("Pos", point2Str(ptPos));
+    i_xmlStreamWriter.writeTextElement("RotAngleDeg", QString::number(fRotAngle_deg));
     i_xmlStreamWriter.writeEndElement();
 
     // Z-Value
     //---------------
 
-    i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObjGroup->getStackingOrderValue()) );
+    i_xmlStreamWriter.writeTextElement("ZValue", QString::number(pGraphObjGroup->getStackingOrderValue()));
 
     // Labels
     //----------------
 
     //QHash<QString, CGraphObjLabel*> arpLabels = pGraphObjGroup->getLabels();
-
-    //if( arpLabels.size() > 0 )
-    //{
+    //if (arpLabels.size() > 0) {
     //    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
     //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
     //    i_xmlStreamWriter.writeEndElement();
@@ -179,95 +166,53 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     // Group members (childrens)
     //--------------------------
 
-    QGraphicsItem* pGraphicsItemChild;
-    CGraphObj*     pGraphObjChild;
-    int            idxGraphObjChild;
-    QString        strNameSpaceChild;
-    QString        strClassNameChild;
-    QString        strObjTypeChild;
-    QString        strObjNameChild;
-    QString        strObjIdChild;
-    CObjFactory*   pObjFactoryChild;
-
     // Connection points need to be recalled before the connection lines as on
     // creating the connection lines their connection points must already exist.
     // For this the connection lines will be saved at the end of the XML file.
-    for( idxGraphObjChild = 0; idxGraphObjChild < pGraphObjGroup->childItems().size(); idxGraphObjChild++ )
-    {
-        pGraphicsItemChild = pGraphObjGroup->childItems()[idxGraphObjChild];
-
-        if( pGraphicsItemChild->type() != EGraphObjTypeSelectionPoint
-         && pGraphicsItemChild->type() != EGraphObjTypeLabel
-         && pGraphicsItemChild->type() != EGraphObjTypeConnectionLine )
-        {
-            pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
-
-            strNameSpaceChild = pGraphObjChild->NameSpace();
-            strClassNameChild = pGraphObjChild->ClassName();
-            strObjTypeChild   = pGraphObjChild->typeAsString();
-            strObjNameChild   = pGraphObjChild->name();
-            strObjIdChild     = pGraphObjChild->keyInTree();
-
-            pObjFactoryChild = CObjFactory::FindObjFactory(pGraphObjChild->getFactoryGroupName(), strObjTypeChild);
-
-            if( pObjFactoryChild != nullptr )
-            {
+    for (CIdxTreeEntry* pChildEntry : pGraphObjGroup->childs()) {
+        CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pChildEntry);
+        if (!pGraphObjChild->isSelectionPoint() && !pGraphObjChild->isLabel() && !pGraphObjChild->isConnectionLine()) {
+            QString strNameSpaceChild = pGraphObjChild->NameSpace();
+            QString strClassNameChild = pGraphObjChild->ClassName();
+            QString strObjTypeChild = pGraphObjChild->typeAsString();
+            QString strObjNameChild = pGraphObjChild->name();
+            QString strObjIdChild = pGraphObjChild->keyInTree();
+            CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(pGraphObjChild->getFactoryGroupName(), strObjTypeChild);
+            if (pObjFactoryChild != nullptr) {
                 i_xmlStreamWriter.writeStartElement("GraphObj");
-
                 i_xmlStreamWriter.writeAttribute( "NameSpace", strNameSpaceChild );
                 i_xmlStreamWriter.writeAttribute( "ClassName", strClassNameChild );
                 i_xmlStreamWriter.writeAttribute( "ObjectType", strObjTypeChild );
                 i_xmlStreamWriter.writeAttribute( "ObjectName", strObjNameChild );
                 i_xmlStreamWriter.writeAttribute( "ObjectId", strObjIdChild );
-
-                errResultInfo = pObjFactoryChild->saveGraphObj(pGraphObjChild,i_xmlStreamWriter);
-
+                errResultInfo = pObjFactoryChild->saveGraphObj(pGraphObjChild, i_xmlStreamWriter);
                 i_xmlStreamWriter.writeEndElement();
-
-                if( errResultInfo.isErrorResult() )
-                {
+                if (errResultInfo.isErrorResult()) {
                     break;
                 }
             }
         }
     }
-
-    if( !errResultInfo.isErrorResult() )
-    {
-        for( idxGraphObjChild = 0; idxGraphObjChild < pGraphObjGroup->childItems().size(); idxGraphObjChild++ )
-        {
-            pGraphicsItemChild = pGraphObjGroup->childItems()[idxGraphObjChild];
-
-            if( pGraphicsItemChild->type() != EGraphObjTypeSelectionPoint
-             && pGraphicsItemChild->type() != EGraphObjTypeLabel
-             && pGraphicsItemChild->type() == EGraphObjTypeConnectionLine )
-            {
-                pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
-
-                strNameSpaceChild = pGraphObjChild->NameSpace();
-                strClassNameChild = pGraphObjChild->ClassName();
-                strObjTypeChild   = pGraphObjChild->typeAsString();
-                strObjNameChild   = pGraphObjChild->name();
-                strObjIdChild     = pGraphObjChild->keyInTree();
-
-                pObjFactoryChild = CObjFactory::FindObjFactory(pGraphObjChild->getFactoryGroupName(), strObjTypeChild);
-
-                if( pObjFactoryChild != nullptr )
-                {
+    if (!errResultInfo.isErrorResult()) {
+        for (CIdxTreeEntry* pChildEntry : pGraphObjGroup->childs()) {
+            CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pChildEntry);
+            if (pGraphObjChild->isSelectionPoint() || pGraphObjChild->isLabel() || pGraphObjChild->isConnectionLine()) {
+                QString strNameSpaceChild = pGraphObjChild->NameSpace();
+                QString strClassNameChild = pGraphObjChild->ClassName();
+                QString strObjTypeChild = pGraphObjChild->typeAsString();
+                QString strObjNameChild = pGraphObjChild->name();
+                QString strObjIdChild = pGraphObjChild->keyInTree();
+                CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(pGraphObjChild->getFactoryGroupName(), strObjTypeChild);
+                if (pObjFactoryChild != nullptr) {
                     i_xmlStreamWriter.writeStartElement("GraphObj");
-
                     i_xmlStreamWriter.writeAttribute( "NameSpace", strNameSpaceChild );
                     i_xmlStreamWriter.writeAttribute( "ClassName", strClassNameChild );
                     i_xmlStreamWriter.writeAttribute( "ObjectType", strObjTypeChild );
                     i_xmlStreamWriter.writeAttribute( "ObjectName", strObjNameChild );
                     i_xmlStreamWriter.writeAttribute( "ObjectId", strObjIdChild );
-
                     errResultInfo = pObjFactoryChild->saveGraphObj(pGraphObjChild,i_xmlStreamWriter);
-
                     i_xmlStreamWriter.writeEndElement();
-
-                    if( errResultInfo.isErrorResult() )
-                    {
+                    if (errResultInfo.isErrorResult()) {
                         break;
                     }
                 }
@@ -275,7 +220,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -292,18 +237,19 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
     QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
 {
-    if( i_pDrawingScene == nullptr )
-    {
+    if (i_pDrawingScene == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr" );
     }
 
-    QString strAddTrcInfo;
-
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjGroup->path() + ", " + i_strObjName;
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "loadGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CGraphObjGroup* pGraphObjGroup = nullptr;
 

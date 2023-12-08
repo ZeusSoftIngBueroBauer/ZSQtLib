@@ -2286,7 +2286,6 @@ int CDrawingScene::groupGraphObjsSelected()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "groupGraphObjsSelected",
         /* strAddInfo   */ "" );
-
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter);
     }
@@ -2295,41 +2294,27 @@ int CDrawingScene::groupGraphObjsSelected()
 
     QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
 
-    if( arpGraphicsItemsSelected.size() > 1 )
-    {
-        CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
-
+    if (arpGraphicsItemsSelected.size() > 1) {
+        CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(
+            CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
         CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
-
-        if( pObjFactoryGroup != nullptr )
-        {
+        if (pObjFactoryGroup != nullptr) {
             CEnumEditTool editToolPrev = m_editTool;
-
             m_editTool = EEditTool::CreateObjects;
-
             m_pGraphObjCreating = pObjFactoryGroup->createGraphObj(
                 /* pDrawingScene */ this,
                 /* ptItemPos     */ CPhysValPoint(*this),
                 /* drawSettings  */ m_drawSettings );
-
             m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
-
-            if( m_pGraphicsItemCreating == nullptr )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "m_pGraphicsItemCreating == nullptr" );
+            if (m_pGraphicsItemCreating == nullptr) {
+                throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "m_pGraphicsItemCreating == nullptr");
             }
-
             CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObjCreating);
-
-            if( pGraphObjGroup == nullptr )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr" );
+            if (pGraphObjGroup == nullptr) {
+                throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
             }
-
             QGraphicsItemGroup* pGraphicsItemGroup = dynamic_cast<QGraphicsItemGroup*>(pGraphObjGroup);
-
-            if( pGraphicsItemGroup == nullptr )
-            {
+            if (pGraphicsItemGroup == nullptr) {
                 throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr" );
             }
 
@@ -2370,8 +2355,7 @@ int CDrawingScene::groupGraphObjsSelected()
 
             //// First deselect all child items so that the boundingRect does not
             //// include the selection points of the child items.
-            //for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-            //{
+            //for (idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++) {
             //    pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
             //    pGraphicsItem->setSelected(false);
             //}
@@ -2387,68 +2371,50 @@ int CDrawingScene::groupGraphObjsSelected()
             // indirectly belongs to two different groups.
 
             // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
-            for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
-            {
+            for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
                 CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
-
-                if( pGraphObjSelected == nullptr )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr" );
+                if (pGraphObjSelected == nullptr) {
+                    throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr");
                 }
 
-                if( !pGraphObjSelected->isConnectionLine() )
-                {
+                if (!pGraphObjSelected->isConnectionLine()) {
                     QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
                     QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
                     QRectF  rctItem = QRectF(posItem, sizItem);
-
-                    if( rctItem.width() >= 0.0 )
-                    {
-                        if( rctItem.left() < fXLeftMin )
-                        {
+                    if (rctItem.width() >= 0.0) {
+                        if (rctItem.left() < fXLeftMin) {
                             fXLeftMin = rctItem.left();
                         }
-                        if( rctItem.right() > fXRightMax )
-                        {
+                        if (rctItem.right() > fXRightMax) {
                             fXRightMax = rctItem.right();
                         }
                     }
-                    else
-                    {
-                        if( rctItem.right() < fXLeftMin )
-                        {
+                    else {
+                        if (rctItem.right() < fXLeftMin) {
                             fXLeftMin = rctItem.right();
                         }
-                        if( rctItem.left() > fXRightMax )
-                        {
+                        if (rctItem.left() > fXRightMax) {
                             fXRightMax = rctItem.left();
                         }
                     }
-
-                    if( rctItem.height() >= 0.0 )
-                    {
-                        if( rctItem.top() < fYTopMin )
-                        {
+                    if (rctItem.height() >= 0.0) {
+                        if (rctItem.top() < fYTopMin) {
                             fYTopMin = rctItem.top();
                         }
-                        if( rctItem.bottom() > fYBottomMax )
-                        {
+                        if (rctItem.bottom() > fYBottomMax) {
                             fYBottomMax = rctItem.bottom();
                         }
                     }
-                    else
-                    {
-                        if( rctItem.bottom() < fYTopMin )
-                        {
+                    else {
+                        if (rctItem.bottom() < fYTopMin) {
                             fYTopMin = rctItem.bottom();
                         }
-                        if( rctItem.top() > fYBottomMax )
-                        {
+                        if (rctItem.top() > fYBottomMax) {
                             fYBottomMax = rctItem.top();
                         }
                     }
-                } // if( pGraphObjSelected->getType() != EGraphObjTypeConnectionLine )
-            } // for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
+                }
+            }
 
             rctGroupSceneCoors.setLeft(fXLeftMin);
             rctGroupSceneCoors.setTop(fYTopMin);
@@ -2458,27 +2424,19 @@ int CDrawingScene::groupGraphObjsSelected()
             pGraphObjGroup->setPos( rctGroupSceneCoors.topLeft() );
 
             // Add child items to group.
-            for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
-            {
+            for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
                 CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
-
-                if( !pGraphObjSelected->isConnectionLine() )
-                {
+                if (!pGraphObjSelected->isConnectionLine()) {
                     // for debugging purposes also called here before adding the item to the group
                     QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
                     QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
-
                     pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
-
                     posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
                     sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
-
                     m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
-
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
                     pGraphObjSelected->acceptCurrentAsOriginalCoors();
 #endif
-
                     // Unselect object to destroy selection points.
                     pGraphicsItemSelected->setSelected(false);
 
@@ -2487,20 +2445,16 @@ int CDrawingScene::groupGraphObjsSelected()
                     //alignmentWidth.m_fVal = 0.0;
                     //alignmentHeight.m_fVal = 0.0;
 
-                    //if( rctGroupSceneCoors.width() != 0.0 )
-                    //{
+                    //if (rctGroupSceneCoors.width() != 0.0) {
                     //    alignmentLeft.m_fVal = posItem.x() / rctGroupSceneCoors.width();
                     //}
-                    //if( rctGroupSceneCoors.height() != 0.0 )
-                    //{
+                    //if (rctGroupSceneCoors.height() != 0.0) {
                     //    alignmentTop.m_fVal = posItem.y() / rctGroupSceneCoors.height();
                     //}
-                    //if( rctGroupSceneCoors.width() != 0.0 )
-                    //{
+                    //if (rctGroupSceneCoors.width() != 0.0) {
                     //    alignmentWidth.m_fVal = sizItem.width() / rctGroupSceneCoors.width();
                     //}
-                    //if( rctGroupSceneCoors.height() != 0.0 )
-                    //{
+                    //if (rctGroupSceneCoors.height() != 0.0) {
                     //    alignmentHeight.m_fVal = sizItem.height() / rctGroupSceneCoors.height();
                     //}
 
@@ -2513,9 +2467,8 @@ int CDrawingScene::groupGraphObjsSelected()
                     //pGraphObj->addAlignment(alignmentTop);
 
                     iObjsGroupedCount++;
-
-                } // if( pGraphObj->getType() != EGraphObjTypeConnectionLine )
-            } // for( auto* pGraphicsItem : arpGraphicsItemsSelected )
+                }
+            }
 
             // Finish creation of group.
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
@@ -2524,20 +2477,14 @@ int CDrawingScene::groupGraphObjsSelected()
 #endif
             pGraphObjGroup->setEditMode(EEditMode::None);
             pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
-
             onGraphObjCreationFinished(pGraphObjGroup);
-
             pGraphObjGroup->setSelected(true);
-
             m_editTool = editToolPrev;
-
-        } // if( pObjFactoryGroup != nullptr )
-    } // if( arpGraphicsItemsSelected.size() > 1 )
-
+        }
+    }
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter);
     }
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(iObjsGroupedCount);
     }
@@ -2560,7 +2507,6 @@ int CDrawingScene::ungroupGraphObjsSelected()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ungroupGraphObjsSelected",
         /* strAddInfo   */ "" );
-
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter);
     }
@@ -2569,60 +2515,38 @@ int CDrawingScene::ungroupGraphObjsSelected()
 
     QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
 
-    for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
-    {
+    for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
         CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
-
-        if( pGraphObjSelected == nullptr )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr" );
+        if (pGraphObjSelected == nullptr) {
+            throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr");
         }
-
-        if( pGraphObjSelected->isGroup() )
-        {
+        if (pGraphObjSelected->isGroup()) {
             CGraphObjGroup* pGraphObjGroupSelected = dynamic_cast<CGraphObjGroup*>(pGraphicsItemSelected);
-
-            if( pGraphObjGroupSelected == nullptr )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr" );
+            if (pGraphObjGroupSelected == nullptr) {
+                throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
             }
-
             QGraphicsItemGroup* pGraphicsItemGroupSelected = dynamic_cast<QGraphicsItemGroup*>(pGraphObjGroupSelected);
-
-            if( pGraphicsItemGroupSelected == nullptr )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr" );
+            if (pGraphicsItemGroupSelected == nullptr) {
+                throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr");
             }
-
-            for( auto* pGraphicsItemChild : pGraphicsItemGroupSelected->childItems() )
-            {
+            for (QGraphicsItem* pGraphicsItemChild : pGraphicsItemGroupSelected->childItems()) {
                 CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
-
-                if( pGraphObjChild == nullptr )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjChild == nullptr" );
+                if (pGraphObjChild == nullptr) {
+                    throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjChild == nullptr");
                 }
-
                 // for debugging purposes also called here before removing the item from the group
                 QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
                 QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
-
                 pGraphicsItemGroupSelected->removeFromGroup(pGraphicsItemChild);
-
                 posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
                 sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
-
                 m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
             }
-
             delete pGraphObjGroupSelected;
             pGraphObjGroupSelected = nullptr;
-
             iObjsUngroupedCount++;
-
-        } // if( pGraphObjSelected->getType() == EGraphObjTypeGroup )
-    } // for( auto* pGraphicsItemSelected : arpGraphicsItemsSelected )
-
+        }
+    }
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         traceInternalStates(mthTracer, EMethodDir::Enter);
     }

@@ -73,13 +73,18 @@ private: // hiding method of base class QGraphisItemGroup
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const; // for subsystem test
 public: // must overridables of base class CGraphObj
+    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
     virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
+    virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
     virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+    virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
     virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const CPhysValSize& i_physValSize ) override;
-    virtual bool hasBoundingRect() const override { return true; }
-    virtual bool hasLineShapePoints() const override { return false; }
-    virtual bool hasRotationSelectionPoints() const override { return true; }
+    virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
+public: // must overridables of base class CGraphObj
+    virtual bool hasBoundingRect() const override;
+    virtual bool hasLineShapePoints() const override;
+    virtual bool hasRotationSelectionPoints() const override;
 protected: // overridables
     virtual void applyGeometryChangeToChildrens();
 public: // must overridables of base class CGraphObj

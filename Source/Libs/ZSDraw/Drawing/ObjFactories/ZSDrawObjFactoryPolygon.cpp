@@ -183,7 +183,7 @@ SErrResultInfo CObjFactoryPolygon::saveGraphObj(
     // Labels
     //----------------
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

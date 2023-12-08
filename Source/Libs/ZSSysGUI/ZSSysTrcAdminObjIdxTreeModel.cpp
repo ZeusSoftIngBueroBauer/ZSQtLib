@@ -243,7 +243,7 @@ int CModelIdxTreeTrcAdminObjs::columnCount( const QModelIndex& i_modelIdxParent 
     #endif
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(EColumnCount);
     }
@@ -391,7 +391,7 @@ QVariant CModelIdxTreeTrcAdminObjs::headerData(
     }
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(varData.toString());
     }
@@ -475,7 +475,7 @@ Qt::ItemFlags CModelIdxTreeTrcAdminObjs::flags( const QModelIndex& i_modelIdx ) 
     } // if( i_modelIdx.isValid() )
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(qItemFlags2Str(uFlags));
     }
@@ -735,7 +735,7 @@ QVariant CModelIdxTreeTrcAdminObjs::data( const QModelIndex& i_modelIdx, int i_i
     } // if( pModelTreeEntry != nullptr )
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(varData.toString());
     }
@@ -905,7 +905,7 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
     }
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bool2Str(bOk));
     }

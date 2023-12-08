@@ -358,7 +358,7 @@ bool CMyClass2Thread::wait( QDeadlineTimer i_deadline )
 
     bool bResult = QThread::wait(i_deadline);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bResult);
     }
@@ -385,7 +385,7 @@ bool CMyClass2Thread::wait( unsigned long i_time_ms )
 
     bool bResult = QThread::wait(i_time_ms);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bResult);
     }
@@ -408,7 +408,7 @@ int CMyClass2Thread::exec()
 
     int iResult = QThread::exec();
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(iResult);
     }
@@ -630,7 +630,7 @@ QString CMyClass2::instMethod(const QString& i_strMthInArgs)
         strResult = "Hello World";
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet);
@@ -680,7 +680,7 @@ int CMyClass2::recursiveTraceMethod()
         --m_iRecursionCount;
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(m_iRecursionCount);
     }
@@ -799,7 +799,7 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
         m_pMyClass3 = m_pMyClass3Thread->getMyClass3();
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = QString(m_pMyClass3 == nullptr ? "null" : m_pMyClass3->objectName());
         mthTracer.setMethodReturn(strMthRet);

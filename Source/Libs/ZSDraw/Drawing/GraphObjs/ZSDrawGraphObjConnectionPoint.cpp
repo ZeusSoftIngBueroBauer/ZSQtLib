@@ -256,7 +256,7 @@ bool CGraphObjConnectionPoint::appendConnectionLine( CGraphObjConnectionLine* i_
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn( "Connected: " + bool2Str(bConnected) );
     }
@@ -863,7 +863,7 @@ QRectF CGraphObjConnectionPoint::boundingRect() const
     //    }
     //}
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Rect(x,y,w,h):(";
         strMthInArgs += QString::number(rctBounding.x(),'f',1);
@@ -1097,7 +1097,7 @@ bool CGraphObjConnectionPoint::sceneEvent( QEvent* i_pEv )
 
     } // switch( i_pEv->type() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Selected:" + bool2Str(isSelected());
         strMthInArgs += ", EditMode:" + m_editMode.toString();

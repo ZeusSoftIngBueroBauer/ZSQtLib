@@ -149,7 +149,7 @@ SErrResultInfo CObjFactoryWdgtLineEdit::saveGraphObj(
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjWdgtLineEdit == nullptr" );
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

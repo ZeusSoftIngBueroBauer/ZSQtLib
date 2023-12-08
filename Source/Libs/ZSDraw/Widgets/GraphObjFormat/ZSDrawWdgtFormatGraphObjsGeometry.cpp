@@ -954,7 +954,7 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
         }
     } // if( !bHasChanges )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bHasChanges);
     }

@@ -354,7 +354,7 @@ bool CWdgtFormatGraphObjsFillStyle::hasChanges() const
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bHasChanges);
     }

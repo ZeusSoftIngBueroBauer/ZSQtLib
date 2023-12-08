@@ -218,7 +218,7 @@ SErrResultInfo CTest::saveTestSteps( const QString& i_strAbsFilePath )
 
     SErrResultInfo errResultInfo = m_pIdxTree->save(strAbsFilePath);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -268,7 +268,7 @@ SErrResultInfo CTest::recallTestSteps( const QString& i_strAbsFilePath )
 
     SErrResultInfo errResultInfo = m_pIdxTree->recall(strAbsFilePath);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -559,7 +559,7 @@ SErrResultInfo CTest::readExpectedTestResults(
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -1027,7 +1027,7 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

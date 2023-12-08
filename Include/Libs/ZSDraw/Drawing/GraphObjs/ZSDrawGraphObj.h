@@ -609,18 +609,18 @@ public: // overridables
     //virtual void acceptCurrentAsOriginalCoors();
     //virtual bool hasValidOrigCoors() const { return m_bHasValidOrigCoors; }
 public: // must overridables
+    virtual CPhysValPoint getPos( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
     virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) = 0;
+    virtual ZS::PhysVal::CPhysVal getWidth( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
     virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) = 0;
+    virtual ZS::PhysVal::CPhysVal getHeight( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
     virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) = 0;
     virtual void setSize( const CPhysValSize& i_physValSize ) = 0;
+    virtual CPhysValSize getSize( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+public: // must overridables
     virtual bool hasBoundingRect() const = 0;
     virtual bool hasLineShapePoints() const = 0;
     virtual bool hasRotationSelectionPoints() const = 0;
-public: // overridables
-    virtual CPhysValPoint getPos( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual ZS::PhysVal::CPhysVal getWidth( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual ZS::PhysVal::CPhysVal getHeight( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual CPhysValSize getSize( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
 public: // overridables
     virtual void setRotationAngleInDegree( double i_fRotAngle_deg );
     virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed );

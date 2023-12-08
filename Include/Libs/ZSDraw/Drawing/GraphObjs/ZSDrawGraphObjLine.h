@@ -90,19 +90,18 @@ public: // instance methods
     double getAngleInDegrees() const;
     ZS::PhysVal::CPhysVal getAngle(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
+    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
     virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) override;
+    virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
     virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) override;
+    virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
     virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight) override;
     virtual void setSize(const CPhysValSize& i_physValSize) override;
+    virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
 public: // must overridables of base class CGraphObj
     virtual bool hasBoundingRect() const override;
     virtual bool hasLineShapePoints() const override;
     virtual bool hasRotationSelectionPoints() const override;
-public: // overridables of base class CGraphObj
-    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
 public: // must overridables of base class CGraphObj
     virtual void setIsHit(bool i_bHit) override;
 public: // overridables of base class CGraphObj

@@ -165,6 +165,8 @@ public: // instance methods (for branch entries)
     int size() const { return m_arpTreeEntries.size(); }
     /*! Returns the child entry at the given index. */
     CIdxTreeEntry* at( int i_idx ) const { return m_arpTreeEntries.at(i_idx); }
+    /*! Returns the child items. */
+    QVector<CIdxTreeEntry*> childs() const { return m_arpTreeEntries; }
 public: // instance methods (for branch entries)
     int indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const;
     int indexOf( const QString& i_strKeyInParentBranch ) const;

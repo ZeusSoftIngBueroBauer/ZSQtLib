@@ -197,7 +197,7 @@ SErrResultInfo CObjFactoryVoltageSource::saveGraphObj(
     //}
 #endif
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

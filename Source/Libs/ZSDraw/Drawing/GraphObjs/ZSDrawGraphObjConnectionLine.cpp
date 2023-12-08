@@ -952,7 +952,7 @@ QPainterPath CGraphObjConnectionLine::shape() const
         painterPath.addPolygon(m_plgLineEnd);
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
@@ -1246,7 +1246,7 @@ bool CGraphObjConnectionLine::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWa
 
     } // switch( i_pEv->type() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Selected:" + bool2Str(isSelected());
         strMthInArgs += ", EditMode:" + m_editMode.toString();
@@ -1639,7 +1639,7 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     } // if( m_editMode == EEditMode::None )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Selected:" + bool2Str(isSelected());
         strMthInArgs += ", EditMode:" + m_editMode.toString();
@@ -2011,7 +2011,7 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 
     } // if( m_editMode != EEditMode::Creating )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Selected:" + bool2Str(isSelected());
         strMthInArgs += ", EditMode:" + m_editMode.toString();
@@ -2298,7 +2298,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 
     } // if( modeDrawing == EMode::Edit )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Selected:" + bool2Str(isSelected());
         strMthInArgs += ", EditMode:" + m_editMode.toString();

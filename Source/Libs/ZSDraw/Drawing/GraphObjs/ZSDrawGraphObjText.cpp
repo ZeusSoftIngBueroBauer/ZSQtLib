@@ -599,7 +599,7 @@ QRectF CGraphObjText::boundingRect() const
     //    }
     //}
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "TextWidth:" + QString::number(textWidth());
         strAddTrcInfo += ", BoundingRect(x,y,w,h):(";

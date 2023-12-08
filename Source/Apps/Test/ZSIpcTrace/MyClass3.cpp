@@ -295,7 +295,7 @@ bool CMyClass3Thread::wait( QDeadlineTimer i_deadline )
 
     bool bResult = QThread::wait(i_deadline);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bResult);
     }
@@ -322,7 +322,7 @@ bool CMyClass3Thread::wait( unsigned long i_time_ms )
 
     bool bResult = QThread::wait(i_time_ms);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bResult);
     }
@@ -345,7 +345,7 @@ int CMyClass3Thread::exec()
 
     int iResult = QThread::exec();
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(iResult);
     }
@@ -400,7 +400,7 @@ QString CMyClass3::classMethod(const QString& i_strMthInArgs)
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet);
@@ -433,7 +433,7 @@ QString CMyClass3::noisyClassMethod(const QString& i_strMthInArgs)
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet);
@@ -466,7 +466,7 @@ QString CMyClass3::veryNoisyClassMethod(const QString& i_strMthInArgs)
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet);
@@ -646,7 +646,7 @@ QString CMyClass3::instMethod(const QString& i_strMthInArgs)
         strResult = "Hello World";
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet);
@@ -689,7 +689,7 @@ QString CMyClass3::noisyInstMethod(const QString& i_strMthInArgs)
         strResult = "Hello World";
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet);
@@ -732,7 +732,7 @@ QString CMyClass3::veryNoisyInstMethod(const QString& i_strMthInArgs)
         strResult = "Hello World";
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet);
@@ -782,7 +782,7 @@ int CMyClass3::recursiveTraceMethod()
         --m_iRecursionCount;
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(m_iRecursionCount);
     }

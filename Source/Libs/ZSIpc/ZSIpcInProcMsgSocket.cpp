@@ -1032,7 +1032,7 @@ CMsg* CInProcMsgSocket::readMessage()
         pMsg = m_arpMsgReadBuff.takeFirst();
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         if( pMsg == nullptr )
         {

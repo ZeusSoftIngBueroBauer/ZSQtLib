@@ -381,7 +381,7 @@ bool CMutex::tryLock(int i_timeout_ms)
     bool bOk = QMutex::tryLock(i_timeout_ms);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -414,7 +414,7 @@ bool CMutex::try_lock()
     bool bOk = QMutex::try_lock();
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -453,7 +453,7 @@ bool CMutex::try_lock_for(std::chrono::duration<Rep, Period> i_duration)
     bool bOk = QMutex::try_lock_for(i_duration);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -492,7 +492,7 @@ bool CMutex::try_lock_until(std::chrono::time_point<Clock, Duration> i_timePoint
     bool bOk = QMutex::try_lock_until(i_timePoint);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -839,7 +839,7 @@ bool CRecursiveMutex::tryLock(int i_timeout_ms)
     bool bOk = QRecursiveMutex::tryLock(i_timeout_ms);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -872,7 +872,7 @@ bool CRecursiveMutex::try_lock()
     bool bOk = QRecursiveMutex::try_lock();
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -911,7 +911,7 @@ bool CRecursiveMutex::try_lock_for(std::chrono::duration<Rep, Period> i_duration
     bool bOk = QRecursiveMutex::try_lock_for(i_duration);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -950,7 +950,7 @@ bool CRecursiveMutex::try_lock_until(std::chrono::time_point<Clock, Duration> i_
     bool bOk = QRecursiveMutex::try_lock_until(i_timePoint);
 
     #ifdef ZS_TRACE_MUTEXES
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }

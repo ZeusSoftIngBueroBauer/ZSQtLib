@@ -150,10 +150,7 @@ public: // class members
 public: // class members
     static const QString c_strMenuNameFile;
     static const QString c_strMenuNameFileOpenLastUsed;
-    static const QString c_strMenuNameMode;
-    static const QString c_strMenuNameEdit;
-    static const QString c_strMenuNameEditRotate;
-    static const QString c_strMenuNameEditMirror;
+    //static const QString c_strMenuNameMode;
     static const QString c_strMenuNameDraw;
     static const QString c_strMenuNameDrawSettings;
     static const QString c_strMenuNameDrawStandardShapes;
@@ -161,6 +158,9 @@ public: // class members
     static const QString c_strMenuNameDrawConnections;
     static const QString c_strMenuNameDrawWidgets;
     static const QString c_strMenuNameDrawElectricity;
+    static const QString c_strMenuNameEdit;
+    static const QString c_strMenuNameEditRotate;
+    static const QString c_strMenuNameEditMirror;
     static const QString c_strMenuNameView;
     static const QString c_strMenuNameDebug;
     static const QString c_strMenuNameInfo;
@@ -171,15 +171,8 @@ public: // class members
     //static const QString c_strActionNameFileOpenLastUsed;
     static const QString c_strActionNameFilePageSetup;
     static const QString c_strActionNameFileQuit;
-    static const QString c_strActionNameModeEdit;
-    static const QString c_strActionNameModeView;
-    static const QString c_strActionNameEditSelect;
-    static const QString c_strActionNameEditRotateLeft;
-    static const QString c_strActionNameEditRotateRight;
-    static const QString c_strActionNameEditMirrorVertical;
-    static const QString c_strActionNameEditMirrorHorizontal;
-    static const QString c_strActionNameEditGroup;
-    static const QString c_strActionNameEditUngroup;
+    //static const QString c_strActionNameModeEdit;
+    //static const QString c_strActionNameModeView;
     static const QString c_strActionNameDrawSettingsLine;
     static const QString c_strActionNameDrawSettingsFill;
     static const QString c_strActionNameDrawSettingsText;
@@ -204,6 +197,13 @@ public: // class members
     static const QString c_strActionNameDrawElectricityInductor;
     static const QString c_strActionNameDrawElectricitySwitch;
     static const QString c_strActionNameDrawElectricityTransistor;
+    static const QString c_strActionNameEditSelect;
+    static const QString c_strActionNameEditRotateLeft;
+    static const QString c_strActionNameEditRotateRight;
+    static const QString c_strActionNameEditMirrorVertical;
+    static const QString c_strActionNameEditMirrorHorizontal;
+    static const QString c_strActionNameEditGroup;
+    static const QString c_strActionNameEditUngroup;
     static const QString c_strActionNameViewZoomIn;
     static const QString c_strActionNameViewZoomOut;
     static const QString c_strActionNameViewZoom;
@@ -239,17 +239,9 @@ protected: // overridables of base class QWidget
 public: // instance methods
     void showFilePageSetupDialog(bool i_bModal);
     void setCurrentUsedFile( const QString& i_strAbsFilePath );
-public: // instance methods
-    void setCheckedActionModeEdit(bool i_bChecked);
-    void setCheckedActionModeView(bool i_bChecked);
-public: // instance methods
-    void setCheckedActionEditSelect(bool i_bChecked);
-    void triggerActionEditRotateLeft();
-    void triggerActionEditRotateRight();
-    void triggerActionEditMirrorVertical();
-    void triggerActionEditMirrorHorizontal();
-    void triggerActionEditGroup();
-    void triggerActionEditUngroup();
+//public: // instance methods
+//    void setCheckedActionModeEdit(bool i_bChecked);
+//    void setCheckedActionModeView(bool i_bChecked);
 public: // instance methods
     void setCheckedActionDrawStandardShapePoint(bool i_bChecked);
     void setCheckedActionDrawStandardShapeLine(bool i_bChecked);
@@ -261,6 +253,14 @@ public: // instance methods
     void triggerActionDrawGraphicsImage();
     void setCheckedActionDrawConnectionPoint(bool i_bChecked);
     void setCheckedActionDrawConnectionLine(bool i_bChecked);
+public: // instance methods
+    void setCheckedActionEditSelect(bool i_bChecked);
+    void triggerActionEditRotateLeft();
+    void triggerActionEditRotateRight();
+    void triggerActionEditMirrorVertical();
+    void triggerActionEditMirrorHorizontal();
+    void triggerActionEditGroup();
+    void triggerActionEditUngroup();
 public slots: // Menu - File
     void onActionFileNewTriggered(bool i_bChecked = false);
     void onActionFileOpenTriggered(bool i_bChecked = false);
@@ -270,19 +270,8 @@ public slots: // Menu - File
     void onActionFileLastUsedFilesTriggered(bool i_bChecked = false);
     void onActionFileQuitTriggered(bool i_bChecked = false);
 public slots: // Menu - Mode
-    void onActionModeEditToggled(bool i_bChecked = false);
-    void onActionModeViewToggled(bool i_bChecked = false);
-public slots: // Menu - Edit - Select/RotateFree
-    void onActionEditSelectToggled(bool i_bChecked = false);
-public slots: // Menu - Edit - Rotate
-    void onActionEditRotateLeftTriggered(bool i_bChecked = false);
-    void onActionEditRotateRightTriggered(bool i_bChecked = false);
-public slots: // Menu - Edit - Mirror
-    void onActionEditMirrorVerticalTriggered(bool i_bChecked = false);
-    void onActionEditMirrorHorizontalTriggered(bool i_bChecked = false);
-public slots: // Menu - Edit - Group
-    void onActionEditGroupTriggered(bool i_bChecked = false);
-    void onActionEditUngroupTriggered(bool i_bChecked = false);
+    //void onActionModeEditToggled(bool i_bChecked = false);
+    //void onActionModeViewToggled(bool i_bChecked = false);
 public slots: // Menu - Draw - Settings
     void onActionDrawSettingsLineTriggered(bool i_bChecked = false);
     void onActionDrawSettingsFillTriggered(bool i_bChecked = false);
@@ -297,6 +286,17 @@ public slots: // Menu - Draw - Standard Shapes
     void onActionDrawStandardShapeTextToggled(bool i_bChecked = false);
 public slots: // Menu - Draw - Graphics
     void onActionDrawGraphicsImageTriggered(bool i_bChecked = false);
+public slots: // Menu - Edit - Select/RotateFree
+    void onActionEditSelectToggled(bool i_bChecked = false);
+public slots: // Menu - Edit - Rotate
+    void onActionEditRotateLeftTriggered(bool i_bChecked = false);
+    void onActionEditRotateRightTriggered(bool i_bChecked = false);
+public slots: // Menu - Edit - Mirror
+    void onActionEditMirrorVerticalTriggered(bool i_bChecked = false);
+    void onActionEditMirrorHorizontalTriggered(bool i_bChecked = false);
+public slots: // Menu - Edit - Group
+    void onActionEditGroupTriggered(bool i_bChecked = false);
+    void onActionEditUngroupTriggered(bool i_bChecked = false);
 public slots: // Menu - Draw - Connections
     void onActionDrawConnectionPointToggled(bool i_bChecked = false);
     void onActionDrawConnectionLineToggled(bool i_bChecked = false);
@@ -395,33 +395,14 @@ protected: // instance members
     QDateTime m_dtCurrentFileLastUsed;
     QAction*  m_pActFileQuit;
     // Menu - Mode
-    QMenu*    m_pMenuMode;
-    QToolBar* m_pToolBarMode;
-    QAction*  m_pActModeEdit;
-    QAction*  m_pActModeView;
-    // Menu - Edit
-    QMenu*    m_pMenuEdit;
-    // Menu - Edit - Select
-    QToolBar* m_pToolBarEditSelect;
-    QAction*  m_pActEditSelect;
-    // Menu - Edit - Rotate and Mirror
-    QToolBar* m_pToolBarEditRotateAndMirror;
-    // Menu - Edit - Rotate
-    QMenu*    m_pMenuEditRotate;
-    QAction*  m_pActEditRotateLeft;
-    QAction*  m_pActEditRotateRight;
-    QDoubleSpinBox* m_pEdtEditRotateAngle;
-    // Menu - Edit - Mirror
-    QMenu*    m_pMenuEditMirror;
-    QAction*  m_pActEditMirrorVertical;
-    QAction*  m_pActEditMirrorHorizontal;
-    // Menu - Edit - Group
-    QToolBar* m_pToolBarEditGroup;
-    QAction*  m_pActEditGroup;
-    QAction*  m_pActEditUngroup;
+    //QMenu*    m_pMenuMode;
+    //QToolBar* m_pToolBarMode;
+    //QAction*  m_pActModeEdit;
+    //QAction*  m_pActModeView;
     // Menu - Draw
     QMenu*    m_pMenuDraw;
-    QAction*  m_pActDrawChecked; // Currently active (checked) draw action
+    /*!< Currently active (checked) draw action */
+    QAction*  m_pActDrawChecked;
     // Menu - Draw - Settings
     QMenu*    m_pMenuDrawSettings;
     QToolBar* m_pToolBarDrawSettings;
@@ -447,6 +428,26 @@ protected: // instance members
     QToolBar* m_pToolBarDrawConnections;
     QAction*  m_pActDrawConnectionPoint;
     QAction*  m_pActDrawConnectionLine;
+    // Menu - Edit
+    QMenu*    m_pMenuEdit;
+    // Menu - Edit - Select
+    QToolBar* m_pToolBarEditSelect;
+    QAction*  m_pActEditSelect;
+    // Menu - Edit - Rotate and Mirror
+    QToolBar* m_pToolBarEditRotateAndMirror;
+    // Menu - Edit - Rotate
+    QMenu*    m_pMenuEditRotate;
+    QAction*  m_pActEditRotateLeft;
+    QAction*  m_pActEditRotateRight;
+    QDoubleSpinBox* m_pEdtEditRotateAngle;
+    // Menu - Edit - Mirror
+    QMenu*    m_pMenuEditMirror;
+    QAction*  m_pActEditMirrorVertical;
+    QAction*  m_pActEditMirrorHorizontal;
+    // Menu - Edit - Group
+    QToolBar* m_pToolBarEditGroup;
+    QAction*  m_pActEditGroup;
+    QAction*  m_pActEditUngroup;
     // Menu - View
     QMenu*    m_pMenuView;
     QToolBar* m_pToolBarView;

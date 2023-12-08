@@ -776,7 +776,7 @@ int CModelErrLog::columnWidthByColumn(int i_iClm, int i_iFontPixelSize) const
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(iClmWidth);
     }
@@ -812,7 +812,7 @@ int CModelErrLog::columnWidthByRole(const QByteArray& i_byteArrRole, int i_iFont
     {
         iClmWidth = columnWidthByColumn(static_cast<int>(clm), i_iFontPixelSize);
     }
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(iClmWidth);
     }
@@ -858,7 +858,7 @@ int CModelErrLog::rowCount( const QModelIndex& i_modelIdxParent ) const
         iRowCount += m_ararpEntries[iSeverity].count();
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(iRowCount);
     }
@@ -885,7 +885,7 @@ int CModelErrLog::columnCount( const QModelIndex& i_modelIdxParent ) const
 
     int iClmCount = EColumnCount;
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(iClmCount);
     }
@@ -938,7 +938,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     if( !i_modelIdx.isValid() )
     {
-        if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
         {
             mthTracer.setMethodReturn(varData.toString());
         }
@@ -949,7 +949,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     if( iRow < 0 || iRow >= rowCount() )
     {
-        if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
         {
             mthTracer.setMethodReturn(varData.toString());
         }
@@ -960,7 +960,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
 
     if( pModelEntry == nullptr )
     {
-        if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
         {
             mthTracer.setMethodReturn(varData.toString());
         }
@@ -1132,7 +1132,7 @@ QVariant CModelErrLog::data( const QModelIndex& i_modelIdx, int i_iRole ) const
         }
     } // if( s_rolesHandled.contains(iRole) )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(varData.toString());
     }
@@ -1163,7 +1163,7 @@ QModelIndex CModelErrLog::index( int i_iRow, int i_iClm, const QModelIndex& i_mo
 
     QModelIndex modelIdx = createIndex(i_iRow, i_iClm, const_cast<SErrLogEntry*>(pModelEntry));
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(modelIdx2Str(modelIdx));
     }
@@ -1191,7 +1191,7 @@ QModelIndex CModelErrLog::parent( const QModelIndex& i_modelIdx ) const
 
     QModelIndex modelIdx;
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(modelIdx2Str(modelIdx));
     }
@@ -1333,7 +1333,7 @@ QVariant CModelErrLog::headerData(
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(varData.toString());
     }

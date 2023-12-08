@@ -309,7 +309,7 @@ void CWdgtGraphObjLabelsProperties::expand(bool i_bExpand)
         m_pWdgtLabels->hide();
         s_bWdgtLabelsVisible = false;
     }
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtLabelsVisible));
     }
 }

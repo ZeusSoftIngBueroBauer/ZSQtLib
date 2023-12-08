@@ -169,7 +169,7 @@ bool CDelegateIdxTreeTrcAdminObjs::isCheckBoxEnabledHit(
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bIsHit);
     }
@@ -372,7 +372,7 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
         } // switch( i_modelIdx.column() )
     } // if( i_modelIdx.isValid() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthReturn = pWdgtEditor == nullptr ? "nullptr" : pWdgtEditor->objectName();
         mthTracer.setMethodReturn(strMthReturn);

@@ -1002,7 +1002,7 @@ QSize CDiagObj::sizeHint()
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(qSize2Str(size));
     }
@@ -1078,7 +1078,7 @@ void CDiagObj::invalidate( unsigned int i_uUpdateFlags, bool i_bInformDiagram )
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg  = "NewUpdFlags=";
         strTrcMsg += updateFlags2Str(m_uUpdateFlags);
@@ -1118,7 +1118,7 @@ void CDiagObj::validate( unsigned int i_uUpdateFlags )
         m_uUpdateFlags &= ~i_uUpdateFlags;
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg  = "NewUpdFlags=";
         strTrcMsg += updateFlags2Str(m_uUpdateFlags);

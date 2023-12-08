@@ -665,7 +665,7 @@ QRectF CGraphObjEllipse::boundingRect() const
     //    }
     //}
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Rect(x,y,w,h):(";
         strMthInArgs += QString::number(rctBounding.x(),'f',1);

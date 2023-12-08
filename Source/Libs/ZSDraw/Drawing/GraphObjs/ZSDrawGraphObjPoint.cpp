@@ -579,7 +579,7 @@ QRectF CGraphObjPoint::boundingRect() const
     //    }
     //}
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthReturn = rect2Str(rctBounding);
         mthTracer.setMethodReturn(strMthReturn);

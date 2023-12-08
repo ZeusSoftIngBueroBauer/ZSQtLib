@@ -1121,28 +1121,30 @@ protected: // instance methods (trace admin objects have to be created in ctor o
 void CGraphObj::createTraceAdminObjs(const QString& i_strClassName)
 //------------------------------------------------------------------------------
 {
-    m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::CtorsAndDtor");
-    m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::ItemChange");
-    m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::BoundingRect");
-    m_pTrcAdminObjIsHit = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::IsHit");
-    m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::Paint");
-    m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEvent");
-    m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEventFilter");
-    m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::HoverEvents");
-    m_pTrcAdminObjMouseClickEvents = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::MouseClickEvents");
-    m_pTrcAdminObjMouseMoveEvents = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::MouseMoveEvents");
-    m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::KeyEvents");
+    if (m_pTrcAdminObjCtorsAndDtor == nullptr) {
+        m_pTrcAdminObjCtorsAndDtor = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::CtorsAndDtor");
+        m_pTrcAdminObjItemChange = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::ItemChange");
+        m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::BoundingRect");
+        m_pTrcAdminObjIsHit = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::IsHit");
+        m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::Paint");
+        m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEvent");
+        m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEventFilter");
+        m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::HoverEvents");
+        m_pTrcAdminObjMouseClickEvents = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::MouseClickEvents");
+        m_pTrcAdminObjMouseMoveEvents = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::MouseMoveEvents");
+        m_pTrcAdminObjKeyEvents = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::KeyEvents");
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1157,28 +1159,30 @@ void CGraphObj::createTraceAdminObjs(const QString& i_strClassName)
 void CGraphObj::releaseTraceAdminObjs()
 //------------------------------------------------------------------------------
 {
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCtorsAndDtor);
-    m_pTrcAdminObjCtorsAndDtor = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjItemChange);
-    m_pTrcAdminObjItemChange = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjBoundingRect);
-    m_pTrcAdminObjBoundingRect = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjIsHit);
-    m_pTrcAdminObjIsHit = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
-    m_pTrcAdminObjPaint = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
-    m_pTrcAdminObjSceneEvent = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
-    m_pTrcAdminObjSceneEventFilter = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEvents);
-    m_pTrcAdminObjHoverEvents = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseClickEvents);
-    m_pTrcAdminObjMouseClickEvents = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvents);
-    m_pTrcAdminObjMouseMoveEvents = nullptr;
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
-    m_pTrcAdminObjKeyEvents = nullptr;
+    if (m_pTrcAdminObjCtorsAndDtor != nullptr) {
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCtorsAndDtor);
+        m_pTrcAdminObjCtorsAndDtor = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjItemChange);
+        m_pTrcAdminObjItemChange = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjBoundingRect);
+        m_pTrcAdminObjBoundingRect = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjIsHit);
+        m_pTrcAdminObjIsHit = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
+        m_pTrcAdminObjPaint = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
+        m_pTrcAdminObjSceneEvent = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
+        m_pTrcAdminObjSceneEventFilter = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEvents);
+        m_pTrcAdminObjHoverEvents = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseClickEvents);
+        m_pTrcAdminObjMouseClickEvents = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvents);
+        m_pTrcAdminObjMouseMoveEvents = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjKeyEvents);
+        m_pTrcAdminObjKeyEvents = nullptr;
+    }
 }
 
 /*==============================================================================
@@ -3342,38 +3346,6 @@ void CGraphObj::acceptCurrentAsOriginalCoors()
 public: // must overridables
 ==============================================================================*/
 
-/*------------------------------------------------------------------------------
-void CGraphObj::setWidth( const CPhysVal& i_physValWidth )
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-void CGraphObj::setHeight( const CPhysVal& i_physValHeight )
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-void CGraphObj::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-void CGraphObj::setSize( const CPhysValSize& i_physValSize )
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-bool CGraphObj::hasBoundingRect() const
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-bool CGraphObj::hasLineShapePoints() const
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-bool CGraphObj::hasRotationSelectionPoints() const
-------------------------------------------------------------------------------*/
-
-/*==============================================================================
-public: // overridables
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 /*! Returns the position of the item in parent coordinates. If the item has no parent,
     its position is given in scene coordinates.
@@ -3421,6 +3393,10 @@ CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_vers
     return physValPoint;
 }
 
+/*------------------------------------------------------------------------------
+void CGraphObj::setWidth( const CPhysVal& i_physValWidth )
+------------------------------------------------------------------------------*/
+
 //------------------------------------------------------------------------------
 CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
@@ -3442,6 +3418,10 @@ CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version
     physValWidth.convertValue(i_unit);
     return physValWidth;
 }
+
+/*------------------------------------------------------------------------------
+void CGraphObj::setHeight( const CPhysVal& i_physValHeight )
+------------------------------------------------------------------------------*/
 
 //------------------------------------------------------------------------------
 CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_version ) const
@@ -3465,6 +3445,14 @@ CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_versio
     return physValHeight;
 }
 
+/*------------------------------------------------------------------------------
+void CGraphObj::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+void CGraphObj::setSize( const CPhysValSize& i_physValSize )
+------------------------------------------------------------------------------*/
+
 //------------------------------------------------------------------------------
 CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 //------------------------------------------------------------------------------
@@ -3487,6 +3475,22 @@ CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_vers
     m_pDrawingScene->convert(physValSize, i_unit);
     return physValSize;
 }
+
+/*==============================================================================
+public: // must overridables
+==============================================================================*/
+
+/*------------------------------------------------------------------------------
+bool CGraphObj::hasBoundingRect() const
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+bool CGraphObj::hasLineShapePoints() const
+------------------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------------------
+bool CGraphObj::hasRotationSelectionPoints() const
+------------------------------------------------------------------------------*/
 
 /*==============================================================================
 public: // overridables

@@ -286,7 +286,7 @@ void CWdgtGraphObjFillStyleProperties::expand(bool i_bExpand)
         m_pWdgtFillStyleSettings->hide();
         s_bWdgtFillStyleVisible = false;
     }
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Expanded: " + bool2Str(s_bWdgtFillStyleVisible));
     }
 }
