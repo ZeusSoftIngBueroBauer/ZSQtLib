@@ -184,7 +184,7 @@ CWdgtGraphObjTextStyleProperties::CWdgtGraphObjTextStyleProperties(
          0 |Font:     | |   | |Font          | |Size  | |Color  |<-->
          1 |Effects:  | |   | |Bold | |Kursiv| |UnderL| |StrikeT|<-->
     */
-    int iClmCount = min(11, m_ariClmWidths.size());
+    int iClmCount = std::min(11, m_ariClmWidths.size());
     for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
         m_pLytWdgtTextStyleSettings->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
     }

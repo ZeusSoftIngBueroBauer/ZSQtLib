@@ -1192,8 +1192,8 @@ void CWdgtEditPhysVal::updateSizeHint()
     QFont fnt = font();
     QFontMetrics fntMetrics = QDoubleSpinBox::fontMetrics();
     QRect rctBounding = fntMetrics.boundingRect(m_strForSizeHint);
-    m_sizeHint.setWidth(max(size1.width(), rctBounding.size().width()) + 20);
-    m_sizeHint.setHeight(max(size1.height(), rctBounding.size().height()));
+    m_sizeHint.setWidth(std::max(size1.width(), rctBounding.size().width()) + 20);
+    m_sizeHint.setHeight(std::max(size1.height(), rctBounding.size().height()));
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(qSize2Str(m_sizeHint));

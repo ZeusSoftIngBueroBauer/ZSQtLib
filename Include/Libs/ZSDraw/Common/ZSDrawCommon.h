@@ -51,12 +51,20 @@ may result in using the software modules.
 global type definitions and constants
 *******************************************************************************/
 
-namespace ZS
-{
-namespace Draw
-{
+namespace ZS {
+namespace Draw {
 class CGraphObj;
+} }
 
+// Note about CEnum template instantiation:
+// gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope"
+// if the for example the template definition is encapsulated in namespace ZS::System.
+// To work around this gcc compile error message the enum classes and the typedef for the
+// enum classes are encapsulated in namespace ZS::System but the temlate instantiation is
+// done in global namespace.
+
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Normed paper sizes.
 */
@@ -75,8 +83,17 @@ enum class ENormedPaperSize {
     DinA10 /*!< 26 x 37 mm. */
 };
 
-template class ZSDRAWDLL_API ::CEnum<ENormedPaperSize>;
+} }
+
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ENormedPaperSize>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ENormedPaperSize> CEnumNormedPaperSize;
+} }
+
+namespace ZS {
+namespace Draw {
 
 const double c_fNormedPaperSizeWidthDinA0_mm  = 841.0;
 const double c_fNormedPaperSizeHeightDinA0_mm = 1189.0;
@@ -110,7 +127,6 @@ const double c_fNormedPaperSizeHeightDinA9_mm = c_fNormedPaperSizeWidthDinA8_mm;
 
 const double c_fNormedPaperSizeWidthDinA10_mm  = 26.0;
 const double c_fNormedPaperSizeHeightDinA10_mm = c_fNormedPaperSizeWidthDinA9_mm;
-
 
 //==============================================================================
 struct ZSDRAWDLL_API SAttribute
@@ -161,7 +177,6 @@ public: // struct members
 
 }; // struct SAttribute
 
-
 /*==============================================================================
 Signatures for simulation event methods
 ==============================================================================*/
@@ -169,7 +184,11 @@ Signatures for simulation event methods
 typedef void (*TFctMouseEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGraphObj, QGraphicsSceneMouseEvent* i_pEv );
 typedef void (*TFctKeyEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGraphObj, QKeyEvent* i_pEv );
 
+} } // ZS::Draw
 
+
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Paper source for the printer.
 */
@@ -181,11 +200,17 @@ enum class EPrinterPaperSource
     Tray1      = 2,
     Tray2      = 3
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EPrinterPaperSource>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EPrinterPaperSource>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EPrinterPaperSource> CEnumPrinterPaperSource;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Dimension unit for scales.
 */
@@ -196,11 +221,16 @@ enum class EScaleDimensionUnit {
                  The logical pixel positions got to be calculated depending
                  on the screen resolution given in Dots/Inch or Pixels/Inch. */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EScaleDimensionUnit>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EScaleDimensionUnit>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EScaleDimensionUnit> CEnumScaleDimensionUnit;
+} }
 
-
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! enum EGraphObjType
 
@@ -240,8 +270,11 @@ ZSDRAWDLL_API QString graphObjType2Str( int i_type );
 ZSDRAWDLL_API EGraphObjType str2GraphObjType( const QString& i_str );
 ZSDRAWDLL_API QString graphObjType2ClassName( int i_type );
 ZSDRAWDLL_API EGraphObjType className2GraphObjType( const QString& i_str );
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Defines the current edit tool.
 */
@@ -253,11 +286,17 @@ enum class EEditTool
     CreateObjects = 2, /*! A valid object factory is selected and objects may be created. */
     Undefined     = 3  /*! May be passed to methods to indicate that the argument should be ignored. */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EEditTool>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditTool>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EEditTool> CEnumEditTool;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! When formating the shape of an object using transformatons like scaling or
     or rotating the original coordinates need to be kept to avoid inaccuracies.
@@ -270,11 +309,17 @@ enum class ECoordinatesVersion
     Original    = 0,    /*!< The coordinate has been explicitly set. */
     Transformed = 1     /*!< Current coordinates resulting when transforming the original coordinates. */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ECoordinatesVersion>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ECoordinatesVersion>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ECoordinatesVersion> CEnumCoordinatesVersion;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Defines the current edit mode of the drawing scene and the graphics item.
 */
@@ -292,11 +337,17 @@ enum class EEditMode
     EditText       = 6, /*!< A single shape point of the selected object is being moved. */
     Undefined      = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EEditMode>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditMode>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EEditMode> CEnumEditMode;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! When currently resizing an object (EditMode::Resize) the resize mode defines
     in which direction the object is being resized.
@@ -310,11 +361,17 @@ enum class EEditResizeMode
     ResizeVer = 3, /*!< The selected object is resized vertically. */
     Undefined = 4, /*!< May be passed to methods to indicate that the argument should be ignored. */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EEditResizeMode>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditResizeMode>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EEditResizeMode> CEnumEditResizeMode;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Object may provide different selection points for editing and selecting.
 */
@@ -325,11 +382,17 @@ enum class ESelectionPointType
     BoundingRectangle = 1,  /*!< The selection point is at the bounding rectangle. */
     PolygonShapePoint = 2   /*!< The selection point is one of the points of a polygon. */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ESelectionPointType>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ESelectionPointType>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ESelectionPointType> CEnumSelectionPointType;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! enum ESelectionPoints
 */
@@ -347,8 +410,11 @@ typedef enum {
 }   ESelectionPoints;
 
 ZSDRAWDLL_API QString selectionPoints2Str( int i_selPts );
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Defines the different selection points which an object may provide for
     editing and moving an object.
@@ -387,8 +453,11 @@ enum class ESelectionPoint
     All           = 13, /*!< To select all selection points at once. */
     Any           = 14  /*!< To specify any selection point. */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ESelectionPoint>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ESelectionPoint>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ESelectionPoint> CEnumSelectionPoint;
 
 const int ESelectionPointRectMin = static_cast<int>(ESelectionPoint::TopLeft);
@@ -407,8 +476,11 @@ ZSDRAWDLL_API ESelectionPoint getOppositeSelectionPoint( ESelectionPoint i_selPt
 ZSDRAWDLL_API CEnumEditMode selectionPoint2EditMode( ESelectionPoint i_selPt );
 ZSDRAWDLL_API CEnumEditResizeMode selectionPoint2EditResizeMode( ESelectionPoint i_selPt );
 ZSDRAWDLL_API Qt::CursorShape selectionPoint2CursorShape( ESelectionPoint i_selPt );
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Defines the possible line points.
 */
@@ -419,11 +491,17 @@ enum class ELinePoint
     Start = 1,  /*!< Start point of a line (usually P1). */
     End   = 2   /*!< End point of a line (usually P2). */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ELinePoint>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ELinePoint>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ELinePoint> CEnumLinePoint;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -435,14 +513,20 @@ enum class ETextStyle
    Bold       = 2,
    BoldItalic = 3  /*!< Italic|Bold */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ETextStyle>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ETextStyle>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ETextStyle> CEnumTextStyle;
 
 ZSDRAWDLL_API bool isTextStyleBold(const CEnumTextStyle& i_style);
 ZSDRAWDLL_API bool isTextStyleItalic(const CEnumTextStyle& i_style);
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 enum ETextSize
@@ -476,8 +560,11 @@ typedef enum {
 ZSDRAWDLL_API int textSize2SizeInPixels( ETextSize i_textSize );
 ZSDRAWDLL_API QString textSize2Str( ETextSize i_textSize );
 ZSDRAWDLL_API ETextSize str2TextSize( const QString& i_str, bool* o_pbConverted = nullptr );
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -489,13 +576,19 @@ enum class ETextEffect
     Underline          = 2,
     StrikeoutUnderline = 3, // Strikeout|Underline
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ETextEffect>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ETextEffect>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ETextEffect> CEnumTextEffect;
 
 ZSDRAWDLL_API bool isTextEffectStrikeout(const CEnumTextEffect& i_textEffect);
 ZSDRAWDLL_API bool isTextEffectUnderline(const CEnumTextEffect& i_textEffect);
+} }
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -523,14 +616,20 @@ enum class EFillStyle
     ConicalGradientPattern = 17,
     TexturePattern         = 18
 } ;
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EFillStyle>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EFillStyle>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EFillStyle> CEnumFillStyle;
 
 ZSDRAWDLL_API Qt::BrushStyle fillStyle2QtBrushStyle( const CEnumFillStyle& i_fillStyle );
 ZSDRAWDLL_API bool isFillStyleGradientPattern( const CEnumFillStyle& i_fillStyle );
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -544,13 +643,19 @@ enum class ELineStyle
     DashDotLine    = 4,
     DashDotDotLine = 5
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ELineStyle>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ELineStyle>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ELineStyle> CEnumLineStyle;
 
 ZSDRAWDLL_API Qt::PenStyle lineStyle2QtPenStyle( const CEnumLineStyle& i_lineStyle );
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! @brief A line may be indicated with one line (normal), a double line or a triple line.
 */
@@ -561,11 +666,17 @@ enum class ELineRecordType
     Double = 1,
     Triple = 2
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ELineRecordType>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ELineRecordType>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ELineRecordType> CEnumLineRecordType;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! @brief A line end may be indicated normal or showing an arrow head.
 
@@ -604,11 +715,17 @@ enum class ELineEndStyle
     Normal    = 0,
     ArrowHead = 1
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<ELineEndStyle>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::ELineEndStyle>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<ELineEndStyle> CEnumLineEndStyle;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -618,13 +735,19 @@ enum class EArrowHeadFillStyle
     NoFill       = 0,
     SolidPattern = 1
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EArrowHeadFillStyle>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EArrowHeadFillStyle>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EArrowHeadFillStyle> CEnumArrowHeadFillStyle;
 
 ZSDRAWDLL_API Qt::BrushStyle arrowHeadFillStyle2QtBrushStyle(const CEnumArrowHeadFillStyle& i_fillStyle);
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*! Base line type for the arrow head.
 
@@ -645,11 +768,17 @@ enum class EArrowHeadBaseLineType
     Normal   = 1, // straight lined
     Indented = 2
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EArrowHeadBaseLineType>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EArrowHeadBaseLineType>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EArrowHeadBaseLineType> CEnumArrowHeadBaseLineType;
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -660,13 +789,19 @@ enum class EArrowHeadWidth
     Medium = 1,    /*!< 13 Pixel */
     Wide   = 2     /*!< 19 Pixel */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EArrowHeadWidth>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EArrowHeadWidth>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EArrowHeadWidth> CEnumArrowHeadWidth;
 
 ZSDRAWDLL_API double arrowHeadWidth2dy(const CEnumArrowHeadWidth& i_width);
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -677,13 +812,19 @@ enum class EArrowHeadLength
     Medium = 1,   /*!< 10 Pixel */
     Long   = 2    /*!< 13 Pixel */
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EArrowHeadLength>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EArrowHeadLength>;
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EArrowHeadLength> CEnumArrowHeadLength;
 
 ZSDRAWDLL_API double arrowHeadLength2dx(const CEnumArrowHeadLength& i_length);
+} }
 
 
+namespace ZS {
+namespace Draw {
 //==============================================================================
 /*!
 */
@@ -700,13 +841,13 @@ enum class EAlignmentRef
     Width     = 7,
     Height    = 8
 };
+} }
 
-template class ZSDRAWDLL_API ::CEnum<EAlignmentRef>;
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EAlignmentRef>;
 
+namespace ZS {
+namespace Draw {
 typedef ::CEnum<EAlignmentRef> CEnumAlignmentRef;
-
-} // namespace ZS
-
-} // namespace Draw
+} }
 
 #endif // #ifndef ZSDraw_Common_h

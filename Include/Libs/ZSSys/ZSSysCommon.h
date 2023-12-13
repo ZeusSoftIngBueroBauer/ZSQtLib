@@ -434,7 +434,6 @@ typedef CEnum<ESearchDirection> CEnumSearchDirection;
 } }
 
 namespace ZS {
-namespace ZS {
 namespace System {
 //==============================================================================
 /*! This enum is mainly used to define for what purpose trace outputs should
@@ -587,7 +586,7 @@ enum class EScaleAxis {
 } }
 
 // template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
-template class ZSSYSDLL_API CEnum<ZS::System::EScaleDir>;
+template class ZSSYSDLL_API CEnum<ZS::System::EScaleAxis>;
 namespace ZS {
 namespace System {
 typedef CEnum<EScaleAxis> CEnumScaleAxis;
@@ -752,14 +751,6 @@ enum class EDimensionType
 };
 } }
 
-//#ifdef _WINDOWS
-//#pragma warning( push )
-//#pragma warning( disable : 4661 )
-//#elif defined __linux__
-//#pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wunused-result"
-//#pragma GCC diagnostic pop
-//#endif
 // template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EDimensionType>;
 namespace ZS {
@@ -786,7 +777,10 @@ ZSSYSDLL_API void getMinMaxArrayRange( int i_iArrIdx, int i_iArrLen, int* o_pIdx
 ZSSYSDLL_API void getMinMaxArrayRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, int* o_pIdxMin, int* o_pIdxMax );
 ZSSYSDLL_API void getMinCountArrayRange( int i_idxStart, int i_iArrLen, int* o_pIdxMin, int* o_piIdxCount );
 ZSSYSDLL_API void getMinCountArrayRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, int* o_pIdxMin, int* o_pIdxCount );
+} }
 
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Predefined trace detail levels for method calls.
 
@@ -865,10 +859,6 @@ namespace ZS {
 namespace System {
 typedef CEnum<ELogDetailLevel> CEnumLogDetailLevel;
 } }
-
-//} // namespace System
-
-//} // namespace ZS
 
 #ifdef _WINDOWS
 #pragma warning( pop )

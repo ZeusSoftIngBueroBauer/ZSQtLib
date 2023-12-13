@@ -541,8 +541,6 @@ template<> const QVector<SEnumEntry> CEnum<EOrientation>::s_arEnumEntries =
 Enum ELayoutPos
 ==============================================================================*/
 
-template<> QMutex CEnum<ELayoutPos>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<ELayoutPos>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<ELayoutPos>::s_arEnumEntries =
 //------------------------------------------------------------------------------
@@ -559,9 +557,6 @@ template<> const QVector<SEnumEntry> CEnum<ELayoutPos>::s_arEnumEntries =
 Enum EScaleAxis
 ==============================================================================*/
 
-template<> QMutex CEnum<EScaleAxis>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EScaleAxis>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
-
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EScaleAxis>::s_arEnumEntries =
 //------------------------------------------------------------------------------
@@ -574,9 +569,6 @@ template<> const QVector<SEnumEntry> CEnum<EScaleAxis>::s_arEnumEntries =
 /*==============================================================================
 Enum EYScaleAxisOrientation
 ==============================================================================*/
-
-template<> QMutex CEnum<EYScaleAxisOrientation>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EYScaleAxisOrientation>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<EYScaleAxisOrientation>::s_arEnumEntries =

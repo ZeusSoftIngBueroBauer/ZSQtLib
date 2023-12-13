@@ -45,10 +45,6 @@ may result in using the software modules.
 #endif
 
 
-//namespace ZS
-//{
-//namespace System
-//{
 const int EInvalidEnumerator = -1;
 
 //******************************************************************************
@@ -1876,10 +1872,6 @@ void CEnum<E>::throwExceptionIfEnumeratorIsInvalid( ZS::System::EResult i_result
         throw ZS::System::CException(__FILE__, __LINE__, errResultInfo);
     }
 }
-
-//} // namespace System
-
-//} // namespace ZS
 
 #ifdef _WINDOWS
 #pragma warning( pop )

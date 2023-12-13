@@ -57,6 +57,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStep.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysMath.h"

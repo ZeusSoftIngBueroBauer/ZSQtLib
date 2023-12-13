@@ -75,6 +75,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
@@ -567,7 +568,7 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         m_pEdtRotationAngle->setRange(-360.0, 360.0);
         m_pEdtRotationAngle->setDecimals(1);
         m_pEdtRotationAngle->setSingleStep(0.1);
-        m_pEdtRotationAngle->setSuffix(" " + ZS::PhysVal::c_strSymbolDegree);
+        m_pEdtRotationAngle->setSuffix(" " + ZS::System::Math::c_strSymbolDegree);
         //m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
         m_pLytLineRotationAngle->addWidget(m_pEdtRotationAngle);
         m_pLytLineRotationAngle->addStretch();

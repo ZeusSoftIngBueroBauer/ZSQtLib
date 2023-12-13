@@ -284,6 +284,7 @@ QVariant SEnumEntry::enumerator2Val(
             bOk = val.canConvert(static_cast<QMetaType>(i_type));
         }
         #endif
+        else {
             bOk = true;
         }
     }

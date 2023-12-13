@@ -1782,7 +1782,7 @@ void CDiagObjMarker::updateData()
         if( m_scaleAxisCursorMove == EScaleAxis::X )
         {
             CUnit unit = pPhysValSrc->unit();
-            xPix = m_pDiagTrace->getValPix(EScaleDir::X, pPhysValSrc->getVal(), &unit);
+            xPix = m_pDiagTrace->getValPix(EScaleAxis::X, pPhysValSrc->getVal(), &unit);
 
             // If the marker is positioned between two valid values ...
             if( pPhysValDst->isValid() ) {
@@ -1805,12 +1805,12 @@ void CDiagObjMarker::updateData()
         else if( m_scaleAxisCursorMove == EScaleAxis::Y )
         {
             CUnit unitSrc = pPhysValSrc->unit();
-            yPix = m_pDiagTrace->getValPix(EScaleDir::Y, pPhysValSrc->getVal(), &unitSrc);
+            yPix = m_pDiagTrace->getValPix(EScaleAxis::Y, pPhysValSrc->getVal(), &unitSrc);
 
             // If the marker is positioned between two valid values ...
             if( pPhysValDst->isValid() ) {
                 CUnit unitDst = pPhysValDst->unit();
-                xPix = m_pDiagTrace->getValPix(EScaleDir::X, pPhysValDst->getVal(), &unitDst);
+                xPix = m_pDiagTrace->getValPix(EScaleAxis::X, pPhysValDst->getVal(), &unitDst);
             }
             if( yPix < m_rectContent.top() ) {
                 yPix = m_rectContent.top();

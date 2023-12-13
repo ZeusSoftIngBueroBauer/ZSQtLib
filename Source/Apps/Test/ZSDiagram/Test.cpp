@@ -1503,14 +1503,14 @@ void CTest::onTimerSigGenTimeout()
 
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitX);
-            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &unitY);
+            m_pDiagTraceSigGen1->setValues(EScaleAxis::X, s_arfXValuesTraces01, &unitX);
+            m_pDiagTraceSigGen1->setValues(EScaleAxis::Y, s_arfYValuesTrace0, &unitY);
         }
 
         if( m_pDiagTraceSigGen2 != nullptr )
         {
-            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitX);
-            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1, &unitY);
+            m_pDiagTraceSigGen2->setValues(EScaleAxis::X, s_arfXValuesTraces01, &unitX);
+            m_pDiagTraceSigGen2->setValues(EScaleAxis::Y, s_arfYValuesTrace1, &unitY);
         }
     } // if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
 
