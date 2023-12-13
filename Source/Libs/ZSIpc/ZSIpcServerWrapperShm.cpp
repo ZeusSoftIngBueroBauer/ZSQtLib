@@ -107,14 +107,9 @@ CShmServerWrapper::CShmServerWrapper(
 
     m_pTimerListen = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerListen,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutListen()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimerListen, &QTimer::timeout,
+        this, &CShmServerWrapper::onTimeoutListen);
 
 } // ctor
 

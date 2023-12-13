@@ -33,7 +33,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysRequest.h"
 
-class QMutex;
+class QRecursiveMutex;
 class QTimer;
 
 namespace ZS
@@ -124,10 +124,10 @@ public: // instance methods
 protected slots:
     void onTmrGarbageCollectorTimeout();
 protected: // class members
-    static CRequestExecTree*    s_pInstance;
-    static QMutex               s_mtx;                  /*!< Mutex to protect the class methods for multithreaded access. */
+    static CRequestExecTree* s_pInstance;
+    static QRecursiveMutex s_mtx;                  /*!< Mutex to protect the class methods for multithreaded access. */
 protected: // instance members
-    QMutex*                     m_pMtx;
+    QRecursiveMutex*            m_pMtx;
     QHash<qint64,SRequestDscr*> m_hshRequestDscrs;  // Entries live longer than CRequest.
     QHash<qint64,CRequest*>     m_hshRequests;      // Only if the CRequest is still alive.
     bool                        m_bTmrGarbageCollectorEnabled;

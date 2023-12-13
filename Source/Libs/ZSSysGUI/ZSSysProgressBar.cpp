@@ -63,14 +63,9 @@ CProgressBar::CProgressBar( QWidget* i_pWdgtParent ) :
 {
     m_pTimer = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimer,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(increment()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimer, &QTimer::timeout,
+        this, &CProgressBar::increment);
 
 } // ctor
 

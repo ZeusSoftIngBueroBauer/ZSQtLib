@@ -268,15 +268,10 @@ void CMyClass2Thread::run()
 
     m_pMyClass2 = new CMyClass2(m_strMyClass2ObjName, this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pMyClass2,
-        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)),
-        /* cnctType     */ Qt::DirectConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pMyClass2, &CMyClass2::aboutToBeDestroyed,
+        this, &CMyClass2Thread::onClass2AboutToBeDestroyed,
+        Qt::DirectConnection);
 
     // To always get the same trace output. Sleep a bit to let the thread starting
     // instance wait on the wait condition.
@@ -285,10 +280,8 @@ void CMyClass2Thread::run()
     exec();
 
     QObject::disconnect(
-        /* pObjSender   */ m_pMyClass2,
-        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)) );
+        m_pMyClass2, &CMyClass2::aboutToBeDestroyed,
+        this, &CMyClass2Thread::onClass2AboutToBeDestroyed);
 
     try
     {
@@ -469,16 +462,11 @@ CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2T
 
     m_pTmrMessages = new QTimer(this);
 
-    if( !QObject::connect(
-        /* szSender   */ m_pTmrMessages,
-        /* szSignal   */ SIGNAL(timeout()),
-        /* szReceiver */ this,
-        /* szSlot     */ SLOT(onTmrMessagesTimeout())) )
-    {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pTmrMessages, &QTimer::timeout,
+        this, &CMyClass2::onTmrMessagesTimeout);
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "-" + objectName() + "-Counters");
+    m_pMtxCounters = new CRecursiveMutex(ClassName() + "-" + objectName() + "-Counters");
     m_pMtxWaitClass3ThreadRunning = new CMutex(ClassName() + "-" + objectName() + "-WaitClass3ThreadRunning");
     m_pWaitClass3ThreadRunning = new CWaitCondition(ClassName() + "-" + objectName() + "-Class3ThreadRunning");
 
@@ -767,15 +755,10 @@ CMyClass3* CMyClass2::startClass3Thread(const QString& i_strMyClass3ObjName)
         {
             m_pMyClass3Thread = new CMyClass3Thread(i_strMyClass3ObjName, this);
 
-           if( !QObject::connect(
-                /* pObjSender   */ m_pMyClass3Thread,
-                /* szSignal     */ SIGNAL(running()),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onClass3ThreadRunning()),
-                /* cnctType     */ Qt::DirectConnection) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pMyClass3Thread, &CMyClass3Thread::running,
+                this, &CMyClass2::onClass3ThreadRunning,
+                Qt::DirectConnection);
         }
 
         if( !m_pMyClass3Thread->isRunning() )

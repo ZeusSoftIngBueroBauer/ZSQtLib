@@ -469,7 +469,9 @@ CWdgtDiagramItemPropertiesBase* CDlgDiagramItemProperties::createDiagItemPropert
     {
         pWdgt = new CWdgtDiagramObjAxisLabelProperties(m_pDiagram, EMode::Edit);
     }
+    #ifdef _WINDOWS
     #pragma message(__TODO__"Implement concrete DiagObj Properties Widget classes")
+    #endif
     else if (m_strDiagItemClassName == CDiagObjCurve::ClassName())
     {
         pWdgt = new CWdgtDiagramObjPropertiesBase(

@@ -27,10 +27,10 @@ may result in using the software modules.
 #ifndef ZSSys_Common_h
 #define ZSSys_Common_h
 
-#include <QtCore/qstring.h>
-
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysEnumTemplate.h"
+
+#include <QtCore/qstring.h>
 
 
 /*******************************************************************************
@@ -88,6 +88,13 @@ global type definitions and constants
 #pragma GCC diagnostic pop
 #endif
 
+// Note about CEnum template instantiation:
+// gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope"
+// if the for example the template definition is encapsulated in namespace ZS::System.
+// To work around this gcc compile error message the enum classes and the typedef for the
+// enum classes are encapsulated in namespace ZS::System but the temlate instantiation is
+// done in global namespace.
+
 namespace ZS {
 namespace System {
 //==============================================================================
@@ -110,6 +117,7 @@ enum class EMode
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EMode>;
 
 namespace ZS {
@@ -138,6 +146,7 @@ enum class ERunMode
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::ERunMode>;
 namespace ZS {
 namespace System {
@@ -165,6 +174,7 @@ enum class EYesNo
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EYesNo>;
 namespace ZS {
 namespace System {
@@ -192,6 +202,7 @@ enum class EStateOnOff
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EStateOnOff>;
 namespace ZS {
 namespace System {
@@ -218,6 +229,7 @@ enum class EEnabled
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EEnabled>;
 namespace ZS {
 namespace System {
@@ -277,6 +289,7 @@ enum class ECopyDepth
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::ECopyDepth>;
 namespace ZS {
 namespace System {
@@ -304,6 +317,7 @@ enum class EObjState
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EObjState>;
 namespace ZS {
 namespace System {
@@ -327,6 +341,7 @@ enum class ERowVersion
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::ERowVersion>;
 namespace ZS {
 namespace System {
@@ -362,6 +377,7 @@ enum class ERowState
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::ERowState>;
 namespace ZS {
 namespace System {
@@ -386,6 +402,7 @@ enum class EContentToStrFormat
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EContentToStrFormat>;
 namespace ZS {
 namespace System {
@@ -409,12 +426,14 @@ enum class ESearchDirection
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::ESearchDirection>;
 namespace ZS {
 namespace System {
 typedef CEnum<ESearchDirection> CEnumSearchDirection;
 } }
 
+namespace ZS {
 namespace ZS {
 namespace System {
 //==============================================================================
@@ -435,6 +454,7 @@ enum class EMethodDir
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EMethodDir>;
 namespace ZS {
 namespace System {
@@ -463,6 +483,7 @@ enum class ETransmitDir
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::ETransmitDir>;
 namespace ZS {
 namespace System {
@@ -495,6 +516,7 @@ enum class EIODir
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EIODir>;
 namespace ZS {
 namespace System {
@@ -518,6 +540,7 @@ enum class EOrientation
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EOrientation>;
 namespace ZS {
 namespace System {
@@ -563,7 +586,8 @@ enum class EScaleAxis {
 };
 } }
 
-template class ZSSYSDLL_API CEnum<ZS::System::EScaleAxis>;
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
+template class ZSSYSDLL_API CEnum<ZS::System::EScaleDir>;
 namespace ZS {
 namespace System {
 typedef CEnum<EScaleAxis> CEnumScaleAxis;
@@ -612,6 +636,7 @@ enum class ESpacing {
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::ESpacing>;
 namespace ZS {
 namespace System {
@@ -639,6 +664,7 @@ enum class EDivLineLayer {
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EDivLineLayer>;
 namespace ZS {
 namespace System {
@@ -667,6 +693,7 @@ enum EComparisonOperator
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EComparisonOperator>;
 namespace ZS {
 namespace System {
@@ -699,6 +726,7 @@ enum class EValueValidity
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EValueValidity>;
 namespace ZS {
 namespace System {
@@ -732,6 +760,7 @@ enum class EDimensionType
 //#pragma GCC diagnostic ignored "-Wunused-result"
 //#pragma GCC diagnostic pop
 //#endif
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EDimensionType>;
 namespace ZS {
 namespace System {
@@ -789,6 +818,7 @@ enum class EMethodTraceDetailLevel
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EMethodTraceDetailLevel>;
 namespace ZS {
 namespace System {
@@ -829,6 +859,7 @@ enum class ELogDetailLevel
 };
 } }
 
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::ELogDetailLevel>;
 namespace ZS {
 namespace System {

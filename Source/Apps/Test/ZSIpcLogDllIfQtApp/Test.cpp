@@ -24,11 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qdir.h>
-#include <QtCore/qfile.h>
-#include <QtCore/qfileinfo.h>
-#include <QtCore/qtimer.h>
-
 #include "Test.h"
 #include "TestConfig.h"
 #include "MyClass1.h"
@@ -40,10 +35,18 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTestGUI/ZSTestStepDlg.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysLoggerIdxTree.h"
 #include "ZSSys/ZSSysLogger.h"
 #include "ZSSys/ZSSysLogServer.h"
+#include "ZSSys/ZSSysTime.h"
+
+#include <QtCore/qdir.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qtextstream.h>
+#include <QtCore/qtimer.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -75,14 +78,9 @@ CTest::CTest() :
     m_pTmrTestStepTimeout = new QTimer(this);
     m_pTmrTestStepTimeout->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrTestStepTimeout,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerTestStepTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrTestStepTimeout, &QTimer::timeout,
+        this, &CTest::onTimerTestStepTimeout);
 
     ZS::Test::CTestStep* pTestStep = nullptr;
 
@@ -1305,10 +1303,8 @@ CTest::~CTest()
     for( auto& pObj : m_hshpMyClass1InstancesByName )
     {
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass1::aboutToBeDestroyed,
+            this, &CTest::onClass1AboutToBeDestroyed);
 
         strObjName = pObj->objectName();
 
@@ -2208,7 +2204,11 @@ void CTest::doTestStepLoggerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+    #else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    #endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2300,7 +2300,11 @@ void CTest::doTestStepLoggerAddLogEntryMyThread( ZS::Test::CTestStep* i_pTestSte
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+    #else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    #endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2392,7 +2396,11 @@ void CTest::doTestStepLogServerAddLogEntry( ZS::Test::CTestStep* i_pTestStep )
     QStringList strlstExpectedValues;
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+    #else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    #endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2486,7 +2494,11 @@ void CTest::doTestStepLogMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if( val.isValid() && val.canConvert(QVariant::String) )
+    #else
+    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    #endif
     {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
@@ -2543,15 +2555,10 @@ void CTest::doTestStepLogMethodCall( ZS::Test::CTestStep* i_pTestStep )
                 CMyClass1* pObj = new CMyClass1(strlstInArgs[0]);
                 m_hshpMyClass1InstancesByName[strObjName] = pObj;
 
-                if( !QObject::connect(
-                    /* pObjSender   */ pObj,
-                    /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)),
-                    /* cnctType     */ Qt::DirectConnection ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    pObj, &CMyClass1::aboutToBeDestroyed,
+                    this, &CTest::onClass1AboutToBeDestroyed,
+                    Qt::DirectConnection);
             }
         }
         else if( strMth == "dtor" )

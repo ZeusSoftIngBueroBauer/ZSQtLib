@@ -1035,14 +1035,24 @@ int CModelIdxTreeBranchContent::columnWidthByColumn(int i_iClm, int i_iFontPixel
             {
                 QString strType = "string";
                 QVariant varData = data(index(iRowIdx, i_iClm), static_cast<int>(ERole::Type));
+                #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 if( varData.canConvert(QVariant::String) )
+                #else
+                // static_cast to avoid deprecation warning
+                if( varData.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+                #endif
                 {
                     strType = varData.toString();
                 }
                 if( strType == "string" || strType == "int" )
                 {
                     varData = data(index(iRowIdx, i_iClm), Qt::DisplayRole);
+                    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     if( varData.canConvert(QVariant::String) )
+                    #else
+                    // static_cast to avoid deprecation warning
+                    if( varData.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+                    #endif
                     {
                         QString strCellData = varData.toString();
                         #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
@@ -1055,7 +1065,12 @@ int CModelIdxTreeBranchContent::columnWidthByColumn(int i_iClm, int i_iFontPixel
                 else if( strType == "imageUrl" || strType == "icon" )
                 {
                     varData = data(index(iRowIdx, i_iClm), Qt::DisplayRole);
+                    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     if( varData.canConvert(QVariant::String) )
+                    #else
+                    // static_cast to avoid deprecation warning
+                    if( varData.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+                    #endif
                     {
                         QString strCellData = varData.toString();
                         QPixmap pixmap(strCellData);

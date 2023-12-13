@@ -139,14 +139,9 @@ CWdgtTrcMsgLog::CWdgtTrcMsgLog(
     m_pLytLineEditSettings->addWidget(m_pChkEnabled); iClm++;
     m_pLytLineEditSettings->addSpacing(c_arcxGridLytClmWidth[iClm]); iClm++;
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkEnabled,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkEnabledToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkEnabled, &QCheckBox::toggled,
+        this, &CWdgtTrcMsgLog::onChkEnabledToggled);
 
     // <LineEdit> Maximum Number of Message Log Entries
     //-------------------------------------------------
@@ -160,14 +155,9 @@ CWdgtTrcMsgLog::CWdgtTrcMsgLog(
     m_pLytLineEditSettings->addWidget(m_pEdtMaxItemCount); iClm++;
     m_pLytLineEditSettings->addSpacing(c_arcxGridLytClmWidth[iClm]); iClm++;
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtMaxItemCount,
-        /* szSignal     */ SIGNAL(editingFinished()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtMaxItemCountEditingFinished()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdtMaxItemCount, &QLineEdit::editingFinished,
+        this, &CWdgtTrcMsgLog::onEdtMaxItemCountEditingFinished);
 
     // <Button> Clear Log Widget
     //--------------------------
@@ -176,14 +166,9 @@ CWdgtTrcMsgLog::CWdgtTrcMsgLog(
     m_pBtnClear->setFixedWidth(c_arcxGridLytClmWidth[iClm]);
     m_pLytLineEditSettings->addWidget(m_pBtnClear); iClm++;
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnClear,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnClearClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnClear, &QPushButton::clicked,
+        this, &CWdgtTrcMsgLog::onBtnClearClicked);
 
     // <EditField> Client Message Log Window
     //--------------------------------------

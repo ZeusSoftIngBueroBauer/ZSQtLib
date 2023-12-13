@@ -149,14 +149,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnStart->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnStart);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnStart,
-        /* szSignal     */ SIGNAL( clicked(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onBtnStartClicked(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnStart, &QPushButton::clicked,
+        this, &CWdgtIdxTreeTestSteps::onBtnStartClicked);
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -171,14 +166,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnStep->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnStep);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnStep,
-        /* szSignal     */ SIGNAL( clicked(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onBtnStepClicked(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnStep, &QPushButton::clicked,
+        this, &CWdgtIdxTreeTestSteps::onBtnStepClicked);
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -194,14 +184,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnPause->setEnabled(false);
     m_pLytHeadLine->addWidget(m_pBtnPause);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnPause,
-        /* szSignal     */ SIGNAL( clicked(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onBtnPauseClicked(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnPause, &QPushButton::clicked,
+        this, &CWdgtIdxTreeTestSteps::onBtnPauseClicked);
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -217,14 +202,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnStop->setEnabled(false);
     m_pLytHeadLine->addWidget(m_pBtnStop);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnStop,
-        /* szSignal     */ SIGNAL( clicked(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onBtnStopClicked(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnStop, &QPushButton::clicked,
+        this, &CWdgtIdxTreeTestSteps::onBtnStopClicked);
 
     m_pLytHeadLine->addSpacing(30);
 
@@ -240,14 +220,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pLytHeadLine->addWidget(m_pBtnViewMode);
     m_pLytHeadLine->addSpacing(10);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnViewMode,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnViewModeClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnViewMode, &QPushButton::clicked,
+        this, &CWdgtIdxTreeTestSteps::onBtnViewModeClicked);
 
     // <Button> Resize Columns To Contents
     //------------------------------------
@@ -259,14 +234,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnTreeViewResizeRowsAndColumnsToContents->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnTreeViewResizeRowsAndColumnsToContents);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnTreeViewResizeRowsAndColumnsToContents,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnTreeViewResizeRowsAndColumnsToContentsClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnTreeViewResizeRowsAndColumnsToContents, &QPushButton::clicked,
+        this, &CWdgtIdxTreeTestSteps::onBtnTreeViewResizeRowsAndColumnsToContentsClicked);
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -280,14 +250,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnTreeViewExpandAll->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnTreeViewExpandAll);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnTreeViewExpandAll,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnTreeViewExpandAllClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnTreeViewExpandAll, &QPushButton::clicked,
+        this, &CWdgtIdxTreeTestSteps::onBtnTreeViewExpandAllClicked);
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -301,14 +266,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pBtnTreeViewCollapseAll->setFixedSize(m_szBtns);
     m_pLytHeadLine->addWidget(m_pBtnTreeViewCollapseAll);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnTreeViewCollapseAll,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnTreeViewCollapseAllClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnTreeViewCollapseAll, &QPushButton::clicked,
+        this, &CWdgtIdxTreeTestSteps::onBtnTreeViewCollapseAllClicked);
 
     m_pLytHeadLine->addSpacing(10);
 
@@ -324,14 +284,9 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
 
     m_pLytHeadLine->addSpacing(10);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtTestStepIntervalInMs,
-        /* szSignal     */ SIGNAL( editingFinished() ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onEdtTestStepIntervalEditingFinished() ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdtTestStepIntervalInMs, &QLineEdit::editingFinished,
+        this, &CWdgtIdxTreeTestSteps::onEdtTestStepIntervalEditingFinished);
 
     // <EditField> Current Test Step
     //------------------------------------
@@ -430,61 +385,31 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     m_pTreeViewTestSteps = new CTreeViewIdxTreeTestSteps(m_pTestStepsModel, this);
     m_pLytMain->addWidget(m_pTreeViewTestSteps);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTreeViewTestSteps->selectionModel(),
-        /* szSignal     */ SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTreeViewTestStepsSelectionModelCurrentRowChanged(const QModelIndex&, const QModelIndex&)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTreeViewTestSteps->selectionModel(), &QItemSelectionModel::currentRowChanged,
+        this, &CWdgtIdxTreeTestSteps::onTreeViewTestStepsSelectionModelCurrentRowChanged);
     if( m_pTreeViewTestSteps != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTreeViewTestSteps,
-            /* szSignal     */ SIGNAL( expanded(const QModelIndex&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onTreeViewTestStepsExpanded(const QModelIndex&) ) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTreeViewTestSteps, &QTreeView::expanded,
+            this, &CWdgtIdxTreeTestSteps::onTreeViewTestStepsExpanded);
     }
 
     // Connect to state changed signal of test
     //----------------------------------------
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL( stateChanged(const ZS::Test::CEnumTestState&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTestStateChanged(const ZS::Test::CEnumTestState&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL( runModeChanged(const ZS::System::CEnumRunMode&) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTestRunModeChanged(const ZS::System::CEnumRunMode&) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL( currentTestStepChanged(ZS::Test::CTestStep*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onCurrentTestStepChanged(ZS::Test::CTestStep*) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL( testStepIntervalChanged(int) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onTestStepIntervalChanged(int) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTest, &CTest::stateChanged,
+        this, &CWdgtIdxTreeTestSteps::onTestStateChanged);
+    QObject::connect(
+        m_pTest, &CTest::runModeChanged,
+        this, &CWdgtIdxTreeTestSteps::onTestRunModeChanged);
+    QObject::connect(
+        m_pTest, &CTest::currentTestStepChanged,
+        this, &CWdgtIdxTreeTestSteps::onCurrentTestStepChanged);
+    QObject::connect(
+        m_pTest, &CTest::testStepIntervalChanged,
+        this, &CWdgtIdxTreeTestSteps::onTestStepIntervalChanged);
 
     // <TreeView> Resize
     //------------------

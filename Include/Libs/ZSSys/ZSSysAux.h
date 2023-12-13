@@ -27,6 +27,10 @@ may result in using the software modules.
 #ifndef ZSSys_Aux_h
 #define ZSSys_Aux_h
 
+#include "ZSSys/ZSSysDllMain.h"
+#include "ZSSys/ZSSysCommon.h"
+#include "ZSSys/ZSSysTime.h"
+
 #include <QtCore/qbytearray.h>
 #include <QtCore/qmargins.h>
 #include <QtCore/qmutex.h>
@@ -34,16 +38,12 @@ may result in using the software modules.
 #include <QtCore/qstring.h>
 #include <QtCore/qthread.h>
 
-#include "ZSSys/ZSSysDllMain.h"
-#include "ZSSys/ZSSysCommon.h"
-#include "ZSSys/ZSSysTime.h"
-
 #ifdef _WINDOWS
 // As "min" will be defined as a macro with two arguments and qdatetime uses "min"
 // as a function with no arguments "windows.h" must be included after qdatetime
 // (which is included by ZSSysTime (which again is included by ZSSysAux)).
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+//#include <windows.h>
 #endif
 
 /*******************************************************************************
@@ -103,7 +103,7 @@ ZSSYSDLL_API bool dir_removeRecursively( const QString& i_strDirPath );
 /* A Safer Alternative to TerminateProcess()
    See http://www.drdobbs.com/a-safer-alternative-to-terminateprocess/184416547
    for more details. */
-ZSSYSDLL_API BOOL SafeTerminateProcess( HANDLE i_hndProcess, UINT i_uExitCode );
+//ZSSYSDLL_API BOOL SafeTerminateProcess( HANDLE i_hndProcess, UINT i_uExitCode );
 #endif
 
 
@@ -131,8 +131,8 @@ ZSSYSDLL_API QByteArray bool2ByteArr( bool i_bValue );
 ZSSYSDLL_API bool byteArr2Bool( const QByteArray& i_str, bool* o_pbConverted = nullptr );
 
 #ifdef _WINDOWS
-ZSSYSDLL_API QString hResult2Str( HRESULT i_hRes );
-ZSSYSDLL_API QString winErrorCode2MessageStr( DWORD i_dwErrCode );
+//ZSSYSDLL_API QString hResult2Str( HRESULT i_hRes );
+//ZSSYSDLL_API QString winErrorCode2MessageStr( DWORD i_dwErrCode );
 ZSSYSDLL_API QString lastWinErrorCode2MessageStr();
 #ifndef __oaidl_h__
 typedef /* [wire_marshal] */ struct tagVARIANT VARIANT;
@@ -150,9 +150,6 @@ ZSSYSDLL_API Qt::Orientation str2QOrientation( const QString& i_str, EEnumEntryA
 
 ZSSYSDLL_API QString qSortOrder2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API Qt::SortOrder str2QSortOrder( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
-
-ZSSYSDLL_API QString qMutexRecursionMode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
-ZSSYSDLL_API QMutex::RecursionMode str2QMutexRecursionMode( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );
 
 ZSSYSDLL_API QString qProcessExitStatus2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API QProcess::ExitStatus str2QProcessExitStatus( const QString& i_str, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName, bool* o_pbConverted = nullptr );

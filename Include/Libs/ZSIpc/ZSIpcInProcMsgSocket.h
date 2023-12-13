@@ -32,7 +32,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 
-class QMutex;
+class QRecursiveMutex;
 class QTimer;
 
 namespace ZS
@@ -146,7 +146,7 @@ protected slots:
     virtual void onServerDestroyed( QObject* i_pServer );
     virtual void onSocketPeerDestroyed( QObject* i_pSocketPeer );
 protected: // instance methods
-    QMutex*                    m_pMutex;
+    QRecursiveMutex*           m_pMutex;
     ESrvCltType                m_srvCltType;           // Defines on which side of the connection the socket is existing
     CInProcMsgServer*          m_pInProcMsgServer;     // On client's side the server to which the socket should be connected to, on server's side the server which created the socket for the new connection.
     CInProcMsgSocket*          m_pInProcMsgSocketPeer; // "Peer" to which this socket is connected (socket on the other side of the connection).

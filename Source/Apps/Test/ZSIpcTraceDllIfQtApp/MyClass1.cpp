@@ -24,10 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qthread.h>
-#include <QtCore/qjsondocument.h>
-#include <QtCore/qjsonobject.h>
-
 #include "MyClass1.h"
 #include "MyClass2.h"
 
@@ -35,6 +31,11 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysSleeperThread.h"
+#include "ZSSys/ZSSysTime.h"
+
+#include <QtCore/qthread.h>
+#include <QtCore/qjsondocument.h>
+#include <QtCore/qjsonobject.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

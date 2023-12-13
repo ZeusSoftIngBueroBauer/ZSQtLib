@@ -34,7 +34,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 
-class QMutex;
+class QRecursiveMutex;
 
 namespace ZS
 {
@@ -112,7 +112,7 @@ public: // overridables
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv );
 protected: // instance methods
-    QMutex*                    m_pMutex;
+    QRecursiveMutex*           m_pMutex;
     ESocketState               m_socketState;
     QString                    m_strHostName;
     unsigned int               m_uPort;

@@ -126,32 +126,15 @@ CDlgLogServer::CDlgLogServer(
     m_pWdgtIpcServer = new ZS::Ipc::GUI::CWdgtIpcServer(i_strObjName);
     m_pTabWidget->addTab(m_pWdgtIpcServer, "Connection Settings");
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcServer,
-        /* szSignal     */ SIGNAL(accepted()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcServerSettingsAccepted()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcServer,
-        /* szSignal     */ SIGNAL(rejected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIpcServerSettingsRejected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtIpcServer,
-        /* szSignal     */ SIGNAL(detailsVisibilityChanged(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onWdgtIpcServerDetailsVisibilityChanged(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pWdgtIpcServer, &CWdgtIpcServer::accepted,
+        this, &CDlgLogServer::onIpcServerSettingsAccepted);
+    QObject::connect(
+        m_pWdgtIpcServer, &CWdgtIpcServer::rejected,
+        this, &CDlgLogServer::onIpcServerSettingsRejected);
+    QObject::connect(
+        m_pWdgtIpcServer, &CWdgtIpcServer::detailsVisibilityChanged,
+        this, &CDlgLogServer::onWdgtIpcServerDetailsVisibilityChanged);
 
     // Log Settings
     //-------------
@@ -159,23 +142,12 @@ CDlgLogServer::CDlgLogServer(
     m_pWdgtLogSettings = new CWdgtLogSettings();
     m_pTabWidget->addTab(m_pWdgtLogSettings, "Log Settings");
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtLogSettings,
-        /* szSignal     */ SIGNAL(accepted()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onLogSettingsAccepted()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtLogSettings,
-        /* szSignal     */ SIGNAL(rejected()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onLogSettingsRejected()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pWdgtLogSettings, &CWdgtLogSettings::accepted,
+        this, &CDlgLogServer::onLogSettingsAccepted);
+    QObject::connect(
+        m_pWdgtLogSettings, &CWdgtLogSettings::rejected,
+        this, &CDlgLogServer::onLogSettingsRejected);
 
     // Assign server to widgets if there is one already defined.
     //----------------------------------------------------------

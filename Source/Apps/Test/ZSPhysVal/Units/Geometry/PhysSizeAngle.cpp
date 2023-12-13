@@ -70,7 +70,7 @@ CPhysSizeAngle::CPhysSizeAngle( CUnitsTreeEntryGrpScienceField* i_pParentBranch 
       /* pPhysSize      */ this,
       /* bIsLogarithmic */ false,
       /* strName        */ "Degree",
-      /* strSymbol      */ QString::fromLatin1("°"),
+      /* strSymbol      */ Math::c_strSymbolDegree,
       /* fMFromSI       */ 180.0/Math::c_fPI ),
     Rad(m_treeEntryRad),
     Degree(m_treeEntryDegree)

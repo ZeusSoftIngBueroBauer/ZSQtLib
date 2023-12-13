@@ -24,23 +24,25 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qglobal.h>
-#include <QtGui/qevent.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtGui/qheaderview.h>
-#include <QtGui/qmenu.h>
-#else
-#include <QtWidgets/qheaderview.h>
-#include <QtWidgets/qmenu.h>
-#endif
-
 #include "ZSTestGUI/ZSTestStepIdxTreeView.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeDelegate.h"
 #include "ZSTestGUI/ZSTestStepIdxTreeModel.h"
 #include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
+
+#include <QtCore/qglobal.h>
+#include <QtGui/qevent.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtGui/qactiongroup.h>
+#include <QtGui/qheaderview.h>
+#include <QtGui/qmenu.h>
+#else
+#include <QtWidgets/qactiongroup.h>
+#include <QtWidgets/qheaderview.h>
+#include <QtWidgets/qmenu.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -106,26 +108,16 @@ CTreeViewIdxTreeTestSteps::CTreeViewIdxTreeTestSteps(
     m_pActionEnableTestGroups = new QAction("Recursively Enable Test Groups",this);
     m_pMenuGroupContext->addAction(m_pActionEnableTestGroups);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionEnableTestGroups,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionEnableTestGroupsTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionEnableTestGroups, &QAction::triggered,
+        this, &CTreeViewIdxTreeTestSteps::onActionEnableTestGroupsTriggered);
 
     m_pActionDisableTestGroups = new QAction("Recursively Disable Test Groups",this);
     m_pMenuGroupContext->addAction(m_pActionDisableTestGroups);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionDisableTestGroups,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionDisableTestGroupsTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionDisableTestGroups, &QAction::triggered,
+        this, &CTreeViewIdxTreeTestSteps::onActionDisableTestGroupsTriggered);
 
     QHeaderView* pHdrView = header();
 
@@ -149,15 +141,10 @@ CTreeViewIdxTreeTestSteps::CTreeViewIdxTreeTestSteps(
     if( pHdrView->sectionsClickable() )
     #endif
     {
-        if( !QObject::connect(
-            /* pObjSender   */ header(),
-            /* szSignal     */ SIGNAL( customContextMenuRequested(const QPoint&) ),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT( onHeaderCustomContextMenuRequested(const QPoint&) ) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( pHdrView->sectionsClickable() )
+        QObject::connect(
+            header(), &QHeaderView::customContextMenuRequested,
+            this, &CTreeViewIdxTreeTestSteps::onHeaderCustomContextMenuRequested);
+    }
 
 } // ctor
 

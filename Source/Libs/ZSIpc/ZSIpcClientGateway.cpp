@@ -350,28 +350,18 @@ CClientGateway::CClientGateway(
     m_pTimerConnect = new QTimer(this);
     m_pTimerConnect->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerConnect,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutConnect()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimerConnect, &QTimer::timeout,
+        this, &CClientGateway::onTimeoutConnect);
 
     // Set the default value for the local host name to the computers name.
     m_socketDscr.m_strLocalHostName = QHostInfo::localHostName();
 
     m_pTimerWatchDog = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerWatchDog,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutWatchDog()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimerWatchDog, &QTimer::timeout,
+        this, &CClientGateway::onTimeoutWatchDog);
 
 } // ctor
 
@@ -1145,7 +1135,7 @@ void CClientGateway::onReadyRead( QObject* i_pSocketWrapper )
 } // onReadyRead
 
 //------------------------------------------------------------------------------
-void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, ZS::System::SErrResultInfo& i_errResultInfo )
+void CClientGateway::onError( QObject* /*i_pSocketWrapper*/, const SErrResultInfo& i_errResultInfo )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -1789,38 +1779,18 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                 {
                                     m_pIpcSocketWrapper->setLocalHostName(m_socketDscr.m_strLocalHostName);
 
-                                    if( !QObject::connect(
-                                        /* pObjSender   */ m_pIpcSocketWrapper,
-                                        /* szSignal     */ SIGNAL(connected(QObject*)),
-                                        /* pObjReceiver */ this,
-                                        /* szSlot       */ SLOT(onConnected(QObject*)) ) )
-                                    {
-                                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                    }
-                                    if( !QObject::connect(
-                                        /* pObjSender   */ m_pIpcSocketWrapper,
-                                        /* szSignal     */ SIGNAL(disconnected(QObject*)),
-                                        /* pObjReceiver */ this,
-                                        /* szSlot       */ SLOT(onDisconnected(QObject*)) ) )
-                                    {
-                                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                    }
-                                    if( !QObject::connect(
-                                        /* pObjSender   */ m_pIpcSocketWrapper,
-                                        /* szSignal     */ SIGNAL(readyRead(QObject*)),
-                                        /* pObjReceiver */ this,
-                                        /* szSlot       */ SLOT(onReadyRead(QObject*)) ) )
-                                    {
-                                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                    }
-                                    if( !QObject::connect(
-                                        /* pObjSender   */ m_pIpcSocketWrapper,
-                                        /* szSignal     */ SIGNAL(error(QObject*,ZS::System::SErrResultInfo&)),
-                                        /* pObjReceiver */ this,
-                                        /* szSlot       */ SLOT(onError(QObject*,ZS::System::SErrResultInfo&)) ) )
-                                    {
-                                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                    }
+                                    QObject::connect(
+                                        m_pIpcSocketWrapper, &CIpcSocketWrapper::connected,
+                                        this, &CClientGateway::onConnected);
+                                    QObject::connect(
+                                        m_pIpcSocketWrapper, &CIpcSocketWrapper::disconnected,
+                                        this, &CClientGateway::onDisconnected);
+                                    QObject::connect(
+                                        m_pIpcSocketWrapper, &CIpcSocketWrapper::readyRead,
+                                        this, &CClientGateway::onReadyRead);
+                                    QObject::connect(
+                                        m_pIpcSocketWrapper, QOverload<QObject*, const SErrResultInfo&>::of(&CIpcSocketWrapper::error),
+                                        this, &CClientGateway::onError);
                                 } // if( m_pIpcSocketWrapper != nullptr )
                             } // if( m_pIpcSocketWrapper == nullptr )
 
@@ -2530,38 +2500,18 @@ bool CClientGateway::event( QEvent* i_pMsg )
                                 {
                                     m_pIpcSocketWrapper->setLocalHostName(m_socketDscr.m_strLocalHostName);
 
-                                    if( !QObject::connect(
-                                        /* pObjSender   */ m_pIpcSocketWrapper,
-                                        /* szSignal     */ SIGNAL(connected(QObject*)),
-                                        /* pObjReceiver */ this,
-                                        /* szSlot       */ SLOT(onConnected(QObject*)) ) )
-                                    {
-                                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                    }
-                                    if( !QObject::connect(
-                                        /* pObjSender   */ m_pIpcSocketWrapper,
-                                        /* szSignal     */ SIGNAL(disconnected(QObject*)),
-                                        /* pObjReceiver */ this,
-                                        /* szSlot       */ SLOT(onDisconnected(QObject*)) ) )
-                                    {
-                                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                    }
-                                    if( !QObject::connect(
-                                        /* pObjSender   */ m_pIpcSocketWrapper,
-                                        /* szSignal     */ SIGNAL(readyRead(QObject*)),
-                                        /* pObjReceiver */ this,
-                                        /* szSlot       */ SLOT(onReadyRead(QObject*)) ) )
-                                    {
-                                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                    }
-                                    if( !QObject::connect(
-                                        /* pObjSender   */ m_pIpcSocketWrapper,
-                                        /* szSignal     */ SIGNAL(error(QObject*,ZS::System::SErrResultInfo&)),
-                                        /* pObjReceiver */ this,
-                                        /* szSlot       */ SLOT(onError(QObject*,ZS::System::SErrResultInfo&)) ) )
-                                    {
-                                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                                    }
+                                    QObject::connect(
+                                        m_pIpcSocketWrapper, &CIpcSocketWrapper::connected,
+                                        this, &CClientGateway::onConnected);
+                                    QObject::connect(
+                                        m_pIpcSocketWrapper, &CIpcSocketWrapper::disconnected,
+                                        this, &CClientGateway::onDisconnected);
+                                    QObject::connect(
+                                        m_pIpcSocketWrapper, &CIpcSocketWrapper::readyRead,
+                                        this, &CClientGateway::onReadyRead);
+                                    QObject::connect(
+                                        m_pIpcSocketWrapper, QOverload<QObject*, const SErrResultInfo&>::of(&CIpcSocketWrapper::error),
+                                        this, &CClientGateway::onError);
                                 } // if( m_pIpcSocketWrapper != nullptr )
                             } // if( m_pIpcSocketWrapper == nullptr )
                         } // if( hostSettingsNew != hostSettingsOld )

@@ -77,8 +77,24 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Creates the test application.
+
+    @note The data referred to by argc and argv must stay valid for the entire
+          lifetime of the QCoreApplication object. In addition, argc must be greater
+          than zero and argv must contain at least one valid character string.
+
+    @note If using the linux distribution of Qt all application constructors
+          must pass argc by reference.
+          Otherwise the application may crash as somehow someone somewhere overwrites
+          the argc variable stored in QCoreApplicationPrivate data.
+
+    @param [in] i_argc
+        Number of arguments passed to the program.
+    @param [in] i_argv
+        Arguments passed to the program.
+*/
 CApplication::CApplication(
-    int            i_argc,
+    int&           i_argc,
     char*          i_argv[],
     const QString& i_strOrganizationName,
     const QString& i_strOrganizationDomain,
@@ -136,14 +152,7 @@ CApplication::CApplication(
     QString     strWindowTitle = i_strWindowTitle;
     QString     strRemoteAppName;
 
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
     QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
 
     parseAppArgs( i_argc, i_argv, strListArgsPar, strListArgsVal );
 
@@ -257,14 +266,9 @@ CApplication::CApplication(
 
     //setQuitOnLastWindowClosed(false);
 
-    //if( !QObject::connect(
-    //    /* pObjSender   */ this,
-    //    /* szSignal     */ SIGNAL(lastWindowClosed()),
-    //    /* pObjReceiver */ this,
-    //    /* szSlot       */ SLOT(onLastWindowClosed()) ) )
-    //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    //}
+    //QObject::connect(
+    //    this, &CApplication::lastWindowClosed,
+    //    this, &CApplication::onLastWindowClosed);
 
     m_pMainWindow = new CMainWindow(strWindowTitle, m_pLogClient);
     m_pMainWindow->show();

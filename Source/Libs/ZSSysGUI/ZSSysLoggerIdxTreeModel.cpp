@@ -643,7 +643,12 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                 {
                     if( pLogger != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( i_varData.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             try
                             {
@@ -661,7 +666,11 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                 {
                     if( pLogger != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.type() == QVariant::Int )
+                        #else
+                        if( i_varData.typeId() == QMetaType::Int )
+                        #endif
                         {
                             try
                             {
@@ -672,7 +681,11 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                             {
                             }
                         }
-                        else if( i_varData.type() == QVariant::String )
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                        if( i_varData.type() == QVariant::String )
+                        #else
+                        if( i_varData.typeId() == QMetaType::QString )
+                        #endif
                         {
                             try
                             {
@@ -690,7 +703,11 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                 {
                     if( pLogger != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.type() == QVariant::String )
+                        #else
+                        if( i_varData.typeId() == QMetaType::QString )
+                        #endif
                         {
                             pLogger->setDataFilter(i_varData.toString());
                         }
@@ -701,7 +718,12 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                 {
                     if( pLogger != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( i_varData.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             pLogger->setAddThreadName(i_varData.toBool());
                         }
@@ -712,7 +734,12 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                 {
                     if( pLogger != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( i_varData.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             pLogger->setAddDateTime(i_varData.toBool());
                         }
@@ -723,7 +750,12 @@ bool CModelIdxTreeLoggers::setData( const QModelIndex& i_modelIdx, const QVarian
                 {
                     if( pLogger != nullptr )
                     {
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( i_varData.canConvert(QVariant::Bool) )
+                        #else
+                        // static_cast to avoid deprecation warning
+                        if( i_varData.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             pLogger->setAddSystemTime(i_varData.toBool());
                         }

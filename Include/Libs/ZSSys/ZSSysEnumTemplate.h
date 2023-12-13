@@ -27,12 +27,12 @@ may result in using the software modules.
 #ifndef ZSSys_EnumTemplate_h
 #define ZSSys_EnumTemplate_h
 
-#include <QtCore/qmutex.h>
-
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrResult.h"
 #include "ZSSys/ZSSysException.h"
+
+#include <QtCore/qmutex.h>
 
 // The static arrays "CEnum<>::s_arEnumEntries" are defined in the cpp file.
 #ifdef _WINDOWS
@@ -154,14 +154,22 @@ public: // class methods
     static E toEnumerator( const QString& i_strName, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk = nullptr );
     static E toEnumerator( const QVariant& i_val, bool* o_pbOk = nullptr );
     static QVariant toValue( E i_enumerator, bool* o_pbOk = nullptr );
-    static QVariant toValue( E i_enumerator, QVariant::Type i_type, bool* o_pbOk = nullptr );
     static QVariant toValue( const QString& i_strName, bool* o_pbOk = nullptr );
-    static QVariant toValue( const QString& i_strName, QVariant::Type i_type, bool* o_pbOk = nullptr );
     static QVariant toValue( const QString& i_strName, int i_idxAlias, bool* o_pbOk = nullptr );
     static QVariant toValue( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk = nullptr );
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    static QVariant toValue( E i_enumerator, QVariant::Type i_type, bool* o_pbOk = nullptr );
+    static QVariant toValue( const QString& i_strName, QVariant::Type i_type, bool* o_pbOk = nullptr );
     static QVariant toValue( const QString& i_strName, QVariant::Type i_type, int i_idxAlias, bool* o_pbOk = nullptr );
     static QVariant toValue( const QString& i_strName, QVariant::Type i_type, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk = nullptr );
     static QVariant toValue( const QString& i_strName, QVariant::Type i_type, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk = nullptr );
+    #else
+    static QVariant toValue( E i_enumerator, QMetaType::Type i_type, bool* o_pbOk = nullptr );
+    static QVariant toValue( const QString& i_strName, QMetaType::Type i_type, bool* o_pbOk = nullptr );
+    static QVariant toValue( const QString& i_strName, QMetaType::Type i_type, int i_idxAlias, bool* o_pbOk = nullptr );
+    static QVariant toValue( const QString& i_strName, QMetaType::Type i_type, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk = nullptr );
+    static QVariant toValue( const QString& i_strName, QMetaType::Type i_type, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk = nullptr );
+    #endif
 public: // class methods
     static CEnum fromString( const QString& i_strName, bool* o_pbOk = nullptr );
     static CEnum fromString( const QString& i_strName, int i_idxAlias, bool* o_pbOk = nullptr );
@@ -227,7 +235,11 @@ public: // instance methods
     int enumeratorAsInt() const;
     bool isValid() const;
     QString toString( int i_idxAlias = ZS::System::EEnumEntryAliasStrName ) const;
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVariant toValue( QVariant::Type i_type = QVariant::Invalid, bool* o_pbOk = nullptr ) const;
+    #else
+    QVariant toValue( QMetaType::Type i_type = QMetaType::UnknownType, bool* o_pbOk = nullptr ) const;
+    #endif
 private: // auxiliary class methods
     static void throwExceptionIfEnumeratorIsInvalid( ZS::System::EResult i_result, int i_iEnumerator, const QString& i_strMth );
 public: // class members
@@ -243,6 +255,12 @@ private: // instance members
 
 }; // template class CEnum
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+template<typename E> QMutex CEnum<E>::s_mtxArMapsStr2Enumerators;
+#else
+template<typename E> QMutex CEnum<E>::s_mtxArMapsStr2Enumerators = QMutex();
+#endif
+template<typename E> QVector<QHash<QString, int>> CEnum<E>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 /*==============================================================================
 public: // class methods
@@ -392,7 +410,11 @@ template <typename E>
 QVariant CEnum<E>::toValue( E i_enumerator, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return toValue(i_enumerator, QVariant::Invalid, o_pbOk);
+    #else
+    return toValue(i_enumerator, QMetaType::UnknownType, o_pbOk);
+    #endif
 }
 
 //------------------------------------------------------------------------------
@@ -409,7 +431,11 @@ QVariant CEnum<E>::toValue( E i_enumerator, bool* o_pbOk )
           - with Result = IdxOutOutOfRange if the enumerator is out of range
 */
 template <typename E>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QVariant CEnum<E>::toValue( E i_enumerator, QVariant::Type i_type, bool* o_pbOk )
+#else
+QVariant CEnum<E>::toValue( E i_enumerator, QMetaType::Type i_type, bool* o_pbOk )
+#endif
 //------------------------------------------------------------------------------
 {
     QString strMth = "toValue(E " + QString::number(static_cast<int>(i_enumerator)) + ")";
@@ -432,7 +458,11 @@ template <typename E>
 QVariant CEnum<E>::toValue( const QString& i_strName, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return toValue(i_strName, QVariant::Invalid, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
+#else
+    return toValue(i_strName, QMetaType::UnknownType, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -449,7 +479,11 @@ QVariant CEnum<E>::toValue( const QString& i_strName, bool* o_pbOk )
     @return Real value of the given enumerator. Invalid if conversion failed.
 */
 template <typename E>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, bool* o_pbOk )
+#else
+QVariant CEnum<E>::toValue( const QString& i_strName, QMetaType::Type i_type, bool* o_pbOk )
+#endif
 //------------------------------------------------------------------------------
 {
     return toValue(i_strName, i_type, ZS::System::EEnumEntryAliasStrUndefined, Qt::CaseSensitive, o_pbOk);
@@ -476,7 +510,11 @@ template <typename E>
 QVariant CEnum<E>::toValue( const QString& i_strName, int i_idxAlias, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return toValue(i_strName, QVariant::Invalid, i_idxAlias, Qt::CaseSensitive, o_pbOk);
+#else
+    return toValue(i_strName, QMetaType::UnknownType, i_idxAlias, Qt::CaseSensitive, o_pbOk);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -495,7 +533,11 @@ template <typename E>
 QVariant CEnum<E>::toValue( const QString& i_strName, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     return toValue(i_strName, QVariant::Invalid, ZS::System::EEnumEntryAliasStrUndefined, i_caseSensitivity, o_pbOk);
+#else
+    return toValue(i_strName, QMetaType::UnknownType, ZS::System::EEnumEntryAliasStrUndefined, i_caseSensitivity, o_pbOk);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -518,7 +560,11 @@ QVariant CEnum<E>::toValue( const QString& i_strName, Qt::CaseSensitivity i_case
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, int i_idxAlias, bool* o_pbOk )
+#else
+QVariant CEnum<E>::toValue( const QString& i_strName, QMetaType::Type i_type, int i_idxAlias, bool* o_pbOk )
+#endif
 //------------------------------------------------------------------------------
 {
     return toValue(i_strName, i_type, i_idxAlias, Qt::CaseSensitive, o_pbOk);
@@ -537,7 +583,11 @@ QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, int
     @return Real value of the given enumerator. Invalid if conversion failed.
 */
 template <typename E>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
+#else
+QVariant CEnum<E>::toValue( const QString& i_strName, QMetaType::Type i_type, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
+#endif
 //------------------------------------------------------------------------------
 {
     return toValue(i_strName, i_type, ZS::System::EEnumEntryAliasStrUndefined, i_caseSensitivity, o_pbOk);
@@ -563,7 +613,11 @@ QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, Qt:
           - with Result = ArgOutOfRange if the alias is out of range.
 */
 template <typename E>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QVariant CEnum<E>::toValue( const QString& i_strName, QVariant::Type i_type, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
+#else
+QVariant CEnum<E>::toValue( const QString& i_strName, QMetaType::Type i_type, int i_idxAlias, Qt::CaseSensitivity i_caseSensitivity, bool* o_pbOk )
+#endif
 //------------------------------------------------------------------------------
 {
     if( s_armapsStr2Enumerators.size() == 0 ) // Use mutex only if maps are not yet initialized.
@@ -1771,7 +1825,11 @@ QString CEnum<E>::toString( int i_idxAlias ) const
           - with Result = InvalidMethodCall if the enumerator of this enum instance is out of range
 */
 template <typename E>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 QVariant CEnum<E>::toValue( QVariant::Type i_type, bool* o_pbOk ) const
+#else
+QVariant CEnum<E>::toValue( QMetaType::Type i_type, bool* o_pbOk ) const
+#endif
 //------------------------------------------------------------------------------
 {
     QString strMth = QString::number(static_cast<int>(m_enumerator)) + ".toString";

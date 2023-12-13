@@ -371,14 +371,9 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLytBtns->addWidget(m_pBtnOk);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnOk,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnOkClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnOk, &QPushButton::clicked,
+        this, &CWdgtTrcSettings::onBtnOkClicked);
 
     // <Button> Cancel
     //----------------
@@ -388,14 +383,9 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLytBtns->addWidget(m_pBtnCancel);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnCancel,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnCancel, &QPushButton::clicked,
+        this, &CWdgtTrcSettings::onBtnCancelClicked);
 
     // <Button> Reset
     //---------------
@@ -405,14 +395,9 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pLytBtns->addWidget(m_pBtnReset);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnReset,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnResetClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnReset, &QPushButton::clicked,
+        this, &CWdgtTrcSettings::onBtnResetClicked);
 
     // <Button> Apply
     //---------------
@@ -421,14 +406,9 @@ CWdgtTrcSettings::CWdgtTrcSettings( const QString& i_strObjName, QWidget* i_pWdg
     m_pBtnApply->setFixedWidth(cxBtnWidth);
     m_pLytBtns->addWidget(m_pBtnApply);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnApply,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnApply, &QPushButton::clicked,
+        this, &CWdgtTrcSettings::onBtnApplyClicked);
 
     // <Stretch> at right side of buttons
     //-----------------------------------
@@ -506,20 +486,14 @@ void CWdgtTrcSettings::setServer( CIpcTrcServer* i_pTrcServer )
     if( m_pTrcClient != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(connected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientConnected(QObject*)) );
+            m_pTrcClient, &CIpcTrcClient::connected,
+            this, &CWdgtTrcSettings::onIpcClientConnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(disconnected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientDisconnected(QObject*)) );
+            m_pTrcClient, &CIpcTrcClient::disconnected,
+            this, &CWdgtTrcSettings::onIpcClientDisconnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
+            m_pTrcClient, &CIpcTrcClient::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
 
         m_pTrcClient = nullptr;
 
@@ -530,10 +504,8 @@ void CWdgtTrcSettings::setServer( CIpcTrcServer* i_pTrcServer )
     if( m_pTrcServer != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
+            m_pTrcServer, &CIpcTrcServer::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
 
         m_pTrcServer = nullptr;
 
@@ -550,14 +522,9 @@ void CWdgtTrcSettings::setServer( CIpcTrcServer* i_pTrcServer )
 
         onTraceSettingsChanged(m_pTrcServer);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTrcServer, &CIpcTrcServer::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
 
         connectGuiControlsOnValueChangedSignals();
         enableGuiControls(true);
@@ -572,10 +539,8 @@ void CWdgtTrcSettings::setClient( CIpcTrcClient* i_pTrcClient )
     if( m_pTrcServer != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
+            m_pTrcServer, &CIpcTrcServer::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
 
         m_pTrcServer = nullptr;
 
@@ -586,20 +551,14 @@ void CWdgtTrcSettings::setClient( CIpcTrcClient* i_pTrcClient )
     if( m_pTrcClient != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(connected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientConnected(QObject*)) );
+            m_pTrcClient, &CIpcTrcClient::connected,
+            this, &CWdgtTrcSettings::onIpcClientConnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(disconnected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientDisconnected(QObject*)) );
+            m_pTrcClient, &CIpcTrcClient::disconnected,
+            this, &CWdgtTrcSettings::onIpcClientDisconnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
+            m_pTrcClient, &CIpcTrcClient::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
 
         m_pTrcClient = nullptr;
 
@@ -613,30 +572,15 @@ void CWdgtTrcSettings::setClient( CIpcTrcClient* i_pTrcClient )
     {
         onTraceSettingsChanged(m_pTrcClient);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(connected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientConnected(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(disconnected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onIpcClientDisconnected(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTrcClient, &CIpcTrcClient::connected,
+            this, &CWdgtTrcSettings::onIpcClientConnected);
+        QObject::connect(
+            m_pTrcClient, &CIpcTrcClient::disconnected,
+            this, &CWdgtTrcSettings::onIpcClientDisconnected);
+        QObject::connect(
+            m_pTrcClient, &CIpcTrcClient::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
 
         // GUI controls will be enabled if the trace client connects with the server.
         if( m_pTrcClient->isConnected() )
@@ -709,40 +653,26 @@ void CWdgtTrcSettings::applyChanges()
     if( m_pTrcServer != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
+            m_pTrcServer, &CIpcTrcServer::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
 
         m_pTrcServer->setTraceSettings(trcSettings);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcServer,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTrcServer, &CIpcTrcServer::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
     }
     else if( m_pTrcClient != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) );
+            m_pTrcClient, &CIpcTrcClient::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
 
         m_pTrcClient->setTraceSettings(trcSettings);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pTrcClient,
-            /* szSignal     */ SIGNAL(traceSettingsChanged(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTraceSettingsChanged(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pTrcClient, &CIpcTrcClient::traceSettingsChanged,
+            this, &CWdgtTrcSettings::onTraceSettingsChanged);
     }
 
     bool bHasChanges = hasChanges();
@@ -782,102 +712,42 @@ void CWdgtTrcSettings::enableGuiControls( bool i_bEnabled )
 void CWdgtTrcSettings::connectGuiControlsOnValueChangedSignals()
 //------------------------------------------------------------------------------
 {
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkTracingEnabled,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkTracingEnabledToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkNewTrcAdminObjsEnabledAsDefault,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkNewTrcAdminObjsEnabledAsDefaultToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel,
-        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbNewTrcAdminObjsMethodCallsDefaultDetailLevelCurrentIndexChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel,
-        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkUseIpcServer,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseIpcServerToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkCacheDataIfNotConnected,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkUseLocalTrcFile,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseLocalTrcFileToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtLocalTrcFileAutoSaveInterval,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileAutoSaveIntervalValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtLocalTrcFileSubFileCountMax,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileSubFileCountMaxValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtLocalTrcFileSubFileLineCountMax,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileSubFileLineCountMaxValueChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pChkLocalTrcFileCloseFileAfterEachWrite,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkLocalTrcFileCloseFileAfterEachWriteToggled(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pChkTracingEnabled, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkTracingEnabledToggled);
+    QObject::connect(
+        m_pChkNewTrcAdminObjsEnabledAsDefault, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkNewTrcAdminObjsEnabledAsDefaultToggled);
+    QObject::connect(
+        m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &CWdgtTrcSettings::onCmbNewTrcAdminObjsMethodCallsDefaultDetailLevelCurrentIndexChanged);
+    QObject::connect(
+        m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &CWdgtTrcSettings::onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged);
+    QObject::connect(
+        m_pChkUseIpcServer, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkUseIpcServerToggled);
+    QObject::connect(
+        m_pChkCacheDataIfNotConnected, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkCacheDataIfNotConnectedToggled);
+    QObject::connect(
+        m_pEdtCacheDataMaxArrLen, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CWdgtTrcSettings::onEdtCacheDataMaxArrLenValueChanged);
+    QObject::connect(
+        m_pChkUseLocalTrcFile, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkUseLocalTrcFileToggled);
+    QObject::connect(
+        m_pEdtLocalTrcFileAutoSaveInterval, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CWdgtTrcSettings::onEdtLocalTrcFileAutoSaveIntervalValueChanged);
+    QObject::connect(
+        m_pEdtLocalTrcFileSubFileCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CWdgtTrcSettings::onEdtLocalTrcFileSubFileCountMaxValueChanged);
+    QObject::connect(
+        m_pEdtLocalTrcFileSubFileLineCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CWdgtTrcSettings::onEdtLocalTrcFileSubFileLineCountMaxValueChanged);
+    QObject::connect(
+        m_pChkLocalTrcFileCloseFileAfterEachWrite, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkLocalTrcFileCloseFileAfterEachWriteToggled);
 }
 
 //------------------------------------------------------------------------------
@@ -885,65 +755,41 @@ void CWdgtTrcSettings::disconnectGuiControlsOnValueChangedSignals()
 //------------------------------------------------------------------------------
 {
     QObject::disconnect(
-        /* pObjSender   */ m_pChkTracingEnabled,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkTracingEnabledToggled(bool)) );
+        m_pChkTracingEnabled, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkTracingEnabledToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkNewTrcAdminObjsEnabledAsDefault,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkNewTrcAdminObjsEnabledAsDefaultToggled(bool)) );
+        m_pChkNewTrcAdminObjsEnabledAsDefault, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkNewTrcAdminObjsEnabledAsDefaultToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel,
-        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbNewTrcAdminObjsDefaultMethodCallsDetailLevelCurrentIndexChanged(int)) );
+        m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &CWdgtTrcSettings::onCmbNewTrcAdminObjsMethodCallsDefaultDetailLevelCurrentIndexChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel,
-        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged(int)) );
+        m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &CWdgtTrcSettings::onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkUseIpcServer,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseIpcServerToggled(bool)) );
+        m_pChkUseIpcServer, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkUseIpcServerToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkCacheDataIfNotConnected,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkCacheDataIfNotConnectedToggled(bool)) );
+        m_pChkCacheDataIfNotConnected, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkCacheDataIfNotConnectedToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtCacheDataMaxArrLen,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtCacheDataMaxArrLenValueChanged(int)) );
+        m_pEdtCacheDataMaxArrLen, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CWdgtTrcSettings::onEdtCacheDataMaxArrLenValueChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkUseLocalTrcFile,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkUseLocalTrcFileToggled(bool)) );
+        m_pChkUseLocalTrcFile, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkUseLocalTrcFileToggled);
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtLocalTrcFileAutoSaveInterval,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileAutoSaveIntervalValueChanged(int)) );
+        m_pEdtLocalTrcFileAutoSaveInterval, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CWdgtTrcSettings::onEdtLocalTrcFileAutoSaveIntervalValueChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtLocalTrcFileSubFileCountMax,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileSubFileCountMaxValueChanged(int)) );
+        m_pEdtLocalTrcFileSubFileCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CWdgtTrcSettings::onEdtLocalTrcFileSubFileCountMaxValueChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pEdtLocalTrcFileSubFileLineCountMax,
-        /* szSignal     */ SIGNAL(valueChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalTrcFileSubFileLineCountMaxValueChanged(int)) );
+        m_pEdtLocalTrcFileSubFileLineCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
+        this, &CWdgtTrcSettings::onEdtLocalTrcFileSubFileLineCountMaxValueChanged);
     QObject::disconnect(
-        /* pObjSender   */ m_pChkLocalTrcFileCloseFileAfterEachWrite,
-        /* szSignal     */ SIGNAL(toggled(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onChkLocalTrcFileCloseFileAfterEachWriteToggled(bool)) );
+        m_pChkLocalTrcFileCloseFileAfterEachWrite, &QCheckBox::toggled,
+        this, &CWdgtTrcSettings::onChkLocalTrcFileCloseFileAfterEachWriteToggled);
 }
 
 /*==============================================================================

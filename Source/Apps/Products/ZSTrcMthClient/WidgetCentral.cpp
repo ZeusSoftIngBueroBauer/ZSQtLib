@@ -87,14 +87,9 @@ CWidgetCentral::CWidgetCentral(
     m_pWdgtMthList = new CWdgtTrcMthList(i_pTrcClient);
     m_pLyt->addWidget(m_pWdgtMthList);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtMthList,
-        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onProgressBarConnectDblClicked()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pWdgtMthList, &CWdgtTrcMthList::progressBarConnectDblClicked,
+        this, &CWidgetCentral::onProgressBarConnectDblClicked);
 
 } // ctor
 

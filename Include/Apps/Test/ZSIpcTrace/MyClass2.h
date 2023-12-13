@@ -39,6 +39,7 @@ namespace ZS
 namespace System
 {
 class CMutex;
+class CRecursiveMutex;
 class CWaitCondition;
 class CTrcAdminObj;
 }
@@ -131,17 +132,17 @@ protected slots:
 protected: // overridables of base class QObject
     virtual bool event( QEvent* i_pEv ) override;
 private: // instance members
-    CMyClass2Thread*            m_pMyClass2Thread;
-    QTimer*                     m_pTmrMessages;
-    ZS::System::CMutex*         m_pMtxCounters;
-    int                         m_iRecursionCount;
-    int                         m_iMsgCount;
-    QString                     m_strMyClass3ObjName;
-    CMyClass3Thread*            m_pMyClass3Thread;
-    CMyClass3*                  m_pMyClass3;
-    ZS::System::CMutex*         m_pMtxWaitClass3ThreadRunning;
-    ZS::System::CWaitCondition* m_pWaitClass3ThreadRunning;
-    ZS::System::CTrcAdminObj*   m_pTrcAdminObj;
+    CMyClass2Thread*             m_pMyClass2Thread;
+    QTimer*                      m_pTmrMessages;
+    ZS::System::CRecursiveMutex* m_pMtxCounters;
+    int                          m_iRecursionCount;
+    int                          m_iMsgCount;
+    QString                      m_strMyClass3ObjName;
+    CMyClass3Thread*             m_pMyClass3Thread;
+    CMyClass3*                   m_pMyClass3;
+    ZS::System::CMutex*          m_pMtxWaitClass3ThreadRunning;
+    ZS::System::CWaitCondition*  m_pWaitClass3ThreadRunning;
+    ZS::System::CTrcAdminObj*    m_pTrcAdminObj;
 
 }; // class CMyClass2
 

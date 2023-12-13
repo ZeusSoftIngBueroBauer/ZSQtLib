@@ -87,14 +87,9 @@ CWidgetCentral::CWidgetCentral(
     m_pWdgtLog = new CWdgtLog(i_pLogClient);
     m_pLyt->addWidget(m_pWdgtLog);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pWdgtLog,
-        /* szSignal     */ SIGNAL(progressBarConnectDblClicked()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onProgressBarConnectDblClicked()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pWdgtLog, &CWdgtLog::progressBarConnectDblClicked,
+        this, &CWidgetCentral::onProgressBarConnectDblClicked);
 
 } // ctor
 

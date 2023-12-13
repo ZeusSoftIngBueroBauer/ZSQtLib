@@ -143,28 +143,18 @@ CMainWindow::CMainWindow(
 
     if( pTrcServer != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ pTrcServer->getIpcServer(),
-            /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTrcServerStateChanged(QObject*,int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            pTrcServer->getIpcServer(), &ZS::Ipc::CServer::stateChanged,
+            this, &CMainWindow::onTrcServerStateChanged);
     }
 
     CIpcTrcClient* pTrcClient = CApplication::GetInstance()->getTrcClient();
 
     if( pTrcClient != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ pTrcClient,
-            /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onTrcClientStateChanged(QObject*,int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            pTrcClient, &CIpcTrcClient::stateChanged,
+            this, &CMainWindow::onTrcClientStateChanged);
     }
 
     // <Menu> File
@@ -189,7 +179,9 @@ CMainWindow::CMainWindow(
     m_pActFileQuit = new QAction("&Quit",this);
     m_pMnuFile->addAction(m_pActFileQuit);
 
-    QObject::connect(m_pActFileQuit, &QAction::triggered, qApp, &QApplication::quit);
+    QObject::connect(
+        m_pActFileQuit, &QAction::triggered,
+        qApp, &QApplication::quit);
 
     // <Menu> Debug
     //=============

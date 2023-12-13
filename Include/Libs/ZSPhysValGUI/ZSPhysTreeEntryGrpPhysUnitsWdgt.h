@@ -65,7 +65,7 @@ public: // overridables of base class CWdgtAbstractTreeEntry
 protected slots:
     void onBtnTableViewRefValsResizeToContentsClicked( bool i_bChecked );
     void onBtnTableViewUnitsGrpResizeToContentsClicked( bool i_bChecked );
-    void onCmbViewModeCurrentIndexChanged( const QString& i_strCurrentText );
+    void onCmbViewModeCurrentIndexChanged( int i_idx );
 protected: // instance methods
     void updateTableView();
 protected: // instance members

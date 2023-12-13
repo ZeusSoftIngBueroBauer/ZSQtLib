@@ -107,22 +107,17 @@ a remote server.
 0.  Provide the following instance member variables to handle the requests
     in progress.
 
-    CRequest*           m_pReqInProgress;   // Request item of the request started by this class.
-    int                     m_iReqIdPending;        // Unique id (key) of the child request item started by calling a request method of another class.
-    CClient::ERequest       m_requestPending;       // Enum value to identify the kind of the started child request (e.g. ERequestChangeSettings).
+    CRequest* m_pReqInProgress;         // Request item of the request started by this class.
+    int m_iReqIdPending;                // Unique id (key) of the child request item started by calling a request method of another class.
+    CClient::ERequest m_requestPending; // Enum value to identify the kind of the started child request (e.g. ERequestChangeSettings).
 
 1.  First connect a "onClientRequestExecuted" slot with the "requestExecuted"
     signal of the client. Usually this has already been done within the ctor
     of the widget hosting the "Connect" button.
 
-    if( !QObject::connect(
-        |* pObjSender   *| m_pClient,
-        |* szSignal     *| SIGNAL(requestExecuted(QObject*,int,int,int,ZS::System::SErrResultInfo&,void*)),
-        |* pObjReceiver *| this,
-        |* szSlot       *| SLOT(onIpcClientRequestExecuted(QObject*,int,int,int,ZS::System::SErrResultInfo&,void*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pClient, &CClient::requestExecuted,
+        this, &MyClass::onIpcClientRequestExecuted);
 
 2.  Create a top request item for the connect request within the
     "onButtonClicked" slot method.
@@ -177,22 +172,12 @@ a remote server.
 
         // Connect to the destroying signals of the created request items to
         // get informed if the request should be aborted.
-        if( !QObject::connect(
-            * pObjSender   * m_pReqInProgress,
-            * szSignal     * SIGNAL(destroying(ZS::System::CRequest*,int,int,int,const ZS::System::SErrResultInfo&)),
-            * pObjReceiver * this,
-            * szSlot       * SLOT(onRequestDestroying(ZS::System::CRequest*,int,int,int,const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            * pObjSender   * pReqPending,
-            * szSignal     * SIGNAL(destroying(ZS::System::CRequest*,int,int,int,const ZS::System::SErrResultInfo&)),
-            * pObjReceiver * this,
-            * szSlot       * SLOT(onRequestDestroying(ZS::System::CRequest*,int,int,int,const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pReqInProgress, &CRequest::destroying,
+            this, &MyClass::onRequestDestroying);
+        QObject::connect(
+            pReqPending, &CRequest::destroying,
+            this, &MyClass::onRequestDestroying);
     }
 
 6.  Within the "onClientRequestExecuted" slot check whether the request has been

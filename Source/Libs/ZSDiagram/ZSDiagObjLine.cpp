@@ -127,7 +127,7 @@ QColor CDiagObjLine::getCol() const
     if( m_pLineStyle )
         return( m_pLineStyle->getCol() );
     else
-        return( Qt::black );  // Es muss auf jeden Fall ein Wert zurückgegeben werden, der else-Zweig sollte aber nie aufgerufen werden
+        return( Qt::black );
 }
 
 //------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ double CDiagObjLine::getX1( ECoordinatesUnit i_pointType ) const
     else if( i_pointType == ECoordinatesUnitPixel && m_eX1 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleAxis::X)] )
         return( m_fX1 );
     else
-        return( 0.0 );  // Jeder Zweig muss einen Rückgabewert haben
+        return( 0.0 );
 }
 
 //------------------------------------------------------------------------------
@@ -177,7 +177,7 @@ double CDiagObjLine::getY1( ECoordinatesUnit i_pointType ) const
     else if( i_pointType == ECoordinatesUnitPixel && m_eY1 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleAxis::Y)] )
         return( m_fY1 );
     else
-        return( 0.0 );  // Jeder Zweig muss einen Rückgabewert haben
+        return( 0.0 );
 }
 
 //------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ double CDiagObjLine::getX2( ECoordinatesUnit i_pointType ) const
     else if( i_pointType == ECoordinatesUnitPixel && m_eX2 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleAxis::X)] )
         return( m_fX2 );
     else
-        return( 0.0 );  // Jeder Zweig muss einen Rückgabewert haben
+        return( 0.0 );
 }
 
 //------------------------------------------------------------------------------
@@ -227,7 +227,7 @@ double CDiagObjLine::getY2( ECoordinatesUnit i_pointType ) const
     else if( i_pointType == ECoordinatesUnitPixel && m_eY2 == ECoordinatesUnitPixel && m_arpDiagScale[static_cast<int>(EScaleAxis::Y)] )
         return( m_fY2 );
     else
-        return( 0.0 );  // Jeder Zweig muss einen Rückgabewert haben
+        return( 0.0 );
 }
 
 //------------------------------------------------------------------------------

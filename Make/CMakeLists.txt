@@ -277,9 +277,27 @@ message(STATUS "CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE: ${CMAKE_ARCHIVE_OUTPUT_D
 message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG:   ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG}")
 message(STATUS "CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 
-if(NOT QT_VERSION_MAJOR)
-    set(QT_VERSION_MAJOR 5)
+set(QT_MINIMUM_VERSION 5.15.4)
+find_program(QMAKE_EXECUTABLE NAMES qmake HINTS ${QTDIR} ENV QTDIR PATH_SUFFIXES bin)
+execute_process(COMMAND ${QMAKE_EXECUTABLE} -query QT_VERSION OUTPUT_VARIABLE QT_VERSION)
+message(STATUS "")
+message(STATUS "QT_VERSION:                         ${QT_VERSION}")
+message(STATUS "")
+if(QT_VERSION LESS QT_MINIMUM_VERSION)
+    MESSAGE(FATAL_ERROR "Minimum supported Qt version: ${QT_MINIMUM_VERSION}.
+    Installed version: ${QT_VERSION}")
 endif()
+string(REPLACE "." ";" QT_VERSION_LIST ${QT_VERSION})
+
+list(LENGTH QT_VERSION_LIST versionInfoListLen)
+# Abort CMake if version info does not follow the expected format with 3 sections separated by '-'.
+if (NOT versionInfoListLen EQUAL 3)
+    message(FATAL_ERROR "Detected QT_VERSION ${QT_VERSION} has wrong format")
+endif()
+list(GET QT_VERSION_LIST 0 QT_VERSION_MAJOR)
+list(GET QT_VERSION_LIST 1 QT_VERSION_MINOR)
+list(GET QT_VERSION_LIST 2 QT_VERSION_PATCH)
+
 message(STATUS "")
 message(STATUS "---------------------------------------------------------------------------------------------")
 message(STATUS "Find Package Qt ${QT_VERSION_MAJOR}")

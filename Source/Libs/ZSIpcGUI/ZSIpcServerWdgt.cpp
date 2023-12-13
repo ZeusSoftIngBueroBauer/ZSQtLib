@@ -260,14 +260,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pCmbSocketType->setEnabled(false);
     m_pLytCnct->addRow( m_pLblSocketType, m_pCmbSocketType );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pCmbSocketType,
-        /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onCmbSocketTypeCurrentIndexChanged(int)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
 
     // <LineEdit> Local Host Name
     //-----------------------------
@@ -297,14 +292,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pEdtLocalPort->setValidator( new QIntValidator(1,65535,this) );
     m_pLytCnct->addRow( m_pLblLocalPort, m_pEdtLocalPort );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtLocalPort,
-        /* szSignal     */ SIGNAL(textChanged(const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtLocalPortTextChanged(const QString&)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdtLocalPort, &QLineEdit::textChanged,
+        this, &CWdgtIpcServer::onEdtLocalPortTextChanged);
 
     // <LineEdit> Max Pending Connections
     //-----------------------------------
@@ -316,14 +306,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pEdtMaxPendingConnections->setValidator( new QIntValidator(1,65535,this) );
     m_pLytCnct->addRow( m_pLblMaxPendingConnections, m_pEdtMaxPendingConnections );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtMaxPendingConnections,
-        /* szSignal     */ SIGNAL(textChanged(const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtMaxPendingConnectionsTextChanged(const QString&)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdtMaxPendingConnections, &QLineEdit::textChanged,
+        this, &CWdgtIpcServer::onEdtMaxPendingConnectionsTextChanged);
 
     // <LineEdit> Buffer Size (for shared memory socket connections)
     //--------------------------------------------------------------
@@ -334,14 +319,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pEdtBufferSize_bytes->setEnabled(false);
     m_pLytCnct->addRow( m_pLblBufferSize_bytes, m_pEdtBufferSize_bytes );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pEdtBufferSize_bytes,
-        /* szSignal     */ SIGNAL(textChanged(const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onEdtBufferSizeTextChanged(const QString&)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pEdtBufferSize_bytes, &QLineEdit::textChanged,
+        this, &CWdgtIpcServer::onEdtBufferSizeTextChanged);
 
     // <Separator>
     //-------------
@@ -370,14 +350,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pLytBtns->addWidget(m_pBtnOk);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnOk,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnOkClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnOk, &QPushButton::clicked,
+        this, &CWdgtIpcServer::onBtnOkClicked);
 
     // <Button> Cancel
     //----------------
@@ -387,14 +362,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pLytBtns->addWidget(m_pBtnCancel);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnCancel,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnCancelClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnCancel, &QPushButton::clicked,
+        this, &CWdgtIpcServer::onBtnCancelClicked);
 
     // <Button> Reset
     //---------------
@@ -405,14 +375,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pLytBtns->addWidget(m_pBtnReset);
     m_pLytBtns->addSpacing(cxBtnSpacing);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnReset,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnResetClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnReset, &QPushButton::clicked,
+        this, &CWdgtIpcServer::onBtnResetClicked);
 
     // <Button> Apply
     //---------------
@@ -422,14 +387,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pBtnApply->setEnabled(false);
     m_pLytBtns->addWidget(m_pBtnApply);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnApply,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnApplyClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnApply, &QPushButton::clicked,
+        this, &CWdgtIpcServer::onBtnApplyClicked);
 
     // <Button> Startup/Shutdown/Abort
     //----------------------------------
@@ -439,14 +399,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pBtnStartup->setEnabled(false);
     m_pLytBtns->addWidget(m_pBtnStartup);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnStartup,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnStartupClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnStartup, &QPushButton::clicked,
+        this, &CWdgtIpcServer::onBtnStartupClicked);
 
     // <Stretch> at right side of buttons
     //-----------------------------------
@@ -482,14 +437,9 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pBtnDetails->setFixedWidth(m_iLblWidth);
     m_pLytDetails->addWidget(m_pBtnDetails);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pBtnDetails,
-        /* szSignal     */ SIGNAL(clicked(bool)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onBtnDetailsClicked(bool)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pBtnDetails, &QPushButton::clicked,
+        this, &CWdgtIpcServer::onBtnDetailsClicked);
 
     // <Widget> Details
     //-----------------
@@ -629,34 +579,20 @@ void CWdgtIpcServer::setServer( CServer* i_pServer )
             //------------------------------
 
             QObject::disconnect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(connected(QObject*,const ZS::Ipc::SSocketDscr&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerConnected(QObject*,const ZS::Ipc::SSocketDscr&)) );
-
+                m_pServer, &CServer::connected,
+                this, &CWdgtIpcServer::onIpcServerConnected);
             QObject::disconnect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(disconnected(QObject*,const ZS::Ipc::SSocketDscr&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerDisconnected(QObject*,const ZS::Ipc::SSocketDscr&)) );
-
+                m_pServer, &CServer::disconnected,
+                this, &CWdgtIpcServer::onIpcServerDisconnected);
             QObject::disconnect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(settingsChanged(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerSettingsChanged(QObject*)) );
-
+                m_pServer, &CServer::settingsChanged,
+                this, &CWdgtIpcServer::onIpcServerSettingsChanged);
             QObject::disconnect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerStateChanged(QObject*,int)) );
-
+                m_pServer, &CServer::stateChanged,
+                this, &CWdgtIpcServer::onIpcServerStateChanged);
             QObject::disconnect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(requestInProgressChanged(QObject*,ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerRequestInProgressChanged(QObject*,ZS::System::SRequestDscr)) );
+                m_pServer, &CServer::requestInProgressChanged,
+                this, &CWdgtIpcServer::onIpcServerRequestInProgressChanged);
 
             resetCnctControls();
 
@@ -676,50 +612,21 @@ void CWdgtIpcServer::setServer( CServer* i_pServer )
             // <Signals/Slots> of connection
             //------------------------------
 
-            if( !QObject::connect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(connected(QObject*,const ZS::Ipc::SSocketDscr&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerConnected(QObject*,const ZS::Ipc::SSocketDscr&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-
-            if( !QObject::connect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(disconnected(QObject*,const ZS::Ipc::SSocketDscr&)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerDisconnected(QObject*,const ZS::Ipc::SSocketDscr&)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-
-            if( !QObject::connect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(settingsChanged(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerSettingsChanged(QObject*)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-
-            if( !QObject::connect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(stateChanged(QObject*,int)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerStateChanged(QObject*,int)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-
-            if( !QObject::connect(
-                /* pObjSender   */ m_pServer,
-                /* szSignal     */ SIGNAL(requestInProgressChanged(QObject*,ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onIpcServerRequestInProgressChanged(QObject*,ZS::System::SRequestDscr)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pServer, &CServer::connected,
+                this, &CWdgtIpcServer::onIpcServerConnected);
+            QObject::connect(
+                m_pServer, &CServer::disconnected,
+                this, &CWdgtIpcServer::onIpcServerDisconnected);
+            QObject::connect(
+                m_pServer, &CServer::settingsChanged,
+                this, &CWdgtIpcServer::onIpcServerSettingsChanged);
+            QObject::connect(
+                m_pServer, &CServer::stateChanged,
+                this, &CWdgtIpcServer::onIpcServerStateChanged);
+            QObject::connect(
+                m_pServer, &CServer::requestInProgressChanged,
+                this, &CWdgtIpcServer::onIpcServerRequestInProgressChanged);
 
             // Read current settings
             //----------------------
@@ -2185,25 +2092,18 @@ void CWdgtIpcServer::resetCnctControls()
     if( m_pLblSocketType != nullptr && m_pCmbSocketType != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pCmbSocketType,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbSocketTypeCurrentIndexChanged(int)) );
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
 
         m_pCmbSocketType->clear();
         m_pCmbSocketType->setEnabled(false);
         m_pCmbSocketType->show();
         m_pLblSocketType->show();
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pCmbSocketType,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbSocketTypeCurrentIndexChanged(int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pLblSocketType != nullptr && m_pCmbSocketType != nullptr )
+        QObject::connect(
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
+    }
 
     // <LineEdit> Remote Host IP Address
     //----------------------------------
@@ -2213,8 +2113,7 @@ void CWdgtIpcServer::resetCnctControls()
         m_pEdtLocalHostAddr->setText("");
         m_pEdtLocalHostAddr->show();
         m_pLblLocalHostAddr->show();
-
-    } // if( m_pLblLocalHostAddr != nullptr && m_pEdtLocalHostAddr != nullptr )
+    }
 
     // <LineEdit> Remote Host Port
     //----------------------------
@@ -2222,10 +2121,8 @@ void CWdgtIpcServer::resetCnctControls()
     if( m_pLblLocalPort != nullptr && m_pEdtLocalPort != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pEdtLocalPort,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtLocalPortTextChanged(const QString&)) );
+            m_pEdtLocalPort, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtLocalPortTextChanged);
 
         m_pEdtLocalPort->setValidator(nullptr);
         m_pEdtLocalPort->setText("");
@@ -2233,15 +2130,10 @@ void CWdgtIpcServer::resetCnctControls()
         m_pEdtLocalPort->show();
         m_pLblLocalPort->show();
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pEdtLocalPort,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtLocalPortTextChanged(const QString&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pLblLocalPort != nullptr && m_pEdtLocalPort != nullptr )
+        QObject::connect(
+            m_pEdtLocalPort, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtLocalPortTextChanged);
+    }
 
     // <LineEdit> Max Pending Connections
     //-----------------------------------
@@ -2249,10 +2141,8 @@ void CWdgtIpcServer::resetCnctControls()
     if( m_pLblMaxPendingConnections != nullptr && m_pEdtMaxPendingConnections != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pEdtMaxPendingConnections,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtMaxPendingConnectionsTextChanged(const QString&)) );
+            m_pEdtMaxPendingConnections, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtMaxPendingConnectionsTextChanged);
 
         m_pEdtMaxPendingConnections->setValidator(nullptr);
         m_pEdtMaxPendingConnections->setText("");
@@ -2260,15 +2150,10 @@ void CWdgtIpcServer::resetCnctControls()
         m_pEdtMaxPendingConnections->show();
         m_pLblMaxPendingConnections->show();
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pEdtMaxPendingConnections,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtMaxPendingConnectionsTextChanged(const QString&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pLblMaxPendingConnections != nullptr && m_pEdtMaxPendingConnections != nullptr )
+        QObject::connect(
+            m_pEdtMaxPendingConnections, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtMaxPendingConnectionsTextChanged);
+    }
 
     // <LineEdit> Buffer Size (for shared memory socket connections)
     //--------------------------------------------------------------
@@ -2276,10 +2161,8 @@ void CWdgtIpcServer::resetCnctControls()
     if( m_pLblBufferSize_bytes != nullptr && m_pEdtBufferSize_bytes != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pEdtBufferSize_bytes,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtBufferSizeTextChanged(const QString&)) );
+            m_pEdtBufferSize_bytes, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtBufferSizeTextChanged);
 
         m_pEdtBufferSize_bytes->setValidator(nullptr);
         m_pEdtBufferSize_bytes->setText("");
@@ -2287,15 +2170,10 @@ void CWdgtIpcServer::resetCnctControls()
         m_pEdtBufferSize_bytes->show();
         m_pLblBufferSize_bytes->show();
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pEdtBufferSize_bytes,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtBufferSizeTextChanged(const QString&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pLblBufferSize_bytes != nullptr && m_pEdtBufferSize_bytes != nullptr )
+        QObject::connect(
+            m_pEdtBufferSize_bytes, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtBufferSizeTextChanged);
+    }
 
     // <Button> Ok
     //------------
@@ -2412,31 +2290,16 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
         int         idxCmb     = m_pCmbSocketType->currentIndex();
         ESocketType socketType = static_cast<ESocketType>(m_pCmbSocketType->itemData(idxCmb).toInt());
 
+        QObject::disconnect(
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
+
         if( socketType != i_hostSettings.m_socketType )
         {
-            QObject::disconnect(
-                /* pObjSender   */ m_pCmbSocketType,
-                /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onCmbSocketTypeCurrentIndexChanged(int)) );
-
             idxCmb = m_pCmbSocketType->findData(i_hostSettings.m_socketType);
             m_pCmbSocketType->setCurrentIndex(idxCmb);
 
-            if( !QObject::connect(
-                /* pObjSender   */ m_pCmbSocketType,
-                /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onCmbSocketTypeCurrentIndexChanged(int)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
         }
-        QObject::disconnect(
-            /* pObjSender   */ m_pCmbSocketType,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbSocketTypeCurrentIndexChanged(int)) );
 
         for( idxCmb = 0; idxCmb < m_pServer->getSocketTypesCount(); idxCmb++ )
         {
@@ -2467,15 +2330,10 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
             m_pLblSocketType->hide();
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pCmbSocketType,
-            /* szSignal     */ SIGNAL(currentIndexChanged(int)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onCmbSocketTypeCurrentIndexChanged(int)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pLblSocketType != nullptr && m_pCmbSocketType != nullptr )
+        QObject::connect(
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
+    }
 
     // <LineEdit> Remote Host Name
     //-----------------------------
@@ -2494,7 +2352,7 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
             m_pEdtLocalHostName->show();
             m_pLblLocalHostName->show();
         }
-    } // if( m_pLblLocalHostName != nullptr && m_pEdtLocalHostName != nullptr )
+    }
 
     // <LineEdit> Remote Host IP Address
     //----------------------------------
@@ -2525,10 +2383,8 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
     if( m_pLblLocalPort != nullptr && m_pEdtLocalPort != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pEdtLocalPort,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtLocalPortTextChanged(const QString&)) );
+            m_pEdtLocalPort, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtLocalPortTextChanged);
 
         if( i_hostSettings.m_socketType == ESocketTypeInProcMsg )
         {
@@ -2547,15 +2403,10 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
             m_pLblLocalPort->show();
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pEdtLocalPort,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtLocalPortTextChanged(const QString&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pLblLocalPort != nullptr && m_pEdtLocalPort != nullptr )
+        QObject::connect(
+            m_pEdtLocalPort, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtLocalPortTextChanged);
+    }
 
     // <LineEdit> Max Pending Connections
     //-----------------------------------
@@ -2563,24 +2414,17 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
     if( m_pLblMaxPendingConnections != nullptr && m_pEdtMaxPendingConnections != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pEdtMaxPendingConnections,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtMaxPendingConnectionsTextChanged(const QString&)) );
+            m_pEdtMaxPendingConnections, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtMaxPendingConnectionsTextChanged);
 
         m_pEdtMaxPendingConnections->setValidator( new QIntValidator(0,60000,this) );
         m_pEdtMaxPendingConnections->setText( QString::number(i_hostSettings.m_uMaxPendingConnections) );
         m_pEdtMaxPendingConnections->setEnabled(true);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pEdtMaxPendingConnections,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtMaxPendingConnectionsTextChanged(const QString&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pLblMaxPendingConnections != nullptr && m_pEdtMaxPendingConnections != nullptr )
+        QObject::connect(
+            m_pEdtMaxPendingConnections, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtMaxPendingConnectionsTextChanged);
+    }
 
     // <LineEdit> Buffer Size (for shared memory socket connections)
     //--------------------------------------------------------------
@@ -2588,10 +2432,8 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
     if( m_pLblBufferSize_bytes != nullptr && m_pEdtBufferSize_bytes != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pEdtBufferSize_bytes,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtBufferSizeTextChanged(const QString&)) );
+            m_pEdtBufferSize_bytes, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtBufferSizeTextChanged);
 
         if( i_hostSettings.m_socketType == ESocketTypeShm )
         {
@@ -2610,15 +2452,10 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
             m_pLblBufferSize_bytes->hide();
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pEdtBufferSize_bytes,
-            /* szSignal     */ SIGNAL(textChanged(const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEdtBufferSizeTextChanged(const QString&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pLblBufferSize_bytes != nullptr && m_pEdtBufferSize_bytes != nullptr )
+        QObject::connect(
+            m_pEdtBufferSize_bytes, &QLineEdit::textChanged,
+            this, &CWdgtIpcServer::onEdtBufferSizeTextChanged);
+    }
 
     // <Button> Ok
     //------------

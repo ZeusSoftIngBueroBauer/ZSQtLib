@@ -188,14 +188,9 @@ CModelRequestSequencer::CModelRequestSequencer( QObject* i_pObjParent ) :
 
     m_pTmrRefresh = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrRefresh,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTmrRefreshTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrRefresh, &QTimer::timeout,
+        this, &CModelRequestSequencer::onTmrRefreshTimeout);
 
     m_pTmrRefresh->start(1000);
 
@@ -260,20 +255,14 @@ void CModelRequestSequencer::setSequencer( CRequestSequencer* i_pReqSeq )
             m_pTmrRefresh->stop();
 
             QObject::disconnect(
-                /* pObjSender   */ m_pReqSeq,
-                /* szSignal     */ SIGNAL(requestAdded(qint64)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestAdded(qint64)) );
+                m_pReqSeq, &CRequestSequencer::requestAdded,
+                this, &CModelRequestSequencer::onRequestAdded);
             QObject::disconnect(
-                /* pObjSender   */ m_pReqSeq,
-                /* szSignal     */ SIGNAL(requestRemoved(qint64)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestRemoved(qint64)) );
+                m_pReqSeq, &CRequestSequencer::requestRemoved,
+                this, &CModelRequestSequencer::onRequestRemoved);
             QObject::disconnect(
-                /* pObjSender   */ m_pReqSeq,
-                /* szSignal     */ SIGNAL(requestChanged(qint64,qint64)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestChanged(qint64,qint64)) );
+                m_pReqSeq, &CRequestSequencer::requestChanged,
+                this, &CModelRequestSequencer::onRequestChanged);
 
             clear();
 
@@ -283,30 +272,15 @@ void CModelRequestSequencer::setSequencer( CRequestSequencer* i_pReqSeq )
 
         if( m_pReqSeq != nullptr )
         {
-            if( !QObject::connect(
-                /* pObjSender   */ m_pReqSeq,
-                /* szSignal     */ SIGNAL(requestAdded(qint64)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestAdded(qint64)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-            if( !QObject::connect(
-                /* pObjSender   */ m_pReqSeq,
-                /* szSignal     */ SIGNAL(requestRemoved(qint64)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestRemoved(qint64)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
-            if( !QObject::connect(
-                /* pObjSender   */ m_pReqSeq,
-                /* szSignal     */ SIGNAL(requestChanged(qint64,qint64)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestChanged(qint64,qint64)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pReqSeq, &CRequestSequencer::requestAdded,
+                this, &CModelRequestSequencer::onRequestAdded);
+            QObject::connect(
+                m_pReqSeq, &CRequestSequencer::requestRemoved,
+                this, &CModelRequestSequencer::onRequestRemoved);
+            QObject::connect(
+                m_pReqSeq, &CRequestSequencer::requestChanged,
+                this, &CModelRequestSequencer::onRequestChanged);
 
             QModelIndex modelIdxTL = createIndex(0, 0, m_pRootEntry);
             QModelIndex modelIdxBR = createIndex(0, EColumnCount-1, m_pRootEntry);
@@ -359,10 +333,8 @@ void CModelRequestSequencer::removeEntry( const QModelIndex& i_modelIdx )
         m_pReqSeq->lock();
 
         QObject::disconnect(
-            /* pObjSender   */ m_pReqSeq,
-            /* szSignal     */ SIGNAL(requestRemoved(qint64)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestRemoved(qint64)) );
+            m_pReqSeq, &CRequestSequencer::requestRemoved,
+            this, &CModelRequestSequencer::onRequestRemoved);
 
         SRequestSeqEntryModelNode* pNode;
         qint64                     iReqId;
@@ -401,14 +373,9 @@ void CModelRequestSequencer::removeEntry( const QModelIndex& i_modelIdx )
 
             endRemoveRows();
 
-            if( !QObject::connect(
-                /* pObjSender   */ m_pReqSeq,
-                /* szSignal     */ SIGNAL(requestRemoved(qint64)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestRemoved(qint64)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pReqSeq, &CRequestSequencer::requestRemoved,
+                this, &CModelRequestSequencer::onRequestRemoved);
 
         } // if( pNode != m_pRootEntry )
 
@@ -592,7 +559,7 @@ QString CModelRequestSequencer::getDurationAsStrInBestUnit( SRequestSeqEntryMode
     }
     else if( fabs(fDuration_s) <= 1.0e-3 )
     {
-        strDuration = QString::number(fDuration_s*1.0e6,'f',3) + " " + QString::fromLatin1("µ") + "s";
+        strDuration = QString::number(fDuration_s*1.0e6,'f',3) + " " + Math::c_strSymbolMicro + "s";
     }
     else if( fabs(fDuration_s) <= 1.0 )
     {

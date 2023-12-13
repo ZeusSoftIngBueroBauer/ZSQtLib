@@ -61,8 +61,10 @@ protected: // ctors and dtor
         QObject*       i_pObjParent );
     virtual ~CEnumerationIdxTree();
 protected: // class members
-    static QMutex                               s_mtx;           /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
-    static QHash<QString, CEnumerationIdxTree*> s_hshpInstances; /*!< Hash with all created enumeration index trees (key is name of instance). */
+    /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
+    static QRecursiveMutex s_mtx;
+    /*!< Hash with all created enumeration index trees (key is name of instance). */
+    static QHash<QString, CEnumerationIdxTree*> s_hshpInstances;
 
 }; // class CEnumerationIdxTree
 

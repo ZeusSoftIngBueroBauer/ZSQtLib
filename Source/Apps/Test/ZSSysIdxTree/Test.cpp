@@ -24,6 +24,25 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "Test.h"
+#include "MainWindow.h"
+
+#include "ZSTest/ZSTestStepIdxTreeEntry.h"
+#include "ZSTest/ZSTestStep.h"
+#include "ZSTest/ZSTestStepGroup.h"
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
+#include "ZSSysGUI/ZSSysGUIAux.h"
+#include "ZSSysGUI/ZSSysIdxTreeModel.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
+#include "ZSSysGUI/ZSSysIdxTreeView.h"
+#include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
+#include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
+#include "ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h"
+
 #include <QtCore/qtimer.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qmimedata.h>
@@ -32,34 +51,15 @@ may result in using the software modules.
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlineedit.h>
 #else
+#include <QtWidgets/qapplication.h>
 #include <QtWidgets/qlineedit.h>
 #endif
-
-#include "Test.h"
-#include "App.h"
-#include "MainWindow.h"
-
-#include "ZSTest/ZSTestStepIdxTreeEntry.h"
-#include "ZSTest/ZSTestStepIdxTree.h"
-#include "ZSTest/ZSTestStep.h"
-#include "ZSTest/ZSTestStepGroup.h"
-#include "ZSSysGUI/ZSSysGUIAux.h"
-#include "ZSSysGUI/ZSSysIdxTreeModel.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelEntry.h"
-#include "ZSSysGUI/ZSSysIdxTreeView.h"
-#include "ZSSysGUI/ZSSysIdxTreeWdgt.h"
-#include "ZSSysGUI/ZSSysIdxTreeModelBranchContent.h"
-#include "ZSSysGUI/ZSSysIdxTreeTableViewBranchContent.h"
-#include "ZSSys/ZSSysTrcServer.h"
-#include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
 using namespace ZS::System;
 using namespace ZS::System::GUI;
-using namespace ZS::Trace;
 using namespace ZS::Apps::Test::IdxTree;
 
 
@@ -2227,14 +2227,9 @@ void CTest::doTestStepCreateTree( ZS::Test::CTestStep* i_pTestStep )
 
     m_pIdxTree = new CTrcAdmObjIdxTree();
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pIdxTree,
-        /* szSignal     */ SIGNAL(destroyed(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onIdxTreeDestroyed(QObject*)) ) )
-    {
-        throw CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pIdxTree, &QObject::destroyed,
+        this, &CTest::onIdxTreeDestroyed);
 
     emit idxTreeAdded(m_pIdxTree);
 
@@ -3658,14 +3653,24 @@ void CTest::doTestStepTreeViewContextMenus( ZS::Test::CTestStep* i_pTestStep )
         QModelIndex modelIdx = pTreeViewIdxTree->currentIndex();
         QRect       rct = pTreeViewIdxTree->visualRect(modelIdx);
         QPoint      ptLocalPos(rct.x(), rct.y());
+        QPoint      ptGlobalPos = pMainWindow->mapToGlobal(ptLocalPos);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         QMouseEvent* pMouseEvent = new QMouseEvent(
             /* type      */ mouseEvent,
             /* ptPos     */ ptLocalPos,
             /* button    */ mouseButton,
             /* buttons   */ mouseButton,
             /* modifiers */ Qt::NoModifier );
-
+#else
+        QMouseEvent* pMouseEvent = new QMouseEvent(
+            /* type      */ mouseEvent,
+            /* localPos  */ ptLocalPos,
+            /* globalPos */ ptGlobalPos,
+            /* button    */ mouseButton,
+            /* buttons   */ mouseButton,
+            /* modifiers */ Qt::NoModifier );
+#endif
         QApplication::postEvent(pTreeViewIdxTree->viewport(), pMouseEvent);
         // delete pMouseEvent; Deleted by Qt
         pMouseEvent = nullptr;

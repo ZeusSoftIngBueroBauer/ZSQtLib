@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
+#include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcMthFile.h"
 #include "ZSSys/ZSSysApp.h"
 #include "ZSSys/ZSSysErrLog.h"
@@ -238,7 +239,7 @@ class CTrcServer : public QObject
 protected: // class members
 ==============================================================================*/
 
-QMutex CTrcServer::s_mtx(QMutex::Recursive);
+QRecursiveMutex CTrcServer::s_mtx;
 CTrcServer* CTrcServer::s_pTheInst = nullptr;
 QHash<Qt::HANDLE, QString> CTrcServer::s_hshThreadNames;
 QHash<QString, Qt::HANDLE> CTrcServer::s_hshThreadIds;
@@ -641,7 +642,7 @@ QString CTrcServer::GetAdminObjFileAbsoluteFilePath()
 
     if( s_strAdminObjFileAbsFilePath.isEmpty() )
     {
-        QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+        QString strAppConfigDir = ZS::System::getAppConfigDir();
         QString strTrcAdminObjFileSuffix = "xml";
         QString strTrcAdminObjFileBaseName = "ZSTrcServer-TrcMthAdmObj";
         SetAdminObjFileAbsoluteFilePath(
@@ -699,7 +700,7 @@ QString CTrcServer::GetLocalTrcFileAbsoluteFilePath()
 
     if( s_strLocalTrcFileAbsFilePath.isEmpty() )
     {
-        QString strAppLogDir = ZS::System::getAppLogDir("System");
+        QString strAppLogDir = ZS::System::getAppLogDir();
         QString strTrcLogFileSuffix = "log";
         QString strTrcLogFileBaseName = "ZSTrcServer-TrcMth";
         SetLocalTrcFileAbsoluteFilePath(

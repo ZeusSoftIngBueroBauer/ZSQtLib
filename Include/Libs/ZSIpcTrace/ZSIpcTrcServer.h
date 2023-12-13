@@ -31,7 +31,7 @@ may result in using the software modules.
 #include "ZSIpc/ZSIpcServer.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
-class QMutex;
+class QRecursiveMutex;
 
 namespace ZS
 {
@@ -234,7 +234,7 @@ protected: // instance members
          not be send back to the remote client. */
     bool m_bOnReceivedDataUpdateInProcess;
     /*!< Mutex to protect the list of the temporarily stored (cached) trace data. */
-    QMutex* m_pMtxListTrcDataCached;
+    QRecursiveMutex* m_pMtxListTrcDataCached;
     /*!< To avoid reallocation (resizing) the cache for the trace data the cache is allocated
          with the maximum number of elements. Unused elements are set to nullptr. But for this
          the number of used entries must be counted seperately. */

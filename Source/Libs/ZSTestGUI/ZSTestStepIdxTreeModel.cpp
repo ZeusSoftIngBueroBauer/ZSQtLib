@@ -122,14 +122,9 @@ CModeldxTreeTestSteps::CModeldxTreeTestSteps(
         /* strAddInfo   */ strMthInArgs );
     #endif
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTest,
-        /* szSignal     */ SIGNAL(currentTestStepChanged(ZS::Test::CTestStep*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTestCurrentTestStepChanged(ZS::Test::CTestStep*)) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTest, &CTest::currentTestStepChanged,
+        this, &CModeldxTreeTestSteps::onTestCurrentTestStepChanged);
 
 } // ctor
 

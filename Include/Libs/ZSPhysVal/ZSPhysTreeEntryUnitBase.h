@@ -92,9 +92,9 @@ protected: // instance members
     bool m_bIsLogarithmic;
     /*!< e.g. 10.0 for power related quantities, 20.0 for Volt etc. */
     double m_fLogFactor;
-    /*!< e.g. ns if this is µs */
+    /*!< e.g. ns if this is us */
     CUnitsTreeEntryUnitBase* m_pNextLower;
-    /*!< e.g. ms if this is µs */
+    /*!< e.g. ms if this is us */
     CUnitsTreeEntryUnitBase* m_pNextHigher;
 
 }; // class CUnitsTreeEntryUnitBase

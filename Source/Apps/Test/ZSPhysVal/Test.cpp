@@ -24,8 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qfileinfo.h>
-
 #include "Test.h"
 #include "TestConfig.h"
 #include "Units/Units.h"
@@ -33,7 +31,11 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysMath.h"
+
+#include <QtCore/qfileinfo.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -388,7 +390,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
-        /* strOperation    */ "CPhysVal(\"8.9 " + QString::fromLatin1("µ") + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio)",
+        /* strOperation    */ "CPhysVal(\"8.9 " + Math::c_strSymbolMicro + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio)",
         /* pGrpParent      */ pTSGrpWithStringValuesConvert2Str,
         /* szDoTestStepFct */ SLOT(doTestStepCtorWithStrValsConvert2Str_11(ZS::Test::CTestStep*)) );
     pTestStep->setDescription( "Constructor with string value containing resolution in %" );
@@ -396,7 +398,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
-        /* strOperation    */ "CPhysVal(\"8.9 " + QString::fromLatin1("µ") + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio,OutResWithUnit)",
+        /* strOperation    */ "CPhysVal(\"8.9 " + Math::c_strSymbolMicro + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio,OutResWithUnit)",
         /* pGrpParent      */ pTSGrpWithStringValuesConvert2Str,
         /* szDoTestStepFct */ SLOT(doTestStepCtorWithStrValsConvert2Str_12(ZS::Test::CTestStep*)) );
     pTestStep->setDescription( "Constructor with string value containing resolution in %" );
@@ -404,7 +406,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep),
-        /* strOperation    */ "CPhysVal(\"8.9 " + QString::fromLatin1("µ") + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio).toString()",
+        /* strOperation    */ "CPhysVal(\"8.9 " +Math::c_strSymbolMicro + "V" + c_strSymbolPlusMinus + " 0.05 %\",Electricity.Voltage,Ratio).toString()",
         /* pGrpParent      */ pTSGrpWithStringValuesConvert2Str,
         /* szDoTestStepFct */ SLOT(doTestStepCtorWithStrValsConvert2Str_13(ZS::Test::CTestStep*)) );
     pTestStep->setDescription( "Constructor with string value containing resolution in %" );

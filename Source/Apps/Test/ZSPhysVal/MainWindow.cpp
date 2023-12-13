@@ -119,9 +119,11 @@ CMainWindow::CMainWindow(
     //----------------------
 
     m_pActFileQuit = m_pMnuFile->addAction(tr("Exit"));
-    m_pActFileQuit->setShortcut(Qt::Key_F4 + Qt::ALT);
+    m_pActFileQuit->setShortcut(Qt::Key_F4 | Qt::ALT);
 
-    QObject::connect(m_pActFileQuit, &QAction::triggered, qApp, &QApplication::quit);
+    QObject::connect(
+        m_pActFileQuit, &QAction::triggered,
+        qApp, &QApplication::quit);
 
     // <Menu> Debug
     //=============

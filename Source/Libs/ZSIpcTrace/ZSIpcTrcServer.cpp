@@ -421,7 +421,7 @@ CIpcTrcServer::CIpcTrcServer(
         /* iTrcMthFileDetailLevelMutex   */ i_eTrcDetailLevelIpcServerMutex,
         /* iTrcMthFileDetailLevelGateway */ i_eTrcDetailLevelIpcServerGateway );
 
-    m_pMtxListTrcDataCached = new QMutex(QMutex::Recursive);
+    m_pMtxListTrcDataCached = new QRecursiveMutex();
 
     // Need direct connections to signals of index tree.
     // If in another thread a trace admin object is created, removed or modified

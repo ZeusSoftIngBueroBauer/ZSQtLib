@@ -41,6 +41,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSTestGUI/ZSTestStepDlg.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -83,14 +84,9 @@ CTest::CTest() :
     m_pTmrTestStepTimeout = new QTimer(this);
     m_pTmrTestStepTimeout->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrTestStepTimeout,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerTestStepTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrTestStepTimeout, &QTimer::timeout,
+        this, &CTest::onTimerTestStepTimeout);
 
     ZS::Test::CTestStep* pTestStep = nullptr;
 
@@ -1131,10 +1127,8 @@ CTest::~CTest()
     for( auto& pObj : m_hshpMyClass1InstancesByName )
     {
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass1::aboutToBeDestroyed,
+            this, &CTest::onClass1AboutToBeDestroyed);
 
         strObjName = pObj->objectName();
 
@@ -1151,10 +1145,8 @@ CTest::~CTest()
     for( auto& pObj : m_hshpMyClass2InstancesByName )
     {
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass2::aboutToBeDestroyed,
+            this, &CTest::onClass2AboutToBeDestroyed);
 
         strObjName = pObj->objectName();
 
@@ -1171,10 +1163,8 @@ CTest::~CTest()
     for( auto& pObj : m_hshpMyClass2ThreadInstancesByName )
     {
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass2ThreadAboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass2Thread::aboutToBeDestroyed,
+            this, &CTest::onClass2ThreadAboutToBeDestroyed);
 
         strObjName = pObj->objectName();
 
@@ -1191,10 +1181,8 @@ CTest::~CTest()
     for( auto& pObj : m_hshpMyClass3InstancesByName )
     {
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass3::aboutToBeDestroyed,
+            this, &CTest::onClass3AboutToBeDestroyed);
 
         strObjName = pObj->objectName();
 
@@ -1211,10 +1199,8 @@ CTest::~CTest()
     for( auto& pObj : m_hshpMyClass3ThreadInstancesByName )
     {
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass3ThreadAboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass3Thread::aboutToBeDestroyed,
+            this, &CTest::onClass3ThreadAboutToBeDestroyed);
 
         strObjName = pObj->objectName();
 
@@ -1235,10 +1221,8 @@ CTest::~CTest()
         CMyClass1* pObj = it.value();
 
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass1::aboutToBeDestroyed,
+            this, &CTest::onClass1AboutToBeDestroyed);
 
         strObjName = pObj->objectName();
         m_multihshpMyClass1InstancesByName.remove(strObjName, pObj);
@@ -1259,10 +1243,8 @@ CTest::~CTest()
         CMyClass2* pObj = it.value();
 
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass2::aboutToBeDestroyed,
+            this, &CTest::onClass2AboutToBeDestroyed);
 
         strObjName = pObj->objectName();
         m_multihshpMyClass2InstancesByName.remove(strObjName, pObj);
@@ -1283,10 +1265,8 @@ CTest::~CTest()
         CMyClass2Thread* pObj = it.value();
 
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass2ThreadAboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass2Thread::aboutToBeDestroyed,
+            this, &CTest::onClass2ThreadAboutToBeDestroyed);
 
         strObjName = pObj->objectName();
         m_multihshpMyClass2ThreadInstancesByName.remove(strObjName, pObj);
@@ -1307,10 +1287,8 @@ CTest::~CTest()
         CMyClass3* pObj = it.value();
 
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass3::aboutToBeDestroyed,
+            this, &CTest::onClass3AboutToBeDestroyed);
 
         strObjName = pObj->objectName();
         m_multihshpMyClass3InstancesByName.remove(strObjName, pObj);
@@ -1331,10 +1309,8 @@ CTest::~CTest()
         CMyClass3Thread* pObj = it.value();
 
         QObject::disconnect(
-            /* pObjSender   */ pObj,
-            /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClass3ThreadAboutToBeDestroyed(QObject*, const QString&)) );
+            pObj, &CMyClass3Thread::aboutToBeDestroyed,
+            this, &CTest::onClass3ThreadAboutToBeDestroyed);
 
         strObjName = pObj->objectName();
         m_multihshpMyClass3ThreadInstancesByName.remove(strObjName, pObj);
@@ -1627,16 +1603,7 @@ void CTest::doTestStepTraceServerRecallAdminObjs( ZS::Test::CTestStep* i_pTestSt
     // Expected Values
     //---------------
 
-    // Range of IniFileScope: ["AppDir", "User", "System"]
-    #ifdef __linux__
-    // Using "System" on linux Mint ends up in directory "etc/xdg/<CompanyName>"
-    // where the application has not write access rights. Stupid ...
-    QString strIniFileScope = "User";
-    #else
-    QString strIniFileScope = "System"; // Default
-    #endif
-
-    QString strAppConfigDir = ZS::System::getAppConfigDir(strIniFileScope);
+    QString strAppConfigDir = ZS::System::getAppConfigDir();
 
     QString strTrcAdminObjFileSuffix = "xml";
     QString strTrcAdminObjFileBaseName = QString(m_pTrcServer->name()) + "-TrcMthAdmObj";
@@ -1859,7 +1826,11 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 
         QString strExpectedResultsAbsFilePath;
         QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         if( val.isValid() && val.canConvert(QVariant::String) )
+        #else
+        if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+        #endif
         {
             strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
         }
@@ -1917,15 +1888,10 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                     m_hshpMyClass1InstancesByName[strObjName] = pObj;
                 }
 
-                if( !QObject::connect(
-                    /* pObjSender   */ pObj,
-                    /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onClass1AboutToBeDestroyed(QObject*, const QString&)),
-                    /* cnctType     */ Qt::DirectConnection ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    pObj, &CMyClass1::aboutToBeDestroyed,
+                    this, &CTest::onClass1AboutToBeDestroyed,
+                    Qt::DirectConnection);
             }
         }
         else if( strMth == "dtor" )
@@ -2046,24 +2012,14 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                         m_hshpMyClass2InstancesByName[strClass2ObjName] = pMyClass2;
                     }
 
-                    if( !QObject::connect(
-                        /* pObjSender   */ pMyClass2Thread,
-                        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onClass2ThreadAboutToBeDestroyed(QObject*, const QString&)),
-                        /* cnctType     */ Qt::DirectConnection ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
-                    if( !QObject::connect(
-                        /* pObjSender   */ pMyClass2,
-                        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)),
-                        /* cnctType     */ Qt::DirectConnection ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pMyClass2Thread, &CMyClass2Thread::aboutToBeDestroyed,
+                        this, &CTest::onClass2ThreadAboutToBeDestroyed,
+                        Qt::DirectConnection);
+                    QObject::connect(
+                        pMyClass2, &CMyClass2::aboutToBeDestroyed,
+                        this, &CTest::onClass2AboutToBeDestroyed,
+                        Qt::DirectConnection);
                 }
             }
         }
@@ -2184,15 +2140,10 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                     m_hshpMyClass2InstancesByName[strObjName] = pObj;
                 }
 
-                if( !QObject::connect(
-                    /* pObjSender   */ pObj,
-                    /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)),
-                    /* cnctType     */ Qt::DirectConnection ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    pObj, &CMyClass2::aboutToBeDestroyed,
+                    this, &CTest::onClass2AboutToBeDestroyed,
+                    Qt::DirectConnection);
             }
             else if( strlstInArgs.size() == 2 )
             {
@@ -2211,15 +2162,10 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                         m_hshpMyClass2InstancesByName[strObjName] = pObj;
                     }
 
-                    if( !QObject::connect(
-                        /* pObjSender   */ pObj,
-                        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onClass2AboutToBeDestroyed(QObject*, const QString&)),
-                        /* cnctType     */ Qt::DirectConnection ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pObj, &CMyClass2::aboutToBeDestroyed,
+                        this, &CTest::onClass2AboutToBeDestroyed,
+                        Qt::DirectConnection);
                 }
             }
         }
@@ -2428,24 +2374,14 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                         m_hshpMyClass3InstancesByName[strClass3ObjName] = pMyClass3;
                     }
 
-                    if( !QObject::connect(
-                        /* pObjSender   */ pMyClass3Thread,
-                        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onClass3ThreadAboutToBeDestroyed(QObject*, const QString&)),
-                        /* cnctType     */ Qt::DirectConnection ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
-                    if( !QObject::connect(
-                        /* pObjSender   */ pMyClass3,
-                        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)),
-                        /* cnctType     */ Qt::DirectConnection ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pMyClass3Thread, &CMyClass3Thread::aboutToBeDestroyed,
+                        this, &CTest::onClass3ThreadAboutToBeDestroyed,
+                        Qt::DirectConnection);
+                    QObject::connect(
+                        pMyClass3, &CMyClass3::aboutToBeDestroyed,
+                        this, &CTest::onClass3AboutToBeDestroyed,
+                        Qt::DirectConnection);
                 }
             }
         }
@@ -2584,15 +2520,10 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                     m_hshpMyClass3InstancesByName[strObjName] = pObj;
                 }
 
-                if( !QObject::connect(
-                    /* pObjSender   */ pObj,
-                    /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)),
-                    /* cnctType     */ Qt::DirectConnection ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    pObj, &CMyClass3::aboutToBeDestroyed,
+                    this, &CTest::onClass3AboutToBeDestroyed,
+                    Qt::DirectConnection);
             }
             else if( strlstInArgs.size() == 2 )
             {
@@ -2611,15 +2542,10 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
                         m_hshpMyClass3InstancesByName[strObjName] = pObj;
                     }
 
-                    if( !QObject::connect(
-                        /* pObjSender   */ pObj,
-                        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)),
-                        /* cnctType     */ Qt::DirectConnection ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pObj, &CMyClass3::aboutToBeDestroyed,
+                        this, &CTest::onClass3AboutToBeDestroyed,
+                        Qt::DirectConnection);
                 }
             }
         }

@@ -84,22 +84,12 @@ CIpcLogClient::CIpcLogClient(const QString& i_strName) :
     // Connect to signals of the Ipc client
     //-------------------------------------
 
-    if( !QObject::connect(
-        /* pObjSender   */ this,
-        /* szSignal     */ SIGNAL( connected(QObject*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onIpcClientConnected(QObject*) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ this,
-        /* szSignal     */ SIGNAL( disconnected(QObject*) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onIpcClientDisconnected(QObject*) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        this, &CIpcLogClient::connected,
+        this, &CIpcLogClient::onIpcClientConnected);
+    QObject::connect(
+        this, &CIpcLogClient::disconnected,
+        this, &CIpcLogClient::onIpcClientDisconnected);
 
     // Connect to the signals of the index tree
     //-----------------------------------------

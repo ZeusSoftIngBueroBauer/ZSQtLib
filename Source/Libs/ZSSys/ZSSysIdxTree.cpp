@@ -342,7 +342,7 @@ CIdxTree::CIdxTree(
 
     if( i_bCreateMutex )
     {
-        m_pMtx = new CMutex(QMutex::Recursive, "CIdxTree-" + i_strObjName, i_eTrcDetailLevelMutex);
+        m_pMtx = new CRecursiveMutex("CIdxTree-" + i_strObjName, i_eTrcDetailLevelMutex);
     }
 
     if( m_pRoot == nullptr )

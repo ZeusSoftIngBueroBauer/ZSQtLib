@@ -531,7 +531,7 @@ protected: // class members
 // But python bindings generated with shiboken will not be compilable then.
 
 static qint64 s_iId = 0;
-static QMutex s_mtxId(QMutex::Recursive);
+static QRecursiveMutex s_mtxId;
 
 /*==============================================================================
 public: // Macros
@@ -1364,7 +1364,7 @@ QString CRequest::getDurationAsStrInBestUnit() const
     }
     else if( fabs(fDuration_s) <= 1.0e-3 )
     {
-        strDuration = QString::number(fDuration_s*1.0e6,'f',3) + " " + QString::fromLatin1("µ") + "s";
+        strDuration = QString::number(fDuration_s*1.0e6,'f',3) + " " + Math::c_strSymbolMicro + "s";
     }
     else if( fabs(fDuration_s) <= 1.0 )
     {

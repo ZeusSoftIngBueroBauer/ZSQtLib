@@ -234,10 +234,14 @@ QString SEnumEntry::enumerator2Str(
 */
 QVariant SEnumEntry::enumerator2Val(
     const SEnumEntry* i_pEnumArr,
-    int               i_iArrLen,
-    int               i_iEnumerator,
-    QVariant::Type    i_type,
-    bool*             o_pbOk )
+    int i_iArrLen,
+    int i_iEnumerator,
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QVariant::Type i_type,
+    #else
+    QMetaType::Type i_type,
+    #endif
+    bool* o_pbOk )
 //------------------------------------------------------------------------------
 {
     QString strMth = "enumerator2Val";
@@ -269,10 +273,17 @@ QVariant SEnumEntry::enumerator2Val(
     const SEnumEntry* pEntry = &i_pEnumArr[i_iEnumerator];
     if (pEntry->m_val.isValid()) {
         val = pEntry->m_val;
+
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         if (i_type != QVariant::Invalid) {
             bOk = val.canConvert(i_type);
         }
-        else {
+        #else
+        if (i_type != QMetaType::UnknownType) {
+            // use static_cast to avoid deprecation warning
+            bOk = val.canConvert(static_cast<QMetaType>(i_type));
+        }
+        #endif
             bOk = true;
         }
     }
@@ -382,7 +393,11 @@ QVariant SEnumEntry::str2Val(
     const SEnumEntry*   i_pEnumArr,
     int                 i_iArrLen,
     const QString&      i_strName,
-    QVariant::Type      i_type,
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QVariant::Type i_type,
+    #else
+    QMetaType::Type i_type,
+    #endif
     int                 i_idxAlias,
     Qt::CaseSensitivity i_caseSensitivity,
     bool*               o_pbOk )
@@ -395,10 +410,19 @@ QVariant SEnumEntry::str2Val(
         const SEnumEntry* pEntry = &i_pEnumArr[iEnumerator];
         if (pEntry->m_val.isValid()) {
             val = pEntry->m_val;
+
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if (i_type != QVariant::Invalid) {
                 bOk = val.canConvert(i_type);
             }
-            else {
+            #else
+            if (i_type != QMetaType::UnknownType) {
+                // use static_cast to avoid deprecation warning
+                bOk = val.canConvert(static_cast<QMetaType>(i_type));
+            }
+            #endif
+            else
+            {
                 bOk = true;
             }
         }
@@ -719,7 +743,11 @@ QVariant SEnumEntry::str2Val(
     const SEnumEntry*                   i_pEnumArr,
     int                                 i_iArrLen,
     const QString&                      i_strName,
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QVariant::Type                      i_type,
+    #else
+    QMetaType::Type                     i_type,
+    #endif
     int                                 i_idxAlias,
     Qt::CaseSensitivity                 i_caseSensitivity,
     bool*                               o_pbOk )
@@ -749,10 +777,16 @@ QVariant SEnumEntry::str2Val(
 
         if( val.isValid() )
         {
-            if( i_type != QVariant::Invalid )
-            {
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            if (i_type != QVariant::Invalid) {
                 bOk = val.canConvert(i_type);
             }
+            #else
+            if (i_type != QMetaType::UnknownType) {
+                // use static_cast to avoid deprecation warning
+                bOk = val.canConvert(static_cast<QMetaType>(i_type));
+            }
+            #endif
             else
             {
                 bOk = true;

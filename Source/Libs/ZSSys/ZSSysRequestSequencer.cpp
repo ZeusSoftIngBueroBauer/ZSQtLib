@@ -32,6 +32,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcServer.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMsg.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
 
@@ -170,7 +171,7 @@ CRequestSequencer::CRequestSequencer(
     // Receivers of the signal may call methods of the sequencer as a reentry.
     // So we need to use a recursive mutex to allow the same thread to access
     // the list of requests (at least to find a request item).
-    m_pMtx = new QMutex(QMutex::Recursive);
+    m_pMtx = new QRecursiveMutex();
 
 } // ctor
 
@@ -580,10 +581,8 @@ void CRequestSequencer::start( CRequest* i_pReqParent )
         if( m_pReqParent != nullptr )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pReqParent,
-                /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onParentRequestDestroyed(QObject*)) );
+                m_pReqParent, &CRequest::destroyed,
+                this, QOverload<QObject*>::of(&CRequestSequencer::onParentRequestDestroyed));
         }
 
         // All top level requests will get the same parent request id provided on starting the sequence.
@@ -2029,10 +2028,8 @@ void CRequestSequencer::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
             m_hshpReqs.remove(i_reqDscr.m_iId);
 
             QObject::disconnect(
-                /* pObjSender   */ pReq,
-                /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)) );
+                pReq, &CRequest::changed,
+                this, &CRequestSequencer::onRequestChanged);
         }
 
         SRequestSeqEntry* pReqSeqEntry = m_hshReqSeqs[i_reqDscr.m_iId];

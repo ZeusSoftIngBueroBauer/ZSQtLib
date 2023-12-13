@@ -109,14 +109,9 @@ CWdgtErrLog::CWdgtErrLog(
         m_pBtnClearTable->setFixedWidth(cxBtnWidth);
         m_pLytLineBtns->addWidget(m_pBtnClearTable);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pBtnClearTable,
-            /* szSignal     */ SIGNAL(clicked(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onBtnClearTableClicked(bool)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pBtnClearTable, &QPushButton::clicked,
+            this, &CWdgtErrLog::onBtnClearTableClicked);
 
         // <Button> Delete selected entries
         //---------------------------------
@@ -125,14 +120,9 @@ CWdgtErrLog::CWdgtErrLog(
         m_pBtnDeleteRows->setFixedWidth(cxBtnWidth);
         m_pLytLineBtns->addWidget(m_pBtnDeleteRows);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pBtnDeleteRows,
-            /* szSignal     */ SIGNAL(clicked(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onBtnDeleteRowsClicked(bool)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pBtnDeleteRows, &QPushButton::clicked,
+            this, &CWdgtErrLog::onBtnDeleteRowsClicked);
 
         // <Button> Resize Columns To Contents
         //------------------------------------
@@ -144,14 +134,9 @@ CWdgtErrLog::CWdgtErrLog(
         m_pBtnResizeRowsAndColumnsToContents->setFixedWidth(cxPxmBtnWidth);
         m_pLytLineBtns->addWidget(m_pBtnResizeRowsAndColumnsToContents);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pBtnResizeRowsAndColumnsToContents,
-            /* szSignal     */ SIGNAL(clicked(bool)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onBtnResizeRowsAndColumnsToContentsClicked(bool)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
+            this, &CWdgtErrLog::onBtnResizeRowsAndColumnsToContentsClicked);
 
         // <Label> File Name
         //------------------

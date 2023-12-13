@@ -177,7 +177,7 @@ void CTest::doTestStepClearLogFileDir( ZS::Test::CTestStep* i_pTestStep )
     strAppNameNormalized.remove("<");
     strAppNameNormalized.remove(">");
 
-    QString strAppLogDir = ZS::System::getAppLogDir("System");
+    QString strAppLogDir = ZS::System::getAppLogDir();
 
     QDir dirAppLog(strAppLogDir);
 
@@ -216,7 +216,7 @@ void CTest::doTestStepAlloc( ZS::Test::CTestStep* i_pTestStep )
     strAppNameNormalized.remove("<");
     strAppNameNormalized.remove(">");
 
-    QString strAppLogDir = ZS::System::getAppLogDir("System");
+    QString strAppLogDir = ZS::System::getAppLogDir();
 
     QString strLogFileSuffix = "log";
 
@@ -336,7 +336,7 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
     strAppNameNormalized.remove("<");
     strAppNameNormalized.remove(">");
 
-    QString strAppLogDir = ZS::System::getAppLogDir("System");
+    QString strAppLogDir = ZS::System::getAppLogDir();
 
     QString strLogFileSuffix = "log";
 
@@ -448,7 +448,7 @@ void CTest::doTestStepRealloc( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strResultValue);
     }
 
-    QString strAppLogDirBak = ZS::System::getAppLogDir("System") + "/Log.bak";
+    QString strAppLogDirBak = ZS::System::getAppLogDir() + "/Log.bak";
 
     QDir dirAppLogBak(strAppLogDirBak);
 
@@ -524,7 +524,7 @@ void CTest::doTestStepAddEntries( ZS::Test::CTestStep* i_pTestStep )
     strAppNameNormalized.remove("<");
     strAppNameNormalized.remove(">");
 
-    QString strAppLogDir = ZS::System::getAppLogDir("System");
+    QString strAppLogDir = ZS::System::getAppLogDir();
 
     QString strLogFileSuffix = "log";
 
@@ -710,7 +710,7 @@ void CTest::doTestStepFree( ZS::Test::CTestStep* i_pTestStep )
     strAppNameNormalized.remove("<");
     strAppNameNormalized.remove(">");
 
-    QString strAppLogDir = ZS::System::getAppLogDir("System");
+    QString strAppLogDir = ZS::System::getAppLogDir();
 
     QString strLogFileSuffix = "log";
 

@@ -649,8 +649,8 @@ void CShmSocketWrapper::connectToHost(
 
     SHM_SERVERCTRLCHAN_LOCK;
 
-    SShmMainHdr*       pShmMainHdrCtrlChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemoryServerCtrlChan->data());
-    quint32            uMsgLen = sizeof(SShmMsgHdrReqConnect) + m_socketDscr.m_strLocalHostName.length();
+    SShmMainHdr* pShmMainHdrCtrlChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemoryServerCtrlChan->data());
+    quint32 uMsgLen = static_cast<quint32>(sizeof(SShmMsgHdrReqConnect) + m_socketDscr.m_strLocalHostName.length());
     SShmMsgReqConnect* pShmMsgReqConnect = reinterpret_cast<SShmMsgReqConnect*>(pShmMainHdrCtrlChan->allocMsg(m_pSharedMemoryServerCtrlChan,EMsgTypeReqConnect,uMsgLen));
 
     if( pShmMsgReqConnect == nullptr )
@@ -775,8 +775,8 @@ void CShmSocketWrapper::disconnectFromHost()
         {
             SHM_SOCKETCOMMCHAN_LOCK;
 
-            SShmMainHdr*          pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
-            quint32               uMsgLen = sizeof(SShmMsgReqDisconnect) + m_socketDscr.m_strLocalHostName.length();
+            SShmMainHdr* pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
+            quint32 uMsgLen = static_cast<quint32>(sizeof(SShmMsgReqDisconnect) + m_socketDscr.m_strLocalHostName.length());
             SShmMsgReqDisconnect* pShmMsgReqDisconnect = reinterpret_cast<SShmMsgReqDisconnect*>(pShmMainHdrCommChan->allocMsg(m_pSharedMemorySocketCommChan,EMsgTypeReqDisconnect,uMsgLen));
 
             if( pShmMsgReqDisconnect == nullptr )
@@ -903,8 +903,8 @@ void CShmSocketWrapper::abort()
         {
             SHM_SOCKETCOMMCHAN_LOCK;
 
-            SShmMainHdr*          pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
-            quint32               uMsgLen = sizeof(SShmMsgReqDisconnect) + m_socketDscr.m_strLocalHostName.length();
+            SShmMainHdr* pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
+            quint32 uMsgLen = static_cast<quint32>(sizeof(SShmMsgReqDisconnect) + m_socketDscr.m_strLocalHostName.length());
             SShmMsgReqDisconnect* pShmMsgReqDisconnect = reinterpret_cast<SShmMsgReqDisconnect*>(pShmMainHdrCommChan->allocMsg(m_pSharedMemorySocketCommChan,EMsgTypeReqDisconnect,uMsgLen));
 
             if( pShmMsgReqDisconnect == nullptr )
@@ -1045,8 +1045,8 @@ qint64 CShmSocketWrapper::write( const QByteArray& i_byteArr )
 
     SHM_SOCKETCOMMCHAN_LOCK;
 
-    SShmMainHdr*           pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
-    quint32                uBlockLen = sizeof(SShmMsgHdrReqReceiveData) + i_byteArr.size();
+    SShmMainHdr* pShmMainHdrCommChan = reinterpret_cast<SShmMainHdr*>(m_pSharedMemorySocketCommChan->data());
+    quint32 uBlockLen = static_cast<quint32>(sizeof(SShmMsgHdrReqReceiveData) + i_byteArr.size());
     SShmMsgReqReceiveData* pShmMsgReqReceiveData = reinterpret_cast<SShmMsgReqReceiveData*>(pShmMainHdrCommChan->allocMsg(m_pSharedMemorySocketCommChan,EMsgTypeReqReceiveData,uBlockLen));
 
     if( pShmMsgReqReceiveData == nullptr )
@@ -1341,46 +1341,21 @@ void CShmSocketWrapper::createTimer()
     m_pTimerSocketCommChanListenForReq = new QTimer(this);
     m_pTimerSocketCommChanWaitForCon = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerServerCtrlChanReqConnect,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutServerCtrlChanReqConnect()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerServerCtrlChanConConnect,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutServerCtrlChanConConnect()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerSocketCommChanWatchDog,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutSocketCommChanWatchDog()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerSocketCommChanListenForReq,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutSocketCommChanListenForReq()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTimerSocketCommChanWaitForCon,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimeoutSocketCommChanWaitForCon()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTimerServerCtrlChanReqConnect, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutServerCtrlChanReqConnect);
+    QObject::connect(
+        m_pTimerServerCtrlChanConConnect, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutServerCtrlChanConConnect);
+    QObject::connect(
+        m_pTimerSocketCommChanWatchDog, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutSocketCommChanWatchDog);
+    QObject::connect(
+        m_pTimerSocketCommChanListenForReq, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutSocketCommChanListenForReq);
+    QObject::connect(
+        m_pTimerSocketCommChanWaitForCon, &QTimer::timeout,
+        this, &CShmSocketWrapper::onTimeoutSocketCommChanWaitForCon);
 
 } // createTimer
 

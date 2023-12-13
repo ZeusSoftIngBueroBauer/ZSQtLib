@@ -141,8 +141,6 @@ class CUnit;
 ZSPHYSVALDLL_API QString invalidValueString();      // "---" as default
 ZSPHYSVALDLL_API void setInvalidValueString( const QString& i_str );
 
-const QString c_strSymbolDegree = QString::fromLatin1("°");     // "\u00b0"
-
 // Please note that the bit number number 8 (0x80) indicates an error.
 // If this bit is not set the result is either Ok or is just a warning.
 typedef quint8 TFormatResult;
@@ -254,7 +252,7 @@ static const char* c_strPrefixAtto   = "a";
 static const char* c_strPrefixFemto  = "f";
 static const char* c_strPrefixPico   = "p";
 static const char* c_strPrefixNano   = "n";
-static const char* c_strPrefixMicro  = "u"; // QString::fromLatin1("µ"); // "\u00b5"
+static const char* c_strPrefixMicro  = "u";
 static const char* c_strPrefixMilli  = "m";
 static const char* c_strPrefixCenti  = "c";
 static const char* c_strPrefixDezi   = "d";

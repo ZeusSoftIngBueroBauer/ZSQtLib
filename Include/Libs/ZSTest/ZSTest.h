@@ -55,8 +55,8 @@ public: // class methods
     static QString NameSpace() { return "ZS::Test"; }
     static QString ClassName() { return "CTest"; }
 public: // class methods to get default file paths
-    static QString GetDefaultTestStepsAbsFilePath( const QString& i_strIniFileScope = "System" );
-    static QString GetDefaultTestResultsAbsFilePath( const QString& i_strIniFileScope = "System" );
+    static QString GetDefaultTestStepsAbsFilePath( const QString& i_strIniFileScope = "User" );
+    static QString GetDefaultTestResultsAbsFilePath( const QString& i_strIniFileScope = "User" );
 public: // ctors and dtor
     CTest(
         const QString& i_strNameSpace,

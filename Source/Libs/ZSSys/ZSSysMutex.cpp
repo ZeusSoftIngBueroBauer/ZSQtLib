@@ -52,47 +52,6 @@ public: // ctors and dtor
 
     For further information please refer to documentation of class QMutex.
 
-    @param i_mode [in]
-        If mode is QMutex::Recursive, a thread can lock the same mutex multiple times
-        and the mutex won't be unlocked until a corresponding number of unlock() calls
-        have been made. Otherwise a thread may only lock a mutex once.
-    @param i_strObjName [in] Descriptive name of the mutex locker.
-*/
-CMutex::CMutex(QMutex::RecursionMode i_mode, const QString& i_strObjName) :
-//------------------------------------------------------------------------------
-    QMutex(i_mode),
-    m_strObjName(i_strObjName)
-    #ifdef ZS_TRACE_MUTEXES
-    ,m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
-    m_pTrcMthFile(nullptr),
-    m_pTrcAdminObj(nullptr)
-    #endif
-{
-    #ifdef ZS_TRACE_MUTEXES
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), i_strObjName);
-    QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = qMutexRecursionMode2Str(i_mode);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj          */ m_pTrcAdminObj,
-        /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ m_strObjName,
-        /* strMethod          */ "ctor",
-        /* strMthInArgs       */ strMthInArgs );
-    #endif
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Constructs a new mutex. The mutex is created in an unlocked state.
-
-    For further information please refer to documentation of class QMutex.
-
     @param i_strObjName [in] Descriptive name of the mutex locker.
 */
 CMutex::CMutex(const QString& i_strObjName) :
@@ -125,62 +84,13 @@ CMutex::CMutex(const QString& i_strObjName) :
 
     For further information please refer to documentation of class QMutex.
 
-    @param i_mode [in]
-        If mode is QMutex::Recursive, a thread can lock the same mutex multiple times
-        and the mutex won't be unlocked until a corresponding number of unlock() calls
-        have been made. Otherwise a thread may only lock a mutex once.
     @param i_strObjName [in] Descriptive name of the mutex locker.
     @param i_eTrcMthFileDetailLevel [in]
         If trace outputs should not be forwarded to the trace server but directly
         to a trace method file allocated by the server, this detail level has to
         be to a value greater than None.
 */
-CMutex::CMutex(
-    QMutex::RecursionMode   i_mode,
-    const QString&          i_strObjName,
-    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
-//------------------------------------------------------------------------------
-    QMutex(i_mode),
-    m_strObjName(i_strObjName)
-    #ifdef ZS_TRACE_MUTEXES
-    ,m_eTrcMthFileDetailLevel(i_eTrcMthFileDetailLevel),
-    m_pTrcMthFile(nullptr),
-    m_pTrcAdminObj(nullptr)
-    #endif
-{
-    #ifdef ZS_TRACE_MUTEXES
-    QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
-    m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
-    QString strMthInArgs;
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = qMutexRecursionMode2Str(i_mode);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj          */ m_pTrcAdminObj,
-        /* pTrcMthFile        */ m_pTrcMthFile,
-        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ NameSpace(),
-        /* strClassName       */ ClassName(),
-        /* strObjName         */ m_strObjName,
-        /* strMethod          */ "ctor",
-        /* strMthInArgs       */ strMthInArgs );
-    #endif
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Constructs a new mutex. The mutex is created in an unlocked state.
-
-    For further information please refer to documentation of class QMutex.
-
-    @param i_strObjName [in] Descriptive name of the mutex locker.
-    @param i_eTrcMthFileDetailLevel [in]
-        If trace outputs should not be forwarded to the trace server but directly
-        to a trace method file allocated by the server, this detail level has to
-        be to a value greater than None.
-*/
-CMutex::CMutex( const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel ) :
+CMutex::CMutex(const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel) :
 //------------------------------------------------------------------------------
     QMutex(),
     m_strObjName(i_strObjName)
@@ -678,7 +588,7 @@ CRecursiveMutex::~CRecursiveMutex()
         /* strNameSpace       */ NameSpace(),
         /* strClassName       */ ClassName(),
         /* strObjName         */ m_strObjName,
-        /* strMethod          */ "ctor",
+        /* strMethod          */ "dtor",
         /* strMthInArgs       */ "" );
     if( m_pTrcAdminObj != nullptr )
     {

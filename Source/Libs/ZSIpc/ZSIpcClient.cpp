@@ -209,11 +209,11 @@ CClient::CClient(
     {
         if( m_pTrcMthFile != nullptr )
         {
-            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
+            m_pMtx = new CRecursiveMutex(ClassName() + "-" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
         }
         else
         {
-            m_pMtx = new CMutex(QMutex::Recursive, ClassName() + "-" + i_strObjName);
+            m_pMtx = new CRecursiveMutex(ClassName() + "-" + i_strObjName);
         }
     }
 
@@ -254,15 +254,9 @@ CClient::CClient(
     // "requestChanged" slot may be called sometimes later not updating the internal states
     // at the expected time (before e.g. the "startup" method returns but sometimes later).
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrReqTimeout,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestTimeout()),
-        /* cnctType     */ m_pMtx != nullptr ? Qt::DirectConnection : Qt::AutoConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrReqTimeout, &QTimer::timeout,
+        this, &CClient::onRequestTimeout);
 
 } // ctor
 
@@ -491,15 +485,9 @@ CRequest* CClient::connect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdPar
     // "requestChanged" slot may be called sometimes later not updating the internal states
     // at the expected time (before e.g. the "startup" method returns but sometimes later).
 
-    if( !QObject::connect(
-        /* pObjSender   */ pReq,
-        /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)),
-        /* cnctType     */ m_pMtx != nullptr ? Qt::DirectConnection : Qt::AutoConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        pReq, &CRequest::changed,
+        this, &CClient::onRequestChanged);
 
     CMsgReqConnect* pMsgReq = new CMsgReqConnect(
         /* pObjSender       */ this,
@@ -651,15 +639,9 @@ CRequest* CClient::disconnect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqId
     // "requestChanged" slot may be called sometimes later not updating the internal states
     // at the expected time (before e.g. the "startup" method returns but sometimes later).
 
-    if( !QObject::connect(
-        /* pObjSender   */ pReq,
-        /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)),
-        /* cnctType     */ m_pMtx != nullptr ? Qt::DirectConnection : Qt::AutoConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        pReq, &CRequest::changed,
+        this, &CClient::onRequestChanged);
 
     CMsgReqDisconnect* pMsgReq = new CMsgReqDisconnect(
         /* pObjSender       */ this,
@@ -813,15 +795,9 @@ CRequest* CClient::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
     // "requestChanged" slot may be called sometimes later not updating the internal states
     // at the expected time (before e.g. the "startup" method returns but sometimes later).
 
-    if( !QObject::connect(
-        /* pObjSender   */ pReq,
-        /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)),
-        /* cnctType     */ m_pMtx != nullptr ? Qt::DirectConnection : Qt::AutoConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        pReq, &CRequest::changed,
+        this, &CClient::onRequestChanged);
 
     bool bIsParentReqInProgress = m_pRequestQueue->isRequestInProgress(i_iReqIdParent);
     bool bPostponeRequest = true;
@@ -972,15 +948,9 @@ CRequest* CClient::sendData( const QByteArray& i_byteArr, int i_iTimeout_ms, boo
     // "requestChanged" slot may be called sometimes later not updating the internal states
     // at the expected time (before e.g. the "startup" method returns but sometimes later).
 
-    if( !QObject::connect(
-        /* pObjSender   */ pReq,
-        /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)),
-        /* cnctType     */ m_pMtx != nullptr ? Qt::DirectConnection : Qt::AutoConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        pReq, &CRequest::changed,
+        this, &CClient::onRequestChanged);
 
     if( i_byteArr.size() == 0 )
     {
@@ -3185,15 +3155,9 @@ CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
     // "requestChanged" slot may be called sometimes later not updating the internal states
     // at the expected time (before e.g. the "startup" method returns but sometimes later).
 
-    if( !QObject::connect(
-        /* pObjSender   */ pReqConnectGateway,
-        /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)),
-        /* cnctType     */ m_pMtx != nullptr ? Qt::DirectConnection : Qt::AutoConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        pReqConnectGateway, &CRequest::changed,
+        this, &CClient::onRequestChanged);
 
     if( m_pGateway == nullptr )
     {
@@ -3399,15 +3363,9 @@ CRequest* CClient::disconnectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_
     // "requestChanged" slot may be called sometimes later not updating the internal states
     // at the expected time (before e.g. the "startup" method returns but sometimes later).
 
-    if( !QObject::connect(
-        /* pObjSender   */ pReqDisconnectGateway,
-        /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)),
-        /* cnctType     */ m_pMtx != nullptr ? Qt::DirectConnection : Qt::AutoConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        pReqDisconnectGateway, &CRequest::changed,
+        this, &CClient::onRequestChanged);
 
     if( m_pGateway == nullptr )
     {
@@ -3773,10 +3731,8 @@ void CClient::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
 
             // On further changes to the request this slot should not be called anymore.
             QObject::disconnect(
-                /* pObjSender   */ pReqChanged,
-                /* szSignal     */ SIGNAL(changed(ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)) );
+                pReqChanged, &CRequest::changed,
+                this, &CClient::onRequestChanged);
 
         } // if( i_reqDscr.m_iProgress_perCent >= 100 )
 

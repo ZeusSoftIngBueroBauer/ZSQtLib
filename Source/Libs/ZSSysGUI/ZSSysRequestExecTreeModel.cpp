@@ -126,7 +126,7 @@ QString SRequestExecTreeModelNode::getDurationAsStrInBestUnit() const
     }
     else if( fabs(fDuration_s) <= 1.0e-3 )
     {
-        strDuration = QString::number(fDuration_s*1.0e6,'f',3) + " " + QString::fromLatin1("µ") + "s";
+        strDuration = QString::number(fDuration_s*1.0e6,'f',3) + " " + Math::c_strSymbolMicro + "s";
     }
     else if( fabs(fDuration_s) <= 1.0 )
     {
@@ -174,33 +174,18 @@ CModelRequestExecTree::CModelRequestExecTree( CRequestExecTree* i_pReqExecTree, 
     // So we queue both - requests created within the main thread and requests
     // created in other threads hoping that always the "requestAdded" signal
     // is received before the "requestChanged" and "requestRemoved" signals.
-    if( !QObject::connect(
-        /* pObjSender   */ m_pReqExecTree,
-        /* szSignal     */ SIGNAL(requestAdded(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestAdded(ZS::System::SRequestDscr)),
-        /* cnctType     */ Qt::QueuedConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pReqExecTree,
-        /* szSignal     */ SIGNAL(requestRemoved(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestRemoved(ZS::System::SRequestDscr)),
-        /* cnctType     */ Qt::QueuedConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
-    if( !QObject::connect(
-        /* pObjSender   */ m_pReqExecTree,
-        /* szSignal     */ SIGNAL(requestChanged(ZS::System::SRequestDscr)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestChanged(ZS::System::SRequestDscr)),
-        /* cnctType     */ Qt::QueuedConnection ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pReqExecTree, &CRequestExecTree::requestAdded,
+        this, &CModelRequestExecTree::onRequestAdded,
+        Qt::QueuedConnection);
+    QObject::connect(
+        m_pReqExecTree, &CRequestExecTree::requestRemoved,
+        this, &CModelRequestExecTree::onRequestRemoved,
+        Qt::QueuedConnection);
+    QObject::connect(
+        m_pReqExecTree, &CRequestExecTree::requestChanged,
+        this, &CModelRequestExecTree::onRequestChanged,
+        Qt::QueuedConnection);
 
     beginInsertRows( QModelIndex(), 0, 0 );
 
@@ -239,14 +224,9 @@ CModelRequestExecTree::CModelRequestExecTree( CRequestExecTree* i_pReqExecTree, 
 
     m_pTmrRefresh = new QTimer(this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrRefresh,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTmrRefreshTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrRefresh, &QTimer::timeout,
+        this, &CModelRequestExecTree::onTmrRefreshTimeout);
 
     m_pTmrRefresh->start(1000);
 
@@ -296,10 +276,8 @@ void CModelRequestExecTree::removeEntry( const QModelIndex& i_modelIdx )
         m_pReqExecTree->lock();
 
         QObject::disconnect(
-            /* pObjSender   */ m_pReqExecTree,
-            /* szSignal     */ SIGNAL(requestRemoved(ZS::System::SRequestDscr)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestRemoved(ZS::System::SRequestDscr)) );
+            m_pReqExecTree, &CRequestExecTree::requestRemoved,
+            this, &CModelRequestExecTree::onRequestRemoved);
 
         SRequestExecTreeModelNode* pNode;
         qint64                     iReqId;
@@ -338,14 +316,9 @@ void CModelRequestExecTree::removeEntry( const QModelIndex& i_modelIdx )
 
             endRemoveRows();
 
-            if( !QObject::connect(
-                /* pObjSender   */ m_pReqExecTree,
-                /* szSignal     */ SIGNAL(requestRemoved(ZS::System::SRequestDscr)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestRemoved(ZS::System::SRequestDscr)) ) )
-            {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-            }
+            QObject::connect(
+                m_pReqExecTree, &CRequestExecTree::requestRemoved,
+                this, &CModelRequestExecTree::onRequestRemoved);
 
         } // if( pNode != m_pRootEntry )
 

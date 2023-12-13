@@ -719,7 +719,7 @@ QSize CDiagObjLabel::sizeHint()
         if( !m_arstrText[m_iState].isEmpty() )
         {
             QFontMetrics fntmtr(m_fntText);
-            QString      strDummyLabel = "Öy,²";
+            QString      strDummyLabel = "Oy,2";
             QRect        rectText;
 
             rectText = fntmtr.boundingRect(strDummyLabel);

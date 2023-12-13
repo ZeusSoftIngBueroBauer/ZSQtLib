@@ -181,7 +181,7 @@ CIpcLogServer::CIpcLogServer() :
     hostSettings.m_uLocalPort = 24762; // Default listen port for IpcLogServer
     m_pIpcServer->setHostSettings(hostSettings);
 
-    m_pMtxListLogDataCached = new QMutex(QMutex::Recursive);
+    m_pMtxListLogDataCached = new QRecursiveMutex();
 
     // Need direct connections to signals of index tree.
     // If in another thread a trace admin object is created, removed or modified
@@ -218,6 +218,16 @@ CIpcLogServer::~CIpcLogServer()
 //------------------------------------------------------------------------------
 {
     m_bIsBeingDestroyed = true;
+
+    QObject::disconnect(
+        m_pLoggersIdxTree, &CIdxTree::treeEntryAdded,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryAdded);
+    QObject::disconnect(
+        m_pLoggersIdxTree, &CIdxTree::treeEntryAboutToBeRemoved,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryAboutToBeRemoved);
+    QObject::disconnect(
+        m_pLoggersIdxTree, &CIdxTreeLoggers::treeEntryChanged,
+        this, &CIpcLogServer::onLoggersIdxTreeEntryChanged);
 
     for( int idx = 0; idx < m_iLogDataCachedCount; idx++ )
     {

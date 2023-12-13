@@ -28,18 +28,13 @@ may result in using the software modules.
 #define ZSSys_ErrLog_h
 
 #include <QtCore/qdatetime.h>
-#include <QtCore/qobject.h>
+#include <QtCore/qthread.h>
 
-#include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysMsg.h"
-
-#ifdef WIN32
-#include <Windows.h>
-#endif
+//#include "ZSSys/ZSSysMsg.h"
 
 class QFile;
-class QMutex;
+class QRecursiveMutex;
 class QWaitCondition;
 class QXmlStreamWriter;
 
@@ -242,7 +237,7 @@ private: // class methods
     #endif
     static void TerminateHandler();
     #ifdef WIN32
-    static long ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers);
+    //static long ExceptionHandler(EXCEPTION_POINTERS* i_pExceptionPointers);
     #endif
 protected: // ctors and dtor
     CErrLog(
@@ -327,7 +322,7 @@ protected: // instance methods
         const QString&    i_strProposal = "" );
     void removeEntry_( int i_iRowIdx, EResultSeverity i_severity = EResultSeverityUndefined );
     #ifdef WIN32
-    QString generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const;
+    //QString generateDump(EXCEPTION_POINTERS* i_pExceptionPointers) const;
     #endif
 private: // copy ctor not allowed
     CErrLog( const CErrLog& );
@@ -335,7 +330,7 @@ private: // assignment operator not allowed
     CErrLog& operator = ( const CErrLog& );
 protected: // class members
     /*!< Mutex to protect the class variables for multithreaded access. */
-    static QMutex s_mtx;
+    static QRecursiveMutex s_mtx;
     /*!< Hash with all created err log instances (key is name of instance). */
     static QHash<QString, CErrLog*> s_hshpInstances;
     /*!< Counts the number the class method InstallQtMsgHandler is called
@@ -346,7 +341,7 @@ protected: // instance members
          Please note that entries may be added from within different thread contexts
          to the error log object and for this the list of entries of the error
          log object is protected by a mutex and entries will be "immediately" entered. */
-    QMutex* m_pMtx;
+    QRecursiveMutex* m_pMtx;
     /*!< Absolute path including the file name and suffix of the error logs xml file. */
     QString m_strAbsFilePath;
     /*!< Xml file of the error log instance. */

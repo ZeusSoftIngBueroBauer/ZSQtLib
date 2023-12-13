@@ -7,8 +7,8 @@
 <MyClass2ThreadNewName1  >       <- <ZS::Apps::Test::IpcTrace::CMyClass3Thread> MyClass3ThreadNewName1.quit()
 <MyClass3ThreadNewName1  > <- <ZS::Apps::Test::IpcTrace::CMyClass3Thread> MyClass3ThreadInst1.exec(): 0
 <MyClass3ThreadNewName1  > -> <ZS::Apps::Test::IpcTrace::CMyClass3> NewName1.dtor()
-<MyClass3ThreadNewName1  >    -> <ZS::System::CMutex> CMyClass3-NewName1-Counters.dtor()
-<MyClass3ThreadNewName1  >    <- <ZS::System::CMutex> CMyClass3-NewName1-Counters.dtor()
+<MyClass3ThreadNewName1  >    -> <ZS::System::CRecursiveMutex> CMyClass3-NewName1-Counters.dtor()
+<MyClass3ThreadNewName1  >    <- <ZS::System::CRecursiveMutex> CMyClass3-NewName1-Counters.dtor()
 <MyClass3ThreadNewName1  > <- <ZS::Apps::Test::IpcTrace::CMyClass3> NewName1.dtor()
 <MyClass3ThreadNewName1  > <- <ZS::Apps::Test::IpcTrace::CMyClass3Thread> MyClass3ThreadInst1.run()
 <MyClass2ThreadNewName1  >       -> <ZS::Apps::Test::IpcTrace::CMyClass3Thread> MyClass3ThreadNewName1.wait(30000 ms)

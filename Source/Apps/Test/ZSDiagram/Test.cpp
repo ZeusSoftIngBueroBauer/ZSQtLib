@@ -25,7 +25,6 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Test.h"
-#include "App.h"
 #include "WidgetCentral.h"
 #include "WdgtTestOutput.h"
 #include "Units/Units.h"
@@ -45,7 +44,6 @@ may result in using the software modules.
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSTest/ZSTestStep.h"
 #include "ZSTest/ZSTestStepGroup.h"
-#include "ZSTest/ZSTestStepIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysMath.h"
 
@@ -63,7 +61,6 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Trace;
 using namespace ZS::Diagram;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Test::Diagram;
@@ -133,14 +130,9 @@ CTest::CTest() :
     m_pTmrTestStepTimeout = new QTimer();
     m_pTmrTestStepTimeout->setSingleShot(true);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pTmrTestStepTimeout,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerTestStepTimeout()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pTmrTestStepTimeout, &QTimer::timeout,
+        this, &CTest::onTimerTestStepTimeout);
 
     // Test Steps
     //-----------
@@ -1396,14 +1388,9 @@ void CTest::doTestStepSigGenStart( ZS::Test::CTestStep* i_pTestStep )
     m_pTimerSigGen = new QTimer(this);
     m_pTimerSigGen->start(10);
 
-    if( !connect(
-        /* pObjSender   */ m_pTimerSigGen,
-        /* szSignal     */ SIGNAL(timeout()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onTimerSigGenTimeout()) ) )
-    {
-        throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-    }
+    QObject::connect(
+        m_pTimerSigGen, &QTimer::timeout,
+        this, &CTest::onTimerSigGenTimeout);
 
     // Actual Result Values
     //---------------------
@@ -1511,16 +1498,19 @@ void CTest::onTimerSigGenTimeout()
             s_arfYValuesTrace1[idxVal] = fy + (fRandFacTrace1 / 10.0) * fyRange;
         }
 
+        CUnit unitX = m_scaleX.unit();
+        CUnit unitY = m_scaleY.unit();
+
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleAxis::X, s_arfXValuesTraces01, &m_scaleX.unit());
-            m_pDiagTraceSigGen1->setValues(EScaleAxis::Y, s_arfYValuesTrace0, &m_scaleY.unit());
+            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitX);
+            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &unitY);
         }
 
         if( m_pDiagTraceSigGen2 != nullptr )
         {
-            m_pDiagTraceSigGen2->setValues(EScaleAxis::X, s_arfXValuesTraces01, &m_scaleX.unit());
-            m_pDiagTraceSigGen2->setValues(EScaleAxis::Y, s_arfYValuesTrace1, &m_scaleY.unit());
+            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitX);
+            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1, &unitY);
         }
     } // if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
 

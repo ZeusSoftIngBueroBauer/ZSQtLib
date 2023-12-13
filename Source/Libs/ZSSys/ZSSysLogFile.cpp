@@ -49,7 +49,7 @@ class ZS::System::CLogFile
 protected: // class members
 ==============================================================================*/
 
-QMutex CLogFile::s_mtx(QMutex::Recursive);
+QRecursiveMutex CLogFile::s_mtx;
 QMap<QString, CLogFile*> CLogFile::s_mapLogFiles;
 
 /*==============================================================================

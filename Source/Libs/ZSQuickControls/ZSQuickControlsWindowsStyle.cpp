@@ -27,6 +27,7 @@ may result in using the software modules.
 #include "ZSQuickControls/ZSQuickControlsWindowsStyle.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysIdxTree.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
@@ -458,7 +459,7 @@ QString CWindowsStyle::getSaveRecallAbsoluteFilePath() const
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod          */ "getSaveRecallAbsoluteFilePath",
         /* strMethodInArgs    */ "" );
-    QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+    QString strAppConfigDir = ZS::System::getAppConfigDir();
     QString strFileSuffix = "xml";
     QString strBaseName = "ZSWindowsStyle";
     QString strAbsFilePath = strAppConfigDir + QDir::separator() + strBaseName + "." + strFileSuffix;

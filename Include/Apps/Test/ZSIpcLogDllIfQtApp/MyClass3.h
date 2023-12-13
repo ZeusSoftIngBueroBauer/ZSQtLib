@@ -36,7 +36,7 @@ namespace ZS
 {
 namespace System
 {
-class CMutex;
+class CRecursiveMutex;
 class CWaitCondition;
 }
 namespace Log
@@ -118,8 +118,8 @@ private: // instance methods
     int sendData2(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
     int sendData3(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // instance members
-    CMyClass3Thread*         m_pMyClass3Thread;
-    ZS::System::CMutex*      m_pMtxCounters;
+    CMyClass3Thread* m_pMyClass3Thread;
+    ZS::System::CRecursiveMutex* m_pMtxCounters;
     ZS::Log::DllIf::CLogger* m_pLogger;
 
 }; // class CMyClass3

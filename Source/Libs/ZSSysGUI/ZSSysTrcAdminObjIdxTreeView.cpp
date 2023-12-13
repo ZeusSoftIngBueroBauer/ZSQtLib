@@ -313,14 +313,9 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
                     {
                         pCmb->addItem(eDetailLevel.toString());
                     }
-                    if( !QObject::connect(
-                        /* pObjSender   */ pCmb,
-                        /* szSignal     */ SIGNAL( activated(int) ),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT( onComboDetailLevelActivated(int) ) ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pCmb, QOverload<int>::of(&QComboBox::activated),
+                        this, &CDelegateIdxTreeTrcAdminObjs::onComboDetailLevelActivated);
                 }
                 break;
             }
@@ -336,14 +331,9 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
                     {
                         pCmb->addItem(eDetailLevel.toString());
                     }
-                    if( !QObject::connect(
-                        /* pObjSender   */ pCmb,
-                        /* szSignal     */ SIGNAL( activated(int) ),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT( onComboDetailLevelActivated(int) ) ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pCmb, QOverload<int>::of(&QComboBox::activated),
+                        this, &CDelegateIdxTreeTrcAdminObjs::onComboDetailLevelActivated);
                 }
                 break;
             }
@@ -354,14 +344,9 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
                     QLineEdit* pEdt = new QLineEdit(i_pWdgtParent);
                     pEdt->setObjectName(pCModelTreeEntry->keyInTree() + ".DataFilter");
                     pWdgtEditor = pEdt;
-                    if( !QObject::connect(
-                        /* pObjSender   */ pEdt,
-                        /* szSignal     */ SIGNAL( editingFinished() ),
-                        /* pObjReceiver */ this,
-                        /* szSlot       */ SLOT( onEdtDataFilterEditingFinished() ) ) )
-                    {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                    }
+                    QObject::connect(
+                        pEdt, &QLineEdit::editingFinished,
+                        this, &CDelegateIdxTreeTrcAdminObjs::onEdtDataFilterEditingFinished);
                 }
                 break;
             }
@@ -770,27 +755,17 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     m_pActionNameSpaceExpand = new QAction(pxmExpandAll, "Expand", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceExpand);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceExpand,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceExpandTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceExpand, &QAction::triggered,
+        this, &CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceExpandTriggered);
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     m_pActionNameSpaceCollapse = new QAction(pxmCollapseAll, "Collapse", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceCollapse);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceCollapse,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceCollapseTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceCollapse, &QAction::triggered,
+        this, &CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceCollapseTriggered);
 
     m_pMenuNameSpaceContext->addSeparator();
 
@@ -802,64 +777,39 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
     m_pActionNameSpaceEnableAdminObjs = new QAction("Recursively Enable Admin Objects",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceEnableAdminObjs);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceEnableAdminObjs,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceEnableAdminObjsTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceEnableAdminObjs, &QAction::triggered,
+        this, &CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceEnableAdminObjsTriggered);
 
     m_pActionNameSpaceDisableAdminObjs = new QAction("Recursively Disable Admin Objects",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceDisableAdminObjs);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceDisableAdminObjs,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceDisableAdminObjsTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceDisableAdminObjs, &QAction::triggered,
+        this, &CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceDisableAdminObjsTriggered);
 
     m_pMenuNameSpaceContext->addSeparator();
 
     m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel = new QAction("Recursively Set Method Calls Detail Level of Admin Objects",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceSetAdminObjsMethodCallsDetailLevel, &QAction::triggered,
+        this, &CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsMethodCallsDetailLevelTriggered);
 
     m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel = new QAction("Recursively Set Runtime Info Detail Level of Admin Objects",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceSetAdminObjsRuntimeInfoDetailLevel, &QAction::triggered,
+        this, &CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsRuntimeInfoDetailLevelTriggered);
 
     m_pActionNameSpaceSetAdminObjsTraceDataFilter = new QAction("Recursively Set Data Filter of Admin Objects",this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetAdminObjsTraceDataFilter);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pActionNameSpaceSetAdminObjsTraceDataFilter,
-        /* szSignal     */ SIGNAL( triggered(bool) ),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT( onActionNameSpaceSetAdminObjsTraceDataFilterTriggered(bool) ) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pActionNameSpaceSetAdminObjsTraceDataFilter, &QAction::triggered,
+        this, &CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsTraceDataFilterTriggered);
 
 } // ctor
 
@@ -1207,7 +1157,12 @@ void CTreeViewIdxTreeTrcAdminObjs::keyPressEvent( QKeyEvent* i_pEv )
                         if( modelIdxSelected.column() == CModelIdxTreeTrcAdminObjs::EColumnEnabled )
                         {
                             QVariant val = pModelAbstract->data(modelIdxSelected, Qt::DisplayRole);
+                            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                             if( val.canConvert(QVariant::Bool) )
+                            #else
+                            // static_cast to avoid deprecation warning
+                            if( val.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                            #endif
                             {
                                 pModelAbstract->setData(modelIdxSelected, !val.toBool(), Qt::EditRole);
                             }
@@ -1315,7 +1270,12 @@ void CTreeViewIdxTreeTrcAdminObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
                     if( pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual,i_pEv->pos(),m_modelIdxSelectedOnMouseReleaseEvent) )
                     {
                         QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
+                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                         if( val.canConvert(QVariant::Bool) )
+                        #else
+                            // static_cast to avoid deprecation warning
+                        if( val.canConvert(static_cast<QMetaType>(QMetaType::Bool)) )
+                        #endif
                         {
                             pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
                         }

@@ -24,6 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "ZSSysGUI/ZSSysPushButton.h"
+#include "ZSSys/ZSSysErrResult.h"
+#include "ZSSys/ZSSysException.h"
+
 #include <QtCore/qglobal.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -33,10 +37,6 @@ may result in using the software modules.
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlabel.h>
 #endif
-
-#include "ZSSysGUI/ZSSysPushButton.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

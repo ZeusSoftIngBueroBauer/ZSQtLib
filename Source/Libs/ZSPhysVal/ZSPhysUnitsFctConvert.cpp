@@ -436,7 +436,7 @@ void SFctConvert::buildFctConvertName()
         //case EFctConvert_SQRxDIVr:
         //{
         //    strFctConvertName +=
-        //        "(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ")² "
+        //        "sqr(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ") "
         //        "/ (" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ")";
         //    break;
         //}
@@ -450,7 +450,7 @@ void SFctConvert::buildFctConvertName()
         //case EFctConvert_SQRxMULr:
         //{
         //    strFctConvertName +=
-        //        "(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ")² "
+        //        "sqr(" + strFormulaSymbolSrc + "/" + strUnitSymbolSrc + ") "
         //        "* (" + strFormulaSymbolRef + "/" + strUnitSymbolRef + ")";
         //    break;
         //}

@@ -40,7 +40,7 @@ namespace ZS
 namespace System
 {
 class CErrLog;
-class CMutex;
+class CRecursiveMutex;
 class CRequest;
 class CRequestQueue;
 class CTrcAdminObj;
@@ -177,25 +177,25 @@ protected: // instance methods
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv ) override;
 protected: // instance members
-    ZS::System::CMutex*        m_pMtx;
-    QString                    m_strObjName;
-    ZS::System::CErrLog*       m_pErrLog;
+    ZS::System::CRecursiveMutex* m_pMtx;
+    QString m_strObjName;
+    ZS::System::CErrLog* m_pErrLog;
     // Connection settings
-    QList<ESocketType>         m_arSocketTypes; // as default only socket type Tcp is supported
-    SServerHostSettings        m_hostSettings;
-    CBlkType*                  m_pBlkType;
-    QVector<SSocketDscr*>      m_arpSocketDscr;
+    QList<ESocketType> m_arSocketTypes; // as default only socket type Tcp is supported
+    SServerHostSettings m_hostSettings;
+    CBlkType* m_pBlkType;
+    QVector<SSocketDscr*> m_arpSocketDscr;
     // Gateway
-    CSrvCltBaseGatewayThread*  m_pGatewayThread;
-    QObject*                   m_pGateway;
+    CSrvCltBaseGatewayThread* m_pGatewayThread;
+    QObject* m_pGateway;
     // State Machine
-    EState                     m_state;
-    bool                       m_bReqExecTreeCreated;
+    EState m_state;
+    bool m_bReqExecTreeCreated;
     ZS::System::CRequestQueue* m_pRequestQueue;
-    ZS::System::SRequestDscr   m_reqDscrTimeout;
-    QTimer*                    m_pTmrReqTimeout;
-    bool                       m_bMsgReqContinuePending;
-    bool                       m_bIsBeingDestroyed;
+    ZS::System::SRequestDscr m_reqDscrTimeout;
+    QTimer* m_pTmrReqTimeout;
+    bool m_bMsgReqContinuePending;
+    bool m_bIsBeingDestroyed;
     /*!< The methods of the Ipc server base class and the Ipc server gateway
          are writing trace outputs to the local trace file. But the trace server
          wants to send data to the trace client. This data should not be written

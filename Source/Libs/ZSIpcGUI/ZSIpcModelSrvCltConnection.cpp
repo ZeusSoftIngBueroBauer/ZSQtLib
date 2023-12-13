@@ -89,20 +89,14 @@ void CModelSrvCltConnection::setServer( CServer* i_pServer )
     if( m_pServer != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pServer,
-            /* szSignal     */ SIGNAL(connected(QObject*,const ZS::Ipc::SSocketDscr&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onServerConnected(QObject*,const ZS::Ipc::SSocketDscr&)) );
+            m_pServer, &CServer::connected,
+            this, &CModelSrvCltConnection::onServerConnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pServer,
-            /* szSignal     */ SIGNAL(disconnected(QObject*,const ZS::Ipc::SSocketDscr&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onServerDisconnected(QObject*,const ZS::Ipc::SSocketDscr&)) );
+            m_pServer, &CServer::disconnected,
+            this, &CModelSrvCltConnection::onServerDisconnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pServer,
-            /* szSignal     */ SIGNAL(socketDscrChanged(QObject*,const ZS::Ipc::SSocketDscr&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onServerSocketDscrChanged(QObject*,const ZS::Ipc::SSocketDscr&)) );
+            m_pServer, &CServer::socketDscrChanged,
+            this, &CModelSrvCltConnection::onServerSocketDscrChanged);
 
         m_pServer = nullptr;
 
@@ -127,32 +121,16 @@ void CModelSrvCltConnection::setServer( CServer* i_pServer )
             endInsertRows();
         }
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pServer,
-            /* szSignal     */ SIGNAL(connected(QObject*,const ZS::Ipc::SSocketDscr&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onServerConnected(QObject*,const ZS::Ipc::SSocketDscr&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pServer,
-            /* szSignal     */ SIGNAL(disconnected(QObject*,const ZS::Ipc::SSocketDscr&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onServerDisconnected(QObject*,const ZS::Ipc::SSocketDscr&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pServer,
-            /* szSignal     */ SIGNAL(socketDscrChanged(QObject*,const ZS::Ipc::SSocketDscr&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onServerSocketDscrChanged(QObject*,const ZS::Ipc::SSocketDscr&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pServer != nullptr )
-
+        QObject::connect(
+            m_pServer, &CServer::connected,
+            this, &CModelSrvCltConnection::onServerConnected);
+        QObject::connect(
+            m_pServer, &CServer::disconnected,
+            this, &CModelSrvCltConnection::onServerDisconnected);
+        QObject::connect(
+            m_pServer, &CServer::socketDscrChanged,
+            this, &CModelSrvCltConnection::onServerSocketDscrChanged);
+    }
 } // setServer
 
 //------------------------------------------------------------------------------
@@ -167,15 +145,11 @@ void CModelSrvCltConnection::setClient( CClient* i_pClient )
     if( m_pClient != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pClient,
-            /* szSignal     */ SIGNAL(connected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClientConnected(QObject*)) );
+            m_pClient, &CClient::connected,
+            this, &CModelSrvCltConnection::onClientConnected);
         QObject::disconnect(
-            /* pObjSender   */ m_pClient,
-            /* szSignal     */ SIGNAL(disconnected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClientDisconnected(QObject*)) );
+            m_pClient, &CClient::disconnected,
+            this, &CModelSrvCltConnection::onClientDisconnected);
 
         m_pClient = nullptr;
 
@@ -192,24 +166,13 @@ void CModelSrvCltConnection::setClient( CClient* i_pClient )
 
     if( m_pClient != nullptr )
     {
-        if( !QObject::connect(
-            /* pObjSender   */ m_pClient,
-            /* szSignal     */ SIGNAL(connected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClientConnected(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-        if( !QObject::connect(
-            /* pObjSender   */ m_pClient,
-            /* szSignal     */ SIGNAL(disconnected(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onClientDisconnected(QObject*)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
-    } // if( m_pClient != nullptr )
-
+        QObject::connect(
+            m_pClient, &CClient::connected,
+            this, &CModelSrvCltConnection::onClientConnected);
+        QObject::connect(
+            m_pClient, &CClient::disconnected,
+            this, &CModelSrvCltConnection::onClientDisconnected);
+    }
 } // setClient
 
 /*==============================================================================

@@ -38,7 +38,7 @@ namespace ZS
 {
 namespace System
 {
-class CMutex;
+class CRecursiveMutex;
 class CWaitCondition;
 class CTrcAdminObj;
 }
@@ -126,12 +126,12 @@ private: // class members
     static ZS::System::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorNoisyMethods;
     static ZS::System::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorVeryNoisyMethods;
 private: // instance members
-    CMyClass3Thread*          m_pMyClass3Thread;
-    ZS::System::CMutex*       m_pMtxCounters;
-    int                       m_iRecursionCount;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjVeryNoisyMethods;
+    CMyClass3Thread*             m_pMyClass3Thread;
+    ZS::System::CRecursiveMutex* m_pMtxCounters;
+    int                          m_iRecursionCount;
+    ZS::System::CTrcAdminObj*    m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj*    m_pTrcAdminObjNoisyMethods;
+    ZS::System::CTrcAdminObj*    m_pTrcAdminObjVeryNoisyMethods;
 
 }; // class CMyClass3
 

@@ -25,7 +25,9 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSSysGUI/ZSSysErrLogModel.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
 #include <QtGui/qguiapplication.h>
@@ -268,9 +270,15 @@ void CModelErrLog::setErrLog( QObject* i_pErrLog )
     {
         if( m_pErrLog != nullptr )
         {
-            QObject::disconnect(m_pErrLog, &CErrLog::entryAdded, this, &CModelErrLog::onEntryAdded);
-            QObject::disconnect(m_pErrLog, &CErrLog::entryChanged, this, &CModelErrLog::onEntryChanged);
-            QObject::disconnect(m_pErrLog, &CErrLog::entryRemoved, this, &CModelErrLog::onEntryRemoved);
+            QObject::disconnect(
+                m_pErrLog, &CErrLog::entryAdded,
+                this, &CModelErrLog::onEntryAdded);
+            QObject::disconnect(
+                m_pErrLog, &CErrLog::entryChanged,
+                this, &CModelErrLog::onEntryChanged);
+            QObject::disconnect(
+                m_pErrLog, &CErrLog::entryRemoved,
+                this, &CModelErrLog::onEntryRemoved);
 
             for( int iSeverity = m_ararpEntries.count()-1; iSeverity >= 0; iSeverity-- )
             {
@@ -310,9 +318,15 @@ void CModelErrLog::setErrLog( QObject* i_pErrLog )
                 onEntryAdded(pErrLogEntry->m_errResultInfo);
             }
 
-            QObject::connect(m_pErrLog, &CErrLog::entryAdded, this, &CModelErrLog::onEntryAdded);
-            QObject::connect(m_pErrLog, &CErrLog::entryChanged, this, &CModelErrLog::onEntryChanged);
-            QObject::connect(m_pErrLog, &CErrLog::entryRemoved, this, &CModelErrLog::onEntryRemoved);
+            QObject::connect(
+                m_pErrLog, &CErrLog::entryAdded,
+                this, &CModelErrLog::onEntryAdded);
+            QObject::connect(
+                m_pErrLog, &CErrLog::entryChanged,
+                this, &CModelErrLog::onEntryChanged);
+            QObject::connect(
+                m_pErrLog, &CErrLog::entryRemoved,
+                this, &CModelErrLog::onEntryRemoved);
         }
 
         emit errLogChanged(m_pErrLog);
@@ -549,21 +563,14 @@ void CModelErrLog::removeEntry( int i_iRowIdx )
         endRemoveRows();
 
         QObject::disconnect(
-            /* pObjSender   */ m_pErrLog,
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) );
+            m_pErrLog, &CErrLog::entryRemoved,
+            this, &CModelErrLog::onEntryRemoved);
 
         m_pErrLog->removeEntry(errResultInfo);
 
-        if( !QObject::connect(
-            /* pObjSender   */ m_pErrLog,
-            /* szSignal     */ SIGNAL(entryRemoved(const ZS::System::SErrResultInfo&)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onEntryRemoved(const ZS::System::SErrResultInfo&)) ) )
-        {
-            throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-        }
+        QObject::connect(
+            m_pErrLog, &CErrLog::entryRemoved,
+            this, &CModelErrLog::onEntryRemoved);
         emit countChanged();
     }
 } // removeEntry
@@ -744,14 +751,24 @@ int CModelErrLog::columnWidthByColumn(int i_iClm, int i_iFontPixelSize) const
             {
                 QString strType = "string";
                 QVariant varData = data(index(iRowIdx, i_iClm), static_cast<int>(ERole::Type));
+                #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 if( varData.canConvert(QVariant::String) )
+                #else
+                // static_cast to avoid deprecation warning
+                if( varData.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+                #endif
                 {
                     strType = varData.toString();
                 }
                 if( strType == "string" || strType == "int" )
                 {
                     varData = data(index(iRowIdx, i_iClm), Qt::DisplayRole);
+                    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     if( varData.canConvert(QVariant::String) )
+                    #else
+                    // static_cast to avoid deprecation warning
+                    if( varData.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+                    #endif
                     {
                         QString strCellData = varData.toString();
                         #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
@@ -764,7 +781,12 @@ int CModelErrLog::columnWidthByColumn(int i_iClm, int i_iFontPixelSize) const
                 else if( strType == "imageUrl" || strType == "icon" )
                 {
                     varData = data(index(iRowIdx, i_iClm), Qt::DisplayRole);
+                    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                     if( varData.canConvert(QVariant::String) )
+                    #else
+                    // static_cast to avoid deprecation warning
+                    if( varData.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+                    #endif
                     {
                         QString strCellData = varData.toString();
                         QPixmap pixmap(strCellData);

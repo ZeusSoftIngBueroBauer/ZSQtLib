@@ -66,7 +66,7 @@ public: // class methods
     static CApplication* GetInstance();
 public: // ctors and dtor
     CApplication(
-        int            i_argc,
+        int&           i_argc,
         char*          i_argv[],
         const QString& i_strOrganizationName,
         const QString& i_strOrganizationDomain,

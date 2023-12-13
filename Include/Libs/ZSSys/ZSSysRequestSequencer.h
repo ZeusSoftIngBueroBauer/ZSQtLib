@@ -32,7 +32,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysRequest.h"
 
-class QMutex;
+class QRecursiveMutex;
 class QTimer;
 
 namespace ZS
@@ -187,7 +187,7 @@ protected slots:
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv );
 protected: // instance members
-    QMutex*                         m_pMtx;
+    QRecursiveMutex*                m_pMtx;
     bool                            m_bKeepReqDscrInExecTree;
     bool                            m_bMsgReqContinuePending;
     bool                            m_bInProgress;

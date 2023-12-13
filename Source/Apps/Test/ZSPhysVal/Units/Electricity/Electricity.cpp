@@ -56,7 +56,7 @@ CPhysScienceFieldElectricity::CPhysScienceFieldElectricity(CIdxTreeEntry* i_pPar
     // Add conversion routines to convert units between different physical sizes
     //==========================================================================
 
-    //Current.addFctConvert( // P = I²*R
+    //Current.addFctConvert( // P = (I*I)*R
     //    /* pPhysSizeDst   */ &Power,
     //    /* pPhysSizeRef   */ &Resistance,
     //    /* fctConvert     */ EFctConvert_SQRxDIVr );
@@ -76,7 +76,7 @@ CPhysScienceFieldElectricity::CPhysScienceFieldElectricity(CIdxTreeEntry* i_pPar
     //    /* pPhysSizeRef   */ &Resistance,
     //    /* fctConvert     */ EFctConvert_SQRT_xDIVr_ );
 
-    //Voltage.addFctConvert( // P = U²/R
+    //Voltage.addFctConvert( // P = (U*U)/R
     //    /* pPhysSizeDst   */ &Power,
     //    /* pPhysSizeRef   */ &Resistance,
     //    /* fctConvert     */ EFctConvert_SQRxDIVr );

@@ -27,7 +27,6 @@ may result in using the software modules.
 #ifndef ZSSys_LogFile_h
 #define ZSSys_LogFile_h
 
-#include <QtCore/qobject.h>
 #include <QtCore/qstring.h>
 
 #include "ZSSys/ZSSysDllMain.h"
@@ -165,13 +164,10 @@ namespace System
 
 */
 class ZSSYSDLL_API CLogFile : public QObject
-//******************************************************************************
 {
     Q_OBJECT
 public: // class methods
-    /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::System"; }
-    /*! Returns the class name. */
     static QString ClassName() { return "CLogFile"; }
 public: // class methods
     static CLogFile* Alloc( const QString& i_strAbsFilePath );
@@ -213,34 +209,49 @@ protected: // instance methods
 protected slots:
     void onTimeoutAutoSaveFile();
 protected: // class members
-    static QMutex                   s_mtx;          /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
-    static QMap<QString, CLogFile*> s_mapLogFiles;  /*!< Map containing all existing (allocated) log file instances.
-                                                         The key of the entries is the absolute file path of the log files.
-                                                         The value is the pointer to the log file instance. */
+    /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
+    static QRecursiveMutex s_mtx;
+    /*!< Map containing all existing (allocated) log file instances.
+         The key of the entries is the absolute file path of the log files.
+         The value is the pointer to the log file instance. */
+    static QMap<QString, CLogFile*> s_mapLogFiles;
 protected: // instance members
-    QString m_strAbsFilePath;           /*!< Absolute path including the file name and suffix. */
-    QString m_strAbsPath;               /*!< Absolute path without the file name and suffix. */
-    QString m_strCompleteBaseName;      /*!< Base name of the file without the path excluding the file suffix.
-                                             The base name consists of all characters up to (but not including) the last '.' character. */
-    QString m_strSuffix;                /*!< Suffix (extension) of the file. The suffix consists of the characters after (but not including) the last '.'. */
-    QString m_strAbsFilePathSubFile00;  /*!< Absolute path including the file name and suffix of the currently active sub log file to which the lines are added (SubFile00). */
-    QFile*  m_pFile;                    /*!< Text file of the currently active sub log file to which the lines are added (SubFile00). */
-    int     m_iRefCount;                /*!< Number of allocs for this log file.
-                                             Will be decreased with each "free" call. If the ref count becomes 0 the log file instance will be
-                                             deleted (but the file of course remains on disk). */
-    bool    m_bCloseFileAfterEachWrite; /*!< If set the log file will be closed after adding a line.
-                                             Âttention! This significantly slows down the execution of the program. */
-    int     m_iSubFileCountMax;         /*!< Maximum number of sub log files.
-                                             Defaults to 2 which should be sufficient in most cases. */
-    int     m_iSubFileLineCountMax;     /*!< Maximum number of lines written to the currently active sub log file (SubFile00) before the file
-                                             will be saved, renamed to SubFile01 and a new empty currently active sub log file will be opened.
-                                             Defaults to 1000. */
-    int     m_iSubFileLineCountCurr;    /*!< Current number of lines written to the latest sub log file (SubFile00).
-                                             If the current number of lines exceeds "SubFleLineCountMax" the content
-                                             will be saved, renamed to SubFile01 and a new empty currently active sub log file will be opened. */
-    int     m_iAutoSaveInterval_ms;     /*!< If greater than 0 a timer is started which automatically saves the currently active sub log file
-                                             within the defined intervals. */
-    QTimer* m_pTimerAutoSave;           /*!< Timer triggering the auto save. */
+    /*!< Absolute path including the file name and suffix. */
+    QString m_strAbsFilePath;
+    /*!< Absolute path without the file name and suffix. */
+    QString m_strAbsPath;
+    /*!< Base name of the file without the path excluding the file suffix.
+         The base name consists of all characters up to (but not including) the last '.' character. */
+    QString m_strCompleteBaseName;
+    /*!< Suffix (extension) of the file. The suffix consists of the characters after (but not including) the last '.'. */
+    QString m_strSuffix;
+    /*!< Absolute path including the file name and suffix of the currently active sub log file to which the lines are added (SubFile00). */
+    QString m_strAbsFilePathSubFile00;
+    /*!< Text file of the currently active sub log file to which the lines are added (SubFile00). */
+    QFile* m_pFile;
+    /*!< Number of allocs for this log file.
+         Will be decreased with each "free" call. If the ref count becomes 0 the log file instance will be
+         deleted (but the file of course remains on disk). */
+    int m_iRefCount;
+    /*!< If set the log file will be closed after adding a line.
+         Attention! This significantly slows down the execution of the program. */
+    bool m_bCloseFileAfterEachWrite;
+    /*!< Maximum number of sub log files.
+         Defaults to 2 which should be sufficient in most cases. */
+    int m_iSubFileCountMax;
+    /*!< Maximum number of lines written to the currently active sub log file (SubFile00) before the file
+         will be saved, renamed to SubFile01 and a new empty currently active sub log file will be opened.
+         Defaults to 1000. */
+    int m_iSubFileLineCountMax;
+    /*!< Current number of lines written to the latest sub log file (SubFile00).
+         If the current number of lines exceeds "SubFleLineCountMax" the content
+         will be saved, renamed to SubFile01 and a new empty currently active sub log file will be opened. */
+    int m_iSubFileLineCountCurr;
+    /*!< If greater than 0 a timer is started which automatically saves the currently active sub log file
+         within the defined intervals. */
+    int m_iAutoSaveInterval_ms;
+    /*!< Timer triggering the auto save. */
+    QTimer* m_pTimerAutoSave;
 
 }; // class CLogFile
 

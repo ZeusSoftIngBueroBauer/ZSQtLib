@@ -186,10 +186,6 @@ static const ZS::System::SEnumEntry s_arEnumStrQItemViewCursorAction[] =
     /* 9 */ SEnumEntry( /*QAbstractItemView::MovePrevious*/ 9, "MovePrevious" )
 };
 
-/*==============================================================================
-Enum Qt::DropAction
-==============================================================================*/
-
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qItemViewCursorAction2Str( int i_iVal, EEnumEntryAliasStr i_alias )
 //------------------------------------------------------------------------------
@@ -251,7 +247,7 @@ Qt::DockWidgetArea ZS::System::GUI::str2QDockWidgetArea( const QString& i_str )
 }
 
 /*==============================================================================
-QEvents
+Enum Qt::DropAction
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

@@ -496,7 +496,7 @@ class CLogServer : public QObject
 protected: // class members
 ==============================================================================*/
 
-QMutex CLogServer::s_mtx(QMutex::Recursive);
+QRecursiveMutex CLogServer::s_mtx;
 CLogServer* CLogServer::s_pTheInst;
 QHash<Qt::HANDLE, QString> CLogServer::s_hshThreadNames;
 QHash<QString, Qt::HANDLE> CLogServer::s_hshThreadIds;
@@ -866,7 +866,7 @@ QString CLogServer::GetLoggerFileAbsoluteFilePath()
 
     if( s_strLoggerFileAbsFilePath.isEmpty() )
     {
-        QString strAppConfigDir = ZS::System::getAppConfigDir("System");
+        QString strAppConfigDir = ZS::System::getAppConfigDir();
         QString strLoggerFileSuffix = "xml";
         QString strLoggerFileBaseName = "ZSLogServer-Loggers";
         SetLoggerFileAbsoluteFilePath(
@@ -924,7 +924,7 @@ QString CLogServer::GetLocalLogFileAbsoluteFilePath()
 
     if( s_strLocalLogFileAbsFilePath.isEmpty() )
     {
-        QString strAppLogDir = ZS::System::getAppLogDir("System");
+        QString strAppLogDir = ZS::System::getAppLogDir();
         QString strTrcLogFileSuffix = "log";
         QString strTrcLogFileBaseName = "ZSLogServer";
         SetLocalLogFileAbsoluteFilePath(
@@ -997,6 +997,10 @@ CLogServer::~CLogServer()
     {
         //m_pLoggersIdxTree->save(m_logSettings.m_strLoggerFileAbsFilePath);
     }
+
+    QObject::disconnect(
+        m_pLogger, &CLogger::aboutToBeDestroyed,
+        this, &CLogServer::onDefaultLoggerAboutToBeDestroyed);
 
     try
     {

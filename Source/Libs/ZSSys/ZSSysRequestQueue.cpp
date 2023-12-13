@@ -131,10 +131,8 @@ CRequestQueue::~CRequestQueue()
     if( m_pReqSyncToBeDeletedLater != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pReqSyncToBeDeletedLater,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            m_pReqSyncToBeDeletedLater, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
 
         try
         {
@@ -152,10 +150,8 @@ CRequestQueue::~CRequestQueue()
         if( m_pReqInProgress->getCreator() == m_pObjParent )
         {
             QObject::disconnect(
-                /* pObjSender   */ m_pReqInProgress,
-                /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+                m_pReqInProgress, &QObject::destroyed,
+                this, &CRequestQueue::onRequestDestroyed);
 
             // .. the request can be deleted together with the request queue.
             try
@@ -179,10 +175,8 @@ CRequestQueue::~CRequestQueue()
             m_arpReqsPostponed[idxReq] = nullptr;
 
             QObject::disconnect(
-                /* pObjSender   */ pReqPostponed,
-                /* szSignal     */ SIGNAL(destroyed(QObject*)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+                pReqPostponed, &QObject::destroyed,
+                this, &CRequestQueue::onRequestDestroyed);
 
             try
             {
@@ -404,10 +398,8 @@ void CRequestQueue::removeRequestInProgress()
     }
 
     QObject::disconnect(
-        /* pObjSender   */ m_pReqInProgress,
-        /* szSignal     */ SIGNAL(destroyed(QObject*)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+        m_pReqInProgress, &QObject::destroyed,
+        this, &CRequestQueue::onRequestDestroyed);
 
     m_hshReqsInProgress.remove(m_pReqInProgress->getId());
 
@@ -586,10 +578,8 @@ void CRequestQueue::removeRequestInProgress( qint64 i_iId )
     else // if( pReq != m_pReqInProgress )
     {
         QObject::disconnect(
-            /* pObjSender   */ pReq,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            pReq, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
 
         m_hshReqsInProgress.remove(i_iId);
     }
@@ -896,10 +886,8 @@ void CRequestQueue::setSyncRequestToBeDeletedLater( CRequest* i_pReq )
     if( m_pReqSyncToBeDeletedLater != nullptr )
     {
         QObject::disconnect(
-            /* pObjSender   */ m_pReqSyncToBeDeletedLater,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            m_pReqSyncToBeDeletedLater, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
 
         if( m_pReqSyncToBeDeletedLater != i_pReq )
         {
@@ -917,8 +905,7 @@ void CRequestQueue::setSyncRequestToBeDeletedLater( CRequest* i_pReq )
     {
         QObject::connect(
             m_pReqSyncToBeDeletedLater, &QObject::destroyed,
-            this, &CRequestQueue::onRequestDestroyed,
-            Qt::DirectConnection);
+            this, &CRequestQueue::onRequestDestroyed);
 
         m_pReqSyncToBeDeletedLater->setObjState(EObjState::Detached);
         m_pReqSyncToBeDeletedLater->update();
@@ -984,10 +971,8 @@ CRequest* CRequestQueue::takePostponedRequestByIdx( int i_idx )
         pReq = m_arpReqsPostponed.takeAt(i_idx);
 
         QObject::disconnect(
-            /* pObjSender   */ pReq,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            pReq, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
     }
 
     return pReq;
@@ -1019,10 +1004,8 @@ CRequest* CRequestQueue::takeFirstPostponedRequest()
         pReq = m_arpReqsPostponed.takeFirst();
 
         QObject::disconnect(
-            /* pObjSender   */ pReq,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            pReq, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
     }
 
     return pReq;
@@ -1054,10 +1037,8 @@ CRequest* CRequestQueue::takeLastPostponedRequest()
         pReq = m_arpReqsPostponed.takeLast();
 
         QObject::disconnect(
-            /* pObjSender   */ pReq,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            pReq, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
     }
 
     return pReq;
@@ -1128,10 +1109,8 @@ void CRequestQueue::removePostponedRequestByIdx( int i_idx )
         CRequest* pReq = m_arpReqsPostponed[i_idx];
 
         QObject::disconnect(
-            /* pObjSender   */ pReq,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            pReq, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
 
         m_arpReqsPostponed.removeAt(i_idx);
 
@@ -1163,10 +1142,8 @@ void CRequestQueue::removePostponedRequestById( qint64 i_iId )
         CRequest* pReq = m_arpReqsPostponed[idxReqPostponed];
 
         QObject::disconnect(
-            /* pObjSender   */ pReq,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            pReq, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
 
         m_arpReqsPostponed.removeAt(idxReqPostponed);
     }
@@ -1197,10 +1174,8 @@ void CRequestQueue::removePostponedRequest( CRequest* i_pReq )
         CRequest* pReq = m_arpReqsPostponed[idxReqPostponed];
 
         QObject::disconnect(
-            /* pObjSender   */ pReq,
-            /* szSignal     */ SIGNAL(destroyed(QObject*)),
-            /* pObjReceiver */ this,
-            /* szSlot       */ SLOT(onRequestDestroyed(QObject*)) );
+            pReq, &QObject::destroyed,
+            this, &CRequestQueue::onRequestDestroyed);
 
         m_arpReqsPostponed.removeAt(idxReqPostponed);
     }

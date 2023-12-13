@@ -1090,20 +1090,16 @@ void CDiagObjTable::setCellValueProvider(
             if( m_ararpDiagObjValueProvider[idxCell] != nullptr )
             {
                 QObject::disconnect(
-                    /* pObjSender   */ m_ararpDiagObjValueProvider[idxCell],
-                    /* pcSignal     */ SIGNAL(valueChanged(ZS::Diagram::CDiagObj*)),
-                    /* pObjReceiver */ this,
-                    /* pcMember     */ SLOT(cellValueChanged(ZS::Diagram::CDiagObj*)) );
+                    m_ararpDiagObjValueProvider[idxCell], QOverload<CDiagObj*>::of(&CDiagObjValueProvider::valueChanged),
+                    this, &CDiagObjTable::cellValueChanged);
             }
             m_ararpDiagObjValueProvider[idxCell] = i_pDiagObjValueProvider;
 
             if( m_ararpDiagObjValueProvider[idxCell] != nullptr )
             {
                 QObject::connect(
-                    /* pObjSender   */ m_ararpDiagObjValueProvider[idxCell],
-                    /* pcSignal     */ SIGNAL(valueChanged(ZS::Diagram::CDiagObj*)),
-                    /* pObjReceiver */ this,
-                    /* pcMember     */ SLOT(cellValueChanged(ZS::Diagram::CDiagObj*)) );
+                    m_ararpDiagObjValueProvider[idxCell], QOverload<CDiagObj*>::of(&CDiagObjValueProvider::valueChanged),
+                    this, &CDiagObjTable::cellValueChanged);
 
                 m_arardataTypeCellVal[idxCell] = EDataTypePhysVal;
             }
@@ -1955,14 +1951,9 @@ CDiagObj* CDiagObjTable::clone( CDataDiagram* i_pDiagramTrg ) const
                     i_pDiagramTrg->findDiagObj(strClassName, strObjName));
                 pDiagObjCloned->m_ararpDiagObjValueProvider[idxCell] = pDiagObjValueProvider;
 
-                if( !QObject::connect(
-                    /* pObjSender   */ pDiagObjValueProvider,
-                    /* pcSignal     */ SIGNAL(valueChanged(ZS::Diagram::CDiagObj*)),
-                    /* pObjReceiver */ pDiagObjCloned,
-                    /* pcMember     */ SLOT(cellValueChanged(ZS::Diagram::CDiagObj*)) ) )
-                {
-                    throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-                }
+                QObject::connect(
+                    pDiagObjValueProvider, QOverload<CDiagObj*>::of(&CDiagObjValueProvider::valueChanged),
+                    pDiagObjCloned, &CDiagObjTable::cellValueChanged);
             }
             if( m_ararpValueFormatCell[idxCell] != nullptr )
             {
@@ -2085,7 +2076,7 @@ void CDiagObjTable::updateLayout()
 
     EDataType    dataTypeCellDpl;
     QFontMetrics fntmtr(m_fnt);
-    QString      strCell = "Öy,²";
+    QString      strCell = "Oy,2";
     QString      strCellTmp;
     QRect        rectCell = fntmtr.boundingRect(strCell);
     int          cxClmWidth;

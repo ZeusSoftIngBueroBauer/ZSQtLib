@@ -166,15 +166,10 @@ void CMyClass3Thread::run()
 
     m_pMyClass3 = new CMyClass3(m_strMyClass3ObjName, this);
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pMyClass3,
-        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)),
-        /* cnctType     */ Qt::DirectConnection) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pMyClass3, &CMyClass3::aboutToBeDestroyed,
+        this, &CMyClass3Thread::onClass3AboutToBeDestroyed,
+        Qt::DirectConnection);
 
     emit running();
 
@@ -185,10 +180,8 @@ void CMyClass3Thread::run()
     exec();
 
     QObject::disconnect(
-        /* pObjSender   */ m_pMyClass3,
-        /* szSignal     */ SIGNAL(aboutToBeDestroyed(QObject*, const QString&)),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onClass3AboutToBeDestroyed(QObject*, const QString&)) );
+        m_pMyClass3, &CMyClass3::aboutToBeDestroyed,
+        this, &CMyClass3Thread::onClass3AboutToBeDestroyed);
 
     try
     {
@@ -320,7 +313,7 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
             QString("ctor(" + strMthInArgs + ")").toStdString().c_str());
     }
 
-    m_pMtxCounters = new CMutex(QMutex::Recursive, ClassName() + "-" + objectName() + "-Counters");
+    m_pMtxCounters = new CRecursiveMutex(ClassName() + "-" + objectName() + "-Counters");
 
 } // ctor
 

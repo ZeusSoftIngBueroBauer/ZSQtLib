@@ -128,7 +128,7 @@ public: // dtor
 protected slots: // must overridables
     virtual void onDisconnected( QObject* i_pSocketWrapper ) = 0;
     virtual void onReadyRead( QObject* i_pSocketWrapper ) = 0;
-    virtual void onError( QObject* i_pSocket, ZS::System::SErrResultInfo& i_errResultInfo ) = 0;
+    virtual void onError( QObject* i_pSocket, const ZS::System::SErrResultInfo& i_errResultInfo ) = 0;
 public: // instance methods
     void addTrcMsgLogObject( QObject* i_pObj );
     void removeTrcMsgLogObject( QObject* i_pObj );

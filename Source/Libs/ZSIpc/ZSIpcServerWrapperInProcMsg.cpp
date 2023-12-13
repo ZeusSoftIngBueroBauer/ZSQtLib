@@ -205,14 +205,10 @@ bool CInProcMsgServerWrapper::listen()
         /* strMethod          */ "listen",
         /* strAddInfo         */ "" );
 
-    if( !QObject::connect(
-        /* pObjSender   */ m_pInProcMsgServer,
-        /* szSignal     */ SIGNAL(newConnection()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onNewConnection()) ) )
-    {
-        throw CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::connect(
+        m_pInProcMsgServer, &CInProcMsgServer::newConnection,
+        this, &CInProcMsgServerWrapper::onNewConnection);
+
     return m_pInProcMsgServer->listen(m_uLocalPort);
 
 } // listen
@@ -239,14 +235,10 @@ void CInProcMsgServerWrapper::close()
         /* strMethod          */ "close",
         /* strAddInfo         */ "" );
 
-    if( !QObject::disconnect(
-        /* pObjSender   */ m_pInProcMsgServer,
-        /* szSignal     */ SIGNAL(newConnection()),
-        /* pObjReceiver */ this,
-        /* szSlot       */ SLOT(onNewConnection()) ) )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultSignalSlotConnectionFailed );
-    }
+    QObject::disconnect(
+        m_pInProcMsgServer, &CInProcMsgServer::newConnection,
+        this, &CInProcMsgServerWrapper::onNewConnection);
+
     m_pInProcMsgServer->close();
 
 } // close

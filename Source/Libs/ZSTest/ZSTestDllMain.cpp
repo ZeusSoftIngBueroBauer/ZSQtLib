@@ -31,7 +31,6 @@ may result in using the software modules.
 #include <QtCore/qglobal.h>
 
 #include "ZSTest/ZSTestDllMain.h"
-#include "ZSSys/ZSSysVersion.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -47,9 +46,6 @@ exported methods
 /*==============================================================================
 Enum ETestResult
 ==============================================================================*/
-
-template<> QMutex CEnum<ETestResult>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<ETestResult>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -72,7 +68,7 @@ static CInitEnumTestResult s_initEnumTestResult;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<ETestResult>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                              Name,        Symbol,  Text,        SCIPShort, SCPILong
+{
     /* 0 */ SEnumEntry( static_cast<int>(ETestResult::Undefined),   "Undefined", "?",     "Undefined", "UND",     "UNDefined" ),
     /* 1 */ SEnumEntry( static_cast<int>(ETestResult::TestFailed),  "Failed",    "ERR",   "Failed",    "FAIL",    "FAILed"    ),
     /* 2 */ SEnumEntry( static_cast<int>(ETestResult::TestPassed),  "Passed",    "OK",    "Passed",    "PASS",    "PASSed"    ),
@@ -84,9 +80,6 @@ template<> const QVector<SEnumEntry> CEnum<ETestResult>::s_arEnumEntries =
 /*==============================================================================
 Enum ETestState
 ==============================================================================*/
-
-template<> QMutex CEnum<ETestState>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<ETestState>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 //------------------------------------------------------------------------------
@@ -108,7 +101,7 @@ static CInitEnumTestState s_initEnumTestState;
 //------------------------------------------------------------------------------
 template<> const QVector<SEnumEntry> CEnum<ETestState>::s_arEnumEntries =
 //------------------------------------------------------------------------------
-{                       // Enumerator,                         Name,      Symbol,    Text,      SCIPShort, SCPILong
+{
     /* 0 */ SEnumEntry( static_cast<int>(ETestState::Idle),    "Idle",    "Idle",    "Idle",    "IDLE",    "IDLE"    ),
     /* 1 */ SEnumEntry( static_cast<int>(ETestState::Running), "Running", "Running", "Running", "RUNN",    "RUNNing" ),
     /* 2 */ SEnumEntry( static_cast<int>(ETestState::Paused),  "Paused",  "Paused",  "Paused",  "PAUS",    "PAUSed"  )

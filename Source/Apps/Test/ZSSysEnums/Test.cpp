@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSTest/ZSTestStepGroup.h"
 #include "ZSTest/ZSTestStepIdxTreeEntry.h"
 #include "ZSTest/ZSTestStepIdxTree.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumTemplate.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
@@ -61,9 +62,6 @@ enum class EProcessorClock
 };
 
 typedef CEnum<EProcessorClock> CEnumProcessorClock;
-
-template<> QMutex CEnum<EProcessorClock>::s_mtxArMapsStr2Enumerators(QMutex::NonRecursive);
-template<> QVector<QHash<QString, int>> CEnum<EProcessorClock>::s_armapsStr2Enumerators = QVector<QHash<QString, int>>();
 
 template<> const QVector<SEnumEntry> CEnum<EProcessorClock>::s_arEnumEntries =
 {   // idxRow,           Enumerator,                                Name,  Symbol, Text,                SCIPShort, SCPILong, Value
@@ -583,16 +581,16 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
     QString strResultValue;
 
     EProcessorClock enumerator;
-    QString         strEnumerator;
+    QString strEnumerator;
 
-    int      iEnumerator;
-    bool     bOk;
+    int iEnumerator;
+    bool bOk;
     QVariant valExpected;
     QVariant valResult;
     QString  strValResult;
 
     const SEnumEntry* pEnumArr = CEnumProcessorClock::s_arEnumEntries.data();
-    const int         iEnumArrLen = CEnumProcessorClock::s_arEnumEntries.count();
+    const int iEnumArrLen = CEnumProcessorClock::s_arEnumEntries.count();
 
     // -------------------------------------------------------------------------
 
@@ -624,12 +622,24 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         }
 
         strExpectedValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valExpected.canConvert(QVariant::Double) ) {
+#else
+        if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+        }
         strlstExpectedValues.append(strExpectedValue);
 
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
         strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
-        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strResultValue += QString::number(valResult.toDouble(),'f',1);
+        }
         strlstResultValues.append(strResultValue);
     }
 
@@ -643,7 +653,13 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         strEnumerator = QString::number(static_cast<int>(enumerator));
         strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
-        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strResultValue += QString::number(valResult.toDouble(),'f',1);
+        }
     }
     catch( CException& exc )
     {
@@ -661,7 +677,13 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         strEnumerator = QString::number(static_cast<int>(enumerator));
         strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + "): ";
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator));
-        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strResultValue += QString::number(valResult.toDouble(),'f',1);
+        }
     }
     catch( CException& exc )
     {
@@ -682,7 +704,11 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         strlstExpectedValues.append(strExpectedValue);
 
         strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
+        #else
+        valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QMetaType::Double, &bOk);
+        #endif
         if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
         strlstResultValues.append(strResultValue);
@@ -699,7 +725,11 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         strlstExpectedValues.append(strExpectedValue);
 
         strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
+        #else
+        valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QMetaType::Double, &bOk);
+        #endif
         if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
     }
@@ -720,7 +750,11 @@ void CTest::doTestStepEnumEntryClassMethodsEnumerator2Val( ZS::Test::CTestStep* 
         strlstExpectedValues.append(strExpectedValue);
 
         strResultValue = "SEnumEntry::enumerator2Val(" + strEnumerator + ", Double, &bOk): ";
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QVariant::Double, &bOk);
+        #else
+        valResult = SEnumEntry::enumerator2Val(pEnumArr, iEnumArrLen, static_cast<int>(enumerator), QMetaType::Double, &bOk);
+        #endif
         if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
     }
@@ -1041,8 +1075,16 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
 
         strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
         valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource);
-        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-        else strValResult = "";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strValResult = QString::number(valResult.toDouble(),'f',1);
+        }
+        else {
+            strValResult = "";
+        }
         strResultValue += strValResult;
         strlstResultValues.append(strResultValue);
     }
@@ -1098,9 +1140,24 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
             strlstExpectedValues.append(strExpectedValue);
 
             strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Double, idxAlias);
-            if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-            else strValResult = "";
+            if( valResult.canConvert(QVariant::Double) ) {
+                strValResult = QString::number(valResult.toDouble(),'f',1);
+            }
+            #else
+            valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::Double, idxAlias);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#else
+            if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+                strValResult = QString::number(valResult.toDouble(),'f',1);
+            }
+            #endif
+            else {
+                strValResult = "";
+            }
             strResultValue += strValResult;
             strlstResultValues.append(strResultValue);
 
@@ -1121,9 +1178,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+    #else
+    valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+    #endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -1139,9 +1205,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -1157,9 +1232,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -1175,9 +1259,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Int, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Int) ) strValResult = QString::number(valResult.toInt());
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Int) ) {
+#else
+    valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::Int, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Int)) ) {
+#endif
+        strValResult = QString::number(valResult.toInt());
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -1193,9 +1286,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -1211,9 +1313,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -1229,9 +1340,18 @@ void CTest::doTestStepEnumEntryClassMethodsStr2Val( ZS::Test::CTestStep* i_pTest
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -1934,8 +2054,16 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
 
         strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + "): ";
         valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource);
-        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-        else strValResult = "";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strValResult = QString::number(valResult.toDouble(),'f',1);
+        }
+        else {
+            strValResult = "";
+        }
         strResultValue += strValResult;
         strlstResultValues.append(strResultValue);
     }
@@ -1991,9 +2119,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
             strlstExpectedValues.append(strExpectedValue);
 
             strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", Double, " + strAlias + "): ";
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Double, idxAlias);
-            if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-            else strValResult = "";
+            if( valResult.canConvert(QVariant::Double) ) {
+            #else
+            valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::Double, idxAlias);
+            if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+            #endif
+                strValResult = QString::number(valResult.toDouble(),'f',1);
+            }
+            else {
+                strValResult = "";
+            }
             strResultValue += strValResult;
             strlstResultValues.append(strResultValue);
 
@@ -2014,9 +2151,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -2032,9 +2178,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -2050,9 +2205,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -2068,9 +2232,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Int, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Int) ) strValResult = QString::number(valResult.toInt());
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Int) ) {
+#else
+    valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::Int, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Int)) ) {
+#endif
+        strValResult = QString::number(valResult.toInt());
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -2086,9 +2259,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -2104,9 +2286,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-    else strValResult = "";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strValResult = QString::number(valResult.toDouble(),'f',1);
+    }
+    else {
+        strValResult = "";
+    }
     strResultValue += strValResult + ", " + bool2Str(bOk);
     strlstResultValues.append(strResultValue);
 
@@ -2124,9 +2315,18 @@ void CTest::doTestStepEnumEntryClassMethodsMapStr2Val( ZS::Test::CTestStep* i_pT
     try
     {
         strResultValue = "SEnumEntry::str2Val(" + strEnumeratorSource + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-        if( valResult.canConvert(QVariant::Double) ) strValResult = QString::number(valResult.toDouble(),'f',1);
-        else strValResult = "";
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        valResult = SEnumEntry::str2Val(armapsStr2Enumerators, pEnumArr, iEnumArrLen, strEnumeratorSource, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strValResult = QString::number(valResult.toDouble(),'f',1);
+        }
+        else {
+            strValResult = "";
+        }
         strResultValue += strValResult + ", " + bool2Str(bOk);
     }
     catch( CException& exc )
@@ -7778,12 +7978,24 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
         }
 
         strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valExpected.canConvert(QVariant::Double) ) {
+#else
+        if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+        }
         strlstExpectedValues.append(strExpectedValue);
 
         valResult = CEnumProcessorClock::toValue(enumerator);
         strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strResultValue += QString::number(valResult.toDouble(),'f',1);
+        }
         strlstResultValues.append(strResultValue);
     }
 
@@ -7799,7 +8011,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     {
         strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(enumerator);
-        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strResultValue += QString::number(valResult.toDouble(),'f',1);
+        }
     }
     catch( CException& exc )
     {
@@ -7824,7 +8042,13 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     {
         strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(enumerator);
-        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strResultValue += QString::number(valResult.toDouble(),'f',1);
+        }
     }
     catch( CException& exc )
     {
@@ -7867,12 +8091,24 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
         }
 
         strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
-        if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-        else strExpectedValue += valExpected.toString() + ", false";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valExpected.canConvert(QVariant::Double) ) {
+#else
+        if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+        }
+        else {
+            strExpectedValue += valExpected.toString() + ", false";
+        }
         strlstExpectedValues.append(strExpectedValue);
 
         strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
+#else
+        valResult = CEnumProcessorClock::toValue(enumerator, QMetaType::Double, &bOk);
+#endif
         if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
         strlstResultValues.append(strResultValue);
@@ -7891,7 +8127,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     try
     {
         strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
+#else
+        valResult = CEnumProcessorClock::toValue(enumerator, QMetaType::Double, &bOk);
+#endif
         if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
     }
@@ -7917,7 +8157,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     try
     {
         strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         valResult = CEnumProcessorClock::toValue(enumerator, QVariant::Double, &bOk);
+#else
+        valResult = CEnumProcessorClock::toValue(enumerator, QMetaType::Double, &bOk);
+#endif
         if( bOk ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", " + bool2Str(bOk);
         else strResultValue += valResult.toString() + ", " + bool2Str(bOk);
     }
@@ -7962,13 +8206,27 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
         }
 
         strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
-        if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
-        else strExpectedValue += valExpected.toString();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valExpected.canConvert(QVariant::Double) ) {
+#else
+        if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+        }
+        else {
+            strExpectedValue += valExpected.toString();
+        }
         strlstExpectedValues.append(strExpectedValue);
 
         strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + "): ";
         valResult = CEnumProcessorClock::toValue(strEnumerator);
-        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strResultValue += QString::number(valResult.toDouble(),'f',1);
+        }
         strlstResultValues.append(strResultValue);
     }
 
@@ -8020,14 +8278,31 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
             }
 
             strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, " + strAlias + "): ";
-            if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
-            else strExpectedValue += valExpected.toString();
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            if( valExpected.canConvert(QVariant::Double) ) {
+#else
+            if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+                strExpectedValue += QString::number(valExpected.toDouble(),'f',1);
+            }
+            else {
+                strExpectedValue += valExpected.toString();
+            }
             strlstExpectedValues.append(strExpectedValue);
 
             strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", Double, " + strAlias + "): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Double, idxAlias);
-            if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1);
-            else strResultValue += valResult.toString();
+            if( valResult.canConvert(QVariant::Double) ) {
+#else
+            valResult = CEnumProcessorClock::toValue(strEnumerator, QMetaType::Double, idxAlias);
+            if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+                strResultValue += QString::number(valResult.toDouble(),'f',1);
+            }
+            else {
+                strResultValue += valResult.toString();
+            }
             strlstResultValues.append(strResultValue);
 
         } // for( iEnumerator = 0; iEnumerator < iEnumArrLen; ++iEnumerator )
@@ -8043,14 +8318,31 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = 5.12e8;
 
     strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strExpectedValue += valExpected.toString() + ", false";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if( valExpected.canConvert(QVariant::Double) ) {
+#else
+    if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strExpectedValue += valExpected.toString() + ", false";
+    }
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strResultValue += valResult.toString() + ", false";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = CEnumProcessorClock::toValue(strEnumerator, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strResultValue += valResult.toString() + ", false";
+    }
     strlstResultValues.append(strResultValue);
 
     strEnumerator = "medIUM";
@@ -8061,14 +8353,31 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = QVariant();
 
     strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strExpectedValue += valExpected.toString() + ", false";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if( valExpected.canConvert(QVariant::Double) ) {
+#else
+    if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strExpectedValue += valExpected.toString() + ", false";
+    }
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strResultValue += valResult.toString() + ", false";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = CEnumProcessorClock::toValue(strEnumerator, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strResultValue += valResult.toString() + ", false";
+    }
     strlstResultValues.append(strResultValue);
 
     strEnumerator = "medIUM";
@@ -8079,14 +8388,31 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = 5.12e8;
 
     strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strExpectedValue += valExpected.toString() + ", false";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if( valExpected.canConvert(QVariant::Double) ) {
+#else
+    if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strExpectedValue += valExpected.toString() + ", false";
+    }
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strResultValue += valResult.toString() + ", false";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = CEnumProcessorClock::toValue(strEnumerator, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strResultValue += valResult.toString() + ", false";
+    }
     strlstResultValues.append(strResultValue);
 
     strEnumerator = "MEDium";
@@ -8097,14 +8423,31 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = 5.12e8;
 
     strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strExpectedValue += valExpected.toString() + ", false";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if( valExpected.canConvert(QVariant::Double) ) {
+#else
+    if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strExpectedValue += valExpected.toString() + ", false";
+    }
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Int, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Int, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strResultValue += valResult.toString() + ", false";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = CEnumProcessorClock::toValue(strEnumerator, QMetaType::Int, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strResultValue += valResult.toString() + ", false";
+    }
     strlstResultValues.append(strResultValue);
 
     strEnumerator = "meDIUM";
@@ -8115,14 +8458,31 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = QVariant();
 
     strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strExpectedValue += valExpected.toString() + ", false";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if( valExpected.canConvert(QVariant::Double) ) {
+#else
+    if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strExpectedValue += valExpected.toString() + ", false";
+    }
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strResultValue += valResult.toString() + ", false";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = CEnumProcessorClock::toValue(strEnumerator, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strResultValue += valResult.toString() + ", false";
+    }
     strlstResultValues.append(strResultValue);
 
     strEnumerator = "meDIUM";
@@ -8133,14 +8493,31 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     valExpected = 5.12e8;
 
     strExpectedValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
-    if( valExpected.canConvert(QVariant::Double) ) strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
-    else strExpectedValue += valExpected.toString() + ", false";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if( valExpected.canConvert(QVariant::Double) ) {
+#else
+    if( valExpected.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strExpectedValue += QString::number(valExpected.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strExpectedValue += valExpected.toString() + ", false";
+    }
     strlstExpectedValues.append(strExpectedValue);
 
     strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-    if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-    else strResultValue += valResult.toString() + ", false";
+    if( valResult.canConvert(QVariant::Double) ) {
+#else
+    valResult = CEnumProcessorClock::toValue(strEnumerator, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+    if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+        strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+    }
+    else {
+        strResultValue += valResult.toString() + ", false";
+    }
     strlstResultValues.append(strResultValue);
 
     strEnumerator = "Medium";
@@ -8157,9 +8534,18 @@ void CTest::doTestStepEnumClassTemplateUserDefinedClassMethodToValue( ZS::Test::
     try
     {
         strResultValue = "CEnumProcessorClock::toValue(" + strEnumerator + ", " + strAlias + ", Invalid, " + strCaseSensitivity + ", &bOk): ";
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         valResult = CEnumProcessorClock::toValue(strEnumerator, QVariant::Invalid, idxAlias, caseSensitivity, &bOk);
-        if( valResult.canConvert(QVariant::Double) ) strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
-        else strResultValue += valResult.toString() + ", false";
+        if( valResult.canConvert(QVariant::Double) ) {
+#else
+        valResult = CEnumProcessorClock::toValue(strEnumerator, QMetaType::UnknownType, idxAlias, caseSensitivity, &bOk);
+        if( valResult.canConvert(static_cast<QMetaType>(QMetaType::Double)) ) {
+#endif
+            strResultValue += QString::number(valResult.toDouble(),'f',1) + ", true";
+        }
+        else {
+            strResultValue += valResult.toString() + ", false";
+        }
     }
     catch( CException& exc )
     {
@@ -12961,7 +13347,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToValue( ZS::Test::C
             strExpectedValue = strEnumerator + ".toValue(QVariant::Double, &bOk): " + val.toString() + ", " + bool2Str(bOk);
             strlstExpectedValues.append(strExpectedValue);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             val = enumInst.toValue(QVariant::Double, &bOk);
+#else
+            val = enumInst.toValue(QMetaType::Double, &bOk);
+#endif
             strResultValue = strEnumerator + ".toValue(QVariant::Double, &bOk): " + val.toString() + ", " + bool2Str(bOk);
         }
         catch( CException& exc )
@@ -12986,7 +13376,11 @@ void CTest::doTestStepEnumClassTemplateUserDefinedInstMethodToValue( ZS::Test::C
             strExpectedValue = strEnumerator + ".toValue(QVariant::Invalid, &bOk): " + val.toString() + ", " + bool2Str(bOk);
             strlstExpectedValues.append(strExpectedValue);
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             val = enumInst.toValue(QVariant::Invalid, &bOk);
+#else
+            val = enumInst.toValue(QMetaType::UnknownType, &bOk);
+#endif
             strResultValue = strEnumerator + ".toValue(QVariant::Invalid, &bOk): " + val.toString() + ", " + bool2Str(bOk);
         }
         catch( CException& exc )
