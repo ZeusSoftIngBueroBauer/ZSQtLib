@@ -638,70 +638,60 @@ void ZS::Draw::getMaxRectArea(
     double& o_fXRightMax, double& o_fYBottomMax )
 //------------------------------------------------------------------------------
 {
-    o_fXLeftMin   = i_fXLeft1;
-    o_fYTopMin    = i_fYTop1;
-    o_fXRightMax  = i_fXRight1;
+    o_fXLeftMin = i_fXLeft1;
+    o_fYTopMin = i_fYTop1;
+    o_fXRightMax = i_fXRight1;
     o_fYBottomMax = i_fYBottom1;
 
-    if( o_fXLeftMin > i_fXLeft2 )
-    {
+    if (o_fXLeftMin > i_fXLeft2) {
         o_fXLeftMin = i_fXLeft2;
     }
-    if( o_fYTopMin > i_fYTop2 )
-    {
+    if (o_fYTopMin > i_fYTop2) {
         o_fYTopMin = i_fYTop2;
     }
-    if( o_fXRightMax < i_fXRight2 )
-    {
+    if (o_fXRightMax < i_fXRight2) {
         o_fXRightMax = i_fXRight2;
     }
-    if( o_fYBottomMax < i_fYBottom2 )
-    {
+    if (o_fYBottomMax < i_fYBottom2) {
         o_fYBottomMax = i_fYBottom2;
     }
-
-} // getMaxRectArea
+}
 
 //------------------------------------------------------------------------------
 void ZS::Draw::getMaxRectArea(
-    const CPhysVal& i_physValLeft1,    const CPhysVal& i_physValTop1,
-    const CPhysVal& i_physValRight1,   const CPhysVal& i_physValBottom1,
-    const CPhysVal& i_physValLeft2,    const CPhysVal& i_physValTop2,
-    const CPhysVal& i_physValRight2,   const CPhysVal& i_physValBottom2,
-    CPhysVal&       o_physValLeftMax,  CPhysVal&       o_physValTopMax,
-    CPhysVal&       o_physValRightMax, CPhysVal&       o_physValBottomMax )
+    const CPhysVal& i_physValLeft1, const CPhysVal& i_physValTop1,
+    const CPhysVal& i_physValRight1, const CPhysVal& i_physValBottom1,
+    const CPhysVal& i_physValLeft2, const CPhysVal& i_physValTop2,
+    const CPhysVal& i_physValRight2, const CPhysVal& i_physValBottom2,
+    CPhysVal& o_physValLeftMax, CPhysVal& o_physValTopMax,
+    CPhysVal& o_physValRightMax, CPhysVal& o_physValBottomMax )
 //------------------------------------------------------------------------------
 {
-    o_physValLeftMax   = i_physValLeft1;
-    o_physValTopMax    = i_physValTop1;
-    o_physValRightMax  = i_physValRight1;
+    o_physValLeftMax = i_physValLeft1;
+    o_physValTopMax = i_physValTop1;
+    o_physValRightMax = i_physValRight1;
     o_physValBottomMax = i_physValBottom1;
 
-    if( o_physValLeftMax > i_physValLeft2 )
-    {
+    if (o_physValLeftMax > i_physValLeft2) {
         o_physValLeftMax = i_physValLeft2;
     }
-    if( o_physValTopMax > i_physValTop2 )
-    {
+    if (o_physValTopMax > i_physValTop2) {
         o_physValTopMax = i_physValTop2;
     }
-    if( o_physValRightMax < i_physValRight2 )
-    {
+    if (o_physValRightMax < i_physValRight2) {
         o_physValRightMax = i_physValRight2;
     }
-    if( o_physValBottomMax < i_physValBottom2 )
-    {
+    if (o_physValBottomMax < i_physValBottom2) {
         o_physValBottomMax = i_physValBottom2;
     }
-
-} // getMaxRectArea
+}
 
 //------------------------------------------------------------------------------
 QRectF ZS::Draw::resizeRect(
-    const QRectF&              i_rect,
+    const QRectF& i_rect,
     const CEnumSelectionPoint& i_selPt,
-    const QPointF&             i_ptSel,
-    CEnumSelectionPoint*       o_pSelPt )
+    const QPointF& i_ptSel,
+    CEnumSelectionPoint* o_pSelPt )
 //------------------------------------------------------------------------------
 {
     CEnumSelectionPoint selPt = i_selPt;
@@ -711,13 +701,10 @@ QRectF ZS::Draw::resizeRect(
     double fXPos = i_ptSel.x();
     double fYPos = i_ptSel.y();
 
-    switch( i_selPt.enumerator() )
-    {
-        case ESelectionPoint::TopLeft:
-        {
+    switch (i_selPt.enumerator()) {
+        case ESelectionPoint::TopLeft: {
             // Moved right and below right bottom corner ..
-            if( fXPos > rctResult.right() && fYPos > rctResult.bottom() )
-            {
+            if (fXPos > rctResult.right() && fYPos > rctResult.bottom()) {
                 rctResult.setLeft(rctResult.right());
                 rctResult.setRight(fXPos);
                 rctResult.setTop(rctResult.bottom());
@@ -725,35 +712,29 @@ QRectF ZS::Draw::resizeRect(
                 selPt = ESelectionPoint::BottomRight;
             }
             // Moved right of right border ..
-            else if( fXPos > rctResult.right() )
-            {
+            else if (fXPos > rctResult.right()) {
                 rctResult.setLeft(rctResult.right());
                 rctResult.setRight(fXPos);
                 rctResult.setTop(fYPos);
                 selPt = ESelectionPoint::TopRight;
             }
             // Moved below bottom border ..
-            else if( fYPos > rctResult.bottom() )
-            {
+            else if (fYPos > rctResult.bottom()) {
                 rctResult.setLeft(fXPos);
                 rctResult.setTop(rctResult.bottom());
                 rctResult.setBottom(fYPos);
                 selPt = ESelectionPoint::BottomLeft;
             }
             // If the bounding rectangle don't need to be twisted ...
-            else
-            {
+            else {
                 rctResult.setLeft(fXPos);
                 rctResult.setTop(fYPos);
             }
             break;
         }
-
-        case ESelectionPoint::BottomLeft:
-        {
+        case ESelectionPoint::BottomLeft: {
             // Moved right and above right top corner ..
-            if( fXPos > rctResult.right() && fYPos < rctResult.top() )
-            {
+            if (fXPos > rctResult.right() && fYPos < rctResult.top()) {
                 rctResult.setLeft(rctResult.right());
                 rctResult.setRight(fXPos);
                 rctResult.setBottom(rctResult.top());
@@ -761,35 +742,29 @@ QRectF ZS::Draw::resizeRect(
                 selPt = ESelectionPoint::TopRight;
             }
             // Moved right of right border ..
-            else if( fXPos > rctResult.right() )
-            {
+            else if (fXPos > rctResult.right()) {
                 rctResult.setLeft(rctResult.right());
                 rctResult.setRight(fXPos);
                 rctResult.setBottom(fYPos);
                 selPt = ESelectionPoint::BottomRight;
             }
             // Moved above top border ..
-            else if( fYPos < rctResult.top() )
-            {
+            else if (fYPos < rctResult.top()) {
                 rctResult.setLeft(fXPos);
                 rctResult.setBottom(rctResult.top());
                 rctResult.setTop(fYPos);
                 selPt = ESelectionPoint::TopLeft;
             }
             // If the bounding rectangle don't need to be twisted ...
-            else
-            {
+            else {
                 rctResult.setLeft(fXPos);
                 rctResult.setBottom(fYPos);
             }
             break;
         }
-
-        case ESelectionPoint::TopRight:
-        {
+        case ESelectionPoint::TopRight: {
             // Moved left and below left bottom corner ..
-            if( fXPos < rctResult.left() && fYPos > rctResult.bottom() )
-            {
+            if (fXPos < rctResult.left() && fYPos > rctResult.bottom()) {
                 rctResult.setRight(rctResult.left());
                 rctResult.setLeft(fXPos);
                 rctResult.setTop(rctResult.bottom());
@@ -797,35 +772,29 @@ QRectF ZS::Draw::resizeRect(
                 selPt = ESelectionPoint::BottomLeft;
             }
             // Moved left of left border ..
-            else if( fXPos < rctResult.left() )
-            {
+            else if (fXPos < rctResult.left()) {
                 rctResult.setRight(rctResult.left());
                 rctResult.setLeft(fXPos);
                 rctResult.setTop(fYPos);
                 selPt = ESelectionPoint::TopLeft;
             }
             // Moved below bottom border ..
-            else if( fYPos > rctResult.bottom() )
-            {
+            else if (fYPos > rctResult.bottom()) {
                 rctResult.setRight(fXPos);
                 rctResult.setTop(rctResult.bottom());
                 rctResult.setBottom(fYPos);
                 selPt = ESelectionPoint::BottomRight;
             }
             // If the bounding rectangle don't need to be twisted ...
-            else
-            {
+            else {
                 rctResult.setRight(fXPos);
                 rctResult.setTop(fYPos);
             }
             break;
         }
-
-        case ESelectionPoint::BottomRight:
-        {
+        case ESelectionPoint::BottomRight: {
             // Moved left and above left top corner ..
-            if( fXPos < rctResult.left() && fYPos < rctResult.top() )
-            {
+            if (fXPos < rctResult.left() && fYPos < rctResult.top()) {
                 rctResult.setRight(rctResult.left());
                 rctResult.setLeft(fXPos);
                 rctResult.setBottom(rctResult.top());
@@ -833,98 +802,79 @@ QRectF ZS::Draw::resizeRect(
                 selPt = ESelectionPoint::TopLeft;
             }
             // Moved left of left border ..
-            else if( fXPos < rctResult.left() )
-            {
+            else if (fXPos < rctResult.left()) {
                 rctResult.setRight(rctResult.left());
                 rctResult.setLeft(fXPos);
                 rctResult.setBottom(fYPos);
                 selPt = ESelectionPoint::BottomLeft;
             }
             // Moved above top border ..
-            else if( fYPos < rctResult.top() )
-            {
+            else if (fYPos < rctResult.top()) {
                 rctResult.setRight(fXPos);
                 rctResult.setBottom(rctResult.top());
                 rctResult.setTop(fYPos);
                 selPt = ESelectionPoint::TopRight;
             }
             // If the bounding rectangle don't need to be twisted ...
-            else
-            {
+            else {
                 rctResult.setRight(fXPos);
                 rctResult.setBottom(fYPos);
             }
             break;
         }
-
-        case ESelectionPoint::LeftCenter:
-        {
+        case ESelectionPoint::LeftCenter: {
             // Moved right of right border ..
-            if( fXPos > rctResult.right() )
-            {
+            if (fXPos > rctResult.right()) {
                 rctResult.setLeft(rctResult.right());
                 rctResult.setRight(fXPos);
                 selPt = ESelectionPoint::RightCenter;
             }
             // If the bounding rectangle don't need to be twisted ...
-            else
-            {
+            else {
                 rctResult.setLeft(fXPos);
             }
             break;
         }
-
-        case ESelectionPoint::RightCenter:
-        {
+        case ESelectionPoint::RightCenter: {
             // Moved left of left border ..
-            if( fXPos < rctResult.left() )
-            {
+            if (fXPos < rctResult.left()) {
                 rctResult.setRight(rctResult.left());
                 rctResult.setLeft(fXPos);
                 selPt = ESelectionPoint::LeftCenter;
             }
             // If the bounding rectangle don't need to be twisted ...
-            else
-            {
+            else {
                 rctResult.setRight(fXPos);
             }
             break;
         }
-
         case ESelectionPoint::TopCenter:
         {
             // Moved below bottom border ..
-            if( fYPos > rctResult.bottom() )
-            {
+            if (fYPos > rctResult.bottom()) {
                 rctResult.setTop(rctResult.bottom());
                 rctResult.setBottom(fYPos);
                 selPt = ESelectionPoint::BottomCenter;
             }
             // If the bounding rectangle don't need to be twisted ...
-            else
-            {
+            else {
                 rctResult.setTop(fYPos);
             }
             break;
         }
-
-        case ESelectionPoint::BottomCenter:
-        {
+        case ESelectionPoint::BottomCenter: {
             // Moved above top border ..
-            if( fYPos < rctResult.top() )
-            {
+            if (fYPos < rctResult.top()) {
                 rctResult.setBottom(rctResult.top());
                 rctResult.setTop(fYPos);
                 selPt = ESelectionPoint::TopCenter;
             }
             // If the bounding rectangle don't need to be twisted ...
-            else
-            {
+            else {
                 rctResult.setBottom(fYPos);
             }
             break;
         }
-
         case ESelectionPoint::Center:
         case ESelectionPoint::RotateTop:
         case ESelectionPoint::RotateBottom:
@@ -933,29 +883,24 @@ QRectF ZS::Draw::resizeRect(
             break;
         }
     }
-
-    if( o_pSelPt != nullptr )
-    {
+    if (o_pSelPt != nullptr) {
         *o_pSelPt = selPt;
     }
-
     return rctResult;
-
-} // resizeRect
+}
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::resizePolygon(
     const QPolygonF& i_plg,
-    const QRectF&    i_rctBoundingNew,
-    const QRectF&    i_rctBoundingOld )
+    const QRectF& i_rctBoundingNew,
+    const QRectF& i_rctBoundingOld )
 //------------------------------------------------------------------------------
 {
     QPolygonF plgResult = i_plg;
 
     QRectF rctBoundingOld = i_rctBoundingOld;
 
-    if( !rctBoundingOld.isValid() )
-    {
+    if (!rctBoundingOld.isValid()) {
         rctBoundingOld = plgResult.boundingRect();
     }
 
@@ -972,45 +917,50 @@ QPolygonF ZS::Draw::resizePolygon(
     double fScaleX = 1.0;
     double fScaleY = 1.0;
 
-    if( fWOld > 0.0 )
-    {
+    if (fWOld > 0.0) {
         fScaleX = fWNew / fWOld;
     }
-    if( fHOld > 0.0 )
-    {
+    if (fHOld > 0.0) {
         fScaleY = fHNew / fHOld;
     }
 
-    QPointF pt;
-    int     idxPt;
-    double  fxdOld, fydOld;
-    double  fxdNew, fydNew;
-
-    for( idxPt = 0; idxPt < plgResult.size(); idxPt++ )
-    {
-        pt = plgResult[idxPt];
-
-        fxdOld = pt.x() - fx0Old;
-        fydOld = pt.y() - fy0Old;
-
-        fxdNew = fScaleX * fxdOld;
-        fydNew = fScaleY * fydOld;
-
-        pt.setX( fx0New + fxdNew );
-        pt.setY( fy0New + fydNew );
-
-        plgResult[idxPt] = pt;
+    for (QPointF& pt : plgResult) {
+        double fxdOld = pt.x() - fx0Old;
+        double fydOld = pt.y() - fy0Old;
+        double fxdNew = fScaleX * fxdOld;
+        double fydNew = fScaleY * fydOld;
+        pt.setX(fx0New + fxdNew);
+        pt.setY(fy0New + fydNew);
+        //plgResult[idxPt] = pt;
     }
-
     return plgResult;
-
-} // resizePolygon
+}
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle of the circle defined by its center
+           point and radius.
+*/
 QRectF ZS::Draw::boundingRect(const QPointF& i_pt, double i_fRadius)
 //------------------------------------------------------------------------------
 {
-    return QRectF( i_pt.x()-i_fRadius,  i_pt.y()-i_fRadius, 2.0*i_fRadius, 2.0*i_fRadius );
+    return QRectF(i_pt.x()-i_fRadius,  i_pt.y()-i_fRadius, 2.0*i_fRadius, 2.0*i_fRadius);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle of the line.
+
+    The position of P1 and P2 is not relevant. If P1 would be right or up
+    P2 the left top corner of the bounding rectangle is either at P1 or P2.
+*/
+QRectF ZS::Draw::boundingRect(const QLineF& i_line)
+//------------------------------------------------------------------------------
+{
+    QPolygonF plg = line2Polygon(i_line);
+    QRectF rectBounding = plg.boundingRect();
+    // Width and height of the bounding rectangle must be corrected by one pixel.
+    //rectBounding.setWidth(rectBounding.width() + 1.0);
+    //rectBounding.setHeight(rectBounding.height() + 1.0);
+    return rectBounding;
 }
 
 //------------------------------------------------------------------------------

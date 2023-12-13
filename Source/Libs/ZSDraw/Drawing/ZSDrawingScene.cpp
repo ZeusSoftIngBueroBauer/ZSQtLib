@@ -1169,7 +1169,7 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
 //------------------------------------------------------------------------------
 {
     if (i_pGraphObj == nullptr) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
+        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
     }
 
     QString strMthInArgs;
@@ -1297,7 +1297,7 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
     if (pGraphicsItem == nullptr) {
-        throw ZS::System::CException(
+        throw CException(
             __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "dynamic_cast<QGraphicsItem*>(i_pGraphObj)");
     }
 
@@ -1308,11 +1308,11 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
     // should not be indicated in the index tree.
     QGraphicsItem* pGraphicsItemParent = nullptr;
     if (i_pGraphObj->isSelectionPoint()) {
-        throw ZS::System::CException(
+        throw CException(
             __FILE__, __LINE__, EResultInvalidMethodCall, "Selection points must be directly added to the graphics scene");
     }
     else if (i_pGraphObj->isLabel()) {
-        throw ZS::System::CException(
+        throw CException(
             __FILE__, __LINE__, EResultInvalidMethodCall, "Labels must be directly added to the graphics scene");
     }
 
@@ -1632,7 +1632,7 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
     //}
 
     if (m_mode != EMode::Edit) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
 
     int iGraphObjTypePrev = static_cast<int>(EGraphObjTypeUndefined);
@@ -1710,11 +1710,11 @@ void CDrawingScene::setCurrentDrawingTool(
         /* strAddInfo   */ strMthInArgs );
 
     if (m_mode != EMode::Edit) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(i_strFactoryGrpName, i_strGraphObjType);
     if (pObjFactory == nullptr) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotRegistered, "pObjFactory == nullptr");
+        throw CException(__FILE__, __LINE__, EResultObjNotRegistered, "pObjFactory == nullptr");
     }
     setCurrentDrawingTool(pObjFactory);
 }
@@ -2036,12 +2036,12 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
 
     if( i_pGraphObj == nullptr )
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
+        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
     }
 
     //if( m_pGraphObjAddingShapePoints != nullptr )
     //{
-    //    throw ZS::System::CException( __FILE__, __LINE__, EResultInternalProgramError, "pGraphObjAddingShapePoints != nullptr" );
+    //    throw CException( __FILE__, __LINE__, EResultInternalProgramError, "pGraphObjAddingShapePoints != nullptr" );
     //}
 
     m_pGraphObjAddingShapePoints = i_pGraphObj;
@@ -2049,7 +2049,7 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
 
     if( m_pGraphicsItemAddingShapePoints == nullptr )
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemAddingShapePoints == nullptr" );
+        throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemAddingShapePoints == nullptr" );
     }
 
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -2086,12 +2086,12 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
 
     if( i_pGraphObj == nullptr )
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
+        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
     }
 
     if( m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints != i_pGraphObj )
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultInternalProgramError, "pGraphObjAddingShapePoints != i_pGraphObj" );
+        throw CException( __FILE__, __LINE__, EResultInternalProgramError, "pGraphObjAddingShapePoints != i_pGraphObj" );
     }
 
     m_pGraphObjAddingShapePoints = nullptr;
@@ -2128,44 +2128,29 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
         /* strMethod    */ "onGraphObjCreationFinished",
         /* strAddInfo   */ strMthInArgs );
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
-
-    if( i_pGraphObj == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
+    if(i_pGraphObj == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
     }
 
     // Reset drawings scenes edit modes:
     //----------------------------------
 
-    if( m_mode == EMode::Edit )
-    {
-        if( m_editTool == EEditTool::CreateObjects )
-        {
-            if( m_pGraphObjCreating == i_pGraphObj )
-            {
+    if (m_mode == EMode::Edit) {
+        if (m_editTool == EEditTool::CreateObjects) {
+            if (m_pGraphObjCreating == i_pGraphObj) {
                 m_pGraphicsItemCreating->setSelected(false);
                 m_pGraphicsItemCreating->setAcceptHoverEvents(false);
                 m_pGraphicsItemCreating->setAcceptedMouseButtons(Qt::NoButton);
-
                 m_pGraphicsItemCreating = nullptr;
                 m_pGraphObjCreating = nullptr;
                 m_pGraphicsItemAddingShapePoints = nullptr;
                 m_pGraphObjAddingShapePoints = nullptr;
-
                 setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
             }
         }
     }
-
     //emit_graphObjCreated(i_pGraphObj);
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-} // onGraphObjCreationFinished
+}
 
 /*==============================================================================
 public: // instance methods
@@ -2177,7 +2162,7 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
 {
     if( i_pGraphObj == nullptr )
     {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
+        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
     }
 
     QString strObjName = i_pGraphObj->name();
@@ -2298,42 +2283,42 @@ int CDrawingScene::groupGraphObjsSelected()
             CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
         CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
         if (pObjFactoryGroup != nullptr) {
-            CEnumEditTool editToolPrev = m_editTool;
-            m_editTool = EEditTool::CreateObjects;
-            m_pGraphObjCreating = pObjFactoryGroup->createGraphObj(
+            // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
+            QRectF rctGroupSceneCoors = getBoundingRectangle(arpGraphicsItemsSelected);
+
+            //CEnumEditTool editToolPrev = m_editTool;
+            //m_editTool = EEditTool::CreateObjects;
+            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactoryGroup->createGraphObj(
                 /* pDrawingScene */ this,
                 /* ptItemPos     */ CPhysValPoint(*this),
-                /* drawSettings  */ m_drawSettings );
-            m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
-            if (m_pGraphicsItemCreating == nullptr) {
-                throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "m_pGraphicsItemCreating == nullptr");
-            }
-            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObjCreating);
+                /* drawSettings  */ m_drawSettings ));
             if (pGraphObjGroup == nullptr) {
                 throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
             }
             QGraphicsItemGroup* pGraphicsItemGroup = dynamic_cast<QGraphicsItemGroup*>(pGraphObjGroup);
             if (pGraphicsItemGroup == nullptr) {
-                throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr" );
+                throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr");
             }
 
             // Add new (empty) group to graphics scene.
             addGraphObj(pGraphObjGroup);
 
             // Start creation of group.
-            pGraphObjGroup->setEditMode(EEditMode::Creating);
+            //pGraphObjGroup->setEditMode(EEditMode::Creating);
 
-            // Child objects are positioned relative to the top left corner of the
-            // bounding rectangle of the parent object. On newly creating an object
-            // they will be positioned relative to the top left corner of the drawing.
-            // On adding the object to a parent group object they will be positioned
-            // relative to the top left corner of the group's bounding rectangle.
+            // A newly created object will be positioned relative to the top left corner of the
+            // drawing scene. On adding an item as a child to a parent item (group) the child
+            // item are positioned relative to the center point of the parent's bounding rectangle.
 
-            //QRectF rctGroupSceneCoors;
-            //double fXLeftMin   = INT_MAX;
-            //double fYTopMin    = INT_MAX;
-            //double fXRightMax  = INT_MIN;
-            //double fYBottomMax = INT_MIN;
+            // ConnectionLines are treated special. If one of the line's connection points don't
+            // belong to the group, the connection line also does not belong to the group.
+            // If both connection points of a connection line are selected and will be grouped
+            // the connection line may not have been selected.
+            // Should connection lines belong to groups at all?
+            // No, not directly. They are linked to connection points. If a connection point
+            // is part of a group also the connection line is part of the group. And if the
+            // line's connection points belong to different groups the connection line
+            // indirectly belongs to two different groups.
 
             //SGraphObjAlignment alignmentWidth(
             //    /* refChild  */ EAlignmentRef::Width,
@@ -2352,74 +2337,7 @@ int CDrawingScene::groupGraphObjsSelected()
             //    /* refParent */ EAlignmentRef::Top,
             //    /* bAbsolute */ false );
 
-            //// First deselect all child items so that the boundingRect does not
-            //// include the selection points of the child items.
-            //for (idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++) {
-            //    pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
-            //    pGraphicsItem->setSelected(false);
-            //}
-
-            // ConnectionLines are treated special. If one of the line's connection points
-            // don't belong to the group the connection line also does not belong to the group.
-            // If both connection points of a connection line are selected and will be grouped
-            // the connection line may not have been selected.
-            // Should connection lines belong to groups at all?
-            // No, not directly. They are linked to connection points. If a connection point
-            // is part of a group also the connection line is part of the group. And if the
-            // line's connection points belong to different groups the connection line
-            // indirectly belongs to two different groups.
-
-            // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
-            //for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
-            //    CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
-            //    if (pGraphObjSelected == nullptr) {
-            //        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr");
-            //    }
-            //    if (!pGraphObjSelected->isConnectionLine() && !pGraphObjSelected->isSelectionPoint() && !pGraphObjSelected->isLabel()) {
-            //        QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
-            //        QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
-            //        QRectF  rctItem = QRectF(posItem, sizItem);
-            //        if (rctItem.width() >= 0.0) {
-            //            if (rctItem.left() < fXLeftMin) {
-            //                fXLeftMin = rctItem.left();
-            //            }
-            //            if (rctItem.right() > fXRightMax) {
-            //                fXRightMax = rctItem.right();
-            //            }
-            //        }
-            //        else {
-            //            if (rctItem.right() < fXLeftMin) {
-            //                fXLeftMin = rctItem.right();
-            //            }
-            //            if (rctItem.left() > fXRightMax) {
-            //                fXRightMax = rctItem.left();
-            //            }
-            //        }
-            //        if (rctItem.height() >= 0.0) {
-            //            if (rctItem.top() < fYTopMin) {
-            //                fYTopMin = rctItem.top();
-            //            }
-            //            if (rctItem.bottom() > fYBottomMax) {
-            //                fYBottomMax = rctItem.bottom();
-            //            }
-            //        }
-            //        else {
-            //            if (rctItem.bottom() < fYTopMin) {
-            //                fYTopMin = rctItem.bottom();
-            //            }
-            //            if (rctItem.top() > fYBottomMax) {
-            //                fYBottomMax = rctItem.top();
-            //            }
-            //        }
-            //    }
-            //}
-
-            //rctGroupSceneCoors.setLeft(fXLeftMin);
-            //rctGroupSceneCoors.setTop(fYTopMin);
-            //rctGroupSceneCoors.setRight(fXRightMax);
-            //rctGroupSceneCoors.setBottom(fYBottomMax);
-
-            //pGraphObjGroup->setPos(rctGroupSceneCoors.topLeft());
+            pGraphObjGroup->setPos(rctGroupSceneCoors.center());
 
             // Add child items to group.
             for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
@@ -2472,11 +2390,11 @@ int CDrawingScene::groupGraphObjsSelected()
             pGraphObjGroup->setSize( toPhysValSize(rctGroupSceneCoors.size()) );
             pGraphObjGroup->acceptCurrentAsOriginalCoors();
 #endif
-            pGraphObjGroup->setEditMode(EEditMode::None);
-            pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
-            onGraphObjCreationFinished(pGraphObjGroup);
+            //pGraphObjGroup->setEditMode(EEditMode::None);
+            //pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
+            //onGraphObjCreationFinished(pGraphObjGroup);
             pGraphObjGroup->setSelected(true);
-            m_editTool = editToolPrev;
+            //m_editTool = editToolPrev;
         }
     }
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -3408,7 +3326,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                                 if( pGraphicsItem == nullptr )
                                 {
-                                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                                    throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                                 }
 
                                 addGraphObj(pGraphObj);
@@ -3534,7 +3452,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if (m_mode != EMode::Edit) {
         if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
+            throw CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
 
@@ -3583,7 +3501,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 if (m_pGraphObjCreating != nullptr) {
                     m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
                     if (m_pGraphicsItemCreating == nullptr) {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                        throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                     }
                     addGraphObj(m_pGraphObjCreating);
                     m_pGraphObjCreating->setEditMode(EEditMode::Creating);
@@ -3693,7 +3611,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if (m_mode != EMode::Edit) {
         if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-            throw ZS::System::CException(__FILE__,__LINE__,EResultInternalProgramError);
+            throw CException(__FILE__,__LINE__,EResultInternalProgramError);
         }
     }
 
@@ -3897,7 +3815,7 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if (m_mode != EMode::Edit) {
         if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
+            throw CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
 
@@ -3985,7 +3903,7 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if (m_mode != EMode::Edit) {
         if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultInternalProgramError);
+            throw CException(__FILE__, __LINE__, EResultInternalProgramError);
         }
     }
 
@@ -4441,7 +4359,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
                 //                if( pGraphicsItemClone == nullptr )
                 //                {
-                //                    throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                //                    throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                 //                }
 
                 //                addGraphObj(pGraphObjClone);
@@ -4537,7 +4455,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
                 //                        if( pGraphicsItemClone == nullptr )
                 //                        {
-                //                            throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
+                //                            throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                 //                        }
 
                 //                        addGraphObj(pGraphObjClone);
@@ -5118,6 +5036,97 @@ void CDrawingScene::paintGridLines(QPainter* i_pPainter)
     i_pPainter->restore();
 
 } // paintGridLines
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle in scene coordinates of the passed graphics items.
+
+    Labels and selection points are not taken into account.
+*/
+QRectF CDrawingScene::getBoundingRectangle(const QList<QGraphicsItem*>& i_arpGraphicsItems) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "GraphicsItems [" + QString::number(i_arpGraphicsItems.size()) + "]";
+        if (i_arpGraphicsItems.size() > 0) {
+            strMthInArgs += "(";
+            for (QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                if (pGraphObj != nullptr) {
+                    if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                    strMthInArgs += "{"+ pGraphObj->typeAsString() + ": "+ pGraphObj->path() + "}";
+                }
+            }
+            strMthInArgs += ")";
+        }
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "getBoundingRectangle",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rectBoundingSceneCoors;
+
+    double fXLeftMin = INT_MAX;
+    double fYTopMin = INT_MAX;
+    double fXRightMax = INT_MIN;
+    double fYBottomMax = INT_MIN;
+    for (QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {
+        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+        if (pGraphObj == nullptr) {
+            throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
+        }
+        if (!pGraphObj->isConnectionLine() && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+            QPointF ptScenePosItem = pGraphicsItem->scenePos();
+            QRectF rectBounding = pGraphObj->boundingRect(true);
+            QRectF rectSceneItem = pGraphicsItem->mapToScene(rectBounding).boundingRect();
+            //QSizeF sizItem = rectBoundingGraphObj.size();
+            //QRectF rectSceneItem = QRectF(ptScenePosItem, sizItem);
+            if (rectSceneItem.width() >= 0.0) {
+                if (rectSceneItem.left() < fXLeftMin) {
+                    fXLeftMin = rectSceneItem.left();
+                }
+                if (rectSceneItem.right() > fXRightMax) {
+                    fXRightMax = rectSceneItem.right();
+                }
+            }
+            else {
+                if (rectSceneItem.right() < fXLeftMin) {
+                    fXLeftMin = rectSceneItem.right();
+                }
+                if (rectSceneItem.left() > fXRightMax) {
+                    fXRightMax = rectSceneItem.left();
+                }
+            }
+            if (rectSceneItem.height() >= 0.0) {
+                if (rectSceneItem.top() < fYTopMin) {
+                    fYTopMin = rectSceneItem.top();
+                }
+                if (rectSceneItem.bottom() > fYBottomMax) {
+                    fYBottomMax = rectSceneItem.bottom();
+                }
+            }
+            else {
+                if (rectSceneItem.bottom() < fYTopMin) {
+                    fYTopMin = rectSceneItem.bottom();
+                }
+                if (rectSceneItem.top() > fYBottomMax) {
+                    fYBottomMax = rectSceneItem.top();
+                }
+            }
+        }
+    }
+    rectBoundingSceneCoors.setLeft(fXLeftMin);
+    rectBoundingSceneCoors.setTop(fYTopMin);
+    rectBoundingSceneCoors.setRight(fXRightMax);
+    rectBoundingSceneCoors.setBottom(fYBottomMax);
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qRect2Str(rectBoundingSceneCoors));
+    }
+    return rectBoundingSceneCoors;
+}
 
 /*==============================================================================
 protected: // auxiliary methods

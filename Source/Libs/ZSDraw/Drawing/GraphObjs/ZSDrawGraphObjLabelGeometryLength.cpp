@@ -326,18 +326,18 @@ void CGraphObjLabelGeometryLength::updatePosition()
 
     CPhysValPoint physValSelPoint1Parent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
     CPhysValPoint physValSelPoint2Parent;
     if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
     }
     else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
 
     CPhysValLine physValLine(physValSelPoint1Parent, physValSelPoint2Parent);
@@ -368,8 +368,8 @@ void CGraphObjLabelGeometryLength::updatePosition()
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     setPos(anchorLineP2ScenePos);
 
-    // Update coordinates of the anchor line.
-    updateAnchorLines();
+    // Please note that on calling setPos the itemChange method of the
+    // label is called invoking updateAnchorLines.
 
     m_bUpdatePositionInProgress = false;
 }
@@ -415,18 +415,18 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
     // for which the length has to be indicated.
     CPhysValPoint physValSelPoint1Parent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
     CPhysValPoint physValSelPoint2Parent;
     if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
     }
     else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
 
     CPhysValLine physValLine(physValSelPoint1Parent, physValSelPoint2Parent);
@@ -479,17 +479,17 @@ void CGraphObjLabelGeometryLength::updateAnchorLines()
 
     CPhysValPoint physValSelPoint1Parent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+        physValSelPoint1Parent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
     CPhysValPoint physValSelPoint2Parent;
     if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_selPt);
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
     }
     else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt2.m_idxPt);
+        physValSelPoint2Parent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
 
     CPhysValLine physValLine = CPhysValLine(physValSelPoint1Parent, physValSelPoint2Parent);

@@ -293,6 +293,7 @@ protected: // auxiliary instance methods
     void invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem);
     void invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem);
     void paintGridLines(QPainter* i_pPainter);
+    QRectF getBoundingRectangle(const QList<QGraphicsItem*>& i_arpGraphicsItems) const;
 protected: // auxiliary instance methods
     void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
     void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal) const;

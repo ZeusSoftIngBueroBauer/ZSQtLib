@@ -161,10 +161,10 @@ void CGraphObjLabelGeometryPosition::updatePosition()
 
     CPhysValPoint physValSelPointParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
     QString strText = physValSelPointParent.toString();

@@ -107,13 +107,13 @@ public: // overridables of base class CGraphObj
 public: // reimplementing methods of base class QGraphicItem
     void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
-    virtual SPolarCoors getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
-    virtual SPolarCoors getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const override;
-    virtual CPhysValPoint getSelectionPointCoors( ESelectionPoint i_selPt ) const override;
-    virtual CPhysValPoint getSelectionPointCoors( int i_idxPt ) const override;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const override;
+    virtual CPhysValPoint getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt ) const override;
+    virtual CPhysValPoint getSelectionPointCoorsInSceneCoors( int i_idxPt ) const override;
 public: // overridables of base class CGraphObj
-    virtual QLineF getAnchorLineToSelectionPointFromPolar(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;
-    virtual QLineF getAnchorLineToSelectionPointFromPolar(const SPolarCoors& i_polarCoors, int i_idxPt) const override;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
@@ -144,14 +144,14 @@ protected: // overridables of base class CGraphObj
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
-    void setPhysValLine(const CPhysValLine& i_physValLine);
+    //void setPhysValLine(const CPhysValLine& i_physValLine);
     void QGraphicsLineItem_setLine(const QLineF& i_line);
     void QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    //void traceInternalStates(
-    //    ZS::System::CMethodTracer& i_mthTracer,
-    //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-    //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
+    void tracePositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
@@ -163,7 +163,7 @@ protected: // instance members
          The coordinates are relative to the parent item.
          If the item does not have another graphical object as a 
          parent, the coordinates are scene coordinates. */
-    CPhysValLine m_physValLine;
+    //CPhysValLine m_physValLine;
     /*!< Polygon points for arrow head at P1 (line start) */
     QPolygonF m_plgP1ArrowHead;
     /*!< Polygon points for arrow head at P2 (line end) */

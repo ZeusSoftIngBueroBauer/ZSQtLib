@@ -1075,10 +1075,10 @@ void CGraphObjSelectionPoint::updatePosition()
 
     CPhysValPoint physValSelPointParent;
     if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPointParent = m_selPt.m_pGraphObj->getSelectionPointCoors(m_selPt.m_selPt);
+        physValSelPointParent = m_selPt.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_selPt.m_selPt);
     }
     else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPointParent = m_selPt.m_pGraphObj->getSelectionPointCoors(m_selPt.m_idxPt);
+        physValSelPointParent = m_selPt.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_selPt.m_idxPt);
     }
     QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
 

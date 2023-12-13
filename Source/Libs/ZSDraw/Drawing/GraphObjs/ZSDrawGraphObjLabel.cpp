@@ -1178,11 +1178,11 @@ void CGraphObjLabel::updatePosition()
     // Get anchor line in scene coordinates.
     QLineF anchorLine;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        anchorLine = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(
+        anchorLine = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
             m_labelDscr.m_polarCoorsToLinkedSelPt, m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        anchorLine = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolar(
+        anchorLine = m_labelDscr.m_selPt1.m_pGraphObj->getAnchorLineToSelectionPointFromPolarInSceneCoors(
             m_labelDscr.m_polarCoorsToLinkedSelPt, m_labelDscr.m_selPt1.m_idxPt);
     }
 
@@ -1191,8 +1191,8 @@ void CGraphObjLabel::updatePosition()
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     setPos(anchorLineP2ScenePos);
 
-    // Update coordinates of the anchor line.
-    updateAnchorLines();
+    // Please note that on calling setPos the itemChange method of the
+    // label is called invoking updateAnchorLines.
 
     m_bUpdatePositionInProgress = false;
 }
@@ -1238,11 +1238,11 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
     QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
 
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        m_labelDscr.m_polarCoorsToLinkedSelPt = m_labelDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPoint(
+        m_labelDscr.m_polarCoorsToLinkedSelPt = m_labelDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
             ptScenePosCenterThis, m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        m_labelDscr.m_polarCoorsToLinkedSelPt = m_labelDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPoint(
+        m_labelDscr.m_polarCoorsToLinkedSelPt = m_labelDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
             ptScenePosCenterThis, m_labelDscr.m_selPt1.m_idxPt);
     }
 
@@ -1269,10 +1269,10 @@ void CGraphObjLabel::updateAnchorLines()
 
     CPhysValPoint physValSelPointParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_selPt);
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoors(m_labelDscr.m_selPt1.m_idxPt);
+        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
     QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();

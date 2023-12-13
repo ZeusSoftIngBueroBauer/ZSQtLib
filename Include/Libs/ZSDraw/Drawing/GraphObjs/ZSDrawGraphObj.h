@@ -158,7 +158,7 @@ public: // struct members
     /*!< When modifying the shape of graphical objects the relative position of labels
          linked to the graphical objects should always be the same.
          This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolar). */
+         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
     SPolarCoors m_polarCoorsToLinkedSelPt;
     /*!< Flag indicating whether the label is visible. */
     bool m_bLabelIsVisible;
@@ -616,7 +616,7 @@ public: // must overridables
     virtual void setSize( const CPhysValSize& i_physValSize ) = 0;
     virtual CPhysValSize getSize( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
 public: // must overridables
-    virtual QRectF boundingRect(bool i_bIncludeLabelsAndSelectionPoints) const;
+    virtual QRectF boundingRect(bool i_bOnlyRealShapePoints = false) const;
 public: // overridables
     virtual void setRotationAngleInDegree( double i_fRotAngle_deg );
     virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed );
@@ -637,13 +637,13 @@ public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
 public: // overridables
-    virtual CPhysValPoint getSelectionPointCoors( ESelectionPoint i_selPt ) const;
-    virtual CPhysValPoint getSelectionPointCoors( int i_idxPt ) const;
+    virtual CPhysValPoint getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt ) const;
+    virtual CPhysValPoint getSelectionPointCoorsInSceneCoors( int i_idxPt ) const;
 public: // overridables
-    virtual SPolarCoors getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const;
-    virtual SPolarCoors getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolar(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const;
-    virtual QLineF getAnchorLineToSelectionPointFromPolar(const SPolarCoors& i_polarCoors, int i_idxPt) const;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, int i_idxPt) const;
 protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
@@ -742,10 +742,14 @@ protected: // auxiliary instance methods (method tracing)
     void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
-    //virtual void traceInternalStates(
-    //    ZS::System::CMethodTracer& i_mthTracer,
-    //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-    //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+    virtual void tracePositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+    virtual void traceInternalStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
 protected: // instance members
     /*!< Flag to indicate that the destructor has been called. */
     bool m_bDtorInProgress;

@@ -3479,12 +3479,29 @@ public: // must overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QRectF CGraphObj::boundingRect(bool i_bIncludeLabelsAndSelectionPoints) const
+/*! @brief Pure virtual method which must be overridden by derived classes to
+           return the bounding rectangle of the object.
+
+    This method is used internally to calculate the bounding rectangle which need
+    to be updated for the drawing scene.
+
+    This method is also used by other objects (like the drawing scene on grouping objects)
+    to calculate the extent of rectangles with or without labels, selection points or
+    things which have to be considered when repainting the dirty rectangle on the
+    drawing scene.
+
+    @param [in] i_bOnlyRealShapePoints
+        If set to true only the real shape points are taken account when calculating
+        the bounding rectangle.
+        If set to false also labels and selection points but also the pen width
+        is taken into account.
+*/
+QRectF CGraphObj::boundingRect(bool i_bOnlyRealShapePoints) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "IncludeLabelsAndSelectionPoints: " + bool2Str(i_bIncludeLabelsAndSelectionPoints);
+        strMthInArgs = "OnlyRealShapePoints: " + bool2Str(i_bOnlyRealShapePoints);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
@@ -3813,7 +3830,7 @@ double CGraphObj::setStackingOrderValue(double i_fZValue, ERowVersion i_version)
         pGraphicsItem->setZValue(i_fZValue);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(QString::number(fZValuePrev, 'f', 1));
+        mthTracer.setMethodReturn("Prev: " + QString::number(fZValuePrev, 'f', 1));
     }
     return fZValuePrev;
 }
@@ -3843,7 +3860,7 @@ double CGraphObj::resetStackingOrderValueToOriginalValue()
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(m_arfZValues[static_cast<int>(ERowVersion::Original)], 'f', 1);
+        strMthInArgs = "Orig: " + QString::number(m_arfZValues[static_cast<int>(ERowVersion::Original)], 'f', 1);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3861,7 +3878,7 @@ double CGraphObj::resetStackingOrderValueToOriginalValue()
         pGraphicsItem->setZValue(m_arfZValues[static_cast<int>(ERowVersion::Original)]);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(QString::number(fZValuePrev, 'f', 1));
+        mthTracer.setMethodReturn("Prev: " + QString::number(fZValuePrev, 'f', 1));
     }
     return fZValuePrev;
 }
@@ -3969,18 +3986,18 @@ public: // overridables
 //------------------------------------------------------------------------------
 /*! @brief Returns the coordinates of the selection point in scene coordinates.
 */
-CPhysValPoint CGraphObj::getSelectionPointCoors( ESelectionPoint i_selPt ) const
+CPhysValPoint CGraphObj::getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
-    QPointF pt;
+    QPointF ptScenePos;
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
-        pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), i_selPt);
+        QPointF ptPos = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), i_selPt);
+        ptScenePos = pGraphicsItem->mapToScene(ptPos);
     }
-    QPointF ptScenePos = pGraphicsItem->mapToScene(pt);
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValPoint physValPoint(ptScenePos, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    return m_pDrawingScene->convert(physValPoint);
+    CPhysValPoint physValPointScenePos(ptScenePos, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    return m_pDrawingScene->convert(physValPointScenePos);
 }
 
 //------------------------------------------------------------------------------
@@ -3990,15 +4007,15 @@ CPhysValPoint CGraphObj::getSelectionPointCoors( ESelectionPoint i_selPt ) const
     the corresponding coordinates of the polygon point.
     The default implementation returns the center of the bounding rectangle.
 */
-CPhysValPoint CGraphObj::getSelectionPointCoors( int i_idxPt ) const
+CPhysValPoint CGraphObj::getSelectionPointCoorsInSceneCoors( int i_idxPt ) const
 //------------------------------------------------------------------------------
 {
-    QPointF pt;
+    QPointF ptScenePos;
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
-        pt = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), ESelectionPoint::Center);
+        QPointF ptPos = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), ESelectionPoint::Center);
+        ptScenePos = pGraphicsItem->mapToScene(ptPos);
     }
-    QPointF ptScenePos = pGraphicsItem->mapToScene(pt);
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValPoint physValPoint(ptScenePos, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     return m_pDrawingScene->convert(physValPoint);
@@ -4025,7 +4042,7 @@ public: // overridables
     @param [in] i_selPt
         Selection point on the bounding rectangle.
 */
-SPolarCoors CGraphObj::getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const
+SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"pure virtual")
@@ -4040,7 +4057,7 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelec
 
     See above for more details.
 */
-SPolarCoors CGraphObj::getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const
+SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"pure virtual")
@@ -4082,7 +4099,7 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_
        AnchorLine   +-----+
                    P1     P2
 */
-QLineF CGraphObj::getAnchorLineToSelectionPointFromPolar(
+QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
@@ -4098,7 +4115,7 @@ QLineF CGraphObj::getAnchorLineToSelectionPointFromPolar(
 
     See above for more details.
 */
-QLineF CGraphObj::getAnchorLineToSelectionPointFromPolar(
+QLineF CGraphObj::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     const SPolarCoors& i_polarCoors, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
@@ -6541,105 +6558,120 @@ void CGraphObj::QGraphicsItem_setPos(const QPointF& i_pos)
     }
 }
 
-////------------------------------------------------------------------------------
-//void CGraphObj::traceInternalStates(
-//    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
-////------------------------------------------------------------------------------
-//{
-//    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-//        QString strTrcInfo;
-//        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-//        if (pGraphicsItem != nullptr) {
-//            QRectF rctBounding = pGraphicsItem->boundingRect();
-//            if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-//            else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-//            else strTrcInfo = "";
-//            strTrcInfo +=
-//                "BoundingRect {" + qRect2Str(rctBounding) + "}" +
-//                ", RotPos {" + point2Str(rctBounding.center()) + "}";
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//                ", RotAngle: " + QString::number(m_fRotAngleCurr_deg) + QString::fromLatin1("°") + "}" +
-//#endif
-//            i_mthTracer.trace(strTrcInfo);
-//        }
-//
-//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-//        else strTrcInfo = "";
-//        strTrcInfo +=
-//            "IsHit: " + bool2Str(m_bIsHit) +
-//            ", EditMode: " + m_editMode.toString() +
-//            ", ResizeMode: " + m_editResizeMode.toString();
-//        i_mthTracer.trace(strTrcInfo);
-//
-//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-//        else strTrcInfo = "";
-//        strTrcInfo +=
-//            "SelPtPolygon: " + QString::number(m_idxSelPtSelectedPolygon) +
-//            ", SelPts [" + QString::number(m_arpSelPtsPolygon.size()) + "]";
-//        if (m_arpSelPtsPolygon.size() > 0 && i_detailLevel > ELogDetailLevel::Debug) {
-//            strTrcInfo += "(";
-//            for (int idx = 0; idx < m_arpSelPtsPolygon.size(); ++idx) {
-//                if (idx > 0) strTrcInfo += ", ";
-//                strTrcInfo += "[" + QString::number(idx) + "] {";
-//                if (m_arpSelPtsPolygon[idx] == nullptr) {
-//                    strTrcInfo +=  "null}";
-//                } else {
-//                    strTrcInfo += point2Str(m_arpSelPtsPolygon[idx]->pos()) + "}";
-//                }
-//            }
-//            strTrcInfo += ")";
-//        }
-//        i_mthTracer.trace(strTrcInfo);
-//
-//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-//        else strTrcInfo = "";
-//        strTrcInfo +=
-//            "SelPtBoundingRect: " + QString(m_selPtSelectedBoundingRect.isValid() ? m_selPtSelectedBoundingRect.toString() : "None") +
-//            ", SelPts [" + QString::number(m_arpSelPtsBoundingRect.size()) + "]";
-//        if (m_arpSelPtsBoundingRect.size() > 0 && i_detailLevel > ELogDetailLevel::Debug) {
-//            strTrcInfo += "(";
-//            for (int idx = 0; idx < m_arpSelPtsBoundingRect.size(); ++idx) {
-//                if (idx > 0) strTrcInfo += ", ";
-//                strTrcInfo += "[" + QString::number(idx) + "] {";
-//                if (m_arpSelPtsBoundingRect[idx] == nullptr) {
-//                    strTrcInfo +=  "null}";
-//                } else {
-//                    strTrcInfo += point2Str(m_arpSelPtsBoundingRect[idx]->pos()) + "}";
-//                }
-//            }
-//            strTrcInfo += ")";
-//        }
-//        i_mthTracer.trace(strTrcInfo);
-//
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//        if (i_mthDir == EMethodDir::Enter) strMthInArgs = "-+ ";
-//        else if (i_mthDir == EMethodDir::Leave) strMthInArgs = "+- ";
-//        else strMthInArgs = "";
-//        strMthInArgs += "HasValidOrigCoors: " + bool2Str(m_bHasValidOrigCoors);
-//        if (m_bHasValidOrigCoors ) {
-//            strMthInArgs +=
-//                QString(", OrigCoors {") +
-//                    "PtPos {" + qPoint2Str(m_ptPosOrig) + "}" +
-//                    ", Size {" + qSize2Str(m_sizOrig) + "}" +
-//                    ", RotAngle: " + QString::number(m_fRotAngleOrig_deg) + QString::fromLatin1("°") + "}" +
-//                    ", RotPos {" + qPoint2Str(m_ptRotOriginOrig) + "}" +
-//                "}";
-//        }
-//        i_mthTracer.trace(strMthInArgs);
-//#endif
-//
-//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-//        else strTrcInfo = "";
-//        strTrcInfo += QString("MousePressEvents: ") +
-//            "ScenePos {" + qPoint2Str(m_ptScenePosOnMousePressEvent) + "}" +
-//            ", MouseEvScenePos {" + qPoint2Str(m_ptMouseEvScenePosOnMousePressEvent) + "}" +
-//            ", Rect {" + qRect2Str(m_rctOnMousePressEvent) + "}" +
-//            ", RotPos {" + qPoint2Str(m_ptRotOriginOnMousePressEvent) + "}";
-//        i_mthTracer.trace(strTrcInfo);
-//    }
-//}
+//------------------------------------------------------------------------------
+void CGraphObj::tracePositionInfo(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+//------------------------------------------------------------------------------
+{
+    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+        QString strRuntimeInfo;
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
+            QPointF ptPos = pGraphicsItem->pos();
+            QPointF ptScenePos = pGraphicsItem->scenePos();
+            QRectF rectBounding = boundingRect(true);
+            QPointF ptCenterPos = rectBounding.center();
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "";
+            strRuntimeInfo += "Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}" +
+                ", BoundingRect {" + qRect2Str(rectBounding) + "}" +
+                ", Center {" + qPoint2Str(ptCenterPos) + "}}";
+            i_mthTracer.trace(strRuntimeInfo);
+            QGraphicsItem* pGraphicsItemParent = pGraphicsItem->parentItem();
+            CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
+            if (pGraphicsItemParent != nullptr && pGraphObjParent != nullptr) {
+                QPointF ptPosParent = pGraphicsItemParent->pos();
+                QPointF ptScenePosParent = pGraphicsItemParent->scenePos();
+                QRectF rectBoundingParent = pGraphicsItemParent->boundingRect();
+                QPointF ptCenterPosParent = rectBoundingParent.center();
+                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+                else strRuntimeInfo = "";
+                strRuntimeInfo += "Parent {" + QString(pGraphObjParent == nullptr ? "null" : pGraphObjParent->path()) +
+                    ", ScenePos {" + qPoint2Str(ptScenePosParent) + "}" +
+                    ", Pos {" + qPoint2Str(ptPosParent) + "}" +
+                    ", BoundingRect {" + qRect2Str(rectBoundingParent) + "}" +
+                    ", Center {" + qPoint2Str(ptCenterPosParent) + "}}";
+                i_mthTracer.trace(strRuntimeInfo);
+            }
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::traceInternalStates(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+//------------------------------------------------------------------------------
+{
+    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+        QString strRuntimeInfo;
+        if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        else strRuntimeInfo = "";
+        strRuntimeInfo = "ItemChangeUpdateOriginalCoorsBlockedCounter: " + QString::number(m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+        i_mthTracer.trace(strRuntimeInfo);
+
+        //if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        //else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        //else strRuntimeInfo = "";
+        //strRuntimeInfo +=
+        //    "IsHit: " + bool2Str(m_bIsHit) +
+        //    ", EditMode: " + m_editMode.toString() +
+        //    ", ResizeMode: " + m_editResizeMode.toString();
+        //i_mthTracer.trace(strRuntimeInfo);
+
+        //if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        //else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        //else strRuntimeInfo = "";
+        //strRuntimeInfo +=
+        //    "SelPtPolygon: " + QString::number(m_idxSelPtSelectedPolygon) +
+        //    ", SelPts [" + QString::number(m_arpSelPtsPolygon.size()) + "]";
+        //if (m_arpSelPtsPolygon.size() > 0 && i_detailLevel > ELogDetailLevel::Debug) {
+        //    strRuntimeInfo += "(";
+        //    for (int idx = 0; idx < m_arpSelPtsPolygon.size(); ++idx) {
+        //        if (idx > 0) strRuntimeInfo += ", ";
+        //        strRuntimeInfo += "[" + QString::number(idx) + "] {";
+        //        if (m_arpSelPtsPolygon[idx] == nullptr) {
+        //            strRuntimeInfo +=  "null}";
+        //        } else {
+        //            strRuntimeInfo += point2Str(m_arpSelPtsPolygon[idx]->pos()) + "}";
+        //        }
+        //    }
+        //    strRuntimeInfo += ")";
+        //}
+        //i_mthTracer.trace(strRuntimeInfo);
+
+        //if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        //else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        //else strRuntimeInfo = "";
+        //strRuntimeInfo +=
+        //    "SelPtBoundingRect: " + QString(m_selPtSelectedBoundingRect.isValid() ? m_selPtSelectedBoundingRect.toString() : "None") +
+        //    ", SelPts [" + QString::number(m_arpSelPtsBoundingRect.size()) + "]";
+        //if (m_arpSelPtsBoundingRect.size() > 0 && i_detailLevel > ELogDetailLevel::Debug) {
+        //    strRuntimeInfo += "(";
+        //    for (int idx = 0; idx < m_arpSelPtsBoundingRect.size(); ++idx) {
+        //        if (idx > 0) strRuntimeInfo += ", ";
+        //        strRuntimeInfo += "[" + QString::number(idx) + "] {";
+        //        if (m_arpSelPtsBoundingRect[idx] == nullptr) {
+        //            strRuntimeInfo +=  "null}";
+        //        } else {
+        //            strRuntimeInfo += point2Str(m_arpSelPtsBoundingRect[idx]->pos()) + "}";
+        //        }
+        //    }
+        //    strRuntimeInfo += ")";
+        //}
+        //i_mthTracer.trace(strRuntimeInfo);
+
+
+        //if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+        //else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+        //else strRuntimeInfo = "";
+        //strRuntimeInfo += QString("MousePressEvents: ") +
+        //    "ScenePos {" + qPoint2Str(m_ptScenePosOnMousePressEvent) + "}" +
+        //    ", MouseEvScenePos {" + qPoint2Str(m_ptMouseEvScenePosOnMousePressEvent) + "}" +
+        //    ", Rect {" + qRect2Str(m_rctOnMousePressEvent) + "}" +
+        //    ", RotPos {" + qPoint2Str(m_ptRotOriginOnMousePressEvent) + "}";
+        //i_mthTracer.trace(strRuntimeInfo);
+    }
+}

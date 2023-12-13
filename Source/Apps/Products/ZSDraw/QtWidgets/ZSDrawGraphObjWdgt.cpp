@@ -836,7 +836,7 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
         for (CEnumSelectionPoint selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++) {
             CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
             if (pGraphObjSelPt != nullptr) {
-                CPhysValPoint ptSel = getSelectionPointCoors(selPt.enumerator());
+                CPhysValPoint ptSel = getSelectionPointCoorsInSceneCoors(selPt.enumerator());
                 ptSel = m_pDrawingScene->convert(ptSel, Units.Length.px);
                 pGraphObjSelPt->setPos(ptSel.toQPointF());
             }
