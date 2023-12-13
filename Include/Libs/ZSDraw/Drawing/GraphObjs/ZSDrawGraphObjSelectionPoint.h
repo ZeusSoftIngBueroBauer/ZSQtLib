@@ -85,9 +85,6 @@ public: // must overridables of base class CGraphObj
     virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const CPhysValSize& i_physValSize ) override;
-    virtual bool hasBoundingRect() const override { return false; }
-    virtual bool hasLineShapePoints() const override { return false; }
-    virtual bool hasRotationSelectionPoints() const override { return false; }
 public: // must overridables of base class CGraphObj
     virtual void setIsHit( bool /*i_bHit*/ ) override {}
 public: // overridables of base class CGraphObj
@@ -97,7 +94,7 @@ public: // reimplementing methods of base class QGraphicItem
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {}
 protected: // overridables of base class CGraphObj
-    virtual void updateToolTip() override;
+    //virtual void updateToolTip() override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
@@ -119,10 +116,10 @@ protected: // auxiliary instance methods
     QCursor getProposedCursor() const;
     void updatePosition();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    void traceInternalStates(
-        ZS::System::CMethodTracer& i_mthTracer,
-        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
+    //void traceInternalStates(
+    //    ZS::System::CMethodTracer& i_mthTracer,
+    //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+    //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // class members
     /*!< Default radius to be used for painting the selection points. */
     static double s_fRadius_px;

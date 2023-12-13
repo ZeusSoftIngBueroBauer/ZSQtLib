@@ -471,24 +471,65 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CGraphObjGroup::hasBoundingRect() const
+QRectF CGraphObjGroup::boundingRect(bool i_bIncludeLabelsAndSelectionPoints) const
 //------------------------------------------------------------------------------
 {
-    return false;
-}
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "IncludeLabelsAndSelectionPoints: " + bool2Str(i_bIncludeLabelsAndSelectionPoints);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "boundingRect",
+        /* strAddInfo   */ strMthInArgs );
 
-//------------------------------------------------------------------------------
-bool CGraphObjGroup::hasLineShapePoints() const
-//------------------------------------------------------------------------------
-{
-    return false;
-}
+    QRectF rctBounding = childrenBoundingRect();
 
-//------------------------------------------------------------------------------
-bool CGraphObjGroup::hasRotationSelectionPoints() const
-//------------------------------------------------------------------------------
-{
-    return false;
+    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect)
+    {
+        if (pGraphObjSelPt != nullptr) {
+            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
+            QPolygonF plgSelPt = mapFromItem( pGraphObjSelPt, rctSelPt );
+            rctBounding |= plgSelPt.boundingRect();
+        }
+    }
+    if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
+        // Half pen width of the selection rectangle would be enough.
+        // But the whole pen width is also not a bad choice.
+        rctBounding.adjust(-2.0, -2.0, 2.0, 2.0);
+    }
+
+    //if (m_bIsHit || isSelected()) {
+    //    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
+    //    CGraphObjLabel* pGraphObjLabel;
+    //    QRectF          rctLabel;
+    //    QPolygonF       plgLabel;
+
+    //    while( itLabels.hasNext() )
+    //    {
+    //        itLabels.next();
+    //        pGraphObjLabel = itLabels.value();
+
+    //        if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
+    //        {
+    //            // Calling pGraphObjLabel->boundingRect() may lead to endless recursion as the
+    //            // label itself may call the boundingRect method of its parent item (which is
+    //            // this item) if the label is selected or has been hit. For this we call
+    //            // boundingRect of the label with a different signature to indicate that we
+    //            // are only interested in the bounding rect of the simple text item.
+    //            rctLabel = pGraphObjLabel->m_pGraphObjLabel->boundingRect(true);
+    //            plgLabel = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, rctLabel );
+    //            rctBounding |= plgLabel.boundingRect();
+    //        }
+    //    }
+    //}
+
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
 }
 
 /*==============================================================================
@@ -2736,8 +2777,8 @@ void CGraphObjGroup::onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjPare
             pGraphObj->onGraphObjParentGeometryChanged(this);
         }
     }
-    updateEditInfo();
-    updateToolTip();
+    //updateEditInfo();
+    //updateToolTip();
 }
 
 /*==============================================================================
@@ -2748,58 +2789,7 @@ public: // overridables of base class QGraphicsPolygonItem
 QRectF CGraphObjGroup::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "boundingRect",
-        /* strAddInfo   */ "" );
-
-    QRectF rctBounding = childrenBoundingRect();
-
-    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect)
-    {
-        if (pGraphObjSelPt != nullptr) {
-            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-            QPolygonF plgSelPt = mapFromItem( pGraphObjSelPt, rctSelPt );
-            rctBounding |= plgSelPt.boundingRect();
-        }
-    }
-    if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
-        // Half pen width of the selection rectangle would be enough.
-        // But the whole pen width is also not a bad choice.
-        rctBounding.adjust(-2.0, -2.0, 2.0, 2.0);
-    }
-
-    //if (m_bIsHit || isSelected()) {
-    //    QHashIterator<QString, CGraphObjLabel*> itLabels(m_arpLabels);
-    //    CGraphObjLabel* pGraphObjLabel;
-    //    QRectF          rctLabel;
-    //    QPolygonF       plgLabel;
-
-    //    while( itLabels.hasNext() )
-    //    {
-    //        itLabels.next();
-    //        pGraphObjLabel = itLabels.value();
-
-    //        if( pGraphObjLabel->m_pGraphObjLabel != nullptr )
-    //        {
-    //            // Calling pGraphObjLabel->boundingRect() may lead to endless recursion as the
-    //            // label itself may call the boundingRect method of its parent item (which is
-    //            // this item) if the label is selected or has been hit. For this we call
-    //            // boundingRect of the label with a different signature to indicate that we
-    //            // are only interested in the bounding rect of the simple text item.
-    //            rctLabel = pGraphObjLabel->m_pGraphObjLabel->boundingRect(true);
-    //            plgLabel = mapFromItem( pGraphObjLabel->m_pGraphObjLabel, rctLabel );
-    //            rctBounding |= plgLabel.boundingRect();
-    //        }
-    //    }
-    //}
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(rect2Str(rctBounding));
-    }
-    return rctBounding;
+    return boundingRect(true);
 }
 
 //------------------------------------------------------------------------------
@@ -2820,32 +2810,26 @@ void CGraphObjGroup::paint(
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
 
-    i_pPainter->save();
-
-    QPen pn(Qt::DotLine);
-
-    if (m_bBoundRectVisible || (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected()))) {
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || isSelected())) {
+        i_pPainter->save();
+        QPen pn(Qt::DotLine);
         if (m_bIsHit || isSelected()) {
             pn.setColor(Qt::blue);
         }
         else {
             pn.setColor(Qt::black);
         }
-
         i_pPainter->setPen(pn);
         i_pPainter->setBrush(Qt::NoBrush);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        i_pPainter->drawRect(m_rctCurr);
-#endif
-
+        QRectF rctBounding = boundingRect(false);
+        i_pPainter->drawRect(rctBounding);
         if (isSelected()) {
             if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
              && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
                 CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
                 CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
-                QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
-                QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
+                QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
+                QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
                 QPointF ptRctM = mapFromScene(ptRct);
                 QPointF ptRotM = mapFromScene(ptRot);
                 i_pPainter->drawLine( ptRctM, ptRotM );
@@ -2855,17 +2839,15 @@ void CGraphObjGroup::paint(
              && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
                 CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
                 CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
-                QPointF ptRct = QPointF( pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y() );
-                QPointF ptRot = QPointF( pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y() );
+                QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
+                QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
                 QPointF ptRctM = mapFromScene(ptRct);
                 QPointF ptRotM = mapFromScene(ptRot);
                 i_pPainter->drawLine( ptRctM, ptRotM );
             }
         }
+        i_pPainter->restore();
     }
-
-    i_pPainter->restore();
-
 } // paint
 
 /*==============================================================================
@@ -3129,9 +3111,9 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_rctOnMousePressEvent = m_rctCurr;
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
 #endif
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
-            updateEditInfo();
-            updateToolTip();
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
+            //updateEditInfo();
+            //updateToolTip();
         }
     }
     else if (modeDrawing == EMode::View) {
@@ -3184,8 +3166,8 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             applyGeometryChangeToChildrens();
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
             update();
         }
         else if (m_editMode == EEditMode::Rotate) {
@@ -3226,8 +3208,8 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 #endif
 
             updateTransform();
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
             update();
         }
@@ -3296,8 +3278,8 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             // Not for group items. Otherwise the layout information would get lost.
             //acceptCurrentAsOriginalCoors();
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
         }
         m_editMode = EEditMode::None;
         m_editResizeMode = EEditResizeMode::None;
@@ -3486,8 +3468,8 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemChildAddedChange || i_change == ItemChildRemovedChange) {
@@ -3531,18 +3513,18 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         //updateToolTip();
     }
 
-    else if( i_change == ItemTransformChange
-          || i_change == ItemPositionHasChanged
-          || i_change == ItemTransformHasChanged
-          || i_change == ItemParentHasChanged
-          #if QT_VERSION >= 0x040700
-          || i_change == ItemScenePositionHasChanged
-          || i_change == ItemRotationHasChanged
-          || i_change == ItemScaleHasChanged
-          || i_change == ItemTransformOriginPointHasChanged )
-          #else
-          || i_change == ItemScenePositionHasChanged )
-          #endif
+    else if( i_change == ItemPositionHasChanged)
+          //|| i_change == ItemTransformChange
+          //|| i_change == ItemTransformHasChanged
+          //|| i_change == ItemParentHasChanged
+          //#if QT_VERSION >= 0x040700
+          //|| i_change == ItemScenePositionHasChanged
+          //|| i_change == ItemRotationHasChanged
+          //|| i_change == ItemScaleHasChanged
+          //|| i_change == ItemTransformOriginPointHasChanged )
+          //#else
+          //|| i_change == ItemScenePositionHasChanged )
+          //#endif
     {
         // Connection lines don't belong to groups. But their connection points do. So if the
         // group is moved also the connection points are moved by Qt's graphics scene.
@@ -3560,8 +3542,8 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         update();
     }
     else if (i_change == ItemZValueHasChanged) {

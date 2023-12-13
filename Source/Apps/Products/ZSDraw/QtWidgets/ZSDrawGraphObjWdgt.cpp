@@ -620,10 +620,10 @@ void CGraphObjWdgt::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     }
                 }
 
-                m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
+                m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
 
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
             }
         }
     }
@@ -702,8 +702,8 @@ void CGraphObjWdgt::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
             }
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 #endif
         } // if( m_editMode == EEditMode::Resize )
 
@@ -751,8 +751,8 @@ void CGraphObjWdgt::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
         }
 
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else // if( m_pDrawingScene->getMode() == EMode::View )
     {
@@ -828,8 +828,8 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemTransformHasChanged) {
@@ -841,8 +841,8 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
                 pGraphObjSelPt->setPos(ptSel.toQPointF());
             }
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
 
     else // if( i_change == ItemMatrixChange
@@ -857,8 +857,8 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
         if (i_change == ItemZValueHasChanged) {
             bZValueChanged = true;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
 
     if (bZValueChanged) {

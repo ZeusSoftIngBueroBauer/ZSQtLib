@@ -115,7 +115,7 @@ CGraphObjText::CGraphObjText(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -1142,7 +1142,7 @@ void CGraphObjText::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             //m_idxSelPtSelectedPolygon = -1;
             //m_selPtSelectedBoundingRect = ESelectionPoint::None;
 
-            //m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Select, m_editMode, m_editResizeMode, true );
+            //m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Select, m_editMode, m_editResizeMode, true );
 
             ////prepareGeometryChange();
 
@@ -1160,8 +1160,8 @@ void CGraphObjText::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
 
@@ -1217,7 +1217,7 @@ void CGraphObjText::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
 #endif
 
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
 
             if( m_editMode == EEditMode::EditText )
             {
@@ -1229,8 +1229,8 @@ void CGraphObjText::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             //    QGraphicsTextItem::focusOutEvent(&focusEv);
             //}
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
 
@@ -1290,8 +1290,8 @@ void CGraphObjText::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             setPos(ptPos);
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Move )
 
@@ -1337,8 +1337,8 @@ void CGraphObjText::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 #endif
 
             updateTransform();
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Rotate )
 
@@ -1410,7 +1410,7 @@ void CGraphObjText::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             // After creating the text item the edit cursor is active, the text should be entered
             // but there should not be a new text object created by pressing the mouse again.
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Select, m_editMode, m_editResizeMode, true );
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Select, m_editMode, m_editResizeMode, true );
 
             ////prepareGeometryChange();
 
@@ -1657,13 +1657,13 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemTransformHasChanged) {
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if( i_change == ItemTransformChange
           || i_change == ItemPositionHasChanged
@@ -1678,8 +1678,8 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
           #endif
     {
         updateTransform();
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
 
     else if (i_change == ItemZValueHasChanged) {

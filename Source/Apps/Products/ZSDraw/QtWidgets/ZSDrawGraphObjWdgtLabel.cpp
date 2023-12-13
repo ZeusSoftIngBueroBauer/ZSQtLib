@@ -141,7 +141,7 @@ CGraphObjWdgtLabel::CGraphObjWdgtLabel(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {

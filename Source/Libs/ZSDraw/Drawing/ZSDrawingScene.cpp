@@ -1479,8 +1479,8 @@ public: // instance methods
     rotieren, seine Form zu ändern, zu selektieren und zu gruppieren, muessen verschiedene
     Modi korrekt gesetzt werden.
 
-    @param i_mode [in] Range [Edit, View und Ignore]
-        Ignore ist zu übergeben, wenn der Mode nicht geändert werden soll und das Argument
+    @param i_mode [in] Range [Edit, View und Undefined]
+        Undefined ist zu übergeben, wenn der Mode nicht geändert werden soll und das Argument
         somit zu ignorieren ist.
         Nur im Edit Mode können Objekte auf der grafischen Oberfläche durch die Maus angelegt
         und verändert werden.
@@ -1489,20 +1489,20 @@ public: // instance methods
         der Maus-Events verarbeitet die ComboBox die Events, um z.B. die PullDown-List zu öffnen.
         Bei dem Objekt kann es sich aber auch um ein vollständig benutzerdefiniertes Objekt wie
         einen grafischen Schalter handeln, der über Maus-Klicks seinen On/Off Zustand ändert.
-    @param i_editTool [in] Range [Select, CreateObjects, Ignore, None]
-        Ignore ist zu übergeben, wenn das EditTool nicht geändert werden soll und das Argument
+    @param i_editTool [in] Range [None, Select, CreateObjects, Undefined]
+        Undefined ist zu übergeben, wenn das EditTool nicht geändert werden soll und das Argument
         somit zu ignorieren ist.
         None zeigt an, dass kein EditTool ausgewählt ist.
         Wird Select übergeben, sollen nachfolgende Maus-Events dazu dienen, Objekte zu selektieren.
         Mit CreateObjects wird angezeigt, dass über nachfolgende Maus-Events Objekte erzeugt werden sollen.
-    @param i_editMode [in] Range [Creating, Move, Resize, Rotate, MoveShapePoint, EditText, Ignore, None]
-        Ignore ist zu übergeben, wenn der EditMode nicht geändert werden soll und das Argument
+    @param i_editMode [in] Range [None, Creating, Move, Resize, Rotate, MoveShapePoint, EditText, Undefined]
+        Undefined ist zu übergeben, wenn der EditMode nicht geändert werden soll und das Argument
         somit zu ignorieren ist.
         None zeigt an, dass kein EditMode ausgewählt ist.
         Die anderen EditModes zeigen an, auf welche Art und Weise das Objekt zu modifizieren ist und hängen
         im wesentlichen davon ab, an welchem Eckpunkt (SelectionPoint) das Objekt mit der Maus gepackt wurde.
-    @param i_editResizeMode [in] Range [ResizeAll, ResizeHor, ResizeVer, Ignore, None]
-        Ignore ist zu übergeben, wenn der ResizeMode nicht geändert werden soll und das Argument
+    @param i_editResizeMode [in] Range [None, ResizeAll, ResizeHor, ResizeVer, Undefined]
+        Undefined ist zu übergeben, wenn der ResizeMode nicht geändert werden soll und das Argument
         somit zu ignorieren ist.
         None zeigt an, dass kein ResizeMode ausgewählt ist.
     @param i_bObjFactoryTypeChanged [in]
@@ -1531,30 +1531,30 @@ void CDrawingScene::setMode(
         /* strMethod    */ "setMode",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     bool bModeChanged = false;
 
-    if (i_mode != EMode::Ignore && m_mode != i_mode) {
+    if (i_mode != EMode::Undefined && m_mode != i_mode) {
         bModeChanged = true;
         m_mode = i_mode;
         if (m_mode == EMode::View) {
-            if (i_editTool == EEditTool::Ignore) {
+            if (i_editTool == EEditTool::Undefined) {
                 m_editTool = EEditTool::None;
             }
-            if (i_editMode == EEditMode::Ignore) {
+            if (i_editMode == EEditMode::Undefined) {
                 m_editMode = EEditMode::None;
             }
-            if (i_editResizeMode == EEditResizeMode::Ignore) {
+            if (i_editResizeMode == EEditResizeMode::Undefined) {
                 m_editResizeMode = EEditResizeMode::None;
             }
         }
         clearSelection();
     }
 
-    if (i_editTool != EEditTool::Ignore && m_editTool != i_editTool) {
+    if (i_editTool != EEditTool::Undefined && m_editTool != i_editTool) {
         bModeChanged = true;
         m_editTool = i_editTool;
         clearSelection();
@@ -1575,12 +1575,12 @@ void CDrawingScene::setMode(
         m_pGraphObjCreating = nullptr;
     }
 
-    if (i_editMode != EEditMode::Ignore && m_editMode != i_editMode) {
+    if (i_editMode != EEditMode::Undefined && m_editMode != i_editMode) {
         bModeChanged = true;
         m_editMode = i_editMode;
     }
 
-    if (i_editResizeMode != EEditResizeMode::Ignore && m_editResizeMode != i_editResizeMode) {
+    if (i_editResizeMode != EEditResizeMode::Undefined && m_editResizeMode != i_editResizeMode) {
         bModeChanged = true;
         m_editResizeMode = i_editResizeMode;
     }
@@ -1590,9 +1590,9 @@ void CDrawingScene::setMode(
         emit_modeChanged();
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // setMode
 
 /*==============================================================================
@@ -1627,10 +1627,9 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentDrawingTool",
         /* strAddInfo   */ strMthInArgs );
-
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     if (m_mode != EMode::Edit) {
         throw ZS::System::CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
@@ -1665,16 +1664,16 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
             if (m_editTool != EEditTool::Select) {
                 editTool = EEditTool::Select;
             }
-            setMode(EMode::Ignore, editTool, EEditMode::None, EEditResizeMode::None, true);
+            setMode(EMode::Undefined, editTool, EEditMode::None, EEditResizeMode::None, true);
         }
         else {
-            setMode(EMode::Ignore, EEditTool::CreateObjects, EEditMode::None, EEditResizeMode::None, true);
+            setMode(EMode::Undefined, EEditTool::CreateObjects, EEditMode::None, EEditResizeMode::None, true);
         }
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // setCurrentDrawingTool
 
 //------------------------------------------------------------------------------
@@ -2031,9 +2030,9 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
         /* strMethod    */ "onGraphObjAddingShapePointsStarted",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     if( i_pGraphObj == nullptr )
     {
@@ -2053,9 +2052,9 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemAddingShapePoints == nullptr" );
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // onGraphObjAddingShapePointsStarted
 
 //------------------------------------------------------------------------------
@@ -2081,9 +2080,9 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
         /* strMethod    */ "onGraphObjAddingShapePointsFinished",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     if( i_pGraphObj == nullptr )
     {
@@ -2098,9 +2097,9 @@ void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj 
     m_pGraphObjAddingShapePoints = nullptr;
     m_pGraphicsItemAddingShapePoints = nullptr;
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // onGraphObjAddingShapePointsFinished
 
 /*==============================================================================
@@ -2129,9 +2128,9 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
         /* strMethod    */ "onGraphObjCreationFinished",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     if( i_pGraphObj == nullptr )
     {
@@ -2156,16 +2155,16 @@ void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
                 m_pGraphicsItemAddingShapePoints = nullptr;
                 m_pGraphObjAddingShapePoints = nullptr;
 
-                setMode(EMode::Ignore, EEditTool::Ignore, EEditMode::None, EEditResizeMode::None, false);
+                setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
             }
         }
     }
 
     //emit_graphObjCreated(i_pGraphObj);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // onGraphObjCreationFinished
 
 /*==============================================================================
@@ -2286,9 +2285,9 @@ int CDrawingScene::groupGraphObjsSelected()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "groupGraphObjsSelected",
         /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     int iObjsGroupedCount = 0;
 
@@ -2330,11 +2329,11 @@ int CDrawingScene::groupGraphObjsSelected()
             // On adding the object to a parent group object they will be positioned
             // relative to the top left corner of the group's bounding rectangle.
 
-            QRectF rctGroupSceneCoors;
-            double fXLeftMin   = INT_MAX;
-            double fYTopMin    = INT_MAX;
-            double fXRightMax  = INT_MIN;
-            double fYBottomMax = INT_MIN;
+            //QRectF rctGroupSceneCoors;
+            //double fXLeftMin   = INT_MAX;
+            //double fYTopMin    = INT_MAX;
+            //double fXRightMax  = INT_MIN;
+            //double fYBottomMax = INT_MIN;
 
             //SGraphObjAlignment alignmentWidth(
             //    /* refChild  */ EAlignmentRef::Width,
@@ -2371,75 +2370,73 @@ int CDrawingScene::groupGraphObjsSelected()
             // indirectly belongs to two different groups.
 
             // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
-            for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
-                CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
-                if (pGraphObjSelected == nullptr) {
-                    throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr");
-                }
+            //for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
+            //    CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+            //    if (pGraphObjSelected == nullptr) {
+            //        throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjSelected == nullptr");
+            //    }
+            //    if (!pGraphObjSelected->isConnectionLine() && !pGraphObjSelected->isSelectionPoint() && !pGraphObjSelected->isLabel()) {
+            //        QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
+            //        QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
+            //        QRectF  rctItem = QRectF(posItem, sizItem);
+            //        if (rctItem.width() >= 0.0) {
+            //            if (rctItem.left() < fXLeftMin) {
+            //                fXLeftMin = rctItem.left();
+            //            }
+            //            if (rctItem.right() > fXRightMax) {
+            //                fXRightMax = rctItem.right();
+            //            }
+            //        }
+            //        else {
+            //            if (rctItem.right() < fXLeftMin) {
+            //                fXLeftMin = rctItem.right();
+            //            }
+            //            if (rctItem.left() > fXRightMax) {
+            //                fXRightMax = rctItem.left();
+            //            }
+            //        }
+            //        if (rctItem.height() >= 0.0) {
+            //            if (rctItem.top() < fYTopMin) {
+            //                fYTopMin = rctItem.top();
+            //            }
+            //            if (rctItem.bottom() > fYBottomMax) {
+            //                fYBottomMax = rctItem.bottom();
+            //            }
+            //        }
+            //        else {
+            //            if (rctItem.bottom() < fYTopMin) {
+            //                fYTopMin = rctItem.bottom();
+            //            }
+            //            if (rctItem.top() > fYBottomMax) {
+            //                fYBottomMax = rctItem.top();
+            //            }
+            //        }
+            //    }
+            //}
 
-                if (!pGraphObjSelected->isConnectionLine()) {
-                    QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
-                    QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
-                    QRectF  rctItem = QRectF(posItem, sizItem);
-                    if (rctItem.width() >= 0.0) {
-                        if (rctItem.left() < fXLeftMin) {
-                            fXLeftMin = rctItem.left();
-                        }
-                        if (rctItem.right() > fXRightMax) {
-                            fXRightMax = rctItem.right();
-                        }
-                    }
-                    else {
-                        if (rctItem.right() < fXLeftMin) {
-                            fXLeftMin = rctItem.right();
-                        }
-                        if (rctItem.left() > fXRightMax) {
-                            fXRightMax = rctItem.left();
-                        }
-                    }
-                    if (rctItem.height() >= 0.0) {
-                        if (rctItem.top() < fYTopMin) {
-                            fYTopMin = rctItem.top();
-                        }
-                        if (rctItem.bottom() > fYBottomMax) {
-                            fYBottomMax = rctItem.bottom();
-                        }
-                    }
-                    else {
-                        if (rctItem.bottom() < fYTopMin) {
-                            fYTopMin = rctItem.bottom();
-                        }
-                        if (rctItem.top() > fYBottomMax) {
-                            fYBottomMax = rctItem.top();
-                        }
-                    }
-                }
-            }
+            //rctGroupSceneCoors.setLeft(fXLeftMin);
+            //rctGroupSceneCoors.setTop(fYTopMin);
+            //rctGroupSceneCoors.setRight(fXRightMax);
+            //rctGroupSceneCoors.setBottom(fYBottomMax);
 
-            rctGroupSceneCoors.setLeft(fXLeftMin);
-            rctGroupSceneCoors.setTop(fYTopMin);
-            rctGroupSceneCoors.setRight(fXRightMax);
-            rctGroupSceneCoors.setBottom(fYBottomMax);
-
-            pGraphObjGroup->setPos( rctGroupSceneCoors.topLeft() );
+            //pGraphObjGroup->setPos(rctGroupSceneCoors.topLeft());
 
             // Add child items to group.
             for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
                 CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
-                if (!pGraphObjSelected->isConnectionLine()) {
+                if (!pGraphObjSelected->isConnectionLine() && !pGraphObjSelected->isSelectionPoint() && !pGraphObjSelected->isLabel()) {
                     // for debugging purposes also called here before adding the item to the group
-                    QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
-                    QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
-                    pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
-                    posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
-                    sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
-                    m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-                    pGraphObjSelected->acceptCurrentAsOriginalCoors();
-#endif
+                    //QPointF posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
+                    //QSizeF  sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
                     // Unselect object to destroy selection points.
                     pGraphicsItemSelected->setSelected(false);
-
+                    pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
+                    //posItem = pGraphObjSelected->getPos(Units.Length.px).toQPointF();
+                    //sizItem = pGraphObjSelected->getSize(Units.Length.px).toQSizeF();
+                    m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
+#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+                    //pGraphObjSelected->acceptCurrentAsOriginalCoors();
+#endif
                     //alignmentLeft.m_fVal = 0.0;
                     //alignmentTop.m_fVal = 0.0;
                     //alignmentWidth.m_fVal = 0.0;
@@ -2482,9 +2479,9 @@ int CDrawingScene::groupGraphObjsSelected()
             m_editTool = editToolPrev;
         }
     }
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(iObjsGroupedCount);
     }
@@ -2507,9 +2504,9 @@ int CDrawingScene::ungroupGraphObjsSelected()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "ungroupGraphObjsSelected",
         /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     int iObjsUngroupedCount = 0;
 
@@ -2547,9 +2544,9 @@ int CDrawingScene::ungroupGraphObjsSelected()
             iObjsUngroupedCount++;
         }
     }
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(iObjsUngroupedCount);
     }
@@ -3193,9 +3190,9 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* strMethod    */ "dragEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     if( pMimeData->hasText() )
     {
@@ -3216,9 +3213,9 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     //QGraphicsScene::dragEnterEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // dragEnterEvent
 
 //------------------------------------------------------------------------------
@@ -3244,9 +3241,9 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* strMethod    */ "dragMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     if( pMimeData->hasText() )
     {
@@ -3267,9 +3264,9 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     //QGraphicsScene::dragMoveEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // dragMoveEvent
 
 //------------------------------------------------------------------------------
@@ -3296,9 +3293,9 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* strMethod    */ "dragLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     if( sceneRect().contains(i_pEv->scenePos()) )
     {
@@ -3325,9 +3322,9 @@ void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         i_pEv->ignore();
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // dragLeaveEvent
 
 //------------------------------------------------------------------------------
@@ -3357,9 +3354,9 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* strMethod    */ "dropEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     bool bAccepted = false;
 
@@ -3421,7 +3418,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                                 //onGraphObjCreationFinished(pGraphObj);
 
-                                setMode(EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false);
+                                setMode(EMode::Undefined, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false);
                             }
                         } // if( strType.compare("ObjFactory",Qt::CaseInsensitive) == 0 )
                     } // if( strlstObjPath.size() > 1 ) // must contain type and object path
@@ -3462,7 +3459,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
                 onGraphObjCreationFinished(pGraphObjImage);
 
-                setMode( EMode::Ignore, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false );
+                setMode( EMode::Undefined, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false );
             }
         } // if( pMimeData->hasUrls() )
     } // if( sceneRect().contains(i_pEv->scenePos()) )
@@ -3478,9 +3475,9 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 
     //QGraphicsScene::dropEvent(i_pEv);
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 
 } // dropEvent
 
@@ -3520,9 +3517,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     bool bEventHandled = false;
 
@@ -3640,9 +3637,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     if (!bEventHandled) {
         forwardMouseEventToObjectsHit(i_pEv);
     }
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
@@ -3683,9 +3680,9 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     emit_mousePosChanged(i_pEv->scenePos());
 
@@ -3869,9 +3866,9 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene::mouseMoveEvent(i_pEv);
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // mouseMoveEvent
 
 //------------------------------------------------------------------------------
@@ -3889,9 +3886,9 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
@@ -3949,9 +3946,9 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseReleaseEvent(i_pEv);
     }
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
@@ -3970,9 +3967,9 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     // Not a nice hack: mouse double click events will not be dispatched to the graphical objects
     // but will be converted to mouse press and mouse release events which are just dispatched
@@ -4043,9 +4040,9 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     m_bMouseDoubleClickEventInProcess = false;
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // mouseDoubleClickEvent
 
 /*==============================================================================
@@ -4067,9 +4064,9 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     QGraphicsScene::keyPressEvent(i_pEv);
 
@@ -4564,9 +4561,9 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         } // if( i_pEv->key() == Qt::Key_V )
     } // if( !i_pEv->isAccepted() )
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // keyPressEvent
 
 //------------------------------------------------------------------------------
@@ -4585,17 +4582,17 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     QGraphicsScene::keyReleaseEvent(i_pEv);
 
     m_iEvKeyModifiers = 0;
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // keyReleaseEvent
 
 /*==============================================================================
@@ -4749,9 +4746,9 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjAboutToBeDestroyed",
         /* strAddInfo   */ strMthInArgs );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Enter);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
     if (pGraphicsItem != nullptr && pGraphicsItem->scene() != nullptr) {
@@ -4794,9 +4791,9 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
     }
     */
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        traceInternalStates(mthTracer, EMethodDir::Leave);
-    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
 } // onGraphObjAboutToBeDestroyed
 
 /*==============================================================================
@@ -5000,8 +4997,8 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
     if (m_mode == EMode::Edit) {
         // If no item has been hit ...
         if (selectedItems().size() == 0) {
-            // .. create selection rectangle are if not yet existing.
-            setMode(EMode::Ignore, EEditTool::Ignore, EEditMode::None, EEditResizeMode::None, false);
+            // .. create selection rectangle area if not yet existing.
+            setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
             QRectF rctSelectionArea(
                 /* x      */ i_pEv->scenePos().x(),
                 /* y      */ i_pEv->scenePos().y(),
@@ -5726,36 +5723,36 @@ void CDrawingScene::emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_d
 protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CDrawingScene::traceInternalStates(
-    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel)
-//------------------------------------------------------------------------------
-{
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel))
-    {
-        QString strAddTrcInfo;
-        if (i_mthDir == EMethodDir::Enter) {
-            strAddTrcInfo = "-+ ";
-        } else if (i_mthDir == EMethodDir::Leave) {
-            strAddTrcInfo = "+- ";
-        } else {
-            strAddTrcInfo = "   ";
-        }
-        strAddTrcInfo = "SceneRect {" + qRect2Str(sceneRect()) + "}";
-        i_mthTracer.trace(strAddTrcInfo);
-        if (i_mthDir == EMethodDir::Enter) {
-            strAddTrcInfo = "-+ ";
-        } else if (i_mthDir == EMethodDir::Leave) {
-            strAddTrcInfo = "+- ";
-        } else {
-            strAddTrcInfo = "   ";
-        }
-        strAddTrcInfo += "Mode: " + m_mode.toString() +
-            ", EditTool: " + m_editTool.toString() +
-            ", EditMode: " + m_editMode.toString() +
-            ", ResizeMode: " + m_editResizeMode.toString() +
-            ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
-            ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-        i_mthTracer.trace(strAddTrcInfo);
-    }
-}
+////------------------------------------------------------------------------------
+//void CDrawingScene::traceInternalStates(
+//    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel)
+////------------------------------------------------------------------------------
+//{
+//    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel))
+//    {
+//        QString strAddTrcInfo;
+//        if (i_mthDir == EMethodDir::Enter) {
+//            strAddTrcInfo = "-+ ";
+//        } else if (i_mthDir == EMethodDir::Leave) {
+//            strAddTrcInfo = "+- ";
+//        } else {
+//            strAddTrcInfo = "   ";
+//        }
+//        strAddTrcInfo = "SceneRect {" + qRect2Str(sceneRect()) + "}";
+//        i_mthTracer.trace(strAddTrcInfo);
+//        if (i_mthDir == EMethodDir::Enter) {
+//            strAddTrcInfo = "-+ ";
+//        } else if (i_mthDir == EMethodDir::Leave) {
+//            strAddTrcInfo = "+- ";
+//        } else {
+//            strAddTrcInfo = "   ";
+//        }
+//        strAddTrcInfo += "Mode: " + m_mode.toString() +
+//            ", EditTool: " + m_editTool.toString() +
+//            ", EditMode: " + m_editMode.toString() +
+//            ", ResizeMode: " + m_editResizeMode.toString() +
+//            ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
+//            ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
+//        i_mthTracer.trace(strAddTrcInfo);
+//    }
+//}

@@ -572,24 +572,24 @@ void CGraphObjSelectionPoint::setCursor( const QCursor& i_cursor )
 protected: // overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::updateToolTip()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateToolTip",
-        /* strAddInfo   */ "" );
-
-    if (m_selPt.m_pGraphObj != nullptr) {
-        m_strToolTip = m_selPt.m_pGraphObj->getToolTip();
-    }
-    else {
-        m_strToolTip = CGraphObj::getToolTip();
-    }
-}
+////------------------------------------------------------------------------------
+//void CGraphObjSelectionPoint::updateToolTip()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "updateToolTip",
+//        /* strAddInfo   */ "" );
+//
+//    if (m_selPt.m_pGraphObj != nullptr) {
+//        m_strToolTip = m_selPt.m_pGraphObj->getToolTip();
+//    }
+//    else {
+//        m_strToolTip = CGraphObj::getToolTip();
+//    }
+//}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
@@ -1099,41 +1099,41 @@ void CGraphObjSelectionPoint::updatePosition()
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::traceInternalStates(
-    CMethodTracer& i_mthTracer,
-    EMethodDir i_mthDir,
-    ELogDetailLevel i_detailLevel) const
-//------------------------------------------------------------------------------
-{
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        QString strTrcInfo;
-        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-        else strTrcInfo = "";
-        strTrcInfo +=
-            "GraphObj: " + QString(m_selPt.m_pGraphObj == nullptr ? "null" : m_selPt.m_pGraphObj->keyInTree());
-        i_mthTracer.trace(strTrcInfo);
-
-        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-        else strTrcInfo = "";
-        strTrcInfo +=
-            "SelectionPoint {" + m_selPt.toString(true) + "}";
-        i_mthTracer.trace(strTrcInfo);
-
-        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-        else strTrcInfo = "";
-        strTrcInfo +=
-            "Geometry: GraphObj {Radius: " + QString::number(m_fRadius_px) + " px}"
-            ", Item { Pos {" + point2Str(pos()) + "}, Ellipse {" + rect2Str(rect()) + "}";
-        i_mthTracer.trace(strTrcInfo);
-        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-        else strTrcInfo = "";
-        strTrcInfo += "Selected: " + bool2Str(isSelected());
-        i_mthTracer.trace(strTrcInfo);
-        CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
-    }
-}
+////------------------------------------------------------------------------------
+//void CGraphObjSelectionPoint::traceInternalStates(
+//    CMethodTracer& i_mthTracer,
+//    EMethodDir i_mthDir,
+//    ELogDetailLevel i_detailLevel) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+//        QString strTrcInfo;
+//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+//        else strTrcInfo = "";
+//        strTrcInfo +=
+//            "GraphObj: " + QString(m_selPt.m_pGraphObj == nullptr ? "null" : m_selPt.m_pGraphObj->keyInTree());
+//        i_mthTracer.trace(strTrcInfo);
+//
+//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+//        else strTrcInfo = "";
+//        strTrcInfo +=
+//            "SelectionPoint {" + m_selPt.toString(true) + "}";
+//        i_mthTracer.trace(strTrcInfo);
+//
+//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+//        else strTrcInfo = "";
+//        strTrcInfo +=
+//            "Geometry: GraphObj {Radius: " + QString::number(m_fRadius_px) + " px}"
+//            ", Item { Pos {" + point2Str(pos()) + "}, Ellipse {" + rect2Str(rect()) + "}";
+//        i_mthTracer.trace(strTrcInfo);
+//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+//        else strTrcInfo = "";
+//        strTrcInfo += "Selected: " + bool2Str(isSelected());
+//        i_mthTracer.trace(strTrcInfo);
+//        CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
+//    }
+//}

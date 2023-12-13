@@ -67,9 +67,6 @@ public: // must overridables of base class CGraphObj
     virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const CPhysValSize& i_physValSize ) override;
-    virtual bool hasBoundingRect() const override { return true; }
-    virtual bool hasLineShapePoints() const override { return false; }
-    virtual bool hasRotationSelectionPoints() const override { return true; }
 public: // must overridables of base class CGraphObj
     virtual void setIsHit( bool i_bHit ) override;
 public: // overridables of base class CGraphObj

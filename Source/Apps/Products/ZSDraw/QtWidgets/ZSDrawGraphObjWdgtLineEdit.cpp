@@ -141,7 +141,7 @@ CGraphObjWdgtLineEdit::CGraphObjWdgtLineEdit(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {

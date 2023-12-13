@@ -99,9 +99,7 @@ public: // must overridables of base class CGraphObj
     virtual void setSize(const CPhysValSize& i_physValSize) override;
     virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
 public: // must overridables of base class CGraphObj
-    virtual bool hasBoundingRect() const override;
-    virtual bool hasLineShapePoints() const override;
-    virtual bool hasRotationSelectionPoints() const override;
+    virtual QRectF boundingRect(bool i_bIncludeLabelsAndSelectionPoints) const override;
 public: // must overridables of base class CGraphObj
     virtual void setIsHit(bool i_bHit) override;
 public: // overridables of base class CGraphObj
@@ -144,16 +142,16 @@ protected: // instance methods
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
 protected: // overridables of base class CGraphObj
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
-    virtual void updateToolTip() override;
+    //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
     void setPhysValLine(const CPhysValLine& i_physValLine);
     void QGraphicsLineItem_setLine(const QLineF& i_line);
     void QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    void traceInternalStates(
-        ZS::System::CMethodTracer& i_mthTracer,
-        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
+    //void traceInternalStates(
+    //    ZS::System::CMethodTracer& i_mthTracer,
+    //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+    //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.

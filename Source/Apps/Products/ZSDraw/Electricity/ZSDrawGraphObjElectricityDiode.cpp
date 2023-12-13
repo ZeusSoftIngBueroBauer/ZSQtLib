@@ -301,7 +301,7 @@ CGraphObjDiode::CGraphObjDiode(
     acceptCurrentAsOriginalCoors();
 #endif
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -502,48 +502,48 @@ void CGraphObjDiode::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOl
 protected: // overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjDiode::updateToolTip()
-//------------------------------------------------------------------------------
-{
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
-        QPointF ptPos;
-
-        m_strToolTip  = "ObjName:\t" + name();
-        m_strToolTip += "\nObjId:\t\t" + keyInTree();
-
-        m_strToolTip += "CutOffVoltage:\t" + QString::number(m_fCutOffVoltage_V) + " V";
-
-        // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
-        // position of the item's top left corner before applying the rotation
-        // transformation matrix but includes the transformation. What we want
-        // (or what I want) is the position of the item before rotating the item
-        // around the rotation origin point. In contrary it looks like "pos"
-        // always returns the top left corner before rotating the object.
-
-        if( pGraphicsItem->parentItem() != nullptr )
-        {
-            ptPos = pGraphicsItem->pos();
-            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
-        }
-        else
-        {
-            ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
-            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
-        }
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
-        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
-#endif
-        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
-
-        pGraphicsItem->setToolTip(m_strToolTip);
-
-    } // if( pGraphicsItem != nullptr )
-
-} // updateToolTip
+////------------------------------------------------------------------------------
+//void CGraphObjDiode::updateToolTip()
+////------------------------------------------------------------------------------
+//{
+//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+//
+//    if( pGraphicsItem != nullptr )
+//    {
+//        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
+//        QPointF ptPos;
+//
+//        m_strToolTip  = "ObjName:\t" + name();
+//        m_strToolTip += "\nObjId:\t\t" + keyInTree();
+//
+//        m_strToolTip += "CutOffVoltage:\t" + QString::number(m_fCutOffVoltage_V) + " V";
+//
+//        // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
+//        // position of the item's top left corner before applying the rotation
+//        // transformation matrix but includes the transformation. What we want
+//        // (or what I want) is the position of the item before rotating the item
+//        // around the rotation origin point. In contrary it looks like "pos"
+//        // always returns the top left corner before rotating the object.
+//
+//        if( pGraphicsItem->parentItem() != nullptr )
+//        {
+//            ptPos = pGraphicsItem->pos();
+//            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
+//        }
+//        else
+//        {
+//            ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
+//            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
+//        }
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//        m_strToolTip += "\nSize:\t\t" + size2Str(getSize());
+//        m_strToolTip += "\nRotation:\t" + QString::number(m_fRotAngleCurr_deg,'f',1) + " " + ZS::PhysVal::c_strSymbolDegree;
+//#endif
+//        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
+//
+//        pGraphicsItem->setToolTip(m_strToolTip);
+//
+//    } // if( pGraphicsItem != nullptr )
+//
+//} // updateToolTip

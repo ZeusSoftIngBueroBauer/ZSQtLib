@@ -82,9 +82,7 @@ public: // must overridables of base class CGraphObj
     virtual void setSize( const CPhysValSize& i_physValSize ) override;
     virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
 public: // must overridables of base class CGraphObj
-    virtual bool hasBoundingRect() const override;
-    virtual bool hasLineShapePoints() const override;
-    virtual bool hasRotationSelectionPoints() const override;
+    virtual QRectF boundingRect(bool i_bIncludeLabelsAndSelectionPoints) const override;
 protected: // overridables
     virtual void applyGeometryChangeToChildrens();
 public: // must overridables of base class CGraphObj

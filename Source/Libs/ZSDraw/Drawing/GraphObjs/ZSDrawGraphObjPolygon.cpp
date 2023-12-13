@@ -108,7 +108,7 @@ CGraphObjPolygon::CGraphObjPolygon(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {

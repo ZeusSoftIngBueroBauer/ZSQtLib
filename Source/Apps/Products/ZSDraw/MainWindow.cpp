@@ -3549,7 +3549,7 @@ void CMainWindow::onActionEditSelectToggled(bool i_bChecked)
         m_pActDrawChecked = m_pActEditSelect;
         pDrawingScene->setCurrentDrawingTool(nullptr);
         pDrawingScene->setMode(
-            EMode::Ignore, EEditTool::Select, EEditMode::None, EEditResizeMode::None);
+            EMode::Undefined, EEditTool::Select, EEditMode::None, EEditResizeMode::None);
     }
     else {
         if( m_pActDrawChecked == m_pActEditSelect ) {
@@ -3557,7 +3557,7 @@ void CMainWindow::onActionEditSelectToggled(bool i_bChecked)
         }
         if( pDrawingScene->getEditTool() == EEditTool::Select ) {
             pDrawingScene->setMode(
-                EMode::Ignore, EEditTool::None, EEditMode::None, EEditResizeMode::None);
+                EMode::Undefined, EEditTool::None, EEditMode::None, EEditResizeMode::None);
         }
     }
 }

@@ -251,7 +251,7 @@ enum class EEditTool
     None          = 0, /*! Indicates that no edit tool is selected. */
     Select        = 1, /*! Objects may be selected. */
     CreateObjects = 2, /*! A valid object factory is selected and objects may be created. */
-    Ignore        = 3  /*! May be passed to methods to indicate that the argument should be ignored. */
+    Undefined     = 3  /*! May be passed to methods to indicate that the argument should be ignored. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<EEditTool>;
@@ -290,7 +290,7 @@ enum class EEditMode
     Rotate         = 4, /*!< The selected object is rotated around the centre point of its bounding rectangle. */
     MoveShapePoint = 5, /*!< A single shape point of the selected object is being moved. */
     EditText       = 6, /*!< A single shape point of the selected object is being moved. */
-    Ignore         = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
+    Undefined      = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<EEditMode>;
@@ -308,7 +308,7 @@ enum class EEditResizeMode
     ResizeAll = 1, /*!< The selected object is resized horizontally and vertically. */
     ResizeHor = 2, /*!< The selected object is resized horizontally. */
     ResizeVer = 3, /*!< The selected object is resized vertically. */
-    Ignore    = 4, /*!< May be passed to methods to indicate that the argument should be ignored. */
+    Undefined = 4, /*!< May be passed to methods to indicate that the argument should be ignored. */
 };
 
 template class ZSDRAWDLL_API ::CEnum<EEditResizeMode>;

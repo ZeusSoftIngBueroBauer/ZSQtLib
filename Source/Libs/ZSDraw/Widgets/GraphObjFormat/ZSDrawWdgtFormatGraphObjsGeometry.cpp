@@ -299,296 +299,287 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
                 throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
             }
 
-            if( m_pGraphObj->hasBoundingRect() )
+            // <Line> Size Width/Height
+            //------------ ------------
+
+            m_pLytLineSize = new QHBoxLayout();
+            m_pLytWdgtPosSize->addLayout(m_pLytLineSize);
+            m_pLblSize = new QLabel("Size");
+            m_pLblSize->setFixedWidth(cxLblWidthClm0);
+            m_pLytLineSize->addWidget(m_pLblSize);
+
+            // <Edit> Size Width
+            //-------------------
+
+            m_pLblSizeWidth = new QLabel("Width:");
+            m_pLblSizeWidth->setFixedWidth(cxLblWidthClm1);
+            m_pLytLineSize->addWidget(m_pLblSizeWidth);
+            m_pEdtSizeWidth = new QDoubleSpinBox();
+            m_pEdtSizeWidth->setFixedWidth(cxEdtWidthClm1);
+            m_pEdtSizeWidth->setRange(0.0, rctScene.right());
+            m_pEdtSizeWidth->setDecimals(1);
+            m_pEdtSizeWidth->setSingleStep(0.1);
+            m_pEdtSizeWidth->setSuffix(" px");
+            m_pEdtSizeWidth->setValue(m_size.width());
+            m_pLytLineSize->addWidget(m_pEdtSizeWidth);
+            m_pLytLineSize->addSpacing(cxSpacingClm1Cml2);
+
+            if( !connect(
+                /* pObjSender   */ m_pEdtSizeWidth,
+                /* szSignal     */ SIGNAL(valueChanged(double)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onEdtSizeWidthValueChanged(double)) ) )
             {
-                // <Line> Size Width/Height
-                //------------ ------------
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
+            if( !connect(
+                /* pObjSender   */ m_pEdtSizeWidth,
+                /* szSignal     */ SIGNAL(editingFinished()),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onEdtSizeWidthEditingFinished()) ) )
+            {
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
 
-                m_pLytLineSize = new QHBoxLayout();
-                m_pLytWdgtPosSize->addLayout(m_pLytLineSize);
-                m_pLblSize = new QLabel("Size");
-                m_pLblSize->setFixedWidth(cxLblWidthClm0);
-                m_pLytLineSize->addWidget(m_pLblSize);
+            // <Edit> Size Height
+            //-------------------
 
-                // <Edit> Size Width
-                //-------------------
+            m_pLblSizeHeight = new QLabel("Height:");
+            m_pLblSizeHeight->setFixedWidth(cxLblWidthClm2);
+            m_pLytLineSize->addWidget(m_pLblSizeHeight);
+            m_pEdtSizeHeight = new QDoubleSpinBox();
+            m_pEdtSizeHeight->setFixedWidth(cxEdtWidthClm2);
+            m_pEdtSizeHeight->setRange(0.0, rctScene.right());
+            m_pEdtSizeHeight->setDecimals(1);
+            m_pEdtSizeHeight->setSingleStep(0.1);
+            m_pEdtSizeHeight->setSuffix(" px");
+            m_pEdtSizeHeight->setValue(m_size.height());
+            m_pLytLineSize->addWidget(m_pEdtSizeHeight);
+            m_pLytLineSize->addStretch();
 
-                m_pLblSizeWidth = new QLabel("Width:");
-                m_pLblSizeWidth->setFixedWidth(cxLblWidthClm1);
-                m_pLytLineSize->addWidget(m_pLblSizeWidth);
-                m_pEdtSizeWidth = new QDoubleSpinBox();
-                m_pEdtSizeWidth->setFixedWidth(cxEdtWidthClm1);
-                m_pEdtSizeWidth->setRange(0.0, rctScene.right());
-                m_pEdtSizeWidth->setDecimals(1);
-                m_pEdtSizeWidth->setSingleStep(0.1);
-                m_pEdtSizeWidth->setSuffix(" px");
-                m_pEdtSizeWidth->setValue(m_size.width());
-                m_pLytLineSize->addWidget(m_pEdtSizeWidth);
-                m_pLytLineSize->addSpacing(cxSpacingClm1Cml2);
-
-                if( !connect(
-                    /* pObjSender   */ m_pEdtSizeWidth,
-                    /* szSignal     */ SIGNAL(valueChanged(double)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onEdtSizeWidthValueChanged(double)) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-                if( !connect(
-                    /* pObjSender   */ m_pEdtSizeWidth,
-                    /* szSignal     */ SIGNAL(editingFinished()),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onEdtSizeWidthEditingFinished()) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-
-                // <Edit> Size Height
-                //-------------------
-
-                m_pLblSizeHeight = new QLabel("Height:");
-                m_pLblSizeHeight->setFixedWidth(cxLblWidthClm2);
-                m_pLytLineSize->addWidget(m_pLblSizeHeight);
-                m_pEdtSizeHeight = new QDoubleSpinBox();
-                m_pEdtSizeHeight->setFixedWidth(cxEdtWidthClm2);
-                m_pEdtSizeHeight->setRange(0.0, rctScene.right());
-                m_pEdtSizeHeight->setDecimals(1);
-                m_pEdtSizeHeight->setSingleStep(0.1);
-                m_pEdtSizeHeight->setSuffix(" px");
-                m_pEdtSizeHeight->setValue(m_size.height());
-                m_pLytLineSize->addWidget(m_pEdtSizeHeight);
-                m_pLytLineSize->addStretch();
-
-                if( !connect(
-                    /* pObjSender   */ m_pEdtSizeHeight,
-                    /* szSignal     */ SIGNAL(valueChanged(double)),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onEdtSizeHeightValueChanged(double)) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-                if( !connect(
-                    /* pObjSender   */ m_pEdtSizeHeight,
-                    /* szSignal     */ SIGNAL(editingFinished()),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onEdtSizeHeightEditingFinished()) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-            } // if( m_pGraphObj->hasBoundingRect() )
+            if( !connect(
+                /* pObjSender   */ m_pEdtSizeHeight,
+                /* szSignal     */ SIGNAL(valueChanged(double)),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onEdtSizeHeightValueChanged(double)) ) )
+            {
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
+            if( !connect(
+                /* pObjSender   */ m_pEdtSizeHeight,
+                /* szSignal     */ SIGNAL(editingFinished()),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onEdtSizeHeightEditingFinished()) ) )
+            {
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
         } // if( graphObjType != EGraphObjTypeLine && graphObjType != EGraphObjTypeConnectionLine )
 
         // <Widget> Shape Points
         //======================
 
-        if( m_pGraphObj->hasLineShapePoints() )
+        m_pWdgtShapePoints = new QWidget();
+        m_pLytWdgtShapePoints = new QVBoxLayout();
+        m_pLytWdgtShapePoints->setContentsMargins(0,0,0,0);
+        m_pWdgtShapePoints->setLayout(m_pLytWdgtShapePoints);
+        m_pLyt->addWidget(m_pWdgtShapePoints);
+
+        // <Separator> ShapePoints
+        //------------------------
+
+        m_pLytWdgtShapePoints->addSpacing(4);
+
+        m_pLytHeadLineShapePoints = new QHBoxLayout();
+        m_pLytWdgtShapePoints->addLayout(m_pLytHeadLineShapePoints);
+
+        m_pLblHeadLineShapePoints = new QLabel("Shape Points:");
+        m_pLytHeadLineShapePoints->addWidget(m_pLblHeadLineShapePoints);
+        m_pSepHeadLineShapePoints = new QFrame();
+        m_pSepHeadLineShapePoints->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+        m_pLytHeadLineShapePoints->addWidget(m_pSepHeadLineShapePoints,1);
+
+        m_pLytWdgtShapePoints->addSpacing(4);
+
+        // <Table> Shape Points
+        //-----------------------
+
+        m_pLytShapePoints = new QHBoxLayout();
+        m_pLytWdgtShapePoints->addLayout(m_pLytShapePoints);
+        m_pViewShapePoints = new QTableView();
+        m_pLytShapePoints->addWidget(m_pViewShapePoints);
+        m_pModelShapePoints = new QStandardItemModel;
+        m_pModelShapePoints->setColumnCount(EClmCount);
+        m_pViewShapePoints->setModel(m_pModelShapePoints);
+        m_pViewShapePoints->horizontalHeader()->setStretchLastSection(true);
+
+        if( !connect(
+            /* pObjSender   */ m_pModelShapePoints,
+            /* szSignal     */ SIGNAL(itemChanged(QStandardItem*)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onModelShapePointsItemChanged(QStandardItem*)) ) )
         {
-            m_pWdgtShapePoints = new QWidget();
-            m_pLytWdgtShapePoints = new QVBoxLayout();
-            m_pLytWdgtShapePoints->setContentsMargins(0,0,0,0);
-            m_pWdgtShapePoints->setLayout(m_pLytWdgtShapePoints);
-            m_pLyt->addWidget(m_pWdgtShapePoints);
+            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+        }
 
-            // <Separator> ShapePoints
-            //------------------------
+        // Called by onGraphObjChanged:
+        //fillShapePointsModel();
 
-            m_pLytWdgtShapePoints->addSpacing(4);
+        // <Widget> Shape Point Buttons
+        //-----------------------------
 
-            m_pLytHeadLineShapePoints = new QHBoxLayout();
-            m_pLytWdgtShapePoints->addLayout(m_pLytHeadLineShapePoints);
+        if( graphObjType != EGraphObjTypeLine )
+        {
+            m_pWdgtShapePointButtons = new QWidget();
+            m_pLytWdgtShapePointButtons = new QVBoxLayout();
+            m_pLytWdgtShapePointButtons->setContentsMargins(10,10,0,0);
+            m_pWdgtShapePointButtons->setLayout(m_pLytWdgtShapePointButtons);
+            m_pLytShapePoints->addWidget(m_pWdgtShapePointButtons);
+            m_pLytShapePoints->addStretch();
 
-            m_pLblHeadLineShapePoints = new QLabel("Shape Points:");
-            m_pLytHeadLineShapePoints->addWidget(m_pLblHeadLineShapePoints);
-            m_pSepHeadLineShapePoints = new QFrame();
-            m_pSepHeadLineShapePoints->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-            m_pLytHeadLineShapePoints->addWidget(m_pSepHeadLineShapePoints,1);
+            // <Button> Shape Point Add
+            //-------------------------
 
-            m_pLytWdgtShapePoints->addSpacing(4);
+            QPixmap pxmBtnAdd(":/ZS/Button/ButtonAdd16x16.png");
+            pxmBtnAdd.setMask(pxmBtnAdd.createHeuristicMask());
 
-            // <Table> Shape Points
-            //-----------------------
-
-            m_pLytShapePoints = new QHBoxLayout();
-            m_pLytWdgtShapePoints->addLayout(m_pLytShapePoints);
-            m_pViewShapePoints = new QTableView();
-            m_pLytShapePoints->addWidget(m_pViewShapePoints);
-            m_pModelShapePoints = new QStandardItemModel;
-            m_pModelShapePoints->setColumnCount(EClmCount);
-            m_pViewShapePoints->setModel(m_pModelShapePoints);
-            m_pViewShapePoints->horizontalHeader()->setStretchLastSection(true);
+            m_pBtnShapePointAdd = new CPushButton();
+            m_pBtnShapePointAdd->setFixedWidth(24);
+            m_pBtnShapePointAdd->setFixedHeight(24);
+            m_pBtnShapePointAdd->setPixmap(pxmBtnAdd);
+            m_pLytWdgtShapePointButtons->addWidget(m_pBtnShapePointAdd);
 
             if( !connect(
-                /* pObjSender   */ m_pModelShapePoints,
-                /* szSignal     */ SIGNAL(itemChanged(QStandardItem*)),
+                /* pObjSender   */ m_pBtnShapePointAdd,
+                /* szSignal     */ SIGNAL(clicked()),
                 /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onModelShapePointsItemChanged(QStandardItem*)) ) )
+                /* szSlot       */ SLOT(onBtnShapePointAddClicked()) ) )
             {
                 throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
             }
 
-            // Called by onGraphObjChanged:
-            //fillShapePointsModel();
+            // <Button> Shape Point Delete
+            //----------------------------
 
-            // <Widget> Shape Point Buttons
+            QPixmap pxmBtnDelete(":/ZS/Button/ButtonDelete16x16.png");
+            pxmBtnDelete.setMask(pxmBtnDelete.createHeuristicMask());
+
+            m_pBtnShapePointDelete = new CPushButton();
+            m_pBtnShapePointDelete->setFixedWidth(24);
+            m_pBtnShapePointDelete->setFixedHeight(24);
+            m_pBtnShapePointDelete->setPixmap(pxmBtnDelete);
+            m_pLytWdgtShapePointButtons->addWidget(m_pBtnShapePointDelete);
+
+            if( !connect(
+                /* pObjSender   */ m_pBtnShapePointDelete,
+                /* szSignal     */ SIGNAL(clicked()),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onBtnShapePointDeleteClicked()) ) )
+            {
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
+
+            // <Button> Shape Point Move Up
             //-----------------------------
 
-            if( graphObjType != EGraphObjTypeLine )
+            QPixmap pxmBtnUp(":/ZS/Button/ButtonMoveUp16x16.png");
+            pxmBtnUp.setMask(pxmBtnUp.createHeuristicMask());
+
+            m_pBtnShapePointUp = new CPushButton();
+            m_pBtnShapePointUp->setFixedWidth(24);
+            m_pBtnShapePointUp->setFixedHeight(24);
+            m_pBtnShapePointUp->setPixmap(pxmBtnUp);
+            m_pLytWdgtShapePointButtons->addWidget(m_pBtnShapePointUp);
+
+            if( !connect(
+                /* pObjSender   */ m_pBtnShapePointUp,
+                /* szSignal     */ SIGNAL(clicked()),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onBtnShapePointUpClicked()) ) )
             {
-                m_pWdgtShapePointButtons = new QWidget();
-                m_pLytWdgtShapePointButtons = new QVBoxLayout();
-                m_pLytWdgtShapePointButtons->setContentsMargins(10,10,0,0);
-                m_pWdgtShapePointButtons->setLayout(m_pLytWdgtShapePointButtons);
-                m_pLytShapePoints->addWidget(m_pWdgtShapePointButtons);
-                m_pLytShapePoints->addStretch();
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
 
-                // <Button> Shape Point Add
-                //-------------------------
+            // <Button> Shape Point Move Down
+            //-------------------------------
 
-                QPixmap pxmBtnAdd(":/ZS/Button/ButtonAdd16x16.png");
-                pxmBtnAdd.setMask(pxmBtnAdd.createHeuristicMask());
+            QPixmap pxmBtnDown(":/ZS/Button/ButtonMoveDown16x16.png");
+            pxmBtnDown.setMask(pxmBtnDown.createHeuristicMask());
 
-                m_pBtnShapePointAdd = new CPushButton();
-                m_pBtnShapePointAdd->setFixedWidth(24);
-                m_pBtnShapePointAdd->setFixedHeight(24);
-                m_pBtnShapePointAdd->setPixmap(pxmBtnAdd);
-                m_pLytWdgtShapePointButtons->addWidget(m_pBtnShapePointAdd);
+            m_pBtnShapePointDown = new CPushButton();
+            m_pBtnShapePointDown->setFixedWidth(24);
+            m_pBtnShapePointDown->setFixedHeight(24);
+            m_pBtnShapePointDown->setPixmap(pxmBtnDown);
+            m_pLytWdgtShapePointButtons->addWidget(m_pBtnShapePointDown);
+            m_pLytWdgtShapePointButtons->addStretch();
 
-                if( !connect(
-                    /* pObjSender   */ m_pBtnShapePointAdd,
-                    /* szSignal     */ SIGNAL(clicked()),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onBtnShapePointAddClicked()) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-
-                // <Button> Shape Point Delete
-                //----------------------------
-
-                QPixmap pxmBtnDelete(":/ZS/Button/ButtonDelete16x16.png");
-                pxmBtnDelete.setMask(pxmBtnDelete.createHeuristicMask());
-
-                m_pBtnShapePointDelete = new CPushButton();
-                m_pBtnShapePointDelete->setFixedWidth(24);
-                m_pBtnShapePointDelete->setFixedHeight(24);
-                m_pBtnShapePointDelete->setPixmap(pxmBtnDelete);
-                m_pLytWdgtShapePointButtons->addWidget(m_pBtnShapePointDelete);
-
-                if( !connect(
-                    /* pObjSender   */ m_pBtnShapePointDelete,
-                    /* szSignal     */ SIGNAL(clicked()),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onBtnShapePointDeleteClicked()) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-
-                // <Button> Shape Point Move Up
-                //-----------------------------
-
-                QPixmap pxmBtnUp(":/ZS/Button/ButtonMoveUp16x16.png");
-                pxmBtnUp.setMask(pxmBtnUp.createHeuristicMask());
-
-                m_pBtnShapePointUp = new CPushButton();
-                m_pBtnShapePointUp->setFixedWidth(24);
-                m_pBtnShapePointUp->setFixedHeight(24);
-                m_pBtnShapePointUp->setPixmap(pxmBtnUp);
-                m_pLytWdgtShapePointButtons->addWidget(m_pBtnShapePointUp);
-
-                if( !connect(
-                    /* pObjSender   */ m_pBtnShapePointUp,
-                    /* szSignal     */ SIGNAL(clicked()),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onBtnShapePointUpClicked()) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-
-                // <Button> Shape Point Move Down
-                //-------------------------------
-
-                QPixmap pxmBtnDown(":/ZS/Button/ButtonMoveDown16x16.png");
-                pxmBtnDown.setMask(pxmBtnDown.createHeuristicMask());
-
-                m_pBtnShapePointDown = new CPushButton();
-                m_pBtnShapePointDown->setFixedWidth(24);
-                m_pBtnShapePointDown->setFixedHeight(24);
-                m_pBtnShapePointDown->setPixmap(pxmBtnDown);
-                m_pLytWdgtShapePointButtons->addWidget(m_pBtnShapePointDown);
-                m_pLytWdgtShapePointButtons->addStretch();
-
-                if( !connect(
-                    /* pObjSender   */ m_pBtnShapePointDown,
-                    /* szSignal     */ SIGNAL(clicked()),
-                    /* pObjReceiver */ this,
-                    /* szSlot       */ SLOT(onBtnShapePointDownClicked()) ) )
-                {
-                    throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-                }
-            } // if( graphObjType != EGraphObjTypeLine )
-        } // if( m_pGraphObj->hasLineShapePoints() )
+            if( !connect(
+                /* pObjSender   */ m_pBtnShapePointDown,
+                /* szSignal     */ SIGNAL(clicked()),
+                /* pObjReceiver */ this,
+                /* szSlot       */ SLOT(onBtnShapePointDownClicked()) ) )
+            {
+                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+            }
+        } // if( graphObjType != EGraphObjTypeLine )
 
         // <Widget> Rotation
         //==================
 
         m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
 
-        if( m_pGraphObj->hasRotationSelectionPoints() )
+        m_pWdgtRotation = new QWidget();
+        m_pLytWdgtRotation = new QVBoxLayout();
+        m_pLytWdgtRotation->setContentsMargins(0,0,0,0);
+        m_pWdgtRotation->setLayout(m_pLytWdgtRotation);
+        m_pLyt->addWidget(m_pWdgtRotation);
+
+        // <Separator> Rotation
+        //----------------------
+
+        m_pLytWdgtRotation->addSpacing(4);
+
+        m_pLytHeadLineRotation = new QHBoxLayout();
+        m_pLytWdgtRotation->addLayout(m_pLytHeadLineRotation);
+
+        m_pLblHeadLineRotation = new QLabel("Rotation:");
+        m_pLytHeadLineRotation->addWidget(m_pLblHeadLineRotation);
+        m_pSepHeadLineRotation = new QFrame();
+        m_pSepHeadLineRotation->setFrameStyle(QFrame::HLine|QFrame::Sunken);
+        m_pLytHeadLineRotation->addWidget(m_pSepHeadLineRotation, 1);
+
+        m_pLytWdgtRotation->addSpacing(4);
+
+        // <Line> Rotation Angle
+        //----------------------
+
+        m_pLytLineRotationAngle = new QHBoxLayout();
+        m_pLytWdgtRotation->addLayout(m_pLytLineRotationAngle);
+        m_pLblRotationAngle = new QLabel("Angle:");
+        m_pLblRotationAngle->setFixedWidth(cxLblWidthClm0);
+        m_pLytLineRotationAngle->addWidget(m_pLblRotationAngle);
+
+        // <Edit> Rotation Angle
+        //----------------------
+
+        m_pLytLineRotationAngle->addSpacing(cxLblWidthClm1 + 4);
+        m_pEdtRotationAngle = new QDoubleSpinBox();
+        m_pEdtRotationAngle->setFixedWidth(cxEdtWidthClm1);
+        m_pEdtRotationAngle->setRange(-360.0, 360.0);
+        m_pEdtRotationAngle->setDecimals(1);
+        m_pEdtRotationAngle->setSingleStep(0.1);
+        m_pEdtRotationAngle->setSuffix(" " + ZS::PhysVal::c_strSymbolDegree);
+        //m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
+        m_pLytLineRotationAngle->addWidget(m_pEdtRotationAngle);
+        m_pLytLineRotationAngle->addStretch();
+
+        if( !connect(
+            /* pObjSender   */ m_pEdtRotationAngle,
+            /* szSignal     */ SIGNAL(valueChanged(double)),
+            /* pObjReceiver */ this,
+            /* szSlot       */ SLOT(onEdtRotationAngleValueChanged(double)) ) )
         {
-            m_pWdgtRotation = new QWidget();
-            m_pLytWdgtRotation = new QVBoxLayout();
-            m_pLytWdgtRotation->setContentsMargins(0,0,0,0);
-            m_pWdgtRotation->setLayout(m_pLytWdgtRotation);
-            m_pLyt->addWidget(m_pWdgtRotation);
-
-            // <Separator> Rotation
-            //----------------------
-
-            m_pLytWdgtRotation->addSpacing(4);
-
-            m_pLytHeadLineRotation = new QHBoxLayout();
-            m_pLytWdgtRotation->addLayout(m_pLytHeadLineRotation);
-
-            m_pLblHeadLineRotation = new QLabel("Rotation:");
-            m_pLytHeadLineRotation->addWidget(m_pLblHeadLineRotation);
-            m_pSepHeadLineRotation = new QFrame();
-            m_pSepHeadLineRotation->setFrameStyle(QFrame::HLine|QFrame::Sunken);
-            m_pLytHeadLineRotation->addWidget(m_pSepHeadLineRotation, 1);
-
-            m_pLytWdgtRotation->addSpacing(4);
-
-            // <Line> Rotation Angle
-            //----------------------
-
-            m_pLytLineRotationAngle = new QHBoxLayout();
-            m_pLytWdgtRotation->addLayout(m_pLytLineRotationAngle);
-            m_pLblRotationAngle = new QLabel("Angle:");
-            m_pLblRotationAngle->setFixedWidth(cxLblWidthClm0);
-            m_pLytLineRotationAngle->addWidget(m_pLblRotationAngle);
-
-            // <Edit> Rotation Angle
-            //----------------------
-
-            m_pLytLineRotationAngle->addSpacing(cxLblWidthClm1 + 4);
-            m_pEdtRotationAngle = new QDoubleSpinBox();
-            m_pEdtRotationAngle->setFixedWidth(cxEdtWidthClm1);
-            m_pEdtRotationAngle->setRange(-360.0, 360.0);
-            m_pEdtRotationAngle->setDecimals(1);
-            m_pEdtRotationAngle->setSingleStep(0.1);
-            m_pEdtRotationAngle->setSuffix(" " + ZS::PhysVal::c_strSymbolDegree);
-            //m_pEdtRotationAngle->setValue(m_fRotAngle_deg);
-            m_pLytLineRotationAngle->addWidget(m_pEdtRotationAngle);
-            m_pLytLineRotationAngle->addStretch();
-
-            if( !connect(
-                /* pObjSender   */ m_pEdtRotationAngle,
-                /* szSignal     */ SIGNAL(valueChanged(double)),
-                /* pObjReceiver */ this,
-                /* szSlot       */ SLOT(onEdtRotationAngleValueChanged(double)) ) )
-            {
-                throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
-            }
-        } // if( m_pGraphObj->hasRotationSelectionPoints() )
+            throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
+        }
 
         // <Widget> Stacking Order
         //========================

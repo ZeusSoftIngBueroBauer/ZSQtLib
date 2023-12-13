@@ -92,7 +92,7 @@ protected: // overridables of base class CGraphObjGroup
     virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
     virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
 protected: // overridables of base class CGraphObj
-    virtual void updateToolTip() override;
+    //virtual void updateToolTip() override;
 protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;

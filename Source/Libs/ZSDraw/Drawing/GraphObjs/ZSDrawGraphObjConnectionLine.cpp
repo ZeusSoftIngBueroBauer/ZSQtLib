@@ -114,7 +114,7 @@ CGraphObjConnectionLine::CGraphObjConnectionLine(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -304,8 +304,8 @@ bool CGraphObjConnectionLine::setConnectionPoint( ELinePoint i_linePoint, CGraph
 
             } // if( linePoint == ELinePoint::End )
 
-            updateToolTip();
-            updateEditInfo();
+            //updateToolTip();
+            //updateEditInfo();
 
         } // if( pGraphObjCnctPt != nullptr )
 
@@ -402,8 +402,8 @@ void CGraphObjConnectionLine::setPolygon( const QPolygonF& i_plg )
 
         updateLineEndPolygonCoors();
 
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
 
     } // if( i_plg.size() >= 2 )
 
@@ -838,8 +838,8 @@ void CGraphObjConnectionLine::onGraphObjParentGeometryChanged( CGraphObj* i_pGra
 
         updateLineEndPolygonCoors();
 
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
 } // onGraphObjParentGeometryChanged
 
@@ -1506,8 +1506,8 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
         updateLineEndPolygonCoors();
 
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
 
     } // if( m_editMode == EEditMode::Creating )
 
@@ -1626,14 +1626,14 @@ void CGraphObjConnectionLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
             }
 
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
 
             m_bCoorsDirty = true;
 
             updateLineEndPolygonCoors();
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
@@ -1712,8 +1712,8 @@ void CGraphObjConnectionLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateLineEndPolygonCoors();
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::MoveShapePoint )
 
@@ -1922,8 +1922,8 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 
                 updateLineEndPolygonCoors();
 
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
 
             } // if( m_idxSelPtSelectedPolygon == 0 || m_idxSelPtSelectedPolygon == plg.size()-1 )
 
@@ -1963,8 +1963,8 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
                 acceptCurrentAsOriginalCoors();
 #endif
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
 
             } // if( m_idxSelPtSelectedPolygon > 0 && m_idxSelPtSelectedPolygon < plg.size()-1 )
 
@@ -2006,8 +2006,8 @@ void CGraphObjConnectionLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         acceptCurrentAsOriginalCoors();
 #endif
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
 
     } // if( m_editMode != EEditMode::Creating )
 
@@ -2284,8 +2284,8 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
                     m_pDrawingScene->onGraphObjAddingShapePointsFinished(this);
                 }
 
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
 
             } // if( plg.size() >= 2 ) // anyway ..
 
@@ -2369,8 +2369,8 @@ QVariant CGraphObjConnectionLine::itemChange( GraphicsItemChange i_change, const
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if( i_change == ItemTransformChange
@@ -2386,8 +2386,8 @@ QVariant CGraphObjConnectionLine::itemChange( GraphicsItemChange i_change, const
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         update();
     }
 

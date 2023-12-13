@@ -45,8 +45,13 @@ namespace Draw
     Labels are used to indicate a descriptive text or coordinates of the object they
     are linked to. This class is also used as the base class for all geometry labels.
 
+    Labels are positioned relative to the graphical object they are linked to.
+    The relative position is defined in polar coordinates (distance and angle to the
+    linked selection point). Labels are positioned in scene coordinates and never
+    belong to groups.
+
     @note Labels should not belong as child to the graphics items for which the
-          selection points are created. Otherwise the "boundingRect" call of groups
+          labels are created. Otherwise the "boundingRect" call of groups
           (which implicitly calls childrenBoundingRect) does not work as the
           label of the bounding rectangle would be included.
 */
@@ -111,9 +116,6 @@ public: // must overridables of base class CGraphObj
     virtual void setHeight( const ZS::PhysVal::CPhysVal& /*i_physValHeight*/ ) override {}
     virtual void setSize( const ZS::PhysVal::CPhysVal& /*i_physValWidth*/, const ZS::PhysVal::CPhysVal& /*i_physValHeight*/ ) override {}
     virtual void setSize( const CPhysValSize& /*i_physValSize*/ ) override {}
-    virtual bool hasBoundingRect() const override { return false; }
-    virtual bool hasLineShapePoints() const override { return false; }
-    virtual bool hasRotationSelectionPoints() const override { return false; }
 public: // overridables of base class CGraphObj
     virtual void setRotationAngleInDegree( double /*i_fRotAngle_deg*/ ) override {} // not supported for labels
 public: // must overridables of base class CGraphObj
@@ -147,10 +149,10 @@ protected: // overridable auxiliary instance methods
     virtual void updatePolarCoorsToLinkedSelPt();
     virtual void updateAnchorLines();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    void traceInternalStates(
-        ZS::System::CMethodTracer& i_mthTracer,
-        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
+    //void traceInternalStates(
+    //    ZS::System::CMethodTracer& i_mthTracer,
+    //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+    //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 protected: // instance members
     /*!< Key and selection point(s) of the label. */
     SLabelDscr m_labelDscr;

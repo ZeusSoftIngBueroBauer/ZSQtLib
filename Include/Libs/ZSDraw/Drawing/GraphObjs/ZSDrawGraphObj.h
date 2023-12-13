@@ -272,12 +272,6 @@ public: // struct members
 
     - void setSize(const CPhysValSizeF& i_physValSize);
 
-    - bool hasBoundingRect() const;
-
-    - bool hasLineShapePoints() const;
-
-    - bool hasRotationSelectionPoints() const;
-
     - void setIsHit(bool i_bHit);
       To indicate that object is hit by mouse cursor by either showing selection points
       or a dotted bounding rectangle or ...
@@ -287,6 +281,10 @@ public: // struct members
 
     Pixel and world coordinates
     ===========================
+
+    At item's position is the coordinate of the item's center point in its parent's coordinate system;
+    sometimes referred to as parent coordinates. The scene is in this sense regarded as all parent-less
+    items' "parent". Top level items' position are in scene coordinates.
 
     In a 1:1 "wysiwyg" scenario with a screen resolution of 4 px/mm
 
@@ -618,9 +616,7 @@ public: // must overridables
     virtual void setSize( const CPhysValSize& i_physValSize ) = 0;
     virtual CPhysValSize getSize( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
 public: // must overridables
-    virtual bool hasBoundingRect() const = 0;
-    virtual bool hasLineShapePoints() const = 0;
-    virtual bool hasRotationSelectionPoints() const = 0;
+    virtual QRectF boundingRect(bool i_bIncludeLabelsAndSelectionPoints) const;
 public: // overridables
     virtual void setRotationAngleInDegree( double i_fRotAngle_deg );
     virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed );
@@ -637,10 +633,6 @@ public: // overridables
     virtual double setStackingOrderValue(double i_fZValue, ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current);
     double getStackingOrderValue(ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current) const;
     double resetStackingOrderValueToOriginalValue();
-public: // overridables
-    virtual void showBoundingRect();
-    virtual void hideBoundingRect();
-    virtual bool isBoundingRectVisible() const;
 public: // overridables
     virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
     virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
@@ -724,8 +716,8 @@ public: // instance methods (simulation methods)
     void removeKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
 protected: // overridables
     virtual void updateTransform();
-    virtual void updateToolTip();
-    virtual void updateEditInfo();
+    //virtual void updateToolTip();
+    //virtual void updateEditInfo();
     //virtual void updateLabelPositionsAndContents();
 protected: // overridables
     //virtual void updateLabelPositions(QList<CGraphObjLabel*>& i_arpLabels);
@@ -750,10 +742,10 @@ protected: // auxiliary instance methods (method tracing)
     void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
-    virtual void traceInternalStates(
-        ZS::System::CMethodTracer& i_mthTracer,
-        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
-        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+    //virtual void traceInternalStates(
+    //    ZS::System::CMethodTracer& i_mthTracer,
+    //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+    //    ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
 protected: // instance members
     /*!< Flag to indicate that the destructor has been called. */
     bool m_bDtorInProgress;
@@ -823,8 +815,6 @@ protected: // instance members
          which is currently set at the graphics item. The current and original versions are mainly
          used to temporarily modify the ZValue to bring the object in front and back again. */
     QVector<double> m_arfZValues;
-    /*!< Flag indicating whether the bounding rectangle is drawn and visible. */
-    bool m_bBoundRectVisible;
     /*!< Currently selected selection point of the items polygon. */
     int m_idxSelPtSelectedPolygon;
     /*!< List of selections points. Selection points are used to resize the graphical object

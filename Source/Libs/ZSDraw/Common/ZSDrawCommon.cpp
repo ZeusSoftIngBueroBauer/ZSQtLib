@@ -258,10 +258,10 @@ template<> QVector<QHash<QString, int>> CEnum<EEditTool>::s_armapsStr2Enumerator
 template<> const QVector<SEnumEntry> CEnum<EEditTool>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(EEditTool::None),          "None",          "-" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditTool::Select),        "Select",        "S" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditTool::CreateObjects), "CreateObjects", "C" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditTool::Ignore),        "Ignore",        "I" )
+    /* 0 */ SEnumEntry( static_cast<int>(EEditTool::None),          "None"),
+    /* 1 */ SEnumEntry( static_cast<int>(EEditTool::Select),        "Select"),
+    /* 2 */ SEnumEntry( static_cast<int>(EEditTool::CreateObjects), "CreateObjects"),
+    /* 3 */ SEnumEntry( static_cast<int>(EEditTool::Undefined),     "Undefined")
 };
 
 
@@ -276,8 +276,8 @@ template<> QVector<QHash<QString, int>> CEnum<ECoordinatesVersion>::s_armapsStr2
 template<> const QVector<SEnumEntry> CEnum<ECoordinatesVersion>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Original), "Original" ),
-    /* 1 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Transformed),  "Current"  )
+    /* 0 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Original),    "Original" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ECoordinatesVersion::Transformed), "Current"  )
 };
 
 
@@ -292,14 +292,14 @@ template<> QVector<QHash<QString, int>> CEnum<EEditMode>::s_armapsStr2Enumerator
 template<> const QVector<SEnumEntry> CEnum<EEditMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),           "None",           "-" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditMode::Creating),       "Creating",       "C" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move",           "M" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditMode::Resize),         "Resize",         "S" ),
-    /* 4 */ SEnumEntry( static_cast<int>(EEditMode::Rotate),         "Rotate",         "R" ),
-    /* 5 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint", "M" ),
-    /* 6 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText",       "E" ),
-    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Ignore),         "Ignore",         "I" )
+    /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),           "None"),
+    /* 1 */ SEnumEntry( static_cast<int>(EEditMode::Creating),       "Creating"),
+    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move"),
+    /* 3 */ SEnumEntry( static_cast<int>(EEditMode::Resize),         "Resize"),
+    /* 4 */ SEnumEntry( static_cast<int>(EEditMode::Rotate),         "Rotate"),
+    /* 5 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint"),
+    /* 6 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText"),
+    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Undefined),      "Undefined")
 };
 
 
@@ -314,11 +314,11 @@ template<> QVector<QHash<QString, int>> CEnum<EEditResizeMode>::s_armapsStr2Enum
 template<> const QVector<SEnumEntry> CEnum<EEditResizeMode>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::None),      "None",      "-" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeAll), "ResizeAll", "A" ),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeHor), "ResizeHor", "H" ),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeVer), "ResizeVer", "V" ),
-    /* 4 */ SEnumEntry( static_cast<int>(EEditResizeMode::Ignore),    "Ignore",    "I" )
+    /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::None),      "None"),
+    /* 1 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeAll), "ResizeAll"),
+    /* 2 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeHor), "ResizeHor"),
+    /* 3 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeVer), "ResizeVer"),
+    /* 4 */ SEnumEntry( static_cast<int>(EEditResizeMode::Undefined), "Undefined")
 };
 
 

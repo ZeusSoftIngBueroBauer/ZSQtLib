@@ -140,7 +140,7 @@ CGraphObjWdgtComboBox::CGraphObjWdgtComboBox(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {

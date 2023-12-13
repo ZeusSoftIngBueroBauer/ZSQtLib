@@ -114,7 +114,7 @@ CGraphObjPoint::CGraphObjPoint(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -1018,8 +1018,8 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             m_pDrawingScene->onGraphObjCreationFinished(this);
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
 
@@ -1031,10 +1031,10 @@ void CGraphObjPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_editResizeMode = EEditResizeMode::None;
             m_idxSelPtSelectedPolygon = 0;
 
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
             // Not a nice hack: mouse double click events will not be dispatched to the graphical objects
             // but will be converted to mouse press and mouse release events which are just dispatched
@@ -1101,8 +1101,8 @@ void CGraphObjPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         {
             QAbstractGraphicsShapeItem::mouseMoveEvent(i_pEv);
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Move )
 
@@ -1158,8 +1158,8 @@ void CGraphObjPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             acceptCurrentAsOriginalCoors();
 #endif
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Move )
 
@@ -1309,8 +1309,8 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if( i_change == ItemTransformChange
@@ -1326,8 +1326,8 @@ QVariant CGraphObjPoint::itemChange( GraphicsItemChange i_change, const QVariant
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if (i_change == ItemZValueHasChanged) {
         bZValueChanged = true;

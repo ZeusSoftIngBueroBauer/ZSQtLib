@@ -1292,40 +1292,40 @@ void CGraphObjLabel::updateAnchorLines()
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjLabel::traceInternalStates(
-    CMethodTracer& i_mthTracer,
-    EMethodDir i_mthDir,
-    ELogDetailLevel i_detailLevel) const
-//------------------------------------------------------------------------------
-{
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        QString strTrcInfo;
-        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-        else strTrcInfo = "";
-        strTrcInfo +=
-            "Key: " + m_labelDscr.m_strKey +
-            ", LinkedTo {" + m_labelDscr.m_selPt1.toString(true) + ", " + m_labelDscr.m_selPt2.toString(true) + "}" +
-            ", Visible: " + QString(isVisible() ? "true" : "false") +
-            ", ShowAnchorLine: " + QString(m_labelDscr.m_bShowAnchorLine ? "true" : "false");
-        i_mthTracer.trace(strTrcInfo);
-        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-        else strTrcInfo = "";
-        strTrcInfo +=
-            "PolarCoorsToLinkedSelPt {" + m_labelDscr.m_polarCoorsToLinkedSelPt.toString() + "}" +
-            ", AnchorLines [" + QString::number(m_anchorLines.size()) + "]";
-        if (m_anchorLines.size() > 0) {
-            strTrcInfo += "(";
-            for (const QLineF& anchorLine : m_anchorLines) {
-                if (!strTrcInfo.endsWith("(")) strTrcInfo += ", ";
-                strTrcInfo += "{" + qLine2Str(anchorLine) + "}";
-            }
-            strTrcInfo += ")";
-        }
-        i_mthTracer.trace(strTrcInfo);
-        i_mthTracer.trace(strTrcInfo);
-        CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
-    }
-}
+////------------------------------------------------------------------------------
+//void CGraphObjLabel::traceInternalStates(
+//    CMethodTracer& i_mthTracer,
+//    EMethodDir i_mthDir,
+//    ELogDetailLevel i_detailLevel) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+//        QString strTrcInfo;
+//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+//        else strTrcInfo = "";
+//        strTrcInfo +=
+//            "Key: " + m_labelDscr.m_strKey +
+//            ", LinkedTo {" + m_labelDscr.m_selPt1.toString(true) + ", " + m_labelDscr.m_selPt2.toString(true) + "}" +
+//            ", Visible: " + QString(isVisible() ? "true" : "false") +
+//            ", ShowAnchorLine: " + QString(m_labelDscr.m_bShowAnchorLine ? "true" : "false");
+//        i_mthTracer.trace(strTrcInfo);
+//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+//        else strTrcInfo = "";
+//        strTrcInfo +=
+//            "PolarCoorsToLinkedSelPt {" + m_labelDscr.m_polarCoorsToLinkedSelPt.toString() + "}" +
+//            ", AnchorLines [" + QString::number(m_anchorLines.size()) + "]";
+//        if (m_anchorLines.size() > 0) {
+//            strTrcInfo += "(";
+//            for (const QLineF& anchorLine : m_anchorLines) {
+//                if (!strTrcInfo.endsWith("(")) strTrcInfo += ", ";
+//                strTrcInfo += "{" + qLine2Str(anchorLine) + "}";
+//            }
+//            strTrcInfo += ")";
+//        }
+//        i_mthTracer.trace(strTrcInfo);
+//        i_mthTracer.trace(strTrcInfo);
+//        CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
+//    }
+//}

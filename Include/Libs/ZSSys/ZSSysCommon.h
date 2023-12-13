@@ -104,10 +104,9 @@ namespace System {
 enum class EMode
 //==============================================================================
 {
-    Edit       = 0, /*!< Indicates that the control is in Edit mode. */
-    View       = 1, /*!< Indicates that the control is in View mode (alias for Simulation mode). */
-    Undefined  = 2, /*!< Indicates that the control is in Undefined mode. */
-    Ignore     = 2  /*!< Indicates that the Mode parameter should be ignored (alias for Undefined mode). */
+    Edit      = 0, /*!< Indicates that the control is in Edit mode. */
+    View      = 1, /*!< Indicates that the control is in View mode. */
+    Undefined = 2 /*!< Indicates that the control is in Undefined mode. */
 };
 } }
 

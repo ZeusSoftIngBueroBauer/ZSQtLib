@@ -183,9 +183,9 @@ public: // instance methods (replacing methods of QGraphicScene)
 public: // instance methods
     void setMode(
         const ZS::System::CEnumMode& i_mode,
-        const CEnumEditTool&         i_editTool = EEditTool::Ignore,
-        const CEnumEditMode&         i_editMode = EEditMode::Ignore,
-        const CEnumEditResizeMode&   i_editResizeMode = EEditResizeMode::Ignore,
+        const CEnumEditTool&         i_editTool = EEditTool::Undefined,
+        const CEnumEditMode&         i_editMode = EEditMode::Undefined,
+        const CEnumEditResizeMode&   i_editResizeMode = EEditResizeMode::Undefined,
         bool                         i_bObjFactoryTypeChanged = false );
     ZS::System::CEnumMode getMode() const { return m_mode; }
     CEnumEditTool getEditTool() const { return m_editTool; }
@@ -320,7 +320,7 @@ protected: // auxiliary instance methods (trace emitting signals)
     void emit_modeChanged();
     void emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
 protected: // auxiliary instance methods (method tracing)
-    void traceInternalStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
+    //void traceInternalStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
 protected: // class members
     static const QString s_strGraphObjNameSeparator;
 protected: // instance members

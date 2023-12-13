@@ -94,7 +94,7 @@ public: // overridables of base class CGraphObj
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
 protected: // overridables of base class CGraphObj
-    virtual void updateToolTip() override;
+    //virtual void updateToolTip() override;
 protected: // class members
     /*!< Needed to set an initial unique name when creating a new instance. */
     static qint64 s_iInstCount;

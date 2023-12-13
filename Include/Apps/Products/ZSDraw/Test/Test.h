@@ -91,7 +91,7 @@ protected: // instance methods
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsCreateObject(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        ZS::Draw::EGraphObjType i_graphObjType,
+        const QString& i_strFactoryGroupName, const QString& i_strGraphObjType,
         const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
     ZS::Test::CTestStepGroup* createTestGroupShowAndMoveTextLabel(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
@@ -112,6 +112,7 @@ protected slots:
     void doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSetMode( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep );

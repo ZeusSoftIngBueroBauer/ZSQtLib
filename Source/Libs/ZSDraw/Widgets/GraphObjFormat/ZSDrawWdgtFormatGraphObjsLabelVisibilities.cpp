@@ -547,7 +547,7 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
     // <Widget> Dimension Lines
     //=========================
 
-    if( m_pGraphObj != nullptr && m_pGraphObj->hasBoundingRect() )
+    if( m_pGraphObj != nullptr)
     {
         //cxLblWidthClm2 = 120;
 
@@ -672,7 +672,7 @@ CWdgtFormatGraphObjsLabelVisibilities::CWdgtFormatGraphObjsLabelVisibilities(
         {
             throw ZS::System::CException(__FILE__,__LINE__,EResultSignalSlotConnectionFailed);
         }
-    } // if( m_pGraphObj->hasBoundingRect() )
+    }
 
     // Set settings at GUI controls
     //=============================

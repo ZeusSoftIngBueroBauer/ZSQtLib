@@ -115,7 +115,7 @@ CGraphObjImage::CGraphObjImage(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -1126,8 +1126,8 @@ void CGraphObjImage::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_rctOnMousePressEvent = m_rctCurr;
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
 #endif
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
 
@@ -1174,10 +1174,10 @@ void CGraphObjImage::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
 #endif
 
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
 
@@ -1256,8 +1256,8 @@ void CGraphObjImage::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Resize )
 
@@ -1301,8 +1301,8 @@ void CGraphObjImage::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 #endif
 
             updateTransform();
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Rotate )
 
@@ -1397,8 +1397,8 @@ void CGraphObjImage::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             acceptCurrentAsOriginalCoors();
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Resize )
 
@@ -1556,16 +1556,16 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemTransformHasChanged) {
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if( i_change == ItemTransformChange
           || i_change == ItemPositionHasChanged
@@ -1583,8 +1583,8 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if (i_change == ItemZValueHasChanged) {
         bZValueChanged = true;

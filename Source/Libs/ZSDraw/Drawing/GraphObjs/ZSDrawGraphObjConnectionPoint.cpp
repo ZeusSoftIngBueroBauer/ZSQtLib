@@ -118,7 +118,7 @@ CGraphObjConnectionPoint::CGraphObjConnectionPoint(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -808,8 +808,8 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryChanged( CGraphObj* i_pGr
             pGraphObjCnctLine->onGraphObjParentGeometryChanged(this);
         }
     }
-    updateEditInfo();
-    updateToolTip();
+    //updateEditInfo();
+    //updateToolTip();
 }
 
 /*==============================================================================
@@ -1470,8 +1470,8 @@ void CGraphObjConnectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv 
 
         m_pDrawingScene->onGraphObjCreationFinished(this);
 
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
 
     } // if( m_editMode == EEditMode::Creating )
 
@@ -1485,10 +1485,10 @@ void CGraphObjConnectionPoint::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv 
             m_editResizeMode = EEditResizeMode::None;
             m_idxSelPtSelectedPolygon = 0;
 
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::Select || m_editMode == EEditMode::Creating )
 
@@ -1537,8 +1537,8 @@ void CGraphObjConnectionPoint::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     {
         QGraphicsEllipseItem::mouseMoveEvent(i_pEv);
 
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
 
     } // if( m_editMode == EEditMode::Move )
 
@@ -1613,8 +1613,8 @@ void CGraphObjConnectionPoint::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pE
     acceptCurrentAsOriginalCoors();
 #endif
 
-    updateEditInfo();
-    updateToolTip();
+    //updateEditInfo();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -1730,8 +1730,8 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
             setAcceptedMouseButtons(Qt::NoButton);
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemPositionHasChanged || i_change == ItemParentHasChanged) {
@@ -1742,8 +1742,8 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
                 pGraphObjCnctLine->onGraphObjParentGeometryChanged(this);
             }
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if( i_change == ItemTransformChange
           || i_change == ItemPositionHasChanged
@@ -1758,8 +1758,8 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if (i_change == ItemZValueHasChanged) {
         bZValueChanged = true;

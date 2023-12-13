@@ -114,7 +114,7 @@ CGraphObjPolyline::CGraphObjPolyline(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -272,8 +272,8 @@ void CGraphObjPolyline::setPolygon( const QPolygonF& i_plg )
 
     updateLineEndPolygonCoors();
 
-    updateEditInfo();
-    updateToolTip();
+    //updateEditInfo();
+    //updateToolTip();
 
     // As "setPolygon" does not end up in an "itemChange" call (even if the
     // flag "ItemSendsGeometryChanges" has been set) we call the "itemChange"
@@ -1369,8 +1369,8 @@ void CGraphObjPolyline::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
             updateTransform();
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
 
@@ -1462,12 +1462,12 @@ void CGraphObjPolyline::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 #endif
                 }
 
-                m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
+                m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
 
                 updateTransform();
 
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
 
             } // if( isSelected() )
 
@@ -1552,8 +1552,8 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 updateTransform();
 
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
 
             } // if( m_editMode == EEditMode::Creating || m_editMode == EEditMode::MoveShapePoint )
 
@@ -1594,8 +1594,8 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 //updateTransform();
 
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
 
             } // if( m_editMode == EEditMode::Resize )
 
@@ -1644,8 +1644,8 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 updateTransform();
 
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
 
             } // if( m_editMode == EEditMode::Rotate )
 
@@ -1687,8 +1687,8 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 updateTransform();
 
-                updateEditInfo();
-                updateToolTip();
+                //updateEditInfo();
+                //updateToolTip();
 
             } // if( m_editMode == EEditMode::MoveShapePoint )
 
@@ -1805,8 +1805,8 @@ void CGraphObjPolyline::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             acceptCurrentAsOriginalCoors();
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Resize )
 
@@ -1839,8 +1839,8 @@ void CGraphObjPolyline::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             acceptCurrentAsOriginalCoors();
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Rotate )
 
@@ -1918,8 +1918,8 @@ void CGraphObjPolyline::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             acceptCurrentAsOriginalCoors();
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::MoveShapePoint )
 
@@ -2041,8 +2041,8 @@ void CGraphObjPolyline::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
             // The object has been initially created.
             m_pDrawingScene->onGraphObjCreationFinished(this);
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Creating )
 
@@ -2122,15 +2122,15 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemTransformHasChanged) {
         QPolygonF plg = polygon();
         QRectF    rctBounding = plg.boundingRect();
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if( i_change == ItemTransformChange
           || i_change == ItemPositionHasChanged
@@ -2149,8 +2149,8 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
         QPolygonF plg = polygon();
         QRectF    rctBounding = plg.boundingRect();
 
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if (i_change == ItemZValueHasChanged) {
         bZValueChanged = true;

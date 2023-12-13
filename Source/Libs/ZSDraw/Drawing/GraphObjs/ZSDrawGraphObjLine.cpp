@@ -955,24 +955,45 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CGraphObjLine::hasBoundingRect() const
+QRectF CGraphObjLine::boundingRect(bool i_bIncludeLabelsAndSelectionPoints) const
 //------------------------------------------------------------------------------
 {
-    return false;
-}
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "IncludeLabelsAndSelectionPoints: " + bool2Str(i_bIncludeLabelsAndSelectionPoints);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "boundingRect",
+        /* strAddInfo   */ strMthInArgs );
 
-//------------------------------------------------------------------------------
-bool CGraphObjLine::hasLineShapePoints() const
-//------------------------------------------------------------------------------
-{
-    return false;
-}
+    QRectF rctBounding = QGraphicsLineItem::boundingRect();
+    for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
+        CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+        if (pGraphObjSelPt != nullptr) {
+            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
+            QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
+            rctBounding |= plgSelPt.boundingRect();
+        }
+    }
+    if (m_plgP1ArrowHead.size() > 0) {
+        rctBounding |= m_plgP1ArrowHead.boundingRect();
+    }
+    if (m_plgP2ArrowHead.size() > 0) {
+        rctBounding |= m_plgP2ArrowHead.boundingRect();
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - m_drawSettings.getPenWidth()/2,
+        rctBounding.top() - m_drawSettings.getPenWidth()/2,
+        rctBounding.width() + m_drawSettings.getPenWidth(),
+        rctBounding.height() + m_drawSettings.getPenWidth() );
 
-//------------------------------------------------------------------------------
-bool CGraphObjLine::hasRotationSelectionPoints() const
-//------------------------------------------------------------------------------
-{
-    return false;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
 }
 
 /*==============================================================================
@@ -1146,8 +1167,9 @@ public: // overridables of base class CGraphObj
 SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPoint(const QPointF& i_pt, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
-    QLineF thisLineSceneCoors(mapToScene(line().p1()), mapToScene(line().p2()));
-    QPointF ptSelPtSceneCoors(mapToScene(line().center()));
+    QLineF thisLine = line();
+    QLineF thisLineSceneCoors(mapToScene(thisLine.p1()), mapToScene(thisLine.p2()));
+    QPointF ptSelPtSceneCoors(mapToScene(thisLine.center()));
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
     double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
     return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
@@ -1185,15 +1207,16 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPoint(const QPointF& i_pt, ES
 SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPoint(const QPointF& i_pt, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
+    QLineF thisLine = line();
     QLineF thisLineSceneCoors;
     QPointF ptSelPtSceneCoors;
     if (i_idxPt == 0) {
-        thisLineSceneCoors = QLineF(mapToScene(line().p1()), mapToScene(line().p2()));
-        ptSelPtSceneCoors = QPointF(mapToScene(line().p1()));
+        thisLineSceneCoors = QLineF(mapToScene(thisLine.p1()), mapToScene(thisLine.p2()));
+        ptSelPtSceneCoors = QPointF(mapToScene(thisLine.p1()));
     }
     else {
-        thisLineSceneCoors = QLineF(mapToScene(line().p2()), mapToScene(line().p1()));
-        ptSelPtSceneCoors = QPointF(mapToScene(line().p2()));
+        thisLineSceneCoors = QLineF(mapToScene(thisLine.p2()), mapToScene(thisLine.p1()));
+        ptSelPtSceneCoors = QPointF(mapToScene(thisLine.p2()));
     }
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
     double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
@@ -1212,7 +1235,8 @@ QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolar(
     const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
-    QLineF lineSelPtSceneCoors(mapToScene(line().center()), mapToScene(line().p2()));
+    QLineF lineSelPt = line();
+    QLineF lineSelPtSceneCoors(mapToScene(lineSelPt.center()), mapToScene(lineSelPt.p2()));
     return ZS::Draw::getLineFromPolar(
         i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
 }
@@ -1227,12 +1251,13 @@ QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolar(
     const SPolarCoors& i_polarCoors, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
+    QLineF lineSelPt = line();
     QLineF lineSelPtSceneCoors;
     if (i_idxPt == 0) {
-        lineSelPtSceneCoors = QLineF(mapToScene(line().p1()), mapToScene(line().p2()));
+        lineSelPtSceneCoors = QLineF(mapToScene(lineSelPt.p1()), mapToScene(lineSelPt.p2()));
     }
     else {
-        lineSelPtSceneCoors = QLineF(mapToScene(line().p2()), mapToScene(line().p1()));
+        lineSelPtSceneCoors = QLineF(mapToScene(lineSelPt.p2()), mapToScene(lineSelPt.p1()));
     }
     return ZS::Draw::getLineFromPolar(
         i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
@@ -1340,37 +1365,7 @@ public: // must overridables of base class QGraphicsItem
 QRectF CGraphObjLine::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "boundingRect",
-        /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsLineItem::boundingRect();
-    for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
-        CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-        if (pGraphObjSelPt != nullptr) {
-            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-            QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-            rctBounding |= plgSelPt.boundingRect();
-        }
-    }
-    if (m_plgP1ArrowHead.size() > 0) {
-        rctBounding |= m_plgP1ArrowHead.boundingRect();
-    }
-    if (m_plgP2ArrowHead.size() > 0) {
-        rctBounding |= m_plgP2ArrowHead.boundingRect();
-    }
-    rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.getPenWidth()/2,
-        rctBounding.top() - m_drawSettings.getPenWidth()/2,
-        rctBounding.width() + m_drawSettings.getPenWidth(),
-        rctBounding.height() + m_drawSettings.getPenWidth() );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(qRect2Str(rctBounding));
-    }
-    return rctBounding;
+    return boundingRect(true);
 }
 
 //------------------------------------------------------------------------------
@@ -1714,8 +1709,8 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             if (m_arpSelPtsPolygon[m_idxSelPtSelectedPolygon] != nullptr) {
                 m_arpSelPtsPolygon[m_idxSelPtSelectedPolygon]->setSelected(true);
             }
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
         }
         else if (editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None) {
             QGraphicsLineItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
@@ -1735,9 +1730,9 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                     }
                 }
             }
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
-            updateEditInfo();
-            updateToolTip();
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
+            //updateEditInfo();
+            //updateToolTip();
         }
     }
 } // mousePressEvent
@@ -1778,8 +1773,8 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
         else if (m_editMode == EEditMode::Move) {
             QGraphicsLineItem::mouseMoveEvent(i_pEv);
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
         }
         else if (m_editMode == EEditMode::Resize) {
         }
@@ -1813,8 +1808,8 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_pDrawingScene->onGraphObjCreationFinished(this);
         }
         else if (m_editMode == EEditMode::Move) {
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
         }
         else if (m_editMode == EEditMode::Resize) {
         }
@@ -1936,18 +1931,18 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bSelectedChanged = true;
         bTreeEntryChanged = true;
     }
-    else if (i_change == ItemPositionHasChanged
-          || i_change == ItemTransformHasChanged
-          || i_change == ItemParentHasChanged
-          || i_change == ItemScenePositionHasChanged
-          || i_change == ItemRotationHasChanged
-          || i_change == ItemScaleHasChanged
-          || i_change == ItemTransformOriginPointHasChanged)
+    else if (i_change == ItemPositionHasChanged)
+          //|| i_change == ItemTransformHasChanged
+          //|| i_change == ItemParentHasChanged
+          //|| i_change == ItemScenePositionHasChanged
+          //|| i_change == ItemRotationHasChanged
+          //|| i_change == ItemScaleHasChanged
+          //|| i_change == ItemTransformOriginPointHasChanged)
     {
         QLineF lineF = line();
 
@@ -1966,8 +1961,8 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         plg.append(lineF.p1());
         plg.append(lineF.p2());
         updateLineEndArrowHeadPolygons();
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
 
         bGeometryChanged = true;
         bTreeEntryChanged = true;
@@ -2096,54 +2091,54 @@ void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
     }
 }
 
-//------------------------------------------------------------------------------
-void CGraphObjLine::updateToolTip()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "updateToolTip",
-        /* strAddInfo   */ "" );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if (pGraphicsItem != nullptr)
-    {
-        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
-        QLineF  lineF = line();
-        QPointF ptPos;
-
-        m_strToolTip  = "ObjPath:\t" + path();
-
-        m_strToolTip += "\nP1:\t\t" + point2Str(lineF.p1());
-        m_strToolTip += "\nP2:\t\t" + point2Str(lineF.p2());
-
-        // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
-        // position of the item's top left corner before applying the rotation
-        // transformation matrix but includes the transformation. What we want
-        // (or what I want) is the position of the item before rotating the item
-        // around the rotation origin point. In contrary it looks like "pos"
-        // always returns the top left corner before rotating the object.
-
-        if( pGraphicsItem->parentItem() != nullptr )
-        {
-            ptPos = pGraphicsItem->pos();
-            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
-        }
-        else
-        {
-            ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
-            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
-        }
-
-        m_strToolTip += "\nSize:\t\t" + getSize(Units.Length.px).toString();
-        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
-
-        pGraphicsItem->setToolTip(m_strToolTip);
-    }
-} // updateToolTip
+////------------------------------------------------------------------------------
+//void CGraphObjLine::updateToolTip()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "updateToolTip",
+//        /* strAddInfo   */ "" );
+//
+//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+//
+//    if (pGraphicsItem != nullptr)
+//    {
+//        QString strNodeSeparator = CDrawingScene::getGraphObjNameNodeSeparator();
+//        QLineF  lineF = line();
+//        QPointF ptPos;
+//
+//        m_strToolTip  = "ObjPath:\t" + path();
+//
+//        m_strToolTip += "\nP1:\t\t" + point2Str(lineF.p1());
+//        m_strToolTip += "\nP2:\t\t" + point2Str(lineF.p2());
+//
+//        // "scenePos" returns mapToScene(0,0). This is NOT equivalent to the
+//        // position of the item's top left corner before applying the rotation
+//        // transformation matrix but includes the transformation. What we want
+//        // (or what I want) is the position of the item before rotating the item
+//        // around the rotation origin point. In contrary it looks like "pos"
+//        // always returns the top left corner before rotating the object.
+//
+//        if( pGraphicsItem->parentItem() != nullptr )
+//        {
+//            ptPos = pGraphicsItem->pos();
+//            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
+//        }
+//        else
+//        {
+//            ptPos = pGraphicsItem->pos(); // don't use "scenePos" here (see comment above)
+//            m_strToolTip += "\nPos:\t\t" + point2Str(ptPos);
+//        }
+//
+//        m_strToolTip += "\nSize:\t\t" + getSize(Units.Length.px).toString();
+//        m_strToolTip += "\nZValue:\t\t" + QString::number(pGraphicsItem->zValue());
+//
+//        pGraphicsItem->setToolTip(m_strToolTip);
+//    }
+//} // updateToolTip
 
 /*==============================================================================
 protected: // auxiliary instance methods (method tracing)
@@ -2218,27 +2213,27 @@ void CGraphObjLine::QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjLine::traceInternalStates(
-    CMethodTracer& i_mthTracer,
-    EMethodDir i_mthDir,
-    ELogDetailLevel i_detailLevel) const
-//------------------------------------------------------------------------------
-{
-    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
-        QString strTrcInfo;
-        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-        else strTrcInfo = "";
-        strTrcInfo +=
-            "Geometry: GraphObj {" + m_physValLine.toString() + "}"
-            ", Item { Pos {" + point2Str(pos()) + "}, Line {" + line2Str(line()) + "}";
-        i_mthTracer.trace(strTrcInfo);
-        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
-        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
-        else strTrcInfo = "";
-        strTrcInfo += "Selected: " + bool2Str(isSelected());
-        i_mthTracer.trace(strTrcInfo);
-        CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
-    }
-}
+////------------------------------------------------------------------------------
+//void CGraphObjLine::traceInternalStates(
+//    CMethodTracer& i_mthTracer,
+//    EMethodDir i_mthDir,
+//    ELogDetailLevel i_detailLevel) const
+////------------------------------------------------------------------------------
+//{
+//    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+//        QString strTrcInfo;
+//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+//        else strTrcInfo = "";
+//        strTrcInfo +=
+//            "Geometry: GraphObj {" + m_physValLine.toString() + "}"
+//            ", Item { Pos {" + point2Str(pos()) + "}, Line {" + line2Str(line()) + "}";
+//        i_mthTracer.trace(strTrcInfo);
+//        if (i_mthDir == EMethodDir::Enter) strTrcInfo = "-+ ";
+//        else if (i_mthDir == EMethodDir::Leave) strTrcInfo = "+- ";
+//        else strTrcInfo = "";
+//        strTrcInfo += "Selected: " + bool2Str(isSelected());
+//        i_mthTracer.trace(strTrcInfo);
+//        CGraphObj::traceInternalStates(i_mthTracer, i_mthDir, i_detailLevel);
+//    }
+//}

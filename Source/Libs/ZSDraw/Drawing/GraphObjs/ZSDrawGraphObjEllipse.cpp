@@ -111,7 +111,7 @@ CGraphObjEllipse::CGraphObjEllipse(
 
     //onDrawSettingsChanged();
 
-    updateToolTip();
+    //updateToolTip();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
@@ -1128,8 +1128,8 @@ void CGraphObjEllipse::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
 
@@ -1173,10 +1173,10 @@ void CGraphObjEllipse::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
 #endif
 
-            m_pDrawingScene->setMode( EMode::Ignore, EEditTool::Ignore, m_editMode, m_editResizeMode, false );
+            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
 
@@ -1242,8 +1242,8 @@ void CGraphObjEllipse::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             //updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Creating || m_editMode == EEditMode::Resize )
 
@@ -1298,8 +1298,8 @@ void CGraphObjEllipse::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             }
 #endif
             updateTransform();
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Rotate )
 
@@ -1365,8 +1365,8 @@ void CGraphObjEllipse::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             // The object has been initially created.
             m_pDrawingScene->onGraphObjCreationFinished(this);
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Creating )
 
@@ -1414,8 +1414,8 @@ void CGraphObjEllipse::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
             acceptCurrentAsOriginalCoors();
 #endif
 
-            updateEditInfo();
-            updateToolTip();
+            //updateEditInfo();
+            //updateToolTip();
 
         } // if( m_editMode == EEditMode::Resize )
 
@@ -1579,13 +1579,13 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
             m_selPtSelectedBoundingRect = ESelectionPoint::None;
             m_idxSelPtSelectedPolygon = -1;
         }
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemTransformHasChanged) {
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if( i_change == ItemTransformChange
           || i_change == ItemPositionHasChanged
@@ -1600,8 +1600,8 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
           #endif
     {
         updateTransform();
-        updateEditInfo();
-        updateToolTip();
+        //updateEditInfo();
+        //updateToolTip();
     }
     else if (i_change == ItemZValueHasChanged) {
         bZValueChanged = true;
