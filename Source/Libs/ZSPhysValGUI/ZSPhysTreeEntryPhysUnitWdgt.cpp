@@ -254,7 +254,7 @@ CWdgtPhysUnit::CWdgtPhysUnit(QWidget* i_pWdgtParent) :
     pLytWdgtValDst->addWidget(m_pCmbUnitsDst);
 
     QObject::connect(
-        m_pCmbUnitsDst, &QComboBox::currentIndexChanged,
+        m_pCmbUnitsDst, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtPhysUnit::onCmbUnitsDstCurrentIndexChanged);
 
     m_pLytLineValDst->addStretch();
@@ -463,7 +463,7 @@ void CWdgtPhysUnit::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
             m_pEdtPhysValSrc, &CWdgtEditPhysVal::editingFinished,
             this, &CWdgtPhysUnit::onEdtPhysValSrcEditingFinished);
         QObject::disconnect(
-            m_pCmbUnitsDst, &QComboBox::currentIndexChanged,
+            m_pCmbUnitsDst, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtPhysUnit::onCmbUnitsDstCurrentIndexChanged);
  
         if( pPhysUnit == nullptr )
@@ -529,7 +529,7 @@ void CWdgtPhysUnit::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree )
             m_pEdtPhysValSrc, &CWdgtEditPhysVal::editingFinished,
             this, &CWdgtPhysUnit::onEdtPhysValSrcEditingFinished);
         QObject::connect(
-            m_pCmbUnitsDst, &QComboBox::currentIndexChanged,
+            m_pCmbUnitsDst, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtPhysUnit::onCmbUnitsDstCurrentIndexChanged);
 
         m_pModelFctConvertsInternal->setKeyInTreeOfRootEntry(i_strKeyInTree);

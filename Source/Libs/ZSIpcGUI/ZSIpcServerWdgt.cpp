@@ -261,7 +261,7 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pLytCnct->addRow( m_pLblSocketType, m_pCmbSocketType );
 
     QObject::connect(
-        m_pCmbSocketType, &QComboBox::currentIndexChanged,
+        m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
 
     // <LineEdit> Local Host Name
@@ -2092,7 +2092,7 @@ void CWdgtIpcServer::resetCnctControls()
     if( m_pLblSocketType != nullptr && m_pCmbSocketType != nullptr )
     {
         QObject::disconnect(
-            m_pCmbSocketType, &QComboBox::currentIndexChanged,
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
 
         m_pCmbSocketType->clear();
@@ -2101,7 +2101,7 @@ void CWdgtIpcServer::resetCnctControls()
         m_pLblSocketType->show();
 
         QObject::connect(
-            m_pCmbSocketType, &QComboBox::currentIndexChanged,
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
     }
 
@@ -2291,7 +2291,7 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
         ESocketType socketType = static_cast<ESocketType>(m_pCmbSocketType->itemData(idxCmb).toInt());
 
         QObject::disconnect(
-            m_pCmbSocketType, &QComboBox::currentIndexChanged,
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
 
         if( socketType != i_hostSettings.m_socketType )
@@ -2331,7 +2331,7 @@ void CWdgtIpcServer::fillCnctControls( const SServerHostSettings& i_hostSettings
         }
 
         QObject::connect(
-            m_pCmbSocketType, &QComboBox::currentIndexChanged,
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtIpcServer::onCmbSocketTypeCurrentIndexChanged);
     }
 

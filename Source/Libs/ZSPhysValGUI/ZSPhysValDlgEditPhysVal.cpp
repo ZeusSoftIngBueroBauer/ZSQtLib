@@ -121,7 +121,7 @@ CDlgEditPhysVal::CDlgEditPhysVal(
         m_pCmbUnit->setCurrentIndex( m_pCmbUnit->findText(pPhysSize->getSIUnitName()) );
 
         QObject::connect(
-            m_pCmbUnit, &QComboBox::activated,
+            m_pCmbUnit, QOverload<int>::of(&QComboBox::activated),
             this, &CDlgEditPhysVal::onCmbUnitActivated);
     }
 

@@ -314,7 +314,7 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
                         pCmb->addItem(eDetailLevel.toString());
                     }
                     QObject::connect(
-                        pCmb, &QComboBox::activated,
+                        pCmb, QOverload<int>::of(&QComboBox::activated),
                         this, &CDelegateIdxTreeTrcAdminObjs::onComboDetailLevelActivated);
                 }
                 break;
@@ -332,7 +332,7 @@ QWidget* CDelegateIdxTreeTrcAdminObjs::createEditor(
                         pCmb->addItem(eDetailLevel.toString());
                     }
                     QObject::connect(
-                        pCmb, &QComboBox::activated,
+                        pCmb, QOverload<int>::of(&QComboBox::activated),
                         this, &CDelegateIdxTreeTrcAdminObjs::onComboDetailLevelActivated);
                 }
                 break;

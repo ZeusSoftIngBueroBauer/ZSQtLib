@@ -45,6 +45,7 @@ may result in using the software modules.
 #include <QtCore/qdir.h>
 #include <QtCore/qfile.h>
 #include <QtCore/qfileinfo.h>
+#include <QtCore/qtextstream.h>
 #include <QtCore/qtimer.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"

@@ -345,7 +345,7 @@ QWidget* CDelegateIdxTreeLoggers::createEditor(
                         pCmb->addItem(eDetailLevel.toString());
                     }
                     QObject::connect(
-                        pCmb, &QComboBox::activated,
+                        pCmb, QOverload<int>::of(&QComboBox::activated),
                         this, &CDelegateIdxTreeLoggers::onComboDetailLevelActivated);
                 }
                 break;

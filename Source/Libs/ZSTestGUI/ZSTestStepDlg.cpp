@@ -143,7 +143,7 @@ CDlgTestStep::CDlgTestStep(
     m_pGrpTestResults->setLayout(m_pLytGrpTestResults);
 
     QObject::connect(
-        m_pBtnGrpTestResults, &QButtonGroup::buttonToggled,
+        m_pBtnGrpTestResults, QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
         this, &CDlgTestStep::onBtnGroupTestResultsButtonToggled);
 
     m_pLytLineButtons = new QHBoxLayout();

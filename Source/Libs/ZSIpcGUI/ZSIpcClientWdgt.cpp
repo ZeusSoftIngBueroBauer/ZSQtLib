@@ -272,7 +272,7 @@ CWdgtIpcClient::CWdgtIpcClient( const QString& i_strObjName, QWidget* i_pWdgtPar
     m_pLytCnct->addRow( m_pLblSocketType, m_pCmbSocketType );
 
     QObject::connect(
-        m_pCmbSocketType, &QComboBox::currentIndexChanged,
+        m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtIpcClient::onCmbSocketTypeCurrentIndexChanged);
 
     // <LineEdit> Remote Host Name
@@ -2221,7 +2221,7 @@ void CWdgtIpcClient::resetCnctControls()
     if( m_pLblSocketType != nullptr && m_pCmbSocketType != nullptr )
     {
         QObject::disconnect(
-            m_pCmbSocketType, &QComboBox::currentIndexChanged,
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtIpcClient::onCmbSocketTypeCurrentIndexChanged);
 
         m_pCmbSocketType->clear();
@@ -2230,7 +2230,7 @@ void CWdgtIpcClient::resetCnctControls()
         m_pLblSocketType->show();
 
         QObject::connect(
-            m_pCmbSocketType, &QComboBox::currentIndexChanged,
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtIpcClient::onCmbSocketTypeCurrentIndexChanged);
     }
 
@@ -2501,7 +2501,7 @@ void CWdgtIpcClient::fillCnctControls(
     if( m_pLblSocketType != nullptr && m_pCmbSocketType != nullptr )
     {
         QObject::disconnect(
-            m_pCmbSocketType, &QComboBox::currentIndexChanged,
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtIpcClient::onCmbSocketTypeCurrentIndexChanged);
 
         for( idxCmb = 0; idxCmb < m_pClient->getSocketTypesCount(); idxCmb++ )
@@ -2534,7 +2534,7 @@ void CWdgtIpcClient::fillCnctControls(
         }
 
         QObject::connect(
-            m_pCmbSocketType, &QComboBox::currentIndexChanged,
+            m_pCmbSocketType, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &CWdgtIpcClient::onCmbSocketTypeCurrentIndexChanged);
     }
 
