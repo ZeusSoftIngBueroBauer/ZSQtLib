@@ -2096,7 +2096,7 @@ QPointF ZS::Draw::getSelectionPointCoors(
 /*! @brief Returns a line with the given length and angle whose start point is at
            the start point of the passed line.
 
-    Example: Input: Horizontal Line, Any Length, Angle = -90°
+    Example: Input: Horizontal Line, Any Length, Angle = -90° (or +270)
 
                  P2 +
                     |
@@ -2104,8 +2104,6 @@ QPointF ZS::Draw::getSelectionPointCoors(
          Line       | -90°
                  P1 +----------Line-----------+
                     P1                        P2
-
-            If rotated by -90 (or +270) degrees:
 
     Example: Input: Vertical Line, Any Length, Angle = 30°
 

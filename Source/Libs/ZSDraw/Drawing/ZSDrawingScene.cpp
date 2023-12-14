@@ -5079,7 +5079,7 @@ QRectF CDrawingScene::getBoundingRectangle(const QList<QGraphicsItem*>& i_arpGra
         }
         if (!pGraphObj->isConnectionLine() && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
             QPointF ptScenePosItem = pGraphicsItem->scenePos();
-            QRectF rectBounding = pGraphObj->boundingRect(true);
+            QRectF rectBounding = pGraphObj->getBoundingRect(true);
             QRectF rectSceneItem = pGraphicsItem->mapToScene(rectBounding).boundingRect();
             //QSizeF sizItem = rectBoundingGraphObj.size();
             //QRectF rectSceneItem = QRectF(ptScenePosItem, sizItem);

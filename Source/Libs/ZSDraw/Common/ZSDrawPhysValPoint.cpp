@@ -187,6 +187,9 @@ CPhysValPoint& CPhysValPoint::operator = ( const QString& i_strValOther )
 {
     QStringList strlst = i_strValOther.split("/");
     if (strlst.size() != 2) {
+        strlst = i_strValOther.split(",");
+    }
+    if (strlst.size() != 2) {
         throw CUnitConversionException(
             __FILE__, __LINE__, EResultArgOutOfRange, i_strValOther);
     }

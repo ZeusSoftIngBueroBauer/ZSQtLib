@@ -521,7 +521,7 @@ public: // overridables of base class CGraphObj
 QString CGraphObjLabel::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
-    QRectF rct = QGraphicsSimpleTextItem::boundingRect();
+    QRectF rct = getBoundingRect(true);
     QPolygonF plgScene = mapToScene(rct);
     return polygon2Str(plgScene);
 }
@@ -806,7 +806,7 @@ void CGraphObjLabel::paint(
     i_pPainter->save();
     i_pPainter->setRenderHint(QPainter::Antialiasing);
 
-    QRectF rct = QGraphicsSimpleTextItem::boundingRect();
+    QRectF rct = boundingRect();
 
     // Draw bounding rectangle in dotted line style if the label is hit by
     // mouse move (hover) or if the label is selected or if no text is assigned.
@@ -1186,10 +1186,11 @@ void CGraphObjLabel::updatePosition()
             m_labelDscr.m_polarCoorsToLinkedSelPt, m_labelDscr.m_selPt1.m_idxPt);
     }
 
-    // The position of a QGraphicsTextItem is defined by its top left corner.
-    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
-    QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
-    setPos(anchorLineP2ScenePos);
+    //// The position of a QGraphicsTextItem is defined by its top left corner.
+    //QRectF rctBoundingThis = boundingRect(true);
+    //QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
+    //setPos(anchorLineP2ScenePos);
+    setPos(anchorLine.p2());
 
     // Please note that on calling setPos the itemChange method of the
     // label is called invoking updateAnchorLines.
@@ -1233,7 +1234,7 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
-    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QRectF rctBoundingThis = getBoundingRect(true);
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
 
@@ -1267,16 +1268,15 @@ void CGraphObjLabel::updateAnchorLines()
         /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
 
-    CPhysValPoint physValSelPointParent;
+    QPointF ptSelScenePosParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
+        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
+        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
-    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
-    QRectF rctBoundingThis = QGraphicsSimpleTextItem::boundingRect();
+    QRectF rctBoundingThis = getBoundingRect(true);
     QPointF ptCenterThis = rctBoundingThis.center();
     QLineF anchorLine(ptCenterThis, mapFromScene(ptSelScenePosParent));
 

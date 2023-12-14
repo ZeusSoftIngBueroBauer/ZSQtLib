@@ -3409,7 +3409,7 @@ CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version
         // This method may only be called if overridden by derived classes.
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
-    double fWidth_px = pGraphicsItem->boundingRect().width();
+    double fWidth_px = getBoundingRect(true).width();
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValWidth(fWidth_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
     // A value like width and height can be directly converted without the drawing size.
@@ -3435,7 +3435,7 @@ CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_versio
         // This method may only be called if overridden by derived classes.
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
-    double fHeight_px = pGraphicsItem->boundingRect().height();
+    double fHeight_px = getBoundingRect(true).height();
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValHeight(fHeight_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
     // A value like width and height can be directly converted without the drawing size.
@@ -3465,7 +3465,7 @@ CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_vers
         // This method may only be called if overridden by derived classes.
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
-    QSizeF size_px = pGraphicsItem->boundingRect().size();
+    QSizeF size_px = getBoundingRect(true).size();
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValSize physValSize(size_px, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     // Width and height could be directly converted without the drawing size.
@@ -3496,7 +3496,7 @@ public: // must overridables
         If set to false also labels and selection points but also the pen width
         is taken into account.
 */
-QRectF CGraphObj::boundingRect(bool i_bOnlyRealShapePoints) const
+QRectF CGraphObj::getBoundingRect(bool i_bOnlyRealShapePoints) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3507,7 +3507,7 @@ QRectF CGraphObj::boundingRect(bool i_bOnlyRealShapePoints) const
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "boundingRect",
+        /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
 #pragma message(__TODO__"Pure virtual")
@@ -3986,18 +3986,17 @@ public: // overridables
 //------------------------------------------------------------------------------
 /*! @brief Returns the coordinates of the selection point in scene coordinates.
 */
-CPhysValPoint CGraphObj::getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt ) const
+QPointF CGraphObj::getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
+    QRectF rectBounding = getBoundingRect(true);
+    QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, i_selPt);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
-        QPointF ptPos = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), i_selPt);
         ptScenePos = pGraphicsItem->mapToScene(ptPos);
     }
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValPoint physValPointScenePos(ptScenePos, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    return m_pDrawingScene->convert(physValPointScenePos);
+    return ptScenePos;
 }
 
 //------------------------------------------------------------------------------
@@ -4007,18 +4006,17 @@ CPhysValPoint CGraphObj::getSelectionPointCoorsInSceneCoors( ESelectionPoint i_s
     the corresponding coordinates of the polygon point.
     The default implementation returns the center of the bounding rectangle.
 */
-CPhysValPoint CGraphObj::getSelectionPointCoorsInSceneCoors( int i_idxPt ) const
+QPointF CGraphObj::getSelectionPointCoorsInSceneCoors( int i_idxPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
+    QRectF rectBounding = getBoundingRect(true);
+    QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, ESelectionPoint::Center);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
-        QPointF ptPos = ZS::Draw::getSelectionPointCoors(pGraphicsItem->boundingRect(), ESelectionPoint::Center);
         ptScenePos = pGraphicsItem->mapToScene(ptPos);
     }
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValPoint physValPoint(ptScenePos, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    return m_pDrawingScene->convert(physValPoint);
+    return ptScenePos;
 }
 
 /*==============================================================================
@@ -6569,7 +6567,7 @@ void CGraphObj::tracePositionInfo(
         if (pGraphicsItem != nullptr) {
             QPointF ptPos = pGraphicsItem->pos();
             QPointF ptScenePos = pGraphicsItem->scenePos();
-            QRectF rectBounding = boundingRect(true);
+            QRectF rectBounding = getBoundingRect(true);
             QPointF ptCenterPos = rectBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -6583,7 +6581,7 @@ void CGraphObj::tracePositionInfo(
             if (pGraphicsItemParent != nullptr && pGraphObjParent != nullptr) {
                 QPointF ptPosParent = pGraphicsItemParent->pos();
                 QPointF ptScenePosParent = pGraphicsItemParent->scenePos();
-                QRectF rectBoundingParent = pGraphicsItemParent->boundingRect();
+                QRectF rectBoundingParent = pGraphObjParent->getBoundingRect(true);
                 QPointF ptCenterPosParent = rectBoundingParent.center();
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

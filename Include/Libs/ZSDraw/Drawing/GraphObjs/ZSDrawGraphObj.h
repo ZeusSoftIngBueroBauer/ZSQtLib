@@ -349,10 +349,47 @@ public: // struct members
 
       Ypx = ImageHeight/px - P1y/px
 
+    Coordinate system(s)
+    ====================
+
+    If a graphics item doesn't have a parent item the position of the item is in scene
+    coordinates with the origin point at (0/0) (top left corner of the drawing scene).
+    If the graphics item is added as a child to the parent the position of the item
+    is relative to the parents center point.
+
+    +-Drawing-Scene------------------------------------------------------------+
+    |(0/0)                                                                     |
+    |                                                                          |
+    |                                                                          |
+    |                              +--Group0---------x-----------------+       |
+    |                              |(-30/-30)        |                 |       |
+    |  (10/50)                     |    +-Rect1-+    |                 |       |
+    |     +-Rect0-+                |    |       |    |(0/0)            |       |
+    |     |       |                x - -|       |- - x - - - - - - - - x       |
+    |     |       |                |    +-------+    |                 |       |
+    |     +-------+                |                 |                 |       |
+    |                              |                 |                 |       |
+    |                              +-----------------x-----------------+       |
+    |                                                                          |
+    |                                                                          |
+    |                                                                          |
+    +--------------------------------------------------------------------------+
+
+    But when providing the position to the user in GUI controls not the relative
+    position to the parent's group center point but the position relative to
+    the groups top left corner should be indicated. Depending on the unit system
+    either in pixels or in metric unit.
+
+    Instead of indicating (-30/-30) for Rect1 in the figure above the user wants
+    to see and change the position of the top left corner from Rect1 relative to
+    the top left corner of Group0 (instead of (-30/-10) the coordinates (20/20)
+    for example.
+
     Selection Points
     ================
 
     Selection points are used to change the shape of the objects.
+    Selection points are always position in scene coordinates and never belong to groups.
     If located at the edge or center points of the outer lines of the bounding rectangle
     they are used to resize the objects.
     For polygons they are also located on the polygon shape points and will be used
@@ -376,6 +413,8 @@ public: // struct members
     - Text labels
     - Position labels
     - Dimension labels
+
+    Labels are always position in scene coordinates and never belong to groups.
 
     Text Labels
     -----------
@@ -505,10 +544,10 @@ public: // instance methods
     CGraphObj* parentGraphObj();
 public: // overridables
     virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
-    virtual void rename( const QString& i_strNameNew );
+    virtual void rename(const QString& i_strNameNew);
 protected: // overridables of base class CIdxTreeEntry
-    virtual void setName( const QString& i_strName ) override;
-    virtual void setKeyInTree( const QString& i_strKey ) override;
+    virtual void setName(const QString& i_strName) override;
+    virtual void setKeyInTree(const QString& i_strKey) override;
 public: // instance methods
     QString getFactoryGroupName() const;
     CEnumEditMode getEditMode() const;
@@ -529,102 +568,102 @@ public: // overridables
 protected: // overridables
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld);
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setPenColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
+    virtual void setPenColor(const QColor& i_clr, bool i_bImmediatelyApplySetting = true);
     virtual QColor getPenColor() const;
-    virtual void setPenWidth( int i_iLineWidth, bool i_bImmediatelyApplySetting = true );
+    virtual void setPenWidth(int i_iLineWidth, bool i_bImmediatelyApplySetting = true);
     virtual int getPenWidth() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setLineStyle( const CEnumLineStyle& i_lineStyle, bool i_bImmediatelyApplySetting = true );
+    virtual void setLineStyle(const CEnumLineStyle& i_lineStyle, bool i_bImmediatelyApplySetting = true);
     virtual CEnumLineStyle getLineStyle() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setFillColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
+    virtual void setFillColor(const QColor& i_clr, bool i_bImmediatelyApplySetting = true);
     virtual QColor getFillColor() const;
-    virtual void setFillStyle( const CEnumFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
+    virtual void setFillStyle(const CEnumFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true);
     virtual CEnumFillStyle getFillStyle() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setLineRecordType( const CEnumLineRecordType& i_lineRecordType, bool i_bImmediatelyApplySetting = true );
+    virtual void setLineRecordType(const CEnumLineRecordType& i_lineRecordType, bool i_bImmediatelyApplySetting = true);
     virtual CEnumLineRecordType getLineRecordType() const;
-    virtual void setLineExtent( int i_iLineExtent_px, bool i_bImmediatelyApplySetting = true );
+    virtual void setLineExtent(int i_iLineExtent_px, bool i_bImmediatelyApplySetting = true);
     virtual int getLineExtent() const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setLineEndStyle( const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumLineEndStyle getLineEndStyle( const CEnumLinePoint& i_linePoint ) const;
-    virtual void setArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumArrowHeadBaseLineType getArrowHeadBaseLineType( const CEnumLinePoint& i_linePoint ) const;
-    virtual void setArrowHeadFillStyle( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumArrowHeadFillStyle getArrowHeadFillStyle( const CEnumLinePoint& i_linePoint ) const;
-    virtual void setArrowHeadWidth( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumArrowHeadWidth getArrowHeadWidth( const CEnumLinePoint& i_linePoint ) const;
-    virtual void setArrowHeadLength( const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length, bool i_bImmediatelyApplySetting = true );
-    virtual CEnumArrowHeadLength getArrowHeadLength( const CEnumLinePoint& i_linePoint ) const;
+    virtual void setLineEndStyle(const CEnumLinePoint& i_linePoint, const CEnumLineEndStyle& i_endStyle, bool i_bImmediatelyApplySetting = true);
+    virtual CEnumLineEndStyle getLineEndStyle(const CEnumLinePoint& i_linePoint) const;
+    virtual void setArrowHeadBaseLineType(const CEnumLinePoint& i_linePoint, const CEnumArrowHeadBaseLineType& i_baseLineType, bool i_bImmediatelyApplySetting = true);
+    virtual CEnumArrowHeadBaseLineType getArrowHeadBaseLineType(const CEnumLinePoint& i_linePoint) const;
+    virtual void setArrowHeadFillStyle(const CEnumLinePoint& i_linePoint, const CEnumArrowHeadFillStyle& i_fillStyle, bool i_bImmediatelyApplySetting = true);
+    virtual CEnumArrowHeadFillStyle getArrowHeadFillStyle( const CEnumLinePoint& i_linePoint) const;
+    virtual void setArrowHeadWidth(const CEnumLinePoint& i_linePoint, const CEnumArrowHeadWidth& i_width, bool i_bImmediatelyApplySetting = true);
+    virtual CEnumArrowHeadWidth getArrowHeadWidth( const CEnumLinePoint& i_linePoint) const;
+    virtual void setArrowHeadLength(const CEnumLinePoint& i_linePoint, const CEnumArrowHeadLength& i_length, bool i_bImmediatelyApplySetting = true);
+    virtual CEnumArrowHeadLength getArrowHeadLength(const CEnumLinePoint& i_linePoint) const;
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") to keep the settings synchronized with QGraphicsItem attributes)
-    virtual void setTextColor( const QColor& i_clr, bool i_bImmediatelyApplySetting = true );
+    virtual void setTextColor(const QColor& i_clr, bool i_bImmediatelyApplySetting = true);
     virtual QColor getTextColor() const;
-    virtual void setTextFont( const QFont& i_fnt, bool i_bImmediatelyApplySetting = true );
+    virtual void setTextFont(const QFont& i_fnt, bool i_bImmediatelyApplySetting = true);
     virtual QFont getTextFont() const;
-    virtual void setTextSize( ETextSize i_size, bool i_bImmediatelyApplySetting = true );
+    virtual void setTextSize(ETextSize i_size, bool i_bImmediatelyApplySetting = true);
     virtual ETextSize getTextSize() const;
-    virtual void setTextStyle( const CEnumTextStyle& i_style, bool i_bImmediatelyApplySetting = true );
+    virtual void setTextStyle(const CEnumTextStyle& i_style, bool i_bImmediatelyApplySetting = true);
     virtual CEnumTextStyle getTextStyle() const;
-    virtual void setTextEffect( const CEnumTextEffect& i_effect, bool i_bImmediatelyApplySetting = true );
+    virtual void setTextEffect(const CEnumTextEffect& i_effect, bool i_bImmediatelyApplySetting = true);
     virtual CEnumTextEffect getTextEffect() const;
 public: // overridables
-    virtual void setMinimumWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
+    virtual void setMinimumWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     virtual bool hasMinimumWidth() const;
     virtual ZS::PhysVal::CPhysVal getMinimumWidth(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMinimumHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
+    virtual void setMinimumHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
     virtual bool hasMinimumHeight() const;
     virtual ZS::PhysVal::CPhysVal getMinimumHeight(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMinimumSize( const CPhysValSize& i_physValSize );
+    virtual void setMinimumSize(const CPhysValSize& i_physValSize);
     virtual bool hasMinimumSize() const;
     virtual CPhysValSize getMinimumSize(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMaximumWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
+    virtual void setMaximumWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     virtual bool hasMaximumWidth() const;
     virtual ZS::PhysVal::CPhysVal getMaximumWidth(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMaximumHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
+    virtual void setMaximumHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
     virtual bool hasMaximumHeight() const;
     virtual ZS::PhysVal::CPhysVal getMaximumHeight(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setMaximumSize( const CPhysValSize& i_physValSize );
+    virtual void setMaximumSize(const CPhysValSize& i_physValSize);
     virtual bool hasMaximumSize() const;
     virtual CPhysValSize getMaximumSize(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setFixedWidth( const ZS::PhysVal::CPhysVal& i_physValWidth );
+    virtual void setFixedWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     virtual bool hasFixedWidth() const;
     virtual ZS::PhysVal::CPhysVal getFixedWidth(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setFixedHeight( const ZS::PhysVal::CPhysVal& i_physValHeight );
+    virtual void setFixedHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
     virtual bool hasFixedHeight() const;
     virtual ZS::PhysVal::CPhysVal getFixedHeight(const ZS::PhysVal::CUnit& i_unit) const;
     virtual void setFixedSize( const CPhysValSize& i_physValSize );
     virtual bool hasFixedSize() const;
     virtual CPhysValSize getFixedSize(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
-    virtual int addAlignment( const SGraphObjAlignment& i_alignment );
+    virtual int addAlignment(const SGraphObjAlignment& i_alignment);
     virtual int getAlignmentCount() const;
-    virtual SGraphObjAlignment getAlignment( int i_idx ) const;
-    virtual void setAlignment( int i_idx, const SGraphObjAlignment& i_alignment );
-    virtual void removeAlignment( int i_idx );
+    virtual SGraphObjAlignment getAlignment(int i_idx) const;
+    virtual void setAlignment(int i_idx, const SGraphObjAlignment& i_alignment);
+    virtual void removeAlignment(int i_idx);
     virtual void clearAlignments();
 public: // overridables
     //virtual void acceptCurrentAsOriginalCoors();
     //virtual bool hasValidOrigCoors() const { return m_bHasValidOrigCoors; }
 public: // must overridables
-    virtual CPhysValPoint getPos( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) = 0;
-    virtual ZS::PhysVal::CPhysVal getWidth( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) = 0;
-    virtual ZS::PhysVal::CPhysVal getHeight( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
-    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) = 0;
-    virtual void setSize( const CPhysValSize& i_physValSize ) = 0;
-    virtual CPhysValSize getSize( const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed ) const;
+    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) = 0;
+    virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) = 0;
+    virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight) = 0;
+    virtual void setSize(const CPhysValSize& i_physValSize) = 0;
+    virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // must overridables
-    virtual QRectF boundingRect(bool i_bOnlyRealShapePoints = false) const;
+    virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const;
 public: // overridables
-    virtual void setRotationAngleInDegree( double i_fRotAngle_deg );
-    virtual double getRotationAngleInDegree( ECoordinatesVersion i_version = ECoordinatesVersion::Transformed );
+    virtual void setRotationAngleInDegree(double i_fRotAngle_deg);
+    virtual double getRotationAngleInDegree(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed);
 public: // overridables
-    virtual void setEditMode( EEditMode i_editMode );
-    virtual void setEditResizeMode( EEditResizeMode i_editResizeMode );
+    virtual void setEditMode(EEditMode i_editMode);
+    virtual void setEditResizeMode(EEditResizeMode i_editResizeMode);
 public: // must overridables
-    virtual void setIsHit( bool i_bHit ) = 0;
+    virtual void setIsHit(bool i_bHit) = 0;
 public: // overridables
     virtual bool isHit() const;
     virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
@@ -634,12 +673,11 @@ public: // overridables
     double getStackingOrderValue(ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current) const;
     double resetStackingOrderValueToOriginalValue();
 public: // overridables
-    virtual bool isBoundingRectSelectionPointHit( const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo ) const;
-    virtual bool isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const;
+    virtual bool isBoundingRectSelectionPointHit(const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo) const;
+    virtual bool isPolygonSelectionPointHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo) const;
 public: // overridables
-    virtual CPhysValPoint getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt ) const;
-    virtual CPhysValPoint getSelectionPointCoorsInSceneCoors( int i_idxPt ) const;
-public: // overridables
+    virtual QPointF getSelectionPointCoorsInSceneCoors(ESelectionPoint i_selPt) const;
+    virtual QPointF getSelectionPointCoorsInSceneCoors(int i_idxPt) const;
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const;
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const;
@@ -702,18 +740,18 @@ protected slots: // overridables
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
 public: // instance methods (simulation methods)
-    void addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void addMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void removeMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void addMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void removeMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void addMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void removeMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void addKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void removeKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void addKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
-    void removeKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr );
+    void addMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void removeMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void addMouseReleaseEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void removeMouseReleaseEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void addMouseDoubleClickEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void removeMouseDoubleClickEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void addMouseMoveEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void removeMouseMoveEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void addKeyPressEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void removeKeyPressEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void addKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    void removeKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
 protected: // overridables
     virtual void updateTransform();
     //virtual void updateToolTip();

@@ -1073,14 +1073,13 @@ void CGraphObjSelectionPoint::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    CPhysValPoint physValSelPointParent;
+    QPointF ptSelScenePosParent;
     if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPointParent = m_selPt.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_selPt.m_selPt);
+        ptSelScenePosParent = m_selPt.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_selPt.m_selPt);
     }
     else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPointParent = m_selPt.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_selPt.m_idxPt);
+        ptSelScenePosParent = m_selPt.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_selPt.m_idxPt);
     }
-    QPointF ptSelScenePosParent = m_pDrawingScene->convert(physValSelPointParent, Units.Length.px).toQPointF();
 
     if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
         if (m_selPt.m_selPt == ESelectionPoint::RotateTop) {

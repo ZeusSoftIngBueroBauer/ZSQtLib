@@ -159,15 +159,18 @@ void CGraphObjLabelGeometryPosition::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    CPhysValPoint physValSelPointParent;
+    QPointF ptSelScenePosParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
+        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        physValSelPointParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
+        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
-    QString strText = physValSelPointParent.toString();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValPoint physValPos(ptSelScenePosParent, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    physValPos = m_pDrawingScene->convert(physValPos, drawingSize.unit());
+    QString strText = physValPos.toString();
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {

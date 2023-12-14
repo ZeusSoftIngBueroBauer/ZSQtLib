@@ -85,10 +85,18 @@ protected: // instance methods
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupMetricsDrawing(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupAddStandardShapes(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapes(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupAddStandardShapesLines(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapesLines(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupAddObject(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const QString& i_strFactoryGroupName, const QString& i_strGraphObjType,
+        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
     ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsCreateObject(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const QString& i_strFactoryGroupName, const QString& i_strGraphObjType,
@@ -115,6 +123,7 @@ protected slots:
     void doTestStepSetMode( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepAddGraphObj( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepShowGeometryLabel( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );

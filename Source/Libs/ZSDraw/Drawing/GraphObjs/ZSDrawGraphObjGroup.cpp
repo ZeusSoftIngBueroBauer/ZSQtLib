@@ -302,7 +302,7 @@ QString CGraphObjGroup::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
     QString strScenePolygonShapePoints;
-    QPolygonF plgScene = mapToScene(boundingRect());
+    QPolygonF plgScene = mapToScene(getBoundingRect(true));
     strScenePolygonShapePoints = polygon2Str(plgScene);
     return strScenePolygonShapePoints;
 }
@@ -317,7 +317,7 @@ CPhysValPoint CGraphObjGroup::getPos( const CUnit& i_unit, ECoordinatesVersion /
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValPoint physValPoint(boundingRect().center(), drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    CPhysValPoint physValPoint(getBoundingRect(true).center(), drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     return m_pDrawingScene->convert(physValPoint, drawingSize.unit());
 }
 
@@ -345,7 +345,7 @@ CPhysVal CGraphObjGroup::getWidth( const CUnit& i_unit, ECoordinatesVersion /*i_
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValLine physValLine(
-        boundingRect().topLeft(), boundingRect().topRight(),
+        getBoundingRect(true).topLeft(), getBoundingRect(true).topRight(),
         drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     return m_pDrawingScene->convert(physValLine, i_unit).length();
 }
@@ -374,7 +374,7 @@ CPhysVal CGraphObjGroup::getHeight( const CUnit& i_unit, ECoordinatesVersion /*i
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValLine physValLine(
-        boundingRect().topLeft(), boundingRect().bottomLeft(),
+        getBoundingRect(true).topLeft(), getBoundingRect(true).bottomLeft(),
         drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     return m_pDrawingScene->convert(physValLine, i_unit).length();
 }
@@ -471,34 +471,36 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QRectF CGraphObjGroup::boundingRect(bool i_bIncludeLabelsAndSelectionPoints) const
+QRectF CGraphObjGroup::getBoundingRect(bool i_bOnlyRealShapePoints) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "IncludeLabelsAndSelectionPoints: " + bool2Str(i_bIncludeLabelsAndSelectionPoints);
+        strMthInArgs = "OnlyRealShapePoints: " + bool2Str(i_bOnlyRealShapePoints);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "boundingRect",
+        /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
+    #pragma message(__TODO__"calculate children with getChildrenBoundingRect(true)")
     QRectF rctBounding = childrenBoundingRect();
 
-    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect)
-    {
-        if (pGraphObjSelPt != nullptr) {
-            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-            QPolygonF plgSelPt = mapFromItem( pGraphObjSelPt, rctSelPt );
-            rctBounding |= plgSelPt.boundingRect();
+    if (!i_bOnlyRealShapePoints) {
+        for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect){
+            if (pGraphObjSelPt != nullptr) {
+                QRectF rctSelPt = pGraphObjSelPt->boundingRect();
+                QPolygonF plgSelPt = mapFromItem( pGraphObjSelPt, rctSelPt );
+                rctBounding |= plgSelPt.boundingRect();
+            }
         }
-    }
-    if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
-        // Half pen width of the selection rectangle would be enough.
-        // But the whole pen width is also not a bad choice.
-        rctBounding.adjust(-2.0, -2.0, 2.0, 2.0);
+        if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
+            // Half pen width of the selection rectangle would be enough.
+            // But the whole pen width is also not a bad choice.
+            rctBounding.adjust(-2.0, -2.0, 2.0, 2.0);
+        }
     }
 
     //if (m_bIsHit || isSelected()) {
@@ -2782,14 +2784,14 @@ void CGraphObjGroup::onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjPare
 }
 
 /*==============================================================================
-public: // overridables of base class QGraphicsPolygonItem
+public: // overridables of base class QGraphicsItemGroup
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 QRectF CGraphObjGroup::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    return boundingRect(true);
+    return getBoundingRect(false);
 }
 
 //------------------------------------------------------------------------------
@@ -2821,7 +2823,7 @@ void CGraphObjGroup::paint(
         }
         i_pPainter->setPen(pn);
         i_pPainter->setBrush(Qt::NoBrush);
-        QRectF rctBounding = boundingRect(false);
+        QRectF rctBounding = getBoundingRect(true);
         i_pPainter->drawRect(rctBounding);
         if (isSelected()) {
             if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
