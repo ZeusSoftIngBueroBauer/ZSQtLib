@@ -2039,7 +2039,7 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
     }
 
     if (bZValueChanged) {
-        emit_zValueChanged();
+        emit_zValueChanged(zValue());
     }
     if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);

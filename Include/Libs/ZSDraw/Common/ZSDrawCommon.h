@@ -318,34 +318,37 @@ typedef ::CEnum<ECoordinatesVersion> CEnumCoordinatesVersion;
 } }
 
 
-//namespace ZS {
-//namespace Draw {
-////==============================================================================
-///*! Defines the current edit mode of the drawing scene and the graphics item.
-//*/
-//enum class EEditMode
-////==============================================================================
-//{
-//    None           = 0, /*!< No edit mode is selected. */
-//    Creating       = 1, /*!< The object has been initially created and is still under
-//                             construction (e.g. adding points to poly lines). 
-//                             !! This mode is not used by the scene !! */
-//    Move           = 2, /*!< The selected objects are moved. */
-//    Resize         = 3, /*!< The selected object is resized. */
-//    Rotate         = 4, /*!< The selected object is rotated around the centre point of its bounding rectangle. */
-//    MoveShapePoint = 5, /*!< A single shape point of the selected object is being moved. */
-//    EditText       = 6, /*!< A single shape point of the selected object is being moved. */
-//    Undefined      = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
-//};
-//} }
-//
-//template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditMode>;
-//namespace ZS {
-//namespace Draw {
-//typedef ::CEnum<EEditMode> CEnumEditMode;
-//} }
-//
-//
+namespace ZS {
+namespace Draw {
+//==============================================================================
+/*! Defines the current edit mode of the drawing scene and the graphics item.
+*/
+enum class EEditMode
+//==============================================================================
+{
+    None                  = 0, /*!< No edit mode is selected. */
+    CreatingByMouseEvents = 1  /*!< The object has been initially created by a mouse press event
+                                    and is still under construction by followoing mouse events.
+                                    For example:
+                                    - Resizing a line by moving the line end point.
+                                    - Resizing a rectangle by moving the bottom right corner.
+                                    - Adding points to poly lines. */
+    //Move           = 2, /*!< The selected objects are moved. */
+    //Resize         = 3, /*!< The selected object is resized. */
+    //Rotate         = 4, /*!< The selected object is rotated around the centre point of its bounding rectangle. */
+    //MoveShapePoint = 5, /*!< A single shape point of the selected object is being moved. */
+    //EditText       = 6, /*!< A single shape point of the selected object is being moved. */
+    //Undefined      = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
+};
+} }
+
+template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditMode>;
+namespace ZS {
+namespace Draw {
+typedef ::CEnum<EEditMode> CEnumEditMode;
+} }
+
+
 //namespace ZS {
 //namespace Draw {
 ////==============================================================================

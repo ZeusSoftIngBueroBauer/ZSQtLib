@@ -3554,7 +3554,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
 
     if (bZValueChanged) {
-        emit_zValueChanged();
+        emit_zValueChanged(zValue());
     }
     if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);

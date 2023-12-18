@@ -1192,6 +1192,42 @@ void CTest::addTestStepsDrawMouseEventsMovePressMoveRelease(
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("MousePos", i_ptMouseRelease);
 
+    if (bMoveRight) {
+        ptMouseMovePos.setX(ptMouseMovePos.x() + 10);
+    }
+    else if (bMoveLeft) {
+        ptMouseMovePos.setX(ptMouseMovePos.x() - 10);
+    }
+    if (bMoveDown) {
+        ptMouseMovePos.setY(ptMouseMovePos.y() + 10);
+    }
+    else if (bMoveUp) {
+        ptMouseMovePos.setY(ptMouseMovePos.y() - 10);
+    }
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(i_ptMouseRelease) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(i_ptMouseRelease) + ")",
+        /* pGrpParent      */ i_pTestStepGroupParent,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", i_ptMouseRelease);
+
 } // addTestStepsDrawMouseEventsMovePressMoveRelease
 
 /*==============================================================================

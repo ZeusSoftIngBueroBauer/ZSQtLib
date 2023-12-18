@@ -2663,46 +2663,32 @@ QString ZS::System::qKeyboardModifiers2Str( quint32 i_modifiers )
 
     if( i_modifiers & Qt::ShiftModifier )
     {
+        if (!str.isEmpty()) str += "|";
         str = "Shift";
     }
     if( i_modifiers & Qt::ControlModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "Control";
     }
     if( i_modifiers & Qt::AltModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "Alt";
     }
     if( i_modifiers & Qt::MetaModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "Meta";
     }
     if( i_modifiers & Qt::KeypadModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "Keypad";
     }
     if( i_modifiers & Qt::GroupSwitchModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "GroupSwitch";
     }
     return str;
@@ -2736,42 +2722,28 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
 {
     QString str;
 
-    if( i_pMimeData == nullptr )
-    {
+    if( i_pMimeData == nullptr ) {
         str = "nullptr";
     }
-    else // if( i_pMimeData != nullptr )
-    {
-        int idx;
-
+    else {
         QStringList strlstFormats = i_pMimeData->formats();
-
         str = "Formats [" + QString::number(strlstFormats.size()) + "]";
-
-        if( strlstFormats.size() > 0 )
-        {
+        if( strlstFormats.size() > 0 ) {
             str += "(";
-
-            for( idx = 0; idx < strlstFormats.size(); idx++ )
-            {
-                if( idx > 0 )
-                {
+            for( int idx = 0; idx < strlstFormats.size(); idx++ ) {
+                if( idx > 0 ) {
                     str += ", " + strlstFormats[idx];
                 }
-                else
-                {
+                else {
                     str += strlstFormats[idx];
                 }
-                if( i_iDetailLevel > 0 )
-                {
+                if( i_iDetailLevel > 0 ) {
                     str += " {";
-
                     QByteArray  byteArr = i_pMimeData->data(strlstFormats[idx]);
                     QDataStream stream(&byteArr, QIODevice::ReadOnly);
                     QStringList strlstItems;
 
-                    while( !stream.atEnd() )
-                    {
+                    while( !stream.atEnd() ) {
                         QString strItem;
                         stream >> strItem;
                         strlstItems << strItem;
@@ -2779,23 +2751,15 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
                     str += strlstItems.join(", ");
                     str += "}";
                 }
-            } // for( idx = 0; idx < strlstFormats.size(); idx++ )
-
+            }
             str += ")";
-
-        } // if( strlstFormats.size() > 0 )
-
-        if( i_pMimeData->hasUrls() )
-        {
+        }
+        if( i_pMimeData->hasUrls() ) {
             str += ", Urls [" + QString::number(i_pMimeData->urls().size()) + "]";
- 
-            if( i_pMimeData->urls().size() > 0 )
-            {
+            if( i_pMimeData->urls().size() > 0 ) {
                 str += "(";
-                for( idx = 0; idx < i_pMimeData->urls().size(); idx++ )
-                {
-                    if( idx > 0 )
-                    {
+                for( int idx = 0; idx < i_pMimeData->urls().size(); idx++ ) {
+                    if( idx > 0 ) {
                         str += ", ";
                     }
                     str += i_pMimeData->urls()[idx].toString();
@@ -2803,24 +2767,16 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
                 str += ")";
             }
         }
-
-        if( i_pMimeData->hasText() )
-        {
+        if( i_pMimeData->hasText() ) {
             str += ", Text: " + i_pMimeData->text();
         }
-
-        if( i_pMimeData->hasHtml() )
-        {
+        if( i_pMimeData->hasHtml() ) {
             str += ", Html: " + i_pMimeData->html();
         }
-
-        if( i_pMimeData->hasImage() )
-        {
+        if( i_pMimeData->hasImage() ) {
             //QVariant i_pMimeData->imageData();
         }
-
-        if( i_pMimeData->hasColor() )
-        {
+        if( i_pMimeData->hasColor() ) {
             //QVariant i_pMimeData->colorData();
         }
     } // if( i_pMimeData != nullptr )
@@ -3012,281 +2968,145 @@ QString ZS::System::qMouseButtons2Str( int i_iBtns )
 {
     QString str;
 
-    if( i_iBtns & Qt::MouseButton::NoButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if (i_iBtns & Qt::MouseButton::NoButton) {
+        if (!str.isEmpty()) str += "|";
         str += "NoButton";
     }
-    if( i_iBtns & Qt::MouseButton::LeftButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::LeftButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "LeftButton";
     }
-    if( i_iBtns & Qt::MouseButton::RightButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::RightButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "RightButton";
     }
-    if( i_iBtns & Qt::MouseButton::MiddleButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::MiddleButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "MiddleButton";
     }
     #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::BackButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::BackButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "BackButton";
     }
     #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::XButton1 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::XButton1 ) {
+        if (!str.isEmpty()) str += "|";
         str += "XButton1";
     }
     #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::ExtraButton1 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton1 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton1";
     }
-    if( i_iBtns & Qt::MouseButton::ForwardButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ForwardButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "ForwardButton";
     }
     #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::XButton2 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::XButton2 ) {
+        if (!str.isEmpty()) str += "|";
         str += "XButton2";
     }
     #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::ExtraButton2 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton2 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton2";
     }
-    if( i_iBtns & Qt::MouseButton::TaskButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::TaskButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "TaskButton";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton3 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton3 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton3";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton4 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton4 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton4";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton5 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton5 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton5";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton6 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton6 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton6";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton7 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton7 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton7";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton8 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton8 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton8";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton9 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton9 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton9";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton10 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton10 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton10";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton11 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton11 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton11";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton12 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton12 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton12";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton13 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton13 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton13";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton14 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton14 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton14";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton15 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton15 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton15";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton16 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton16 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton16";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton17 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton17 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton17";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton18 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton18 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton18";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton19 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton19 ) {
+        if (!str.isEmpty()) str += "|";
         str += "extrabutton19";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton20 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton20 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton20";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton21 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton21 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton21";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton22 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton22 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton22";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton23 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton23 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton23";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton24 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton24 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton24";
     }
-    if( i_iBtns & Qt::MouseButton::AllButtons )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::AllButtons ) {
+        if (!str.isEmpty()) str += "|";
         str += "AllButtons";
     }
     #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)

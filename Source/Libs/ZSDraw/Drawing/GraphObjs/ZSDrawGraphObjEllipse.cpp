@@ -1465,7 +1465,7 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
     }
 
     if (bZValueChanged) {
-        emit_zValueChanged();
+        emit_zValueChanged(zValue());
     }
     if (bTreeEntryChanged && m_pTree != nullptr) {
         m_pTree->onTreeEntryChanged(this);

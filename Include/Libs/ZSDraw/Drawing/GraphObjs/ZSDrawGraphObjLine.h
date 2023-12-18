@@ -125,7 +125,7 @@ public: // must overridables of base class QGraphicsItem
     virtual QPainterPath shape() const override;
     virtual void paint(QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr) override;
 protected: // overridables of base class QGraphicsItem
-    //virtual bool sceneEventFilter(QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv) override;
+    virtual bool sceneEventFilter(QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;
@@ -140,8 +140,9 @@ protected: // overridables of base class QGraphicsItem
 protected: // instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
-protected: // overridables of base class CGraphObj
+public: // must overridables of base class CGraphObj
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
+    virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
     //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
     void setPhysValLine(const CPhysValLine& i_physValLine);

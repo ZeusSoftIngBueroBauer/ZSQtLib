@@ -85,9 +85,9 @@ public: // must overridables of base class CGraphObj
     virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const CPhysValSize& i_physValSize ) override;
-public: // must overridables of base class CGraphObj
-    //virtual void setIsHit( bool /*i_bHit*/ ) override {}
 public: // overridables of base class CGraphObj
+    //virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const;
+    //virtual void setIsHit( bool /*i_bHit*/ ) override {}
     //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
     //void setCursor( const QCursor& cursor );
@@ -99,10 +99,6 @@ public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-    virtual void hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
-protected: // overridables of base class QGraphicsItem
     virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
@@ -113,7 +109,6 @@ protected slots: // overridables of base class CGraphObj
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // auxiliary instance methods
-    QCursor getProposedCursor() const;
     void updatePosition();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     //void traceInternalStates(

@@ -183,7 +183,7 @@ public: // struct methods
     bool isPolygonShapePointHit() const;
     bool isLineSegmentHit() const;
 public: // struct methods
-    void setCursor(double i_fGraphObjRotAngle_rad);
+    //void setCursor(double i_fGraphObjRotAngle_rad);
 public: // struct methods
     QString toString() const;
 public: // struct members
@@ -271,10 +271,6 @@ public: // struct members
     - void setSize(const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight);
 
     - void setSize(const CPhysValSizeF& i_physValSize);
-
-    - void setIsHit(bool i_bHit);
-      To indicate that object is hit by mouse cursor by either showing selection points
-      or a dotted bounding rectangle or ...
 
     - void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
       Also creates the selection points if not yet created.
@@ -399,19 +395,20 @@ public: // struct members
     on the bounding rectangle or on the polygon shape points.
     When moving a selection point the parent got to be informed that the selection point
     has been moved to adapt its shape.
-    This information path could be implemented in two ways:
-    - the parent could install a scene filter and listen to mouse events
-    - the parent can connect to the geometryChanged signal of the selection point and
-      the selection point connects to the geometryChanged signal of the object.
-    The second way is implemented even if it could lead to onGeometryChanged signal/slot chains.
-    If the selection point is moved, the graphical objects shape is modified emitting the
-    geometry changed signal which is reveived by the selection point.
-    If the graphical object is moved the geometryChanged signal is emitted and the
-    selection point updates its position emitting also the geometryChanged signal which
-    will be reveived again by the moved graphical object.
-    When comparing the geometry values this should not lead to an endless loop.
-    To be on save side a "geometryChangedSignalEmitted" flag is used to avoid the recursion.
-    Using sceneEventFilter would avoid the possible endless recursion but has other pitfalls.
+
+    When creating objects on the drawing scene using mouse move events the mouse events
+    will be passed to the selection points and the selection points will be moved.
+    The object under construction will receive the geometry changed signals by the
+    selection point and will update its shape.
+
+    The mouse event finishing the creation of the object depends on the type of graphical
+    object being created. For lines for example the creation is finished if the mouse release
+    event is received by the selection point previously moved. To handle the mouse event the
+    object under construction installs a scene event filter on the selection point.
+
+    In order to handle the mouse event correctly the graphical object need to know that it
+    is currently being created. For this the edit mode is used which is set if the object
+    has been created on the drawing scene.
 
     Labels
     ======
@@ -504,8 +501,10 @@ signals:
          For this the signal may not be emitted "directly" by the derived classes but the class
          must call "emit_aboutToBeDestroyed" in their destructors. */
     void aboutToBeDestroyed(CGraphObj* i_pGraphObj);
+    /*!< This signal is emitted if the edit mode of the object has been changed. */
+    void editModeChanged(CGraphObj* i_pGraphObj, const CEnumEditMode& i_eMode);
     /*!< This signal is emitted if the selected state of the object has been changed. */
-    void selectedChanged(CGraphObj* i_pGraphObj);
+    void selectedChanged(CGraphObj* i_pGraphObj, bool i_bIsSelected);
     /*!< This signal is emitted if the geometry of the object has been changed. */
     void geometryChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the physical unit of the drawing scene's size has been changed
@@ -513,7 +512,7 @@ signals:
          viewers need to update the value strings correspondingly. */
     void geometryValuesUnitChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the Z-value (stacking order) of the object has been changed. */
-    void zValueChanged(CGraphObj* i_pGraphObj);
+    void zValueChanged(CGraphObj* i_pGraphObj, double i_fZValue);
     /*!< This signal is emitted if the drawing settings (pen style, etc.) of the object has been changed. */
     void drawSettingsChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if a new text label has been added. */
@@ -668,14 +667,14 @@ public: // overridables
     virtual void setRotationAngleInDegree(double i_fRotAngle_deg);
     virtual double getRotationAngleInDegree(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed);
 public: // overridables
-    //virtual void setEditMode(EEditMode i_editMode);
-    //virtual void setEditResizeMode(EEditResizeMode i_editResizeMode);
-public: // must overridables
-    //virtual void setIsHit(bool i_bHit) = 0;
+    virtual void setEditMode(const CEnumEditMode& i_eMode);
+    CEnumEditMode editMode() const;
+    //virtual void setEditResizeMode(CEnumEditResizeMode i_eMode);
 public: // overridables
-    //virtual bool isHit() const;
-    //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const;
+    virtual void setIsHit(bool i_bIsHit);
+    virtual bool isHit() const;
+    //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
 public: // overridables
     virtual double bringToFront();
     virtual double setStackingOrderValue(double i_fZValue, ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current);
@@ -695,7 +694,7 @@ protected: // must overridables
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
 protected: // overridables
     virtual void hideSelectionPoints( ESelectionPoints i_selPts = ESelectionPointsAll );
-    virtual void bringSelectionPointsToFront( ESelectionPoints i_selPts = ESelectionPointsAll );
+    //virtual void bringSelectionPointsToFront( ESelectionPoints i_selPts = ESelectionPointsAll );
 protected: // overridables
     virtual void showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
     virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );
@@ -736,15 +735,11 @@ public: // overridables (geometry labels)
     virtual void showGeometryLabelAnchorLine(const QString& i_strName);
     virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
     virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;
-protected: // overridables (geometry labels)
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
-protected slots: // overridables
-    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
 public slots: // overridables
+    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     virtual void onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
-protected slots: // overridables
+    virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
@@ -761,7 +756,9 @@ public: // instance methods (simulation methods)
     void removeKeyPressEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     void addKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
     void removeKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-protected: // overridables
+protected: // overridables (geometry labels)
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
     virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
@@ -777,10 +774,11 @@ protected: // auxiliary instance methods
 protected: // auxiliary instance methods
     void emit_aboutToBeDestroyed();
 protected: // auxiliary instance methods (method tracing)
-    void emit_selectedChanged();
+    void emit_editModeChanged(const CEnumEditMode& i_eMode);
+    void emit_selectedChanged(bool i_bIsSelected);
     void emit_geometryChanged();
     void emit_geometryValuesUnitChanged();
-    void emit_zValueChanged();
+    void emit_zValueChanged(double i_fZValue);
     void emit_drawSettingsChanged();
     void emit_labelAdded(const QString& i_strName);
     void emit_labelRemoved(const QString& i_strName);
@@ -789,11 +787,16 @@ protected: // auxiliary instance methods (method tracing)
     void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
+public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
-    virtual void traceInternalStates(
+    virtual void traceGraphicsItemStates(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+    virtual void traceGraphObjStates(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
@@ -851,11 +854,12 @@ protected: // instance members
     CPhysValSize m_physValSizeFixed;
     /*!< Alignments of the graphical object to the parent group.. */
     QList<SGraphObjAlignment> m_arAlignments;
-    /*!< Flag indicating whether the graphical object is hit by the mouse cursor. */
-    //bool m_bIsHit;
-    ///*!< Current edit mode. The current edit mode defines how the graphical object handels
-    //     incoming events like moving the mouse cursor. */
-    //CEnumEditMode m_editMode;
+    /*!< Flag indicating whether the graphical object is hit by the mouse cursor
+         (between hoverEnterEvent and hoverLeaveEvent). */
+    bool m_bIsHit;
+    /*!< Current edit mode. The current edit mode defines how the graphical object for example
+         handels mouse events passed to the selection points. */
+    CEnumEditMode m_editMode;
     ///*!< If the graphical object is currently being resized this member defines how the object
     //     will be resized. */
     //CEnumEditResizeMode m_editResizeMode;
@@ -973,10 +977,11 @@ protected: // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjIsHit;
+    //ZS::System::CTrcAdminObj* m_pTrcAdminObjIsHit;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
     //ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEvent;
-    //ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverEvents;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents;

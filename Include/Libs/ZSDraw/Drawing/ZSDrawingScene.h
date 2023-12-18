@@ -319,8 +319,9 @@ protected: // auxiliary instance methods (trace emitting signals)
     void emit_modeChanged(const ZS::System::CEnumMode& i_eMode);
     void emit_drawingToolChanged(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
     void emit_drawSettingsChanged(const ZS::Draw::CDrawSettings& i_drawSettings);
-protected: // auxiliary instance methods (method tracing)
+public: // auxiliary instance methods (method tracing)
     //void traceInternalStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
+    void traceItemsStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
 protected: // class members
     static const QString s_strGraphObjNameSeparator;
 protected: // instance members

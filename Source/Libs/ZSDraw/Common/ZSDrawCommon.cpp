@@ -270,19 +270,19 @@ template<> const QVector<SEnumEntry> CEnum<ECoordinatesVersion>::s_arEnumEntries
 Enum EEditMode
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//template<> const QVector<SEnumEntry> CEnum<EEditMode>::s_arEnumEntries =
-////------------------------------------------------------------------------------
-//{
-//    /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),           "None"),
-//    /* 1 */ SEnumEntry( static_cast<int>(EEditMode::Creating),       "Creating"),
-//    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move"),
-//    /* 3 */ SEnumEntry( static_cast<int>(EEditMode::Resize),         "Resize"),
-//    /* 4 */ SEnumEntry( static_cast<int>(EEditMode::Rotate),         "Rotate"),
-//    /* 5 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint"),
-//    /* 6 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText"),
-//    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Undefined),      "Undefined")
-//};
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EEditMode>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),                  "None"),
+    /* 1 */ SEnumEntry( static_cast<int>(EEditMode::CreatingByMouseEvents), "CreatingByMouseEvents")
+    ///* 2 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move"),
+    ///* 3 */ SEnumEntry( static_cast<int>(EEditMode::Resize),         "Resize"),
+    ///* 4 */ SEnumEntry( static_cast<int>(EEditMode::Rotate),         "Rotate"),
+    ///* 5 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint"),
+    ///* 6 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText"),
+    ///* 7 */ SEnumEntry( static_cast<int>(EEditMode::Undefined),      "Undefined")
+};
 
 
 /*==============================================================================
