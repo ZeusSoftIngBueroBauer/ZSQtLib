@@ -119,11 +119,11 @@ public: // must overridables of base class CGraphObj
 public: // overridables of base class CGraphObj
     virtual void setRotationAngleInDegree( double /*i_fRotAngle_deg*/ ) override {} // not supported for labels
 public: // must overridables of base class CGraphObj
-    virtual void setIsHit( bool i_bHit ) override;
+    //virtual void setIsHit( bool i_bHit ) override;
 public: // overridables of base class CGraphObj
-    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
+    //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
-    void setCursor( const QCursor& cursor );
+    //void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {};
 public: // must overridables of base class QGraphicsItem

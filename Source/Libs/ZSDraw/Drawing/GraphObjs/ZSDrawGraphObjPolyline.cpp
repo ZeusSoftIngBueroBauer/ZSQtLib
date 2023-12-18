@@ -97,7 +97,7 @@ CGraphObjPolyline::CGraphObjPolyline(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     createTraceAdminObjs("StandardShapes::" + ClassName());
 
@@ -108,22 +108,13 @@ CGraphObjPolyline::CGraphObjPolyline(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
 
     //onDrawSettingsChanged();
 
     //updateToolTip();
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
 
 } // ctor
 
@@ -228,11 +219,11 @@ public: // replacing methods of QGraphicsPolygonItem
 void CGraphObjPolyline::setPolygon( const QPolygonF& i_plg )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strAddTrcInfo = "Polygon:" + polygon2Str(i_plg);
+        strMthInArgs = "Polygon:" + polygon2Str(i_plg);
     }
 
     CMethodTracer mthTracer(
@@ -240,7 +231,7 @@ void CGraphObjPolyline::setPolygon( const QPolygonF& i_plg )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "setPolygon",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QGraphicsPolygonItem::setPolygon(i_plg);
 
@@ -491,153 +482,153 @@ void CGraphObjPolyline::setSize( const CPhysValSize& i_physValSize )
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjPolyline::setIsHit( bool i_bHit )
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo = "Hit:" + bool2Str(i_bHit);
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setIsHit",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    if( m_bIsHit != i_bHit )
-    {
-        m_bIsHit = i_bHit;
-
-        if( i_bHit )
-        {
-            showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter);
-        }
-        else if( !isSelected() )
-        {
-            hideSelectionPoints();
-        }
-        update();
-    }
-
-} // setIsHit
+////------------------------------------------------------------------------------
+//void CGraphObjPolyline::setIsHit( bool i_bHit )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
+//    {
+//        strMthInArgs = "Hit:" + bool2Str(i_bHit);
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setIsHit",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if( m_bIsHit != i_bHit )
+//    {
+//        m_bIsHit = i_bHit;
+//
+//        if( i_bHit )
+//        {
+//            showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter);
+//        }
+//        else if( !isSelected() )
+//        {
+//            hideSelectionPoints();
+//        }
+//        update();
+//    }
+//
+//} // setIsHit
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-bool CGraphObjPolyline::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
-        strAddTrcInfo = "Point:" + point2Str(i_pt) +
-            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo)) +
-            ", Polygon:" + polygon2Str(polygon());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjIsHit,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "isHit",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    bool bIsHit = false;
-
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        if( pGraphicsItem->isSelected() )
-        {
-            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
-
-            if( !bIsHit )
-            {
-                bIsHit = isBoundingRectSelectionPointHit(
-                    /* pt               */ i_pt,
-                    /* iSelPtsCount     */ -1,
-                    /* pSelPts          */ nullptr,
-                    /* pGraphObjHitInfo */ o_pHitInfo );
-            }
-        }
-
-        if( !bIsHit )
-        {
-            QPolygonF plg = polygon();
-            bIsHit = isPolygonHit( plg, EFillStyle::NoFill, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
-        }
-
-        if( !bIsHit )
-        {
-            if( pGraphicsItem->isSelected() )
-            {
-                bIsHit = pGraphicsItem->contains(i_pt);
-
-                if( o_pHitInfo != nullptr )
-                {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-                    o_pHitInfo->m_idxPolygonShapePoint = -1;
-                    o_pHitInfo->m_idxLineSegment = -1;
-                    o_pHitInfo->m_ptSelected = i_pt;
-                }
-            }
-        }
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        if( bIsHit && o_pHitInfo != nullptr )
-        {
-            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
-        }
-#endif
-
-    } // if( pGraphicsItem != nullptr )
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs;
-        if (o_pHitInfo != nullptr) {
-            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
-            mthTracer.setMethodOutArgs(strMthOutArgs);
-        }
-        mthTracer.setMethodReturn(bIsHit);
-    }
-
-    return bIsHit;
-
-} // isHit
+////------------------------------------------------------------------------------
+//bool CGraphObjPolyline::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Point:" + point2Str(i_pt) +
+//            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo)) +
+//            ", Polygon:" + polygon2Str(polygon());
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjIsHit,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "isHit",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    bool bIsHit = false;
+//
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//
+//    if( pGraphicsItem != nullptr )
+//    {
+//        if( pGraphicsItem->isSelected() )
+//        {
+//            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
+//
+//            if( !bIsHit )
+//            {
+//                bIsHit = isBoundingRectSelectionPointHit(
+//                    /* pt               */ i_pt,
+//                    /* iSelPtsCount     */ -1,
+//                    /* pSelPts          */ nullptr,
+//                    /* pGraphObjHitInfo */ o_pHitInfo );
+//            }
+//        }
+//
+//        if( !bIsHit )
+//        {
+//            QPolygonF plg = polygon();
+//            bIsHit = isPolygonHit( plg, EFillStyle::NoFill, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
+//        }
+//
+//        if( !bIsHit )
+//        {
+//            if( pGraphicsItem->isSelected() )
+//            {
+//                bIsHit = pGraphicsItem->contains(i_pt);
+//
+//                if( o_pHitInfo != nullptr )
+//                {
+//                    //o_pHitInfo->m_editMode = EEditMode::Move;
+//                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+//                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+//                    o_pHitInfo->m_idxPolygonShapePoint = -1;
+//                    o_pHitInfo->m_idxLineSegment = -1;
+//                    o_pHitInfo->m_ptSelected = i_pt;
+//                }
+//            }
+//        }
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//        if( bIsHit && o_pHitInfo != nullptr )
+//        {
+//            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
+//        }
+//#endif
+//
+//    } // if( pGraphicsItem != nullptr )
+//
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        QString strMthOutArgs;
+//        if (o_pHitInfo != nullptr) {
+//            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
+//            mthTracer.setMethodOutArgs(strMthOutArgs);
+//        }
+//        mthTracer.setMethodReturn(bIsHit);
+//    }
+//
+//    return bIsHit;
+//
+//} // isHit
 
 /*==============================================================================
 public: // reimplementing methods of base class QGraphicItem
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjPolyline::setCursor( const QCursor& i_cursor )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = qCursorShape2Str(i_cursor.shape());
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setCursor",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsPolygonItem::setCursor(i_cursor);
-
-} // setCursor
+////------------------------------------------------------------------------------
+//void CGraphObjPolyline::setCursor( const QCursor& i_cursor )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
+//    {
+//        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setCursor",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QGraphicsPolygonItem::setCursor(i_cursor);
+//
+//} // setCursor
 
 /*==============================================================================
 protected: // must overridables of base class CGraphObj
@@ -647,11 +638,11 @@ protected: // must overridables of base class CGraphObj
 void CGraphObjPolyline::showSelectionPoints( unsigned char i_selPts )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strAddTrcInfo = "SelectionPoints:" + selectionPoints2Str(i_selPts);
+        strMthInArgs = "SelectionPoints:" + selectionPoints2Str(i_selPts);
     }
 
     CMethodTracer mthTracer(
@@ -659,7 +650,7 @@ void CGraphObjPolyline::showSelectionPoints( unsigned char i_selPts )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "showSelectionPoints",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( parentItem() == nullptr )
     {
@@ -687,11 +678,11 @@ public: // overridables of base class QGraphicsPolygonItem
 QRectF CGraphObjPolyline::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strAddTrcInfo = "Polygon:" + polygon2Str(polygon());
+        strMthInArgs = "Polygon:" + polygon2Str(polygon());
     }
 
     CMethodTracer mthTracer(
@@ -699,7 +690,7 @@ QRectF CGraphObjPolyline::boundingRect() const
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "boundingRect",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_bCoorsDirty )
     {
@@ -786,12 +777,12 @@ QRectF CGraphObjPolyline::boundingRect() const
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
-        strAddTrcInfo  = "Rect(x,y,w,h):(";
-        strAddTrcInfo += QString::number(rctBounding.x(),'f',1);
-        strAddTrcInfo += "," + QString::number(rctBounding.y(),'f',1);
-        strAddTrcInfo += "," + QString::number(rctBounding.width(),'f',1);
-        strAddTrcInfo += "," + QString::number(rctBounding.height(),'f',1) + ")";
-        mthTracer.setMethodReturn(strAddTrcInfo);
+        strMthInArgs  = "Rect(x,y,w,h):(";
+        strMthInArgs += QString::number(rctBounding.x(),'f',1);
+        strMthInArgs += "," + QString::number(rctBounding.y(),'f',1);
+        strMthInArgs += "," + QString::number(rctBounding.width(),'f',1);
+        strMthInArgs += "," + QString::number(rctBounding.height(),'f',1) + ")";
+        mthTracer.setMethodReturn(strMthInArgs);
     }
 
     return rctBounding;
@@ -802,11 +793,11 @@ QRectF CGraphObjPolyline::boundingRect() const
 QPainterPath CGraphObjPolyline::shape() const
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strAddTrcInfo = "Polygon:" + polygon2Str(polygon());
+        strMthInArgs = "Polygon:" + polygon2Str(polygon());
     }
 
     CMethodTracer mthTracer(
@@ -814,7 +805,7 @@ QPainterPath CGraphObjPolyline::shape() const
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "shape",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPainterPath painterPath = QGraphicsPolygonItem::shape();
 
@@ -831,8 +822,8 @@ QPainterPath CGraphObjPolyline::shape() const
     {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
         QGraphicsItem* pVThis = const_cast<QGraphicsItem*>(pCThis);
-        strAddTrcInfo  = "Path:" + qPainterPath2Str(pVThis,painterPath);
-        mthTracer.setMethodReturn(strAddTrcInfo);
+        strMthInArgs  = "Path:" + qPainterPath2Str(pVThis,painterPath);
+        mthTracer.setMethodReturn(strMthInArgs);
     }
 
     return painterPath;
@@ -924,7 +915,7 @@ void CGraphObjPolyline::paint(
 
     } // if( lineEndStyleLineStart != ELineEndStyle::Normal || lineEndStyleLineEnd != ELineEndStyle::Normal )
 
-    if( m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected()) )
+    if( m_pDrawingScene->getMode() == EMode::Edit && (/*m_bIsHit ||*/ isSelected()) )
     {
         if( m_plgCurr.size() > 0 )
         {
@@ -1002,150 +993,140 @@ void CGraphObjPolyline::paint(
 protected: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-bool CGraphObjPolyline::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv )
-//------------------------------------------------------------------------------
-{
-    //--------------------------------------------------------------------
-    // Mouse events of selection points will be "watched" to forward those
-    // events to this item in order to resize and rotate this item.
-    //--------------------------------------------------------------------
-
-    CGraphObjSelectionPoint* pGraphObjSelPtWatched = dynamic_cast<CGraphObjSelectionPoint*>(i_pGraphicsItemWatched);
-
-    if( pGraphObjSelPtWatched == nullptr )
-    {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObjSelPtWatched == nullptr" );
-    }
-
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjSceneEventFilter, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "ItemWatched:" + pGraphObjSelPtWatched->name();
-        strAddTrcInfo += ", Event:" + qEventType2Str(i_pEv->type());
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjSceneEventFilter,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "sceneEventFilter",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    bool bEventHandled = false;
-
-    switch( i_pEv->type() )
-    {
-        case QEvent::GraphicsSceneMouseMove:
-        {
-            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-            if( pEv != nullptr )
-            {
-                QPointF ptEvPos;
-                for( int i = 0x1; i <= 0x10; i <<= 1 )
-                {
-                    Qt::MouseButton button = Qt::MouseButton(i);
-                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-                    pEv->setButtonDownPos( button, ptEvPos );
-                }
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-                pEv->setPos(ptEvPos);
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-                pEv->setLastPos(ptEvPos);
-                mouseMoveEvent(pEv);
-                bEventHandled = true;
-            }
-            break;
-        }
-        case QEvent::GraphicsSceneMousePress:
-        {
-            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-            if( pEv != nullptr )
-            {
-                QPointF ptEvPos;
-                for( int i = 0x1; i <= 0x10; i <<= 1 )
-                {
-                    Qt::MouseButton button = Qt::MouseButton(i);
-                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-                    pEv->setButtonDownPos( button, ptEvPos );
-                }
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-                pEv->setPos(ptEvPos);
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-                pEv->setLastPos(ptEvPos);
-                mousePressEvent(pEv);
-                bEventHandled = true;
-            }
-            break;
-        }
-        case QEvent::GraphicsSceneMouseRelease:
-        {
-            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-            if( pEv != nullptr )
-            {
-                QPointF ptEvPos;
-                for( int i = 0x1; i <= 0x10; i <<= 1 )
-                {
-                    Qt::MouseButton button = Qt::MouseButton(i);
-                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-                    pEv->setButtonDownPos( button, ptEvPos );
-                }
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-                pEv->setPos(ptEvPos);
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-                pEv->setLastPos(ptEvPos);
-                mouseReleaseEvent(pEv);
-                bEventHandled = true;
-            }
-            break;
-        }
-        case QEvent::GraphicsSceneMouseDoubleClick:
-        {
-            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-            if( pEv != nullptr )
-            {
-                QPointF ptEvPos;
-                for( int i = 0x1; i <= 0x10; i <<= 1 )
-                {
-                    Qt::MouseButton button = Qt::MouseButton(i);
-                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
-                    pEv->setButtonDownPos( button, ptEvPos );
-                }
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
-                pEv->setPos(ptEvPos);
-                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
-                pEv->setLastPos(ptEvPos);
-                mouseDoubleClickEvent(pEv);
-                bEventHandled = true;
-            }
-            break;
-        }
-        default:
-        {
-            break;
-        }
-
-    } // switch( i_pEv->type() )
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
-        mthTracer.trace(strAddTrcInfo);
-    }
-
-    return bEventHandled;
-
-} // sceneEventFilter
+////------------------------------------------------------------------------------
+//bool CGraphObjPolyline::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv )
+////------------------------------------------------------------------------------
+//{
+//    //--------------------------------------------------------------------
+//    // Mouse events of selection points will be "watched" to forward those
+//    // events to this item in order to resize and rotate this item.
+//    //--------------------------------------------------------------------
+//
+//    CGraphObjSelectionPoint* pGraphObjSelPtWatched = dynamic_cast<CGraphObjSelectionPoint*>(i_pGraphicsItemWatched);
+//    if (pGraphObjSelPtWatched == nullptr) {
+//        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObjSelPtWatched == nullptr" );
+//    }
+//
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjSceneEventFilter, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "ItemWatched: " + pGraphObjSelPtWatched->name();
+//        if (isGraphicsSceneHoverEvent(i_pEv)) {
+//            QGraphicsSceneHoverEvent* pHoverEvent = dynamic_cast<QGraphicsSceneHoverEvent*>(i_pEv);
+//            strMthInArgs += ", " + qEventType2Str(i_pEv->type()) + " {" + qGraphicsSceneHoverEvent2Str(pHoverEvent) + "}";
+//        }
+//        else if (isGraphicsSceneMouseEvent(i_pEv)) {
+//            QGraphicsSceneMouseEvent* pMouseEvent = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+//            strMthInArgs += ", " + qEventType2Str(i_pEv->type()) + " {" + qGraphicsSceneMouseEvent2Str(pMouseEvent) + "}";
+//        }
+//        else {
+//            strMthInArgs += ", Event: " + qEventType2Str(i_pEv->type());
+//        }
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjSceneEventFilter,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "sceneEventFilter",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    bool bEventHandled = false;
+//
+//    switch( i_pEv->type() )
+//    {
+//        case QEvent::GraphicsSceneMouseMove:
+//        {
+//            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+//            if( pEv != nullptr )
+//            {
+//                QPointF ptEvPos;
+//                for( int i = 0x1; i <= 0x10; i <<= 1 )
+//                {
+//                    Qt::MouseButton button = Qt::MouseButton(i);
+//                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
+//                    pEv->setButtonDownPos( button, ptEvPos );
+//                }
+//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
+//                pEv->setPos(ptEvPos);
+//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
+//                pEv->setLastPos(ptEvPos);
+//                mouseMoveEvent(pEv);
+//                bEventHandled = true;
+//            }
+//            break;
+//        }
+//        case QEvent::GraphicsSceneMousePress:
+//        {
+//            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+//            if( pEv != nullptr )
+//            {
+//                QPointF ptEvPos;
+//                for( int i = 0x1; i <= 0x10; i <<= 1 )
+//                {
+//                    Qt::MouseButton button = Qt::MouseButton(i);
+//                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
+//                    pEv->setButtonDownPos( button, ptEvPos );
+//                }
+//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
+//                pEv->setPos(ptEvPos);
+//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
+//                pEv->setLastPos(ptEvPos);
+//                mousePressEvent(pEv);
+//                bEventHandled = true;
+//            }
+//            break;
+//        }
+//        case QEvent::GraphicsSceneMouseRelease:
+//        {
+//            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+//            if( pEv != nullptr )
+//            {
+//                QPointF ptEvPos;
+//                for( int i = 0x1; i <= 0x10; i <<= 1 )
+//                {
+//                    Qt::MouseButton button = Qt::MouseButton(i);
+//                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
+//                    pEv->setButtonDownPos( button, ptEvPos );
+//                }
+//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
+//                pEv->setPos(ptEvPos);
+//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
+//                pEv->setLastPos(ptEvPos);
+//                mouseReleaseEvent(pEv);
+//                bEventHandled = true;
+//            }
+//            break;
+//        }
+//        case QEvent::GraphicsSceneMouseDoubleClick:
+//        {
+//            QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
+//            if( pEv != nullptr )
+//            {
+//                QPointF ptEvPos;
+//                for( int i = 0x1; i <= 0x10; i <<= 1 )
+//                {
+//                    Qt::MouseButton button = Qt::MouseButton(i);
+//                    ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->buttonDownPos(button) );
+//                    pEv->setButtonDownPos( button, ptEvPos );
+//                }
+//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->pos() );
+//                pEv->setPos(ptEvPos);
+//                ptEvPos = mapFromItem( pGraphObjSelPtWatched, pEv->lastPos() );
+//                pEv->setLastPos(ptEvPos);
+//                mouseDoubleClickEvent(pEv);
+//                bEventHandled = true;
+//            }
+//            break;
+//        }
+//        default:
+//        {
+//            break;
+//        }
+//
+//    } // switch( i_pEv->type() )
+//
+//    return bEventHandled;
+//
+//} // sceneEventFilter
 
 /*==============================================================================
 protected: // overridables of base class QGraphicsItem
@@ -1155,47 +1136,37 @@ protected: // overridables of base class QGraphicsItem
 void CGraphObjPolyline::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "hoverEnterEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    QPointF ptItemPos = i_pEv->pos();
+    //QPointF ptItemPos = i_pEv->pos();
 
-    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    //CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-    {
-        SGraphObjHitInfo hitInfo;
+    //if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
+    //{
+    //    SGraphObjHitInfo hitInfo;
 
-        bool bIsHit = isHit(ptItemPos,&hitInfo);
+    //    bool bIsHit = isHit(ptItemPos,&hitInfo);
 
-        if( bIsHit )
-        {
-            if( cursor().shape() != hitInfo.m_cursor.shape() )
-            {
-                setCursor(hitInfo.m_cursor);
-            }
-        }
+    //    if( bIsHit )
+    //    {
+    //        if( cursor().shape() != hitInfo.m_cursor.shape() )
+    //        {
+    //            setCursor(hitInfo.m_cursor);
+    //        }
+    //    }
 
-    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
+    //} // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
 } // hoverEnterEvent
 
@@ -1203,47 +1174,37 @@ void CGraphObjPolyline::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 void CGraphObjPolyline::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "hoverMoveEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    QPointF ptItemPos = i_pEv->pos();
+    //QPointF ptItemPos = i_pEv->pos();
 
-    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    //CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
-    {
-        SGraphObjHitInfo hitInfo;
+    //if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
+    //{
+    //    SGraphObjHitInfo hitInfo;
 
-        bool bIsHit = isHit(ptItemPos,&hitInfo);
+    //    bool bIsHit = isHit(ptItemPos,&hitInfo);
 
-        if( bIsHit )
-        {
-            if( cursor().shape() != hitInfo.m_cursor.shape() )
-            {
-                setCursor(hitInfo.m_cursor);
-            }
-        }
+    //    if( bIsHit )
+    //    {
+    //        if( cursor().shape() != hitInfo.m_cursor.shape() )
+    //        {
+    //            setCursor(hitInfo.m_cursor);
+    //        }
+    //    }
 
-    } // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
+    //} // if( modeDrawing == EMode::Edit && editToolDrawing == EEditTool::Select )
 
 } // hoverMoveEvent
 
@@ -1251,26 +1212,16 @@ void CGraphObjPolyline::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 void CGraphObjPolyline::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjHoverEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneHoverEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "hoverLeaveEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     unsetCursor();
 
@@ -1284,206 +1235,196 @@ protected: // overridables of base class QGraphicsItem
 void CGraphObjPolyline::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mousePressEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    if( modeDrawing == EMode::Edit )
-    {
-        //Qt::MouseButtons iEvMouseButtonState = i_pEv->buttons() & Qt::MouseButtonMask;
-        Qt::KeyboardModifiers iEvMouseKeyboardModifiers = i_pEv->modifiers() & Qt::KeyboardModifierMask;
-
-        QPointF ptMouseItemPos = i_pEv->pos();
-
-        // The "old" coordinates are used by resize (mouse move) events to calculate
-        // the difference between the original coordinates on before starting the
-        // resize event and the current coordinates during the resize event.
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        m_rctOnMousePressEvent = m_rctCurr;
-        m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
-#endif
-
-        if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
-        {
-            QGraphicsPolygonItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-
-            QPolygonF plg = polygon();
-            QRectF    rctItem;
-
-            if( plg.size() < 2 )
-            {
-                plg.append( QPointF(0.0,0.0) );
-                plg.append( QPointF(1.0,1.0) );
-            }
-
-            // If there was no polygon shape point selected ..
-            if( m_idxSelPtSelectedPolygon < 0 || m_idxSelPtSelectedPolygon >= plg.size() )
-            {
-                // .. the shape has been initially hit right after creation.
-                m_idxSelPtSelectedPolygon = plg.size()-1;
-                plg[m_idxSelPtSelectedPolygon] = ptMouseItemPos;
-            }
-            // If there was already a polygon shape point selected ..
-            else
-            {
-                // .. the currently selected shape point will be fixed and
-                // another point will be added.
-                plg[m_idxSelPtSelectedPolygon] = ptMouseItemPos;
-                plg.append(ptMouseItemPos);
-                m_idxSelPtSelectedPolygon = plg.size()-1;
-            }
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            m_rctCurr = plg.boundingRect();
-            m_ptRotOriginCurr = m_rctCurr.center();
-
-            QGraphicsPolygonItem::setPolygon(plg);
-            while( m_arpSelPtsPolygon.size() < plg.size() )
-            {
-                m_arpSelPtsPolygon.append(nullptr);
-            }
-
-            showSelectionPointsOfPolygon(plg);
-            updateSelectionPointsOfBoundingRect(m_rctCurr);
-#endif
-
-            updateTransform();
-
-            //updateEditInfo();
-            //updateToolTip();
-
-        } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
-
-        else if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
-        {
-            if( contains(ptMouseItemPos) )
-            {
-                QGraphicsPolygonItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-            }
-
-            if( isSelected() )
-            {
-                CGraphObjSelectionPoint* pGraphObjSelPt;
-                ESelectionPoint          selPt;
-                int                      idxSelPt;
-
-                // Polygon shape points may be very close or even overlap each other.
-                // On creating the polygon the most likely point the user wants to grab
-                // is the last shape point to move it around. If the ALT keyboard key
-                // is pressed together with the mouse the "alternate" selection point
-                // is desired (if there is any) and we first check whether any selection
-                // point from the bounding rectangle has been hit.
-
-                SGraphObjHitInfo hitInfo;
-
-                bool bIsHit = false;
-
-                if( iEvMouseKeyboardModifiers & Qt::AltModifier )
-                {
-                    bIsHit = isBoundingRectSelectionPointHit(
-                        /* pt               */ ptMouseItemPos,
-                        /* iSelPtsCount     */ -1,
-                        /* pSelPts          */ nullptr,
-                        /* pGraphObjHitInfo */ &hitInfo );
-                }
-
-                if( !bIsHit )
-                {
-                    bIsHit = isHit( ptMouseItemPos, &hitInfo );
-                }
-
-                m_editMode                  = hitInfo.m_editMode;
-                m_editResizeMode            = hitInfo.m_editResizeMode;
-                m_idxSelPtSelectedPolygon   = hitInfo.m_idxPolygonShapePoint;
-                m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
-
-                for( idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++ )
-                {
-                    pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-
-                    if( pGraphObjSelPt != nullptr )
-                    {
-                        if( idxSelPt == m_idxSelPtSelectedPolygon )
-                        {
-                            pGraphObjSelPt->setSelected(true);
-                        }
-                        else
-                        {
-                            pGraphObjSelPt->setSelected(false);
-                        }
-                    }
-                }
-
-                for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-                {
-                    selPt = static_cast<ESelectionPoint>(idxSelPt);
-
-                    pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-
-                    if( pGraphObjSelPt != nullptr )
-                    {
-                        if( m_selPtSelectedBoundingRect == selPt )
-                        {
-                            pGraphObjSelPt->setSelected(true);
-                        }
-                        else
-                        {
-                            pGraphObjSelPt->setSelected(false);
-                        }
-                    }
-                }
-
-                if( m_editMode == EEditMode::Resize || m_editMode == EEditMode::Rotate || m_editMode == EEditMode::MoveShapePoint )
-                {
-                    m_plgOnMousePressEvent = polygon();
-                    m_rctOnMousePressEvent = m_plgOnMousePressEvent.boundingRect();
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-                    m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
-#endif
-                }
-
-                m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
-
-                updateTransform();
-
-                //updateEditInfo();
-                //updateToolTip();
-
-            } // if( isSelected() )
-
-        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
-
-    } // if( modeDrawing == EMode::Edit )
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
-        mthTracer.trace(strAddTrcInfo);
-    }
+//    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+//    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+//
+//    if( modeDrawing == EMode::Edit )
+//    {
+//        //Qt::MouseButtons iEvMouseButtonState = i_pEv->buttons() & Qt::MouseButtonMask;
+//        Qt::KeyboardModifiers iEvMouseKeyboardModifiers = i_pEv->modifiers() & Qt::KeyboardModifierMask;
+//
+//        QPointF ptMouseItemPos = i_pEv->pos();
+//
+//        // The "old" coordinates are used by resize (mouse move) events to calculate
+//        // the difference between the original coordinates on before starting the
+//        // resize event and the current coordinates during the resize event.
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//        m_rctOnMousePressEvent = m_rctCurr;
+//        m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
+//#endif
+//
+//        if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
+//        {
+//            QGraphicsPolygonItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
+//
+//            QPolygonF plg = polygon();
+//            QRectF    rctItem;
+//
+//            if( plg.size() < 2 )
+//            {
+//                plg.append( QPointF(0.0,0.0) );
+//                plg.append( QPointF(1.0,1.0) );
+//            }
+//
+//            // If there was no polygon shape point selected ..
+//            if( m_idxSelPtSelectedPolygon < 0 || m_idxSelPtSelectedPolygon >= plg.size() )
+//            {
+//                // .. the shape has been initially hit right after creation.
+//                m_idxSelPtSelectedPolygon = plg.size()-1;
+//                plg[m_idxSelPtSelectedPolygon] = ptMouseItemPos;
+//            }
+//            // If there was already a polygon shape point selected ..
+//            else
+//            {
+//                // .. the currently selected shape point will be fixed and
+//                // another point will be added.
+//                plg[m_idxSelPtSelectedPolygon] = ptMouseItemPos;
+//                plg.append(ptMouseItemPos);
+//                m_idxSelPtSelectedPolygon = plg.size()-1;
+//            }
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            m_rctCurr = plg.boundingRect();
+//            m_ptRotOriginCurr = m_rctCurr.center();
+//
+//            QGraphicsPolygonItem::setPolygon(plg);
+//            while( m_arpSelPtsPolygon.size() < plg.size() )
+//            {
+//                m_arpSelPtsPolygon.append(nullptr);
+//            }
+//
+//            showSelectionPointsOfPolygon(plg);
+//            updateSelectionPointsOfBoundingRect(m_rctCurr);
+//#endif
+//
+//            updateTransform();
+//
+//            //updateEditInfo();
+//            //updateToolTip();
+//
+//        } // if( editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating )
+//
+//        else if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
+//        {
+//            if( contains(ptMouseItemPos) )
+//            {
+//                QGraphicsPolygonItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
+//            }
+//
+//            if( isSelected() )
+//            {
+//                CGraphObjSelectionPoint* pGraphObjSelPt;
+//                ESelectionPoint          selPt;
+//                int                      idxSelPt;
+//
+//                // Polygon shape points may be very close or even overlap each other.
+//                // On creating the polygon the most likely point the user wants to grab
+//                // is the last shape point to move it around. If the ALT keyboard key
+//                // is pressed together with the mouse the "alternate" selection point
+//                // is desired (if there is any) and we first check whether any selection
+//                // point from the bounding rectangle has been hit.
+//
+//                SGraphObjHitInfo hitInfo;
+//
+//                bool bIsHit = false;
+//
+//                if( iEvMouseKeyboardModifiers & Qt::AltModifier )
+//                {
+//                    bIsHit = isBoundingRectSelectionPointHit(
+//                        /* pt               */ ptMouseItemPos,
+//                        /* iSelPtsCount     */ -1,
+//                        /* pSelPts          */ nullptr,
+//                        /* pGraphObjHitInfo */ &hitInfo );
+//                }
+//
+//                if( !bIsHit )
+//                {
+//                    bIsHit = isHit( ptMouseItemPos, &hitInfo );
+//                }
+//
+//                m_editMode                  = hitInfo.m_editMode;
+//                m_editResizeMode            = hitInfo.m_editResizeMode;
+//                m_idxSelPtSelectedPolygon   = hitInfo.m_idxPolygonShapePoint;
+//                m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
+//
+//                for( idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++ )
+//                {
+//                    pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
+//
+//                    if( pGraphObjSelPt != nullptr )
+//                    {
+//                        if( idxSelPt == m_idxSelPtSelectedPolygon )
+//                        {
+//                            pGraphObjSelPt->setSelected(true);
+//                        }
+//                        else
+//                        {
+//                            pGraphObjSelPt->setSelected(false);
+//                        }
+//                    }
+//                }
+//
+//                for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
+//                {
+//                    selPt = static_cast<ESelectionPoint>(idxSelPt);
+//
+//                    pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
+//
+//                    if( pGraphObjSelPt != nullptr )
+//                    {
+//                        if( m_selPtSelectedBoundingRect == selPt )
+//                        {
+//                            pGraphObjSelPt->setSelected(true);
+//                        }
+//                        else
+//                        {
+//                            pGraphObjSelPt->setSelected(false);
+//                        }
+//                    }
+//                }
+//
+//                if( m_editMode == EEditMode::Resize || m_editMode == EEditMode::Rotate || m_editMode == EEditMode::MoveShapePoint )
+//                {
+//                    m_plgOnMousePressEvent = polygon();
+//                    m_rctOnMousePressEvent = m_plgOnMousePressEvent.boundingRect();
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//                    m_ptRotOriginOnMousePressEvent = mapToScene(m_ptRotOriginCurr);
+//#endif
+//                }
+//
+//                m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
+//
+//                updateTransform();
+//
+//                //updateEditInfo();
+//                //updateToolTip();
+//
+//            } // if( isSelected() )
+//
+//        } // if( editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None )
+//
+//    } // if( modeDrawing == EMode::Edit )
+//
+//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+//    {
+//        strMthInArgs  = "Selected:" + bool2Str(isSelected());
+//        strMthInArgs += ", EditMode:" + m_editMode.toString();
+//        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
+//        strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+//        strMthInArgs += ", Polygon:" + polygon2Str(polygon());
+//        mthTracer.trace(strMthInArgs);
+//    }
 
 } // mousePressEvent
 
@@ -1491,220 +1432,200 @@ void CGraphObjPolyline::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseMoveEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    if( modeDrawing == EMode::Edit )
-    {
-        Qt::MouseButtons iEvMouseButtonState = i_pEv->buttons() & Qt::MouseButtonMask;
-
-        // If no mouse button is pressed ...
-        if( iEvMouseButtonState == Qt::NoButton )
-        {
-            if( m_editMode == EEditMode::Creating /*|| m_editMode == EEditMode::MoveShapePoint*/ )
-            {
-                QPointF ptMouseItemPos = i_pEv->pos();
-
-                QPolygonF plg = polygon();
-
-                if( m_idxSelPtSelectedPolygon >= 0 && m_idxSelPtSelectedPolygon < plg.size() )
-                {
-                    plg[m_idxSelPtSelectedPolygon] = ptMouseItemPos;
-                }
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-                m_rctCurr = plg.boundingRect();
-                m_ptRotOriginCurr = m_rctCurr.center();
-#endif
-
-                QGraphicsPolygonItem::setPolygon(plg);
-
-                // Don't change the position of the object as the position of further
-                // mouse events should be received relative to the object's position
-                // on starting the edit process on pressing the mouse.
-                //setPos(ptPosNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-                m_bCoorsDirty = true;
-#endif
-
-                updateLineEndPolygonCoors();
-
-                updateTransform();
-
-                //updateEditInfo();
-                //updateToolTip();
-
-            } // if( m_editMode == EEditMode::Creating || m_editMode == EEditMode::MoveShapePoint )
-
-        } // if( iEvMouseButtonState == Qt::NoButton )
-
-        // If the left mouse button is pressed ...
-        else if( iEvMouseButtonState & Qt::LeftButton )
-        {
-            if( m_editMode == EEditMode::Move )
-            {
-                QGraphicsPolygonItem::mouseMoveEvent(i_pEv);
-            }
-
-            else if( m_editMode == EEditMode::Resize )
-            {
-                QPointF ptMouseItemPos = i_pEv->pos();
-
-                QPolygonF plg;
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-                m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos );
-
-                plg = resizePolygon( m_plgOnMousePressEvent, m_rctCurr, m_rctOnMousePressEvent );
-
-                //m_ptRotOriginCurr = m_rctCurr.center();
-
-                QGraphicsPolygonItem::setPolygon(plg);
-
-                updateSelectionPointsOfPolygon(plg);
-                updateSelectionPointsOfBoundingRect(m_rctCurr);
-
-                updateLabelPositionsAndContents();
-
-                m_bCoorsDirty = true;
-#endif
-
-                updateLineEndPolygonCoors();
-
-                //updateTransform();
-
-                //updateEditInfo();
-                //updateToolTip();
-
-            } // if( m_editMode == EEditMode::Resize )
-
-            else if( m_editMode == EEditMode::Rotate )
-            {
-                QPointF ptMouseScenePos = i_pEv->scenePos();
-
-                double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-                m_fRotAngleCurr_deg = Math::rad2Deg(fRotAngle_rad);
-
-                switch( m_selPtSelectedBoundingRect.enumerator() )
-                {
-                    case ESelectionPoint::RotateTop:
-                    {
-                        m_fRotAngleCurr_deg -= 90.0;
-                        break;
-                    }
-                    case ESelectionPoint::RotateBottom:
-                    {
-                        m_fRotAngleCurr_deg -= 270.0;
-                        break;
-                    }
-                    default:
-                    {
-                        break;
-                    }
-                }
-
-                m_fRotAngleCurr_deg = Math::round2Resolution( m_fRotAngleCurr_deg, m_pDrawingScene->getRotationAngleResolutionInDegree() );
-
-                while( m_fRotAngleCurr_deg >= 360.0 )
-                {
-                    m_fRotAngleCurr_deg -= 360.0;
-                }
-                while( m_fRotAngleCurr_deg < 0.0 )
-                {
-                    m_fRotAngleCurr_deg += 360.0;
-                }
-
-                m_bCoorsDirty = true;
-#endif
-
-                updateLineEndPolygonCoors();
-
-                updateTransform();
-
-                //updateEditInfo();
-                //updateToolTip();
-
-            } // if( m_editMode == EEditMode::Rotate )
-
-            else if( m_editMode == EEditMode::MoveShapePoint )
-            {
-                QPointF ptMouseItemPos = i_pEv->pos();
-
-                QPolygonF plg = polygon();
-
-                CGraphObjSelectionPoint* pGraphObjSelPt;
-                QPointF                  ptSel;
-
-                if( plg.size() >= 2 ) // anyway ..
-                {
-                    if( m_idxSelPtSelectedPolygon >= 0 && m_idxSelPtSelectedPolygon < plg.size() )
-                    {
-                        plg[m_idxSelPtSelectedPolygon] = ptMouseItemPos;
-
-                        setPolygon(plg);
-
-                        if( m_idxSelPtSelectedPolygon >= 0 && m_idxSelPtSelectedPolygon < m_arpSelPtsPolygon.size() )
-                        {
-                            pGraphObjSelPt = m_arpSelPtsPolygon[m_idxSelPtSelectedPolygon];
-
-                            if( pGraphObjSelPt != nullptr )
-                            {
-                                ptSel = plg[m_idxSelPtSelectedPolygon];
-                                ptSel = mapToScene(ptSel);
-                                pGraphObjSelPt->setPos(ptSel);
-                            }
-                        }
-                    }
-
-                } // if( plg.size() >= 2 )
-
-                m_bCoorsDirty = true;
-
-                updateLineEndPolygonCoors();
-
-                updateTransform();
-
-                //updateEditInfo();
-                //updateToolTip();
-
-            } // if( m_editMode == EEditMode::MoveShapePoint )
-
-        } // if( iEvMouseButtonState & Qt::LeftButton )
-
-    } // if( modeDrawing == EMode::Edit )
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
-        mthTracer.trace(strAddTrcInfo);
-    }
+//    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+//
+//    if( modeDrawing == EMode::Edit )
+//    {
+//        Qt::MouseButtons iEvMouseButtonState = i_pEv->buttons() & Qt::MouseButtonMask;
+//
+//        // If no mouse button is pressed ...
+//        if( iEvMouseButtonState == Qt::NoButton )
+//        {
+//            if( m_editMode == EEditMode::Creating /*|| m_editMode == EEditMode::MoveShapePoint*/ )
+//            {
+//                QPointF ptMouseItemPos = i_pEv->pos();
+//
+//                QPolygonF plg = polygon();
+//
+//                if( m_idxSelPtSelectedPolygon >= 0 && m_idxSelPtSelectedPolygon < plg.size() )
+//                {
+//                    plg[m_idxSelPtSelectedPolygon] = ptMouseItemPos;
+//                }
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//                m_rctCurr = plg.boundingRect();
+//                m_ptRotOriginCurr = m_rctCurr.center();
+//#endif
+//
+//                QGraphicsPolygonItem::setPolygon(plg);
+//
+//                // Don't change the position of the object as the position of further
+//                // mouse events should be received relative to the object's position
+//                // on starting the edit process on pressing the mouse.
+//                //setPos(ptPosNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//                m_bCoorsDirty = true;
+//#endif
+//
+//                updateLineEndPolygonCoors();
+//
+//                updateTransform();
+//
+//                //updateEditInfo();
+//                //updateToolTip();
+//
+//            } // if( m_editMode == EEditMode::Creating || m_editMode == EEditMode::MoveShapePoint )
+//
+//        } // if( iEvMouseButtonState == Qt::NoButton )
+//
+//        // If the left mouse button is pressed ...
+//        else if( iEvMouseButtonState & Qt::LeftButton )
+//        {
+//            if( m_editMode == EEditMode::Move )
+//            {
+//                QGraphicsPolygonItem::mouseMoveEvent(i_pEv);
+//            }
+//
+//            else if( m_editMode == EEditMode::Resize )
+//            {
+//                QPointF ptMouseItemPos = i_pEv->pos();
+//
+//                QPolygonF plg;
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//                m_rctCurr = resizeRect( m_rctOnMousePressEvent, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos );
+//
+//                plg = resizePolygon( m_plgOnMousePressEvent, m_rctCurr, m_rctOnMousePressEvent );
+//
+//                //m_ptRotOriginCurr = m_rctCurr.center();
+//
+//                QGraphicsPolygonItem::setPolygon(plg);
+//
+//                updateSelectionPointsOfPolygon(plg);
+//                updateSelectionPointsOfBoundingRect(m_rctCurr);
+//
+//                updateLabelPositionsAndContents();
+//
+//                m_bCoorsDirty = true;
+//#endif
+//
+//                updateLineEndPolygonCoors();
+//
+//                //updateTransform();
+//
+//                //updateEditInfo();
+//                //updateToolTip();
+//
+//            } // if( m_editMode == EEditMode::Resize )
+//
+//            else if( m_editMode == EEditMode::Rotate )
+//            {
+//                QPointF ptMouseScenePos = i_pEv->scenePos();
+//
+//                double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//                m_fRotAngleCurr_deg = Math::rad2Deg(fRotAngle_rad);
+//
+//                switch( m_selPtSelectedBoundingRect.enumerator() )
+//                {
+//                    case ESelectionPoint::RotateTop:
+//                    {
+//                        m_fRotAngleCurr_deg -= 90.0;
+//                        break;
+//                    }
+//                    case ESelectionPoint::RotateBottom:
+//                    {
+//                        m_fRotAngleCurr_deg -= 270.0;
+//                        break;
+//                    }
+//                    default:
+//                    {
+//                        break;
+//                    }
+//                }
+//
+//                m_fRotAngleCurr_deg = Math::round2Resolution( m_fRotAngleCurr_deg, m_pDrawingScene->getRotationAngleResolutionInDegree() );
+//
+//                while( m_fRotAngleCurr_deg >= 360.0 )
+//                {
+//                    m_fRotAngleCurr_deg -= 360.0;
+//                }
+//                while( m_fRotAngleCurr_deg < 0.0 )
+//                {
+//                    m_fRotAngleCurr_deg += 360.0;
+//                }
+//
+//                m_bCoorsDirty = true;
+//#endif
+//
+//                updateLineEndPolygonCoors();
+//
+//                updateTransform();
+//
+//                //updateEditInfo();
+//                //updateToolTip();
+//
+//            } // if( m_editMode == EEditMode::Rotate )
+//
+//            else if( m_editMode == EEditMode::MoveShapePoint )
+//            {
+//                QPointF ptMouseItemPos = i_pEv->pos();
+//
+//                QPolygonF plg = polygon();
+//
+//                CGraphObjSelectionPoint* pGraphObjSelPt;
+//                QPointF                  ptSel;
+//
+//                if( plg.size() >= 2 ) // anyway ..
+//                {
+//                    if( m_idxSelPtSelectedPolygon >= 0 && m_idxSelPtSelectedPolygon < plg.size() )
+//                    {
+//                        plg[m_idxSelPtSelectedPolygon] = ptMouseItemPos;
+//
+//                        setPolygon(plg);
+//
+//                        if( m_idxSelPtSelectedPolygon >= 0 && m_idxSelPtSelectedPolygon < m_arpSelPtsPolygon.size() )
+//                        {
+//                            pGraphObjSelPt = m_arpSelPtsPolygon[m_idxSelPtSelectedPolygon];
+//
+//                            if( pGraphObjSelPt != nullptr )
+//                            {
+//                                ptSel = plg[m_idxSelPtSelectedPolygon];
+//                                ptSel = mapToScene(ptSel);
+//                                pGraphObjSelPt->setPos(ptSel);
+//                            }
+//                        }
+//                    }
+//
+//                } // if( plg.size() >= 2 )
+//
+//                m_bCoorsDirty = true;
+//
+//                updateLineEndPolygonCoors();
+//
+//                updateTransform();
+//
+//                //updateEditInfo();
+//                //updateToolTip();
+//
+//            } // if( m_editMode == EEditMode::MoveShapePoint )
+//
+//        } // if( iEvMouseButtonState & Qt::LeftButton )
+//
+//    } // if( modeDrawing == EMode::Edit )
 
 } // mouseMoveEvent
 
@@ -1712,228 +1633,208 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 void CGraphObjPolyline::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseReleaseEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    if( modeDrawing == EMode::Edit )
-    {
-        if( m_editMode == EEditMode::Creating )
-        {
-            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
-        }
-
-        else if( m_editMode == EEditMode::Move )
-        {
-            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
-
-            m_editMode = EEditMode::None;
-            m_editResizeMode = EEditResizeMode::None;
-            m_idxSelPtSelectedPolygon = -1;
-            m_selPtSelectedBoundingRect = ESelectionPoint::None;
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            acceptCurrentAsOriginalCoors();
-#endif
-        }
-
-        else if( m_editMode == EEditMode::Resize )
-        {
-            // The mouse release event would select the object.
-            // This is not wanted if the selection tool is not active.
-            bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
-            bool bIsSelectableReset = false;
-
-            if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
-            {
-                setFlag(QGraphicsItem::ItemIsSelectable,false);
-                bIsSelectableReset = true;
-            }
-
-            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
-
-            if( bIsSelectableReset )
-            {
-                setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
-            }
-
-            m_editMode = EEditMode::None;
-            m_editResizeMode = EEditResizeMode::None;
-            m_idxSelPtSelectedPolygon = -1;
-            m_selPtSelectedBoundingRect = ESelectionPoint::None;
-
-            QPointF ptScenePosOld = scenePos();
-            QPointF ptScenePosNew = ptScenePosOld;
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            QPolygonF plgScene         = mapToScene(m_rctCurr);
-            QRectF    rctBoundingScene = plgScene.boundingRect();
-            QPointF   ptRotOriginScene = rctBoundingScene.center();
-            double    fAngle_rad       = Math::deg2Rad(m_fRotAngleCurr_deg);
-
-            ptScenePosNew = rotatePoint( ptRotOriginScene, ptScenePosOld, -fAngle_rad );
-
-            m_ptRotOriginCurr = m_rctCurr.center();
-
-            setPos(ptScenePosNew);
-
-            m_bCoorsDirty = true;
-
-            updateLineEndPolygonCoors();
-
-            updateTransform();
-
-            acceptCurrentAsOriginalCoors();
-#endif
-
-            //updateEditInfo();
-            //updateToolTip();
-
-        } // if( m_editMode == EEditMode::Resize )
-
-        else if( m_editMode == EEditMode::Rotate )
-        {
-            // The mouse release event would select the object.
-            // This is not wanted if the selection tool is not active.
-            bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
-            bool bIsSelectableReset = false;
-
-            if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
-            {
-                setFlag(QGraphicsItem::ItemIsSelectable,false);
-                bIsSelectableReset = true;
-            }
-
-            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
-
-            if( bIsSelectableReset )
-            {
-                setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
-            }
-
-            m_editMode = EEditMode::None;
-            m_editResizeMode = EEditResizeMode::None;
-            m_idxSelPtSelectedPolygon = -1;
-            m_selPtSelectedBoundingRect = ESelectionPoint::None;
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            acceptCurrentAsOriginalCoors();
-#endif
-
-            //updateEditInfo();
-            //updateToolTip();
-
-        } // if( m_editMode == EEditMode::Rotate )
-
-        else if( m_editMode == EEditMode::MoveShapePoint )
-        {
-            // The mouse release event would select the object.
-            // This is not wanted if the selection tool is not active.
-            bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
-            bool bIsSelectableReset = false;
-
-            if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
-            {
-                setFlag(QGraphicsItem::ItemIsSelectable,false);
-                bIsSelectableReset = true;
-            }
-
-            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
-
-            if( bIsSelectableReset )
-            {
-                setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
-            }
-
-            m_editMode = EEditMode::None;
-            m_editResizeMode = EEditResizeMode::None;
-            m_idxSelPtSelectedPolygon = -1;
-            m_selPtSelectedBoundingRect = ESelectionPoint::None;
-
-            normalize();
-
-            QPolygonF plg              = polygon();
-            QRectF    rctItem          = plg.boundingRect();
-            QPointF   ptScenePosOld    = mapToScene(rctItem.topLeft());
-            QPointF   ptScenePosNew    = ptScenePosOld;
-            QPolygonF polygonScene     = mapToScene(rctItem);
-            QRectF    rctBoundingScene = polygonScene.boundingRect();
-            QPointF   ptRotOriginScene = rctBoundingScene.center();
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            double    fAngle_rad       = Math::deg2Rad(m_fRotAngleCurr_deg);
-#endif
-
-            QSizeF    sizMoveOffs( rctItem.left(), rctItem.top() );
-            QPointF   pt;
-            int       idxPt;
-
-            // The position of the polyline should become the top left corner of it's bounding rectangle.
-            // On moving one shape point all other shape points should keep their scene position.
-            for( idxPt = 0; idxPt < plg.size(); idxPt++ )
-            {
-                pt = plg[idxPt];
-                pt.setX( pt.x() - sizMoveOffs.width() );
-                pt.setY( pt.y() - sizMoveOffs.height() );
-                plg[idxPt] = pt;
-            }
-
-            QGraphicsPolygonItem::setPolygon(plg);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            m_rctCurr = plg.boundingRect();
-
-            m_ptRotOriginCurr = m_rctCurr.center();
-
-            ptScenePosNew = rotatePoint( ptRotOriginScene, ptScenePosOld, -fAngle_rad );
-
-            setPos(ptScenePosNew);
-
-            m_bCoorsDirty = true;
-#endif
-
-            updateLineEndPolygonCoors();
-
-            updateTransform();
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            acceptCurrentAsOriginalCoors();
-#endif
-
-            //updateEditInfo();
-            //updateToolTip();
-
-        } // if( m_editMode == EEditMode::MoveShapePoint )
-
-    } // if( modeDrawing == EMode::Edit )
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
-        mthTracer.trace(strAddTrcInfo);
-    }
+//    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+//
+//    if( modeDrawing == EMode::Edit )
+//    {
+//        if( m_editMode == EEditMode::Creating )
+//        {
+//            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
+//        }
+//
+//        else if( m_editMode == EEditMode::Move )
+//        {
+//            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
+//
+//            m_editMode = EEditMode::None;
+//            m_editResizeMode = EEditResizeMode::None;
+//            m_idxSelPtSelectedPolygon = -1;
+//            m_selPtSelectedBoundingRect = ESelectionPoint::None;
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            acceptCurrentAsOriginalCoors();
+//#endif
+//        }
+//
+//        else if( m_editMode == EEditMode::Resize )
+//        {
+//            // The mouse release event would select the object.
+//            // This is not wanted if the selection tool is not active.
+//            bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
+//            bool bIsSelectableReset = false;
+//
+//            if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
+//            {
+//                setFlag(QGraphicsItem::ItemIsSelectable,false);
+//                bIsSelectableReset = true;
+//            }
+//
+//            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
+//
+//            if( bIsSelectableReset )
+//            {
+//                setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
+//            }
+//
+//            m_editMode = EEditMode::None;
+//            m_editResizeMode = EEditResizeMode::None;
+//            m_idxSelPtSelectedPolygon = -1;
+//            m_selPtSelectedBoundingRect = ESelectionPoint::None;
+//
+//            QPointF ptScenePosOld = scenePos();
+//            QPointF ptScenePosNew = ptScenePosOld;
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            QPolygonF plgScene         = mapToScene(m_rctCurr);
+//            QRectF    rctBoundingScene = plgScene.boundingRect();
+//            QPointF   ptRotOriginScene = rctBoundingScene.center();
+//            double    fAngle_rad       = Math::deg2Rad(m_fRotAngleCurr_deg);
+//
+//            ptScenePosNew = rotatePoint( ptRotOriginScene, ptScenePosOld, -fAngle_rad );
+//
+//            m_ptRotOriginCurr = m_rctCurr.center();
+//
+//            setPos(ptScenePosNew);
+//
+//            m_bCoorsDirty = true;
+//
+//            updateLineEndPolygonCoors();
+//
+//            updateTransform();
+//
+//            acceptCurrentAsOriginalCoors();
+//#endif
+//
+//            //updateEditInfo();
+//            //updateToolTip();
+//
+//        } // if( m_editMode == EEditMode::Resize )
+//
+//        else if( m_editMode == EEditMode::Rotate )
+//        {
+//            // The mouse release event would select the object.
+//            // This is not wanted if the selection tool is not active.
+//            bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
+//            bool bIsSelectableReset = false;
+//
+//            if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
+//            {
+//                setFlag(QGraphicsItem::ItemIsSelectable,false);
+//                bIsSelectableReset = true;
+//            }
+//
+//            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
+//
+//            if( bIsSelectableReset )
+//            {
+//                setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
+//            }
+//
+//            m_editMode = EEditMode::None;
+//            m_editResizeMode = EEditResizeMode::None;
+//            m_idxSelPtSelectedPolygon = -1;
+//            m_selPtSelectedBoundingRect = ESelectionPoint::None;
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            acceptCurrentAsOriginalCoors();
+//#endif
+//
+//            //updateEditInfo();
+//            //updateToolTip();
+//
+//        } // if( m_editMode == EEditMode::Rotate )
+//
+//        else if( m_editMode == EEditMode::MoveShapePoint )
+//        {
+//            // The mouse release event would select the object.
+//            // This is not wanted if the selection tool is not active.
+//            bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
+//            bool bIsSelectableReset = false;
+//
+//            if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
+//            {
+//                setFlag(QGraphicsItem::ItemIsSelectable,false);
+//                bIsSelectableReset = true;
+//            }
+//
+//            QGraphicsPolygonItem::mouseReleaseEvent(i_pEv);
+//
+//            if( bIsSelectableReset )
+//            {
+//                setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
+//            }
+//
+//            m_editMode = EEditMode::None;
+//            m_editResizeMode = EEditResizeMode::None;
+//            m_idxSelPtSelectedPolygon = -1;
+//            m_selPtSelectedBoundingRect = ESelectionPoint::None;
+//
+//            normalize();
+//
+//            QPolygonF plg              = polygon();
+//            QRectF    rctItem          = plg.boundingRect();
+//            QPointF   ptScenePosOld    = mapToScene(rctItem.topLeft());
+//            QPointF   ptScenePosNew    = ptScenePosOld;
+//            QPolygonF polygonScene     = mapToScene(rctItem);
+//            QRectF    rctBoundingScene = polygonScene.boundingRect();
+//            QPointF   ptRotOriginScene = rctBoundingScene.center();
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            double    fAngle_rad       = Math::deg2Rad(m_fRotAngleCurr_deg);
+//#endif
+//
+//            QSizeF    sizMoveOffs( rctItem.left(), rctItem.top() );
+//            QPointF   pt;
+//            int       idxPt;
+//
+//            // The position of the polyline should become the top left corner of it's bounding rectangle.
+//            // On moving one shape point all other shape points should keep their scene position.
+//            for( idxPt = 0; idxPt < plg.size(); idxPt++ )
+//            {
+//                pt = plg[idxPt];
+//                pt.setX( pt.x() - sizMoveOffs.width() );
+//                pt.setY( pt.y() - sizMoveOffs.height() );
+//                plg[idxPt] = pt;
+//            }
+//
+//            QGraphicsPolygonItem::setPolygon(plg);
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            m_rctCurr = plg.boundingRect();
+//
+//            m_ptRotOriginCurr = m_rctCurr.center();
+//
+//            ptScenePosNew = rotatePoint( ptRotOriginScene, ptScenePosOld, -fAngle_rad );
+//
+//            setPos(ptScenePosNew);
+//
+//            m_bCoorsDirty = true;
+//#endif
+//
+//            updateLineEndPolygonCoors();
+//
+//            updateTransform();
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            acceptCurrentAsOriginalCoors();
+//#endif
+//
+//            //updateEditInfo();
+//            //updateToolTip();
+//
+//        } // if( m_editMode == EEditMode::MoveShapePoint )
+//
+//    } // if( modeDrawing == EMode::Edit )
 
 } // mouseReleaseEvent
 
@@ -1941,26 +1842,16 @@ void CGraphObjPolyline::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 void CGraphObjPolyline::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qGraphicsSceneMouseEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "mouseDoubleClickEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     // When doubleclicking an item, the item will first receive a mouse
     // press event, followed by a release event (i.e., a click), then a
@@ -1969,99 +1860,89 @@ void CGraphObjPolyline::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     // This is not necessary here.
     //QGraphicsPolygonItem::mouseDoubleClickEvent(i_pEv);
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    if( modeDrawing == EMode::Edit )
-    {
-        if( m_editMode == EEditMode::Creating )
-        {
-            // Before the double click event a mouse press event occurs creating an additional
-            // point which is not desired. This point got to be removed again. We are going
-            // to remove all succeeding points overlapping each other which will also remove the
-            // last undesired point.
-
-            QPolygonF plg = polygon();
-
-            if( plg.size() > 2 )
-            {
-                int idxPt;
-
-                for( idxPt = plg.size()-1; idxPt > 0; idxPt-- )
-                {
-                    if( plg[idxPt] == plg[idxPt-1] )
-                    {
-                        plg.remove(idxPt);
-                    }
-                }
-            }
-
-            QRectF  rctItem = plg.boundingRect();
-            QPointF ptPos   = pos();   // current position (coordinates of first shape point)
-            QPointF ptLT    = mapToScene(rctItem.topLeft());
-            QSizeF  sizMoveOffs( ptLT.x() - ptPos.x(), ptLT.y() - ptPos.y() );
-            QPointF pt;
-            int     idxPt;
-
-            // The position of the polyline should become the top left corner of it's bounding rectangle.
-            for( idxPt = 0; idxPt < plg.size(); idxPt++ )
-            {
-                pt = plg[idxPt];
-                pt.setX( pt.x() - sizMoveOffs.width() );
-                pt.setY( pt.y() - sizMoveOffs.height() );
-                plg[idxPt] = pt;
-            }
-
-            QGraphicsPolygonItem::setPolygon(plg);
-
-            setPos(ptLT);
-
-            normalize();
-
-            m_bCoorsDirty = true;
-
-            updateLineEndPolygonCoors();
-
-            plg = polygon();
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            m_rctCurr = plg.boundingRect();
-            m_ptRotOriginCurr = m_rctCurr.center();
-#endif
-
-            m_editMode = EEditMode::None;
-            m_editResizeMode = EEditResizeMode::None;
-            m_idxSelPtSelectedPolygon = -1;
-            m_selPtSelectedBoundingRect = ESelectionPoint::None;
-
-            updateTransform();
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            acceptCurrentAsOriginalCoors();
-#endif
-
-            // The object has been initially created.
-            m_pDrawingScene->onGraphObjCreationFinished(this);
-
-            //updateEditInfo();
-            //updateToolTip();
-
-        } // if( m_editMode == EEditMode::Creating )
-
-        else if( isSelected() )
-        {
-            onCreateAndExecDlgFormatGraphObjs();
-        }
-
-    } // if( modeDrawing == EMode::Edit )
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
-        mthTracer.trace(strAddTrcInfo);
-    }
+//    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+//
+//    if( modeDrawing == EMode::Edit )
+//    {
+//        if( m_editMode == EEditMode::Creating )
+//        {
+//            // Before the double click event a mouse press event occurs creating an additional
+//            // point which is not desired. This point got to be removed again. We are going
+//            // to remove all succeeding points overlapping each other which will also remove the
+//            // last undesired point.
+//
+//            QPolygonF plg = polygon();
+//
+//            if( plg.size() > 2 )
+//            {
+//                int idxPt;
+//
+//                for( idxPt = plg.size()-1; idxPt > 0; idxPt-- )
+//                {
+//                    if( plg[idxPt] == plg[idxPt-1] )
+//                    {
+//                        plg.remove(idxPt);
+//                    }
+//                }
+//            }
+//
+//            QRectF  rctItem = plg.boundingRect();
+//            QPointF ptPos   = pos();   // current position (coordinates of first shape point)
+//            QPointF ptLT    = mapToScene(rctItem.topLeft());
+//            QSizeF  sizMoveOffs( ptLT.x() - ptPos.x(), ptLT.y() - ptPos.y() );
+//            QPointF pt;
+//            int     idxPt;
+//
+//            // The position of the polyline should become the top left corner of it's bounding rectangle.
+//            for( idxPt = 0; idxPt < plg.size(); idxPt++ )
+//            {
+//                pt = plg[idxPt];
+//                pt.setX( pt.x() - sizMoveOffs.width() );
+//                pt.setY( pt.y() - sizMoveOffs.height() );
+//                plg[idxPt] = pt;
+//            }
+//
+//            QGraphicsPolygonItem::setPolygon(plg);
+//
+//            setPos(ptLT);
+//
+//            normalize();
+//
+//            m_bCoorsDirty = true;
+//
+//            updateLineEndPolygonCoors();
+//
+//            plg = polygon();
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            m_rctCurr = plg.boundingRect();
+//            m_ptRotOriginCurr = m_rctCurr.center();
+//#endif
+//
+//            m_editMode = EEditMode::None;
+//            m_editResizeMode = EEditResizeMode::None;
+//            m_idxSelPtSelectedPolygon = -1;
+//            m_selPtSelectedBoundingRect = ESelectionPoint::None;
+//
+//            updateTransform();
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            acceptCurrentAsOriginalCoors();
+//#endif
+//
+//            // The object has been initially created.
+//            //m_pDrawingScene->onGraphObjCreationFinished(this);
+//
+//            //updateEditInfo();
+//            //updateToolTip();
+//
+//        } // if( m_editMode == EEditMode::Creating )
+//
+//        else if( isSelected() )
+//        {
+//            onCreateAndExecDlgFormatGraphObjs();
+//        }
+//
+//    } // if( modeDrawing == EMode::Edit )
 
 } // mouseDoubleClickEvent
 
@@ -2102,12 +1983,12 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
         prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
-            if (m_editMode == EEditMode::Creating) {
-                showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
-            }
-            else {
-                showSelectionPoints();
-            }
+            //if (m_editMode == EEditMode::Creating) {
+            //    showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
+            //}
+            //else {
+            //    showSelectionPoints();
+            //}
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();
@@ -2117,10 +1998,10 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
             setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
-            m_editMode = EEditMode::None;
-            m_editResizeMode = EEditResizeMode::None;
-            m_selPtSelectedBoundingRect = ESelectionPoint::None;
-            m_idxSelPtSelectedPolygon = -1;
+            //m_editMode = EEditMode::None;
+            //m_editResizeMode = EEditResizeMode::None;
+            //m_selPtSelectedBoundingRect = ESelectionPoint::None;
+            //m_idxSelPtSelectedPolygon = -1;
         }
         //updateEditInfo();
         //updateToolTip();
@@ -2182,65 +2063,36 @@ protected: // instance methods
 void CGraphObjPolyline::normalize()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "normalize",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
     QPolygonF plgOld = polygon();
-
     QPolygonF plgNew = normalizePolygon( plgOld, m_pDrawingScene->getHitToleranceInPx() );
-
-    if( plgOld.size() != plgNew.size() )
-    {
+    if (plgOld.size() != plgNew.size()) {
         setPolygon(plgNew);
-
         hideSelectionPoints();
-
-        if( isSelected() )
-        {
+        if (isSelected()) {
             showSelectionPoints();
         }
     }
-
-} // normalize
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjPolyline::updateLineEndPolygonCoors()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + QString::number(m_idxSelPtSelectedPolygon);
-        strAddTrcInfo += ", Polygon:" + polygon2Str(polygon());
-    }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "updateLineEndPolygonCoors",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ "" );
 
-    if( m_bCoorsDirty )
-    {
+    if (m_bCoorsDirty) {
         CEnumLineEndStyle lineEndStyleLineStart = m_drawSettings.getLineEndStyle(ELinePoint::Start);
         CEnumLineEndStyle lineEndStyleLineEnd   = m_drawSettings.getLineEndStyle(ELinePoint::End);
 

@@ -503,8 +503,8 @@ struct SGraphObjHitInfo
 //------------------------------------------------------------------------------
 SGraphObjHitInfo::SGraphObjHitInfo() :
 //------------------------------------------------------------------------------
-    m_editMode(EEditMode::None),
-    m_editResizeMode(EEditResizeMode::None),
+    //m_editMode(EEditMode::None),
+    //m_editResizeMode(EEditResizeMode::None),
     m_selPtBoundingRect(ESelectionPoint::None),
     m_idxPolygonShapePoint(-1),
     m_idxLineSegment(-1),
@@ -521,9 +521,9 @@ bool SGraphObjHitInfo::isBoundingRectSelectionPointHit() const
 //------------------------------------------------------------------------------
 {
     bool bIsHit = false;
-    if (m_editMode == EEditMode::Resize && m_editResizeMode != EEditResizeMode::None) {
+    //if (m_editMode == EEditMode::Resize && m_editResizeMode != EEditResizeMode::None) {
         bIsHit = (m_selPtBoundingRect >= ESelectionPointRectMin) && (m_selPtBoundingRect <= ESelectionPointRectMax);
-    }
+    //}
     return bIsHit;
 }
 
@@ -532,9 +532,9 @@ bool SGraphObjHitInfo::isSelectionPointHit() const
 //------------------------------------------------------------------------------
 {
     bool bIsHit = false;
-    if (m_editMode != EEditMode::None) {
+    //if (m_editMode != EEditMode::None) {
         bIsHit = (m_selPtBoundingRect != ESelectionPoint::None);
-    }
+    //}
     return bIsHit;
 }
 
@@ -543,9 +543,9 @@ bool SGraphObjHitInfo::isPolygonShapePointHit() const
 //------------------------------------------------------------------------------
 {
     bool bIsHit = false;
-    if (m_editMode == EEditMode::MoveShapePoint) {
+    //if (m_editMode == EEditMode::MoveShapePoint) {
         bIsHit = (m_idxPolygonShapePoint >= 0);
-    }
+    //}
     return bIsHit;
 }
 
@@ -554,9 +554,9 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
 //------------------------------------------------------------------------------
 {
     bool bIsHit = false;
-    if (m_editMode != EEditMode::None) {
+    //if (m_editMode != EEditMode::None) {
         bIsHit = (m_idxLineSegment >= 0);
-    }
+    //}
     return bIsHit;
 }
 
@@ -572,134 +572,134 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
 void SGraphObjHitInfo::setCursor(double i_fGraphObjRotAngle_rad)
 //------------------------------------------------------------------------------
 {
-    double fCursorAngle_rad = 0.0;
-    bool   bSetResizeCursor = false;
+    //double fCursorAngle_rad = 0.0;
+    //bool   bSetResizeCursor = false;
 
-    switch (m_editMode.enumerator())
-    {
-        case EEditMode::Move:
-        {
-            m_cursor = Qt::SizeAllCursor;
-            break;
-        }
-        case EEditMode::Resize:
-        {
-            switch( m_editResizeMode.enumerator() )
-            {
-                case EEditResizeMode::ResizeAll:
-                {
-                    switch( m_selPtBoundingRect.enumerator() )
-                    {
-                        case ESelectionPoint::TopLeft:
-                        case ESelectionPoint::BottomRight:
-                        {
-                            fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f135Degrees_rad; // 2nd quadrant: arrow from right/bottom -> top/left
-                            m_cursor = Qt::SizeFDiagCursor; /*  \  */
-                            bSetResizeCursor = true;
-                            break;
-                        }
-                        case ESelectionPoint::TopRight:
-                        case ESelectionPoint::BottomLeft:
-                        {
-                            fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f45Degrees_rad; // 1st quadrant: arrow from bottom/left -> top/right
-                            m_cursor = Qt::SizeBDiagCursor; /*  /  */
-                            bSetResizeCursor = true;
-                            break;
-                        }
-                        case ESelectionPoint::RotateTop:
-                        case ESelectionPoint::RotateBottom:
-                        {
-                            QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
-                            m_cursor = QCursor(bmpCursor);
-                            break;
-                        }
-                        case ESelectionPoint::LeftCenter:
-                        case ESelectionPoint::RightCenter:
-                        case ESelectionPoint::TopCenter:
-                        case ESelectionPoint::BottomCenter:
-                        case ESelectionPoint::Center:
-                        default:
-                        {
-                            break;
-                        }
-                    }
-                    break;
-                }
-                case EEditResizeMode::ResizeHor:
-                {
-                    fCursorAngle_rad = i_fGraphObjRotAngle_rad;
-                    m_cursor = Qt::SizeHorCursor;
-                    bSetResizeCursor = true;
-                    break;
-                }
-                case EEditResizeMode::ResizeVer:
-                {
-                    fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f90Degrees_rad;
-                    m_cursor = Qt::SizeVerCursor;
-                    bSetResizeCursor = true;
-                    break;
-                }
-                default:
-                {
-                    break;
-                }
-            }
-            break;
-        }
-        case EEditMode::Rotate:
-        {
-            QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
-            m_cursor = QCursor(bmpCursor);
-            break;
-        }
-        case EEditMode::MoveShapePoint:
-        {
-            m_cursor = Qt::CrossCursor;
-            break;
-        }
-        case EEditMode::EditText:
-        {
-            m_cursor = Qt::IBeamCursor;
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    } // switch( editMode )
+    //switch (m_editMode.enumerator())
+    //{
+    //    case EEditMode::Move:
+    //    {
+    //        m_cursor = Qt::SizeAllCursor;
+    //        break;
+    //    }
+    //    case EEditMode::Resize:
+    //    {
+    //        switch( m_editResizeMode.enumerator() )
+    //        {
+    //            case EEditResizeMode::ResizeAll:
+    //            {
+    //                switch( m_selPtBoundingRect.enumerator() )
+    //                {
+    //                    case ESelectionPoint::TopLeft:
+    //                    case ESelectionPoint::BottomRight:
+    //                    {
+    //                        fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f135Degrees_rad; // 2nd quadrant: arrow from right/bottom -> top/left
+    //                        m_cursor = Qt::SizeFDiagCursor; /*  \  */
+    //                        bSetResizeCursor = true;
+    //                        break;
+    //                    }
+    //                    case ESelectionPoint::TopRight:
+    //                    case ESelectionPoint::BottomLeft:
+    //                    {
+    //                        fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f45Degrees_rad; // 1st quadrant: arrow from bottom/left -> top/right
+    //                        m_cursor = Qt::SizeBDiagCursor; /*  /  */
+    //                        bSetResizeCursor = true;
+    //                        break;
+    //                    }
+    //                    case ESelectionPoint::RotateTop:
+    //                    case ESelectionPoint::RotateBottom:
+    //                    {
+    //                        QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+    //                        m_cursor = QCursor(bmpCursor);
+    //                        break;
+    //                    }
+    //                    case ESelectionPoint::LeftCenter:
+    //                    case ESelectionPoint::RightCenter:
+    //                    case ESelectionPoint::TopCenter:
+    //                    case ESelectionPoint::BottomCenter:
+    //                    case ESelectionPoint::Center:
+    //                    default:
+    //                    {
+    //                        break;
+    //                    }
+    //                }
+    //                break;
+    //            }
+    //            case EEditResizeMode::ResizeHor:
+    //            {
+    //                fCursorAngle_rad = i_fGraphObjRotAngle_rad;
+    //                m_cursor = Qt::SizeHorCursor;
+    //                bSetResizeCursor = true;
+    //                break;
+    //            }
+    //            case EEditResizeMode::ResizeVer:
+    //            {
+    //                fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f90Degrees_rad;
+    //                m_cursor = Qt::SizeVerCursor;
+    //                bSetResizeCursor = true;
+    //                break;
+    //            }
+    //            default:
+    //            {
+    //                break;
+    //            }
+    //        }
+    //        break;
+    //    }
+    //    case EEditMode::Rotate:
+    //    {
+    //        QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+    //        m_cursor = QCursor(bmpCursor);
+    //        break;
+    //    }
+    //    case EEditMode::MoveShapePoint:
+    //    {
+    //        m_cursor = Qt::CrossCursor;
+    //        break;
+    //    }
+    //    case EEditMode::EditText:
+    //    {
+    //        m_cursor = Qt::IBeamCursor;
+    //        break;
+    //    }
+    //    default:
+    //    {
+    //        break;
+    //    }
+    //} // switch( editMode )
 
-    if( bSetResizeCursor )
-    {
-        // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
-        while( fCursorAngle_rad >= Math::c_f180Degrees_rad )
-        {
-            fCursorAngle_rad -= Math::c_f180Degrees_rad;
-        }
-        while( fCursorAngle_rad < 0.0 )
-        {
-            fCursorAngle_rad += Math::c_f180Degrees_rad;
-        }
-        if( fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0 ) // 0.0 .. 22.5°
-        {
-            m_cursor = Qt::SizeHorCursor;
-        }
-        else if( fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0 ) // 22.5° .. 67.5°
-        {
-            m_cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
-        }
-        else if( fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0 ) // 67.5° .. 112.5°
-        {
-            m_cursor = Qt::SizeVerCursor;
-        }
-        else if( fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0 ) // 112.5° .. 157.5°
-        {
-            m_cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
-        }
-        else if( fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad ) // 157.5° .. 180.0°
-        {
-            m_cursor = Qt::SizeHorCursor;
-        }
-    } // if( bSetResizeCursor )
+    //if( bSetResizeCursor )
+    //{
+    //    // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
+    //    while( fCursorAngle_rad >= Math::c_f180Degrees_rad )
+    //    {
+    //        fCursorAngle_rad -= Math::c_f180Degrees_rad;
+    //    }
+    //    while( fCursorAngle_rad < 0.0 )
+    //    {
+    //        fCursorAngle_rad += Math::c_f180Degrees_rad;
+    //    }
+    //    if( fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0 ) // 0.0 .. 22.5°
+    //    {
+    //        m_cursor = Qt::SizeHorCursor;
+    //    }
+    //    else if( fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0 ) // 22.5° .. 67.5°
+    //    {
+    //        m_cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
+    //    }
+    //    else if( fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0 ) // 67.5° .. 112.5°
+    //    {
+    //        m_cursor = Qt::SizeVerCursor;
+    //    }
+    //    else if( fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0 ) // 112.5° .. 157.5°
+    //    {
+    //        m_cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
+    //    }
+    //    else if( fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad ) // 157.5° .. 180.0°
+    //    {
+    //        m_cursor = Qt::SizeHorCursor;
+    //    }
+    //} // if( bSetResizeCursor )
 } // setCursor
 
 /* public: // struct methods
@@ -712,8 +712,8 @@ void SGraphObjHitInfo::setCursor(double i_fGraphObjRotAngle_rad)
 QString SGraphObjHitInfo::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str = "EditMode:" + m_editMode.toString() +
-        ", ResizeMode:" + m_editResizeMode.toString() +
+    QString str = //"EditMode:" + m_editMode.toString() +
+        //", ResizeMode:" + m_editResizeMode.toString() +
         ", SelPtBoundingRect:" + m_selPtBoundingRect.toString() +
         ", PolygonShapePoint:" + QString::number(m_idxPolygonShapePoint) +
         ", LineSegment:" + QString::number(m_idxLineSegment) +
@@ -817,13 +817,13 @@ CGraphObj::CGraphObj(
     m_physValSizeMaximum(),
     m_physValSizeFixed(),
     m_arAlignments(),
-    m_bIsHit(false),
-    m_editMode(EEditMode::None),
-    m_editResizeMode(EEditResizeMode::None),
+    //m_bIsHit(false),
+    //m_editMode(EEditMode::None),
+    //m_editResizeMode(EEditResizeMode::None),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
-    m_idxSelPtSelectedPolygon(-1),
+    //m_idxSelPtSelectedPolygon(-1),
     m_arpSelPtsPolygon(),
-    m_selPtSelectedBoundingRect(ESelectionPoint::None),
+    //m_selPtSelectedBoundingRect(ESelectionPoint::None),
     m_arpSelPtsBoundingRect(CEnumSelectionPoint::count()),
     m_strlstPredefinedLabelNames(),
     m_hshLabelDscrs(),
@@ -863,8 +863,8 @@ CGraphObj::CGraphObj(
     m_pTrcAdminObjBoundingRect(nullptr),
     m_pTrcAdminObjIsHit(nullptr),
     m_pTrcAdminObjPaint(nullptr),
-    m_pTrcAdminObjSceneEvent(nullptr),
-    m_pTrcAdminObjSceneEventFilter(nullptr),
+    //m_pTrcAdminObjSceneEvent(nullptr),
+    //m_pTrcAdminObjSceneEventFilter(nullptr),
     m_pTrcAdminObjHoverEvents(nullptr),
     m_pTrcAdminObjMouseClickEvents(nullptr),
     m_pTrcAdminObjMouseMoveEvents(nullptr),
@@ -1042,13 +1042,13 @@ CGraphObj::~CGraphObj()
     //m_physValSizeMaximum;
     //m_physValSizeFixed;
     //m_arAlignments;
-    m_bIsHit = false;
-    m_editMode = static_cast<EEditMode>(0);
-    m_editResizeMode = static_cast<EEditResizeMode>(0);
+    //m_bIsHit = false;
+    //m_editMode = static_cast<EEditMode>(0);
+    //m_editResizeMode = static_cast<EEditResizeMode>(0);
     //m_arfZValues.clear();
-    m_idxSelPtSelectedPolygon = 0;
+    //m_idxSelPtSelectedPolygon = 0;
     //m_arpSelPtsPolygon;
-    m_selPtSelectedBoundingRect = static_cast<ESelectionPoint>(0);
+    //m_selPtSelectedBoundingRect = static_cast<ESelectionPoint>(0);
     //m_arpSelPtsBoundingRect;
     //m_strlstPredefinedLabelNames;
     //m_hshLabelDscrs;
@@ -1089,8 +1089,8 @@ CGraphObj::~CGraphObj()
     m_pTrcAdminObjBoundingRect = nullptr;
     m_pTrcAdminObjIsHit = nullptr;
     m_pTrcAdminObjPaint = nullptr;
-    m_pTrcAdminObjSceneEvent = nullptr;
-    m_pTrcAdminObjSceneEventFilter = nullptr;
+    //m_pTrcAdminObjSceneEvent = nullptr;
+    //m_pTrcAdminObjSceneEventFilter = nullptr;
     m_pTrcAdminObjHoverEvents = nullptr;
     m_pTrcAdminObjMouseClickEvents = nullptr;
     m_pTrcAdminObjMouseMoveEvents = nullptr;
@@ -1130,10 +1130,10 @@ void CGraphObj::createTraceAdminObjs(const QString& i_strClassName)
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::IsHit");
         m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::Paint");
-        m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEvent");
-        m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
-            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEventFilter");
+        //m_pTrcAdminObjSceneEvent = CTrcServer::GetTraceAdminObj(
+        //    NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEvent");
+        //m_pTrcAdminObjSceneEventFilter = CTrcServer::GetTraceAdminObj(
+        //    NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::SceneEventFilter");
         m_pTrcAdminObjHoverEvents = CTrcServer::GetTraceAdminObj(
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::HoverEvents");
         m_pTrcAdminObjMouseClickEvents = CTrcServer::GetTraceAdminObj(
@@ -1168,10 +1168,10 @@ void CGraphObj::releaseTraceAdminObjs()
         m_pTrcAdminObjIsHit = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaint);
         m_pTrcAdminObjPaint = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
-        m_pTrcAdminObjSceneEvent = nullptr;
-        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
-        m_pTrcAdminObjSceneEventFilter = nullptr;
+        //CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEvent);
+        //m_pTrcAdminObjSceneEvent = nullptr;
+        //CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjSceneEventFilter);
+        //m_pTrcAdminObjSceneEventFilter = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjHoverEvents);
         m_pTrcAdminObjHoverEvents = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseClickEvents);
@@ -1554,11 +1554,11 @@ QString CGraphObj::getFactoryGroupName() const
 
     The edit mode defines how mouse and key events are handled.
 */
-CEnumEditMode CGraphObj::getEditMode() const
-//------------------------------------------------------------------------------
-{
-    return m_editMode;
-}
+//CEnumEditMode CGraphObj::getEditMode() const
+////------------------------------------------------------------------------------
+//{
+//    return m_editMode;
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the current edit mode of the object.
@@ -1566,11 +1566,11 @@ CEnumEditMode CGraphObj::getEditMode() const
     If the object is currently being resized (editMode == Resize) the resize mode
     defines how the object will be resized.
 */
-CEnumEditResizeMode CGraphObj::getEditResizeMode() const
-//------------------------------------------------------------------------------
-{
-    return m_editResizeMode;
-}
+//CEnumEditResizeMode CGraphObj::getEditResizeMode() const
+////------------------------------------------------------------------------------
+//{
+//    return m_editResizeMode;
+//}
 
 /*==============================================================================
 public: // overridables
@@ -1596,11 +1596,11 @@ public: // instance methods
 /*! @brief Returns the currently selected index of the polygons shape point
            if the form of the object is modified by moving a polygon shape point.
 */
-int CGraphObj::getSelectedPolygonShapePointIndex() const
-//------------------------------------------------------------------------------
-{
-    return m_idxSelPtSelectedPolygon;
-}
+//int CGraphObj::getSelectedPolygonShapePointIndex() const
+////------------------------------------------------------------------------------
+//{
+//    return m_idxSelPtSelectedPolygon;
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the currently selected point at the bounding rectangle if
@@ -1609,29 +1609,29 @@ int CGraphObj::getSelectedPolygonShapePointIndex() const
 
      PolygonPoint is returned if a polygon point is selected.
 */
-CEnumSelectionPoint CGraphObj::getSelectedBoundingRectPoint() const
-//------------------------------------------------------------------------------
-{
-    return m_selPtSelectedBoundingRect;
-}
+//CEnumSelectionPoint CGraphObj::getSelectedBoundingRectPoint() const
+////------------------------------------------------------------------------------
+//{
+//    return m_selPtSelectedBoundingRect;
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a human readable tool tip string.
 */
-QString CGraphObj::getToolTip() const
-//------------------------------------------------------------------------------
-{
-    return m_strToolTip;
-}
+//QString CGraphObj::getToolTip() const
+////------------------------------------------------------------------------------
+//{
+//    return m_strToolTip;
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns a human readable string with information about the current editing mode.
 */
-QString CGraphObj::getEditInfo() const
-//------------------------------------------------------------------------------
-{
-    return m_strEditInfo;
-}
+//QString CGraphObj::getEditInfo() const
+////------------------------------------------------------------------------------
+//{
+//    return m_strEditInfo;
+//}
 
 /*==============================================================================
 public: // overridables
@@ -3637,41 +3637,41 @@ public: // overridables
 public: // overridables
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObj::setEditMode( EEditMode i_editMode )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumEditMode(i_editMode).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setEditMode",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_editMode = i_editMode;
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::setEditResizeMode( EEditResizeMode i_editResizeMode )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumEditResizeMode(i_editResizeMode).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setEditResizeMode",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_editResizeMode = i_editResizeMode;
-}
+////------------------------------------------------------------------------------
+//void CGraphObj::setEditMode( EEditMode i_editMode )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = CEnumEditMode(i_editMode).toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::setEditMode",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    m_editMode = i_editMode;
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::setEditResizeMode( EEditResizeMode i_editResizeMode )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = CEnumEditResizeMode(i_editResizeMode).toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::setEditResizeMode",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    m_editResizeMode = i_editResizeMode;
+//}
 
 /*==============================================================================
 public: // must overridables
@@ -3685,57 +3685,117 @@ bool CGraphObj::setIsHit()
 public: // overridables
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-bool CGraphObj::isHit() const
-//------------------------------------------------------------------------------
-{
-    return m_bIsHit;
-}
+////------------------------------------------------------------------------------
+//bool CGraphObj::isHit() const
+////------------------------------------------------------------------------------
+//{
+//    return m_bIsHit;
+//}
+
+////------------------------------------------------------------------------------
+//bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Point:" + point2Str(i_pt) +
+//            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo));
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjIsHit,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "isHit",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    bool bIsHit = false;
+//
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem != nullptr) {
+//        if (pGraphicsItem->isSelected()) {
+//            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
+//            if (!bIsHit) {
+//                bIsHit = isBoundingRectSelectionPointHit(
+//                    /* pt               */ i_pt,
+//                    /* iSelPtsCount     */ -1,
+//                    /* pSelPts          */ nullptr,
+//                    /* pGraphObjHitInfo */ o_pHitInfo );
+//            }
+//        }
+//        if (!bIsHit) {
+//            if (pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern) {
+//                bIsHit = pGraphicsItem->contains(i_pt);
+//                if (o_pHitInfo != nullptr) {
+//                    //o_pHitInfo->m_editMode = EEditMode::Move;
+//                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+//                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+//                    o_pHitInfo->m_idxPolygonShapePoint = -1;
+//                    o_pHitInfo->m_idxLineSegment = -1;
+//                    o_pHitInfo->m_ptSelected = i_pt;
+//                }
+//            }
+//        }
+//        if (bIsHit && o_pHitInfo != nullptr) {
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
+//#endif
+//        }
+//    }
+//
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        QString strMthOutArgs;
+//        if (o_pHitInfo != nullptr) {
+//            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
+//            mthTracer.setMethodOutArgs(strMthOutArgs);
+//        }
+//        mthTracer.setMethodReturn(bIsHit);
+//    }
+//    return bIsHit;
+//}
 
 //------------------------------------------------------------------------------
-bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
+QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Point:" + point2Str(i_pt) +
-            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo));
+        strMthInArgs = "Point:" + point2Str(i_pt);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjIsHit,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "isHit",
+        /* strMethod    */ "getProposedCursor",
         /* strAddInfo   */ strMthInArgs );
 
-    bool bIsHit = false;
-
+    QCursor cursor = Qt::ArrowCursor;
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
+        bool bIsHit = false;
+        SGraphObjHitInfo hitInfo;
         if (pGraphicsItem->isSelected()) {
-            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
+            bIsHit = isPolygonSelectionPointHit(i_pt, &hitInfo);
             if (!bIsHit) {
                 bIsHit = isBoundingRectSelectionPointHit(
                     /* pt               */ i_pt,
                     /* iSelPtsCount     */ -1,
                     /* pSelPts          */ nullptr,
-                    /* pGraphObjHitInfo */ o_pHitInfo );
+                    /* pGraphObjHitInfo */ &hitInfo );
             }
         }
         if (!bIsHit) {
             if (pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern) {
                 bIsHit = pGraphicsItem->contains(i_pt);
-                if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-                    o_pHitInfo->m_idxPolygonShapePoint = -1;
-                    o_pHitInfo->m_idxLineSegment = -1;
-                    o_pHitInfo->m_ptSelected = i_pt;
-                }
+                //o_pHitInfo->m_editMode = EEditMode::Move;
+                //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                hitInfo.m_selPtBoundingRect = ESelectionPoint::None;
+                hitInfo.m_idxPolygonShapePoint = -1;
+                hitInfo.m_idxLineSegment = -1;
+                hitInfo.m_ptSelected = i_pt;
             }
         }
-        if (bIsHit && o_pHitInfo != nullptr) {
+        if (bIsHit) {
+            cursor = hitInfo.m_cursor;
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
             o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
 #endif
@@ -3743,14 +3803,9 @@ bool CGraphObj::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs;
-        if (o_pHitInfo != nullptr) {
-            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
-            mthTracer.setMethodOutArgs(strMthOutArgs);
-        }
-        mthTracer.setMethodReturn(bIsHit);
+        mthTracer.setMethodOutArgs(qCursorShape2Str(cursor.shape()));
     }
-    return bIsHit;
+    return cursor;
 }
 
 /*==============================================================================
@@ -3932,8 +3987,8 @@ bool CGraphObj::isBoundingRectSelectionPointHit(
                     if (o_pHitInfo != nullptr) {
                         ptTmp = pGraphObjSelPt->pos();
                         ptTmp = pGraphObjSelPt->mapToItem(pGraphicsItem,ptTmp);
-                        o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
-                        o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
+                        //o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
+                        //o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
                         o_pHitInfo->m_selPtBoundingRect = selPt;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
@@ -3964,8 +4019,8 @@ bool CGraphObj::isPolygonSelectionPointHit( const QPointF& i_pt, SGraphObjHitInf
                     if (o_pHitInfo != nullptr) {
                         ptTmp = pGraphObjSelPt->pos();
                         ptTmp = pGraphObjSelPt->mapToItem(pGraphicsItem,ptTmp);
-                        o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
-                        o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                        //o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
+                        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                         o_pHitInfo->m_idxPolygonShapePoint = idxSelPt;
                         o_pHitInfo->m_idxLineSegment = -1;
@@ -4342,7 +4397,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                     m_pDrawingScene->addItem(pGraphObjSelPt);
 
                     // Event filters can only be installed on items in a scene.
-                    pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
+                    //pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
                 }
             }
         }
@@ -4472,7 +4527,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                 m_pDrawingScene->addItem(pGraphObjSelPt);
 
                 // Event filters can only be installed on items in a scene.
-                pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
+                //pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
             }
         }
     }

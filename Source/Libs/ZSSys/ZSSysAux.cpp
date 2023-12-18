@@ -1479,7 +1479,7 @@ static const ZS::System::SEnumEntry s_arEnumStrCursorShape[] =
 QString ZS::System::qCursorShape2Str( int i_shape )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrCursorShape, _ZSArrLen(s_arEnumStrCursorShape), i_shape );
+    return SEnumEntry::enumerator2Str(s_arEnumStrCursorShape, _ZSArrLen(s_arEnumStrCursorShape), i_shape);
 }
 
 
@@ -1488,47 +1488,62 @@ Enum Qt::DropAction
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+QString ZS::System::qDropAction2Str( Qt::DropAction i_action )
+//------------------------------------------------------------------------------
+{
+    QString strAction;
+    if (i_action == Qt::IgnoreAction) {
+        strAction = "Ignore";
+    }
+    else if (i_action == Qt::ActionMask) {
+        strAction += "Mask";
+    }
+    else if (i_action == Qt::CopyAction) {
+       strAction = "Copy";
+    }
+    else if (i_action == Qt::MoveAction) {
+        strAction = "Move";
+    }
+    else if (i_action == Qt::LinkAction) {
+        strAction += "Link";
+    }
+    else if (i_action == Qt::TargetMoveAction) {
+        strAction += "TargetMove";
+    }
+    if (strAction.isEmpty()) {
+        strAction = "? (" + QString::number(i_action, 16) + ")";
+    }
+    return strAction;
+}
+
+
+//------------------------------------------------------------------------------
 QString ZS::System::qDropActions2Str( int i_actions )
 //------------------------------------------------------------------------------
 {
     QString strAction;
-
-    if( i_actions == 0x00 )
-    {
+    if (i_actions == 0x00) {
         strAction = "Ignore";
     }
-    if( i_actions & Qt::CopyAction )
-    {
-        if( !strAction.isEmpty() )
-        {
-            strAction += "|";
+    else {
+        if (i_actions & Qt::CopyAction) {
+            if (!strAction.isEmpty()) strAction += "|";
+            strAction += "Copy";
         }
-        strAction += "Copy";
-    }
-    if( i_actions & Qt::MoveAction )
-    {
-        if( !strAction.isEmpty() )
-        {
-            strAction += "|";
+        if (i_actions & Qt::MoveAction) {
+            if (!strAction.isEmpty()) strAction += "|";
+            strAction += "Move";
         }
-        strAction += "Move";
-    }
-    if( i_actions & Qt::LinkAction )
-    {
-        if( !strAction.isEmpty() )
-        {
-            strAction += "|";
+        if (i_actions & Qt::LinkAction) {
+            if (!strAction.isEmpty()) strAction += "|";
+            strAction += "Link";
         }
-        strAction += "Link";
     }
-
-    if( strAction.isEmpty() )
-    {
-        strAction = "? (" + QString::number(i_actions,16) + ")";
+    if (strAction.isEmpty()) {
+        strAction = "? (" + QString::number(i_actions, 16) + ")";
     }
     return strAction;
-
-} // qDropActions2Str
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::qEvent2Str( QEvent* i_pEv )

@@ -339,18 +339,18 @@ void CDlgFormatGraphObjs::addWidget(
     CWdgtFormatGraphObjs* i_pWdgt )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo = i_strWdgtName;
+        strMthInArgs = i_strWdgtName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "addWidget",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QListWidgetItem* pListWdgtItem = new QListWidgetItem(i_icon, i_strWdgtName, m_pListWdgt);
     m_arpListWdgtItems.insert(i_strWdgtName, pListWdgtItem);
@@ -364,18 +364,18 @@ void CDlgFormatGraphObjs::addWidget(
 void CDlgFormatGraphObjs::setCurrentWidget( const QString& i_strWdgtName )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo = i_strWdgtName;
+        strMthInArgs = i_strWdgtName;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentWidget",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QListWidgetItem* pListWdgtItem;
     int              idxTmp;
@@ -401,7 +401,7 @@ protected slots: // overridables of base class QDialog
 void CDlgFormatGraphObjs::closeEvent( QCloseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -411,7 +411,7 @@ void CDlgFormatGraphObjs::closeEvent( QCloseEvent* i_pEv )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "closeEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -428,7 +428,7 @@ void CDlgFormatGraphObjs::closeEvent( QCloseEvent* i_pEv )
 void CDlgFormatGraphObjs::showEvent( QShowEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -438,7 +438,7 @@ void CDlgFormatGraphObjs::showEvent( QShowEvent* i_pEv )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "showEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pGraphObj != nullptr )
     {
@@ -463,7 +463,7 @@ protected slots: // overridables of base class QDialog
 void CDlgFormatGraphObjs::accept()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -473,7 +473,7 @@ void CDlgFormatGraphObjs::accept()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "accept",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     onBtnAcceptClicked();
 
@@ -485,7 +485,7 @@ void CDlgFormatGraphObjs::accept()
 void CDlgFormatGraphObjs::reject()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -495,7 +495,7 @@ void CDlgFormatGraphObjs::reject()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "reject",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -511,7 +511,7 @@ protected slots:
 void CDlgFormatGraphObjs::onBtnAcceptClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -521,7 +521,7 @@ void CDlgFormatGraphObjs::onBtnAcceptClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnAcceptClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -541,7 +541,7 @@ void CDlgFormatGraphObjs::onBtnAcceptClicked()
 void CDlgFormatGraphObjs::onBtnResetClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -551,7 +551,7 @@ void CDlgFormatGraphObjs::onBtnResetClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnResetClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -627,7 +627,7 @@ protected slots: // instance methods (List Widget)
 void CDlgFormatGraphObjs::onListWdgtCurrentRowChanged( int i_iRow )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -637,7 +637,7 @@ void CDlgFormatGraphObjs::onListWdgtCurrentRowChanged( int i_iRow )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onListWdgtCurrentRowChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -653,7 +653,7 @@ protected: // instance methods
 void CDlgFormatGraphObjs::hidePopups()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -663,7 +663,7 @@ void CDlgFormatGraphObjs::hidePopups()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "hidePopups",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QHashIterator<QString,CWdgtFormatGraphObjs*> it(m_arpWdgtsFormatGraphObjs);
     CWdgtFormatGraphObjs* pWdgtFormatGraphObjs;
@@ -681,7 +681,7 @@ void CDlgFormatGraphObjs::hidePopups()
 void CDlgFormatGraphObjs::setWindowTitle()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -691,7 +691,7 @@ void CDlgFormatGraphObjs::setWindowTitle()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setWindowTitle",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     // If one specific graphical object is selected ...
     if( m_pGraphObj != nullptr )

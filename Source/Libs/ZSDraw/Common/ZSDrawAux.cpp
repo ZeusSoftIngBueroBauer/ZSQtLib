@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
 
+#include <QtCore/qmimedata.h>
 #include <QtWidgets/qgraphicsitem.h>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -429,6 +430,29 @@ QGraphicsItem::QGraphicsSceneEvents
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+bool ZS::Draw::isGraphicsSceneDragDropEvent( QEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return (dynamic_cast<QGraphicsSceneDragDropEvent*>(i_pEv) != nullptr);
+}
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString str = "Pos {" + point2Str(i_pEv->pos()) + "}" +
+        ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
+        ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}" +
+        ", Buttons {" + qMouseButtons2Str(i_pEv->buttons()) + "}" +
+        ", KeyboardModifiers {" + qKeyboardModifiers2Str(i_pEv->modifiers()) + "}" +
+        ", PossibleActions {" + qDropActions2Str(i_pEv->possibleActions()) +
+        ", DropAction: " + qDropAction2Str(i_pEv->dropAction()) +
+        ", ProposedAction: " + qDropAction2Str(i_pEv->proposedAction()) +
+        ", MimeData: " + QString(i_pEv->mimeData() == nullptr ? "null" : i_pEv->mimeData()->text());
+    return str;
+}
+
+//------------------------------------------------------------------------------
 bool ZS::Draw::isGraphicsSceneHoverEvent( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
@@ -459,6 +483,22 @@ QString ZS::Draw::qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv 
     return "Pos {" + point2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
         ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}";
+}
+
+//------------------------------------------------------------------------------
+bool ZS::Draw::isGraphicsSceneResizeEvent( QEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    return (dynamic_cast<QGraphicsSceneResizeEvent*>(i_pEv) != nullptr);
+}
+
+//------------------------------------------------------------------------------
+QString ZS::Draw::qGraphicsSceneResizeEvent2Str( QGraphicsSceneResizeEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QString str = "NewSize {" + qSize2Str(i_pEv->newSize()) + "}" +
+        ", OldSize {" + qSize2Str(i_pEv->oldSize()) + "}";
+    return str;
 }
 
 /*******************************************************************************
@@ -1122,8 +1162,8 @@ bool ZS::Draw::isRectHit(
         fTolerance = 2.0;
     }
     if (o_pHitInfo != nullptr) {
-        o_pHitInfo->m_editMode = EEditMode::None;
-        o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+        //o_pHitInfo->m_editMode = EEditMode::None;
+        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
         o_pHitInfo->m_idxPolygonShapePoint = -1;
         o_pHitInfo->m_idxLineSegment = -1;
@@ -1146,8 +1186,8 @@ bool ZS::Draw::isRectHit(
             if (rct.contains(i_pt)) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
-                    o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
+                    //o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
+                    //o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
                     o_pHitInfo->m_selPtBoundingRect = selPt;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
@@ -1166,8 +1206,8 @@ bool ZS::Draw::isRectHit(
                 if (rct.contains(i_pt)) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
-                        o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
-                        o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
+                        //o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
+                        //o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
                         o_pHitInfo->m_selPtBoundingRect = selPt;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
@@ -1185,8 +1225,8 @@ bool ZS::Draw::isRectHit(
                 if (isLineHit(lin, i_pt, fTolerance)) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
-                        o_pHitInfo->m_editMode = EEditMode::Move;
-                        o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                        //o_pHitInfo->m_editMode = EEditMode::Move;
+                        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = idxPt;
@@ -1201,8 +1241,8 @@ bool ZS::Draw::isRectHit(
             if (i_fillStyle == EFillStyle::SolidPattern) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    //o_pHitInfo->m_editMode = EEditMode::Move;
+                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
@@ -1240,8 +1280,8 @@ bool ZS::Draw::isEllipseHit(
     }
     if( o_pHitInfo != nullptr )
     {
-        o_pHitInfo->m_editMode = EEditMode::None;
-        o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+        //o_pHitInfo->m_editMode = EEditMode::None;
+        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
         o_pHitInfo->m_idxPolygonShapePoint = -1;
         o_pHitInfo->m_idxLineSegment = -1;
@@ -1272,8 +1312,8 @@ bool ZS::Draw::isEllipseHit(
             if (rct.contains(i_pt)) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
-                    o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
+                    //o_pHitInfo->m_editMode = selectionPoint2EditMode(selPt);
+                    //o_pHitInfo->m_editResizeMode = selectionPoint2EditResizeMode(selPt);
                     o_pHitInfo->m_selPtBoundingRect = selPt;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
@@ -1294,8 +1334,8 @@ bool ZS::Draw::isEllipseHit(
                 if (fabs(fx) <= fTolerance) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
-                        o_pHitInfo->m_editMode = EEditMode::Resize;
-                        o_pHitInfo->m_editResizeMode = EEditResizeMode::ResizeHor;
+                        //o_pHitInfo->m_editMode = EEditMode::Resize;
+                        //o_pHitInfo->m_editResizeMode = EEditResizeMode::ResizeHor;
                         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::RightCenter;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
@@ -1309,8 +1349,8 @@ bool ZS::Draw::isEllipseHit(
                 if (fabs(fy) <= fTolerance) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
-                        o_pHitInfo->m_editMode = EEditMode::Resize;
-                        o_pHitInfo->m_editResizeMode = EEditResizeMode::ResizeVer;
+                        //o_pHitInfo->m_editMode = EEditMode::Resize;
+                        //o_pHitInfo->m_editResizeMode = EEditResizeMode::ResizeVer;
                         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::BottomCenter;
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
@@ -1332,8 +1372,8 @@ bool ZS::Draw::isEllipseHit(
                     bIsHit = true;
                 }
                 if (bIsHit && o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    //o_pHitInfo->m_editMode = EEditMode::Move;
+                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
@@ -1367,8 +1407,8 @@ bool ZS::Draw::isEllipseHit(
                     }
                 }
                 if (bIsHit && o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    //o_pHitInfo->m_editMode = EEditMode::Move;
+                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
@@ -1381,8 +1421,8 @@ bool ZS::Draw::isEllipseHit(
             if (i_fillStyle == EFillStyle::SolidPattern) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    //o_pHitInfo->m_editMode = EEditMode::Move;
+                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
@@ -1412,8 +1452,8 @@ bool ZS::Draw::isPolygonHit(
         fTolerance = 2.0;
     }
     if (o_pHitInfo != nullptr) {
-        o_pHitInfo->m_editMode = EEditMode::None;
-        o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+        //o_pHitInfo->m_editMode = EEditMode::None;
+        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
         o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
         o_pHitInfo->m_idxPolygonShapePoint = -1;
         o_pHitInfo->m_idxLineSegment = -1;
@@ -1434,7 +1474,7 @@ bool ZS::Draw::isPolygonHit(
             if (rct.contains(i_pt)) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
+                    //o_pHitInfo->m_editMode = EEditMode::MoveShapePoint;
                     o_pHitInfo->m_idxPolygonShapePoint = idxPt;
                     o_pHitInfo->m_ptSelected = pt;
                     o_pHitInfo->m_cursor = Qt::CrossCursor;
@@ -1449,8 +1489,8 @@ bool ZS::Draw::isPolygonHit(
                     if (isLineHit(lin, i_pt, fTolerance)) {
                         bIsHit = true;
                         if (o_pHitInfo != nullptr) {
-                            o_pHitInfo->m_editMode = EEditMode::Move;
-                            o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                            //o_pHitInfo->m_editMode = EEditMode::Move;
+                            //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                             o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                             o_pHitInfo->m_idxPolygonShapePoint = -1;
                             o_pHitInfo->m_idxLineSegment = idxPt;
@@ -1466,8 +1506,8 @@ bool ZS::Draw::isPolygonHit(
             if (i_fillStyle == EFillStyle::SolidPattern) {
                 bIsHit = true;
                 if (o_pHitInfo != nullptr) {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+                    //o_pHitInfo->m_editMode = EEditMode::Move;
+                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
                     o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;

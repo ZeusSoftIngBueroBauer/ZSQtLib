@@ -600,113 +600,113 @@ void CGraphObjLabel::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOl
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjLabel::setIsHit( bool i_bHit )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = bool2Str(i_bHit);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setIsHit",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_bIsHit != i_bHit)
-    {
-        m_bIsHit = i_bHit;
-
-        update();
-
-        QRectF rctUpd = QGraphicsSimpleTextItem::boundingRect();
-        QPolygonF plgLabel = mapToScene(rctUpd);
-        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_labelDscr.m_selPt1.m_pGraphObj->getSize(Units.Length.px).toQSizeF());
-        QPolygonF plgGraphObj = dynamic_cast<QGraphicsItem*>(m_labelDscr.m_selPt1.m_pGraphObj)->mapToScene(rctGraphObj);
-
-        rctUpd = plgLabel.boundingRect();
-        rctGraphObj = plgGraphObj.boundingRect();
-        rctUpd |= rctGraphObj;
-
-        m_pDrawingScene->update(rctUpd);
-    }
-}
+////------------------------------------------------------------------------------
+//void CGraphObjLabel::setIsHit( bool i_bHit )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = bool2Str(i_bHit);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setIsHit",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_bIsHit != i_bHit)
+//    {
+//        m_bIsHit = i_bHit;
+//
+//        update();
+//
+//        QRectF rctUpd = QGraphicsSimpleTextItem::boundingRect();
+//        QPolygonF plgLabel = mapToScene(rctUpd);
+//        QRectF rctGraphObj = QRectF(QPointF(0.0, 0.0), m_labelDscr.m_selPt1.m_pGraphObj->getSize(Units.Length.px).toQSizeF());
+//        QPolygonF plgGraphObj = dynamic_cast<QGraphicsItem*>(m_labelDscr.m_selPt1.m_pGraphObj)->mapToScene(rctGraphObj);
+//
+//        rctUpd = plgLabel.boundingRect();
+//        rctGraphObj = plgGraphObj.boundingRect();
+//        rctUpd |= rctGraphObj;
+//
+//        m_pDrawingScene->update(rctUpd);
+//    }
+//}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-bool CGraphObjLabel::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs =
-            "Point:" + point2Str(i_pt) +
-            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo));
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjIsHit,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "isHit",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-        mthTracer.trace("BoundingRect {" + qRect2Str(rctBounding) + "}");
-    }
-
-    bool bIsHit = false;
-
-    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-
-    bIsHit = isRectHit( rctBounding, EFillStyle::SolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
-
-    if (bIsHit && o_pHitInfo != nullptr) {
-        o_pHitInfo->m_editMode = EEditMode::Move;
-        o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-        o_pHitInfo->m_idxPolygonShapePoint = -1;
-        o_pHitInfo->m_idxLineSegment = -1;
-        o_pHitInfo->m_ptSelected = rctBounding.center();
-    }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs;
-        if (o_pHitInfo != nullptr) {
-            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
-            mthTracer.setMethodOutArgs(strMthOutArgs);
-        }
-        mthTracer.setMethodReturn(bIsHit);
-    }
-    return bIsHit;
-}
+////------------------------------------------------------------------------------
+//bool CGraphObjLabel::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs =
+//            "Point:" + point2Str(i_pt) +
+//            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo));
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjIsHit,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "isHit",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//        QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+//        mthTracer.trace("BoundingRect {" + qRect2Str(rctBounding) + "}");
+//    }
+//
+//    bool bIsHit = false;
+//
+//    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+//
+//    bIsHit = isRectHit( rctBounding, EFillStyle::SolidPattern, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
+//
+//    if (bIsHit && o_pHitInfo != nullptr) {
+//        //o_pHitInfo->m_editMode = EEditMode::Move;
+//        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+//        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+//        o_pHitInfo->m_idxPolygonShapePoint = -1;
+//        o_pHitInfo->m_idxLineSegment = -1;
+//        o_pHitInfo->m_ptSelected = rctBounding.center();
+//    }
+//
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        QString strMthOutArgs;
+//        if (o_pHitInfo != nullptr) {
+//            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
+//            mthTracer.setMethodOutArgs(strMthOutArgs);
+//        }
+//        mthTracer.setMethodReturn(bIsHit);
+//    }
+//    return bIsHit;
+//}
 
 /*==============================================================================
 public: // reimplementing methods of base class QGraphicItem
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjLabel::setCursor( const QCursor& i_cursor )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qCursorShape2Str(i_cursor.shape());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setCursor",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsSimpleTextItem::setCursor(i_cursor);
-}
+////------------------------------------------------------------------------------
+//void CGraphObjLabel::setCursor( const QCursor& i_cursor )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setCursor",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QGraphicsSimpleTextItem::setCursor(i_cursor);
+//}
 
 /*==============================================================================
 public: // must overridables of base class QGraphicsItem
@@ -740,7 +740,7 @@ QRectF CGraphObjLabel::boundingRect() const
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
 
     // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
             rctBounding |= rctBoundingAnchorLine;
@@ -771,7 +771,7 @@ QPainterPath CGraphObjLabel::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
         }
@@ -811,7 +811,7 @@ void CGraphObjLabel::paint(
     // Draw bounding rectangle in dotted line style if the label is hit by
     // mouse move (hover) or if the label is selected or if no text is assigned.
     QPen pn(Qt::SolidLine);
-    if (m_bIsHit || isSelected()) {
+    if (/*m_bIsHit ||*/ isSelected()) {
         pn.setColor(Qt::blue);
         pn.setStyle(Qt::DotLine);
         i_pPainter->setPen(pn);
@@ -838,7 +838,7 @@ void CGraphObjLabel::paint(
     // Draw anchor line to selection point of linked object if the label is hit,
     // hovered, selected or if the anchor line is set to be visible.
     // Use a different color if the line is hit, hovered or selected.
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         // P1 of the anchor line is on one of the center points of the
         // bounding rectangle of this label.
         // P2 is on the selection point of the linked parent item.
@@ -848,7 +848,7 @@ void CGraphObjLabel::paint(
         for (const QLineF& anchorLine : m_anchorLines) {
             if (!rctBounding.contains(anchorLine.p2())) {
                 if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
-                    QColor color = m_bIsHit || isSelected() ? Qt::blue : Qt::lightGray;
+                    QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
                     color.setAlpha(192);
                     pn.setColor(color);
                     i_pPainter->setPen(pn);
@@ -888,18 +888,18 @@ void CGraphObjLabel::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( editToolDrawing == EEditTool::Select )
-    {
-        if( cursor().shape() != Qt::SizeAllCursor )
-        {
-            setCursor(Qt::SizeAllCursor);
-        }
-    }
-    else if( editToolDrawing == EEditTool::CreateObjects )
-    {
-    }
+    //if( editToolDrawing == EEditTool::Select )
+    //{
+    //    if( cursor().shape() != Qt::SizeAllCursor )
+    //    {
+    //        setCursor(Qt::SizeAllCursor);
+    //    }
+    //}
+    //else if( editToolDrawing == EEditTool::CreateObjects )
+    //{
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -917,18 +917,18 @@ void CGraphObjLabel::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( editToolDrawing == EEditTool::Select )
-    {
-        if( cursor().shape() != Qt::SizeAllCursor )
-        {
-            setCursor(Qt::SizeAllCursor);
-        }
-    }
-    else if( editToolDrawing == EEditTool::CreateObjects )
-    {
-    }
+    //if( editToolDrawing == EEditTool::Select )
+    //{
+    //    if( cursor().shape() != Qt::SizeAllCursor )
+    //    {
+    //        setCursor(Qt::SizeAllCursor);
+    //    }
+    //}
+    //else if( editToolDrawing == EEditTool::CreateObjects )
+    //{
+    //}
 }
 
 //------------------------------------------------------------------------------

@@ -86,7 +86,7 @@ CGraphObjPolygon::CGraphObjPolygon(
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
 
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     createTraceAdminObjs("StandardShapes::" + ClassName());
 
@@ -97,7 +97,7 @@ CGraphObjPolygon::CGraphObjPolygon(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPolygonF plg = polygon();
     QRectF    rctBounding = plg.boundingRect();
@@ -109,15 +109,6 @@ CGraphObjPolygon::CGraphObjPolygon(
     //onDrawSettingsChanged();
 
     //updateToolTip();
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
 
 } // ctor
 
@@ -152,7 +143,7 @@ public: // must overridables of base class CGraphObj
 CGraphObj* CGraphObjPolygon::clone()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
     {
@@ -163,7 +154,7 @@ CGraphObj* CGraphObjPolygon::clone()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "clone",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CGraphObjPolygon* pGraphObj = new CGraphObjPolygon(m_pDrawingScene, m_strName);
     pGraphObj->setDrawSettings(m_drawSettings);
@@ -248,115 +239,115 @@ void CGraphObjPolygon::onDrawSettingsChanged(const CDrawSettings& i_drawSettings
 public: // overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-bool CGraphObjPolygon::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
-//------------------------------------------------------------------------------
-{
-    QString strAddTrcInfo;
-    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
-        strAddTrcInfo = "Point:" + point2Str(i_pt) +
-            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo)) +
-            ", Polygon:" + polygon2Str(polygon());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjIsHit,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "isHit",
-        /* strAddInfo   */ strAddTrcInfo );
-
-    bool bIsHit = false;
-
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-
-    if( pGraphicsItem != nullptr )
-    {
-        if( pGraphicsItem->isSelected() )
-        {
-            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
-
-            if( !bIsHit )
-            {
-                bIsHit = isBoundingRectSelectionPointHit(
-                    /* pt               */ i_pt,
-                    /* iSelPtsCount     */ -1,
-                    /* pSelPts          */ nullptr,
-                    /* pGraphObjHitInfo */ o_pHitInfo );
-            }
-        }
-
-        if( !bIsHit )
-        {
-            QPolygonF plg = polygon();
-            bIsHit = isPolygonHit( plg, EFillStyle::NoFill, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
-        }
-
-        if( !bIsHit )
-        {
-            // In contrary to polylines for polygons we also have to check "contains" for solid fill styles.
-            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern )
-            {
-                bIsHit = pGraphicsItem->contains(i_pt);
-
-                if( o_pHitInfo != nullptr )
-                {
-                    o_pHitInfo->m_editMode = EEditMode::Move;
-                    o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-                    o_pHitInfo->m_idxPolygonShapePoint = -1;
-                    o_pHitInfo->m_idxLineSegment = -1;
-                    o_pHitInfo->m_ptSelected = i_pt;
-                }
-            }
-        }
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        if( bIsHit && o_pHitInfo != nullptr )
-        {
-            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
-        }
-#endif
-
-    } // if( pGraphicsItem != nullptr )
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs;
-        if (o_pHitInfo != nullptr) {
-            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
-            mthTracer.setMethodOutArgs(strMthOutArgs);
-        }
-        mthTracer.setMethodReturn(bIsHit);
-    }
-
-    return bIsHit;
-
-} // isHit
+////------------------------------------------------------------------------------
+//bool CGraphObjPolygon::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Point:" + point2Str(i_pt) +
+//            ", HitInfo, " + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo)) +
+//            ", Polygon:" + polygon2Str(polygon());
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjIsHit,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "isHit",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    bool bIsHit = false;
+//
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//
+//    if( pGraphicsItem != nullptr )
+//    {
+//        if( pGraphicsItem->isSelected() )
+//        {
+//            bIsHit = isPolygonSelectionPointHit(i_pt,o_pHitInfo);
+//
+//            if( !bIsHit )
+//            {
+//                bIsHit = isBoundingRectSelectionPointHit(
+//                    /* pt               */ i_pt,
+//                    /* iSelPtsCount     */ -1,
+//                    /* pSelPts          */ nullptr,
+//                    /* pGraphObjHitInfo */ o_pHitInfo );
+//            }
+//        }
+//
+//        if( !bIsHit )
+//        {
+//            QPolygonF plg = polygon();
+//            bIsHit = isPolygonHit( plg, EFillStyle::NoFill, i_pt, m_pDrawingScene->getHitToleranceInPx(), o_pHitInfo );
+//        }
+//
+//        if( !bIsHit )
+//        {
+//            // In contrary to polylines for polygons we also have to check "contains" for solid fill styles.
+//            if( pGraphicsItem->isSelected() || m_drawSettings.getFillStyle() == EFillStyle::SolidPattern )
+//            {
+//                bIsHit = pGraphicsItem->contains(i_pt);
+//
+//                if( o_pHitInfo != nullptr )
+//                {
+//                    //o_pHitInfo->m_editMode = EEditMode::Move;
+//                    //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+//                    o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+//                    o_pHitInfo->m_idxPolygonShapePoint = -1;
+//                    o_pHitInfo->m_idxLineSegment = -1;
+//                    o_pHitInfo->m_ptSelected = i_pt;
+//                }
+//            }
+//        }
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//        if( bIsHit && o_pHitInfo != nullptr )
+//        {
+//            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
+//        }
+//#endif
+//
+//    } // if( pGraphicsItem != nullptr )
+//
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        QString strMthOutArgs;
+//        if (o_pHitInfo != nullptr) {
+//            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
+//            mthTracer.setMethodOutArgs(strMthOutArgs);
+//        }
+//        mthTracer.setMethodReturn(bIsHit);
+//    }
+//
+//    return bIsHit;
+//
+//} // isHit
 
 /*==============================================================================
 public: // reimplementing methods of base class QGraphicItem
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjPolygon::setCursor( const QCursor& i_cursor )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = qCursorShape2Str(i_cursor.shape());
-    }
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setCursor",
-        /* strAddInfo   */ strMthInArgs );
-
-    CGraphObjPolyline::setCursor(i_cursor);
-
-} // setCursor
+////------------------------------------------------------------------------------
+//void CGraphObjPolygon::setCursor( const QCursor& i_cursor )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
+//    {
+//        strMthInArgs = qCursorShape2Str(i_cursor.shape());
+//    }
+//
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setCursor",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    CGraphObjPolyline::setCursor(i_cursor);
+//
+//} // setCursor
 
 /*==============================================================================
 public: // overridables of base class QGraphicsPolygonItem
@@ -366,11 +357,11 @@ public: // overridables of base class QGraphicsPolygonItem
 QRectF CGraphObjPolygon::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strAddTrcInfo = "Polygon:" + polygon2Str(polygon());
+        strMthInArgs = "Polygon:" + polygon2Str(polygon());
     }
 
     CMethodTracer mthTracer(
@@ -378,7 +369,7 @@ QRectF CGraphObjPolygon::boundingRect() const
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "boundingRect",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QRectF rctBounding = QGraphicsPolygonItem::boundingRect();
 
@@ -452,12 +443,12 @@ QRectF CGraphObjPolygon::boundingRect() const
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
-        strAddTrcInfo  = "Rect(x,y,w,h):(";
-        strAddTrcInfo += QString::number(rctBounding.x(),'f',1);
-        strAddTrcInfo += "," + QString::number(rctBounding.y(),'f',1);
-        strAddTrcInfo += "," + QString::number(rctBounding.width(),'f',1);
-        strAddTrcInfo += "," + QString::number(rctBounding.height(),'f',1) + ")";
-        mthTracer.setMethodReturn(strAddTrcInfo);
+        strMthInArgs  = "Rect(x,y,w,h):(";
+        strMthInArgs += QString::number(rctBounding.x(),'f',1);
+        strMthInArgs += "," + QString::number(rctBounding.y(),'f',1);
+        strMthInArgs += "," + QString::number(rctBounding.width(),'f',1);
+        strMthInArgs += "," + QString::number(rctBounding.height(),'f',1) + ")";
+        mthTracer.setMethodReturn(strMthInArgs);
     }
 
     return rctBounding;
@@ -494,7 +485,7 @@ void CGraphObjPolygon::paint(
 
     i_pPainter->drawPolygon(plg);
 
-    if( m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected()) )
+    if( m_pDrawingScene->getMode() == EMode::Edit && (/*m_bIsHit ||*/ isSelected()) )
     {
         if( plg.size() > 0 )
         {

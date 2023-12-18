@@ -301,15 +301,6 @@ CGraphObjSwitch::CGraphObjSwitch(
 
     //updateToolTip();
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
-
 } // ctor
 
 //------------------------------------------------------------------------------
@@ -542,42 +533,42 @@ protected: // overridables of base class CGraphObjGroup
 void CGraphObjSwitch::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    //QString strAddTrcInfo;
 
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-    }
+    //if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
+    //{
+    //    strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
+    //    strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
+    //    strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
+    //    strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //}
 
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "mousePressEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+    //CMethodTracer mthTracer(
+    //    /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
+    //    /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+    //    /* strObjName   */ m_strName,
+    //    /* strMethod    */ "mousePressEvent",
+    //    /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjGroup::mousePressEvent(i_pEv);
+    //CGraphObjGroup::mousePressEvent(i_pEv);
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::View )
-    {
-    }
+    //if( modeDrawing == EMode::View )
+    //{
+    //}
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
+    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    //{
+    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //    mthTracer.trace(strAddTrcInfo);
+    //}
 
 } // mousePressEvent
 
@@ -585,43 +576,43 @@ void CGraphObjSwitch::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 void CGraphObjSwitch::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    //QString strAddTrcInfo;
 
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-    }
+    //if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
+    //{
+    //    strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
+    //    strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
+    //    strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
+    //    strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //}
 
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "mouseReleaseEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+    //CMethodTracer mthTracer(
+    //    /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
+    //    /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+    //    /* strObjName   */ m_strName,
+    //    /* strMethod    */ "mouseReleaseEvent",
+    //    /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjGroup::mouseReleaseEvent(i_pEv);
+    //CGraphObjGroup::mouseReleaseEvent(i_pEv);
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::View )
-    {
-        toggleState();
-    }
+    //if( modeDrawing == EMode::View )
+    //{
+    //    toggleState();
+    //}
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
+    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    //{
+    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //    mthTracer.trace(strAddTrcInfo);
+    //}
 
 } // mouseReleaseEvent
 
@@ -629,41 +620,41 @@ void CGraphObjSwitch::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 void CGraphObjSwitch::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    //QString strAddTrcInfo;
 
-    if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
-        strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-    }
+    //if (areMethodCallsActive(m_pTrcAdminObjMouseClickEvents, EMethodTraceDetailLevel::ArgsNormal))
+    //{
+    //    strAddTrcInfo  = "Ev.Pos:(" + QString::number(i_pEv->pos().x()) + "," + QString::number(i_pEv->pos().y()) + ")";
+    //    strAddTrcInfo += ", Ev.ScenePos:(" + QString::number(i_pEv->scenePos().x()) + "," + QString::number(i_pEv->scenePos().y()) + ")";
+    //    strAddTrcInfo += ", Ev.ScreenPos:(" + QString::number(i_pEv->screenPos().x()) + "," + QString::number(i_pEv->screenPos().y()) + ")";
+    //    strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //}
 
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "mouseDoubleClickEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+    //CMethodTracer mthTracer(
+    //    /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
+    //    /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+    //    /* strObjName   */ m_strName,
+    //    /* strMethod    */ "mouseDoubleClickEvent",
+    //    /* strAddInfo   */ strAddTrcInfo );
 
-    // When double clicking an item, the item will first receive a mouse
-    // press event, followed by a release event (i.e., a click), then a
-    // double click event, and finally a release event.
-    // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
+    //// When double clicking an item, the item will first receive a mouse
+    //// press event, followed by a release event (i.e., a click), then a
+    //// double click event, and finally a release event.
+    //// The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
 
-    CGraphObjGroup::mouseDoubleClickEvent(i_pEv);
+    //CGraphObjGroup::mouseDoubleClickEvent(i_pEv);
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
+    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    //{
+    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //    mthTracer.trace(strAddTrcInfo);
+    //}
 
 } // mouseDoubleClickEvent
 
@@ -675,41 +666,41 @@ protected: // overridables of base class CGraphObjGroup
 void CGraphObjSwitch::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    //QString strAddTrcInfo;
 
-    if (areMethodCallsActive(m_pTrcAdminObjKeyEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Key:" + qKeyCode2Str(i_pEv->key());
-        strAddTrcInfo += ", Ev.Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-    }
+    //if (areMethodCallsActive(m_pTrcAdminObjKeyEvents, EMethodTraceDetailLevel::ArgsNormal))
+    //{
+    //    strAddTrcInfo  = "Ev.Key:" + qKeyCode2Str(i_pEv->key());
+    //    strAddTrcInfo += ", Ev.Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
+    //    strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //}
 
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "keyPressEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+    //CMethodTracer mthTracer(
+    //    /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
+    //    /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+    //    /* strObjName   */ m_strName,
+    //    /* strMethod    */ "keyPressEvent",
+    //    /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjGroup::keyPressEvent(i_pEv);
+    //CGraphObjGroup::keyPressEvent(i_pEv);
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::View )
-    {
-    }
+    //if( modeDrawing == EMode::View )
+    //{
+    //}
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
+    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    //{
+    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //    mthTracer.trace(strAddTrcInfo);
+    //}
 
 } // keyPressEvent
 
@@ -717,41 +708,41 @@ void CGraphObjSwitch::keyPressEvent( QKeyEvent* i_pEv )
 void CGraphObjSwitch::keyReleaseEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    //QString strAddTrcInfo;
 
-    if (areMethodCallsActive(m_pTrcAdminObjKeyEvents, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strAddTrcInfo  = "Ev.Key:" + qKeyCode2Str(i_pEv->key());
-        strAddTrcInfo += ", Ev.Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
-        strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-    }
+    //if (areMethodCallsActive(m_pTrcAdminObjKeyEvents, EMethodTraceDetailLevel::ArgsNormal))
+    //{
+    //    strAddTrcInfo  = "Ev.Key:" + qKeyCode2Str(i_pEv->key());
+    //    strAddTrcInfo += ", Ev.Modifiers:" + qKeyboardModifiers2Str(i_pEv->modifiers());
+    //    strAddTrcInfo += ", Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //}
 
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "keyReleaseEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+    //CMethodTracer mthTracer(
+    //    /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
+    //    /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+    //    /* strObjName   */ m_strName,
+    //    /* strMethod    */ "keyReleaseEvent",
+    //    /* strAddInfo   */ strAddTrcInfo );
 
-    CGraphObjGroup::keyReleaseEvent(i_pEv);
+    //CGraphObjGroup::keyReleaseEvent(i_pEv);
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::View )
-    {
-    }
+    //if( modeDrawing == EMode::View )
+    //{
+    //}
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
-        strAddTrcInfo += ", EditMode:" + m_editMode.toString();
-        strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
-        strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-        mthTracer.trace(strAddTrcInfo);
-    }
+    //if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
+    //{
+    //    strAddTrcInfo  = "Selected:" + bool2Str(isSelected());
+    //    strAddTrcInfo += ", EditMode:" + m_editMode.toString();
+    //    strAddTrcInfo += ", ResizeMode:" + m_editResizeMode.toString();
+    //    strAddTrcInfo += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
+    //    mthTracer.trace(strAddTrcInfo);
+    //}
 
 } // keyReleaseEvent
 

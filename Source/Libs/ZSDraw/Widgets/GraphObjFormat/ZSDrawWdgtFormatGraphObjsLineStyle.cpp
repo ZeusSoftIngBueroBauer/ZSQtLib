@@ -833,7 +833,7 @@ protected: // instance methods
 void CWdgtFormatGraphObjsLineStyle::fillLineStylesModel( QStandardItemModel* i_pModel )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -843,7 +843,7 @@ void CWdgtFormatGraphObjsLineStyle::fillLineStylesModel( QStandardItemModel* i_p
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "fillLineStylesModel",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPixmap        pxmLineStyle(64,16);
     QStandardItem* pLineStyleItem;
@@ -887,7 +887,7 @@ void CWdgtFormatGraphObjsLineStyle::fillLineStylesModel( QStandardItemModel* i_p
 void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoint, QStandardItemModel* i_pModel )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -897,7 +897,7 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoi
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "fillLineEndStylesModel",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPixmap        pxmLineEnd(24,24);
     QPainter       painter;
@@ -1141,7 +1141,7 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndStylesModel( ELinePoint i_linePoi
 void CWdgtFormatGraphObjsLineStyle::fillLineEndSizesModel( ELinePoint i_linePoint, QStandardItemModel* i_pModel )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1151,7 +1151,7 @@ void CWdgtFormatGraphObjsLineStyle::fillLineEndSizesModel( ELinePoint i_linePoin
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "fillLineEndSizesModel",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPixmap        pxmLineEnd( s_rctPxmLineEndSize.size() );
     QPainter       painter;
@@ -1221,7 +1221,7 @@ protected slots: // overridables of base class QWidget
 void CWdgtFormatGraphObjsLineStyle::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1231,7 +1231,7 @@ void CWdgtFormatGraphObjsLineStyle::mousePressEvent( QMouseEvent* i_pEv )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -1247,7 +1247,7 @@ protected slots: // instance methods (Line Style)
 void CWdgtFormatGraphObjsLineStyle::onBtnPenColorClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1257,7 +1257,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnPenColorClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnPenColorClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QColor clr = QColorDialog::getColor(
         /* clrInitial  */ m_drawSettings.getPenColor(),
@@ -1280,7 +1280,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnPenColorClicked()
 void CWdgtFormatGraphObjsLineStyle::onEdtPenWidthTextChanged( const QString& i_strText )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1290,7 +1290,7 @@ void CWdgtFormatGraphObjsLineStyle::onEdtPenWidthTextChanged( const QString& i_s
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onEdtPenWidthTextChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -1302,7 +1302,7 @@ void CWdgtFormatGraphObjsLineStyle::onEdtPenWidthTextChanged( const QString& i_s
 void CWdgtFormatGraphObjsLineStyle::onBtnLineStyleClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1312,7 +1312,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineStyleClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnLineStyleClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups(m_pViewLineStyles);
 
@@ -1362,7 +1362,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineStyleClicked()
 void CWdgtFormatGraphObjsLineStyle::onViewLineStylesClicked( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1372,7 +1372,7 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineStylesClicked( const QModelIndex& 
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onViewLineStylesClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QStandardItem* pLineStyleItem = m_pModelLineStyles->itemFromIndex(i_modelIdx);
 
@@ -1404,7 +1404,7 @@ protected slots: // instance methods (Line End Styles)
 void CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineStartClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1414,7 +1414,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineStartClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnLineEndStylesLineStartClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups(m_pViewLineEndStylesLineStart);
 
@@ -1475,7 +1475,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineStartClicked()
 void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineStartClicked( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1485,7 +1485,7 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineStartClicked( const Q
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onViewLineEndStylesLineStartClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QStandardItem* pLineEndStyleItem = m_pModelLineEndStylesLineStart->itemFromIndex(i_modelIdx);
 
@@ -1522,7 +1522,7 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineStartClicked( const Q
 void CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineEndClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1532,7 +1532,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineEndClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnLineEndStylesLineEndClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups(m_pViewLineEndStylesLineEnd);
 
@@ -1593,7 +1593,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndStylesLineEndClicked()
 void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineEndClicked( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1603,7 +1603,7 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndStylesLineEndClicked( const QMo
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onViewLineEndStylesLineEndClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QStandardItem* pLineEndStyleItem = m_pModelLineEndStylesLineEnd->itemFromIndex(i_modelIdx);
 
@@ -1644,7 +1644,7 @@ protected slots: // instance methods (Line End Sizes)
 void CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineStartClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1654,7 +1654,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineStartClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnLineEndSizesLineStartClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups(m_pViewLineEndSizesLineStart);
 
@@ -1715,7 +1715,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineStartClicked()
 void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineStartClicked( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1725,7 +1725,7 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineStartClicked( const QM
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onViewLineEndSizesLineStartClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QStandardItem* pLineEndSizeItem = m_pModelLineEndSizesLineStart->itemFromIndex(i_modelIdx);
 
@@ -1757,7 +1757,7 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineStartClicked( const QM
 void CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineEndClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1767,7 +1767,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineEndClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnLineEndSizesLineEndClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups(m_pViewLineEndSizesLineEnd);
 
@@ -1828,7 +1828,7 @@ void CWdgtFormatGraphObjsLineStyle::onBtnLineEndSizesLineEndClicked()
 void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineEndClicked( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1838,7 +1838,7 @@ void CWdgtFormatGraphObjsLineStyle::onViewLineEndSizesLineEndClicked( const QMod
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onViewLineEndSizesLineEndClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QStandardItem* pLineEndSizeItem = m_pModelLineEndSizesLineEnd->itemFromIndex(i_modelIdx);
 
@@ -1874,7 +1874,7 @@ protected: // instance methods
 void CWdgtFormatGraphObjsLineStyle::setPenColor( const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1884,7 +1884,7 @@ void CWdgtFormatGraphObjsLineStyle::setPenColor( const CDrawSettings& i_drawSett
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setPenColor",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPainter painter(m_pPxmBtnPenColor);
     painter.setPen(i_drawSettings.getPenColor());
@@ -1898,7 +1898,7 @@ void CWdgtFormatGraphObjsLineStyle::setPenColor( const CDrawSettings& i_drawSett
 void CWdgtFormatGraphObjsLineStyle::setLineStyle( const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1908,7 +1908,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineStyle( const CDrawSettings& i_drawSet
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineStyle",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPixmap  pxmLineStyle(64,24);
     QLine    linLineStyle( 4, pxmLineStyle.height()/2, pxmLineStyle.width()-18, pxmLineStyle.height()/2 );
@@ -1956,7 +1956,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineStyle( const CDrawSettings& i_drawSet
 void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -1966,7 +1966,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndStyle",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CEnumLineEndStyle          lineEndStyle        = i_drawSettings.getLineEndStyle(i_linePoint);
     CEnumArrowHeadBaseLineType lineEndBaseLineType = i_drawSettings.getArrowHeadBaseLineType(i_linePoint);
@@ -2097,7 +2097,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndStyle( ELinePoint i_linePoint, con
 void CWdgtFormatGraphObjsLineStyle::setLineEndSize( ELinePoint i_linePoint, const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -2107,7 +2107,7 @@ void CWdgtFormatGraphObjsLineStyle::setLineEndSize( ELinePoint i_linePoint, cons
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setLineEndSize",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CEnumArrowHeadWidth  lineEndWidth  = i_drawSettings.getArrowHeadWidth(i_linePoint);
     CEnumArrowHeadLength lineEndLength = i_drawSettings.getArrowHeadLength(i_linePoint);

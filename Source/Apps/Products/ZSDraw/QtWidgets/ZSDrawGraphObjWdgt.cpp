@@ -103,26 +103,26 @@ CGraphObjWdgt::~CGraphObjWdgt()
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjWdgt::setIsHit( bool i_bHit )
-//------------------------------------------------------------------------------
-{
-    if( m_bIsHit != i_bHit )
-    {
-        m_bIsHit = i_bHit;
-
-        if( i_bHit )
-        {
-            showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter);
-        }
-        else if( !isSelected() )
-        {
-            hideSelectionPoints();
-        }
-        update();
-    }
-
-} // setIsHit
+////------------------------------------------------------------------------------
+//void CGraphObjWdgt::setIsHit( bool i_bHit )
+////------------------------------------------------------------------------------
+//{
+//    if( m_bIsHit != i_bHit )
+//    {
+//        m_bIsHit = i_bHit;
+//
+//        if( i_bHit )
+//        {
+//            showSelectionPoints(ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter);
+//        }
+//        else if( !isSelected() )
+//        {
+//            hideSelectionPoints();
+//        }
+//        update();
+//    }
+//
+//} // setIsHit
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -489,26 +489,26 @@ protected: // overridables of base class QGraphicsItem
 void CGraphObjWdgt::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    //CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( modeDrawing == EMode::Edit )
-    {
-        if( editToolDrawing == EEditTool::Select )
-        {
-            QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
+    //if( modeDrawing == EMode::Edit )
+    //{
+    //    if( editToolDrawing == EEditTool::Select )
+    //    {
+    //        QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
 
-            SGraphObjHitInfo hitInfo;
+    //        SGraphObjHitInfo hitInfo;
 
-            bool bIsHit = isHit(ptItemPos,&hitInfo);
+    //        bool bIsHit = isHit(ptItemPos,&hitInfo);
 
-            if( bIsHit )
-            {
-                setCursor(hitInfo.m_cursor);
-            }
-        }
-    }
-    else
+    //        if( bIsHit )
+    //        {
+    //            setCursor(hitInfo.m_cursor);
+    //        }
+    //    }
+    //}
+    //else
     {
         QGraphicsProxyWidget::hoverEnterEvent(i_pEv);
     }
@@ -519,26 +519,26 @@ void CGraphObjWdgt::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
 void CGraphObjWdgt::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+    //CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
 
-    if( modeDrawing == EMode::Edit )
-    {
-        if( editToolDrawing == EEditTool::Select )
-        {
-            QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
+    //if( modeDrawing == EMode::Edit )
+    //{
+    //    if( editToolDrawing == EEditTool::Select )
+    //    {
+    //        QPointF ptItemPos = mapFromScene(i_pEv->scenePos());
 
-            SGraphObjHitInfo hitInfo;
+    //        SGraphObjHitInfo hitInfo;
 
-            bool bIsHit = isHit(ptItemPos,&hitInfo);
+    //        bool bIsHit = isHit(ptItemPos,&hitInfo);
 
-            if( bIsHit )
-            {
-                setCursor(hitInfo.m_cursor);
-            }
-        }
-    }
-    else
+    //        if( bIsHit )
+    //        {
+    //            setCursor(hitInfo.m_cursor);
+    //        }
+    //    }
+    //}
+    //else
     {
         QGraphicsProxyWidget::hoverMoveEvent(i_pEv);
     }
@@ -570,65 +570,65 @@ protected: // overridables of base class QGraphicsItem
 void CGraphObjWdgt::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
-    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    if( modeDrawing == EMode::Edit )
-    {
-        if( m_editMode == EEditMode::Creating )
-        {
-            // Widgets are created by drop events.
-
-        } // if( m_editMode == EEditMode::Creating )
-
-        else if( m_editMode == EEditMode::None )
-        {
-            if( editToolDrawing == EEditTool::Select )
-            {
-                QGraphicsItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-
-                //QPointF ptMousePos = i_pEv->pos();
-
-                CGraphObjSelectionPoint* pGraphObjSelPt;
-                CEnumSelectionPoint      selPt;
-
-                SGraphObjHitInfo hitInfo;
-
-                //bool bIsHit = isHit( ptMousePos, &hitInfo );
-
-                m_editMode                  = hitInfo.m_editMode;
-                m_editResizeMode            = hitInfo.m_editResizeMode;
-                m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-                m_ptRotOriginCurr = rect().center();
-#endif
-                for( selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++ )
-                {
-                    pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
-
-                    if( pGraphObjSelPt != nullptr )
-                    {
-                        if( m_selPtSelectedBoundingRect == selPt )
-                        {
-                            pGraphObjSelPt->setSelected(true);
-                        }
-                        else
-                        {
-                            pGraphObjSelPt->setSelected(false);
-                        }
-                    }
-                }
-
-                m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
-
-                //updateEditInfo();
-                //updateToolTip();
-            }
-        }
-    }
-
-    else // if( modeDrawing == EMode::View )
+//    CEnumMode     modeDrawing     = m_pDrawingScene->getMode();
+//    CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
+//
+//    if( modeDrawing == EMode::Edit )
+//    {
+//        if( m_editMode == EEditMode::Creating )
+//        {
+//            // Widgets are created by drop events.
+//
+//        } // if( m_editMode == EEditMode::Creating )
+//
+//        else if( m_editMode == EEditMode::None )
+//        {
+//            if( editToolDrawing == EEditTool::Select )
+//            {
+//                QGraphicsItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
+//
+//                //QPointF ptMousePos = i_pEv->pos();
+//
+//                CGraphObjSelectionPoint* pGraphObjSelPt;
+//                CEnumSelectionPoint      selPt;
+//
+//                SGraphObjHitInfo hitInfo;
+//
+//                //bool bIsHit = isHit( ptMousePos, &hitInfo );
+//
+//                m_editMode                  = hitInfo.m_editMode;
+//                m_editResizeMode            = hitInfo.m_editResizeMode;
+//                m_selPtSelectedBoundingRect = hitInfo.m_selPtBoundingRect;
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//                m_ptRotOriginCurr = rect().center();
+//#endif
+//                for( selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++ )
+//                {
+//                    pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
+//
+//                    if( pGraphObjSelPt != nullptr )
+//                    {
+//                        if( m_selPtSelectedBoundingRect == selPt )
+//                        {
+//                            pGraphObjSelPt->setSelected(true);
+//                        }
+//                        else
+//                        {
+//                            pGraphObjSelPt->setSelected(false);
+//                        }
+//                    }
+//                }
+//
+//                m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
+//
+//                //updateEditInfo();
+//                //updateToolTip();
+//            }
+//        }
+//    }
+//
+//    else // if( modeDrawing == EMode::View )
     {
         QGraphicsProxyWidget::mousePressEvent(i_pEv);
     }
@@ -639,81 +639,81 @@ void CGraphObjWdgt::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 void CGraphObjWdgt::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    if( m_pDrawingScene->getMode() == EMode::Edit )
-    {
-        if( m_editMode == EEditMode::Creating )
-        {
-            // Widgets are created by drop events.
-        }
-        else if( m_editMode == EEditMode::Move )
-        {
-            QGraphicsItem::mouseMoveEvent(i_pEv);
-        }
-        else if( m_editMode == EEditMode::Resize )
-        {
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-            QRectF  rctItemOld = geometry();
-            QRectF  rctItemNew = rctItemOld;
-            QPointF ptPosOld = pos(); // relative to the parent (which might be the drawing scene)
-            QPointF ptPosNew = ptPosOld;
-            QPointF ptRotOriginOld = m_ptRotOriginCurr;
-            QPointF ptRotOriginNew = ptRotOriginOld;
-            QPointF ptMouseItemPos = i_pEv->pos();
-            double  fdx = 0.0;
-            double  fdy = 0.0;
-
-            rctItemNew = resizeRect( rctItemOld, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos, &m_selPtSelectedBoundingRect );
-
-            if( rctItemNew.left() != 0.0 )
-            {
-                fdx = rctItemNew.left();
-                rctItemNew.translate(-fdx,0.0);
-                ptPosNew.setX( ptPosOld.x() + fdx );
-                ptRotOriginNew.setX( ptRotOriginOld.x() - fdx );
-            }
-
-            if( rctItemNew.top() != 0.0 )
-            {
-                fdy = rctItemNew.top();
-                rctItemNew.translate(0.0,-fdy);
-                ptPosNew.setY( ptPosOld.y() + fdy );
-                ptRotOriginNew.setY( ptRotOriginOld.y() - fdy );
-            }
-
-            setGeometry(rctItemNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-
-            setPos(ptPosNew);    // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
-
-            m_ptRotOriginCurr = ptRotOriginNew;
-
-            CGraphObjSelectionPoint* pGraphObjSelPt;
-            QPointF                  ptSel;
-            CEnumSelectionPoint      selPt;
-
-            for( selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++ )
-            {
-                pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
-
-                if( pGraphObjSelPt != nullptr )
-                {
-                    ptSel = ZS::Draw::getSelectionPointCoors(rctItemNew,selPt.enumerator());
-                    ptSel = mapToScene(ptSel);
-                    pGraphObjSelPt->setPos(ptSel);
-                }
-            }
-
-            //updateEditInfo();
-            //updateToolTip();
-#endif
-        } // if( m_editMode == EEditMode::Resize )
-
-        else if( m_editMode == EEditMode::Rotate )
-        {
-            // Rotating a widget is not supported.
-        }
-    }
-
-    else // if( m_pDrawingScene->getMode() == EMode::View )
+//    if( m_pDrawingScene->getMode() == EMode::Edit )
+//    {
+//        if( m_editMode == EEditMode::Creating )
+//        {
+//            // Widgets are created by drop events.
+//        }
+//        else if( m_editMode == EEditMode::Move )
+//        {
+//            QGraphicsItem::mouseMoveEvent(i_pEv);
+//        }
+//        else if( m_editMode == EEditMode::Resize )
+//        {
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//            QRectF  rctItemOld = geometry();
+//            QRectF  rctItemNew = rctItemOld;
+//            QPointF ptPosOld = pos(); // relative to the parent (which might be the drawing scene)
+//            QPointF ptPosNew = ptPosOld;
+//            QPointF ptRotOriginOld = m_ptRotOriginCurr;
+//            QPointF ptRotOriginNew = ptRotOriginOld;
+//            QPointF ptMouseItemPos = i_pEv->pos();
+//            double  fdx = 0.0;
+//            double  fdy = 0.0;
+//
+//            rctItemNew = resizeRect( rctItemOld, m_selPtSelectedBoundingRect.enumerator(), ptMouseItemPos, &m_selPtSelectedBoundingRect );
+//
+//            if( rctItemNew.left() != 0.0 )
+//            {
+//                fdx = rctItemNew.left();
+//                rctItemNew.translate(-fdx,0.0);
+//                ptPosNew.setX( ptPosOld.x() + fdx );
+//                ptRotOriginNew.setX( ptRotOriginOld.x() - fdx );
+//            }
+//
+//            if( rctItemNew.top() != 0.0 )
+//            {
+//                fdy = rctItemNew.top();
+//                rctItemNew.translate(0.0,-fdy);
+//                ptPosNew.setY( ptPosOld.y() + fdy );
+//                ptRotOriginNew.setY( ptRotOriginOld.y() - fdy );
+//            }
+//
+//            setGeometry(rctItemNew); // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
+//
+//            setPos(ptPosNew);    // does not lead to "itemChange" call even if flag ItemSendsGeometryChanges is set.
+//
+//            m_ptRotOriginCurr = ptRotOriginNew;
+//
+//            CGraphObjSelectionPoint* pGraphObjSelPt;
+//            QPointF                  ptSel;
+//            CEnumSelectionPoint      selPt;
+//
+//            for( selPt = 0; selPt < CEnumSelectionPoint::count(); selPt++ )
+//            {
+//                pGraphObjSelPt = m_arpSelPtsBoundingRect[selPt.enumeratorAsInt()];
+//
+//                if( pGraphObjSelPt != nullptr )
+//                {
+//                    ptSel = ZS::Draw::getSelectionPointCoors(rctItemNew,selPt.enumerator());
+//                    ptSel = mapToScene(ptSel);
+//                    pGraphObjSelPt->setPos(ptSel);
+//                }
+//            }
+//
+//            //updateEditInfo();
+//            //updateToolTip();
+//#endif
+//        } // if( m_editMode == EEditMode::Resize )
+//
+//        else if( m_editMode == EEditMode::Rotate )
+//        {
+//            // Rotating a widget is not supported.
+//        }
+//    }
+//
+//    else // if( m_pDrawingScene->getMode() == EMode::View )
     {
         QGraphicsProxyWidget::mouseMoveEvent(i_pEv);
     }
@@ -724,37 +724,37 @@ void CGraphObjWdgt::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 void CGraphObjWdgt::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    if( m_pDrawingScene->getMode() == EMode::Edit )
-    {
-        //EEditMode editModePrev = m_editMode;
+    //if( m_pDrawingScene->getMode() == EMode::Edit )
+    //{
+    //    //EEditMode editModePrev = m_editMode;
 
-        m_editMode = EEditMode::None;
-        m_editResizeMode = EEditResizeMode::None;
-        m_idxSelPtSelectedPolygon = -1;
-        m_selPtSelectedBoundingRect = ESelectionPoint::None;
+    //    m_editMode = EEditMode::None;
+    //    m_editResizeMode = EEditResizeMode::None;
+    //    m_idxSelPtSelectedPolygon = -1;
+    //    m_selPtSelectedBoundingRect = ESelectionPoint::None;
 
-        // The mouse release event would select the object.
-        // This is not wanted if the selection tool is not active.
-        bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
-        bool bIsSelectableReset = false;
+    //    // The mouse release event would select the object.
+    //    // This is not wanted if the selection tool is not active.
+    //    bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
+    //    bool bIsSelectableReset = false;
 
-        if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
-        {
-            setFlag(QGraphicsItem::ItemIsSelectable,false);
-            bIsSelectableReset = true;
-        }
+    //    if( bIsSelectable && m_pDrawingScene->getEditTool() != EEditTool::Select )
+    //    {
+    //        setFlag(QGraphicsItem::ItemIsSelectable,false);
+    //        bIsSelectableReset = true;
+    //    }
 
-        QGraphicsItem::mouseReleaseEvent(i_pEv);
+    //    QGraphicsItem::mouseReleaseEvent(i_pEv);
 
-        if( bIsSelectableReset )
-        {
-            setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
-        }
+    //    if( bIsSelectableReset )
+    //    {
+    //        setFlag(QGraphicsItem::ItemIsSelectable,bIsSelectable);
+    //    }
 
-        //updateEditInfo();
-        //updateToolTip();
-    }
-    else // if( m_pDrawingScene->getMode() == EMode::View )
+    //    //updateEditInfo();
+    //    //updateToolTip();
+    //}
+    //else // if( m_pDrawingScene->getMode() == EMode::View )
     {
         QGraphicsProxyWidget::mouseReleaseEvent(i_pEv);
     }
@@ -770,16 +770,16 @@ void CGraphObjWdgt::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     // doubleclick event, and finally a release event.
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+    //CEnumMode modeDrawing = m_pDrawingScene->getMode();
 
-    if( modeDrawing == EMode::Edit )
-    {
-        if( isSelected() )
-        {
-            onCreateAndExecDlgFormatGraphObjs();
-        }
-    }
-    else // if( modeDrawing == EMode::View )
+    //if( modeDrawing == EMode::Edit )
+    //{
+    //    if( isSelected() )
+    //    {
+    //        onCreateAndExecDlgFormatGraphObjs();
+    //    }
+    //}
+    //else // if( modeDrawing == EMode::View )
     {
         QGraphicsProxyWidget::mouseDoubleClickEvent(i_pEv);
     }
@@ -807,13 +807,13 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
     else if (i_change == ItemSelectedHasChanged) {
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
-            if (m_editMode == EEditMode::Creating) {
-                showSelectionPoints(
-                    ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
-            }
-            else {
-                showSelectionPoints();
-            }
+            //if (m_editMode == EEditMode::Creating) {
+            //    showSelectionPoints(
+            //        ESelectionPointsBoundingRectCorner|ESelectionPointsBoundingRectLineCenter|ESelectionPointsPolygonShapePoints);
+            //}
+            //else {
+            //    showSelectionPoints();
+            //}
             // Not necessary as item has been brought to front and "showSelectionPoints"
             // sets zValue of selection points above item.
             //bringSelectionPointsToFront();
@@ -823,10 +823,10 @@ QVariant CGraphObjWdgt::itemChange( GraphicsItemChange i_change, const QVariant&
             setAcceptedMouseButtons(Qt::NoButton);
             hideSelectionPoints();
             resetStackingOrderValueToOriginalValue(); // restore ZValue as before selecting the object
-            m_editMode = EEditMode::None;
-            m_editResizeMode = EEditResizeMode::None;
-            m_selPtSelectedBoundingRect = ESelectionPoint::None;
-            m_idxSelPtSelectedPolygon = -1;
+            //m_editMode = EEditMode::None;
+            //m_editResizeMode = EEditResizeMode::None;
+            //m_selPtSelectedBoundingRect = ESelectionPoint::None;
+            //m_idxSelPtSelectedPolygon = -1;
         }
         //updateEditInfo();
         //updateToolTip();

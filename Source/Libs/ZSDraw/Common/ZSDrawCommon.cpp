@@ -238,19 +238,19 @@ EGraphObjType ZS::Draw::className2GraphObjType( const QString& i_str )
 }
 
 
-/*==============================================================================
-Enum EEditTool
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<EEditTool>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(EEditTool::None),          "None"),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditTool::Select),        "Select"),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditTool::CreateObjects), "CreateObjects"),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditTool::Undefined),     "Undefined")
-};
+///*==============================================================================
+//Enum EEditTool
+//==============================================================================*/
+//
+////------------------------------------------------------------------------------
+//template<> const QVector<SEnumEntry> CEnum<EEditTool>::s_arEnumEntries =
+////------------------------------------------------------------------------------
+//{
+//    /* 0 */ SEnumEntry( static_cast<int>(EEditTool::None),          "None"),
+//    /* 1 */ SEnumEntry( static_cast<int>(EEditTool::Select),        "Select"),
+//    /* 2 */ SEnumEntry( static_cast<int>(EEditTool::CreateObjects), "CreateObjects"),
+//    /* 3 */ SEnumEntry( static_cast<int>(EEditTool::Undefined),     "Undefined")
+//};
 
 
 /*==============================================================================
@@ -270,35 +270,35 @@ template<> const QVector<SEnumEntry> CEnum<ECoordinatesVersion>::s_arEnumEntries
 Enum EEditMode
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<EEditMode>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),           "None"),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditMode::Creating),       "Creating"),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move"),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditMode::Resize),         "Resize"),
-    /* 4 */ SEnumEntry( static_cast<int>(EEditMode::Rotate),         "Rotate"),
-    /* 5 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint"),
-    /* 6 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText"),
-    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Undefined),      "Undefined")
-};
+////------------------------------------------------------------------------------
+//template<> const QVector<SEnumEntry> CEnum<EEditMode>::s_arEnumEntries =
+////------------------------------------------------------------------------------
+//{
+//    /* 0 */ SEnumEntry( static_cast<int>(EEditMode::None),           "None"),
+//    /* 1 */ SEnumEntry( static_cast<int>(EEditMode::Creating),       "Creating"),
+//    /* 2 */ SEnumEntry( static_cast<int>(EEditMode::Move),           "Move"),
+//    /* 3 */ SEnumEntry( static_cast<int>(EEditMode::Resize),         "Resize"),
+//    /* 4 */ SEnumEntry( static_cast<int>(EEditMode::Rotate),         "Rotate"),
+//    /* 5 */ SEnumEntry( static_cast<int>(EEditMode::MoveShapePoint), "MoveShapePoint"),
+//    /* 6 */ SEnumEntry( static_cast<int>(EEditMode::EditText),       "EditText"),
+//    /* 7 */ SEnumEntry( static_cast<int>(EEditMode::Undefined),      "Undefined")
+//};
 
 
 /*==============================================================================
 Enum EEditResizeMode
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<EEditResizeMode>::s_arEnumEntries =
-//------------------------------------------------------------------------------
-{
-    /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::None),      "None"),
-    /* 1 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeAll), "ResizeAll"),
-    /* 2 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeHor), "ResizeHor"),
-    /* 3 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeVer), "ResizeVer"),
-    /* 4 */ SEnumEntry( static_cast<int>(EEditResizeMode::Undefined), "Undefined")
-};
+////------------------------------------------------------------------------------
+//template<> const QVector<SEnumEntry> CEnum<EEditResizeMode>::s_arEnumEntries =
+////------------------------------------------------------------------------------
+//{
+//    /* 0 */ SEnumEntry( static_cast<int>(EEditResizeMode::None),      "None"),
+//    /* 1 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeAll), "ResizeAll"),
+//    /* 2 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeHor), "ResizeHor"),
+//    /* 3 */ SEnumEntry( static_cast<int>(EEditResizeMode::ResizeVer), "ResizeVer"),
+//    /* 4 */ SEnumEntry( static_cast<int>(EEditResizeMode::Undefined), "Undefined")
+//};
 
 
 /*==============================================================================
@@ -510,65 +510,65 @@ ESelectionPoint ZS::Draw::getOppositeSelectionPoint( ESelectionPoint i_selPt )
 
 } // getOppositeSelectionPoint
 
-//------------------------------------------------------------------------------
-CEnumEditMode ZS::Draw::selectionPoint2EditMode( ESelectionPoint i_selPt )
-//------------------------------------------------------------------------------
-{
-    const EEditMode s_arEditModes[] =
-    {
-        /*  0: None         */ EEditMode::None,
-        /*  1: TopLeft      */ EEditMode::Resize,
-        /*  2: TopRight     */ EEditMode::Resize,
-        /*  3: BottomRight  */ EEditMode::Resize,
-        /*  4: BottomLeft   */ EEditMode::Resize,
-        /*  5: TopCenter    */ EEditMode::Resize,
-        /*  6: RightCenter  */ EEditMode::Resize,
-        /*  7: BottomCenter */ EEditMode::Resize,
-        /*  8: LeftCenter   */ EEditMode::Resize,
-        /*  9: Center       */ EEditMode::Move,
-        /* 10: RotateTop    */ EEditMode::Rotate,
-        /* 11: RotateBottom */ EEditMode::Rotate
-    };
-
-    EEditMode editMode = EEditMode::None;
-
-    if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arEditModes) )
-    {
-        editMode = s_arEditModes[static_cast<int>(i_selPt)];
-    }
-    return editMode;
-
-} // selectionPoint2EditMode
-
-//------------------------------------------------------------------------------
-CEnumEditResizeMode ZS::Draw::selectionPoint2EditResizeMode( ESelectionPoint i_selPt )
-//------------------------------------------------------------------------------
-{
-    static const EEditResizeMode s_arEditResizeModes[] =
-    {
-        /*  0: None         */ EEditResizeMode::None,
-        /*  1: TopLeft      */ EEditResizeMode::ResizeAll,
-        /*  2: TopRight     */ EEditResizeMode::ResizeAll,
-        /*  3: BottomRight  */ EEditResizeMode::ResizeAll,
-        /*  4: BottomLeft   */ EEditResizeMode::ResizeAll,
-        /*  5: TopCenter    */ EEditResizeMode::ResizeVer,
-        /*  6: RightCenter  */ EEditResizeMode::ResizeHor,
-        /*  7: BottomCenter */ EEditResizeMode::ResizeVer,
-        /*  8: LeftCenter   */ EEditResizeMode::ResizeHor,
-        /*  9: Center       */ EEditResizeMode::None,
-        /* 10: RotateTop    */ EEditResizeMode::None,
-        /* 11: RotateBottom */ EEditResizeMode::None
-    };
-
-    EEditResizeMode editResizeMode = EEditResizeMode::None;
-
-    if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arEditResizeModes) )
-    {
-        editResizeMode = s_arEditResizeModes[static_cast<int>(i_selPt)];
-    }
-    return editResizeMode;
-
-} // selectionPoint2EditResizeMode
+////------------------------------------------------------------------------------
+//CEnumEditMode ZS::Draw::selectionPoint2EditMode( ESelectionPoint i_selPt )
+////------------------------------------------------------------------------------
+//{
+//    const EEditMode s_arEditModes[] =
+//    {
+//        /*  0: None         */ EEditMode::None,
+//        /*  1: TopLeft      */ EEditMode::Resize,
+//        /*  2: TopRight     */ EEditMode::Resize,
+//        /*  3: BottomRight  */ EEditMode::Resize,
+//        /*  4: BottomLeft   */ EEditMode::Resize,
+//        /*  5: TopCenter    */ EEditMode::Resize,
+//        /*  6: RightCenter  */ EEditMode::Resize,
+//        /*  7: BottomCenter */ EEditMode::Resize,
+//        /*  8: LeftCenter   */ EEditMode::Resize,
+//        /*  9: Center       */ EEditMode::Move,
+//        /* 10: RotateTop    */ EEditMode::Rotate,
+//        /* 11: RotateBottom */ EEditMode::Rotate
+//    };
+//
+//    EEditMode editMode = EEditMode::None;
+//
+//    if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arEditModes) )
+//    {
+//        editMode = s_arEditModes[static_cast<int>(i_selPt)];
+//    }
+//    return editMode;
+//
+//} // selectionPoint2EditMode
+//
+////------------------------------------------------------------------------------
+//CEnumEditResizeMode ZS::Draw::selectionPoint2EditResizeMode( ESelectionPoint i_selPt )
+////------------------------------------------------------------------------------
+//{
+//    static const EEditResizeMode s_arEditResizeModes[] =
+//    {
+//        /*  0: None         */ EEditResizeMode::None,
+//        /*  1: TopLeft      */ EEditResizeMode::ResizeAll,
+//        /*  2: TopRight     */ EEditResizeMode::ResizeAll,
+//        /*  3: BottomRight  */ EEditResizeMode::ResizeAll,
+//        /*  4: BottomLeft   */ EEditResizeMode::ResizeAll,
+//        /*  5: TopCenter    */ EEditResizeMode::ResizeVer,
+//        /*  6: RightCenter  */ EEditResizeMode::ResizeHor,
+//        /*  7: BottomCenter */ EEditResizeMode::ResizeVer,
+//        /*  8: LeftCenter   */ EEditResizeMode::ResizeHor,
+//        /*  9: Center       */ EEditResizeMode::None,
+//        /* 10: RotateTop    */ EEditResizeMode::None,
+//        /* 11: RotateBottom */ EEditResizeMode::None
+//    };
+//
+//    EEditResizeMode editResizeMode = EEditResizeMode::None;
+//
+//    if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arEditResizeModes) )
+//    {
+//        editResizeMode = s_arEditResizeModes[static_cast<int>(i_selPt)];
+//    }
+//    return editResizeMode;
+//
+//} // selectionPoint2EditResizeMode
 
 //------------------------------------------------------------------------------
 Qt::CursorShape ZS::Draw::selectionPoint2CursorShape( ESelectionPoint i_selPt )

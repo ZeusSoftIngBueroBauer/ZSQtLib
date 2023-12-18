@@ -187,19 +187,19 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_drawSettings(),
     m_pDrawSettingsTmp(nullptr),
     m_mode(EMode::Undefined),
-    m_editTool(EEditTool::None),
-    m_editMode(EEditMode::None),
-    m_editResizeMode(EEditResizeMode::None),
+    //m_editTool(EEditTool::None),
+    //m_editMode(EEditMode::None),
+    //m_editResizeMode(EEditResizeMode::None),
     m_pGraphicsItemSelectionArea(nullptr),
     m_pObjFactory(nullptr),
-    m_pGraphicsItemCreating(nullptr),
-    m_pGraphObjCreating(nullptr),
-    m_pGraphicsItemAddingShapePoints(nullptr),
-    m_pGraphObjAddingShapePoints(nullptr),
+    //m_pGraphicsItemCreating(nullptr),
+    //m_pGraphObjCreating(nullptr),
+    //m_pGraphicsItemAddingShapePoints(nullptr),
+    //m_pGraphObjAddingShapePoints(nullptr),
     m_pGraphObjsIdxTree(nullptr),
-    m_pGraphObjsIdxTreeClipboard(nullptr),
-    m_arpGraphicsItemsAcceptingHoverEvents(),
-    m_arpGraphicsItemsBroughtToFront(),
+    //m_pGraphObjsIdxTreeClipboard(nullptr),
+    //m_arpGraphicsItemsAcceptingHoverEvents(),
+    //m_arpGraphicsItemsBroughtToFront(),
     m_fRotAngleRes_degree(1.0),
     m_fHitTolerance_px(2.0),
     m_bMouseDoubleClickEventInProcess(false),
@@ -238,12 +238,12 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
         &Units.Length, &CUnitsLength::scaleFactorChanged,
         this, &CDrawingScene::onDrawUnitsScaleFactorChanged );
 
-    m_pGraphObjsIdxTreeClipboard = new CIdxTree(
-        /* strObjName       */ "DrawingScene-" + objectName() + "-Clipboard-GraphObjs",
-        /* pRootTreeEntry   */ nullptr,
-        /* strNodeSeparator */ "::",
-        /* bCreateMutex     */ false,
-        /* pObjParent       */ nullptr );
+    //m_pGraphObjsIdxTreeClipboard = new CIdxTree(
+    //    /* strObjName       */ "DrawingScene-" + objectName() + "-Clipboard-GraphObjs",
+    //    /* pRootTreeEntry   */ nullptr,
+    //    /* strNodeSeparator */ "::",
+    //    /* bCreateMutex     */ false,
+    //    /* pObjParent       */ nullptr );
 
     //setItemIndexMethod(NoIndex);
 
@@ -278,10 +278,10 @@ CDrawingScene::~CDrawingScene()
         delete m_pDrawSettingsTmp;
     } catch (...) {
     }
-    try {
-        delete m_pGraphObjsIdxTreeClipboard;
-    } catch(...) {
-    }
+    //try {
+    //    delete m_pGraphObjsIdxTreeClipboard;
+    //} catch(...) {
+    //}
     try {
         delete m_pGraphObjsIdxTree;
     } catch(...) {
@@ -300,18 +300,18 @@ CDrawingScene::~CDrawingScene()
     //m_drawSettings;
     m_pDrawSettingsTmp = nullptr;
     m_mode = static_cast<ZS::System::EMode>(0);
-    m_editTool = static_cast<EEditTool>(0);
-    m_editMode = static_cast<EEditMode>(0);
-    m_editResizeMode = static_cast<EEditResizeMode>(0);
+    //m_editTool = static_cast<EEditTool>(0);
+    //m_editMode = static_cast<EEditMode>(0);
+    //m_editResizeMode = static_cast<EEditResizeMode>(0);
     m_pGraphicsItemSelectionArea = nullptr;
     m_pObjFactory = nullptr;
-    m_pGraphicsItemCreating = nullptr;
-    m_pGraphObjCreating = nullptr;
-    m_pGraphicsItemAddingShapePoints = nullptr;
-    m_pGraphObjAddingShapePoints = nullptr;
+    //m_pGraphicsItemCreating = nullptr;
+    //m_pGraphObjCreating = nullptr;
+    //m_pGraphicsItemAddingShapePoints = nullptr;
+    //m_pGraphObjAddingShapePoints = nullptr;
     //m_strGraphObjNameSeparator;
     m_pGraphObjsIdxTree = nullptr;
-    m_pGraphObjsIdxTreeClipboard = nullptr;
+    //m_pGraphObjsIdxTreeClipboard = nullptr;
     //m_arpGraphicsItemsAcceptingHoverEvents;
     //m_arpGraphicsItemsBroughtToFront;
     m_fRotAngleRes_degree = 0.0;
@@ -1227,10 +1227,10 @@ void CDrawingScene::clear()
     emit_aboutToBeCleared();
 
     m_pGraphicsItemSelectionArea = nullptr;
-    m_pGraphicsItemCreating = nullptr;
-    m_pGraphObjCreating = nullptr;
-    m_pGraphicsItemAddingShapePoints = nullptr;
-    m_pGraphObjAddingShapePoints = nullptr;
+    //m_pGraphicsItemCreating = nullptr;
+    //m_pGraphObjCreating = nullptr;
+    //m_pGraphicsItemAddingShapePoints = nullptr;
+    //m_pGraphObjAddingShapePoints = nullptr;
 
     // Clear internal clipboard.
     //CGraphObj* pGraphObj;
@@ -1241,13 +1241,13 @@ void CDrawingScene::clear()
     //    deleteItem(pGraphObj);
     //    ++itIdxTree;
     //}
-    m_pGraphObjsIdxTreeClipboard->clear();
+    //m_pGraphObjsIdxTreeClipboard->clear();
     m_pGraphObjsIdxTree->clear();
 
     QGraphicsScene::clear();
 
-    m_arpGraphicsItemsAcceptingHoverEvents.clear();
-    m_arpGraphicsItemsBroughtToFront.clear();
+    //m_arpGraphicsItemsAcceptingHoverEvents.clear();
+    //m_arpGraphicsItemsBroughtToFront.clear();
 
 } // clear
 
@@ -1397,22 +1397,22 @@ void CDrawingScene::removeItem(QGraphicsItem* i_pGraphicsItem)
     if (i_pGraphicsItem != nullptr && i_pGraphicsItem->scene() != nullptr) {
         QGraphicsScene::removeItem(i_pGraphicsItem);
     }
-    if (i_pGraphicsItem != nullptr && m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
-        invalidateItemInAcceptingHoverEventsList(i_pGraphicsItem);
-        for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
-            if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
-                m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
-            }
-        }
-    }
-    if (i_pGraphicsItem != nullptr && m_arpGraphicsItemsBroughtToFront.size() > 0) {
-        invalidateItemInBroughtToFrontList(i_pGraphicsItem);
-        for (int idxGraphObj = m_arpGraphicsItemsBroughtToFront.size()-1; idxGraphObj >= 0; idxGraphObj--) {
-            if (m_arpGraphicsItemsBroughtToFront[idxGraphObj] == nullptr) {
-                m_arpGraphicsItemsBroughtToFront.removeAt(idxGraphObj);
-            }
-        }
-    }
+    //if (i_pGraphicsItem != nullptr && m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
+    //    invalidateItemInAcceptingHoverEventsList(i_pGraphicsItem);
+    //    for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+    //        if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
+    //            m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
+    //        }
+    //    }
+    //}
+    //if (i_pGraphicsItem != nullptr && m_arpGraphicsItemsBroughtToFront.size() > 0) {
+    //    invalidateItemInBroughtToFrontList(i_pGraphicsItem);
+    //    for (int idxGraphObj = m_arpGraphicsItemsBroughtToFront.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+    //        if (m_arpGraphicsItemsBroughtToFront[idxGraphObj] == nullptr) {
+    //            m_arpGraphicsItemsBroughtToFront.removeAt(idxGraphObj);
+    //        }
+    //    }
+    //}
 }
 
 /*==============================================================================
@@ -1509,21 +1509,20 @@ public: // instance methods
         true, falls der grafische Object Type und damit die Objekt Factory zur Erzeugung des Objekt verändert wurde.
         falls otherwise.
 */
-void CDrawingScene::setMode(
-    const ZS::System::CEnumMode& i_mode,
-    const CEnumEditTool&         i_editTool,
-    const CEnumEditMode&         i_editMode,
-    const CEnumEditResizeMode&   i_editResizeMode,
-    bool                         i_bObjFactoryTypeChanged )
+void CDrawingScene::setMode(const ZS::System::CEnumMode& i_mode)
+    //const CEnumEditTool&         i_editTool,
+    //const CEnumEditMode&         i_editMode,
+    //const CEnumEditResizeMode&   i_editResizeMode,
+    //bool                         i_bObjFactoryTypeChanged )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Mode:" + i_mode.toString() +
-            ", EditTool:" + i_editTool.toString() +
-            ", EditMode:" + i_editMode.toString() +
-            ", ResizeMode:" + i_editResizeMode.toString() +
-            ", ObjFactoryChanged:" + bool2Str(i_bObjFactoryTypeChanged);
+        strMthInArgs = "Mode:" + i_mode.toString();
+            //", EditTool:" + i_editTool.toString() +
+            //", EditMode:" + i_editMode.toString() +
+            //", ResizeMode:" + i_editResizeMode.toString() +
+            //", ObjFactoryChanged:" + bool2Str(i_bObjFactoryTypeChanged);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1541,53 +1540,53 @@ void CDrawingScene::setMode(
         bModeChanged = true;
         m_mode = i_mode;
         if (m_mode == EMode::View) {
-            if (i_editTool == EEditTool::Undefined) {
-                m_editTool = EEditTool::None;
-            }
-            if (i_editMode == EEditMode::Undefined) {
-                m_editMode = EEditMode::None;
-            }
-            if (i_editResizeMode == EEditResizeMode::Undefined) {
-                m_editResizeMode = EEditResizeMode::None;
-            }
+            //if (i_editTool == EEditTool::Undefined) {
+            //    m_editTool = EEditTool::None;
+            //}
+            //if (i_editMode == EEditMode::Undefined) {
+            //    m_editMode = EEditMode::None;
+            //}
+            //if (i_editResizeMode == EEditResizeMode::Undefined) {
+            //    m_editResizeMode = EEditResizeMode::None;
+            //}
         }
         clearSelection();
     }
 
-    if (i_editTool != EEditTool::Undefined && m_editTool != i_editTool) {
-        bModeChanged = true;
-        m_editTool = i_editTool;
-        clearSelection();
-    }
+    //if (i_editTool != EEditTool::Undefined && m_editTool != i_editTool) {
+    //    bModeChanged = true;
+    //    m_editTool = i_editTool;
+    //    clearSelection();
+    //}
 
-    QString strObjFactory;
+    //QString strObjFactory;
 
-    if (m_pObjFactory != nullptr) {
-        strObjFactory = m_pObjFactory->getGraphObjTypeAsString();
-    }
-    else {
-        m_pGraphicsItemCreating = nullptr;
-        m_pGraphObjCreating = nullptr;
-    }
+    //if (m_pObjFactory != nullptr) {
+    //    strObjFactory = m_pObjFactory->getGraphObjTypeAsString();
+    //}
+    //else {
+    //    //m_pGraphicsItemCreating = nullptr;
+    //    //m_pGraphObjCreating = nullptr;
+    //}
 
-    if (m_editTool != EEditTool::CreateObjects) {
-        m_pGraphicsItemCreating = nullptr;
-        m_pGraphObjCreating = nullptr;
-    }
+    //if (m_editTool != EEditTool::CreateObjects) {
+    //    //m_pGraphicsItemCreating = nullptr;
+    //    //m_pGraphObjCreating = nullptr;
+    //}
 
-    if (i_editMode != EEditMode::Undefined && m_editMode != i_editMode) {
-        bModeChanged = true;
-        m_editMode = i_editMode;
-    }
+    //if (i_editMode != EEditMode::Undefined && m_editMode != i_editMode) {
+    //    bModeChanged = true;
+    //    m_editMode = i_editMode;
+    //}
 
-    if (i_editResizeMode != EEditResizeMode::Undefined && m_editResizeMode != i_editResizeMode) {
-        bModeChanged = true;
-        m_editResizeMode = i_editResizeMode;
-    }
+    //if (i_editResizeMode != EEditResizeMode::Undefined && m_editResizeMode != i_editResizeMode) {
+    //    bModeChanged = true;
+    //    m_editResizeMode = i_editResizeMode;
+    //}
 
-    if (bModeChanged || i_bObjFactoryTypeChanged) {
+    if (bModeChanged /*|| i_bObjFactoryTypeChanged*/) {
         update();
-        emit_modeChanged();
+        emit_modeChanged(m_mode);
     }
 
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -1635,41 +1634,36 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
 
-    int iGraphObjTypePrev = static_cast<int>(EGraphObjTypeUndefined);
-
-    if (m_pObjFactory != nullptr) {
-        QObject::disconnect(
-            m_pObjFactory, &CObjFactory::destroyed,
-            this, &CDrawingScene::onGraphObjFactoryDestroyed );
-        iGraphObjTypePrev = m_pObjFactory->getGraphObjType();
-    }
-
-    int iGraphObjTypeCurr = iGraphObjTypePrev;
-
-    m_pObjFactory = i_pObjFactory;
-
-    if (m_pObjFactory != nullptr) {
-        QObject::connect(
-            m_pObjFactory, &CObjFactory::destroyed,
-            this, &CDrawingScene::onGraphObjFactoryDestroyed );
-        iGraphObjTypeCurr = m_pObjFactory->getGraphObjType();
-    }
-    else {
-        iGraphObjTypeCurr = static_cast<int>(EGraphObjTypeUndefined);
-    }
-
-    if (iGraphObjTypePrev != iGraphObjTypeCurr) {
-        if (iGraphObjTypeCurr == static_cast<int>(EGraphObjTypeUndefined)) {
-            CEnumEditTool editTool = m_editTool;
-            if (m_editTool != EEditTool::Select) {
-                editTool = EEditTool::Select;
-            }
-            setMode(EMode::Undefined, editTool, EEditMode::None, EEditResizeMode::None, true);
+    if (m_pObjFactory != i_pObjFactory) {
+        QString strFactoryGrpName;
+        QString strGraphObjType;
+        if (m_pObjFactory != nullptr) {
+            QObject::disconnect(
+                m_pObjFactory, &CObjFactory::destroyed,
+                this, &CDrawingScene::onGraphObjFactoryDestroyed );
         }
-        else {
-            setMode(EMode::Undefined, EEditTool::CreateObjects, EEditMode::None, EEditResizeMode::None, true);
+        m_pObjFactory = i_pObjFactory;
+        if (m_pObjFactory != nullptr) {
+            QObject::connect(
+                m_pObjFactory, &CObjFactory::destroyed,
+                this, &CDrawingScene::onGraphObjFactoryDestroyed );
+            strFactoryGrpName = m_pObjFactory->getGroupName();
+            strGraphObjType = m_pObjFactory->getGraphObjTypeAsString();
         }
+        emit_drawingToolChanged(strFactoryGrpName, strGraphObjType);
     }
+    //if (iGraphObjTypePrev != iGraphObjTypeCurr) {
+    //    if (iGraphObjTypeCurr == static_cast<int>(EGraphObjTypeUndefined)) {
+    //        CEnumEditTool editTool = m_editTool;
+    //        if (m_editTool != EEditTool::Select) {
+    //            editTool = EEditTool::Select;
+    //        }
+    //        setMode(EMode::Undefined, editTool, EEditMode::None, EEditResizeMode::None, true);
+    //    }
+    //    else {
+    //        setMode(EMode::Undefined, EEditTool::CreateObjects, EEditMode::None, EEditResizeMode::None, true);
+    //    }
+    //}
 
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave);
@@ -1770,17 +1764,17 @@ public: // instance methods
     The mouse cursor shape depends on the graphic item at the given position
     and the currently selected edit tool and edit mode.
 
-    @param i_ptPos [in]
+    @param i_ptScenePos [in]
         Scene coordinates to be checked.
 
     @return Proposed cursor shape.
 */
-QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
+QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pos:" + point2Str(i_ptPos);
+        strMthInArgs = "Pos:" + point2Str(i_ptScenePos);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
@@ -1791,39 +1785,58 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptPos ) const
     QCursor cursor = Qt::ArrowCursor;
 
     if (m_mode == EMode::Edit) {
-        QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_ptPos);
-        if (m_editTool == EEditTool::Select) {
-            if (m_editMode == EEditMode::EditText) {
-                cursor = Qt::IBeamCursor;
+        if (sceneRect().contains(i_ptScenePos)) {
+            if (m_pObjFactory != nullptr) {
+                cursor = Qt::CrossCursor;
             }
-        }
-        else if (m_editTool == EEditTool::CreateObjects) {
-            int iObjFactoryType = getCurrentDrawingToolGraphObjType();
-            if (m_editMode == EEditMode::MoveShapePoint) {
-                if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-                    cursor = Qt::CrossCursor;
-                }
-            }
-            else if (m_editMode == EEditMode::EditText) {
-                cursor = Qt::IBeamCursor;
-            }
-            else if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-                // Special case for connection lines which may only be created on connection points.
-                if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
-                    cursor = Qt::ArrowCursor;
-                    for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
-                        if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
-                            QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
-                            cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
-                            break;
-                        }
+            else {
+                QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_ptScenePos);
+                for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
+                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                    if (pGraphObj != nullptr) {
+                        pGraphObj->getProposedCursor(i_ptScenePos);
+                        break;
                     }
-                }
-                else {
-                    cursor = Qt::CrossCursor;
+                    //if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
+                    //    QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+                    //    cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
+                    //    break;
+                    //}
                 }
             }
         }
+        //if (m_editTool == EEditTool::Select) {
+        //    if (m_editMode == EEditMode::EditText) {
+        //        cursor = Qt::IBeamCursor;
+        //    }
+        //}
+        //else if (m_editTool == EEditTool::CreateObjects) {
+        //    int iObjFactoryType = getCurrentDrawingToolGraphObjType();
+        //    if (m_editMode == EEditMode::MoveShapePoint) {
+        //        if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+        //            cursor = Qt::CrossCursor;
+        //        }
+        //    }
+        //    else if (m_editMode == EEditMode::EditText) {
+        //        cursor = Qt::IBeamCursor;
+        //    }
+        //    else if (iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+        //        // Special case for connection lines which may only be created on connection points.
+        //        if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
+        //            cursor = Qt::ArrowCursor;
+        //            for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
+        //                if (pGraphicsItem->type() == static_cast<int>(EGraphObjTypeConnectionPoint)) {
+        //                    QPixmap pxmCursor(":/ZS/Draw/CursorPin16x16.png");
+        //                    cursor = QCursor(pxmCursor, 0, pxmCursor.height()-1);
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //        else {
+        //            cursor = Qt::CrossCursor;
+        //        }
+        //    }
+        //}
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
@@ -1842,8 +1855,8 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
-        strMthInArgs += ", ScenePos:" + point2Str(i_ptScenePos);
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path()) +
+                       ", ScenePos:" + point2Str(i_ptScenePos);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1862,8 +1875,8 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF&
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path());
-        strMthInArgs += ", ScenePos:" + point2Str(i_ptScenePos);
+        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path()) +
+                       ", ScenePos:" + point2Str(i_ptScenePos);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1903,7 +1916,19 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
+        strMthInArgs = "Item: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree()) +
+                       ", Items[" + QString::number(i_arpGraphicsItems.size()) + "]";
+        if (i_arpGraphicsItems.size() > 0) {
+            strMthInArgs += "(";
+            for (const QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {
+                const CGraphObj* pGraphObj = dynamic_cast<const CGraphObj*>(pGraphicsItem);
+                if (pGraphObj != nullptr) {
+                    if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                    strMthInArgs += pGraphObj->typeAsString() + ": " + pGraphObj->path();
+                }
+            }
+            strMthInArgs += ")";
+        }
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1965,7 +1990,19 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QG
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree());
+        strMthInArgs = "Item: " + QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->keyInTree()) +
+                       ", Items[" + QString::number(i_arpGraphicsItems.size()) + "]";
+        if (i_arpGraphicsItems.size() > 0) {
+            strMthInArgs += "(";
+            for (const QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {
+                const CGraphObj* pGraphObj = dynamic_cast<const CGraphObj*>(pGraphicsItem);
+                if (pGraphObj != nullptr) {
+                    if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                    strMthInArgs += pGraphObj->typeAsString() + ": " + pGraphObj->path();
+                }
+            }
+            strMthInArgs += ")";
+        }
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -2017,45 +2054,45 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 
     @param i_pGraphObj [in] Pointer to graphic item.
 */
-void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjAddingShapePointsStarted",
-        /* strAddInfo   */ strMthInArgs );
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
-
-    if( i_pGraphObj == nullptr )
-    {
-        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
-    }
-
-    //if( m_pGraphObjAddingShapePoints != nullptr )
-    //{
-    //    throw CException( __FILE__, __LINE__, EResultInternalProgramError, "pGraphObjAddingShapePoints != nullptr" );
-    //}
-
-    m_pGraphObjAddingShapePoints = i_pGraphObj;
-    m_pGraphicsItemAddingShapePoints = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-
-    if( m_pGraphicsItemAddingShapePoints == nullptr )
-    {
-        throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemAddingShapePoints == nullptr" );
-    }
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-} // onGraphObjAddingShapePointsStarted
+//void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "onGraphObjAddingShapePointsStarted",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+//    //}
+//
+//    if( i_pGraphObj == nullptr )
+//    {
+//        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
+//    }
+//
+//    //if( m_pGraphObjAddingShapePoints != nullptr )
+//    //{
+//    //    throw CException( __FILE__, __LINE__, EResultInternalProgramError, "pGraphObjAddingShapePoints != nullptr" );
+//    //}
+//
+//    //m_pGraphObjAddingShapePoints = i_pGraphObj;
+//    //m_pGraphicsItemAddingShapePoints = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
+//
+//    //if( m_pGraphicsItemAddingShapePoints == nullptr )
+//    //{
+//    //    throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemAddingShapePoints == nullptr" );
+//    //}
+//
+//    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+//    //}
+//} // onGraphObjAddingShapePointsStarted
 
 //------------------------------------------------------------------------------
 /*! This method has to be called by graphical objects (polylines and connection lines)
@@ -2067,40 +2104,40 @@ void CDrawingScene::onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj )
 
     @param i_pGraphObj [in] Pointer to graphic item.
 */
-void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjAddingShapePointsFinished",
-        /* strAddInfo   */ strMthInArgs );
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
-
-    if( i_pGraphObj == nullptr )
-    {
-        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
-    }
-
-    if( m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints != i_pGraphObj )
-    {
-        throw CException( __FILE__, __LINE__, EResultInternalProgramError, "pGraphObjAddingShapePoints != i_pGraphObj" );
-    }
-
-    m_pGraphObjAddingShapePoints = nullptr;
-    m_pGraphicsItemAddingShapePoints = nullptr;
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-} // onGraphObjAddingShapePointsFinished
+//void CDrawingScene::onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "onGraphObjAddingShapePointsFinished",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+//    //}
+//
+//    if( i_pGraphObj == nullptr )
+//    {
+//        throw CException( __FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr" );
+//    }
+//
+//    if( m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints != i_pGraphObj )
+//    {
+//        throw CException( __FILE__, __LINE__, EResultInternalProgramError, "pGraphObjAddingShapePoints != i_pGraphObj" );
+//    }
+//
+//    m_pGraphObjAddingShapePoints = nullptr;
+//    m_pGraphicsItemAddingShapePoints = nullptr;
+//
+//    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+//    //}
+//} // onGraphObjAddingShapePointsFinished
 
 /*==============================================================================
 public: // to be called by graphical objects (as graphical objects are not derived from QObject and cannot emit signals)
@@ -2115,42 +2152,42 @@ public: // to be called by graphical objects (as graphical objects are not deriv
 
     @param i_pGraphObj [in] Pointer to graphic item.
 */
-void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onGraphObjCreationFinished",
-        /* strAddInfo   */ strMthInArgs );
-
-    if(i_pGraphObj == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
-    }
-
-    // Reset drawings scenes edit modes:
-    //----------------------------------
-
-    if (m_mode == EMode::Edit) {
-        if (m_editTool == EEditTool::CreateObjects) {
-            if (m_pGraphObjCreating == i_pGraphObj) {
-                m_pGraphicsItemCreating->setSelected(false);
-                m_pGraphicsItemCreating->setAcceptHoverEvents(false);
-                m_pGraphicsItemCreating->setAcceptedMouseButtons(Qt::NoButton);
-                m_pGraphicsItemCreating = nullptr;
-                m_pGraphObjCreating = nullptr;
-                m_pGraphicsItemAddingShapePoints = nullptr;
-                m_pGraphObjAddingShapePoints = nullptr;
-                setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
-            }
-        }
-    }
-    //emit_graphObjCreated(i_pGraphObj);
-}
+//void CDrawingScene::onGraphObjCreationFinished( CGraphObj* i_pGraphObj )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = QString(i_pGraphObj == nullptr ? "nullptr" : i_pGraphObj->keyInTree());
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "onGraphObjCreationFinished",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if(i_pGraphObj == nullptr) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
+//    }
+//
+//    // Reset drawings scenes edit modes:
+//    //----------------------------------
+//
+//    //if (m_mode == EMode::Edit) {
+//    //    if (m_editTool == EEditTool::CreateObjects) {
+//    //        if (m_pGraphObjCreating == i_pGraphObj) {
+//    //            m_pGraphicsItemCreating->setSelected(false);
+//    //            m_pGraphicsItemCreating->setAcceptHoverEvents(false);
+//    //            m_pGraphicsItemCreating->setAcceptedMouseButtons(Qt::NoButton);
+//    //            m_pGraphicsItemCreating = nullptr;
+//    //            m_pGraphObjCreating = nullptr;
+//    //            m_pGraphicsItemAddingShapePoints = nullptr;
+//    //            m_pGraphObjAddingShapePoints = nullptr;
+//    //            setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
+//    //        }
+//    //    }
+//    //}
+//    //emit_graphObjCreated(i_pGraphObj);
+//}
 
 /*==============================================================================
 public: // instance methods
@@ -3089,18 +3126,9 @@ public: // overridables of base class QGraphicsScene
 void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    const QMimeData* pMimeData = i_pEv->mimeData();
-    QString strMimeData = pMimeData->text();
-
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
-            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
-            ", EvScreenPos:(" + qPoint2Str(i_pEv->screenPos()) + ")" +
-            ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions()) +
-            ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction()) +
-            ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction()) +
-            ", MimeDataText:" + strMimeData;
+        strMthInArgs = qGraphicsSceneDragDropEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3108,50 +3136,35 @@ void CDrawingScene::dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* strMethod    */ "dragEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
-
-    if( pMimeData->hasText() )
-    {
-        i_pEv->accept();
+    const QMimeData* pMimeData = i_pEv->mimeData();
+    if (pMimeData != nullptr) {
+        if (pMimeData->hasText()) {
+            i_pEv->accept();
+        }
+        else if (pMimeData->hasImage()) {
+            i_pEv->accept();
+        }
+        else if (pMimeData->hasUrls()) {
+            i_pEv->accept();
+        }
+        else {
+            i_pEv->ignore();
+        }
     }
-    else if( pMimeData->hasImage() )
-    {
-        i_pEv->accept();
-    }
-    else if( pMimeData->hasUrls() )
-    {
-        i_pEv->accept();
-    }
-    else
-    {
+    else {
         i_pEv->ignore();
     }
 
     //QGraphicsScene::dragEnterEvent(i_pEv);
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-} // dragEnterEvent
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    const QMimeData* pMimeData = i_pEv->mimeData();
-    QString strMimeData = pMimeData->text();
-
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
-            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
-            ", EvScreenPos:(" + qPoint2Str(i_pEv->screenPos()) + ")" +
-            ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions()) +
-            ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction()) +
-            ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction()) +
-            ", MimeDataText:" + strMimeData;
+        strMthInArgs = qGraphicsSceneDragDropEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3159,112 +3172,75 @@ void CDrawingScene::dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* strMethod    */ "dragMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
-
-    if( pMimeData->hasText() )
-    {
-        i_pEv->accept();
+    const QMimeData* pMimeData = i_pEv->mimeData();
+    if (pMimeData != nullptr) {
+        if (pMimeData->hasText()) {
+            i_pEv->accept();
+        }
+        else if (pMimeData->hasImage()) {
+            i_pEv->accept();
+        }
+        else if (pMimeData->hasUrls()) {
+            i_pEv->accept();
+        }
+        else {
+            i_pEv->ignore();
+        }
     }
-    else if( pMimeData->hasImage() )
-    {
-        i_pEv->accept();
-    }
-    else if( pMimeData->hasUrls() )
-    {
-        i_pEv->accept();
-    }
-    else
-    {
+    else {
         i_pEv->ignore();
     }
 
     //QGraphicsScene::dragMoveEvent(i_pEv);
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-} // dragMoveEvent
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    const QMimeData* pMimeData = i_pEv->mimeData();
-    QString strMimeData = pMimeData->text();
-
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
-            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
-            ", EvScreenPos:(" + qPoint2Str(i_pEv->screenPos()) + ")" +
-            ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions()) +
-            ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction()) +
-            ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction()) +
-            ", MimeDataText:" + strMimeData;
+        strMthInArgs = qGraphicsSceneDragDropEvent2Str(i_pEv);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "dragLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
-
-    if( sceneRect().contains(i_pEv->scenePos()) )
-    {
-        if( pMimeData->hasText() )
-        {
-            i_pEv->accept();
+    const QMimeData* pMimeData = i_pEv->mimeData();
+    if (pMimeData != nullptr) {
+        if (sceneRect().contains(i_pEv->scenePos())) {
+            if (pMimeData->hasText()) {
+                i_pEv->accept();
+            }
+            else if (pMimeData->hasImage()) {
+                i_pEv->accept();
+            }
+            else if (pMimeData->hasUrls()) {
+                i_pEv->accept();
+            }
+            else {
+                i_pEv->ignore();
+            }
         }
-        else if( pMimeData->hasImage() )
-        {
-            i_pEv->accept();
-        }
-        else if( pMimeData->hasUrls() )
-        {
-            i_pEv->accept();
-        }
-        else
-        {
+        else {
             i_pEv->ignore();
         }
-    } // if( sceneRect().contains(i_pEv->scenePos()) )
-
-    else // if( !sceneRect().contains(i_pEv->scenePos()) )
-    {
+    }
+    else {
         i_pEv->ignore();
     }
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-} // dragLeaveEvent
+    //QGraphicsScene::dragLeaveEvent(i_pEv);
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    const QMimeData* pMimeData = i_pEv->mimeData();
-    QString strMimeData;
-
-    if (pMimeData != nullptr) {
-        strMimeData = pMimeData->text();
-    }
-
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "EvItemPos {" + qPoint2Str(i_pEv->pos()) + "}" +
-            ", EvScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
-            ", EvScreenPos:(" + qPoint2Str(i_pEv->screenPos()) + ")" +
-            ", EvPossibleActions:" + qDropActions2Str(i_pEv->possibleActions()) +
-            ", EvProposedAction:" + qDropActions2Str(i_pEv->proposedAction()) +
-            ", EvDropAction:" + qDropActions2Str(i_pEv->dropAction()) +
-            ", MimeDataText:" + strMimeData;
+        strMthInArgs = qGraphicsSceneDragDropEvent2Str(i_pEv);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -3272,132 +3248,74 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
         /* strMethod    */ "dropEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
-
     bool bAccepted = false;
 
-    if( pMimeData != nullptr && sceneRect().contains(i_pEv->scenePos()) )
-    {
-        if( pMimeData->hasText() )
-        {
+    const QMimeData* pMimeData = i_pEv->mimeData();
+    if (pMimeData != nullptr && sceneRect().contains(i_pEv->scenePos())) {
+        if (pMimeData->hasText()) {
             bAccepted = true;
-
+            QString strMimeData;
+            if (pMimeData != nullptr) {
+                strMimeData = pMimeData->text();
+            }
             QStringList strlstMimeData = strMimeData.split("; ",Qt::SkipEmptyParts);
-
-            if( strlstMimeData.size() > 0 )
-            {
-                CObjFactory*   pObjFactory;
-                QGraphicsItem* pGraphicsItem;
-                CGraphObj*     pGraphObj;
-                QString        strObj;
-                QStringList    strlstObjPath;
-                QString        strType;
-                QString        strObjPath;
-                int            idxObj;
-
+            if (strlstMimeData.size() > 0) {
                 clearSelection();
-
-                for( idxObj = 0; idxObj < strlstMimeData.size(); idxObj++ )
-                {
-                    strObj = strlstMimeData[idxObj];
-
-                    strlstObjPath = strObj.split("::");
-
-                    if( strlstObjPath.size() > 1 ) // must contain type and object path
-                    {
-                        strType = strlstObjPath[0];
-
-                        if( strType.compare("ObjFactory",Qt::CaseInsensitive) == 0 )
-                        {
+                for (int idxObj = 0; idxObj < strlstMimeData.size(); idxObj++) {
+                    QString strObj = strlstMimeData[idxObj];
+                    QStringList strlstObjPath = strObj.split("::");
+                    if (strlstObjPath.size() > 1) { // must contain type and object path
+                        QString strType = strlstObjPath[0];
+                        if (strType.compare("ObjFactory",Qt::CaseInsensitive) == 0) {
                             strlstObjPath.removeFirst();
-                            strObjPath = strlstObjPath.join("::");
-                            pObjFactory = CObjFactory::FindObjFactory(strObjPath);
-
-                            if( pObjFactory != nullptr )
-                            {
-                                pGraphObj = pObjFactory->createGraphObj(
+                            QString strObjPath = strlstObjPath.join("::");
+                            CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strObjPath);
+                            if (pObjFactory != nullptr) {
+                                CGraphObj* pGraphObj = pObjFactory->createGraphObj(
                                     /* pDrawingScene */ this,
                                     /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
                                     /* drawSettings  */ m_drawSettings );
-
-                                pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-
-                                if( pGraphicsItem == nullptr )
-                                {
+                                QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+                                if (pGraphicsItem == nullptr) {
                                     throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                                 }
-
                                 addGraphObj(pGraphObj);
-
                                 //pGraphicsItem->setPos( i_pEv->scenePos() );
                                 pGraphicsItem->setSelected(true);
-
                                 //onGraphObjCreationFinished(pGraphObj);
-
-                                setMode(EMode::Undefined, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false);
+                                //setMode(EMode::Undefined, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false);
                             }
-                        } // if( strType.compare("ObjFactory",Qt::CaseInsensitive) == 0 )
-                    } // if( strlstObjPath.size() > 1 ) // must contain type and object path
-                } // for( idxObj = 0; idxObj < strlstMimeData.size(); idxObj++ )
-            } // if( strlstMimeData.size() > 0 )
-        } // if( pMimeData->hasText() )
-
-        else if( pMimeData->hasImage() )
-        {
-            bAccepted = true;
-
-        } // if( pMimeData->hasImage() )
-
-        else if( pMimeData->hasUrls() )
-        {
-            bAccepted = true;
-
-            QList<QUrl>     arurls = pMimeData->urls();
-            QUrl            url;
-            int             idxUrl;
-            QString         strFilePath;
-            CGraphObjImage* pGraphObjImage;
-
-            for( idxUrl = 0; idxUrl < arurls.size(); idxUrl++ )
-            {
-                url = arurls[idxUrl];
-
-                strFilePath = url.toLocalFile();
-
-                pGraphObjImage = new CGraphObjImage(this);
-                pGraphObjImage->setDrawSettings(m_drawSettings);
-
-                pGraphObjImage->setImageFilePath(strFilePath);
-
-                addGraphObj(pGraphObjImage);
-
-                pGraphObjImage->setPos( i_pEv->scenePos() );
-
-                onGraphObjCreationFinished(pGraphObjImage);
-
-                setMode( EMode::Undefined, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false );
+                        }
+                    }
+                }
             }
-        } // if( pMimeData->hasUrls() )
-    } // if( sceneRect().contains(i_pEv->scenePos()) )
-
-    if( bAccepted )
-    {
+        }
+        else if (pMimeData->hasImage()) {
+            bAccepted = true;
+        }
+        else if (pMimeData->hasUrls()) {
+            bAccepted = true;
+            QList<QUrl> arurls = pMimeData->urls();
+            for (const QUrl& url : arurls) {
+                QString strFilePath = url.toLocalFile();
+                CGraphObjImage* pGraphObjImage = new CGraphObjImage(this);
+                pGraphObjImage->setDrawSettings(m_drawSettings);
+                pGraphObjImage->setImageFilePath(strFilePath);
+                addGraphObj(pGraphObjImage);
+                pGraphObjImage->setPos(i_pEv->scenePos());
+                //onGraphObjCreationFinished(pGraphObjImage);
+                //setMode(EMode::Undefined, EEditTool::Select, EEditMode::Move, EEditResizeMode::None, false);
+            }
+        }
+    }
+    if (bAccepted) {
         i_pEv->accept();
     }
-    else
-    {
+    else {
         i_pEv->ignore();
     }
-
     //QGraphicsScene::dropEvent(i_pEv);
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
-
-} // dropEvent
+}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsScene
@@ -3439,7 +3357,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     //    traceInternalStates(mthTracer, EMethodDir::Enter);
     //}
 
-    bool bEventHandled = false;
+    //bool bEventHandled = false;
 
     m_ptMouseEvScenePosOnMousePressEvent = i_pEv->scenePos();
 
@@ -3450,26 +3368,26 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
 
-    if (m_mode != EMode::Edit) {
-        if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-            throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-        }
-    }
+    //if (m_mode != EMode::Edit) {
+    //    if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+    //        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    //    }
+    //}
 
     if (m_mode == EMode::Edit) {
         // If currently an object is "under construction" ...
-        if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
-            // ... forward mouse event to object "under construction".
-            if (m_pGraphObjCreating != nullptr) {
-                forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
-            }
-            else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
-                forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
-            }
-            bEventHandled = i_pEv->isAccepted();
-        }
+        //if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
+        //    // ... forward mouse event to object "under construction".
+        //    if (m_pGraphObjCreating != nullptr) {
+        //        forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
+        //    }
+        //    else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
+        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
+        //    }
+        //    bEventHandled = i_pEv->isAccepted();
+        //}
         // If currently no object is "under construction" but an object got to be created ...
-        else if (m_editTool == EEditTool::CreateObjects && m_pObjFactory != nullptr) {
+        if (/*m_editTool == EEditTool::CreateObjects &&*/ m_pObjFactory != nullptr) {
             bool bCreateObj = true;
             CGraphObjConnectionPoint* pGraphObjCnctPtHit = nullptr;
             // Connection lines may only be created on connection points.
@@ -3488,57 +3406,62 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
             }
             if (bCreateObj) {
+                // The mouse press event is handled by the drawing scene to create a new object.
+                //bEventHandled = true;
+
                 // Unselect all currently selected objects.
                 clearSelection();
 
                 // Graphical objects must always be created at their transformation origin points.
                 // Otherwise mapping coordinates to group coordinates does not work correctly.
                 // This is especially true for connection points and circles.
-                m_pGraphObjCreating = m_pObjFactory->createGraphObj(
+                CGraphObj* pGraphObj = m_pObjFactory->createGraphObj(
                     /* pDrawingScene */ this,
                     /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
                     /* drawSettings  */ m_drawSettings );
-                if (m_pGraphObjCreating != nullptr) {
-                    m_pGraphicsItemCreating = dynamic_cast<QGraphicsItem*>(m_pGraphObjCreating);
-                    if (m_pGraphicsItemCreating == nullptr) {
+                if (pGraphObj != nullptr) {
+                    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+                    if (pGraphicsItem == nullptr) {
                         throw CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItem == nullptr" );
                     }
-                    addGraphObj(m_pGraphObjCreating);
-                    m_pGraphObjCreating->setEditMode(EEditMode::Creating);
+                    addGraphObj(pGraphObj);
+                    //m_pGraphObjCreating->setEditMode(EEditMode::Creating);
 
-                    CGraphObjConnectionLine* pGraphObjCnctLineCreating = nullptr;
-                    CGraphObjConnectionPoint* pGraphObjCnctPtCreating = nullptr;
-                    if (m_pGraphObjCreating->isConnectionLine()) {
-                        pGraphObjCnctLineCreating = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjCreating);
-                    }
-                    else if (m_pGraphObjCreating->isConnectionPoint()) {
-                        pGraphObjCnctPtCreating = dynamic_cast<CGraphObjConnectionPoint*>(m_pGraphObjCreating);
-                    }
+                    //CGraphObjConnectionLine* pGraphObjCnctLineCreating = nullptr;
+                    //CGraphObjConnectionPoint* pGraphObjCnctPtCreating = nullptr;
+                    //if (pGraphObj->isConnectionLine()) {
+                    //    pGraphObjCnctLineCreating = dynamic_cast<CGraphObjConnectionLine*>(pGraphObj);
+                    //}
+                    //else if (pGraphObj->isConnectionPoint()) {
+                    //    pGraphObjCnctPtCreating = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObj);
+                    //}
 
-                    #pragma message(__TODO__)
-                    if (pGraphObjCnctPtCreating != nullptr) {
-                        // Need to set left top position of connection points as transformation origin point.
-                        // Otherwise mapping coordinates to group coordinates does not work correctly.
-                        QRectF rctGraphObjCnctPt = pGraphObjCnctPtCreating->rect();
-                        QPointF ptPosGraphObjCnctPt = QPointF(
-                            i_pEv->scenePos().x() - rctGraphObjCnctPt.width()/2.0,
-                            i_pEv->scenePos().y() - rctGraphObjCnctPt.height()/2.0 );
-                        pGraphObjCnctPtCreating->setPos(ptPosGraphObjCnctPt);
-                    }
-                    else {
-                        //m_pGraphicsItemCreating->setPos(i_pEv->scenePos());
-                    }
+                    //#pragma message(__TODO__)
+                    //if (pGraphObjCnctPtCreating != nullptr) {
+                    //    // Need to set left top position of connection points as transformation origin point.
+                    //    // Otherwise mapping coordinates to group coordinates does not work correctly.
+                    //    QRectF rctGraphObjCnctPt = pGraphObjCnctPtCreating->rect();
+                    //    QPointF ptPosGraphObjCnctPt = QPointF(
+                    //        i_pEv->scenePos().x() - rctGraphObjCnctPt.width()/2.0,
+                    //        i_pEv->scenePos().y() - rctGraphObjCnctPt.height()/2.0 );
+                    //    pGraphObjCnctPtCreating->setPos(ptPosGraphObjCnctPt);
+                    //}
+                    //else {
+                    //    //m_pGraphicsItemCreating->setPos(i_pEv->scenePos());
+                    //}
 
-                    // On selecting the object, selection points are created. When creating the object
-                    // the selection points must get the following mouse move events to modify the
+                    // On creating objects by a mouse press events the object may be "under construction"
+                    // and following mouse move events may be used to immediately resize the object.
+                    // For this the object will be selected and selection points are created.
+                    // The selection points must get the following mouse move events to modify the
                     // shape of the graphical object.
-                    m_pGraphicsItemCreating->setSelected(true);
-                    m_pGraphicsItemCreating->setAcceptHoverEvents(true);
+                    pGraphicsItem->setSelected(true);
+                    //pGraphicsItem->setAcceptHoverEvents(true);
 
-                    if (pGraphObjCnctLineCreating != nullptr && pGraphObjCnctPtHit != nullptr) {
-                        pGraphObjCnctLineCreating->setConnectionPoint(ELinePoint::Start,pGraphObjCnctPtHit);
-                    }
-                    emit_modeChanged();
+                    //if (pGraphObjCnctLineCreating != nullptr && pGraphObjCnctPtHit != nullptr) {
+                    //    pGraphObjCnctLineCreating->setConnectionPoint(ELinePoint::Start, pGraphObjCnctPtHit);
+                    //}
+                    //emit_modeChanged(m_mode);
                 }
             }
 
@@ -3552,9 +3475,12 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         }
     } // if (m_mode == EMode::Edit)
 
-    if (!bEventHandled) {
-        forwardMouseEventToObjectsHit(i_pEv);
-    }
+    //if (!bEventHandled) {
+        // ... dispatch mouse event to objects "under cursor".
+        #pragma message(__TODO__"temporarily added")
+        QGraphicsScene::mousePressEvent(i_pEv);
+        //forwardMouseEventToObjectsHit(i_pEv);
+    //}
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave);
     //}
@@ -3598,9 +3524,6 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
 
     emit_mousePosChanged(i_pEv->scenePos());
 
@@ -3609,173 +3532,174 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
 
-    if (m_mode != EMode::Edit) {
-        if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-            throw CException(__FILE__,__LINE__,EResultInternalProgramError);
-        }
-    }
+    //if (m_mode != EMode::Edit) {
+    //    if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+    //        throw CException(__FILE__,__LINE__,EResultInternalProgramError);
+    //    }
+    //}
 
     if (m_mode == EMode::Edit) {
         // If currently an object is "under construction" ...
-        if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
-            // ... forward mouse event to object "under construction".
-            if (m_pGraphicsItemCreating != nullptr) {
-                forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
-            }
-            else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
-                forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
-            }
-        }
+        //if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
+        //    // ... forward mouse event to object "under construction".
+        //    if (m_pGraphicsItemCreating != nullptr) {
+        //        forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
+        //    }
+        //    else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
+        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
+        //    }
+        //}
+        #pragma message(__TODO__"temporarily added")
+        QGraphicsScene::mouseMoveEvent(i_pEv);
         // If currently no object is "under construction" ...
-        else {
-            bool bDispatchMouseEvents2ObjectsUnderMouseCursor = false;
-            bool bDispatchMouseEvents2ConnectionPointsUnderMouseCursor = false;
-            if (m_editTool == EEditTool::CreateObjects) {
-                // If no mouse button is pressed ...
-                if (iMouseButtonState == Qt::NoButton) {
-                    // If the drawing tool "ConnectionLine" is selected ...
-                    if (m_pObjFactory != nullptr && iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine))
-                    {
-                        bDispatchMouseEvents2ConnectionPointsUnderMouseCursor = true;
-                    }
-                }
-            }
-            else if (m_editTool == EEditTool::Select) {
-                if (iMouseButtonState & Qt::LeftButton) {
-                    if (m_pGraphicsItemSelectionArea != nullptr) {
-                        QRectF rctSelectionArea(
-                            /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
-                            /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
-                            /* width  */ i_pEv->scenePos().x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
-                            /* height */ i_pEv->scenePos().y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
-                        m_pGraphicsItemSelectionArea->setRect(rctSelectionArea);
-                    }
-                    else {
-                        QGraphicsScene::mouseMoveEvent(i_pEv);
-                    }
-                }
-                else if (iMouseButtonState == Qt::NoButton) {
-                    bDispatchMouseEvents2ObjectsUnderMouseCursor = true;
-                }
-            }
-            if (bDispatchMouseEvents2ObjectsUnderMouseCursor || bDispatchMouseEvents2ConnectionPointsUnderMouseCursor) {
-                // Some items may completely overlap (encircle) other objects (a big rectangle may completely
-                // enclose a smaller rectangle or the bounding rectangle of a polyline may enclose other objects).
-                // In this case Qt's graphic scene does not dispatch the mouse events as hover events to the
-                // enclosed objects if they are not "on top" (according to the scene's item list Z order) of the
-                // enclosing items. If the outer object does not hide the inner object (fill style solid pattern)
-                // this behavior is not what we want and what the user expects. E.g. if a rectangle with
-                // "FillStyle = NoFill" would enclose another object the user would expect that the inner object
-                // can be selected by mouse clicks. And if you consider polylines which are never "filled" objects,
-                // the inner objects should always be selectable by mouse clicks. The polyline as the outer object
-                // should only be selected if one of its line segments would be hit.
-                QRectF rctToCheck(
-                    /* x      */ i_pEv->scenePos().x() - m_fHitTolerance_px,
-                    /* y      */ i_pEv->scenePos().y() - m_fHitTolerance_px,
-                    /* width  */ 2*m_fHitTolerance_px,
-                    /* height */ 2*m_fHitTolerance_px );
-                QList<QGraphicsItem*> arpGraphicsItemsIntersected =
-                    items(rctToCheck, Qt::IntersectsItemShape, Qt::AscendingOrder);
-                QList<QGraphicsItem*> arpGraphicsItemsHit;
+        {
+            //bool bDispatchMouseEvents2ObjectsUnderMouseCursor = false;
+            //bool bDispatchMouseEvents2ConnectionPointsUnderMouseCursor = false;
+            //if (m_editTool == EEditTool::CreateObjects) {
+            //    // If no mouse button is pressed ...
+            //    if (iMouseButtonState == Qt::NoButton) {
+            //        // If the drawing tool "ConnectionLine" is selected ...
+            //        if (m_pObjFactory != nullptr && iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
+            //            bDispatchMouseEvents2ConnectionPointsUnderMouseCursor = true;
+            //        }
+            //    }
+            //}
+            //else if (m_editTool == EEditTool::Select) {
+            //    if (iMouseButtonState & Qt::LeftButton) {
+            //        if (m_pGraphicsItemSelectionArea != nullptr) {
+            //            QRectF rctSelectionArea(
+            //                /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
+            //                /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
+            //                /* width  */ i_pEv->scenePos().x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
+            //                /* height */ i_pEv->scenePos().y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
+            //            m_pGraphicsItemSelectionArea->setRect(rctSelectionArea);
+            //        }
+            //        else {
+            //            QGraphicsScene::mouseMoveEvent(i_pEv);
+            //        }
+            //    }
+            //    else if (iMouseButtonState == Qt::NoButton) {
+            //        bDispatchMouseEvents2ObjectsUnderMouseCursor = true;
+            //    }
+            //}
+            //if (bDispatchMouseEvents2ObjectsUnderMouseCursor || bDispatchMouseEvents2ConnectionPointsUnderMouseCursor) {
+            //    // Some items may completely overlap (encircle) other objects (a big rectangle may completely
+            //    // enclose a smaller rectangle or the bounding rectangle of a polyline may enclose other objects).
+            //    // In this case Qt's graphic scene does not dispatch the mouse events as hover events to the
+            //    // enclosed objects if they are not "on top" (according to the scene's item list Z order) of the
+            //    // enclosing items. If the outer object does not hide the inner object (fill style solid pattern)
+            //    // this behavior is not what we want and what the user expects. E.g. if a rectangle with
+            //    // "FillStyle = NoFill" would enclose another object the user would expect that the inner object
+            //    // can be selected by mouse clicks. And if you consider polylines which are never "filled" objects,
+            //    // the inner objects should always be selectable by mouse clicks. The polyline as the outer object
+            //    // should only be selected if one of its line segments would be hit.
+            //    QRectF rctToCheck(
+            //        /* x      */ i_pEv->scenePos().x() - m_fHitTolerance_px,
+            //        /* y      */ i_pEv->scenePos().y() - m_fHitTolerance_px,
+            //        /* width  */ 2*m_fHitTolerance_px,
+            //        /* height */ 2*m_fHitTolerance_px );
+            //    QList<QGraphicsItem*> arpGraphicsItemsIntersected =
+            //        items(rctToCheck, Qt::IntersectsItemShape, Qt::AscendingOrder);
+            //    QList<QGraphicsItem*> arpGraphicsItemsHit;
 
-                // Create array with objects which have been hit by mouse cursor.
-                if (arpGraphicsItemsIntersected.size() > 0) {
-                    for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsIntersected) {
-                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                        if (pGraphicsItem != nullptr && pGraphObj != nullptr) {
-                            bool bCheckIsHit = false;
-                            if (pGraphObj->isSelectionPoint()) {
-                            }
-                            else if (pGraphObj->isConnectionPoint()) {
-                                bCheckIsHit = bDispatchMouseEvents2ConnectionPointsUnderMouseCursor ||
-                                              bDispatchMouseEvents2ObjectsUnderMouseCursor;
-                            }
-                            else if (pGraphicsItem->parentItem() == nullptr) {
-                                bCheckIsHit = bDispatchMouseEvents2ObjectsUnderMouseCursor;
-                           }
-                           if (bCheckIsHit) {
-                                QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(i_pEv->scenePos());
-                                bool bGraphObjHit = pGraphObj->isHit(ptMouseItemPos, nullptr);
-                                if (bGraphObjHit) {
-                                    arpGraphicsItemsHit.append(pGraphicsItem);
-                                }
-                            }
-                        }
-                    }
-                }
+            //    // Create array with objects which have been hit by mouse cursor.
+            //    if (arpGraphicsItemsIntersected.size() > 0) {
+            //        for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsIntersected) {
+            //            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            //            if (pGraphicsItem != nullptr && pGraphObj != nullptr) {
+            //                bool bCheckIsHit = false;
+            //                if (pGraphObj->isSelectionPoint()) {
+            //                }
+            //                else if (pGraphObj->isConnectionPoint()) {
+            //                    bCheckIsHit = bDispatchMouseEvents2ConnectionPointsUnderMouseCursor ||
+            //                                  bDispatchMouseEvents2ObjectsUnderMouseCursor;
+            //                }
+            //                else if (pGraphicsItem->parentItem() == nullptr) {
+            //                    bCheckIsHit = bDispatchMouseEvents2ObjectsUnderMouseCursor;
+            //               }
+            //               if (bCheckIsHit) {
+            //                    QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(i_pEv->scenePos());
+            //                    bool bGraphObjHit = pGraphObj->isHit(ptMouseItemPos, nullptr);
+            //                    if (bGraphObjHit) {
+            //                        arpGraphicsItemsHit.append(pGraphicsItem);
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
 
-                // Objects which have been hit by mouse cursor temporarily accept hover events.
-                for (QGraphicsItem* pGraphicsItemHit : arpGraphicsItemsHit) {
-                    CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
-                    if (pGraphicsItemHit != nullptr && pGraphObjHit != nullptr) {
-                        #if QT_VERSION < 0x050000
-                        if (!pGraphicsItemHit->acceptsHoverEvents()) {
-                        #else
-                        if (!pGraphicsItemHit->acceptHoverEvents()) {
-                        #endif
-                            pGraphicsItemHit->setAcceptHoverEvents(true);
-                            pGraphicsItemHit->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
-                            pGraphObjHit->setIsHit(true);
-                            // Append object hit by mouse cursor to list of objects temporarily accepting hover events (if not yet already part of that list).
-                            bool bGraphObjAcceptingHoverEventsFound = false;
-                            for (int idxGraphObj = 0; idxGraphObj < m_arpGraphicsItemsAcceptingHoverEvents.size(); idxGraphObj++) {
-                                QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
-                                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                                // If already part of list ...
-                                if (pGraphObjHit == pGraphObj) {
-                                    bGraphObjAcceptingHoverEventsFound = true;
-                                    break;
-                                }
-                            }
-                            // If not already part of list ...
-                            if (!bGraphObjAcceptingHoverEventsFound) {
-                                m_arpGraphicsItemsAcceptingHoverEvents.append(pGraphicsItemHit);
-                            }
-                        }
-                    }
-                }
+            //    // Objects which have been hit by mouse cursor temporarily accept hover events.
+            //    for (QGraphicsItem* pGraphicsItemHit : arpGraphicsItemsHit) {
+            //        CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
+            //        if (pGraphicsItemHit != nullptr && pGraphObjHit != nullptr) {
+            //            #if QT_VERSION < 0x050000
+            //            if (!pGraphicsItemHit->acceptsHoverEvents()) {
+            //            #else
+            //            if (!pGraphicsItemHit->acceptHoverEvents()) {
+            //            #endif
+            //                pGraphicsItemHit->setAcceptHoverEvents(true);
+            //                pGraphicsItemHit->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
+            //                pGraphObjHit->setIsHit(true);
+            //                // Append object hit by mouse cursor to list of objects temporarily accepting hover events (if not yet already part of that list).
+            //                bool bGraphObjAcceptingHoverEventsFound = false;
+            //                for (int idxGraphObj = 0; idxGraphObj < m_arpGraphicsItemsAcceptingHoverEvents.size(); idxGraphObj++) {
+            //                    QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
+            //                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            //                    // If already part of list ...
+            //                    if (pGraphObjHit == pGraphObj) {
+            //                        bGraphObjAcceptingHoverEventsFound = true;
+            //                        break;
+            //                    }
+            //                }
+            //                // If not already part of list ...
+            //                if (!bGraphObjAcceptingHoverEventsFound) {
+            //                    m_arpGraphicsItemsAcceptingHoverEvents.append(pGraphicsItemHit);
+            //                }
+            //            }
+            //        }
+            //    }
 
-                // Objects which have not been hit, but have been part of the list temporarily accepting hover events,
-                // must be removed from the list and are no longer accepting hover events.
-                if (m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
-                    for (int idxGraphObj = 0; idxGraphObj < m_arpGraphicsItemsAcceptingHoverEvents.size(); idxGraphObj++) {
-                        bool bGraphObjHitFound = false;
-                        QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
-                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                        for (int idxGraphObjHit = 0; idxGraphObjHit < arpGraphicsItemsHit.size(); idxGraphObjHit++) {
-                            QGraphicsItem* pGraphicsItemHit = arpGraphicsItemsHit[idxGraphObjHit];
-                            CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
-                            if (pGraphObjHit == pGraphObj) {
-                                bGraphObjHitFound = true;
-                                break;
-                            }
-                        }
-                        if (!bGraphObjHitFound) {
-                            #if QT_VERSION < 0x050000
-                            if (pGraphicsItem->acceptsHoverEvents()) {
-                            #else
-                            if (pGraphicsItem->acceptHoverEvents()) {
-                            #endif
-                                pGraphicsItem->setAcceptHoverEvents(false);
-                                pGraphicsItem->setAcceptedMouseButtons(Qt::NoButton);
-                                pGraphicsItem->unsetCursor();
-                            }
-                            if (/*!pGraphicsItem->isSelected() &&*/ pGraphObj->isHit()) {
-                                pGraphObj->setIsHit(false);
-                            }
-                            m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] = nullptr;
-                        }
-                    }
-                    for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
-                        if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
-                            m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
-                        }
-                    }
-                }
+            //    // Objects which have not been hit, but have been part of the list temporarily accepting hover events,
+            //    // must be removed from the list and are no longer accepting hover events.
+            //    if (m_arpGraphicsItemsAcceptingHoverEvents.size() > 0) {
+            //        for (int idxGraphObj = 0; idxGraphObj < m_arpGraphicsItemsAcceptingHoverEvents.size(); idxGraphObj++) {
+            //            bool bGraphObjHitFound = false;
+            //            QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
+            //            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            //            for (int idxGraphObjHit = 0; idxGraphObjHit < arpGraphicsItemsHit.size(); idxGraphObjHit++) {
+            //                QGraphicsItem* pGraphicsItemHit = arpGraphicsItemsHit[idxGraphObjHit];
+            //                CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
+            //                if (pGraphObjHit == pGraphObj) {
+            //                    bGraphObjHitFound = true;
+            //                    break;
+            //                }
+            //            }
+            //            if (!bGraphObjHitFound) {
+            //                #if QT_VERSION < 0x050000
+            //                if (pGraphicsItem->acceptsHoverEvents()) {
+            //                #else
+            //                if (pGraphicsItem->acceptHoverEvents()) {
+            //                #endif
+            //                    pGraphicsItem->setAcceptHoverEvents(false);
+            //                    pGraphicsItem->setAcceptedMouseButtons(Qt::NoButton);
+            //                    pGraphicsItem->unsetCursor();
+            //                }
+            //                if (/*!pGraphicsItem->isSelected() &&*/ pGraphObj->isHit()) {
+            //                    pGraphObj->setIsHit(false);
+            //                }
+            //                m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] = nullptr;
+            //            }
+            //        }
+            //        for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+            //            if (m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] == nullptr) {
+            //                m_arpGraphicsItemsAcceptingHoverEvents.removeAt(idxGraphObj);
+            //            }
+            //        }
+            //    }
 
-                QGraphicsScene::mouseMoveEvent(i_pEv);
+            //    QGraphicsScene::mouseMoveEvent(i_pEv);
 
-            } // if( bDispatchMouseEvents2ObjectsUnderMouseCursor || bDispatchMouseEvents2ConnectionPointsUnderMouseCursor )
+            //} // if( bDispatchMouseEvents2ObjectsUnderMouseCursor || bDispatchMouseEvents2ConnectionPointsUnderMouseCursor )
         } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
     }
     else if (m_mode == EMode::View)
@@ -3783,10 +3707,6 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseMoveEvent(i_pEv);
     }
-
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
 } // mouseMoveEvent
 
 //------------------------------------------------------------------------------
@@ -3804,20 +3724,17 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
 
-    if (m_mode != EMode::Edit) {
-        if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-            throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-        }
-    }
+    //if (m_mode != EMode::Edit) {
+    //    if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+    //        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    //    }
+    //}
 
     QPointF ptScenePosMouseEvent = i_pEv->scenePos();
 
@@ -3825,35 +3742,35 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if (m_mode == EMode::Edit) {
         // If currently an object is "under construction" ...
-        if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr)
-        {
-            // ... forward mouse event to object "under construction".
-            if (m_pGraphObjCreating != nullptr) {
-                forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
-            }
-            else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
-                forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
-            }
-        }
-
+        //if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr)
+        //{
+        //    // ... forward mouse event to object "under construction".
+        //    if (m_pGraphObjCreating != nullptr) {
+        //        forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
+        //    }
+        //    else /*if (m_pGraphicsItemAddingShapePoints != nullptr)*/ {
+        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
+        //    }
+        //}
         // If currently no object is "under construction" ...
-        else {
+        {
             // ... dispatch mouse press event to objects "under cursor".
+            #pragma message(__TODO__"temporarily added")
             QGraphicsScene::mouseReleaseEvent(i_pEv);
-            if (m_pGraphicsItemSelectionArea != nullptr) {
-                QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
-                delete m_pGraphicsItemSelectionArea;
-                m_pGraphicsItemSelectionArea = nullptr;
-                QRectF rctSelectionArea(
-                    /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
-                    /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
-                    /* width  */ ptScenePosMouseEvent.x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
-                    /* height */ ptScenePosMouseEvent.y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
+            //if (m_pGraphicsItemSelectionArea != nullptr) {
+            //    QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
+            //    delete m_pGraphicsItemSelectionArea;
+            //    m_pGraphicsItemSelectionArea = nullptr;
+            //    QRectF rctSelectionArea(
+            //        /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
+            //        /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
+            //        /* width  */ ptScenePosMouseEvent.x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
+            //        /* height */ ptScenePosMouseEvent.y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
 
-                QPainterPath path;
-                path.addRect(rctSelectionArea);
-                setSelectionArea(path, Qt::ContainsItemShape);
-            }
+            //    QPainterPath path;
+            //    path.addRect(rctSelectionArea);
+            //    setSelectionArea(path, Qt::ContainsItemShape);
+            //}
             //else if (m_pGraphicsItemSelectionArea == nullptr) {
             //    // ... dispatch mouse press event to objects "under cursor".
             //    QGraphicsScene::mouseReleaseEvent(i_pEv);
@@ -3864,9 +3781,6 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseReleaseEvent(i_pEv);
     }
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
@@ -3885,10 +3799,6 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
-
     // Not a nice hack: mouse double click events will not be dispatched to the graphical objects
     // but will be converted to mouse press and mouse release events which are just dispatched
     // to the selection points. The "sceneEventFilter" functions of the graphical objects may
@@ -3901,11 +3811,11 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         iObjFactoryType = m_pObjFactory->getGraphObjType();
     }
 
-    if (m_mode != EMode::Edit) {
-        if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
-            throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-        }
-    }
+    //if (m_mode != EMode::Edit) {
+    //    if (m_pGraphObjCreating != nullptr || iObjFactoryType != static_cast<int>(EGraphObjTypeUndefined)) {
+    //        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    //    }
+    //}
 
     QPointF ptScenePosMouseEvent = i_pEv->scenePos();
 
@@ -3913,40 +3823,40 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     if (m_mode == EMode::Edit) {
         // If currently an object is "under construction" ...
-        if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
-            // If currently a connection line is "under construction" ...
-            if (m_pGraphicsItemCreating != nullptr && m_pGraphObjCreating->isConnectionLine()) {
-                bool bIsValidEndPoint = true;
-                CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
-                CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjCreating);
-                if (pGraphObjCnctLine != nullptr) {
-                    pGraphObjCnctPt = getConnectionPoint(i_pEv->scenePos());
-                    if (pGraphObjCnctPt != nullptr) {
-                        bIsValidEndPoint = true;
-                    }
-                }
-                if (bIsValidEndPoint) {
-                    bIsValidEndPoint = pGraphObjCnctLine->setConnectionPoint(ELinePoint::End, pGraphObjCnctPt);
-                }
-                if (!bIsValidEndPoint) {
-                    delete m_pGraphicsItemCreating;
-                    m_pGraphicsItemCreating = nullptr;
-                    m_pGraphObjCreating = nullptr;
-                    m_pGraphicsItemAddingShapePoints = nullptr;
-                    m_pGraphObjAddingShapePoints = nullptr;
-                    pGraphObjCnctLine = nullptr;
-                }
-            }
-            // ... dispatch mouse event to object "under construction".
-            if (m_pGraphicsItemCreating != nullptr) {
-                forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
-            }
-            else if (m_pGraphicsItemAddingShapePoints != nullptr) {
-                forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
-            }
-        }
+        //if (m_pGraphicsItemCreating != nullptr || m_pGraphicsItemAddingShapePoints != nullptr) {
+        //    // If currently a connection line is "under construction" ...
+        //    if (m_pGraphicsItemCreating != nullptr && m_pGraphObjCreating->isConnectionLine()) {
+        //        bool bIsValidEndPoint = true;
+        //        CGraphObjConnectionPoint* pGraphObjCnctPt = nullptr;
+        //        CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObjCreating);
+        //        if (pGraphObjCnctLine != nullptr) {
+        //            pGraphObjCnctPt = getConnectionPoint(i_pEv->scenePos());
+        //            if (pGraphObjCnctPt != nullptr) {
+        //                bIsValidEndPoint = true;
+        //            }
+        //        }
+        //        if (bIsValidEndPoint) {
+        //            bIsValidEndPoint = pGraphObjCnctLine->setConnectionPoint(ELinePoint::End, pGraphObjCnctPt);
+        //        }
+        //        if (!bIsValidEndPoint) {
+        //            delete m_pGraphicsItemCreating;
+        //            m_pGraphicsItemCreating = nullptr;
+        //            m_pGraphObjCreating = nullptr;
+        //            m_pGraphicsItemAddingShapePoints = nullptr;
+        //            m_pGraphObjAddingShapePoints = nullptr;
+        //            pGraphObjCnctLine = nullptr;
+        //        }
+        //    }
+        //    // ... dispatch mouse event to object "under construction".
+        //    if (m_pGraphicsItemCreating != nullptr) {
+        //        forwardMouseEvent(m_pGraphicsItemCreating, i_pEv);
+        //    }
+        //    else if (m_pGraphicsItemAddingShapePoints != nullptr) {
+        //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
+        //    }
+        //}
         // If currently no object is "under construction" ...
-        else  {
+        {
             // ... dispatch mouse event to objects "under cursor".
             QGraphicsScene::mouseDoubleClickEvent(i_pEv);
         }
@@ -3958,9 +3868,6 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     m_bMouseDoubleClickEventInProcess = false;
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
 } // mouseDoubleClickEvent
 
 /*==============================================================================
@@ -3988,169 +3895,105 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
     QGraphicsScene::keyPressEvent(i_pEv);
 
-    if( !i_pEv->isAccepted() )
-    {
-        QGraphicsItem* pGraphicsItem;
-        CGraphObj*     pGraphObj;
-        int            idxGraphObj;
-
+    if (!i_pEv->isAccepted()) {
         m_iEvKeyModifiers = i_pEv->modifiers();
 
         // As default the key is not handled by the manual test.
         i_pEv->ignore();
 
         // Pressed any key for moving or changing the shape of the objects ...
-        if( i_pEv->key() == Qt::Key_Left || i_pEv->key() == Qt::Key_Right || i_pEv->key() == Qt::Key_Up || i_pEv->key() == Qt::Key_Down )
-        {
-            if( m_editTool == EEditTool::Select )
-            {
+        if (i_pEv->key() == Qt::Key_Left || i_pEv->key() == Qt::Key_Right || i_pEv->key() == Qt::Key_Up || i_pEv->key() == Qt::Key_Down) {
+            //if (m_editTool == EEditTool::Select) {
                 QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
-
                 // If at least one object has been selected which can be moved, resized or rotated ...
-                if( arpGraphicsItemsSelected.size() > 0 )
-                {
+                if (arpGraphicsItemsSelected.size() > 0) {
                     // We are going to change the position or rotate the objects.
-                    QPointF ptPos;
-                    double  fXOffs = 0;
-                    double  fYOffs = 0;
-
-                    switch( i_pEv->key() )
-                    {
-                        case Qt::Key_Left:
-                        {
-                            fXOffs = -1.0;
-                            break;
-                        }
-                        case Qt::Key_Right:
-                        {
-                            fXOffs = 1.0;
-                            break;
-                        }
-                        case Qt::Key_Up:
-                        {
-                            fYOffs = -1.0;
-                            break;
-                        }
-                        case Qt::Key_Down:
-                        {
-                            fYOffs = 1.0;
-                            break;
-                        }
+                    double fXOffs = 0;
+                    double fYOffs = 0;
+                    if (i_pEv->key() == Qt::Key_Left) {
+                        fXOffs = -1.0;
                     }
-
-                    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-                    {
-                        pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
-
+                    else if (i_pEv->key() == Qt::Key_Right) {
+                        fXOffs = 1.0;
+                    }
+                    else if (i_pEv->key() == Qt::Key_Up) {
+                        fYOffs = -1.0;
+                    }
+                    else if (i_pEv->key() == Qt::Key_Down) {
+                        fYOffs = 1.0;
+                    }
+                    for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsSelected) {
                         // Children will be moved together with their parents ...
-                        if( pGraphicsItem != nullptr && pGraphicsItem->parentItem() == nullptr )
-                        {
-                            ptPos = pGraphicsItem->pos();
-
-                            ptPos.setX( ptPos.x() + fXOffs );
-                            ptPos.setY( ptPos.y() + fYOffs );
-
+                        if (pGraphicsItem->parentItem() == nullptr) {
+                            QPointF ptPos = pGraphicsItem->pos();
+                            ptPos.setX(ptPos.x() + fXOffs);
+                            ptPos.setY(ptPos.y() + fYOffs);
                             pGraphicsItem->setPos(ptPos);
                         }
-                    } // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-                } // if( arpGraphicsItemsSelected.size() > 0 )
-            } // if( m_editTool == EEditTool::Select )
-        } // if( i_pEv->key() == Qt::Key_Left || i_pEv->key() == Qt::Key_Right || i_pEv->key() == Qt::Key_Up || i_pEv->key() == Qt::Key_Down )
+                    }
+                }
+            //} // if( m_editTool == EEditTool::Select )
+        }
 
         // Pressed any key for moving or changing the shape of the objects ...
-        else if( i_pEv->key() == Qt::Key_Plus || i_pEv->key() == Qt::Key_Minus )
-        {
-            if( m_editTool == EEditTool::Select )
-            {
+        else if (i_pEv->key() == Qt::Key_Plus || i_pEv->key() == Qt::Key_Minus) {
+            //if (m_editTool == EEditTool::Select) {
                 QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
-
                 // If at least one object has been selected which can be rotated ...
-                if( arpGraphicsItemsSelected.size() > 0 )
-                {
+                if (arpGraphicsItemsSelected.size() > 0) {
                     double fRotAngleOffs_deg = 0.0;
                     double fRotAngle_deg = 0.0;
-
-                    if( i_pEv->key() == Qt::Key_Plus )
-                    {
+                    if (i_pEv->key() == Qt::Key_Plus) {
                         fRotAngleOffs_deg = 1.0; // by one degree
                     }
-                    else // if( i_pEv->key() == Qt::Key_Minus )
-                    {
+                    else {
                         fRotAngleOffs_deg = -1.0; // be one degree
                     }
-
-                    for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-                    {
-                        pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
-                        pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
+                    for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsSelected) {
+                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                         // Children will be moved together with their parents ...
-                        if( pGraphObj != nullptr && pGraphicsItem->parentItem() == nullptr )
-                        {
+                        if (pGraphObj != nullptr && pGraphicsItem->parentItem() == nullptr) {
                             fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
-
                             fRotAngle_deg += fRotAngleOffs_deg;
-
                             pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
                         }
-                    } // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-                } // if( arpGraphicsItemsSelected.size() > 0 )
-            } // if( m_editTool == EEditTool::Select )
-        } // if( i_pEv->key() == Qt::Key_Plus || i_pEv->key() == Qt::Key_Minus )
+                    }
+                }
+            //} // if( m_editTool == EEditTool::Select )
+        }
 
         // Pressed key to delete selected objects ...
-        else if( i_pEv->key() == Qt::Key_Delete )
-        {
+        else if (i_pEv->key() == Qt::Key_Delete) {
             QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
-            QStringList           strlstGraphObjIdsSelected;
-            QString               strGraphObjId;
-
+            QStringList strlstGraphObjIdsSelected;
             // On deleting a graphical object the object may destroy other graphical objects
             // (e.g. connection points may delete connection lines) and the list of selected
             // items may change while the dtor is in process. So we don't store a list with object
             // references but a list with object ids and check whether the object still belong
             // to the drawing scene before deleting the object.
-
-            for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-            {
-                pGraphicsItem = arpGraphicsItemsSelected[idxGraphObj];
-
-                if( pGraphicsItem != m_pGraphicsItemSelectionArea )
-                {
-                    pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-                    if( pGraphObj != nullptr )
-                    {
-                        strlstGraphObjIdsSelected.append( pGraphObj->keyInTree() );
+            for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsSelected) {
+                if (pGraphicsItem != m_pGraphicsItemSelectionArea) {
+                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                    if (pGraphObj != nullptr) {
+                        strlstGraphObjIdsSelected.append(pGraphObj->keyInTree());
                     }
                 }
             }
-
-            for( idxGraphObj = 0; idxGraphObj < strlstGraphObjIdsSelected.size(); idxGraphObj++ )
-            {
-                strGraphObjId = strlstGraphObjIdsSelected[idxGraphObj];
-
-                pGraphObj = findGraphObj(strGraphObjId);
-
-                if( pGraphObj != nullptr )
-                {
+            for (const QString& strGraphObjId : strlstGraphObjIdsSelected) {
+                CGraphObj* pGraphObj = findGraphObj(strGraphObjId);
+                if (pGraphObj != nullptr) {
                     delete pGraphObj;
                     pGraphObj = nullptr;
                 }
             }
-
-        } // if( i_pEv->key() == Qt::Key_Delete )
+        }
 
         // Pressed key to copy selected objects to the (internal) clipboard ...
-        else if( i_pEv->key() == Qt::Key_C )
-        {
-            if( m_iEvKeyModifiers == Qt::ControlModifier )
-            {
+        else if (i_pEv->key() == Qt::Key_C) {
+            if (m_iEvKeyModifiers == Qt::ControlModifier) {
                 //// Clear internal clipboard.
-                //if( m_dctpGraphObjsClipboard.size() > 0 )
-                //{
+                //if (m_dctpGraphObjsClipboard.size() > 0) {
                 //    QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
-
                 //    while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
                 //    {
                 //        pGraphObj = itGraphObjsClipboard.value();
@@ -4303,10 +4146,8 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
         } // if( i_pEv->key() == Qt::Key_C )
 
         // Pressed key to insert the objects from the (internal) clipboard ...
-        else if( i_pEv->key() == Qt::Key_V )
-        {
-            if( m_iEvKeyModifiers == Qt::ControlModifier )
-            {
+        else if (i_pEv->key() == Qt::Key_V) {
+            if (m_iEvKeyModifiers == Qt::ControlModifier) {
                 //CGraphObj*                pGraphObjClone;
                 //QGraphicsItem*            pGraphicsItemClone;
                 //CGraphObjConnectionLine*  pGraphObjCnctLine;
@@ -4664,22 +4505,19 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onGraphObjAboutToBeDestroyed",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
     if (pGraphicsItem != nullptr && pGraphicsItem->scene() != nullptr) {
         removeItem(pGraphicsItem);
     }
-    if (m_pGraphObjCreating != nullptr && m_pGraphObjCreating == i_pGraphObj) {
-        m_pGraphicsItemCreating = nullptr;
-        m_pGraphObjCreating = nullptr;
-    }
-    if (m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints == i_pGraphObj) {
-        m_pGraphicsItemAddingShapePoints = nullptr;
-        m_pGraphObjAddingShapePoints = nullptr;
-    }
+    //if (m_pGraphObjCreating != nullptr && m_pGraphObjCreating == i_pGraphObj) {
+    //    m_pGraphicsItemCreating = nullptr;
+    //    m_pGraphObjCreating = nullptr;
+    //}
+    //if (m_pGraphObjAddingShapePoints != nullptr && m_pGraphObjAddingShapePoints == i_pGraphObj) {
+    //    m_pGraphicsItemAddingShapePoints = nullptr;
+    //    m_pGraphObjAddingShapePoints = nullptr;
+    //}
 
     // The children will be recursively deleted by the CGraphObj destructor.
     /*
@@ -4709,9 +4547,6 @@ void CDrawingScene::onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj)
     }
     */
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
 } // onGraphObjAboutToBeDestroyed
 
 /*==============================================================================
@@ -4724,38 +4559,38 @@ protected: // auxiliary methods
     Before sending the event to the graphics item the scene pos and last scene pos
     are mapped to the local coordinate system of the item.
 */
-void CDrawingScene::forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsSceneMouseEvent* i_pEv)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
-        strMthInArgs = pGraphObj->keyInTree() + ", {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "forwardMouseEvent",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsSceneMouseEvent ev(i_pEv->type());
-
-    QPointF ptMouseItemPos = i_pGraphicsItem->mapFromScene(i_pEv->scenePos());
-    QPointF ptMouseItemPosLast = i_pGraphicsItem->mapFromScene(i_pEv->lastScenePos());
-
-    ev.setWidget(i_pEv->widget());
-    ev.setPos(ptMouseItemPos);
-    ev.setLastPos(ptMouseItemPosLast);
-    ev.setScenePos(i_pEv->scenePos());
-    ev.setLastScenePos(i_pEv->lastScenePos());
-    ev.setScreenPos(i_pEv->screenPos());
-    ev.setLastScreenPos(i_pEv->lastScreenPos());
-    ev.setButton(i_pEv->button());
-    ev.setButtons(i_pEv->buttons());
-    ev.setModifiers(i_pEv->modifiers());
-
-    sendEvent(i_pGraphicsItem, &ev);
-}
+//void CDrawingScene::forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsSceneMouseEvent* i_pEv)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
+//        strMthInArgs = pGraphObj->keyInTree() + ", {" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "forwardMouseEvent",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QGraphicsSceneMouseEvent ev(i_pEv->type());
+//
+//    QPointF ptMouseItemPos = i_pGraphicsItem->mapFromScene(i_pEv->scenePos());
+//    QPointF ptMouseItemPosLast = i_pGraphicsItem->mapFromScene(i_pEv->lastScenePos());
+//
+//    ev.setWidget(i_pEv->widget());
+//    ev.setPos(ptMouseItemPos);
+//    ev.setLastPos(ptMouseItemPosLast);
+//    ev.setScenePos(i_pEv->scenePos());
+//    ev.setLastScenePos(i_pEv->lastScenePos());
+//    ev.setScreenPos(i_pEv->screenPos());
+//    ev.setLastScreenPos(i_pEv->lastScreenPos());
+//    ev.setButton(i_pEv->button());
+//    ev.setButtons(i_pEv->buttons());
+//    ev.setModifiers(i_pEv->modifiers());
+//
+//    sendEvent(i_pGraphicsItem, &ev);
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Forwards (sends, dispatches) the event to the objects which are hit
@@ -4779,166 +4614,166 @@ void CDrawingScene::forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsS
     should always be selectable by mouse clicks. The polyline as the outer object
     should only be selected if one of its line segments would be hit.
 */
-void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "{" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "forwardMouseEventToObjectsHit",
-        /* strAddInfo   */ strMthInArgs );
-
-    QRectF rctToCheck(
-        /* x      */ i_pEv->scenePos().x() - m_fHitTolerance_px,
-        /* y      */ i_pEv->scenePos().y() - m_fHitTolerance_px,
-        /* width  */ 2.0 * m_fHitTolerance_px,
-        /* height */ 2.0 * m_fHitTolerance_px);
-    QList<QGraphicsItem*> arpGraphicsItemsIntersected =
-        items(rctToCheck, Qt::IntersectsItemShape, Qt::AscendingOrder);
-    QList<QGraphicsItem*> arpGraphicsItemsHit;
-    if (arpGraphicsItemsIntersected.size() > 0) {
-        for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsIntersected.size(); idxGraphObj++) {
-            QGraphicsItem* pGraphicsItem = arpGraphicsItemsIntersected[idxGraphObj];
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-            if (pGraphicsItem != nullptr && pGraphObj != nullptr) {
-                QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(i_pEv->scenePos());
-                // Selected graphic items are considered as being hit if it has been clicked
-                // inside their bounding rectangle. But if selected items overlap other items
-                // whose shape edge points or bounding rectangles have been clicked the mouse
-                // events should be passed through to those objects.
-                bool bGraphObjHit = pGraphObj->isHit(ptMouseItemPos, nullptr);
-                if (bGraphObjHit) {
-                    arpGraphicsItemsHit.append(pGraphicsItem);
-                }
-            }
-        }
-    }
-
-    /*  Temporarily bring all objects to front which have been hit so that
-        Qt dispatches the mouse press events to those objects.
-        We use a double nested loop to achieve the following order:
-
-        1. Not selected objects
-            1.1. Graphics items which are not groups, connection points, labels or selection points.
-            1.2. Selection Points of Graphics Items
-            1.3. Labels of Graphics Items
-            1.4. Connection Points
-            1.5. Groups (only in view mode)
-        2. Selected objects
-            1.1. Graphics items which are not groups, connection points, labels or selection points.
-            2.2. Selection Points of Graphics Items
-            2.3. Labels of Graphics Items
-            2.4. Connection Points
-            2.5. Groups (only in view mode)
-
-        Items at the end of the list are "above" the objects listed before
-        and will receive the mouse events.
-        Please note that the second outer loop for selected objects will be
-        executed also in view mode even if unnecessary as in simulation
-        mode there will be no selected objects.
-    */
-
-    if (arpGraphicsItemsHit.size() > 0) {
-        // In first loop for all objects hit, check objects which are unselected.
-        // In second loop for all objects hit, check objects which are selected.
-        const QVector<bool> c_arbSelected = {false, true};
-        const QVector<EGraphObjType> c_arGraphObjTypes = {
-            EGraphObjTypeUndefined,
-            EGraphObjTypeSelectionPoint,
-            EGraphObjTypeLabel,
-            EGraphObjTypeConnectionPoint,
-            EGraphObjTypeGroup
-        };
-        for (bool bSelected : c_arbSelected) {
-            for (EGraphObjType graphObjType : c_arGraphObjTypes) {
-                for (QGraphicsItem* pGraphicsItemHit : arpGraphicsItemsHit) {
-                    bool bBringToFront = false;
-                    CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
-                    if (pGraphicsItemHit != nullptr && pGraphObjHit != nullptr) {
-                        if (bSelected == pGraphicsItemHit->isSelected()) {
-                            if (graphObjType == EGraphObjTypeUndefined) {
-                                if (!pGraphObjHit->isSelectionPoint() && !pGraphObjHit->isLabel()
-                                    && !pGraphObjHit->isConnectionPoint() && !pGraphObjHit->isGroup()) {
-                                    bBringToFront = true;
-                                }
-                            }
-                            else if (graphObjType == EGraphObjTypeLabel) {
-                                bBringToFront = pGraphObjHit->isLabel();
-                            }
-                            else {
-                                bBringToFront = (graphObjType == pGraphObjHit->type());
-                            }
-                        }
-                        if (bBringToFront) {
-                            bringToFront(pGraphicsItemHit, arpGraphicsItemsIntersected);
-                            pGraphicsItemHit->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
-                            // Append object hit by mouse cursor to list of objects temporarily brought to front.
-                            bool bGraphObjBroughtToFrontFound = false;
-                            for (QGraphicsItem* pGraphicsItem : m_arpGraphicsItemsBroughtToFront) {
-                                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                                // If already part of list ...
-                                if (pGraphObjHit == pGraphObj) {
-                                    bGraphObjBroughtToFrontFound = true;
-                                    break;
-                                }
-                            }
-                            // If not already part of list ...
-                            if (!bGraphObjBroughtToFrontFound) {
-                                m_arpGraphicsItemsBroughtToFront.append(pGraphicsItemHit);
-                            }
-                        }
-                    }
-                } // for (int idxGraphObj = arpGraphicsItemsHit.size()-1; idxGraphObj >= 0; idxGraphObj--)
-            } // for (int idxObjType = 0; idxObjType < c_iInnerLoopCount; idxObjType++)
-        } // for (int idxSel = 0; idxSel < c_iOuterLoopCount; idxSel++)
-    } // if( arpGraphicsItemsHit.size() > 0 )
-
-    // Dispatch mouse press event to objects which have been hit.
-    QGraphicsScene::mousePressEvent(i_pEv);
-
-    // After the mouse event has been dispatched the Z-order of the objects temporarily brought to front
-    // must be restored. While dispatching the mouse press event to the graphics scene objects some of the
-    // objects may be destroyed (e.g. selection points or labels).
-    for (QGraphicsItem* pGraphicsItem : m_arpGraphicsItemsBroughtToFront) {
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-        if (pGraphObj != nullptr) {
-            pGraphObj->resetStackingOrderValueToOriginalValue();
-        }
-    }
-    m_arpGraphicsItemsBroughtToFront.clear();
-
-    // In edit mode ..
-    if (m_mode == EMode::Edit) {
-        // If no item has been hit ...
-        if (selectedItems().size() == 0) {
-            // .. create selection rectangle area if not yet existing.
-            setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
-            QRectF rctSelectionArea(
-                /* x      */ i_pEv->scenePos().x(),
-                /* y      */ i_pEv->scenePos().y(),
-                /* width  */ 1,
-                /* height */ 1 );
-            if (m_pGraphicsItemSelectionArea == nullptr) {
-                QPen penSelectionArea(Qt::DotLine);
-                penSelectionArea.setColor(Qt::black);
-                QBrush brsSelectionArea(Qt::SolidPattern);
-                int iHue   = 240; // 0..359
-                int iSat   =  63; // 0..255
-                int iVal   = 127; // 0..255
-                int iAlpha =  63; // 0..255
-                brsSelectionArea.setColor(QColor::fromHsv(iHue, iSat, iVal, iAlpha));
-                m_pGraphicsItemSelectionArea = addRect(
-                    /* rect   */ rctSelectionArea,
-                    /* pen    */ penSelectionArea,
-                    /* brush  */ brsSelectionArea );
-            }
-        }
-    }
-}
+//void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "{" + qGraphicsSceneMouseEvent2Str(i_pEv) + "}";
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObj,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod    */ "forwardMouseEventToObjectsHit",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QRectF rctToCheck(
+//        /* x      */ i_pEv->scenePos().x() - m_fHitTolerance_px,
+//        /* y      */ i_pEv->scenePos().y() - m_fHitTolerance_px,
+//        /* width  */ 2.0 * m_fHitTolerance_px,
+//        /* height */ 2.0 * m_fHitTolerance_px);
+//    QList<QGraphicsItem*> arpGraphicsItemsIntersected =
+//        items(rctToCheck, Qt::IntersectsItemShape, Qt::AscendingOrder);
+//    QList<QGraphicsItem*> arpGraphicsItemsHit;
+//    if (arpGraphicsItemsIntersected.size() > 0) {
+//        for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsIntersected.size(); idxGraphObj++) {
+//            QGraphicsItem* pGraphicsItem = arpGraphicsItemsIntersected[idxGraphObj];
+//            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+//            if (pGraphicsItem != nullptr && pGraphObj != nullptr) {
+//                QPointF ptMouseItemPos = pGraphicsItem->mapFromScene(i_pEv->scenePos());
+//                // Selected graphic items are considered as being hit if it has been clicked
+//                // inside their bounding rectangle. But if selected items overlap other items
+//                // whose shape edge points or bounding rectangles have been clicked the mouse
+//                // events should be passed through to those objects.
+//                bool bGraphObjHit = pGraphObj->isHit(ptMouseItemPos, nullptr);
+//                if (bGraphObjHit) {
+//                    arpGraphicsItemsHit.append(pGraphicsItem);
+//                }
+//            }
+//        }
+//    }
+//
+//    /*  Temporarily bring all objects to front which have been hit so that
+//        Qt dispatches the mouse press events to those objects.
+//        We use a double nested loop to achieve the following order:
+//
+//        1. Not selected objects
+//            1.1. Graphics items which are not groups, connection points, labels or selection points.
+//            1.2. Selection Points of Graphics Items
+//            1.3. Labels of Graphics Items
+//            1.4. Connection Points
+//            1.5. Groups (only in view mode)
+//        2. Selected objects
+//            1.1. Graphics items which are not groups, connection points, labels or selection points.
+//            2.2. Selection Points of Graphics Items
+//            2.3. Labels of Graphics Items
+//            2.4. Connection Points
+//            2.5. Groups (only in view mode)
+//
+//        Items at the end of the list are "above" the objects listed before
+//        and will receive the mouse events.
+//        Please note that the second outer loop for selected objects will be
+//        executed also in view mode even if unnecessary as in simulation
+//        mode there will be no selected objects.
+//    */
+//
+//    if (arpGraphicsItemsHit.size() > 0) {
+//        // In first loop for all objects hit, check objects which are unselected.
+//        // In second loop for all objects hit, check objects which are selected.
+//        const QVector<bool> c_arbSelected = {false, true};
+//        const QVector<EGraphObjType> c_arGraphObjTypes = {
+//            EGraphObjTypeUndefined,
+//            EGraphObjTypeSelectionPoint,
+//            EGraphObjTypeLabel,
+//            EGraphObjTypeConnectionPoint,
+//            EGraphObjTypeGroup
+//        };
+//        for (bool bSelected : c_arbSelected) {
+//            for (EGraphObjType graphObjType : c_arGraphObjTypes) {
+//                for (QGraphicsItem* pGraphicsItemHit : arpGraphicsItemsHit) {
+//                    bool bBringToFront = false;
+//                    CGraphObj* pGraphObjHit = dynamic_cast<CGraphObj*>(pGraphicsItemHit);
+//                    if (pGraphicsItemHit != nullptr && pGraphObjHit != nullptr) {
+//                        if (bSelected == pGraphicsItemHit->isSelected()) {
+//                            if (graphObjType == EGraphObjTypeUndefined) {
+//                                if (!pGraphObjHit->isSelectionPoint() && !pGraphObjHit->isLabel()
+//                                    && !pGraphObjHit->isConnectionPoint() && !pGraphObjHit->isGroup()) {
+//                                    bBringToFront = true;
+//                                }
+//                            }
+//                            else if (graphObjType == EGraphObjTypeLabel) {
+//                                bBringToFront = pGraphObjHit->isLabel();
+//                            }
+//                            else {
+//                                bBringToFront = (graphObjType == pGraphObjHit->type());
+//                            }
+//                        }
+//                        if (bBringToFront) {
+//                            bringToFront(pGraphicsItemHit, arpGraphicsItemsIntersected);
+//                            pGraphicsItemHit->setAcceptedMouseButtons(Qt::LeftButton|Qt::RightButton|Qt::MiddleButton|Qt::XButton1|Qt::XButton2);
+//                            // Append object hit by mouse cursor to list of objects temporarily brought to front.
+//                            bool bGraphObjBroughtToFrontFound = false;
+//                            for (QGraphicsItem* pGraphicsItem : m_arpGraphicsItemsBroughtToFront) {
+//                                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+//                                // If already part of list ...
+//                                if (pGraphObjHit == pGraphObj) {
+//                                    bGraphObjBroughtToFrontFound = true;
+//                                    break;
+//                                }
+//                            }
+//                            // If not already part of list ...
+//                            if (!bGraphObjBroughtToFrontFound) {
+//                                m_arpGraphicsItemsBroughtToFront.append(pGraphicsItemHit);
+//                            }
+//                        }
+//                    }
+//                } // for (int idxGraphObj = arpGraphicsItemsHit.size()-1; idxGraphObj >= 0; idxGraphObj--)
+//            } // for (int idxObjType = 0; idxObjType < c_iInnerLoopCount; idxObjType++)
+//        } // for (int idxSel = 0; idxSel < c_iOuterLoopCount; idxSel++)
+//    } // if( arpGraphicsItemsHit.size() > 0 )
+//
+//    // Dispatch mouse press event to objects which have been hit.
+//    QGraphicsScene::mousePressEvent(i_pEv);
+//
+//    // After the mouse event has been dispatched the Z-order of the objects temporarily brought to front
+//    // must be restored. While dispatching the mouse press event to the graphics scene objects some of the
+//    // objects may be destroyed (e.g. selection points or labels).
+//    for (QGraphicsItem* pGraphicsItem : m_arpGraphicsItemsBroughtToFront) {
+//        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+//        if (pGraphObj != nullptr) {
+//            pGraphObj->resetStackingOrderValueToOriginalValue();
+//        }
+//    }
+//    m_arpGraphicsItemsBroughtToFront.clear();
+//
+//    // In edit mode ..
+//    if (m_mode == EMode::Edit) {
+//        // If no item has been hit ...
+//        if (selectedItems().size() == 0) {
+//            // .. create selection rectangle area if not yet existing.
+//            //setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
+//            QRectF rctSelectionArea(
+//                /* x      */ i_pEv->scenePos().x(),
+//                /* y      */ i_pEv->scenePos().y(),
+//                /* width  */ 1,
+//                /* height */ 1 );
+//            if (m_pGraphicsItemSelectionArea == nullptr) {
+//                QPen penSelectionArea(Qt::DotLine);
+//                penSelectionArea.setColor(Qt::black);
+//                QBrush brsSelectionArea(Qt::SolidPattern);
+//                int iHue   = 240; // 0..359
+//                int iSat   =  63; // 0..255
+//                int iVal   = 127; // 0..255
+//                int iAlpha =  63; // 0..255
+//                brsSelectionArea.setColor(QColor::fromHsv(iHue, iSat, iVal, iAlpha));
+//                m_pGraphicsItemSelectionArea = addRect(
+//                    /* rect   */ rctSelectionArea,
+//                    /* pen    */ penSelectionArea,
+//                    /* brush  */ brsSelectionArea );
+//            }
+//        }
+//    }
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Removes the item and all its childs recursively from the list of 
@@ -4961,16 +4796,16 @@ void CDrawingScene::forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pE
     @note Labels and selection points are not added as childs to the graphic item
           they belong to. They are only linked to its parent via the parent member.
 */
-void CDrawingScene::invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem)
-//------------------------------------------------------------------------------
-{
-    for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
-        QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
-        if (pGraphicsItem != nullptr && (pGraphicsItem == i_pGraphicsItem || pGraphicsItem->parentItem() == i_pGraphicsItem)) {
-            m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] = nullptr;
-        }
-    }
-}
+//void CDrawingScene::invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem)
+////------------------------------------------------------------------------------
+//{
+//    for (int idxGraphObj = m_arpGraphicsItemsAcceptingHoverEvents.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+//        QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj];
+//        if (pGraphicsItem != nullptr && (pGraphicsItem == i_pGraphicsItem || pGraphicsItem->parentItem() == i_pGraphicsItem)) {
+//            m_arpGraphicsItemsAcceptingHoverEvents[idxGraphObj] = nullptr;
+//        }
+//    }
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Removes the item and all its childs recursively from the list of 
@@ -4978,16 +4813,16 @@ void CDrawingScene::invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pG
 
     see invalidateItemInAcceptingHoverEventsList
 */
-void CDrawingScene::invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem)
-//------------------------------------------------------------------------------
-{
-    for (int idxGraphObj = m_arpGraphicsItemsBroughtToFront.size()-1; idxGraphObj >= 0; idxGraphObj--) {
-        QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsBroughtToFront[idxGraphObj];
-        if (pGraphicsItem != nullptr && (pGraphicsItem == i_pGraphicsItem || pGraphicsItem->parentItem() == i_pGraphicsItem)) {
-            m_arpGraphicsItemsBroughtToFront[idxGraphObj] = nullptr;
-        }
-    }
-}
+//void CDrawingScene::invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem)
+////------------------------------------------------------------------------------
+//{
+//    for (int idxGraphObj = m_arpGraphicsItemsBroughtToFront.size()-1; idxGraphObj >= 0; idxGraphObj--) {
+//        QGraphicsItem* pGraphicsItem = m_arpGraphicsItemsBroughtToFront[idxGraphObj];
+//        if (pGraphicsItem != nullptr && (pGraphicsItem == i_pGraphicsItem || pGraphicsItem->parentItem() == i_pGraphicsItem)) {
+//            m_arpGraphicsItemsBroughtToFront[idxGraphObj] = nullptr;
+//        }
+//    }
+//}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::paintGridLines(QPainter* i_pPainter)
@@ -5699,16 +5534,38 @@ void CDrawingScene::emit_mousePosChanged( const QPointF& i_ptMousePos )
 }
 
 //------------------------------------------------------------------------------
-void CDrawingScene::emit_modeChanged()
+void CDrawingScene::emit_modeChanged(const ZS::System::CEnumMode& i_eMode)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal) ) {
+        strMthInArgs = i_eMode.toString();
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "emit_modeChanged",
-        /* strAddInfo   */ "" );
+        /* strAddInfo   */ strMthInArgs );
 
-    emit modeChanged();
+    emit modeChanged(i_eMode);
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::emit_drawingToolChanged(
+    const QString& i_strFactoryGrpName, const QString& i_strGraphObjType)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strFactoryGrpName + ", " + i_strGraphObjType;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "emit_drawingToolChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    emit drawingToolChanged(i_strFactoryGrpName, i_strGraphObjType);
 }
 
 //------------------------------------------------------------------------------
@@ -5739,29 +5596,29 @@ protected: // auxiliary instance methods (method tracing)
 //{
 //    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel))
 //    {
-//        QString strAddTrcInfo;
+//        QString strMthInArgs;
 //        if (i_mthDir == EMethodDir::Enter) {
-//            strAddTrcInfo = "-+ ";
+//            strMthInArgs = "-+ ";
 //        } else if (i_mthDir == EMethodDir::Leave) {
-//            strAddTrcInfo = "+- ";
+//            strMthInArgs = "+- ";
 //        } else {
-//            strAddTrcInfo = "   ";
+//            strMthInArgs = "   ";
 //        }
-//        strAddTrcInfo = "SceneRect {" + qRect2Str(sceneRect()) + "}";
-//        i_mthTracer.trace(strAddTrcInfo);
+//        strMthInArgs = "SceneRect {" + qRect2Str(sceneRect()) + "}";
+//        i_mthTracer.trace(strMthInArgs);
 //        if (i_mthDir == EMethodDir::Enter) {
-//            strAddTrcInfo = "-+ ";
+//            strMthInArgs = "-+ ";
 //        } else if (i_mthDir == EMethodDir::Leave) {
-//            strAddTrcInfo = "+- ";
+//            strMthInArgs = "+- ";
 //        } else {
-//            strAddTrcInfo = "   ";
+//            strMthInArgs = "   ";
 //        }
-//        strAddTrcInfo += "Mode: " + m_mode.toString() +
+//        strMthInArgs += "Mode: " + m_mode.toString() +
 //            ", EditTool: " + m_editTool.toString() +
 //            ", EditMode: " + m_editMode.toString() +
 //            ", ResizeMode: " + m_editResizeMode.toString() +
 //            ", ObjFactory: " + QString(m_pObjFactory == nullptr ? "nullptr" : m_pObjFactory->path()) +
 //            ", GraphObjCreating: " + QString(m_pGraphObjCreating == nullptr ? "nullptr" : m_pGraphObjCreating->name());
-//        i_mthTracer.trace(strAddTrcInfo);
+//        i_mthTracer.trace(strMthInArgs);
 //    }
 //}

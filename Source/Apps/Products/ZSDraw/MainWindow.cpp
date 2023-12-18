@@ -438,6 +438,9 @@ CMainWindow::CMainWindow(
         pDrawingScene, &CDrawingScene::modeChanged,
         this, &CMainWindow::onDrawingSceneModeChanged );
     QObject::connect(
+        pDrawingScene, &CDrawingScene::drawingToolChanged,
+        this, &CMainWindow::onDrawingSceneDrawingToolChanged );
+    QObject::connect(
         pDrawingScene, &CDrawingScene::drawSettingsChanged,
         this, &CMainWindow::onDrawingSceneDrawSettingsChanged );
 
@@ -477,7 +480,15 @@ CMainWindow::CMainWindow(
     // Initialize Status Settings
     //---------------------------
 
-    onDrawingSceneModeChanged();
+    QString strFactoryGroupName;
+    QString strGraphObjType;
+    CObjFactory* pObjFactory = pDrawingScene->getCurrentDrawingTool();
+    if (pObjFactory != nullptr) {
+        strFactoryGroupName = pObjFactory->getGroupName();
+        strGraphObjType = pObjFactory->getGraphObjTypeAsString();
+    }
+    onDrawingSceneModeChanged(pDrawingScene->getMode());
+    onDrawingSceneDrawingToolChanged(strFactoryGroupName, strGraphObjType);
     onDrawingSceneSizeChanged(pDrawingScene->drawingSize());
     onDrawingSceneDrawSettingsChanged(pDrawingScene->drawSettings());
 
@@ -3548,17 +3559,17 @@ void CMainWindow::onActionEditSelectToggled(bool i_bChecked)
         }
         m_pActDrawChecked = m_pActEditSelect;
         pDrawingScene->setCurrentDrawingTool(nullptr);
-        pDrawingScene->setMode(
-            EMode::Undefined, EEditTool::Select, EEditMode::None, EEditResizeMode::None);
+        //pDrawingScene->setMode(
+        //    EMode::Undefined, EEditTool::Select, EEditMode::None, EEditResizeMode::None);
     }
     else {
         if( m_pActDrawChecked == m_pActEditSelect ) {
             m_pActDrawChecked = nullptr;
         }
-        if( pDrawingScene->getEditTool() == EEditTool::Select ) {
-            pDrawingScene->setMode(
-                EMode::Undefined, EEditTool::None, EEditMode::None, EEditResizeMode::None);
-        }
+        //if( pDrawingScene->getEditTool() == EEditTool::Select ) {
+        //    pDrawingScene->setMode(
+        //        EMode::Undefined, EEditTool::None, EEditMode::None, EEditResizeMode::None);
+        //}
     }
 }
 
@@ -4146,9 +4157,7 @@ void CMainWindow::onDrawingSceneFocusItemChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObjNew = dynamic_cast<CGraphObj*>(i_pNewFocusItem);
         CGraphObj* pGraphObjOld = dynamic_cast<CGraphObj*>(i_pOldFocusItem);
         strMthInArgs  = "NewItem:" + QString(pGraphObjNew == nullptr ? "nullptr" : pGraphObjNew->path());
@@ -4201,29 +4210,38 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
 }
 
 //------------------------------------------------------------------------------
-void CMainWindow::onDrawingSceneModeChanged()
+void CMainWindow::onDrawingSceneModeChanged(const CEnumMode& i_mode)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal) )  {
+        strMthInArgs = i_mode.toString();
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneModeChanged",
         /* strAddInfo   */ "" );
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        if (m_pWdgtCentral != nullptr) {
-            CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-            int iObjFactoryType = pDrawingScene->getCurrentDrawingToolGraphObjType();
-            CGraphObj* pGraphObjCreating = pDrawingScene->getGraphObjCreating();
-            QString strAddTrcInfo = "Mode:" + pDrawingScene->getMode().toString() +
-                ", EditTool:" + pDrawingScene->getEditTool().toString() +
-                ", EditMode:" + pDrawingScene->getEditMode().toString() +
-                ", ResizeMode:" + pDrawingScene->getEditResizeMode().toString() +
-                ", ObjFactory:" + graphObjType2Str(iObjFactoryType) +
-                ", GraphObjCreating: " + QString(pGraphObjCreating == nullptr ? "nullptr" : pGraphObjCreating->name());
-            mthTracer.trace(strAddTrcInfo);
-        }
+    updateWindowTitle();
+    updateActions();
+    updateStatusBar();
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onDrawingSceneDrawingToolChanged(
+    const QString& i_strFactoryGrpName, const QString& i_strGraphObjType)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if( areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal) )  {
+        strMthInArgs = i_strFactoryGrpName + ", " + i_strGraphObjType;
     }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onDrawingSceneDrawingToolChanged",
+        /* strAddInfo   */ "" );
 
     updateWindowTitle();
     updateActions();
@@ -4533,83 +4551,77 @@ void CMainWindow::updateStatusBar()
         /* strMethod    */ "updateStatusBar",
         /* strAddInfo   */ "" );
 
-    if (m_pWdgtCentral != nullptr)
-    {
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    //if (m_pWdgtCentral != nullptr)
+    //{
+    //    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
 
-        if (m_pLblStatusBarDrawingSceneEditTool != nullptr) {
-            QString strEditInfo = "Tool: ";
-            CEnumEditTool editTool = pDrawingScene->getEditTool();
-            if( editTool == EEditTool::CreateObjects ) {
-                int     iGraphObjType = pDrawingScene->getCurrentDrawingToolGraphObjType();
-                QString strObjFactory = graphObjType2Str(iGraphObjType);
-                strEditInfo += "Create " + strObjFactory;
-            }
-            else if( editTool != EEditTool::None ) {
-                strEditInfo += editTool.toString();
-            }
-            m_pLblStatusBarDrawingSceneEditTool->setText(strEditInfo);
-        }
+    //    if (m_pLblStatusBarDrawingSceneEditTool != nullptr) {
+    //        QString strEditInfo = "Tool: ";
+    //        CEnumEditTool editTool = pDrawingScene->getEditTool();
+    //        if( editTool == EEditTool::CreateObjects ) {
+    //            int iGraphObjType = pDrawingScene->getCurrentDrawingToolGraphObjType();
+    //            QString strObjFactory = graphObjType2Str(iGraphObjType);
+    //            strEditInfo += "Create " + strObjFactory;
+    //        }
+    //        else if( editTool != EEditTool::None ) {
+    //            strEditInfo += editTool.toString();
+    //        }
+    //        m_pLblStatusBarDrawingSceneEditTool->setText(strEditInfo);
+    //    }
 
-        if (m_pLblStatusBarDrawingSceneEditMode != nullptr || m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr) {
-            QString strEditModeInfo;
-            QString strGraphObjEditInfo;
+    //    if (m_pLblStatusBarDrawingSceneEditMode != nullptr || m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr) {
+    //        QString strEditModeInfo;
+    //        QString strGraphObjEditInfo;
+    //        CEnumEditMode editMode = pDrawingScene->getEditMode();
+    //        if (editMode != EEditMode::None) {
+    //            QGraphicsItem* pGraphicsItemSelected = nullptr;
+    //            QList<QGraphicsItem*> arGraphicsItemSelected = pDrawingScene->selectedItems();
+    //            if (arGraphicsItemSelected.size() > 0) {
+    //                pGraphicsItemSelected = arGraphicsItemSelected[0];
+    //            }
+    //            //else if (pDrawingScene->getGraphicsItemCreating() != nullptr) {
+    //            //    pGraphicsItemSelected = pDrawingScene->getGraphicsItemCreating();
+    //            //}
 
-            CEnumEditMode       editMode       = pDrawingScene->getEditMode();
-            CEnumEditResizeMode editResizeMode = pDrawingScene->getEditResizeMode();
+    //            if (pGraphicsItemSelected != nullptr) {
+    //                CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+    //                if (pGraphObjSelected == nullptr) {
+    //                    throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
+    //                }
+    //                strEditModeInfo += pGraphObjSelected->name();
+    //                strGraphObjEditInfo += pGraphObjSelected->name() + ": " + pGraphObjSelected->getEditInfo();
+    //            }
 
-            QList<QGraphicsItem*> arGraphicsItemSelected = pDrawingScene->selectedItems();
-            QGraphicsItem*        pGraphicsItemCreating  = pDrawingScene->getGraphicsItemCreating();
-            QGraphicsItem*        pGraphicsItem = nullptr;
-            CGraphObj*            pGraphObj = nullptr;
-
-            if (editMode != EEditMode::None) {
-                if (arGraphicsItemSelected.size() > 0) {
-                    pGraphicsItem = arGraphicsItemSelected[0];
-                }
-                else if (pGraphicsItemCreating != nullptr) {
-                    pGraphicsItem = pGraphicsItemCreating;
-                }
-
-                if (pGraphicsItem != nullptr) {
-                    pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-                    if (pGraphObj == nullptr) {
-                        throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
-                    }
-                    strEditModeInfo += pGraphObj->name();
-                    strGraphObjEditInfo += pGraphObj->name() + ": " + pGraphObj->getEditInfo();
-                }
-
-                if (editMode == EEditMode::Resize) {
-                    if (editResizeMode >= 0 && editResizeMode < CEnumEditResizeMode::count()) {
-                        if (!strEditModeInfo.isEmpty()) {
-                            strEditModeInfo += ".";
-                        }
-                        strEditModeInfo += editResizeMode.toString();
-                    }
-                    else if (editMode != EEditMode::None) {
-                        if (!strEditModeInfo.isEmpty()) {
-                            strEditModeInfo += ".";
-                        }
-                        strEditModeInfo += editMode.toString();
-                    }
-                }
-                else {
-                    if (!strEditModeInfo.isEmpty()) {
-                        strEditModeInfo += ".";
-                    }
-                    strEditModeInfo += editMode.toString();
-                }
-            }
-            if (m_pLblStatusBarDrawingSceneEditMode != nullptr) {
-                m_pLblStatusBarDrawingSceneEditMode->setText("Mode: " + strEditModeInfo);
-            }
-            if (m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr) {
-                m_pLblStatusBarDrawingSceneGraphObjEditInfo->setText("Info: " + strGraphObjEditInfo);
-            }
-        }
-    }
+    //            if (editMode == EEditMode::Resize) {
+    //                CEnumEditResizeMode editResizeMode = pDrawingScene->getEditResizeMode();
+    //                if (editResizeMode >= 0 && editResizeMode < CEnumEditResizeMode::count()) {
+    //                    if (!strEditModeInfo.isEmpty()) {
+    //                        strEditModeInfo += ".";
+    //                    }
+    //                    strEditModeInfo += editResizeMode.toString();
+    //                }
+    //                else if (editMode != EEditMode::None) {
+    //                    if (!strEditModeInfo.isEmpty()) {
+    //                        strEditModeInfo += ".";
+    //                    }
+    //                    strEditModeInfo += editMode.toString();
+    //                }
+    //            }
+    //            else {
+    //                if (!strEditModeInfo.isEmpty()) {
+    //                    strEditModeInfo += ".";
+    //                }
+    //                strEditModeInfo += editMode.toString();
+    //            }
+    //        }
+    //        if (m_pLblStatusBarDrawingSceneEditMode != nullptr) {
+    //            m_pLblStatusBarDrawingSceneEditMode->setText("Mode: " + strEditModeInfo);
+    //        }
+    //        if (m_pLblStatusBarDrawingSceneGraphObjEditInfo != nullptr) {
+    //            m_pLblStatusBarDrawingSceneGraphObjEditInfo->setText("Info: " + strGraphObjEditInfo);
+    //        }
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -4867,11 +4879,11 @@ void CMainWindow::updateActions()
                 else {
                     m_pActEditSelect->setEnabled(true);
                 }
-                if (pDrawingScene->getEditTool() != EEditTool::Select) {
-                    m_pActEditSelect->setChecked(false);
+                if (pDrawingScene->getCurrentDrawingTool() == nullptr) {
+                    m_pActEditSelect->setChecked(true);
                 }
                 else {
-                    m_pActEditSelect->setChecked(true);
+                    m_pActEditSelect->setChecked(false);
                 }
             }
         }

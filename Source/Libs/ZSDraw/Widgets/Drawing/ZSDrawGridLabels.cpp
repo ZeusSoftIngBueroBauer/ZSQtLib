@@ -262,17 +262,17 @@ void CWdgtGridLabels::onDrawingViewContentAreaChanged()
 
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         QRect rect = m_pDrawingView->geometry();
-        QString strAddTrcInfo = "DrawingView.Geometry {" + qRect2Str(rect) + "}";
-        mthTracer.trace(strAddTrcInfo);
+        QString strMthInArgs = "DrawingView.Geometry {" + qRect2Str(rect) + "}";
+        mthTracer.trace(strMthInArgs);
         rect = m_pDrawingView->viewport()->geometry();
-        strAddTrcInfo = "DrawingView.Viewport.Geometry {" + qRect2Str(rect) + "}";
-        mthTracer.trace(strAddTrcInfo);
+        strMthInArgs = "DrawingView.Viewport.Geometry {" + qRect2Str(rect) + "}";
+        mthTracer.trace(strMthInArgs);
         int iScrollBarValue = m_pDrawingView->verticalScrollBar()->value();
-        strAddTrcInfo = "DrawingView.VerticalScrollBar.Value: " + QString::number(iScrollBarValue);
-        mthTracer.trace(strAddTrcInfo);
+        strMthInArgs = "DrawingView.VerticalScrollBar.Value: " + QString::number(iScrollBarValue);
+        mthTracer.trace(strMthInArgs);
         iScrollBarValue = m_pDrawingView->horizontalScrollBar()->value();
-        strAddTrcInfo = "DrawingView.HorizontalScrollBar.Value: " + QString::number(iScrollBarValue);
-        mthTracer.trace(strAddTrcInfo);
+        strMthInArgs = "DrawingView.HorizontalScrollBar.Value: " + QString::number(iScrollBarValue);
+        mthTracer.trace(strMthInArgs);
     }
 
     update();

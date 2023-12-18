@@ -187,8 +187,8 @@ public: // struct methods
 public: // struct methods
     QString toString() const;
 public: // struct members
-    CEnumEditMode m_editMode;
-    CEnumEditResizeMode m_editResizeMode;
+    //CEnumEditMode m_editMode;
+    //CEnumEditResizeMode m_editResizeMode;
     CEnumSelectionPoint m_selPtBoundingRect;
     int m_idxPolygonShapePoint;
     int m_idxLineSegment;
@@ -401,9 +401,17 @@ public: // struct members
     has been moved to adapt its shape.
     This information path could be implemented in two ways:
     - the parent could install a scene filter and listen to mouse events
-    - the parent can connect to the geometryChanged signal of the selection point.
-    Currently the first way is implemented. But the second way is preferrable as this
-    is a common way also used by other scenarios like moving labels or resizing groups.
+    - the parent can connect to the geometryChanged signal of the selection point and
+      the selection point connects to the geometryChanged signal of the object.
+    The second way is implemented even if it could lead to onGeometryChanged signal/slot chains.
+    If the selection point is moved, the graphical objects shape is modified emitting the
+    geometry changed signal which is reveived by the selection point.
+    If the graphical object is moved the geometryChanged signal is emitted and the
+    selection point updates its position emitting also the geometryChanged signal which
+    will be reveived again by the moved graphical object.
+    When comparing the geometry values this should not lead to an endless loop.
+    To be on save side a "geometryChangedSignalEmitted" flag is used to avoid the recursion.
+    Using sceneEventFilter would avoid the possible endless recursion but has other pitfalls.
 
     Labels
     ======
@@ -550,15 +558,15 @@ protected: // overridables of base class CIdxTreeEntry
     virtual void setKeyInTree(const QString& i_strKey) override;
 public: // instance methods
     QString getFactoryGroupName() const;
-    CEnumEditMode getEditMode() const;
-    CEnumEditResizeMode getEditResizeMode() const;
+    //CEnumEditMode getEditMode() const;
+    //CEnumEditResizeMode getEditResizeMode() const;
 public: // overridables (for subsystem test)
     virtual QString getScenePolygonShapePointsString() const;
 public: // instance methods
-    int getSelectedPolygonShapePointIndex() const;
-    CEnumSelectionPoint getSelectedBoundingRectPoint() const;
-    QString getToolTip() const;
-    QString getEditInfo() const;
+    //int getSelectedPolygonShapePointIndex() const;
+    //CEnumSelectionPoint getSelectedBoundingRectPoint() const;
+    //QString getToolTip() const;
+    //QString getEditInfo() const;
 public: // overridables
     virtual void onCreateAndExecDlgFormatGraphObjs();
 public: // overridables
@@ -660,13 +668,14 @@ public: // overridables
     virtual void setRotationAngleInDegree(double i_fRotAngle_deg);
     virtual double getRotationAngleInDegree(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed);
 public: // overridables
-    virtual void setEditMode(EEditMode i_editMode);
-    virtual void setEditResizeMode(EEditResizeMode i_editResizeMode);
+    //virtual void setEditMode(EEditMode i_editMode);
+    //virtual void setEditResizeMode(EEditResizeMode i_editResizeMode);
 public: // must overridables
-    virtual void setIsHit(bool i_bHit) = 0;
+    //virtual void setIsHit(bool i_bHit) = 0;
 public: // overridables
-    virtual bool isHit() const;
-    virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
+    //virtual bool isHit() const;
+    //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
+    virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const;
 public: // overridables
     virtual double bringToFront();
     virtual double setStackingOrderValue(double i_fZValue, ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current);
@@ -843,13 +852,13 @@ protected: // instance members
     /*!< Alignments of the graphical object to the parent group.. */
     QList<SGraphObjAlignment> m_arAlignments;
     /*!< Flag indicating whether the graphical object is hit by the mouse cursor. */
-    bool m_bIsHit;
-    /*!< Current edit mode. The current edit mode defines how the graphical object handels
-         incoming events like moving the mouse cursor. */
-    CEnumEditMode m_editMode;
-    /*!< If the graphical object is currently being resized this member defines how the object
-         will be resized. */
-    CEnumEditResizeMode m_editResizeMode;
+    //bool m_bIsHit;
+    ///*!< Current edit mode. The current edit mode defines how the graphical object handels
+    //     incoming events like moving the mouse cursor. */
+    //CEnumEditMode m_editMode;
+    ///*!< If the graphical object is currently being resized this member defines how the object
+    //     will be resized. */
+    //CEnumEditResizeMode m_editResizeMode;
     /*!< Defines the Z-Value which again defines the drawing order within the list
          of graphics item of the drawing scene.
          Two values are stored. The original version is the ZValue which will be initially used
@@ -858,14 +867,14 @@ protected: // instance members
          used to temporarily modify the ZValue to bring the object in front and back again. */
     QVector<double> m_arfZValues;
     /*!< Currently selected selection point of the items polygon. */
-    int m_idxSelPtSelectedPolygon;
+    //int m_idxSelPtSelectedPolygon;
     /*!< List of selections points. Selection points are used to resize the graphical object
          using the mouse. The number and type of selection poionts depend on the type of the
          graphical object. A line only has two selection points at the start and end  point.
          A rectangle has at least four selection points - one at each corner. */
     QList<CGraphObjSelectionPoint*> m_arpSelPtsPolygon;
     /*!< Currently selected selection point at the bounding rectangle. */
-    CEnumSelectionPoint m_selPtSelectedBoundingRect;
+    //CEnumSelectionPoint m_selPtSelectedBoundingRect;
     /*!< List of selection points at the bounding rectangle. */
     QVector<CGraphObjSelectionPoint*> m_arpSelPtsBoundingRect;
     /*!< List with predefined (reserved) label names.
@@ -966,8 +975,8 @@ protected: // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjIsHit;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEvent;
-    ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;
+    //ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEvent;
+    //ZS::System::CTrcAdminObj* m_pTrcAdminObjSceneEventFilter;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjHoverEvents;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseClickEvents;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvents;

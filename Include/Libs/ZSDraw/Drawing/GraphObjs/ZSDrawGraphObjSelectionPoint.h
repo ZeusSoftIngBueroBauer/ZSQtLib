@@ -73,9 +73,9 @@ public: // instance methods
 public: // instance methods
     void setRadiusInPx( double i_fRadius_px );
     double getRadiusInPx() const;
-public: // instance methods (replacing the methods of base class QGraphicsItem)
-    void setSelected( bool i_bSelected );
-    bool isSelected() const;
+//public: // instance methods (replacing the methods of base class QGraphicsItem)
+//    void setSelected( bool i_bSelected );
+//    bool isSelected() const;
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
@@ -86,11 +86,11 @@ public: // must overridables of base class CGraphObj
     virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const CPhysValSize& i_physValSize ) override;
 public: // must overridables of base class CGraphObj
-    virtual void setIsHit( bool /*i_bHit*/ ) override {}
+    //virtual void setIsHit( bool /*i_bHit*/ ) override {}
 public: // overridables of base class CGraphObj
-    virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
+    //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
-    void setCursor( const QCursor& cursor );
+    //void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {}
 protected: // overridables of base class CGraphObj
@@ -129,7 +129,7 @@ protected: // instance members
     /*!< Radius for drawing the selection point. */
     double m_fRadius_px;
     /*!< True if the selection point is selected for changing the shape of the graphical object. */
-    bool m_bSelected;
+    //bool m_bSelected;
     /*!< Flag used to avoid recursive calls of "updatePosition". */
     bool m_bUpdatePositionInProgress;
 

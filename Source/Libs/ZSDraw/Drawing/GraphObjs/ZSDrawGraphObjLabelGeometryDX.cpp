@@ -201,7 +201,7 @@ QRectF CGraphObjLabelGeometryDX::boundingRect() const
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
 
     // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
             rctBounding |= rctBoundingAnchorLine;
@@ -238,7 +238,7 @@ QPainterPath CGraphObjLabelGeometryDX::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
         }
@@ -278,7 +278,7 @@ void CGraphObjLabelGeometryDX::paint(
 
     CGraphObjLabel::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         i_pPainter->save();
         i_pPainter->setRenderHint(QPainter::Antialiasing);
         QPen pn = pen();
@@ -293,7 +293,7 @@ void CGraphObjLabelGeometryDX::paint(
         const QLineF& anchorLine = m_anchorLines[2];
          if (!rctBounding.contains(anchorLine.p2())) {
              if ((fabs(anchorLine.dx()) >= 5.0) || (fabs(anchorLine.dy()) >= 5.0)) {
-                QColor color = m_bIsHit || isSelected() ? Qt::blue : Qt::lightGray;
+                QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
                 color.setAlpha(192);
                 pn.setColor(color);
                 i_pPainter->setPen(pn);

@@ -202,7 +202,7 @@ QRectF CGraphObjLabelGeometryAngle::boundingRect() const
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
 
     // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
             rctBounding |= rctBoundingAnchorLine;
@@ -237,7 +237,7 @@ QPainterPath CGraphObjLabelGeometryAngle::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
         }
@@ -278,14 +278,14 @@ void CGraphObjLabelGeometryAngle::paint(
     // Draw anchor line 2 (circle segment) to indicate the angle if the label is hit,
     // hovered, selected or if the anchor line is set to be visible.
     // Use a different color if the line is hit, hovered or selected.
-    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
         i_pPainter->save();
         i_pPainter->setRenderHint(QPainter::Antialiasing);
         QPen pn = pen();
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
         if (fabs(m_rectAnchorLine2CircleSegment.width()) >= 20.0) {
-            QColor color = m_bIsHit || isSelected() ? Qt::blue : Qt::lightGray;
+            QColor color = /*m_bIsHit ||*/ isSelected() ? Qt::blue : Qt::lightGray;
             color.setAlpha(192);
             pn.setColor(color);
             i_pPainter->setPen(pn);

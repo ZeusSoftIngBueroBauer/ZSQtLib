@@ -469,14 +469,14 @@ public: // must overridables of base class CWdgtFormatGraphObjs
 void CWdgtFormatGraphObjsTextStyle::applyChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "applyChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if (m_pGraphObj != nullptr) {
         m_pGraphObj->setDrawSettings(m_drawSettings);
@@ -507,14 +507,14 @@ void CWdgtFormatGraphObjsTextStyle::applyChanges()
 void CWdgtFormatGraphObjsTextStyle::resetChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "resetChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_pGraphObj != nullptr )
     {
@@ -682,14 +682,14 @@ void CWdgtFormatGraphObjsTextStyle::onBtnTextColorClicked()
 void CWdgtFormatGraphObjsTextStyle::onCmbFontCurrentFontChanged( const QFont& i_fnt )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbFontCurrentFontChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_drawSettings.setTextFont(i_fnt);
 
@@ -701,7 +701,7 @@ void CWdgtFormatGraphObjsTextStyle::onCmbFontCurrentFontChanged( const QFont& i_
 void CWdgtFormatGraphObjsTextStyle::onCmbSizeCurrentIndexChanged( int i_idx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -711,7 +711,7 @@ void CWdgtFormatGraphObjsTextStyle::onCmbSizeCurrentIndexChanged( int i_idx )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCmbSizeCurrentIndexChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     m_drawSettings.setTextSize( static_cast<ETextSize>(i_idx) );
 
@@ -723,7 +723,7 @@ void CWdgtFormatGraphObjsTextStyle::onCmbSizeCurrentIndexChanged( int i_idx )
 void CWdgtFormatGraphObjsTextStyle::onChkFontStyleItalicStateChanged( int )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -733,7 +733,7 @@ void CWdgtFormatGraphObjsTextStyle::onChkFontStyleItalicStateChanged( int )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkFontStyleItalicStateChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CEnumTextStyle textStyle = ETextStyle::Normal;
 
@@ -760,7 +760,7 @@ void CWdgtFormatGraphObjsTextStyle::onChkFontStyleItalicStateChanged( int )
 void CWdgtFormatGraphObjsTextStyle::onChkFontStyleBoldStateChanged( int )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -770,7 +770,7 @@ void CWdgtFormatGraphObjsTextStyle::onChkFontStyleBoldStateChanged( int )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkFontStyleBoldStateChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CEnumTextStyle textStyle = ETextStyle::Normal;
 
@@ -797,7 +797,7 @@ void CWdgtFormatGraphObjsTextStyle::onChkFontStyleBoldStateChanged( int )
 void CWdgtFormatGraphObjsTextStyle::onChkTextEffectStrikeoutStateChanged( int )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -807,7 +807,7 @@ void CWdgtFormatGraphObjsTextStyle::onChkTextEffectStrikeoutStateChanged( int )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkTextEffectStrikeoutStateChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CEnumTextEffect textEffect = ETextEffect::None;
 
@@ -834,7 +834,7 @@ void CWdgtFormatGraphObjsTextStyle::onChkTextEffectStrikeoutStateChanged( int )
 void CWdgtFormatGraphObjsTextStyle::onChkTextEffectUnderlineStateChanged( int )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -844,7 +844,7 @@ void CWdgtFormatGraphObjsTextStyle::onChkTextEffectUnderlineStateChanged( int )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onChkTextEffectUnderlineStateChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CEnumTextEffect textEffect = ETextEffect::None;
 
@@ -875,7 +875,7 @@ protected: // instance methods
 void CWdgtFormatGraphObjsTextStyle::setTextColor( const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -885,7 +885,7 @@ void CWdgtFormatGraphObjsTextStyle::setTextColor( const CDrawSettings& i_drawSet
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setTextColor",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPainter painter(m_pPxmBtnTextColor);
 
@@ -903,7 +903,7 @@ void CWdgtFormatGraphObjsTextStyle::setTextColor( const CDrawSettings& i_drawSet
 void CWdgtFormatGraphObjsTextStyle::setFont( const CDrawSettings& i_drawSettings )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -913,7 +913,7 @@ void CWdgtFormatGraphObjsTextStyle::setFont( const CDrawSettings& i_drawSettings
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFont",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     // <ComboBox> Font
     //---------------------

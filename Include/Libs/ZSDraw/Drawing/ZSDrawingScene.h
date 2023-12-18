@@ -132,23 +132,22 @@ signals:
     void aboutToBeCleared();
     /*! Signal emitted if the drawing size has been changed.
         @param i_size [in] Contains the new drawing size (pixel dimension, metric, etc.). */
-    void drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
+    void drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
     /*! Signal emitted if the grid settings has been changed.
         @param i_settings [in] Contains the new grid settings (visibilities of lines, labels, etc.). */
-    void gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
+    void gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
     /*! Signal emitted if the mouse positions has been changed.
         @param i_ptMousePos [in] Current mouse position in pixels. */
-    void mousePosChanged( const QPointF& i_ptMousePos );
+    void mousePosChanged(const QPointF& i_ptMousePos);
     /*! Signal emitted if the mode has been changed.
-        The signal is emitted if the mode changes between Edit and View mode (see enum ZS::System:EMode) or
-        if the selected edit tool changed (see enum ZS::Draw::EEditTool) or
-        if the edit mode changed (see enum ZS::Draw::EEditMode) or
-        if the resize mode changed (see enum ZS::Draw::EEditResizeMode).
         See also method CDrawingScene::setMode. */
-    void modeChanged();
+    void modeChanged(const ZS::System::CEnumMode& i_eMode);
+    /*! Signal emitted if the mode has been changed.
+        See also method CDrawingScene::setMode. */
+    void drawingToolChanged(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
     /*! Signal emitted if the draw set has been changed.
         @param i_drawSettings [in] Contains the new draw settings (pen style, line color, font, etc.). */
-    void drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
+    void drawSettingsChanged(const ZS::Draw::CDrawSettings& i_drawSettings);
 public: // instance methods
     void setDrawingSize( const CDrawingSize& i_drawingSize);
     const CDrawingSize& drawingSize() const;
@@ -181,23 +180,22 @@ public: // instance methods
 public: // instance methods (replacing methods of QGraphicScene)
     void removeItem(QGraphicsItem* i_pGraphicsItem);
 public: // instance methods
-    void setMode(
-        const ZS::System::CEnumMode& i_mode,
-        const CEnumEditTool&         i_editTool = EEditTool::Undefined,
-        const CEnumEditMode&         i_editMode = EEditMode::Undefined,
-        const CEnumEditResizeMode&   i_editResizeMode = EEditResizeMode::Undefined,
-        bool                         i_bObjFactoryTypeChanged = false );
+    void setMode(const ZS::System::CEnumMode& i_mode);
+        //const CEnumEditTool&         i_editTool = EEditTool::Undefined,
+        //const CEnumEditMode&         i_editMode = EEditMode::Undefined,
+        //const CEnumEditResizeMode&   i_editResizeMode = EEditResizeMode::Undefined,
+        //bool                         i_bObjFactoryTypeChanged = false );
     ZS::System::CEnumMode getMode() const { return m_mode; }
-    CEnumEditTool getEditTool() const { return m_editTool; }
-    CEnumEditMode getEditMode() const { return m_editMode; }
-    CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
+    //CEnumEditTool getEditTool() const { return m_editTool; }
+    //CEnumEditMode getEditMode() const { return m_editMode; }
+    //CEnumEditResizeMode getEditResizeMode() const { return m_editResizeMode; }
 public: // instance methods
-    void setCurrentDrawingTool( CObjFactory* i_pObjFactory );
-    void setCurrentDrawingTool( const QString& i_strFactoryGrpName, const QString& i_strGraphObjType );
+    void setCurrentDrawingTool(CObjFactory* i_pObjFactory);
+    void setCurrentDrawingTool(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
     CObjFactory* getCurrentDrawingTool() const { return m_pObjFactory; }
     int getCurrentDrawingToolGraphObjType() const;
-    QGraphicsItem* getGraphicsItemCreating() const { return m_pGraphicsItemCreating; }
-    CGraphObj* getGraphObjCreating() const { return m_pGraphObjCreating; }
+    //QGraphicsItem* getGraphicsItemCreating() const { return m_pGraphicsItemCreating; }
+    //CGraphObj* getGraphObjCreating() const { return m_pGraphObjCreating; }
 public: // instance methods
     CGraphObjConnectionPoint* getConnectionPoint( const QPointF& i_ptScenePos );
 public: // instance methods
@@ -209,9 +207,9 @@ public: // instance methods
     double bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<QGraphicsItem*>& i_arpGraphicsItems = QList<QGraphicsItem*>() );
     double sendToBack( QGraphicsItem* i_pGraphicsItem, const QList<QGraphicsItem*>& i_arpGraphicsItems = QList<QGraphicsItem*>() );
 public: // to be called by graphical objects
-    void onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj );
-    void onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj );
-    void onGraphObjCreationFinished( CGraphObj* i_pGraphObj );
+    //void onGraphObjAddingShapePointsStarted( CGraphObj* i_pGraphObj );
+    //void onGraphObjAddingShapePointsFinished( CGraphObj* i_pGraphObj );
+    //void onGraphObjCreationFinished( CGraphObj* i_pGraphObj );
 public: // instance methods
     QString findUniqueGraphObjName( CGraphObj* i_pGraphObj );
 public: // instance methods
@@ -288,10 +286,10 @@ protected slots:
     void onGraphObjFactoryDestroyed( QObject* i_pObjFactory );
     void onGraphObjAboutToBeDestroyed( CGraphObj* i_pGraphObj );
 protected: // auxiliary instance methods
-    void forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsSceneMouseEvent* i_pEv);
-    void forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv);
-    void invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem);
-    void invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem);
+    //void forwardMouseEvent(QGraphicsItem* i_pGraphicsItem, QGraphicsSceneMouseEvent* i_pEv);
+    //void forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv);
+    //void invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem);
+    //void invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem);
     void paintGridLines(QPainter* i_pPainter);
     QRectF getBoundingRectangle(const QList<QGraphicsItem*>& i_arpGraphicsItems) const;
 protected: // auxiliary instance methods
@@ -315,11 +313,12 @@ protected: // auxiliary instance methods
     double getDoubleVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, double fValDefault = 0.0) const;
 protected: // auxiliary instance methods (trace emitting signals)
     void emit_aboutToBeCleared();
-    void emit_drawingSizeChanged( const ZS::Draw::CDrawingSize& i_size );
-    void emit_gridSettingsChanged( const ZS::Draw::CDrawGridSettings& i_settings );
-    void emit_mousePosChanged( const QPointF& i_ptMousePos );
-    void emit_modeChanged();
-    void emit_drawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
+    void emit_drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);
+    void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
+    void emit_mousePosChanged(const QPointF& i_ptMousePos);
+    void emit_modeChanged(const ZS::System::CEnumMode& i_eMode);
+    void emit_drawingToolChanged(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
+    void emit_drawSettingsChanged(const ZS::Draw::CDrawSettings& i_drawSettings);
 protected: // auxiliary instance methods (method tracing)
     //void traceInternalStates(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_mthDir, ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug);
 protected: // class members
@@ -342,24 +341,24 @@ protected: // instance members
          After updating the changes the temporary buffer will be deleted. */
     CDrawSettings* m_pDrawSettingsTmp;
     ZS::System::CEnumMode m_mode;
-    CEnumEditTool m_editTool;
-    CEnumEditMode m_editMode;
-    CEnumEditResizeMode m_editResizeMode;
+    //CEnumEditTool m_editTool;
+    //CEnumEditMode m_editMode;
+    //CEnumEditResizeMode m_editResizeMode;
     QGraphicsRectItem* m_pGraphicsItemSelectionArea;
     /*!< Corresponds to the selected drawing tool. */
     CObjFactory* m_pObjFactory;
     /*!< Same object as GraphObjCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    QGraphicsItem* m_pGraphicsItemCreating;
+    //QGraphicsItem* m_pGraphicsItemCreating;
     /*! Same object as GraphicsItemCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    CGraphObj* m_pGraphObjCreating;
+    //CGraphObj* m_pGraphObjCreating;
     /*! Same object as GraphObjAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    QGraphicsItem* m_pGraphicsItemAddingShapePoints;
+    //QGraphicsItem* m_pGraphicsItemAddingShapePoints;
     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
-    CGraphObj* m_pGraphObjAddingShapePoints;
+    //CGraphObj* m_pGraphObjAddingShapePoints;
     ZS::System::CIdxTree* m_pGraphObjsIdxTree;
-    ZS::System::CIdxTree* m_pGraphObjsIdxTreeClipboard;
-    QList<QGraphicsItem*> m_arpGraphicsItemsAcceptingHoverEvents;
-    QList<QGraphicsItem*> m_arpGraphicsItemsBroughtToFront;
+    //ZS::System::CIdxTree* m_pGraphObjsIdxTreeClipboard;
+    //QList<QGraphicsItem*> m_arpGraphicsItemsAcceptingHoverEvents;
+    //QList<QGraphicsItem*> m_arpGraphicsItemsBroughtToFront;
     double m_fRotAngleRes_degree;
     double m_fHitTolerance_px;
     bool m_bMouseDoubleClickEventInProcess;

@@ -273,26 +273,26 @@ ZSDRAWDLL_API EGraphObjType className2GraphObjType( const QString& i_str );
 } }
 
 
-namespace ZS {
-namespace Draw {
-//==============================================================================
-/*! Defines the current edit tool.
-*/
-enum class EEditTool
-//==============================================================================
-{
-    None          = 0, /*! Indicates that no edit tool is selected. */
-    Select        = 1, /*! Objects may be selected. */
-    CreateObjects = 2, /*! A valid object factory is selected and objects may be created. */
-    Undefined     = 3  /*! May be passed to methods to indicate that the argument should be ignored. */
-};
-} }
-
-template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditTool>;
-namespace ZS {
-namespace Draw {
-typedef ::CEnum<EEditTool> CEnumEditTool;
-} }
+//namespace ZS {
+//namespace Draw {
+////==============================================================================
+///*! Defines the current edit tool.
+//*/
+//enum class EEditTool
+////==============================================================================
+//{
+//    None          = 0, /*! Indicates that no edit tool is selected. */
+//    Select        = 1, /*! Objects may be selected. */
+//    CreateObjects = 2, /*! A valid object factory is selected and objects may be created. */
+//    Undefined     = 3  /*! May be passed to methods to indicate that the argument should be ignored. */
+//};
+//} }
+//
+//template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditTool>;
+//namespace ZS {
+//namespace Draw {
+//typedef ::CEnum<EEditTool> CEnumEditTool;
+//} }
 
 
 namespace ZS {
@@ -318,56 +318,56 @@ typedef ::CEnum<ECoordinatesVersion> CEnumCoordinatesVersion;
 } }
 
 
-namespace ZS {
-namespace Draw {
-//==============================================================================
-/*! Defines the current edit mode of the drawing scene and the graphics item.
-*/
-enum class EEditMode
-//==============================================================================
-{
-    None           = 0, /*!< No edit mode is selected. */
-    Creating       = 1, /*!< The object has been initially created and is still under
-                             construction (e.g. adding points to poly lines). 
-                             !! This mode is not used by the scene !! */
-    Move           = 2, /*!< The selected objects are moved. */
-    Resize         = 3, /*!< The selected object is resized. */
-    Rotate         = 4, /*!< The selected object is rotated around the centre point of its bounding rectangle. */
-    MoveShapePoint = 5, /*!< A single shape point of the selected object is being moved. */
-    EditText       = 6, /*!< A single shape point of the selected object is being moved. */
-    Undefined      = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
-};
-} }
-
-template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditMode>;
-namespace ZS {
-namespace Draw {
-typedef ::CEnum<EEditMode> CEnumEditMode;
-} }
-
-
-namespace ZS {
-namespace Draw {
-//==============================================================================
-/*! When currently resizing an object (EditMode::Resize) the resize mode defines
-    in which direction the object is being resized.
-*/
-enum class EEditResizeMode
-//==============================================================================
-{
-    None      = 0, /*!< No resize mode selected. */
-    ResizeAll = 1, /*!< The selected object is resized horizontally and vertically. */
-    ResizeHor = 2, /*!< The selected object is resized horizontally. */
-    ResizeVer = 3, /*!< The selected object is resized vertically. */
-    Undefined = 4, /*!< May be passed to methods to indicate that the argument should be ignored. */
-};
-} }
-
-template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditResizeMode>;
-namespace ZS {
-namespace Draw {
-typedef ::CEnum<EEditResizeMode> CEnumEditResizeMode;
-} }
+//namespace ZS {
+//namespace Draw {
+////==============================================================================
+///*! Defines the current edit mode of the drawing scene and the graphics item.
+//*/
+//enum class EEditMode
+////==============================================================================
+//{
+//    None           = 0, /*!< No edit mode is selected. */
+//    Creating       = 1, /*!< The object has been initially created and is still under
+//                             construction (e.g. adding points to poly lines). 
+//                             !! This mode is not used by the scene !! */
+//    Move           = 2, /*!< The selected objects are moved. */
+//    Resize         = 3, /*!< The selected object is resized. */
+//    Rotate         = 4, /*!< The selected object is rotated around the centre point of its bounding rectangle. */
+//    MoveShapePoint = 5, /*!< A single shape point of the selected object is being moved. */
+//    EditText       = 6, /*!< A single shape point of the selected object is being moved. */
+//    Undefined      = 7  /*!< May be passed to methods to indicate that the argument should be ignored. */
+//};
+//} }
+//
+//template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditMode>;
+//namespace ZS {
+//namespace Draw {
+//typedef ::CEnum<EEditMode> CEnumEditMode;
+//} }
+//
+//
+//namespace ZS {
+//namespace Draw {
+////==============================================================================
+///*! When currently resizing an object (EditMode::Resize) the resize mode defines
+//    in which direction the object is being resized.
+//*/
+//enum class EEditResizeMode
+////==============================================================================
+//{
+//    None      = 0, /*!< No resize mode selected. */
+//    ResizeAll = 1, /*!< The selected object is resized horizontally and vertically. */
+//    ResizeHor = 2, /*!< The selected object is resized horizontally. */
+//    ResizeVer = 3, /*!< The selected object is resized vertically. */
+//    Undefined = 4, /*!< May be passed to methods to indicate that the argument should be ignored. */
+//};
+//} }
+//
+//template class ZSDRAWDLL_API ::CEnum<ZS::Draw::EEditResizeMode>;
+//namespace ZS {
+//namespace Draw {
+//typedef ::CEnum<EEditResizeMode> CEnumEditResizeMode;
+//} }
 
 
 namespace ZS {
@@ -473,8 +473,8 @@ ZSDRAWDLL_API void setSelectionPointRotateDistance( double i_fDist_px );
 ZSDRAWDLL_API double getSelectionPointRotateDistance();
 ZSDRAWDLL_API QPointF getOppositeSelectionPoint( const QRectF& i_rct, ESelectionPoint i_selPt );
 ZSDRAWDLL_API ESelectionPoint getOppositeSelectionPoint( ESelectionPoint i_selPt );
-ZSDRAWDLL_API CEnumEditMode selectionPoint2EditMode( ESelectionPoint i_selPt );
-ZSDRAWDLL_API CEnumEditResizeMode selectionPoint2EditResizeMode( ESelectionPoint i_selPt );
+//ZSDRAWDLL_API CEnumEditMode selectionPoint2EditMode( ESelectionPoint i_selPt );
+//ZSDRAWDLL_API CEnumEditResizeMode selectionPoint2EditResizeMode( ESelectionPoint i_selPt );
 ZSDRAWDLL_API Qt::CursorShape selectionPoint2CursorShape( ESelectionPoint i_selPt );
 } }
 

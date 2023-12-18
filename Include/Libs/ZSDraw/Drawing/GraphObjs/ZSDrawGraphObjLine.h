@@ -101,11 +101,11 @@ public: // must overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const override;
 public: // must overridables of base class CGraphObj
-    virtual void setIsHit(bool i_bHit) override;
+    //virtual void setIsHit(bool i_bHit) override;
 public: // overridables of base class CGraphObj
-    virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const override;
+    //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const override;
 public: // reimplementing methods of base class QGraphicItem
-    void setCursor( const QCursor& cursor );
+    //void setCursor( const QCursor& cursor );
 public: // overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const override;
@@ -125,7 +125,7 @@ public: // must overridables of base class QGraphicsItem
     virtual QPainterPath shape() const override;
     virtual void paint(QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr) override;
 protected: // overridables of base class QGraphicsItem
-    virtual bool sceneEventFilter(QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv) override;
+    //virtual bool sceneEventFilter(QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     virtual void hoverEnterEvent(QGraphicsSceneHoverEvent* i_pEv) override;
     virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent* i_pEv) override;

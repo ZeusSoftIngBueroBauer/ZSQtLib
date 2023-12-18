@@ -380,17 +380,17 @@ protected: // instance methods
 void CGraphicsItemsModel::clearModelEntry( CGraphObjModelEntry* i_pModelEntry )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         if( i_pModelEntry == nullptr )
         {
-            strAddTrcInfo = "ModelEntry:nullptr";
+            strMthInArgs = "ModelEntry:nullptr";
         }
         else
         {
-            strAddTrcInfo = "ModelEntry:" + i_pModelEntry->getGraphObjId();
+            strMthInArgs = "ModelEntry:" + i_pModelEntry->getGraphObjId();
         }
     }
 
@@ -398,7 +398,7 @@ void CGraphicsItemsModel::clearModelEntry( CGraphObjModelEntry* i_pModelEntry )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "clearModelEntry",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( i_pModelEntry->getChildCount() > 0 )
     {
@@ -436,17 +436,17 @@ protected slots:
 void CGraphicsItemsModel::onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
         if( i_pGraphObj == nullptr )
         {
-            strAddTrcInfo = "GraphObj:nullptr";
+            strMthInArgs = "GraphObj:nullptr";
         }
         else
         {
-            strAddTrcInfo = "GraphObj:" + i_pGraphObj->keyInTree();
+            strMthInArgs = "GraphObj:" + i_pGraphObj->keyInTree();
         }
     }
 
@@ -454,7 +454,7 @@ void CGraphicsItemsModel::onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneGraphObjCreated",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( !i_pGraphObj->isSelectionPoint() && !i_pGraphObj->isLabel() )
     {
@@ -480,18 +480,18 @@ void CGraphicsItemsModel::onDrawingSceneGraphObjCreated( ZS::Draw::CGraphObj* i_
 void CGraphicsItemsModel::onDrawingSceneGraphObjDestroying( const QString& i_strObjId )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo = "ObjId:" + i_strObjId;
+        strMthInArgs = "ObjId:" + i_strObjId;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneGraphObjDestroying",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_dctpGraphObjs.contains(i_strObjId) )
     {
@@ -532,19 +532,19 @@ void CGraphicsItemsModel::onDrawingSceneGraphObjIdChanged(
     const QString& i_strObjIdNew )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "ObjIdOld:" + i_strObjIdOld;
-        strAddTrcInfo += ", ObjIdNew:" + i_strObjIdNew;
+        strMthInArgs  = "ObjIdOld:" + i_strObjIdOld;
+        strMthInArgs += ", ObjIdNew:" + i_strObjIdNew;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneGraphObjIdChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_dctpGraphObjs.contains(i_strObjIdOld) )
     {
@@ -583,20 +583,20 @@ void CGraphicsItemsModel::onDrawingSceneGraphObjNameChanged(
     const QString& i_strObjNameNew )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObj != nullptr && m_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "ObjId:" + i_strObjId;
-        strAddTrcInfo += ", ObjNameOld:" + i_strObjNameOld;
-        strAddTrcInfo += ", ObjNameNew:" + i_strObjNameNew;
+        strMthInArgs  = "ObjId:" + i_strObjId;
+        strMthInArgs += ", ObjNameOld:" + i_strObjNameOld;
+        strMthInArgs += ", ObjNameNew:" + i_strObjNameNew;
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneGraphObjNameChanged",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     if( m_dctpGraphObjs.contains(i_strObjId) )
     {
@@ -627,18 +627,18 @@ public: // must overridables of base class QAbstractItemModel
 int CGraphicsItemsModel::rowCount( const QModelIndex& i_modelIdxParent ) const
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( m_pTrcAdminObjNoisyMethods != nullptr && m_pTrcAdminObjNoisyMethods->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo = "ModelIdxParent:" + QString::number(i_modelIdxParent.row()) + "," + QString::number(i_modelIdxParent.column());
+        strMthInArgs = "ModelIdxParent:" + QString::number(i_modelIdxParent.row()) + "," + QString::number(i_modelIdxParent.column());
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjNoisyMethods,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "rowCount",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     int iRowCount = 0;
 
@@ -659,8 +659,8 @@ int CGraphicsItemsModel::rowCount( const QModelIndex& i_modelIdxParent ) const
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
     {
-        strAddTrcInfo = "RowCount:" + QString::number(iRowCount);
-        mthTracer.setMethodReturn(strAddTrcInfo);
+        strMthInArgs = "RowCount:" + QString::number(iRowCount);
+        mthTracer.setMethodReturn(strMthInArgs);
     }
 
     return iRowCount;

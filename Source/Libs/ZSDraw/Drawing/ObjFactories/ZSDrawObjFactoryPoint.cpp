@@ -114,20 +114,20 @@ SErrResultInfo CObjFactoryPoint::saveGraphObj(
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
     }
 
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
-        strAddTrcInfo  = "GraphObj:" + i_pGraphObj->NameSpace();
-        strAddTrcInfo += "::" + i_pGraphObj->ClassName();
-        strAddTrcInfo += "::" + i_pGraphObj->name();
+        strMthInArgs  = "GraphObj:" + i_pGraphObj->NameSpace();
+        strMthInArgs += "::" + i_pGraphObj->ClassName();
+        strMthInArgs += "::" + i_pGraphObj->name();
     }
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "saveGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     SErrResultInfo errResultInfo;
 
@@ -190,13 +190,13 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pDrawingScene == nullptr" );
     }
 
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "loadGraphObj",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CGraphObjPoint* pGraphObj = nullptr;
 
@@ -290,7 +290,7 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
             throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
         }
 
-        i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
+        //i_pDrawingScene->onGraphObjCreationFinished(pGraphObj);
 
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         pGraphObj->acceptCurrentAsOriginalCoors();

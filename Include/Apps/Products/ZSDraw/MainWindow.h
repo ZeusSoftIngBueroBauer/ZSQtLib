@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSApps_Draw_MainWindow_h
 
 #include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysCommon.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qmainwindow.h>
@@ -317,7 +318,8 @@ public slots: // Drawing Scene
     void onDrawingSceneFocusItemChanged( QGraphicsItem* i_pNewFocusItem, QGraphicsItem* i_pOldFocusItem, Qt::FocusReason reason );
     void onDrawingSceneSelectionChanged();
     void onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos );
-    void onDrawingSceneModeChanged();
+    void onDrawingSceneModeChanged(const ZS::System::CEnumMode& i_eMode);
+    void onDrawingSceneDrawingToolChanged(const QString& i_strFactoryGrpName, const QString& i_strGraphObjType);
     void onDrawingSceneDrawSettingsChanged( const ZS::Draw::CDrawSettings& i_drawSettings );
 protected slots: // Drawing View
     void onDrawingViewMousePosChanged( const QPointF& i_ptMousePos );

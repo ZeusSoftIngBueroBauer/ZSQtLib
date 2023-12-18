@@ -1409,18 +1409,18 @@ void CTest::doTestStepSetMode( ZS::Test::CTestStep* i_pTestStep )
         /* strAddInfo   */ strMthInArgs );
 
     QString strMode = i_pTestStep->getConfigValue("Mode").toString();
-    QString strEditTool = i_pTestStep->getConfigValue("EditTool").toString();
-    QString strEditMode = i_pTestStep->getConfigValue("EditMode").toString();
-    QString strEditResizeMode = i_pTestStep->getConfigValue("EditResizeMode").toString();
+    //QString strEditTool = i_pTestStep->getConfigValue("EditTool").toString();
+    //QString strEditMode = i_pTestStep->getConfigValue("EditMode").toString();
+    //QString strEditResizeMode = i_pTestStep->getConfigValue("EditResizeMode").toString();
 
     CEnumMode eMode = strMode;
-    CEnumEditTool eEditTool = strEditTool;
-    CEnumEditMode eEditMode = strEditMode;
-    CEnumEditResizeMode eResizeMode = strEditResizeMode;
+    //CEnumEditTool eEditTool = strEditTool;
+    //CEnumEditMode eEditMode = strEditMode;
+    //CEnumEditResizeMode eResizeMode = strEditResizeMode;
 
     i_pTestStep->setExpectedValue("");
 
-    m_pDrawingScene->setMode(eMode, eEditTool, eEditMode, eResizeMode);
+    m_pDrawingScene->setMode(eMode/*, eEditTool, eEditMode, eResizeMode*/);
 
     i_pTestStep->setResultValue("");
 }

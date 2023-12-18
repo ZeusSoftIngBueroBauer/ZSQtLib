@@ -277,8 +277,8 @@ void CDrawingView::setCursor(const QCursor& i_cursor)
         /* strMethod    */ "setCursor",
         /* strAddInfo   */ strMthInArgs );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strAddTrcInfo = "CurrentCursor: " + qCursor2Str(cursor());
-        mthTracer.trace(strAddTrcInfo);
+        QString strMthInArgs = "CurrentCursor: " + qCursor2Str(cursor());
+        mthTracer.trace(strMthInArgs);
     }
 
     QGraphicsView::setCursor(i_cursor);
@@ -295,8 +295,8 @@ void CDrawingView::unsetCursor()
         /* strMethod    */ "unsetCursor",
         /* strAddInfo   */ "" );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        QString strAddTrcInfo = "CurrentCursor: " + qCursor2Str(cursor());
-        mthTracer.trace(strAddTrcInfo);
+        QString strMthInArgs = "CurrentCursor: " + qCursor2Str(cursor());
+        mthTracer.trace(strMthInArgs);
     }
 
     QGraphicsView::unsetCursor();
@@ -489,35 +489,31 @@ void CDrawingView::adjustCursor(QMouseEvent* i_pEv)
         /* strMethod    */ "adjustCursor",
         /* strAddInfo   */ strMthInArgs );
 
-    QCursor crsor;
-    bool bGraphicsItemHasCursor = false;
+    //QCursor crsor;
+    //bool bGraphicsItemHasCursor = false;
 
-    QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
-    for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++) {
-        QGraphicsItem* pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
-        if (pGraphicsItem->hasCursor()) {
-            bGraphicsItemHasCursor = true;
-            crsor = pGraphicsItem->cursor();
-            break;
-        }
-    }
-    if (bGraphicsItemHasCursor) {
-        //if (cursor() != crsor) {
-            setCursor(crsor);
-        //}
+    //QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(mapFromGlobal(QCursor::pos()));
+    //for (int idxGraphObj = 0; idxGraphObj < arpGraphicsItemsUnderCursor.size(); idxGraphObj++) {
+    //    QGraphicsItem* pGraphicsItem = arpGraphicsItemsUnderCursor[idxGraphObj];
+    //    if (pGraphicsItem->hasCursor()) {
+    //        bGraphicsItemHasCursor = true;
+    //        crsor = pGraphicsItem->cursor();
+    //        break;
+    //    }
+    //}
+    //if (bGraphicsItemHasCursor) {
+    //    //if (cursor() != crsor) {
+    //        setCursor(crsor);
+    //    //}
+    //}
+    //else {
+    QPointF ptScenePos = mapToScene(i_pEv->pos());
+    QRectF rctScene = m_pDrawingScene->sceneRect();
+    if (rctScene.contains(ptScenePos)) {
+        setCursor(m_pDrawingScene->getProposedCursor(ptScenePos));
     }
     else {
-        QPointF ptScenePos = mapToScene(i_pEv->pos());
-        QRectF  rctScene = m_pDrawingScene->sceneRect();
-        if (rctScene.contains(ptScenePos)) {
-            crsor = m_pDrawingScene->getProposedCursor(ptScenePos);
-            //if (cursor() != crsor) {
-                setCursor(crsor);
-            //}
-        }
-        else {
-            unsetCursor();
-        }
+        unsetCursor();
     }
 }
 

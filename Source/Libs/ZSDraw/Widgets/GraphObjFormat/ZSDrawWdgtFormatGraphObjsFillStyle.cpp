@@ -393,7 +393,7 @@ protected: // instance methods
 void CWdgtFormatGraphObjsFillStyle::fillFillStylesModel( QStandardItemModel* i_pModel )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -403,7 +403,7 @@ void CWdgtFormatGraphObjsFillStyle::fillFillStylesModel( QStandardItemModel* i_p
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "fillFillStylesModel",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPixmap        pxmFillStyle(64,16);
     QStandardItem* pFillStyleItem;
@@ -460,7 +460,7 @@ protected: // overridables of base class QWidget
 void CWdgtFormatGraphObjsFillStyle::mousePressEvent( QMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -470,7 +470,7 @@ void CWdgtFormatGraphObjsFillStyle::mousePressEvent( QMouseEvent* i_pEv )
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mousePressEvent",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -486,7 +486,7 @@ protected slots: // instance methods (Fill STyle)
 void CWdgtFormatGraphObjsFillStyle::onBtnFillColorClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -496,7 +496,7 @@ void CWdgtFormatGraphObjsFillStyle::onBtnFillColorClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnFillColorClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups();
 
@@ -519,7 +519,7 @@ void CWdgtFormatGraphObjsFillStyle::onBtnFillColorClicked()
 void CWdgtFormatGraphObjsFillStyle::onBtnFillStyleClicked()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -529,7 +529,7 @@ void CWdgtFormatGraphObjsFillStyle::onBtnFillStyleClicked()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onBtnFillStyleClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     hidePopups(m_pViewFillStyles);
 
@@ -591,7 +591,7 @@ void CWdgtFormatGraphObjsFillStyle::onBtnFillStyleClicked()
 void CWdgtFormatGraphObjsFillStyle::onViewFillStylesClicked( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -601,7 +601,7 @@ void CWdgtFormatGraphObjsFillStyle::onViewFillStylesClicked( const QModelIndex& 
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onViewFillStylesClicked",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QStandardItem* pFillStyleItem = m_pModelFillStyles->itemFromIndex(i_modelIdx);
 
@@ -633,7 +633,7 @@ protected: // instance methods
 void CWdgtFormatGraphObjsFillStyle::setFillColor()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -643,7 +643,7 @@ void CWdgtFormatGraphObjsFillStyle::setFillColor()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFillColor",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPainter painter(m_pPxmBtnFillColor);
 
@@ -664,7 +664,7 @@ void CWdgtFormatGraphObjsFillStyle::setFillColor()
 void CWdgtFormatGraphObjsFillStyle::setFillStyle()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -674,7 +674,7 @@ void CWdgtFormatGraphObjsFillStyle::setFillStyle()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setFillStyle",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     QPixmap  pxmFillStyle(64,24);
     QRect    rctFillStyle( 3, 3, pxmFillStyle.width()-20, pxmFillStyle.height()-6 );

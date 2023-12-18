@@ -183,7 +183,7 @@ public: // must overridables of base class CWdgtFormatGraphObjs
 void CWdgtFormatGraphObjsText::applyChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -193,7 +193,7 @@ void CWdgtFormatGraphObjsText::applyChanges()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "applyChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CGraphObjText* pGraphObjText = dynamic_cast<CGraphObjText*>(m_pGraphObj);
 
@@ -213,7 +213,7 @@ void CWdgtFormatGraphObjsText::applyChanges()
 void CWdgtFormatGraphObjsText::resetChanges()
 //------------------------------------------------------------------------------
 {
-    QString strAddTrcInfo;
+    QString strMthInArgs;
 
     if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
     {
@@ -223,7 +223,7 @@ void CWdgtFormatGraphObjsText::resetChanges()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "resetChanges",
-        /* strAddInfo   */ strAddTrcInfo );
+        /* strAddInfo   */ strMthInArgs );
 
     CGraphObjText* pGraphObjText = dynamic_cast<CGraphObjText*>(m_pGraphObj);
 

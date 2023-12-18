@@ -865,14 +865,11 @@ protected slots:
 void CTreeViewGraphObjs::onDrawingSceneSelectionChanged()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onDrawingSceneSelectionChanged",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     //QObject::disconnect(
     //    selectionModel(), currentChanged,
@@ -882,22 +879,18 @@ void CTreeViewGraphObjs::onDrawingSceneSelectionChanged()
 
     QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
 
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strAddTrcInfo = "SelectedItems: " + QString::number(arpSelectedItems.size());
-        if( arpSelectedItems.size() > 0 )
-        {
-            strAddTrcInfo += " [";
-
-            for( auto& pGraphicsItem : arpSelectedItems )
-            {
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "SelectedItems [" + QString::number(arpSelectedItems.size()) + "]";
+        if (arpSelectedItems.size() > 0) {
+            strRuntimeInfo += "(";
+            for (auto& pGraphicsItem : arpSelectedItems) {
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-                if( !strAddTrcInfo.endsWith(" [") ) strAddTrcInfo += ", ";
-                strAddTrcInfo += pGraphObj->path();
+                if( !strRuntimeInfo.endsWith("(") ) strRuntimeInfo += ", ";
+                strRuntimeInfo += pGraphObj->path();
             }
-            strAddTrcInfo += "]";
+            strRuntimeInfo += ")";
         }
-        mthTracer.trace(strAddTrcInfo);
+        mthTracer.trace(strRuntimeInfo);
     }
 
     //if( arpSelectedItems.size() == 1 )
@@ -957,13 +950,9 @@ void CTreeViewGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Event {" + qKeyEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -982,8 +971,8 @@ void CTreeViewGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
 
         if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
-            strAddTrcInfo = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(modelIdxSelected) + "}";
-            mthTracer.trace(strAddTrcInfo);
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(modelIdxSelected) + "}";
+            mthTracer.trace(strMthInArgs);
         }
 
         if( pModelTreeEntry != nullptr )
@@ -1079,8 +1068,8 @@ void CTreeViewGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
 
     if (m_modelIdxSelectedOnMousePressEvent.isValid()) {
         if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-            QString strAddTrcInfo = "ModelIdxPressed {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
-            mthTracer.trace(strAddTrcInfo);
+            QString strMthInArgs = "ModelIdxPressed {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            mthTracer.trace(strMthInArgs);
         }
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
         if (pModelTreeEntry != nullptr) {
@@ -1137,8 +1126,8 @@ void CTreeViewGraphObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     if (m_modelIdxSelectedOnMouseReleaseEvent.isValid()) {
         if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-            QString strAddTrcInfo = "ModelIdxReleased {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
-            mthTracer.trace(strAddTrcInfo);
+            QString strMthInArgs = "ModelIdxReleased {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMouseReleaseEvent) + "}";
+            mthTracer.trace(strMthInArgs);
         }
     }
     if (!bEventHandled) {
@@ -1166,8 +1155,8 @@ void CTreeViewGraphObjs::mouseDoubleClickEvent( QMouseEvent* i_pEv )
 
     if (modelIdx.isValid()) {
         if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-            QString strAddTrcInfo = "ModelIdxClicked {" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
-            mthTracer.trace(strAddTrcInfo);
+            QString strMthInArgs = "ModelIdxClicked {" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
+            mthTracer.trace(strMthInArgs);
         }
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
         if (pModelTreeEntry != nullptr) {
@@ -1410,13 +1399,9 @@ void CTreeViewGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strAddTrcInfo;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1427,8 +1412,8 @@ void CTreeViewGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
     {
         if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
         {
-            strAddTrcInfo = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
-            mthTracer.trace(strAddTrcInfo);
+            strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
+            mthTracer.trace(strMthInArgs);
         }
 
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
