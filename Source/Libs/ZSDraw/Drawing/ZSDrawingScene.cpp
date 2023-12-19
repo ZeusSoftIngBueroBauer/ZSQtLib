@@ -201,7 +201,7 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     //m_arpGraphicsItemsAcceptingHoverEvents(),
     //m_arpGraphicsItemsBroughtToFront(),
     m_fRotAngleRes_degree(1.0),
-    m_fHitTolerance_px(2.0),
+    m_fHitTolerance_px(3.0),
     m_bMouseDoubleClickEventInProcess(false),
     m_ptMouseEvScenePosOnMousePressEvent(),
     m_iEvKeyModifiers(0),
@@ -1817,8 +1817,15 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
             else {
                 QList<QGraphicsItem*> arpGraphicsItemsUnderCursor = items(i_ptScenePos);
                 for (QGraphicsItem* pGraphicsItem : arpGraphicsItemsUnderCursor) {
-                    if (pGraphicsItem->hasCursor()) {
+                    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                    if (pGraphObj != nullptr /*&& pGraphObj->isSelectionPoint()*/) {
+                        QPointF ptPos = pGraphicsItem->mapFromScene(i_ptScenePos);
+                        cursor = pGraphObj->getProposedCursor(ptPos);
+                        break;
+                    }
+                    else if (pGraphicsItem->hasCursor()) {
                         cursor = pGraphicsItem->cursor();
+                        break;
                     }
                     //CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                     //if (pGraphObj != nullptr) {
@@ -5662,7 +5669,7 @@ void CDrawingScene::traceItemsStates(
         QString strRuntimeInfo;
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        else strRuntimeInfo = "";
+        else strRuntimeInfo = "   ";
         QGraphicsItem* pGraphicsItemMouseGrabber = mouseGrabberItem();
         CGraphObj* pGraphObjMouseGrabber = dynamic_cast<CGraphObj*>(pGraphicsItemMouseGrabber);
         if (pGraphObjMouseGrabber == nullptr) {
@@ -5677,7 +5684,14 @@ void CDrawingScene::traceItemsStates(
         for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
             if (pGraphObj != nullptr) {
+
+                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+                else strRuntimeInfo = "   ";
+                strRuntimeInfo += "--- " + pGraphObj->typeAsString() + ": " + pGraphObj->path();
+                i_mthTracer.trace(strRuntimeInfo);
                 pGraphObj->traceGraphicsItemStates(i_mthTracer, i_mthDir, i_detailLevel);
+                pGraphObj->tracePositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
             }
         }
     }

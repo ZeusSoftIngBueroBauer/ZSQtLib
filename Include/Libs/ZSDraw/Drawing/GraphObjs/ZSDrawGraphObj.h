@@ -681,8 +681,7 @@ public: // overridables
     double getStackingOrderValue(ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current) const;
     double resetStackingOrderValueToOriginalValue();
 public: // overridables
-    virtual bool isBoundingRectSelectionPointHit(const QPointF& i_pt, int i_iSelPtsCount, const ESelectionPoint* i_pSelPts, SGraphObjHitInfo* o_pHitInfo) const;
-    virtual bool isPolygonSelectionPointHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo) const;
+    CGraphObjSelectionPoint* getSelectionPointHit(const QPointF& i_pt) const;
 public: // overridables
     virtual QPointF getSelectionPointCoorsInSceneCoors(ESelectionPoint i_selPt) const;
     virtual QPointF getSelectionPointCoorsInSceneCoors(int i_idxPt) const;

@@ -1196,114 +1196,58 @@ QRectF CGraphObjLine::getBoundingRect(bool i_bOnlyRealShapePoints) const
 }
 
 /*==============================================================================
-public: // must overridables of base class CGraphObj
-==============================================================================*/
-
-////------------------------------------------------------------------------------
-//void CGraphObjLine::setIsHit( bool i_bHit )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = bool2Str(i_bHit);
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "setIsHit",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if (m_bIsHit != i_bHit) {
-//        m_bIsHit = i_bHit;
-//        if (m_bIsHit) {
-//            QLineF lineF = line();
-//            QPolygonF plg;
-//            plg.append(lineF.p1());
-//            plg.append(lineF.p2());
-//            showSelectionPointsOfPolygon(plg);
-//        }
-//        else if (!isSelected()) {
-//            hideSelectionPoints();
-//        }
-//        update();
-//    }
-//} // setIsHit
-
-/*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//bool CGraphObjLine::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjIsHit, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = "Point:" + point2Str(i_pt) +
-//            ", HitInfo {" + QString(o_pHitInfo == nullptr ? "null" : pointer2Str(o_pHitInfo)) + "}";
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjIsHit,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "isHit",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    bool bIsHit = false;
-//
-//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-//    if (pGraphicsItem != nullptr) {
-//        if (pGraphicsItem->isSelected()) {
-//            bIsHit = isPolygonSelectionPointHit(i_pt, o_pHitInfo);
-//        }
-//        if (!bIsHit) {
-//            QLineF lineF = line();
-//            bIsHit = isLineHit(lineF, i_pt, m_pDrawingScene->getHitToleranceInPx());
-//            if (o_pHitInfo != nullptr) {
-//                //o_pHitInfo->m_editMode = EEditMode::Move;
-//                //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-//                o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-//                o_pHitInfo->m_idxPolygonShapePoint = -1;
-//                o_pHitInfo->m_idxLineSegment = 0;
-//                o_pHitInfo->m_ptSelected = i_pt;
-//                o_pHitInfo->m_cursor = Qt::SizeAllCursor;
-//            }
-//        }
-//    }
-//
-//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-//        QString strMthOutArgs;
-//        if (o_pHitInfo != nullptr) {
-//            strMthOutArgs = "HitInfo {" + o_pHitInfo->toString() + "}";
-//            mthTracer.setMethodOutArgs(strMthOutArgs);
-//        }
-//        mthTracer.setMethodReturn(bIsHit);
-//    }
-//    return bIsHit;
-//}
+//------------------------------------------------------------------------------
+/*! @brief Returns the proposed cursor shape for the given point.
 
-/*==============================================================================
-public: // reimplementing methods of base class QGraphicItem
-==============================================================================*/
+    The cursor shape depends which shape point of the object has been hit.
+    If a selection point has been hit, the position and type of selection point
+    defines the cursor shape.
 
-////------------------------------------------------------------------------------
-//void CGraphObjLine::setCursor( const QCursor& i_cursor )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = qCursorShape2Str(i_cursor.shape());
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "setCursor",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    QGraphicsLineItem::setCursor(i_cursor);
-//}
+    If no selection point is hit, the cursor shape is defined which position
+    of the line has been hit. If the start or end point of the line is hit
+    (and if there is no selection point over those end points), the cursor
+    shape is a cross cursor. On any other point of the line the proposed cursor
+    shape is a SizeAllCursor to indicate that the line may be moved when selecting
+    the line and moving the mouse.
+
+    @param i_pt [in] Point to be check in local coordinates.
+*/
+QCursor CGraphObjLine::getProposedCursor(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point:" + point2Str(i_pt);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "getProposedCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QCursor cursor = Qt::ArrowCursor;
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
+        if (pGraphObjSelPtHit != nullptr) {
+            cursor = pGraphObjSelPtHit->getProposedCursor(i_pt);
+        }
+        else {
+            SGraphObjHitInfo hitInfo;
+            if (isLineHit(line(), i_pt, m_pDrawingScene->getHitToleranceInPx(), &hitInfo)) {
+                cursor = hitInfo.m_cursor;
+            }
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs(qCursorShape2Str(cursor.shape()));
+    }
+    return cursor;
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -1630,17 +1574,23 @@ void CGraphObjLine::paint(
 
     QLineF lineF = line();
 
-    if (m_pDrawingScene->getMode() == EMode::Edit && (isSelected() || m_bIsHit)) {
-        QPainterPath outline;
-        outline.moveTo(lineF.p1());
-        outline.lineTo(lineF.p2());
-        pn.setColor(Qt::cyan);
-        //pn.setColor(Qt::lightGray);
-        pn.setWidth(3 + m_drawSettings.getPenWidth());
-        //pn.setStyle(Qt::DotLine);
-        pn.setStyle(Qt::SolidLine);
-        i_pPainter->strokePath(outline, pn);
-        pn.setWidth(1 + m_drawSettings.getPenWidth());
+    if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected())) {
+        if (m_bIsHit || isSelected()) {
+            QPainterPath outline;
+            outline.moveTo(lineF.p1());
+            outline.lineTo(lineF.p2());
+            if (isSelected()) {
+                pn.setColor(Qt::magenta);
+                pn.setWidth(3 + m_drawSettings.getPenWidth());
+            }
+            else {
+                pn.setColor(Qt::cyan);
+                pn.setWidth(3 + m_drawSettings.getPenWidth());
+            }
+            pn.setStyle(Qt::SolidLine);
+            i_pPainter->strokePath(outline, pn);
+            pn.setWidth(1 + m_drawSettings.getPenWidth());
+        }
     }
     else {
         pn.setWidth(m_drawSettings.getPenWidth());
@@ -1824,23 +1774,17 @@ void CGraphObjLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QLineF lineF = line();
-    QPolygonF plg;
-    plg.append(lineF.p1());
-    plg.append(lineF.p2());
-    showSelectionPointsOfPolygon(plg);
-    setCursor(getProposedCursor(i_pEv->pos()));
-    setIsHit(true);
-    update();
-    //if (m_pDrawingScene->getMode() == EMode::Edit/*&&  m_pDrawingScene->getEditTool() == EEditTool::Select*/) {
-    //    SGraphObjHitInfo hitInfo;
-    //    bool bIsHit = isHit(i_pEv->pos(), &hitInfo);
-    //    if (bIsHit) {
-    //        if (cursor().shape() != hitInfo.m_cursor.shape()) {
-    //            setCursor(hitInfo.m_cursor);
-    //        }
-    //    }
-    //}
+    // Ignore hover events if the line is currently being created.
+    if (m_editMode != EEditMode::CreatingByMouseEvents) {
+        QLineF lineF = line();
+        QPolygonF plg;
+        plg.append(lineF.p1());
+        plg.append(lineF.p2());
+        showSelectionPointsOfPolygon(plg);
+        setCursor(getProposedCursor(i_pEv->pos()));
+        setIsHit(true);
+        update();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1858,23 +1802,17 @@ void CGraphObjLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    QLineF lineF = line();
-    QPolygonF plg;
-    plg.append(lineF.p1());
-    plg.append(lineF.p2());
-    showSelectionPointsOfPolygon(plg);
-    setCursor(getProposedCursor(i_pEv->pos()));
-    setIsHit(true);
-    update();
-    //if (m_pDrawingScene->getMode() == EMode::Edit /*&& m_pDrawingScene->getEditTool() == EEditTool::Select*/) {
-    //    SGraphObjHitInfo hitInfo;
-    //    bool bIsHit = isHit(i_pEv->pos(), &hitInfo);
-    //    if (bIsHit) {
-    //        if (cursor().shape() != hitInfo.m_cursor.shape()) {
-    //            setCursor(hitInfo.m_cursor);
-    //        }
-    //    }
-    //}
+    // Ignore hover events if the line is currently being created.
+    if (m_editMode != EEditMode::CreatingByMouseEvents) {
+        QLineF lineF = line();
+        QPolygonF plg;
+        plg.append(lineF.p1());
+        plg.append(lineF.p2());
+        showSelectionPointsOfPolygon(plg);
+        setCursor(getProposedCursor(i_pEv->pos()));
+        setIsHit(true);
+        update();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1893,7 +1831,11 @@ void CGraphObjLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    hideSelectionPoints();
+    // If the object has been selected by a mouse click event the
+    // selection points should remain visible.
+    if (!isSelected()) {
+        hideSelectionPoints();
+    }
     unsetCursor();
     setIsHit(false);
     update();
@@ -1918,43 +1860,10 @@ void CGraphObjLine::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    if (modeDrawing == EMode::Edit) {
-        //if (editToolDrawing == EEditTool::CreateObjects && m_editMode == EEditMode::Creating) {
-        //    QGraphicsLineItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-        //    m_idxSelPtSelectedPolygon = 1;
-        //    if (m_arpSelPtsPolygon[m_idxSelPtSelectedPolygon] != nullptr) {
-        //        m_arpSelPtsPolygon[m_idxSelPtSelectedPolygon]->setSelected(true);
-        //    }
-        //    //updateEditInfo();
-        //    //updateToolTip();
-        //}
-        //else if (editToolDrawing == EEditTool::Select && m_editMode == EEditMode::None) {
-        //    QGraphicsLineItem::mousePressEvent(i_pEv); // this will select the item (creating selection points)
-        //    SGraphObjHitInfo hitInfo;
-        //    bool bIsHit = isHit(i_pEv->pos(), &hitInfo);
-        //    m_editMode = hitInfo.m_editMode;
-        //    m_editResizeMode = hitInfo.m_editResizeMode;
-        //    m_idxSelPtSelectedPolygon = hitInfo.m_idxPolygonShapePoint;
-        //    for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
-        //        CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-        //        if (pGraphObjSelPt != nullptr) {
-        //            if (idxSelPt == m_idxSelPtSelectedPolygon) {
-        //                pGraphObjSelPt->setSelected(true);
-        //            }
-        //            else {
-        //                pGraphObjSelPt->setSelected(false);
-        //            }
-        //        }
-        //    }
-        //    m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Undefined, m_editMode, m_editResizeMode, false );
-        //    //updateEditInfo();
-        //    //updateToolTip();
-        //}
-    }
-} // mousePressEvent
+    // Forward the mouse event to the LineItems base implementation.
+    // This will select the item, creating selection points if not yet created.
+    QGraphicsLineItem::mousePressEvent(i_pEv);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
@@ -1971,38 +1880,10 @@ void CGraphObjLine::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
-    if (modeDrawing == EMode::Edit) {
-        //if (m_editMode == EEditMode::Creating || m_editMode == EEditMode::MoveShapePoint) {
-        //    QRectF sceneRect = m_pDrawingScene->sceneRect();
-        //    QPointF posEv = i_pEv->pos();
-        //    if (sceneRect.contains(mapToScene(posEv))) {
-        //        posEv = mapToParent(posEv);
-        //        CPhysValPoint physValPosEv = m_pDrawingScene->toPhysValPoint(posEv);
-        //        CPhysValLine physValLine = m_physValLine;
-        //        if (m_idxSelPtSelectedPolygon == 0) {
-        //            physValLine.setP1(physValPosEv);
-        //        }
-        //        else if (m_idxSelPtSelectedPolygon == 1) {
-        //            physValLine.setP2(physValPosEv);
-        //        }
-        //        setLine(physValLine);
-        //    }
-        //}
-        //else if (m_editMode == EEditMode::Move) {
-        //    QGraphicsLineItem::mouseMoveEvent(i_pEv);
-        //    //updateEditInfo();
-        //    //updateToolTip();
-        //}
-        //else if (m_editMode == EEditMode::Resize) {
-        //}
-        //else if (m_editMode == EEditMode::Rotate) {
-        //}
-        //else if (m_editMode == EEditMode::EditText) {
-        //}
-    }
-} // mouseMoveEvent
+    // Forward the mouse event to the LineItems base implementation.
+    // This will move the item resulting in an itemChange call with PositionHasChanged.
+    QGraphicsLineItem::mouseMoveEvent(i_pEv);
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
@@ -2019,47 +1900,22 @@ void CGraphObjLine::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    CEnumMode modeDrawing = m_pDrawingScene->getMode();
+    //// The mouse release event would select the object.
+    //// This is not wanted if the selection tool is not active.
+    //bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
+    //bool bIsSelectableReset = false;
 
-    if (modeDrawing == EMode::Edit) {
-        //if (m_editMode == EEditMode::Creating) {
-        //    // The object has been initially created.
-        //    //m_pDrawingScene->onGraphObjCreationFinished(this);
-        //}
-        //else if (m_editMode == EEditMode::Move) {
-        //    //updateEditInfo();
-        //    //updateToolTip();
-        //}
-        //else if (m_editMode == EEditMode::Resize) {
-        //}
-        //else if (m_editMode == EEditMode::Rotate) {
-        //}
-        //else if (m_editMode == EEditMode::MoveShapePoint) {
-        //}
-        //else if (m_editMode == EEditMode::EditText) {
-        //}
+    //if (bIsSelectable /*&& m_pDrawingScene->getEditTool() != EEditTool::Select*/) {
+    //    setFlag(QGraphicsItem::ItemIsSelectable, false);
+    //    bIsSelectableReset = true;
+    //}
 
-        //m_editMode = EEditMode::None;
-        //m_editResizeMode = EEditResizeMode::None;
-        //m_idxSelPtSelectedPolygon = -1;
-        //m_selPtSelectedBoundingRect = ESelectionPoint::None;
-    }
-
-    // The mouse release event would select the object.
-    // This is not wanted if the selection tool is not active.
-    bool bIsSelectable = flags() & QGraphicsItem::ItemIsSelectable;
-    bool bIsSelectableReset = false;
-
-    if (bIsSelectable /*&& m_pDrawingScene->getEditTool() != EEditTool::Select*/) {
-        setFlag(QGraphicsItem::ItemIsSelectable, false);
-        bIsSelectableReset = true;
-    }
-
+    // Forward the mouse event to the LineItems base implementation.
     QGraphicsLineItem::mouseReleaseEvent(i_pEv);
 
-    if (bIsSelectableReset) {
-        setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
-    }
+    //if (bIsSelectableReset) {
+    //    setFlag(QGraphicsItem::ItemIsSelectable, bIsSelectable);
+    //}
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
@@ -2077,14 +1933,13 @@ void CGraphObjLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    // When doubleclicking an item, the item will first receive a mouse
+    // When double clicking an item, the item will first receive a mouse
     // press event, followed by a release event (i.e., a click), then a
     // doubleclick event, and finally a release event.
     // The default implementation of "mouseDoubleClickEvent" calls "mousePressEvent".
     //QGraphicsLineItem::mouseDoubleClickEvent(i_pEv);
 
     CEnumMode modeDrawing = m_pDrawingScene->getMode();
-
     if (modeDrawing == EMode::Edit) {
         if (isSelected()) {
             onCreateAndExecDlgFormatGraphObjs();
@@ -2484,6 +2339,7 @@ void CGraphObjLine::tracePositionInfo(
         const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
         if (pGraphicsItem != nullptr) {
             QString strRuntimeInfo;
+
             QPointF ptPos = pGraphicsItem->pos();
             QPointF ptScenePos = pGraphicsItem->scenePos();
             QLineF lineF = line();
@@ -2491,12 +2347,13 @@ void CGraphObjLine::tracePositionInfo(
             QPointF ptCenterPos = rectBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "";
+            else strRuntimeInfo = "   ";
             strRuntimeInfo += "Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}" +
                 ", Line {" + qLine2Str(lineF) + "}" +
                 ", BoundingRect {" + qRect2Str(rectBounding) + "}" +
                 ", Center {" + qPoint2Str(ptCenterPos) + "}}";
             i_mthTracer.trace(strRuntimeInfo);
+
             QGraphicsItem* pGraphicsItemParent = pGraphicsItem->parentItem();
             CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
             if (pGraphicsItemParent != nullptr && pGraphObjParent != nullptr) {
@@ -2506,7 +2363,7 @@ void CGraphObjLine::tracePositionInfo(
                 QPointF ptCenterPosParent = rectBoundingParent.center();
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-                else strRuntimeInfo = "";
+                else strRuntimeInfo = "   ";
                 strRuntimeInfo += "Parent {" + QString(pGraphObjParent == nullptr ? "null" : pGraphObjParent->path()) +
                     ", ScenePos {" + qPoint2Str(ptScenePosParent) + "}" +
                     ", Pos {" + qPoint2Str(ptPosParent) + "}" +

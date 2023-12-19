@@ -709,6 +709,65 @@ public: // reimplementing methods of base class QGraphicItem
 //}
 
 /*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle of the object.
+
+    This method is used internally to calculate the bounding rectangle which need
+    to be updated for the drawing scene.
+
+    This method is also used by other objects (like the drawing scene on grouping objects)
+    to calculate the extent of rectangles with or without labels, selection points or
+    things which have to be considered when repainting the dirty rectangle on the
+    drawing scene.
+
+    @param [in] i_bOnlyRealShapePoints
+        If set to true only the real shape points are taken account when calculating
+        the bounding rectangle.
+        If set to false also labels and selection points but also the pen width
+        and the line end arrow heads are taken into account.
+*/
+QRectF CGraphObjLabel::getBoundingRect(bool i_bOnlyRealShapePoints) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OnlyRealShapePoints: " + bool2Str(i_bOnlyRealShapePoints);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "getBoundingRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rctBounding;
+    if (i_bOnlyRealShapePoints) {
+        rctBounding = QGraphicsSimpleTextItem::boundingRect();
+    }
+    else {
+        // If the object is hit and the anchor line is visible also this area need to be updated.
+        if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+            for (const QLineF& anchorLine : m_anchorLines) {
+                QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
+                rctBounding |= rctBoundingAnchorLine;
+            }
+        }
+        rctBounding = QRectF(
+            rctBounding.left() - m_drawSettings.getPenWidth()/2,
+            rctBounding.top() - m_drawSettings.getPenWidth()/2,
+            rctBounding.width() + m_drawSettings.getPenWidth(),
+            rctBounding.height() + m_drawSettings.getPenWidth() );
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
+}
+
+/*==============================================================================
 public: // must overridables of base class QGraphicsItem
 ==============================================================================*/
 
@@ -730,31 +789,7 @@ public: // must overridables of base class QGraphicsItem
 QRectF CGraphObjLabel::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "boundingRect",
-        /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-
-    // If the object is hit and the anchor line is visible also this area need to be updated.
-    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
-        for (const QLineF& anchorLine : m_anchorLines) {
-            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
-            rctBounding |= rctBoundingAnchorLine;
-        }
-    }
-    rctBounding = QRectF(
-        rctBounding.left() - m_drawSettings.getPenWidth()/2,
-        rctBounding.top() - m_drawSettings.getPenWidth()/2,
-        rctBounding.width() + m_drawSettings.getPenWidth(),
-        rctBounding.height() + m_drawSettings.getPenWidth() );
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(qRect2Str(rctBounding));
-    }
-    return rctBounding;
+    return getBoundingRect(false);
 }
 
 //------------------------------------------------------------------------------

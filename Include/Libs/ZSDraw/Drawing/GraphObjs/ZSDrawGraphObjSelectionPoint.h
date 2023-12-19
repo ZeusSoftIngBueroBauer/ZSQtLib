@@ -85,12 +85,16 @@ public: // must overridables of base class CGraphObj
     virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
     virtual void setSize( const CPhysValSize& i_physValSize ) override;
+public: // must overridables of base class CGraphObj
+    virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const override;
 public: // overridables of base class CGraphObj
-    //virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const;
+    virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
     //virtual void setIsHit( bool /*i_bHit*/ ) override {}
     //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
 public: // reimplementing methods of base class QGraphicItem
     //void setCursor( const QCursor& cursor );
+public: // overridables of base class QGraphicsItem
+    virtual bool contains(const QPointF& i_pt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {}
 protected: // overridables of base class CGraphObj

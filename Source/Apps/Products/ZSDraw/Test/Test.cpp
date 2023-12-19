@@ -510,7 +510,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     createTestGroupAddObject(
         pGrpAddLine0, io_idxGroup,
         CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeLine),
-        QPoint(400, 290), QPoint(400, 310));
+        QPoint(300, 290), QPoint(300, 310));
 
     // Line1
     //------
@@ -525,7 +525,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     createTestGroupAddObject(
         pGrpAddLine1, io_idxGroup,
         CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeLine),
-        QPoint(390, 300), QPoint(410, 300));
+        QPoint(290, 300), QPoint(310, 300));
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -1211,22 +1211,6 @@ void CTest::addTestStepsDrawMouseEventsMovePressMoveRelease(
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("MousePos", ptMouseMovePos);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMouseMovePos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptMouseMovePos) + ")",
-        /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMouseMovePos);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(i_ptMouseRelease) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(i_ptMouseRelease) + ")",
-        /* pGrpParent      */ i_pTestStepGroupParent,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", i_ptMouseRelease);
 
 } // addTestStepsDrawMouseEventsMovePressMoveRelease
 

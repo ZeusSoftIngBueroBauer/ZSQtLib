@@ -782,7 +782,7 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryChanged( CGraphObj* i_pGr
 }
 
 /*==============================================================================
-public: // overridables of base class QGraphicsPolygonItem
+public: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

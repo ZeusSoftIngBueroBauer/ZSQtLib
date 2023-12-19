@@ -1053,19 +1053,19 @@ QPolygonF ZS::Draw::rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount, const 
                 break;
             }
             case ESelectionPoint::BottomCenter: {
-                plg[idxSelPt] = getCenterPoint( QLineF(i_rct.bottomLeft(),i_rct.bottomRight()) );
+                plg[idxSelPt] = QLineF(i_rct.bottomLeft(), i_rct.bottomRight()).center();
                 break;
             }
             case ESelectionPoint::TopCenter: {
-                plg[idxSelPt] = getCenterPoint( QLineF(i_rct.topLeft(),i_rct.topRight()) );
+                plg[idxSelPt] = QLineF(i_rct.topLeft(), i_rct.topRight()).center();
                 break;
             }
             case ESelectionPoint::RightCenter: {
-                plg[idxSelPt] = getCenterPoint( QLineF(i_rct.topRight(),i_rct.bottomRight()) );
+                plg[idxSelPt] = QLineF(i_rct.topRight(), i_rct.bottomRight()).center();
                 break;
             }
             case ESelectionPoint::LeftCenter: {
-                plg[idxSelPt] = getCenterPoint( QLineF(i_rct.topLeft(),i_rct.bottomLeft()) );
+                plg[idxSelPt] = QLineF(i_rct.topLeft(), i_rct.bottomLeft()).center();
                 break;
             }
             case ESelectionPoint::Center: {
@@ -1084,7 +1084,31 @@ QPolygonF ZS::Draw::rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount, const 
 } // rect2Polygon
 
 //------------------------------------------------------------------------------
-bool ZS::Draw::isLineHit( const QLineF& i_lineF, const QPointF& i_point, double i_fTolerance )
+/*! @brief Checks whether the given line is hit by the given point taking the
+           given tolerance into account.
+
+          + P1
+           \
+          +-\-+
+         Pt x\| PtToleranceRectangle
+          +---+
+               \
+                 + P2
+
+    The method creates a rectangle whose width and height is twice the tolerance
+    and whose center point is the given point.
+
+    The method checks whether P1 and P2 are within this rectangle.
+    If neither P1 nor P1 are hit the method checks whether the outer border lines
+    of the rectangle (top, bottom, left, right) intersects with the line.
+    If none of those lines hit the two diagonales of the tolerance rectangle are
+    also checked.
+*/
+bool ZS::Draw::isLineHit(
+    const QLineF& i_line,
+    const QPointF& i_pt,
+    double i_fTolerance,
+    SGraphObjHitInfo* o_pHitInfo)
 //------------------------------------------------------------------------------
 {
     // We create a square with the SideLength = 2 * fTolerance.
@@ -1097,35 +1121,71 @@ bool ZS::Draw::isLineHit( const QLineF& i_lineF, const QPointF& i_point, double 
     if (fTolerance <= 0.0) {
         fTolerance = 2.0;
     }
+    if (o_pHitInfo != nullptr) {
+        //o_pHitInfo->m_editMode = EEditMode::None;
+        //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
+        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
+        o_pHitInfo->m_idxPolygonShapePoint = -1;
+        o_pHitInfo->m_idxLineSegment = -1;
+        o_pHitInfo->m_ptSelected = QPointF();
+        o_pHitInfo->m_cursor = Qt::ArrowCursor;
+    }
 
-    double fXLeft   = i_point.x() - fTolerance;
-    double fYTop    = i_point.y() - fTolerance;
-    double fXRight  = i_point.x() + fTolerance;
-    double fYBottom = i_point.y() + fTolerance;
+    double fXLeft   = i_pt.x() - fTolerance;
+    double fYTop    = i_pt.y() - fTolerance;
+    double fXRight  = i_pt.x() + fTolerance;
+    double fYBottom = i_pt.y() + fTolerance;
+    QRectF rctPt(QPointF(fXLeft, fYTop), QPointF(fXRight, fYBottom));
 
-    QRectF rctPt(QPointF(fXLeft,fYTop), QPointF(fXRight,fYBottom));
-    QLineF lineRctPt;
-
-    for (int idx = 0; idx < 4; idx++) {
-        if (idx == 0) {
-            lineRctPt.setP1(QPointF(rctPt.left(), rctPt.top()));
-            lineRctPt.setP2(QPointF(rctPt.right(), rctPt.top()));
-        }
-        else if (idx == 1) {
-            lineRctPt.setP1(QPointF(rctPt.right(), rctPt.top()));
-            lineRctPt.setP2(QPointF(rctPt.right(), rctPt.bottom()));
-        }
-        else if (idx == 2) {
-            lineRctPt.setP1(QPointF(rctPt.left(), rctPt.bottom()));
-            lineRctPt.setP2(QPointF(rctPt.right(), rctPt.bottom()));
-        }
-        else if (idx == 3) {
-            lineRctPt.setP1(QPointF(rctPt.left(), rctPt.top()));
-            lineRctPt.setP2(QPointF(rctPt.left(), rctPt.bottom()));
-        }
-        if (lineRctPt.intersects(i_lineF, nullptr) == QLineF::BoundedIntersection) {
-            bIsHit = true;
-            break;
+    if (rctPt.contains(i_line.p1())) {
+        bIsHit = true;
+        o_pHitInfo->m_idxPolygonShapePoint = 0;
+        o_pHitInfo->m_ptSelected = i_pt;
+        o_pHitInfo->m_cursor = Qt::CrossCursor;
+    }
+    else if (rctPt.contains(i_line.p2())) {
+        bIsHit = true;
+        o_pHitInfo->m_idxPolygonShapePoint = 1;
+        o_pHitInfo->m_ptSelected = i_pt;
+        o_pHitInfo->m_cursor = Qt::CrossCursor;
+    }
+    else {
+        enum ERectangleLinesToCheck {
+            ELineTop,
+            ELineBottom,
+            ELineLeft,
+            ELineRight,
+            ELineDiagTLBR, // TopLeft to BottomRight
+            ELineDiagBLTR, // BottomLeft to TopRight
+            ELineCOUNT
+        };
+        QLineF lineRctPt;
+        QPointF ptIntersection;
+        for (int idxLine = 0; idxLine < ELineCOUNT; ++idxLine) {
+            if (idxLine == ELineTop) {
+                lineRctPt = QLineF(rctPt.topLeft(), rctPt.topRight());
+            }
+            else if (idxLine == ELineBottom) {
+                lineRctPt = QLineF(rctPt.bottomLeft(), rctPt.bottomRight());
+            }
+            else if (idxLine == ELineLeft) {
+                lineRctPt = QLineF(rctPt.topLeft(), rctPt.bottomLeft());
+            }
+            else if (idxLine == ELineRight) {
+                lineRctPt = QLineF(rctPt.topRight(), rctPt.bottomRight());
+            }
+            else if (idxLine == ELineDiagTLBR) {
+                lineRctPt = QLineF(rctPt.topLeft(), rctPt.bottomRight());
+            }
+            else if (idxLine == ELineDiagBLTR) {
+                lineRctPt = QLineF(rctPt.bottomLeft(), rctPt.topRight());
+            }
+            if (lineRctPt.intersects(i_line, &ptIntersection) == QLineF::BoundedIntersection) {
+                bIsHit = true;
+                o_pHitInfo->m_ptSelected = ptIntersection;
+                o_pHitInfo->m_cursor = Qt::SizeAllCursor;
+                break;
+            }
         }
     }
     return bIsHit;
@@ -1192,7 +1252,7 @@ bool ZS::Draw::isRectHit(
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = pt;
-                    o_pHitInfo->m_cursor = selectionPoint2CursorShape(selPt);
+                    o_pHitInfo->m_cursor = selectionPoint2Cursor(selPt);
                 }
                 break;
             }
@@ -1212,7 +1272,7 @@ bool ZS::Draw::isRectHit(
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
                         o_pHitInfo->m_ptSelected = pt;
-                        o_pHitInfo->m_cursor = selectionPoint2CursorShape(selPt);
+                        o_pHitInfo->m_cursor = selectionPoint2Cursor(selPt);
                     }
                     break;
                 }
@@ -1222,16 +1282,13 @@ bool ZS::Draw::isRectHit(
             plg = i_rct; // this cast return 5 points (left top corner twice)
             for (int idxPt = 0; idxPt < plg.size()-1; idxPt++) {
                 QLineF lin(plg[idxPt], plg[idxPt+1]);
-                if (isLineHit(lin, i_pt, fTolerance)) {
+                if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
                     bIsHit = true;
                     if (o_pHitInfo != nullptr) {
                         //o_pHitInfo->m_editMode = EEditMode::Move;
                         //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-                        o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-                        o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = idxPt;
                         o_pHitInfo->m_ptSelected = i_pt;
-                        o_pHitInfo->m_cursor = Qt::SizeAllCursor;
                     }
                     break;
                 }
@@ -1318,7 +1375,7 @@ bool ZS::Draw::isEllipseHit(
                     o_pHitInfo->m_idxPolygonShapePoint = -1;
                     o_pHitInfo->m_idxLineSegment = -1;
                     o_pHitInfo->m_ptSelected = pt;
-                    o_pHitInfo->m_cursor = selectionPoint2CursorShape(selPt);
+                    o_pHitInfo->m_cursor = selectionPoint2Cursor(selPt);
                 }
                 break;
             }
@@ -1340,7 +1397,7 @@ bool ZS::Draw::isEllipseHit(
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
                         o_pHitInfo->m_ptSelected = i_pt;
-                        o_pHitInfo->m_cursor = selectionPoint2CursorShape(ESelectionPoint::RightCenter);
+                        o_pHitInfo->m_cursor = selectionPoint2Cursor(ESelectionPoint::RightCenter);
                     }
                 }
             }
@@ -1355,7 +1412,7 @@ bool ZS::Draw::isEllipseHit(
                         o_pHitInfo->m_idxPolygonShapePoint = -1;
                         o_pHitInfo->m_idxLineSegment = -1;
                         o_pHitInfo->m_ptSelected = i_pt;
-                        o_pHitInfo->m_cursor = selectionPoint2CursorShape(ESelectionPoint::BottomCenter);
+                        o_pHitInfo->m_cursor = selectionPoint2Cursor(ESelectionPoint::BottomCenter);
                     }
                 }
             }
@@ -1486,16 +1543,13 @@ bool ZS::Draw::isPolygonHit(
             if (i_plg.size() > 1) {
                 for (int idxPt = 0; idxPt < i_plg.size()-1; idxPt++) {
                     QLineF lin(i_plg[idxPt], i_plg[idxPt+1]);
-                    if (isLineHit(lin, i_pt, fTolerance)) {
+                    if (isLineHit(lin, i_pt, fTolerance, o_pHitInfo)) {
                         bIsHit = true;
                         if (o_pHitInfo != nullptr) {
                             //o_pHitInfo->m_editMode = EEditMode::Move;
                             //o_pHitInfo->m_editResizeMode = EEditResizeMode::None;
-                            o_pHitInfo->m_selPtBoundingRect = ESelectionPoint::None;
-                            o_pHitInfo->m_idxPolygonShapePoint = -1;
                             o_pHitInfo->m_idxLineSegment = idxPt;
                             o_pHitInfo->m_ptSelected = i_pt;
-                            o_pHitInfo->m_cursor = Qt::SizeAllCursor;
                         }
                         break;
                     }
@@ -1540,13 +1594,10 @@ double ZS::Draw::getDistance( const QPointF& i_pt, const QLineF& i_line )
 }
 
 //------------------------------------------------------------------------------
-double ZS::Draw::getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 )
-//------------------------------------------------------------------------------
-{
-    // Calculates the angle between point 2 and point 1.
-    // Point 1 is considered to be the origin of the coordinate system.
+/*! @brief Calculates the angle between point 2 and point 1.
 
-    /*
+    Point 1 is considered to be the origin of the coordinate system.
+
             Q2        |      Q1        
       (PI/2 .. PI)    | (0.0 .. PI/2)  
       (90° .. 180°)   | (0 .. 90°)     
@@ -1556,35 +1607,29 @@ double ZS::Draw::getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 )
       (-180° .. -90°) | (-90 .. 0°)    
       (-PI .. -PI/2)  | (-PI/2 .. 0.0) 
             Q3        |      Q4        
-    */
-
+*/
+double ZS::Draw::getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 )
+//------------------------------------------------------------------------------
+{
     double fAngle_rad = 0.0;
 
     // If both points are at the same y position (horizontal line) ...
-    if( i_pt1.y() == i_pt2.y() )
-    {
+    if (i_pt1.y() == i_pt2.y()) {
         // If its a line from right to left ..
-        if( i_pt2.x() < i_pt1.x() )
-        {
+        if (i_pt2.x() < i_pt1.x()) {
             fAngle_rad = ZS::System::Math::c_fPI;
         }
     }
-    else
-    {
+    else {
         double fWidth_px  = i_pt2.x() - i_pt1.x();
         double fRadius_px = QLineF(i_pt1, i_pt2).length();
-
         fAngle_rad = acos(fWidth_px/fRadius_px);
-
-        if( i_pt2.y() > i_pt1.y() )
-        {
+        if (i_pt2.y() > i_pt1.y()) {
             fAngle_rad *= -1.0;
         }
     }
-
     return fAngle_rad;
-
-} // getAngleRad
+}
 
 //------------------------------------------------------------------------------
 QPointF ZS::Draw::rotatePoint( const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad )
@@ -1639,62 +1684,40 @@ QPolygonF ZS::Draw::normalizePolygon( const QPolygonF& i_plg, int i_iPrecision )
 {
     QPolygonF plg = i_plg;
 
-    int idxPt;
-
     // Remove "identical" points:
-    if( plg.size() > 2 )
-    {
+    if (plg.size() > 2) {
         QPointF pt1;
         QPointF pt2;
         QString strPt1;
         QString strPt2;
 
-        for( idxPt = plg.size()-1; idxPt >= 2; idxPt-- )
-        {
-            pt1 = plg[idxPt];
-            pt2 = plg[idxPt-1];
-
-            strPt1 = point2Str(pt1,'f',0);
-            strPt2 = point2Str(pt2,'f',0);
-
-            if( strPt1 == strPt2 )
-            {
+        for (int idxPt = plg.size()-1; idxPt >= 2; idxPt--) {
+            QPointF pt1 = plg[idxPt];
+            QPointF pt2 = plg[idxPt-1];
+            QString strPt1 = point2Str(pt1, 'f', 0);
+            QString strPt2 = point2Str(pt2, 'f', 0);
+            if (strPt1 == strPt2) {
                 plg.remove(idxPt);
             }
         }
     }
 
     // Remove points on direct lines between two neighbor points:
-    if( plg.size() > 3 )
-    {
-        bool    bPtRemoved = true;
-        QLineF  ln;
-        QPointF ptCheck;
-
-        while( bPtRemoved )
-        {
+    if (plg.size() > 3) {
+        bool bPtRemoved = true;
+        while (bPtRemoved) {
             bPtRemoved = false;
-
-            for( idxPt = plg.size()-1; idxPt >= 2; idxPt-- )
-            {
-                ln = QLineF( plg[idxPt], plg[idxPt-2] );
-                ptCheck = plg[idxPt-1];
-
-                if( isLineHit(ln,ptCheck,i_iPrecision) )
-                {
+            for (int idxPt = plg.size()-1; idxPt >= 2; idxPt--) {
+                QLineF ln = QLineF( plg[idxPt], plg[idxPt-2] );
+                QPointF ptCheck = plg[idxPt-1];
+                if (isLineHit(ln, ptCheck, i_iPrecision, nullptr)) {
                     plg.remove(idxPt-1);
-
                     bPtRemoved = true;
                     break;
-
-                } // if( isLineHit() )
-
-            } // for( idxPt = plg.size()-1; idxPt >= 3; idxPt-- )
-
-        } // while( bNormalizedTmp )
-
-    } // if( plg.size() > 3 )
-
+                }
+            }
+        }
+    }
     return plg;
 
 } // normalizePolygon
@@ -1771,88 +1794,43 @@ QPolygonF ZS::Draw::normalizePolygon( const QPolygonF& i_plg, int i_iPrecision )
 //} // rotatePolygonRectSelectionPoints2HorRectSelectionPoints
 
 //------------------------------------------------------------------------------
-QPointF ZS::Draw::getCenterPoint( const QLineF& i_line )
-//------------------------------------------------------------------------------
-{
-    QPointF ptCenter;
-
-    double fXLeft   = i_line.p1().x();
-    double fYTop    = i_line.p1().y();
-    double fXRight  = i_line.p2().x();
-    double fYBottom = i_line.p2().y();
-
-    if( fXLeft > fXRight )
-    {
-        double fXLeftTmp = fXLeft;
-        fXLeft = fXRight;
-        fXRight = fXLeftTmp;
-    }
-    if( fYTop > fYBottom )
-    {
-        double fYTopTmp = fYTop;
-        fYTop = fYBottom;
-        fYBottom = fYTopTmp;
-    }
-
-    ptCenter.setX( fXLeft + (fXRight-fXLeft)/2.0 );
-    ptCenter.setY( fYTop + (fYBottom-fYTop)/2.0 );
-
-    return ptCenter;
-
-} // getCenterPoint
-
-//------------------------------------------------------------------------------
 QPointF ZS::Draw::getCenterPointOfPolygonRect( const QPolygonF& i_polygonRect )
 //------------------------------------------------------------------------------
 {
     QPointF ptCenter;
 
-    if( i_polygonRect.size() == 4 )
-    {
+    if (i_polygonRect.size() == 4) {
         double fXLeft   = i_polygonRect[0].x();
         double fYTop    = i_polygonRect[0].y();
         double fXRight  = i_polygonRect[0].x();
         double fYBottom = i_polygonRect[0].y();
-        int    idxPt;
-
-        for( idxPt = 1; idxPt < i_polygonRect.size(); idxPt++ )
-        {
-            if( i_polygonRect[idxPt].x() < fXLeft )
-            {
+        for (int idxPt = 1; idxPt < i_polygonRect.size(); idxPt++) {
+            if (i_polygonRect[idxPt].x() < fXLeft) {
                 fXLeft = i_polygonRect[idxPt].x();
             }
-            if( i_polygonRect[idxPt].y() < fYTop )
-            {
+            if (i_polygonRect[idxPt].y() < fYTop) {
                 fYTop = i_polygonRect[idxPt].y();
             }
-            if( i_polygonRect[idxPt].x() > fXRight )
-            {
+            if (i_polygonRect[idxPt].x() > fXRight) {
                 fXRight = i_polygonRect[idxPt].x();
             }
-            if( i_polygonRect[idxPt].y() > fYBottom )
-            {
+            if (i_polygonRect[idxPt].y() > fYBottom) {
                 fYBottom = i_polygonRect[idxPt].y();
             }
         }
-
-        if( fXLeft > fXRight )
-        {
+        if (fXLeft > fXRight) {
             double fXLeftTmp = fXLeft;
             fXLeft = fXRight;
             fXRight = fXLeftTmp;
         }
-        if( fYTop > fYBottom )
-        {
+        if (fYTop > fYBottom) {
             double fYTopTmp = fYTop;
             fYTop = fYBottom;
             fYBottom = fYTopTmp;
         }
-
         ptCenter.setX( fXLeft + (fXRight-fXLeft)/2.0 );
         ptCenter.setY( fYTop + (fYBottom-fYTop)/2.0 );
-
-    } // if( i_polygonRect.size() == 4 )
-
+    }
     return ptCenter;
 
 } // getCenterPointOfPolygonRect
@@ -1862,132 +1840,98 @@ QPointF ZS::Draw::getMassCenterPointOfPolygon( const QPolygonF& i_polygon )
 //------------------------------------------------------------------------------
 {
     QPointF ptCenter;
-
-    if( i_polygon.size() == 1 )
-    {
+    if (i_polygon.size() == 1) {
         ptCenter = i_polygon[0];
     }
-    else if( i_polygon.size() == 2 )
-    {
+    else if (i_polygon.size() == 2) {
         ptCenter.setX( (i_polygon[0].x() + i_polygon[1].x()) / 2.0 );
         ptCenter.setY( (i_polygon[0].y() + i_polygon[1].y()) / 2.0 );
     }
-    else // if( i_polygon.size() > 2 )
-    {
-        int    idxPt, idxPt2;
+    else { // if( i_polygon.size() > 2 )
+        int idxPt, idxPt2;
         double ai, atmp = 0, xtmp = 0, ytmp = 0;
-
-        for( idxPt = i_polygon.size()-1, idxPt2 = 0; idxPt2 < i_polygon.size(); idxPt = idxPt2, idxPt2++ )
-        {
+        for (idxPt = i_polygon.size()-1, idxPt2 = 0; idxPt2 < i_polygon.size(); idxPt = idxPt2, idxPt2++) {
             ai = i_polygon[idxPt].x() * i_polygon[idxPt2].y() - i_polygon[idxPt2].x() * i_polygon[idxPt].y();
             atmp += ai;
             xtmp += (i_polygon[idxPt2].x() + i_polygon[idxPt].x()) * ai;
             ytmp += (i_polygon[idxPt2].y() + i_polygon[idxPt].y()) * ai;
         }
-
-        if( atmp != 0.0 )
-        {
+        if (atmp != 0.0) {
             ptCenter.setX( xtmp / (3.0 * atmp) );
             ptCenter.setY( ytmp / (3.0 * atmp) );
         }
-        else
-        {
+        else {
             ptCenter = i_polygon[0];
         }
     }
-
     return ptCenter;
-
-} // getMassCenterPointOfPolygon
+}
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::getBoundingRectPolygon( const QPolygonF& i_polygon )
 //------------------------------------------------------------------------------
 {
     QPolygonF polygonBoundingRect;
-
     polygonBoundingRect.resize(4);
-
-    if( i_polygon.size() > 0 )
-    {
+    if (i_polygon.size() > 0) {
         double fXLeft   = i_polygon[0].x();
         double fYTop    = i_polygon[0].y();
         double fXRight  = i_polygon[0].x();
         double fYBottom = i_polygon[0].y();
-        int    idxPt;
-
-        for( idxPt = 1; idxPt < i_polygon.size(); idxPt++ )
-        {
-            if( i_polygon[idxPt].x() < fXLeft )
-            {
+        for (int idxPt = 1; idxPt < i_polygon.size(); idxPt++) {
+            if (i_polygon[idxPt].x() < fXLeft) {
                 fXLeft = i_polygon[idxPt].x();
             }
-            if( i_polygon[idxPt].y() < fYTop )
-            {
+            if (i_polygon[idxPt].y() < fYTop) {
                 fYTop = i_polygon[idxPt].y();
             }
-            if( i_polygon[idxPt].x() > fXRight )
-            {
+            if (i_polygon[idxPt].x() > fXRight) {
                 fXRight = i_polygon[idxPt].x();
             }
-            if( i_polygon[idxPt].y() > fYBottom )
-            {
+            if (i_polygon[idxPt].y() > fYBottom) {
                 fYBottom = i_polygon[idxPt].y();
             }
         }
-
-        if( fXLeft > fXRight )
-        {
+        if (fXLeft > fXRight) {
             double fXLeftTmp = fXLeft;
             fXLeft = fXRight;
             fXRight = fXLeftTmp;
         }
-        if( fYTop > fYBottom )
-        {
+        if (fYTop > fYBottom) {
             double fYTopTmp = fYTop;
             fYTop = fYBottom;
             fYBottom = fYTopTmp;
         }
-
         polygonBoundingRect[0] = QPointF(fXLeft,fYTop);
         polygonBoundingRect[1] = QPointF(fXRight,fYTop);
         polygonBoundingRect[2] = QPointF(fXRight,fYBottom);
         polygonBoundingRect[3] = QPointF(fXLeft,fYBottom);
-
-    } // if( i_polygon.size() > 0 )
-
+    }
     return polygonBoundingRect;
-
-} // getBoundingRectPolygon
+}
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::getEllipseFocusPoints( const QRectF& i_rct )
 //------------------------------------------------------------------------------
 {
     QPolygonF plgFocusPoints(2);
-
     QPointF ptC = i_rct.center();
-
-    if( i_rct.width() == i_rct.height() )
-    {
+    if (i_rct.width() == i_rct.height()) {
         plgFocusPoints[0] = ptC;
         plgFocusPoints[1] = ptC;
     }
-    else if( i_rct.width() > i_rct.height() )
-    {
+    else if (i_rct.width() > i_rct.height()) {
         double fe = getEllipseCenterFocusDist(i_rct);
         plgFocusPoints[0] = QPointF( ptC.x() - fe, ptC.y() );
         plgFocusPoints[1] = QPointF( ptC.x() + fe, ptC.y() );
     }
-    else // if( i_rct.width() < i_rct.height() )
-    {
+    else { // if( i_rct.width() < i_rct.height() )
         double fe = getEllipseCenterFocusDist(i_rct);
         plgFocusPoints[0] = QPointF( ptC.x(), ptC.y() - fe );
         plgFocusPoints[1] = QPointF( ptC.x(), ptC.y() + fe );
     }
     return plgFocusPoints;
-
-} // getEllipseFocusPoints
+}
 
 //------------------------------------------------------------------------------
 double ZS::Draw::getEllipseCenterFocusDist( const QRectF& i_rct )
@@ -1995,19 +1939,13 @@ double ZS::Draw::getEllipseCenterFocusDist( const QRectF& i_rct )
 {
     double fa = i_rct.width();
     double fb = i_rct.height();
-
-    if( fa < fb )
-    {
+    if (fa < fb) {
         double fTmp = fb;
         fb = fa;
         fa = fTmp;
     }
-
-    double fe = sqrt( Math::sqr(fa) - Math::sqr(fb) );
-
-    return fe;
-
-} // getEllipseCenterFocusDist
+    return sqrt(Math::sqr(fa) - Math::sqr(fb));
+}
 
 //------------------------------------------------------------------------------
 QPointF ZS::Draw::getSelectionPointCoors( const QLineF& i_lin, ESelectionPoint i_selPt )
@@ -2661,62 +2599,40 @@ QString ZS::Draw::polygon2Str( const QPolygonF& i_polygon, char i_cF, int i_iPre
 QPolygon ZS::Draw::str2Polygon( const QString& i_str, bool* i_pbConverted )
 //------------------------------------------------------------------------------
 {
-    bool     bConverted = false;
+    bool bConverted = false;
     QPolygon plg;
-
     QStringList strlst = i_str.split(",");
-    int         idxPt;
-
-    for( idxPt = 0; idxPt < strlst.size(); idxPt++ )
-    {
+    for (int idxPt = 0; idxPt < strlst.size(); idxPt++) {
         QString strPt = strlst[idxPt];
-        QPoint  pt    = str2Point(strPt,&bConverted);
-
-        if( !bConverted )
-        {
+        QPoint pt = str2Point(strPt, &bConverted);
+        if (!bConverted) {
             break;
         }
-
         plg.append(pt);
     }
-
-    if( i_pbConverted != nullptr )
-    {
+    if (i_pbConverted != nullptr) {
         *i_pbConverted = bConverted;
     }
-
     return plg;
-
-} // str2Polygon
+}
 
 //------------------------------------------------------------------------------
 QPolygonF ZS::Draw::str2PolygonF( const QString& i_str, bool* i_pbConverted )
 //------------------------------------------------------------------------------
 {
-    bool      bConverted = false;
+    bool bConverted = false;
     QPolygonF plg;
-
     QStringList strlst = i_str.split(",");
-    int         idxPt;
-
-    for( idxPt = 0; idxPt < strlst.size(); idxPt++ )
-    {
+    for (int idxPt = 0; idxPt < strlst.size(); idxPt++) {
         QString strPt = strlst[idxPt];
-        QPointF pt    = str2PointF(strPt,&bConverted);
-
-        if( !bConverted )
-        {
+        QPointF pt = str2PointF(strPt, &bConverted);
+        if (!bConverted) {
             break;
         }
-
         plg.append(pt);
     }
-
-    if( i_pbConverted != nullptr )
-    {
+    if (i_pbConverted != nullptr) {
         *i_pbConverted = bConverted;
     }
-
     return plg;
-
-} // str2PolygonF
+}

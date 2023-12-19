@@ -29,6 +29,8 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
+#include <QtGui/qbitmap.h>
+#include <QtCore/qhash.h>
 
 using namespace ZS::System;
 using namespace ZS::Draw;
@@ -571,34 +573,78 @@ ESelectionPoint ZS::Draw::getOppositeSelectionPoint( ESelectionPoint i_selPt )
 //} // selectionPoint2EditResizeMode
 
 //------------------------------------------------------------------------------
-Qt::CursorShape ZS::Draw::selectionPoint2CursorShape( ESelectionPoint i_selPt )
+QCursor ZS::Draw::selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRotationAngle_degree )
 //------------------------------------------------------------------------------
 {
-    static const Qt::CursorShape s_arCursorShapes[] =
+    static const QHash<int, Qt::CursorShape> s_hshCursorShapes =
     {
-        /*  0: None         */ Qt::ForbiddenCursor,
-        /*  1: TopLeft      */ Qt::SizeFDiagCursor, /*  \  */
-        /*  2: TopRight     */ Qt::SizeBDiagCursor, /*  /  */
-        /*  3: BottomRight  */ Qt::SizeFDiagCursor, /*  \  */
-        /*  4: BottomLeft   */ Qt::SizeBDiagCursor, /*  /  */
-        /*  5: TopCenter    */ Qt::SizeVerCursor,
-        /*  6: RightCenter  */ Qt::SizeHorCursor,
-        /*  7: BottomCenter */ Qt::SizeVerCursor,
-        /*  8: LeftCenter   */ Qt::SizeHorCursor,
-        /*  9: Center       */ Qt::SizeAllCursor,
-        /* 10: RotateTop    */ Qt::BitmapCursor,
-        /* 11: RotateBottom */ Qt::BitmapCursor
+        {static_cast<int>(ESelectionPoint::None),         Qt::ForbiddenCursor},
+        {static_cast<int>(ESelectionPoint::TopLeft),      Qt::SizeFDiagCursor}, /*  \  */
+        {static_cast<int>(ESelectionPoint::TopRight),     Qt::SizeBDiagCursor}, /*  /  */
+        {static_cast<int>(ESelectionPoint::BottomRight),  Qt::SizeFDiagCursor}, /*  \  */
+        {static_cast<int>(ESelectionPoint::BottomLeft),   Qt::SizeBDiagCursor}, /*  /  */
+        {static_cast<int>(ESelectionPoint::TopCenter),    Qt::SizeVerCursor},   /*  |  */
+        {static_cast<int>(ESelectionPoint::RightCenter),  Qt::SizeHorCursor},   /* <-> */
+        {static_cast<int>(ESelectionPoint::BottomCenter), Qt::SizeVerCursor},   /*  |  */
+        {static_cast<int>(ESelectionPoint::LeftCenter),   Qt::SizeHorCursor},   /* <-> */
+        {static_cast<int>(ESelectionPoint::Center),       Qt::SizeAllCursor},   /* <|> */
+        {static_cast<int>(ESelectionPoint::RotateTop),    Qt::BitmapCursor},    /*  o  */
+        {static_cast<int>(ESelectionPoint::RotateBottom), Qt::BitmapCursor},    /*  o  */
+        {static_cast<int>(ESelectionPoint::PolygonPoint), Qt::CrossCursor}      /*  X  */
     };
 
-    Qt::CursorShape cursorShape = Qt::ArrowCursor;
-
-    if( static_cast<int>(i_selPt) >= 0 && static_cast<int>(i_selPt) < _ZSArrLen(s_arCursorShapes) )
-    {
-        cursorShape = s_arCursorShapes[static_cast<int>(i_selPt)];
+    QCursor cursor = Qt::ArrowCursor;
+    if (i_selPt == ESelectionPoint::RotateTop || i_selPt == ESelectionPoint::RotateBottom) {
+        QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+        cursor = QCursor(bmpCursor);
     }
-    return cursorShape;
-
-} // selectionPoint2CursorShape
+    else {
+        cursor = s_hshCursorShapes.value(static_cast<int>(i_selPt), Qt::ArrowCursor);
+        if (i_fRotationAngle_degree != 0.0) {
+            double fCursorAngle_degree = 0.0;
+            if (cursor == Qt::SizeFDiagCursor) {
+                // " \ ": 2nd quadrant: arrow from right/bottom -> top/left
+                fCursorAngle_degree = 135.0;
+            }
+            else if (cursor == Qt::SizeBDiagCursor) {
+                // " / ": 1st quadrant: arrow from bottom/left -> top/right
+                fCursorAngle_degree = 45.0;
+            }
+            else if (cursor == Qt::SizeHorCursor) {
+                // "<->"
+                fCursorAngle_degree = 180.0;
+            }
+            else if (cursor == Qt::SizeVerCursor) {
+                /* " | " */
+                fCursorAngle_degree = 270.0;
+            }
+            fCursorAngle_degree += i_fRotationAngle_degree;
+            // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
+            while (fCursorAngle_degree >= 180.0) {
+                fCursorAngle_degree -= 180.0;
+            }
+            while (fCursorAngle_degree < 0.0) {
+                fCursorAngle_degree += 180.0;
+            }
+            if (fCursorAngle_degree >= 0.0 && fCursorAngle_degree < 45.0/2.0) { // 0.0 .. 22.5°
+                cursor = Qt::SizeHorCursor;
+            }
+            else if (fCursorAngle_degree >= 45.0/2.0 && fCursorAngle_degree < 3.0*45.0/2.0) { // 22.5° .. 67.5°
+                cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
+            }
+            else if (fCursorAngle_degree >= 3.0*45.0/2.0 && fCursorAngle_degree < 5.0*45.0/2.0) { // 67.5° .. 112.5°
+                cursor = Qt::SizeVerCursor;
+            }
+            else if (fCursorAngle_degree >= 5.0*45.0/2.0 && fCursorAngle_degree < 7.0*45.0/2.0) { // 112.5° .. 157.5°
+                cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
+            }
+            else if (fCursorAngle_degree >= 7.0*45.0/2.0 && fCursorAngle_degree <= 180.0) { // 157.5° .. 180.0°
+                cursor = Qt::SizeHorCursor;
+            }
+        }
+    }
+    return cursor;
+}
 
 
 /*==============================================================================

@@ -120,7 +120,7 @@ ZSDRAWDLL_API QRectF boundingRect(const QPointF& i_pt, double i_fRadius);
 ZSDRAWDLL_API QRectF boundingRect(const QLineF& i_line);
 ZSDRAWDLL_API QPolygonF line2Polygon(const QLineF& i_line);
 ZSDRAWDLL_API QPolygonF rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount = -1, const ESelectionPoint* i_pSelPts = nullptr);
-ZSDRAWDLL_API bool isLineHit(const QLineF& i_lin, const QPointF& i_pt, double i_fTolerance);
+ZSDRAWDLL_API bool isLineHit(const QLineF& i_line, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isRectHit(const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isEllipseHit(const QRectF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API bool isPolygonHit(const QPolygonF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
@@ -130,7 +130,6 @@ ZSDRAWDLL_API QPointF rotatePoint(const QPointF& i_ptCenter, const QPointF& i_pt
 ZSDRAWDLL_API QPolygonF rotateRect(const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad);
 ZSDRAWDLL_API QPolygonF rotatePolygon(const QPointF& i_ptCenter, const QPolygonF& i_plg, double i_fAngle_rad);
 ZSDRAWDLL_API QPolygonF normalizePolygon(const QPolygonF& i_plg, int i_iPrecision = 0);
-ZSDRAWDLL_API QPointF getCenterPoint(const QLineF& i_line);
 ZSDRAWDLL_API QPointF getCenterPointOfPolygonRect(const QPolygonF& i_plgRect);
 ZSDRAWDLL_API QPointF getMassCenterPointOfPolygon(const QPolygonF& i_plg);
 ZSDRAWDLL_API QPolygonF getBoundingRectPolygon(const QPolygonF& i_plg);

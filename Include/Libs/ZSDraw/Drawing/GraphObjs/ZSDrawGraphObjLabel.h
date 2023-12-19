@@ -119,6 +119,8 @@ public: // must overridables of base class CGraphObj
 public: // overridables of base class CGraphObj
     virtual void setRotationAngleInDegree( double /*i_fRotAngle_deg*/ ) override {} // not supported for labels
 public: // must overridables of base class CGraphObj
+    virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const override;
+public: // must overridables of base class CGraphObj
     //virtual void setIsHit( bool i_bHit ) override;
 public: // overridables of base class CGraphObj
     //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;

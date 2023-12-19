@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysCommon.h"
 #include "ZSSys/ZSSysEnumTemplate.h"
 
+#include <QtGui/qcursor.h>
 #if QT_VERSION < 0x050000
 #include <QtGui/qgraphicsitem.h>
 #else
@@ -478,7 +479,7 @@ ZSDRAWDLL_API QPointF getOppositeSelectionPoint( const QRectF& i_rct, ESelection
 ZSDRAWDLL_API ESelectionPoint getOppositeSelectionPoint( ESelectionPoint i_selPt );
 //ZSDRAWDLL_API CEnumEditMode selectionPoint2EditMode( ESelectionPoint i_selPt );
 //ZSDRAWDLL_API CEnumEditResizeMode selectionPoint2EditResizeMode( ESelectionPoint i_selPt );
-ZSDRAWDLL_API Qt::CursorShape selectionPoint2CursorShape( ESelectionPoint i_selPt );
+ZSDRAWDLL_API QCursor selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRotationAngle_degree = 0.0 );
 } }
 
 

@@ -76,7 +76,7 @@ double CGraphObjSelectionPoint::GetDefaultRadiusInPx()
 protected: // class members
 ==============================================================================*/
 
-double CGraphObjSelectionPoint::s_fRadius_px = 3.0;
+double CGraphObjSelectionPoint::s_fRadius_px = 4.0;
 
 /*==============================================================================
 public: // ctors and dtor
@@ -491,101 +491,100 @@ void CGraphObjSelectionPoint::setSize( const CPhysValSize& i_physValSize )
 }
 
 /*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle of the object.
+
+    This method is used internally to calculate the bounding rectangle which need
+    to be updated for the drawing scene.
+
+    This method is also used by other objects (like the drawing scene on grouping objects)
+    to calculate the extent of rectangles with or without labels, selection points or
+    things which have to be considered when repainting the dirty rectangle on the
+    drawing scene.
+
+    @param [in] i_bOnlyRealShapePoints
+        If set to true only the real shape points are taken account when calculating
+        the bounding rectangle.
+        If set to false also labels and selection points but also the pen width
+        and the line end arrow heads are taken into account.
+*/
+QRectF CGraphObjSelectionPoint::getBoundingRect(bool i_bOnlyRealShapePoints) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "OnlyRealShapePoints: " + bool2Str(i_bOnlyRealShapePoints);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "getBoundingRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    // Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
+    // into account. So we cannot call this method to get the real bounding rectangle of
+    // the line if only the real shape points should be considered.
+    QRectF rctBounding;
+    if (i_bOnlyRealShapePoints) {
+        rctBounding = rect();
+    }
+    else {
+        rctBounding = QGraphicsEllipseItem::boundingRect();
+        rctBounding = QRectF(
+            rctBounding.left() - m_drawSettings.getPenWidth()/2,
+            rctBounding.top() - m_drawSettings.getPenWidth()/2,
+            rctBounding.width() + m_drawSettings.getPenWidth(),
+            rctBounding.height() + m_drawSettings.getPenWidth() );
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
+}
+
+/*==============================================================================
 public: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the cursor to be shown if the mouse is hovered over the
            selection point.
+
+    The cursor shape depends on the type of the selection point. If the parent
+    object is rotated, the cursor shape is adjusted correspondingly.
+
+    @param i_pt [in] Point to be check in local coordinates.
 */
-//QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_ptScenePos) const
-////------------------------------------------------------------------------------
-//{
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "getProposedCursor",
-//        /* strAddInfo   */ "" );
-//
-//    QCursor cursor = Qt::CustomCursor;
-//
-//#pragma message(__TODO__"see SGraphObjHitInfo::setCursor")
-//    //if (m_pDrawingScene->getEditTool() == EEditTool::Select) {
-//        double fRotAngleCurr_rad = 0.0;
-//        double fCursorAngle_rad  = 0.0;
-//        bool   bSetResizeCursor  = false;
-//
-//        if (m_selPt.m_pGraphObj != nullptr) {
-//            fRotAngleCurr_rad = Math::deg2Rad(m_selPt.m_pGraphObj->getRotationAngleInDegree());
-//        }
-//
-//        if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
-//            if (m_selPt.m_selPt == ESelectionPoint::TopLeft || m_selPt.m_selPt == ESelectionPoint::BottomRight) {
-//                fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f135Degrees_rad; // 2nd quadrant: arrow from right/bottom -> top/left
-//                cursor = Qt::SizeFDiagCursor; /*  \  */
-//                bSetResizeCursor = true;
-//            }
-//            else if (m_selPt.m_selPt == ESelectionPoint::TopRight || m_selPt.m_selPt == ESelectionPoint::BottomLeft) {
-//                fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f45Degrees_rad; // 1st quadrant: arrow from bottom/left -> top/right
-//                cursor = Qt::SizeBDiagCursor; /*  /  */
-//                bSetResizeCursor = true;
-//            }
-//            else if (m_selPt.m_selPt == ESelectionPoint::LeftCenter || m_selPt.m_selPt == ESelectionPoint::RightCenter) {
-//                fCursorAngle_rad = fRotAngleCurr_rad;
-//                cursor = Qt::SizeHorCursor;
-//                bSetResizeCursor = true;
-//            }
-//            else if (m_selPt.m_selPt == ESelectionPoint::TopCenter || m_selPt.m_selPt == ESelectionPoint::BottomCenter) {
-//                fCursorAngle_rad = fRotAngleCurr_rad + Math::c_f90Degrees_rad;
-//                cursor = Qt::SizeVerCursor;
-//                bSetResizeCursor = true;
-//            }
-//            else if (m_selPt.m_selPt == ESelectionPoint::Center) {
-//                cursor = Qt::SizeAllCursor;
-//            }
-//            else if (m_selPt.m_selPt == ESelectionPoint::RotateTop || m_selPt.m_selPt == ESelectionPoint::RotateBottom) {
-//                QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
-//                cursor = QCursor(bmpCursor);
-//            }
-//            else if (m_selPt.m_selPt == ESelectionPoint::PolygonPoint) {
-//                cursor = Qt::CrossCursor;
-//            }
-//            if (bSetResizeCursor) {
-//                // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
-//                while (fCursorAngle_rad >= Math::c_f180Degrees_rad) {
-//                    fCursorAngle_rad -= Math::c_f180Degrees_rad;
-//                }
-//                while (fCursorAngle_rad < 0.0) {
-//                    fCursorAngle_rad += Math::c_f180Degrees_rad;
-//                }
-//                if (fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0) { // 0.0 .. 22.5°
-//                    cursor = Qt::SizeHorCursor;
-//                }
-//                else if (fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0) { // 22.5° .. 67.5°
-//                    cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
-//                }
-//                else if (fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0) { // 67.5° .. 112.5°
-//                    cursor = Qt::SizeVerCursor;
-//                }
-//                else if (fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0) { // 112.5° .. 157.5°
-//                    cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
-//                }
-//                else if (fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad) { // 157.5° .. 180.0°
-//                    cursor = Qt::SizeHorCursor;
-//                }
-//            }
-//        }
-//        else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-//            cursor = Qt::CrossCursor;
-//        }
-//    //}
-//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-//        mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
-//    }
-//    return cursor;
-//
-//} // getProposedCursor
+QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_ptScenePos) const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "getProposedCursor",
+        /* strAddInfo   */ "" );
+
+    QCursor cursor = Qt::CrossCursor;
+    if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+        double fRotationAngle_degree = 0.0;
+        if (m_selPt.m_pGraphObj != nullptr) {
+            fRotationAngle_degree = m_selPt.m_pGraphObj->getRotationAngleInDegree();
+        }
+        cursor = selectionPoint2Cursor(m_selPt.m_selPt, fRotationAngle_degree);
+    }
+    else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        cursor = Qt::CrossCursor;
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qCursorShape2Str(cursor.shape()));
+    }
+    return cursor;
+}
 
 ////------------------------------------------------------------------------------
 //bool CGraphObjSelectionPoint::isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo ) const
@@ -655,6 +654,32 @@ public: // overridables of base class CGraphObj
 //}
 
 /*==============================================================================
+pbulic: // overridables of base class QGraphicsItem
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CGraphObjSelectionPoint::contains(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "contains",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bContains = QGraphicsEllipseItem::contains(i_pt);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bContains);
+    }
+    return bContains;
+}
+
+/*==============================================================================
 public: // reimplementing methods of base class QGraphicItem
 ==============================================================================*/
 
@@ -700,34 +725,21 @@ protected: // overridables of base class CGraphObj
 //}
 
 /*==============================================================================
-public: // overridables of base class QGraphicsPolygonItem
+public: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
 QRectF CGraphObjSelectionPoint::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "boundingRect",
-        /* strAddInfo   */ "" );
-
-    QRectF rctBounding = QGraphicsEllipseItem::boundingRect();
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthRet = qRect2Str(rctBounding);
-        mthTracer.setMethodReturn(strMthRet);
-    }
-    return rctBounding;
+    return getBoundingRect(false);
 }
 
 //------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::paint(
     QPainter* i_pPainter,
-    const QStyleOptionGraphicsItem* /*i_pStyleOption*/,
-    QWidget* /*i_pWdgt*/ )
+    const QStyleOptionGraphicsItem* i_pStyleOption,
+    QWidget* i_pWdgt )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -748,29 +760,32 @@ void CGraphObjSelectionPoint::paint(
 
     if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
         if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
+            pn.setWidth(2);
             pn.setColor(Qt::blue);
-            //brsh.setStyle(Qt::SolidPattern);
-            //brsh.setColor(Qt::blue);
-            brsh.setStyle(Qt::NoBrush);
+            brsh.setStyle(Qt::SolidPattern);
+            //brsh.setStyle(Qt::NoBrush);
+            brsh.setColor(Qt::blue);
         }
         else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+            pn.setWidth(2);
             pn.setColor(Qt::magenta);
-            //brsh.setStyle(Qt::SolidPattern);
-            //brsh.setColor(Qt::magenta);
-            brsh.setStyle(Qt::NoBrush);
+            brsh.setStyle(Qt::SolidPattern);
+            //brsh.setStyle(Qt::NoBrush);
+            brsh.setColor(Qt::magenta);
         }
     }
     else {
+        pn.setWidth(2);
         pn.setColor(Qt::red);
-        //brsh.setStyle(Qt::SolidPattern);
-        //brsh.setColor(Qt::white);
-        brsh.setStyle(Qt::NoBrush);
+        brsh.setStyle(Qt::SolidPattern);
+        //brsh.setStyle(Qt::NoBrush);
+        brsh.setColor(Qt::white);
     }
-
-    //QGraphicsEllipseItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
     i_pPainter->setPen(pn);
     i_pPainter->setBrush(brsh);
+
+    //QGraphicsEllipseItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
     if ((spanAngle() != 0) && (qAbs(spanAngle()) % (360 * 16) == 0)) {
         i_pPainter->drawEllipse(rect());

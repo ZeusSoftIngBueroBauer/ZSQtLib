@@ -350,7 +350,7 @@ public: // reimplementing methods of base class QGraphicItem
 //} // setCursor
 
 /*==============================================================================
-public: // overridables of base class QGraphicsPolygonItem
+public: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------

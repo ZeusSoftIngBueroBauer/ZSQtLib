@@ -492,7 +492,7 @@ void CGraphObjPoint::showSelectionPoints( unsigned char i_selPts )
 } // showSelectionPoints
 
 /*==============================================================================
-public: // overridables of base class QGraphicsPolygonItem
+public: // overridables of base class QGraphicsItem
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
