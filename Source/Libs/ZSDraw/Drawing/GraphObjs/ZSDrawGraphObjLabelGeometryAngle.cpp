@@ -237,14 +237,10 @@ QPainterPath CGraphObjLabelGeometryAngle::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
-    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
         }
-    }
-    painterPath.addEllipse(m_rectAnchorLine2CircleSegment);
-    if (m_plgP2ArrowHead.size() > 0) {
-        painterPath.addPolygon(m_plgP2ArrowHead);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         const QGraphicsItem* pCThis = static_cast<const QGraphicsItem*>(this);
@@ -353,11 +349,11 @@ void CGraphObjLabelGeometryAngle::updatePosition()
         m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
         lineFPolarBase);
 
-    //// The position of a QGraphicsTextItem is defined by its top left corner.
-    //QRectF rctBoundingThis = getBoundingRect(true);
-    //QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
-    //setPos(anchorLineP2ScenePos);
-    setPos(anchorLine.p2());
+    // The position of a QGraphicsTextItem is defined by its top left corner.
+    // Move text item so that its center point is at the line end point of the anchor line.
+    QRectF rctBoundingThis = getBoundingRect(true);
+    QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
+    setPos(anchorLineP2ScenePos);
 
     // Please note that on calling setPos the itemChange method of the
     // label is called invoking updateAnchorLines.

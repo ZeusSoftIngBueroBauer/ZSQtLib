@@ -1230,6 +1230,9 @@ QCursor CGraphObjLine::getProposedCursor(const QPointF& i_pt) const
         /* strAddInfo   */ strMthInArgs );
 
     QCursor cursor = Qt::ArrowCursor;
+    if (m_bIsHit) {
+        cursor = Qt::SizeAllCursor;
+    }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
         CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
@@ -1768,8 +1771,8 @@ void CGraphObjLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         plg.append(lineF.p1());
         plg.append(lineF.p2());
         showSelectionPointsOfPolygon(plg);
-        setCursor(getProposedCursor(i_pEv->pos()));
         setIsHit(true);
+        setCursor(getProposedCursor(i_pEv->pos()));
     }
 }
 
@@ -1795,8 +1798,8 @@ void CGraphObjLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         plg.append(lineF.p1());
         plg.append(lineF.p2());
         showSelectionPointsOfPolygon(plg);
-        setCursor(getProposedCursor(i_pEv->pos()));
         setIsHit(true);
+        setCursor(getProposedCursor(i_pEv->pos()));
     }
 }
 
@@ -1821,8 +1824,8 @@ void CGraphObjLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
     if (!isSelected()) {
         hideSelectionPoints();
     }
-    unsetCursor();
     setIsHit(false);
+    unsetCursor();
 }
 
 /*==============================================================================

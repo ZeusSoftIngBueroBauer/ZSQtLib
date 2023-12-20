@@ -289,15 +289,15 @@ public slots: // Menu - Draw - Graphics
     void onActionDrawGraphicsImageTriggered(bool i_bChecked = false);
 public slots: // Menu - Edit - Select/RotateFree
     void onActionEditSelectToggled(bool i_bChecked = false);
+public slots: // Menu - Edit - Group
+    void onActionEditGroupTriggered(bool i_bChecked = false);
+    void onActionEditUngroupTriggered(bool i_bChecked = false);
 public slots: // Menu - Edit - Rotate
     void onActionEditRotateLeftTriggered(bool i_bChecked = false);
     void onActionEditRotateRightTriggered(bool i_bChecked = false);
 public slots: // Menu - Edit - Mirror
     void onActionEditMirrorVerticalTriggered(bool i_bChecked = false);
     void onActionEditMirrorHorizontalTriggered(bool i_bChecked = false);
-public slots: // Menu - Edit - Group
-    void onActionEditGroupTriggered(bool i_bChecked = false);
-    void onActionEditUngroupTriggered(bool i_bChecked = false);
 public slots: // Menu - Draw - Connections
     void onActionDrawConnectionPointToggled(bool i_bChecked = false);
     void onActionDrawConnectionLineToggled(bool i_bChecked = false);
@@ -435,6 +435,10 @@ protected: // instance members
     // Menu - Edit - Select
     QToolBar* m_pToolBarEditSelect;
     QAction*  m_pActEditSelect;
+    // Menu - Edit - Group
+    QToolBar* m_pToolBarEditGroup;
+    QAction*  m_pActEditGroup;
+    QAction*  m_pActEditUngroup;
     // Menu - Edit - Rotate and Mirror
     QToolBar* m_pToolBarEditRotateAndMirror;
     // Menu - Edit - Rotate
@@ -446,10 +450,6 @@ protected: // instance members
     QMenu*    m_pMenuEditMirror;
     QAction*  m_pActEditMirrorVertical;
     QAction*  m_pActEditMirrorHorizontal;
-    // Menu - Edit - Group
-    QToolBar* m_pToolBarEditGroup;
-    QAction*  m_pActEditGroup;
-    QAction*  m_pActEditUngroup;
     // Menu - View
     QMenu*    m_pMenuView;
     QToolBar* m_pToolBarView;

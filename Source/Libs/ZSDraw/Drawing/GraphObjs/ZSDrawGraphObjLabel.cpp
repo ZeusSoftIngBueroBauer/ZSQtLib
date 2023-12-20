@@ -752,11 +752,9 @@ QRectF CGraphObjLabel::getBoundingRect(bool i_bOnlyRealShapePoints) const
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF rctBounding;
-    if (i_bOnlyRealShapePoints) {
+    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+    if (!i_bOnlyRealShapePoints) {
         rctBounding = QGraphicsSimpleTextItem::boundingRect();
-    }
-    else {
         // If the object is hit and the anchor line is visible also this area need to be updated.
         if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
             for (const QLineF& anchorLine : m_anchorLines) {
@@ -815,7 +813,7 @@ QPainterPath CGraphObjLabel::shape() const
         /* strAddInfo   */ "" );
 
     QPainterPath painterPath = QGraphicsSimpleTextItem::shape();
-    if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
         for (const QLineF& anchorLine : m_anchorLines) {
             painterPath.addPolygon(ZS::Draw::line2Polygon(anchorLine));
         }
@@ -850,12 +848,12 @@ void CGraphObjLabel::paint(
     i_pPainter->save();
     i_pPainter->setRenderHint(QPainter::Antialiasing);
 
-    QRectF rct = boundingRect();
+    QRectF rct = getBoundingRect(true);
 
     // Draw bounding rectangle in dotted line style if the label is hit by
     // mouse move (hover) or if the label is selected or if no text is assigned.
     QPen pn(Qt::SolidLine);
-    if (/*m_bIsHit ||*/ isSelected()) {
+    if (m_bIsHit || isSelected()) {
         pn.setColor(Qt::blue);
         pn.setStyle(Qt::DotLine);
         i_pPainter->setPen(pn);
@@ -932,18 +930,8 @@ void CGraphObjLabel::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    //if( editToolDrawing == EEditTool::Select )
-    //{
-    //    if( cursor().shape() != Qt::SizeAllCursor )
-    //    {
-    //        setCursor(Qt::SizeAllCursor);
-    //    }
-    //}
-    //else if( editToolDrawing == EEditTool::CreateObjects )
-    //{
-    //}
+    setIsHit(true);
+    setCursor(getProposedCursor(i_pEv->pos()));
 }
 
 //------------------------------------------------------------------------------
@@ -961,18 +949,8 @@ void CGraphObjLabel::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    //CEnumEditTool editToolDrawing = m_pDrawingScene->getEditTool();
-
-    //if( editToolDrawing == EEditTool::Select )
-    //{
-    //    if( cursor().shape() != Qt::SizeAllCursor )
-    //    {
-    //        setCursor(Qt::SizeAllCursor);
-    //    }
-    //}
-    //else if( editToolDrawing == EEditTool::CreateObjects )
-    //{
-    //}
+    setIsHit(true);
+    setCursor(getProposedCursor(i_pEv->pos()));
 }
 
 //------------------------------------------------------------------------------
@@ -990,6 +968,7 @@ void CGraphObjLabel::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
+    setIsHit(false);
     unsetCursor();
 }
 
@@ -1013,8 +992,6 @@ void CGraphObjLabel::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsSimpleTextItem::mousePressEvent(i_pEv);
-
-    //i_pEv->accept();
 }
 
 //------------------------------------------------------------------------------
@@ -1033,8 +1010,6 @@ void CGraphObjLabel::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsSimpleTextItem::mouseMoveEvent(i_pEv);
-
-    //i_pEv->accept();
 }
 
 //------------------------------------------------------------------------------
@@ -1053,10 +1028,7 @@ void CGraphObjLabel::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsSimpleTextItem::mouseReleaseEvent(i_pEv);
-
-    //i_pEv->accept();
-
-} // mouseReleaseEvent
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjLabel::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
@@ -1081,8 +1053,7 @@ void CGraphObjLabel::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     //QGraphicsSimpleTextItem::mouseDoubleClickEvent(i_pEv);
 
     i_pEv->accept();
-
-} // mouseDoubleClickEvent
+}
 
 /*==============================================================================
 protected slots:
@@ -1230,11 +1201,11 @@ void CGraphObjLabel::updatePosition()
             m_labelDscr.m_polarCoorsToLinkedSelPt, m_labelDscr.m_selPt1.m_idxPt);
     }
 
-    //// The position of a QGraphicsTextItem is defined by its top left corner.
-    //QRectF rctBoundingThis = boundingRect(true);
-    //QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
-    //setPos(anchorLineP2ScenePos);
-    setPos(anchorLine.p2());
+    // The position of a QGraphicsTextItem is defined by its top left corner.
+    // Move text item so that its center point is at the line end point of the anchor line.
+    QRectF rctBoundingThis = getBoundingRect(true);
+    QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
+    setPos(anchorLineP2ScenePos);
 
     // Please note that on calling setPos the itemChange method of the
     // label is called invoking updateAnchorLines.

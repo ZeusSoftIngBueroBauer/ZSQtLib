@@ -3425,18 +3425,18 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         //    bEventHandled = i_pEv->isAccepted();
         //}
         // If currently no object is "under construction" but an object got to be created ...
-        if (/*m_editTool == EEditTool::CreateObjects &&*/ m_pObjFactory != nullptr) {
+        if (m_pObjFactory != nullptr /*&& m_editTool == EEditTool::CreateObjects*/ ) {
             bool bCreateObj = true;
-            CGraphObjConnectionPoint* pGraphObjCnctPtHit = nullptr;
-            // Connection lines may only be created on connection points.
-            // A connection point must have been hit to create connection lines.
-            if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
-                // Check whether a connection point has been hit.
-                pGraphObjCnctPtHit = getConnectionPoint(i_pEv->scenePos());
-                if (pGraphObjCnctPtHit == nullptr) {
-                    bCreateObj = false;
-                }
-            }
+            //CGraphObjConnectionPoint* pGraphObjCnctPtHit = nullptr;
+            //// Connection lines may only be created on connection points.
+            //// A connection point must have been hit to create connection lines.
+            //if (iObjFactoryType == static_cast<int>(EGraphObjTypeConnectionLine)) {
+            //    // Check whether a connection point has been hit.
+            //    pGraphObjCnctPtHit = getConnectionPoint(i_pEv->scenePos());
+            //    if (pGraphObjCnctPtHit == nullptr) {
+            //        bCreateObj = false;
+            //    }
+            //}
             // Don't start creating objects if mouse press was outside the scene rectangle.
             if (bCreateObj) {
                 if (!sceneRect().contains(i_pEv->scenePos())) {
@@ -3502,6 +3502,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 }
             }
 
+            // Dispatch mouse event to objects "under cursor".
+            QGraphicsScene::mousePressEvent(i_pEv);
+
             // If an object has been newly created and is still under construction ...
             //if (m_pGraphicsItemCreating != nullptr)
             //{
@@ -3510,13 +3513,46 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
             //    bEventHandled = true;
             //}
         }
-    } // if (m_mode == EMode::Edit)
+        // If no item has been hit ...
+        else { // if (m_pObjFactory == nullptr)
+        
+            // Dispatch mouse event to objects "under cursor".
+            QGraphicsScene::mousePressEvent(i_pEv);
+
+            // If no object has been selected ...
+            if (selectedItems().size() == 0) {
+                // .. create selection rectangle area if not yet existing.
+                //setMode(EMode::Undefined, EEditTool::Undefined, EEditMode::None, EEditResizeMode::None, false);
+                QRectF rctSelectionArea(
+                    /* x      */ i_pEv->scenePos().x(),
+                    /* y      */ i_pEv->scenePos().y(),
+                    /* width  */ 1,
+                    /* height */ 1 );
+                if (m_pGraphicsItemSelectionArea == nullptr) {
+                    QPen penSelectionArea(Qt::DotLine);
+                    penSelectionArea.setColor(Qt::black);
+                    QBrush brsSelectionArea(Qt::SolidPattern);
+                    int iHue   = 240; // 0..359
+                    int iSat   =  63; // 0..255
+                    int iVal   = 127; // 0..255
+                    int iAlpha =  63; // 0..255
+                    brsSelectionArea.setColor(QColor::fromHsv(iHue, iSat, iVal, iAlpha));
+                    m_pGraphicsItemSelectionArea = addRect(
+                        /* rect   */ rctSelectionArea,
+                        /* pen    */ penSelectionArea,
+                        /* brush  */ brsSelectionArea );
+                }
+            }
+        }
+    }
+    else if (m_mode == EMode::View) {
+        // Dispatch mouse event to objects "under cursor".
+        QGraphicsScene::mousePressEvent(i_pEv);
+    }
 
     //if (!bEventHandled) {
-        // ... dispatch mouse event to objects "under cursor".
-        #pragma message(__TODO__"temporarily added")
-        QGraphicsScene::mousePressEvent(i_pEv);
-        //forwardMouseEventToObjectsHit(i_pEv);
+    //    // ... dispatch mouse event to objects "under cursor".
+    //    //forwardMouseEventToObjectsHit(i_pEv);
     //}
 
     //traceItemsStates(mthTracer, EMethodDir::Leave);
@@ -3588,8 +3624,6 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         //        forwardMouseEvent(m_pGraphicsItemAddingShapePoints, i_pEv);
         //    }
         //}
-        #pragma message(__TODO__"temporarily added")
-        QGraphicsScene::mouseMoveEvent(i_pEv);
         // If currently no object is "under construction" ...
         {
             //bool bDispatchMouseEvents2ObjectsUnderMouseCursor = false;
@@ -3603,24 +3637,31 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             //        }
             //    }
             //}
-            //else if (m_editTool == EEditTool::Select) {
-            //    if (iMouseButtonState & Qt::LeftButton) {
-            //        if (m_pGraphicsItemSelectionArea != nullptr) {
-            //            QRectF rctSelectionArea(
-            //                /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
-            //                /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
-            //                /* width  */ i_pEv->scenePos().x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
-            //                /* height */ i_pEv->scenePos().y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
-            //            m_pGraphicsItemSelectionArea->setRect(rctSelectionArea);
-            //        }
-            //        else {
-            //            QGraphicsScene::mouseMoveEvent(i_pEv);
-            //        }
-            //    }
-            //    else if (iMouseButtonState == Qt::NoButton) {
-            //        bDispatchMouseEvents2ObjectsUnderMouseCursor = true;
-            //    }
-            //}
+            if (m_pObjFactory == nullptr /*&&m_editTool == EEditTool::Select*/) {
+                if (iMouseButtonState & Qt::LeftButton) {
+                    if (m_pGraphicsItemSelectionArea != nullptr) {
+                        QRectF rctSelectionArea(
+                            /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
+                            /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
+                            /* width  */ i_pEv->scenePos().x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
+                            /* height */ i_pEv->scenePos().y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
+                        m_pGraphicsItemSelectionArea->setRect(rctSelectionArea);
+                    }
+                    else {
+                        // Dispatch mouse event to objects "under cursor".
+                        QGraphicsScene::mouseMoveEvent(i_pEv);
+                    }
+                }
+                else if (iMouseButtonState == Qt::NoButton) {
+                    // Dispatch mouse event to objects "under cursor".
+                    QGraphicsScene::mouseMoveEvent(i_pEv);
+                    //bDispatchMouseEvents2ObjectsUnderMouseCursor = true;
+                }
+            }
+            else {
+                // Dispatch mouse event to objects "under cursor".
+                QGraphicsScene::mouseMoveEvent(i_pEv);
+            }
             //if (bDispatchMouseEvents2ObjectsUnderMouseCursor || bDispatchMouseEvents2ConnectionPointsUnderMouseCursor) {
             //    // Some items may completely overlap (encircle) other objects (a big rectangle may completely
             //    // enclose a smaller rectangle or the bounding rectangle of a polyline may enclose other objects).
@@ -3741,9 +3782,8 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
             //} // if( bDispatchMouseEvents2ObjectsUnderMouseCursor || bDispatchMouseEvents2ConnectionPointsUnderMouseCursor )
         } // if( m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr )
     }
-    else if (m_mode == EMode::View)
-    {
-        // ... dispatch mouse event to objects "under cursor".
+    else if (m_mode == EMode::View) {
+        // Dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseMoveEvent(i_pEv);
     }
 
@@ -3798,31 +3838,28 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         //}
         // If currently no object is "under construction" ...
         {
-            // ... dispatch mouse press event to objects "under cursor".
-            #pragma message(__TODO__"temporarily added")
-            QGraphicsScene::mouseReleaseEvent(i_pEv);
-            //if (m_pGraphicsItemSelectionArea != nullptr) {
-            //    QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
-            //    delete m_pGraphicsItemSelectionArea;
-            //    m_pGraphicsItemSelectionArea = nullptr;
-            //    QRectF rctSelectionArea(
-            //        /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
-            //        /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
-            //        /* width  */ ptScenePosMouseEvent.x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
-            //        /* height */ ptScenePosMouseEvent.y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
+            if (m_pGraphicsItemSelectionArea != nullptr) {
+                QGraphicsScene::removeItem(m_pGraphicsItemSelectionArea);
+                delete m_pGraphicsItemSelectionArea;
+                m_pGraphicsItemSelectionArea = nullptr;
+                QRectF rctSelectionArea(
+                    /* x      */ m_ptMouseEvScenePosOnMousePressEvent.x(),
+                    /* y      */ m_ptMouseEvScenePosOnMousePressEvent.y(),
+                    /* width  */ ptScenePosMouseEvent.x() - m_ptMouseEvScenePosOnMousePressEvent.x() + 1,
+                    /* height */ ptScenePosMouseEvent.y() - m_ptMouseEvScenePosOnMousePressEvent.y() + 1 );
 
-            //    QPainterPath path;
-            //    path.addRect(rctSelectionArea);
-            //    setSelectionArea(path, Qt::ContainsItemShape);
-            //}
-            //else if (m_pGraphicsItemSelectionArea == nullptr) {
-            //    // ... dispatch mouse press event to objects "under cursor".
-            //    QGraphicsScene::mouseReleaseEvent(i_pEv);
-            //}
+                QPainterPath path;
+                path.addRect(rctSelectionArea);
+                setSelectionArea(path, Qt::ContainsItemShape);
+            }
+            else {
+                // Dispatch mouse event to objects "under cursor".
+                QGraphicsScene::mouseReleaseEvent(i_pEv);
+            }
         } // if (m_pGraphObjCreating == nullptr && m_pGraphObjAddingShapePoints == nullptr)
     }
     else if (m_mode == EMode::View) {
-        // ... dispatch mouse event to objects "under cursor".
+        // Dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseReleaseEvent(i_pEv);
     }
 
@@ -3906,12 +3943,12 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         //}
         // If currently no object is "under construction" ...
         {
-            // ... dispatch mouse event to objects "under cursor".
+            // Dispatch mouse event to objects "under cursor".
             QGraphicsScene::mouseDoubleClickEvent(i_pEv);
         }
     }
     else if (m_mode == EMode::View) {
-        // ... dispatch mouse event to objects "under cursor".
+        // Dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseDoubleClickEvent(i_pEv);
     }
 

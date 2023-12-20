@@ -317,6 +317,10 @@ CMainWindow::CMainWindow(
     // Menu - Edit - Select
     m_pToolBarEditSelect(nullptr),
     m_pActEditSelect(nullptr),
+    // Menu - Edit - Group
+    m_pToolBarEditGroup(nullptr),
+    m_pActEditGroup(nullptr),
+    m_pActEditUngroup(nullptr),
     // Menu - Edit - Rotate and Mirror
     m_pToolBarEditRotateAndMirror(nullptr),
     // Menu - Edit - Rotate
@@ -328,10 +332,6 @@ CMainWindow::CMainWindow(
     m_pMenuEditMirror(nullptr),
     m_pActEditMirrorVertical(nullptr),
     m_pActEditMirrorHorizontal(nullptr),
-    // Menu - Edit - Group
-    m_pToolBarEditGroup(nullptr),
-    m_pActEditGroup(nullptr),
-    m_pActEditUngroup(nullptr),
     // Menu - View
     m_pMenuView(nullptr),
     m_pToolBarView(nullptr),
@@ -813,6 +813,10 @@ CMainWindow::~CMainWindow()
     // Menu - Edit - Select
     m_pToolBarEditSelect = nullptr;
     m_pActEditSelect = nullptr;
+    // Menu - Edit - Group
+    m_pToolBarEditGroup = nullptr;
+    m_pActEditGroup = nullptr;
+    m_pActEditUngroup = nullptr;
     // Menu - Edit - Rotate and Mirror
     m_pToolBarEditRotateAndMirror = nullptr;
     // Menu - Edit - Rotate
@@ -824,10 +828,6 @@ CMainWindow::~CMainWindow()
     m_pMenuEditMirror = nullptr;
     m_pActEditMirrorVertical = nullptr;
     m_pActEditMirrorHorizontal = nullptr;
-    // Menu - Edit - Group
-    m_pToolBarEditGroup = nullptr;
-    m_pActEditGroup = nullptr;
-    m_pActEditUngroup = nullptr;
     // Menu - View
     m_pMenuView = nullptr;
     m_pToolBarView = nullptr;
@@ -1537,11 +1537,40 @@ void CMainWindow::createActions()
     m_pActEditSelect = new QAction( iconEditSelect, c_strActionNameEditSelect.section(":",-1,-1), this );
     m_pActEditSelect->setStatusTip( tr("Select Object(s)") );
     m_pActEditSelect->setCheckable(true);
-    m_pActEditSelect->setEnabled(false);
 
     QObject::connect(
         m_pActEditSelect, &QAction::triggered,
         this, &CMainWindow::onActionEditSelectToggled );
+
+    // <MenuItem> Edit::Group
+    //-----------------------
+
+    QIcon iconEditGroup;
+    QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.png");
+    iconEditGroup.addPixmap(pxmEditGroup16x16);
+
+    m_pActEditGroup = new QAction(iconEditGroup, c_strActionNameEditGroup.section(":",-1,-1), this);
+    m_pActEditGroup->setStatusTip(tr("Group Selected Objects"));
+    m_pActEditGroup->setEnabled(false);
+
+    QObject::connect(
+        m_pActEditGroup, &QAction::triggered,
+        this, &CMainWindow::onActionEditGroupTriggered );
+
+    // <MenuItem> Edit::Ungroup
+    //-------------------------
+
+    QIcon iconEditUngroup;
+    QPixmap pxmEditUngroup16x16(":/ZS/Draw/EditUngroup16x16.png");
+    iconEditUngroup.addPixmap(pxmEditUngroup16x16);
+
+    m_pActEditUngroup = new QAction( iconEditUngroup, c_strActionNameEditUngroup.section(":",-1,-1), this );
+    m_pActEditUngroup->setStatusTip( tr("Ungroup Selected Group(s)") );
+    m_pActEditUngroup->setEnabled(false);
+
+    QObject::connect(
+        m_pActEditUngroup, &QAction::triggered,
+        this, &CMainWindow::onActionEditUngroupTriggered );
 
     // <MenuItem> Edit::Rotate::Left
     //------------------------------
@@ -1607,36 +1636,6 @@ void CMainWindow::createActions()
     QObject::connect(
         m_pActEditMirrorHorizontal, &QAction::triggered,
         this, &CMainWindow::onActionEditMirrorHorizontalTriggered );
-
-    // <MenuItem> Edit::Group
-    //-----------------------
-
-    QIcon iconEditGroup;
-    QPixmap pxmEditGroup16x16(":/ZS/Draw/EditGroup16x16.png");
-    iconEditGroup.addPixmap(pxmEditGroup16x16);
-
-    m_pActEditGroup = new QAction(iconEditGroup, c_strActionNameEditGroup.section(":",-1,-1), this);
-    m_pActEditGroup->setStatusTip(tr("Group Selected Objects"));
-    m_pActEditGroup->setEnabled(false);
-
-    QObject::connect(
-        m_pActEditGroup, &QAction::triggered,
-        this, &CMainWindow::onActionEditGroupTriggered );
-
-    // <MenuItem> Edit::Ungroup
-    //-------------------------
-
-    QIcon iconEditUngroup;
-    QPixmap pxmEditUngroup16x16(":/ZS/Draw/EditUngroup16x16.png");
-    iconEditUngroup.addPixmap(pxmEditUngroup16x16);
-
-    m_pActEditUngroup = new QAction( iconEditUngroup, c_strActionNameEditUngroup.section(":",-1,-1), this );
-    m_pActEditUngroup->setStatusTip( tr("Ungroup Selected Group(s)") );
-    m_pActEditUngroup->setEnabled(false);
-
-    QObject::connect(
-        m_pActEditUngroup, &QAction::triggered,
-        this, &CMainWindow::onActionEditUngroupTriggered );
 
     // <Menu> View
     //============
@@ -3574,6 +3573,46 @@ void CMainWindow::onActionEditSelectToggled(bool i_bChecked)
 }
 
 /*==============================================================================
+public slots: // Menu - Edit - Group
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionEditGroupTriggered(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onActionEditGroupTriggered",
+        /* strAddInfo   */ strMthInArgs );
+
+    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    pDrawingScene->groupGraphObjsSelected();
+}
+
+//------------------------------------------------------------------------------
+void CMainWindow::onActionEditUngroupTriggered(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onActionEditUngroupTriggered",
+        /* strAddInfo   */ strMthInArgs );
+
+    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    pDrawingScene->ungroupGraphObjsSelected();
+}
+
+/*==============================================================================
 public slots: // Menu - Edit - Rotate
 ==============================================================================*/
 
@@ -3699,46 +3738,6 @@ void CMainWindow::onActionEditMirrorHorizontalTriggered(bool i_bChecked)
         /* pWdgtParent */ this,
         /* strTitle    */ QApplication::applicationName() + ": Unsupported Feature",
         /* strText     */ "Sorry but mirroring is not yet supported." );
-}
-
-/*==============================================================================
-public slots: // Menu - Edit - Group
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActionEditGroupTriggered(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionEditGroupTriggered",
-        /* strAddInfo   */ strMthInArgs );
-
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-    pDrawingScene->groupGraphObjsSelected();
-}
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActionEditUngroupTriggered(bool i_bChecked)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Checked: " + bool2Str(i_bChecked);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onActionEditUngroupTriggered",
-        /* strAddInfo   */ strMthInArgs );
-
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-    pDrawingScene->ungroupGraphObjsSelected();
 }
 
 /*==============================================================================
@@ -4873,12 +4872,12 @@ void CMainWindow::updateActions()
                 m_pActEditSelect->setEnabled(false);
             }
             else {
-                if (pDrawingScene->items().size() == 0) {
-                    m_pActEditSelect->setEnabled(false);
-                }
-                else {
-                    m_pActEditSelect->setEnabled(true);
-                }
+                //if (pDrawingScene->items().size() == 0) {
+                //    m_pActEditSelect->setEnabled(false);
+                //}
+                //else {
+                //    m_pActEditSelect->setEnabled(true);
+                //}
                 if (pDrawingScene->getCurrentDrawingTool() == nullptr) {
                     m_pActEditSelect->setChecked(true);
                 }

@@ -54,6 +54,27 @@ namespace Draw
           labels are created. Otherwise the "boundingRect" call of groups
           (which implicitly calls childrenBoundingRect) does not work as the
           label of the bounding rectangle would be included.
+
+    When positioning a label on the graphics scene the setPos method moves the
+    top left corner of the text item.
+
+    +-Drawing-Scene--------------------------------------------------------------------+
+    |(0/0)                                                                             |
+    |  Scene coordinates                                Text item's local coordinates  |
+    |                                                                                  |
+    |                                                                                  |
+    |                                                                                  |
+    |                                                                                  |
+    |                                                                                  |
+    |                                                  TL             TR               |
+    |  (120/90) = text.pos                        (0/0) +-------------+                |
+    |                                                   | Hello World |                |
+    |                                                   +-------------+ (40/30)        |
+    |  (160/120) = text.bottomRight                    BL              BR              |
+    |                                                                                  |
+    |                                                                                  |
+    |                                                                                  |
+    +----------------------------------------------------------------------------------+
 */
 class ZSDRAWDLL_API CGraphObjLabel : public CGraphObj, public QGraphicsSimpleTextItem
 //******************************************************************************

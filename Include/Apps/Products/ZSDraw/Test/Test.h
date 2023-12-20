@@ -97,6 +97,11 @@ protected: // instance methods
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const QString& i_strFactoryGroupName, ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strGraphObjName,
         const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease, const QPoint& i_ptMouseAfterRelease);
+    ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsCreateGroup(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const QString& i_strGraphObjName,
+        const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease, int i_iMovesCount,
+        const QPoint& i_ptMouseAfterRelease);
     ZS::Test::CTestStepGroup* createTestGroupShowAndMoveTextLabel(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const QString& i_strGraphObjName, const QString& i_strLabelName,
@@ -106,9 +111,18 @@ protected: // instance methods
         const QString& i_strGraphObjName, const QString& i_strLabelName,
         const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
 protected: // instance methods
+    void addTestStepDrawMouseEventPress(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
+        const QPoint& i_ptMousePos);
+    void addTestStepDrawMouseEventRelease(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
+        const QPoint& i_ptMousePos);
     void addTestStepDrawMouseEventsMove(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
-        const QPoint& i_ptMouseStart, const QPoint& i_ptMouseStop);
+        const QPoint& i_ptMouseStart, const QPoint& i_ptMouseStop, int i_iMovesCount = 0);
+    void addTestStepsDrawMouseEventsMove(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
+        const QPoint& i_ptMouseStart, const QPoint& i_ptMouseStop, int i_iMovesCount = 0);
     void addTestStepsDrawMouseEventsMovePressMoveRelease(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
         const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);

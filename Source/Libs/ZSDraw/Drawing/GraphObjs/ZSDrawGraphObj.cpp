@@ -3826,6 +3826,9 @@ QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
         /* strAddInfo   */ strMthInArgs );
 
     QCursor cursor = Qt::ArrowCursor;
+    if (m_bIsHit) {
+        cursor = Qt::SizeAllCursor;
+    }
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
         CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);

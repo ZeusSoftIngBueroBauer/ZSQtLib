@@ -40,6 +40,68 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
+/*! @brief Class for line items.
+
+    A line has a start and an end point (P1 and P2).
+    The center point of the line is the origin of the line's local coordinate system.
+
+    When positioning a line on the graphics scene or as a child of a parent object
+    the setPos method moves the center point of the line.
+
+    If the line has no parent the center point corresponds to the position of
+    the line within the graphics scene.
+
+    +-Drawing-Scene--------------------------------------------------------------------+
+    |(0/0)                                                                             |
+    |  Scene coordinates                                     Line's local coordinates  |
+    |                                                                                  |
+    |                                                                                  |
+    |  (100/50) = scenePos(line.p1)                      + (-20/-40) = line.p1         |
+    |                                                     \                            |
+    |                                                      \                           |
+    |                                                       \                          |
+    |  (120/90) = line.pos                                   X (0/0) = line.center()   |
+    |                                                         \                        |
+    |                                                          \                       |
+    |                                                           \                      |
+    |  (140/130) = scenePos(line.p2)                             + (20/40) = line.p2   |
+    |                                                                                  |
+    |                                                                                  |
+    +----------------------------------------------------------------------------------+
+
+    The origin of the parent item's coordinate system is the center of the parent's
+    bounding rectangle and the coordinates of the parent's top left corner is not
+    at (0/0) but at negative pixel values.
+
+    +-Drawing-Scene--------------------------------------------------------------------+
+    |(0/0)                                                                             |
+    |  Scene coordinates     Group's local coordinates   Line's local coordinates      |
+    |                                                                                  |
+    |                        +---Group---------------x-----------------------+         |
+    |                        | (-40/-50) = group.topLeft                     |         |
+    |                        |                                               |         |
+    |                        |                           + (-20/-40) = line.p1         |
+    |                        |                            \                  |         |
+    |                        |                       |     \                 |         |
+    |  (60/60 = group.pos    x (0/0) = group.center--X--    \                |         |
+    |                        | (10/10) = line.pos    |       X (0/0) = line.center     |
+    |                        |                                \              |         |
+    |                        |                                 \             |         |
+    |                        |                                  \            |         |
+    |                        | (40/50) = group.bottomRight       + (20/40) = line.p2   |
+    |                        +---Group---------------x-----------------------+         |
+    |                                                                                  |
+    |                                                                                  |
+    +----------------------------------------------------------------------------------+
+
+    If the line coordinates have to be entered via gui controls the coordinates
+    have to be provided not in the item's local coordinate system but relative to
+    the parent's (or drawing scenes) top left corner.
+
+    If the line belongs to a group, as shown in the picture above, the user enters the
+    coordinates (80/30) for P1 and (120/110) for P2 to position the line within the group.
+    Those coordinates need to be transformed so that the position of the line becomes (10/10).
+*/
 class ZSDRAWDLL_API CGraphObjLine : public CGraphObj, public QGraphicsLineItem
 //******************************************************************************
 {
