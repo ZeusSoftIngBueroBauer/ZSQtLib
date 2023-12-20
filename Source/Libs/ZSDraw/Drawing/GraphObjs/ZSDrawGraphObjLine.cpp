@@ -173,7 +173,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strAddInfo   */ strMthInArgs );
 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges
-           | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemIsSelectable);
+           | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
     setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
     setAcceptHoverEvents(true);
 
@@ -1690,30 +1690,17 @@ bool CGraphObjLine::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEv
     SGraphObjSelectionPoint selPt = pGraphObjSelPtWatched->getSelectionPoint();
 
     bool bEventHandled = false;
-    if (i_pEv->type() == QEvent::GraphicsSceneMouseRelease) {
+    if (i_pEv->type() == QEvent::GraphicsSceneMousePress) {
+        setSelected(true);
+        bEventHandled = true;
+    }
+    else if (i_pEv->type() == QEvent::GraphicsSceneMouseRelease) {
         if (m_editMode == EEditMode::CreatingByMouseEvents && selPt.m_idxPt == 1) {
             setEditMode(EEditMode::None);
             setSelected(false);
             bEventHandled = true;
         }
     }
-    //else if (i_pEv->type() == QEvent::GraphicsSceneMousePress) {
-    //    QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
-    //    if (pEv != nullptr) {
-    //        QPointF ptEvPos;
-    //        for (int btns = Qt::MouseButton::LeftButton; btns <= Qt::MouseButton::ForwardButton; btns <<= 1) {
-    //            Qt::MouseButton button = Qt::MouseButton(btns);
-    //            ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->buttonDownPos(button));
-    //            pEv->setButtonDownPos(button, ptEvPos);
-    //        }
-    //        ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->pos());
-    //        pEv->setPos(ptEvPos);
-    //        ptEvPos = mapFromItem(pGraphObjSelPtWatched, pEv->lastPos());
-    //        pEv->setLastPos(ptEvPos);
-    //        mousePressEvent(pEv);
-    //        bEventHandled = true;
-    //    }
-    //}
     //else if (i_pEv->type() == QEvent::GraphicsSceneMouseDoubleClick) {
     //    QGraphicsSceneMouseEvent* pEv = dynamic_cast<QGraphicsSceneMouseEvent*>(i_pEv);
     //    if (pEv != nullptr) {
@@ -1783,7 +1770,6 @@ void CGraphObjLine::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         showSelectionPointsOfPolygon(plg);
         setCursor(getProposedCursor(i_pEv->pos()));
         setIsHit(true);
-        update();
     }
 }
 
@@ -1811,7 +1797,6 @@ void CGraphObjLine::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         showSelectionPointsOfPolygon(plg);
         setCursor(getProposedCursor(i_pEv->pos()));
         setIsHit(true);
-        update();
     }
 }
 
@@ -1838,7 +1823,6 @@ void CGraphObjLine::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
     }
     unsetCursor();
     setIsHit(false);
-    update();
 }
 
 /*==============================================================================

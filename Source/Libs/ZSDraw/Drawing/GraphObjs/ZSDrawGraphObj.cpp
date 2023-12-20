@@ -1554,57 +1554,6 @@ QString CGraphObj::getFactoryGroupName() const
     return m_strFactoryGroupName;
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Returns the current edit mode of the object.
-
-    The edit mode defines how mouse and key events are handled.
-*/
-void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
-//------------------------------------------------------------------------------
-{
-    if (m_editMode != i_eMode) {
-        m_editMode = i_eMode;
-        if (m_editMode == EEditMode::CreatingByMouseEvents) {
-            QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-            if (pGraphicsItemThis != nullptr) {
-                // Immeadiately select the object to create the selection points.
-                // Following mouse move press, mouse move and mouse release events will
-                // be forwarded by the scene to the selection point responsible for
-                // resizing the obejct (the top most selection point most recently created).
-                pGraphicsItemThis->setSelected(true);
-                // The object is under construction. Hover events will not be accepted.
-                // Only when no drawing tool is selected in the drawing scene hover
-                // events may be accepted.
-                pGraphicsItemThis->setAcceptHoverEvents(false);
-            }
-        }
-        emit_editModeChanged(m_editMode);
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the current edit mode of the object.
-
-    The edit mode defines how mouse and key events are handled.
-*/
-CEnumEditMode CGraphObj::editMode() const
-//------------------------------------------------------------------------------
-{
-    return m_editMode;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the current edit mode of the object.
-
-    If the object is currently being resized (editMode == Resize) the resize mode
-    defines how the object will be resized.
-*/
-//CEnumEditResizeMode CGraphObj::getEditResizeMode() const
-////------------------------------------------------------------------------------
-//{
-//    return m_editResizeMode;
-//}
-
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
@@ -3670,24 +3619,56 @@ public: // overridables
 public: // overridables
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//void CGraphObj::setEditMode( EEditMode i_editMode )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = CEnumEditMode(i_editMode).toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "CGraphObj::setEditMode",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    m_editMode = i_editMode;
-//}
-//
+//------------------------------------------------------------------------------
+/*! @brief Returns the current edit mode of the object.
+
+    The edit mode defines how mouse and key events are handled.
+*/
+void CGraphObj::setEditMode(const CEnumEditMode& i_eMode)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_eMode.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::setEditMode",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_editMode != i_eMode) {
+        m_editMode = i_eMode;
+        if (m_editMode == EEditMode::CreatingByMouseEvents) {
+            QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+            if (pGraphicsItemThis != nullptr) {
+                // Immeadiately select the object to create the selection points.
+                // Following mouse move press, mouse move and mouse release events will
+                // be forwarded by the scene to the selection point responsible for
+                // resizing the obejct (the top most selection point most recently created).
+                pGraphicsItemThis->setSelected(true);
+                // The object is under construction. Hover events will not be accepted.
+                // Only when no drawing tool is selected in the drawing scene hover
+                // events may be accepted.
+                pGraphicsItemThis->setAcceptHoverEvents(false);
+            }
+        }
+        emit_editModeChanged(m_editMode);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the current edit mode of the object.
+
+    The edit mode defines how mouse and key events are handled.
+*/
+CEnumEditMode CGraphObj::editMode() const
+//------------------------------------------------------------------------------
+{
+    return m_editMode;
+}
+
 ////------------------------------------------------------------------------------
 //void CGraphObj::setEditResizeMode( EEditResizeMode i_editResizeMode )
 ////------------------------------------------------------------------------------
@@ -3706,49 +3687,21 @@ public: // overridables
 //    m_editResizeMode = i_editResizeMode;
 //}
 
+//------------------------------------------------------------------------------
+/*! @brief Returns the current edit mode of the object.
+
+    If the object is currently being resized (editMode == Resize) the resize mode
+    defines how the object will be resized.
+*/
+//CEnumEditResizeMode CGraphObj::editResizeMode() const
+////------------------------------------------------------------------------------
+//{
+//    return m_editResizeMode;
+//}
+
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the proposed cursor shape for the given point.
-
-    The cursor shape depends which shape point of the object has been hit.
-    If a selection point has been hit, the position and type of selection point
-    defines the cursor shape.
-
-    The base implementation just checks whether a selection point has been hit
-    and returns the cursor shape proposed by the selection point.
-
-    @param i_pt [in] Point to be check in local coordinates.
-*/
-QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Point:" + point2Str(i_pt);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCursor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "getProposedCursor",
-        /* strAddInfo   */ strMthInArgs );
-
-    QCursor cursor = Qt::ArrowCursor;
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItemThis != nullptr) {
-        CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
-        if (pGraphObjSelPtHit != nullptr) {
-            cursor = pGraphObjSelPtHit->getProposedCursor(i_pt);
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodOutArgs(qCursorShape2Str(cursor.shape()));
-    }
-    return cursor;
-}
 
 //------------------------------------------------------------------------------
 void CGraphObj::setIsHit(bool i_bIsHit)
@@ -3767,6 +3720,10 @@ void CGraphObj::setIsHit(bool i_bIsHit)
 
     if (m_bIsHit != i_bIsHit) {
         m_bIsHit = i_bIsHit;
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItemThis != nullptr) {
+            pGraphicsItemThis->update();
+        }
     }
 }
 
@@ -3837,6 +3794,50 @@ bool CGraphObj::isHit() const
 //    }
 //    return bIsHit;
 //}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the proposed cursor shape for the given point.
+
+    The cursor shape depends which shape point of the object has been hit.
+    If a selection point has been hit, the position and type of selection point
+    defines the cursor shape.
+
+    The base implementation just checks whether a selection point has been hit
+    and returns the cursor shape proposed by the selection point.
+
+    @param i_pt [in] Point to be check in local coordinates.
+*/
+QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Point:" + point2Str(i_pt);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCursor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "getProposedCursor",
+        /* strAddInfo   */ strMthInArgs );
+
+    QCursor cursor = Qt::ArrowCursor;
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        CGraphObjSelectionPoint* pGraphObjSelPtHit = getSelectionPointHit(i_pt);
+        if (pGraphObjSelPtHit != nullptr) {
+            cursor = pGraphObjSelPtHit->getProposedCursor(i_pt);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodOutArgs(qCursorShape2Str(cursor.shape()));
+    }
+    return cursor;
+}
 
 /*==============================================================================
 public: // overridables
@@ -6680,8 +6681,7 @@ void CGraphObj::traceGraphicsItemStates(
             strRuntimeInfo += "AcceptHoverEvents: " + bool2Str(pGraphicsItemThis->acceptHoverEvents()) +
                              ", IsSelected: " + bool2Str(pGraphicsItemThis->isSelected()) +
                              ", IsVisible: " + bool2Str(pGraphicsItemThis->isVisible()) +
-                             ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled()) +
-                             ", IsUnderMouse: " + bool2Str(pGraphicsItemThis->isUnderMouse());
+                             ", IsEnabled: " + bool2Str(pGraphicsItemThis->isEnabled());
             i_mthTracer.trace(strRuntimeInfo);
 
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";

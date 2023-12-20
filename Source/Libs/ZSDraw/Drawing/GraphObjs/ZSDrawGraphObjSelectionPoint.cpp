@@ -762,24 +762,24 @@ void CGraphObjSelectionPoint::paint(
         if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
             pn.setWidth(2);
             pn.setColor(Qt::blue);
-            brsh.setStyle(Qt::SolidPattern);
-            //brsh.setStyle(Qt::NoBrush);
-            brsh.setColor(Qt::blue);
+            brsh.setStyle(Qt::NoBrush);
+            //brsh.setStyle(Qt::SolidPattern);
+            //brsh.setColor(Qt::blue);
         }
         else if (m_selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
             pn.setWidth(2);
             pn.setColor(Qt::magenta);
-            brsh.setStyle(Qt::SolidPattern);
-            //brsh.setStyle(Qt::NoBrush);
-            brsh.setColor(Qt::magenta);
+            brsh.setStyle(Qt::NoBrush);
+            //brsh.setStyle(Qt::SolidPattern);
+            //brsh.setColor(Qt::magenta);
         }
     }
     else {
         pn.setWidth(2);
         pn.setColor(Qt::red);
-        brsh.setStyle(Qt::SolidPattern);
-        //brsh.setStyle(Qt::NoBrush);
-        brsh.setColor(Qt::white);
+        brsh.setStyle(Qt::NoBrush);
+        //brsh.setStyle(Qt::SolidPattern);
+        //brsh.setColor(Qt::white);
     }
 
     i_pPainter->setPen(pn);

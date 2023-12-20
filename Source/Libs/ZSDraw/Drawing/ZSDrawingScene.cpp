@@ -1626,17 +1626,17 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setCurrentDrawingTool",
         /* strAddInfo   */ strMthInArgs );
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
-    //}
+
+    //traceItemsStates(mthTracer, EMethodDir::Enter);
 
     if (m_mode != EMode::Edit) {
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "m_mode != EMode::Edit");
     }
 
     if (m_pObjFactory != i_pObjFactory) {
-        // As long as a drawing tool is selected, the graphics item don't accpet hover events.
-        bool bAdjustItemsAcceptHoverEvents = false;
+        // As long as a drawing tool is selected,
+        // graphics item don't accpet hover events and cannot be selected.
+        bool bAdjustItemsStates = false;
         QString strFactoryGrpName;
         QString strGraphObjType;
         if (m_pObjFactory != nullptr) {
@@ -1645,13 +1645,13 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
                 this, &CDrawingScene::onGraphObjFactoryDestroyed );
             // If no drawing tool is selected anymore ...
             if (i_pObjFactory == nullptr) {
-                bAdjustItemsAcceptHoverEvents = true;
+                bAdjustItemsStates = true;
             }
         }
         else {
             // If a drawing tool has been selected ...
             if (i_pObjFactory != nullptr) {
-                bAdjustItemsAcceptHoverEvents = true;
+                bAdjustItemsStates = true;
             }
         }
         m_pObjFactory = i_pObjFactory;
@@ -1662,15 +1662,17 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
             strFactoryGrpName = m_pObjFactory->getGroupName();
             strGraphObjType = m_pObjFactory->getGraphObjTypeAsString();
         }
-        if (bAdjustItemsAcceptHoverEvents) {
+        if (bAdjustItemsStates) {
             QList<QGraphicsItem*> arpGraphicsItems = items();
             for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                 if (pGraphObj != nullptr) {
                     // !! Selection points may never accept hover events !!
                     // (see comment in constructor of class CGraphObjSelectionPoint).
+                    // Selection points are also not selectable.
                     if (!pGraphObj->isSelectionPoint()) {
                         pGraphicsItem->setAcceptHoverEvents(m_pObjFactory == nullptr);
+                        pGraphicsItem->setSelected(m_pObjFactory == nullptr ? pGraphicsItem->isSelected() : false);
                     }
                 }
             }
@@ -1690,9 +1692,8 @@ void CDrawingScene::setCurrentDrawingTool( CObjFactory* i_pObjFactory )
     //    }
     //}
 
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
+    //traceItemsStates(mthTracer, EMethodDir::Leave);
+
 } // setCurrentDrawingTool
 
 //------------------------------------------------------------------------------
@@ -3396,7 +3397,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     m_ptMouseEvScenePosOnMousePressEvent = i_pEv->scenePos();
 
-    traceItemsStates(mthTracer, EMethodDir::None);
+    //traceItemsStates(mthTracer, EMethodDir::Enter);
 
     emit_mousePosChanged(i_pEv->scenePos());
 
@@ -3517,9 +3518,9 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene::mousePressEvent(i_pEv);
         //forwardMouseEventToObjectsHit(i_pEv);
     //}
-    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Leave);
-    //}
+
+    //traceItemsStates(mthTracer, EMethodDir::Leave);
+
 } // mousePressEvent
 
 //------------------------------------------------------------------------------
@@ -3561,7 +3562,7 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    traceItemsStates(mthTracer, EMethodDir::None);
+    //traceItemsStates(mthTracer, EMethodDir::Enter);
 
     emit_mousePosChanged(i_pEv->scenePos());
 
@@ -3745,6 +3746,9 @@ void CDrawingScene::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseMoveEvent(i_pEv);
     }
+
+    //traceItemsStates(mthTracer, EMethodDir::Leave);
+
 } // mouseMoveEvent
 
 //------------------------------------------------------------------------------
@@ -3762,6 +3766,8 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
+
+    //traceItemsStates(mthTracer, EMethodDir::Enter);
 
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
@@ -3819,6 +3825,9 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
         // ... dispatch mouse event to objects "under cursor".
         QGraphicsScene::mouseReleaseEvent(i_pEv);
     }
+
+    //traceItemsStates(mthTracer, EMethodDir::Leave);
+
 } // mouseReleaseEvent
 
 //------------------------------------------------------------------------------
@@ -3836,6 +3845,8 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
+
+    //traceItemsStates(mthTracer, EMethodDir::Enter);
 
     // Not a nice hack: mouse double click events will not be dispatched to the graphical objects
     // but will be converted to mouse press and mouse release events which are just dispatched
@@ -3905,6 +3916,8 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     }
 
     m_bMouseDoubleClickEventInProcess = false;
+
+    //traceItemsStates(mthTracer, EMethodDir::Leave);
 
 } // mouseDoubleClickEvent
 
@@ -5690,6 +5703,7 @@ void CDrawingScene::traceItemsStates(
                 else strRuntimeInfo = "   ";
                 strRuntimeInfo += "--- " + pGraphObj->typeAsString() + ": " + pGraphObj->path();
                 i_mthTracer.trace(strRuntimeInfo);
+                pGraphObj->traceGraphObjStates(i_mthTracer, i_mthDir, i_detailLevel);
                 pGraphObj->traceGraphicsItemStates(i_mthTracer, i_mthDir, i_detailLevel);
                 pGraphObj->tracePositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
             }

@@ -98,11 +98,14 @@ CGraphObjLabel::CGraphObjLabel(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
-
     if (i_selPt.m_pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
+
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges
+           | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
+    setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
     setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);
@@ -141,11 +144,14 @@ CGraphObjLabel::CGraphObjLabel(
     m_bUpdatePositionInProgress(false),
     m_bPositionUpdateOnParentGeometryChanged(false)
 {
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
-
     if (i_selPt.m_pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
+
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges
+           | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
+    setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
     setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);
@@ -180,11 +186,14 @@ CGraphObjLabel::CGraphObjLabel(
     m_bUpdatePositionInProgress(false),
     m_bPositionUpdateOnParentGeometryChanged(false)
 {
-    setFlags(QGraphicsItem::ItemIsMovable|QGraphicsItem::ItemIsSelectable|QGraphicsItem::ItemIsFocusable|QGraphicsItem::ItemSendsGeometryChanges);
-
     if (i_selPt1.m_pGraphObj == nullptr || i_selPt2.m_pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
+
+    setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges
+           | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    setAcceptedMouseButtons(Qt::LeftButton | Qt::RightButton | Qt::MiddleButton | Qt::XButton1 | Qt::XButton2);
+    setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt1.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
     setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);

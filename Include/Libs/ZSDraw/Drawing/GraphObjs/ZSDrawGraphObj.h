@@ -557,8 +557,6 @@ protected: // overridables of base class CIdxTreeEntry
     virtual void setKeyInTree(const QString& i_strKey) override;
 public: // instance methods
     QString getFactoryGroupName() const;
-    //CEnumEditMode getEditMode() const;
-    //CEnumEditResizeMode getEditResizeMode() const;
 public: // overridables (for subsystem test)
     virtual QString getScenePolygonShapePointsString() const;
 public: // instance methods
@@ -670,11 +668,12 @@ public: // overridables
     virtual void setEditMode(const CEnumEditMode& i_eMode);
     CEnumEditMode editMode() const;
     //virtual void setEditResizeMode(CEnumEditResizeMode i_eMode);
+    //CEnumEditResizeMode editResizeMode() const;
+    virtual void setIsHit(bool i_bIsHit);
+    bool isHit() const;
+    //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
 public: // overridables
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const;
-    virtual void setIsHit(bool i_bIsHit);
-    virtual bool isHit() const;
-    //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
 public: // overridables
     virtual double bringToFront();
     virtual double setStackingOrderValue(double i_fZValue, ZS::System::ERowVersion i_version = ZS::System::ERowVersion::Current);
