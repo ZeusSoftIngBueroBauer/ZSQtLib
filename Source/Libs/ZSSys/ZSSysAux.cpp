@@ -74,29 +74,31 @@ public auxiliary methods
 QString ZS::System::getCurrentThreadName()
 //------------------------------------------------------------------------------
 {
-    QString str = QThread::currentThread()->objectName();
+    return getThreadName(QThread::currentThread());
+}
 
-    if( str.isEmpty() )
-    {
+//------------------------------------------------------------------------------
+QString ZS::System::getThreadName(QThread* i_pThread)
+//------------------------------------------------------------------------------
+{
+    QThread* pThread = i_pThread;
+    if (i_pThread == nullptr) {
+        pThread = QThread::currentThread();
+    }
+    QString str = pThread->objectName();
+    if (str.isEmpty()) {
         str = "0x" + threadId2Str(QThread::currentThreadId());
     }
     return str;
-
-} // getCurrentThreadName
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::createGUID()
 //------------------------------------------------------------------------------
 {
-    QString strGUID;
-
     QUuid uuid = QUuid::createUuid();
-
-    strGUID = uuid.toString();
-
-    return strGUID;
-
-} // createGUID
+    return uuid.toString();
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Converts the given string with unicode characters into a byte array.
@@ -117,8 +119,7 @@ QByteArray ZS::System::str2ByteArr( const QString& i_str )
     byteArr.resize(i_str.length()*sizeof(QChar));
     memcpy( byteArr.data(), i_str.data(), byteArr.size() );
     return byteArr;
-
-} // str2ByteArr
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Converts the given byte array containg unicode characters into a
@@ -139,8 +140,7 @@ QString ZS::System::byteArr2Str( const QByteArray& i_byteArr )
     str.resize(i_byteArr.size()/sizeof(QChar));
     memcpy( str.data(), i_byteArr.data(), i_byteArr.size() );
     return str;
-
-} // byteArr2Str
+}
 
 //------------------------------------------------------------------------------
 QList<QByteArray> ZS::System::strlst2ByteArrLst( const QStringList& i_strlst )

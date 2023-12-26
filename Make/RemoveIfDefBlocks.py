@@ -31,12 +31,14 @@ Description
 Because the python script 'RemoveIfDefBlockFromFile' is imported, you must call
 this python script from the directory where the imported python script is located.
 
-This script walks through the directory passed with argument '--path',
-searches for all '*.cpp', '*.h' and '*.qml' files and removes the code blocks starting
-with '#ifdef <directive>' (in qml files with '//#ifdef <directive>') to the next line
-containing either '#else' or '#endif' (in qml either '//#else' or '//#endif').
-If an '#else' is found after the '#ifdef <directive>' the lines between '#else'
-end the next '#endif' are kept.
+This script walks through the directory passed with argument '--path', searches for
+all 'CMakeList.txt', '*.cpp', '*.h' and '*.qml' files and removes the code blocks
+starting with '#ifdef <directive>' to the next line containing either '#else' or '#endif'.
+If an '#else' is found after the '#ifdef <directive>' the lines between '#else' and
+the next '#endif' are kept.
+
+In qml files the directives are commented like '//#ifdef <directive>' and '//#else' or '//#endif'.
+In the CMakeLists.txt files the blocks are not removed but only added the archive containing
 
 In addition all files in which the '#ifdef <directive>' has been found are added to zip
 archives including path information:
@@ -72,8 +74,8 @@ Default: Current working directory
 Usage Examples
 --------------
 
-python RemoveIfDefBlocks.py --path='/home/devel/display_application' --directive='USE_ZS_QTLIBS' --zipOutDir='/home/devel/display_application.bak/ITS-5711-InstanceConflict'
-python RemoveIfDefBlocks.py --path='/home/devel/display_application' --gitChanges --sinceCommit='fac5073c' --directive='USE_ZS_QTLIBS' --zipOutDir='/home/devel/display_application.bak/ITS-5437-DeleteCodingData'
+python RemoveIfDefBlocks.py --path='/home/devel/display_application' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-5808-ReactionToProfileChangeVECUService'
+python RemoveIfDefBlocks.py --path='/home/devel/display_application' --gitChanges --sinceCommit='fac5073c' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-5808-ReactionToProfileChangeVECUService
 '''
 
 import argparse, datetime, fnmatch, getopt, os, sys, subprocess, zipfile
@@ -125,7 +127,11 @@ def getFilePathsWithDirective(repoRootDir, directive) -> []:
         for fileName in fileNames:
             sourceFilePath = ''
             filePath = os.path.join(dirPath, fileName)
-            if fnmatch.fnmatch(fileName, '*.qml'):
+            directiveInFiles = directive
+            if fnmatch.fnmatch(fileName, 'CMakeLists.txt'):
+                directiveInFiles = directiveInFiles.removeprefix('#ifdef ')
+                sourceFilePath = filePath
+            elif fnmatch.fnmatch(fileName, '*.qml'):
                 sourceFilePath = filePath
             elif fnmatch.fnmatch(fileName, '*.cpp'):
                 sourceFilePath = filePath
@@ -139,13 +145,13 @@ def getFilePathsWithDirective(repoRootDir, directive) -> []:
                         lines = f.readlines()
                         for idxLine in range(len(lines)):
                             line = lines[idxLine]
-                            if directive in line:
+                            if directiveInFiles in line:
                                 directiveInFile = True
                                 break
                     except:
                         print('Cannot read: ', sourceFilePath)
                 if directiveInFile:
-                    #print('Processing File: ', sourceFilePath)
+                    print('Found File: ', sourceFilePath)
                     filePathsWithDirective.append(sourceFilePath)
                 #else:
                 #    print('Ignoring File: ', sourceFilePath)
@@ -208,16 +214,15 @@ def main():
     parser.add_argument('-p', '--path', help='Directory to be recursively scanned for files with extension .cpp, .h and .qml.')
     parser.add_argument('-g', '--gitChanges', type=bool, default=False, help='Check files changed in git commit.')
     parser.add_argument('-s', '--sinceCommit', default=None, help='Include files since this git commit hash.')
-    parser.add_argument('-d', '--directive', default='#ifdef USE_ZS_IPCTRACE_DLL_IF', help='Directive for the #ifdef blocks to be removed.')
+    parser.add_argument('-d', '--directive', default='USE_ZS_IPCTRACE_DLL_IF', help='Directive for the #ifdef blocks to be removed.')
     parser.add_argument('-z', '--zipOutDir', help='Directory in which the zip archives have to be created.')
     args = parser.parse_args()
     path = args.path
     gitChanges = args.gitChanges
     directive = args.directive
-    zipOutDir = args.zipOutDir
-    #zipOutDir = os.path.abspath(args.zipOutDir)
     if not '#ifdef' in directive:
         directive = '#ifdef ' + directive
+    zipOutDir = args.zipOutDir
     print('path           = ' + path)
     print('gitChanges     = ' + str(gitChanges))
     print('zipOutDir      = ' + zipOutDir)

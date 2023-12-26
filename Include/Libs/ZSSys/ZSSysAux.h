@@ -69,6 +69,7 @@ public auxiliary methods
 *******************************************************************************/
 
 ZSSYSDLL_API QString getCurrentThreadName();
+ZSSYSDLL_API QString getThreadName(QThread* i_pThread);
 
 ZSSYSDLL_API QString createGUID();
 
