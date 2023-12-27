@@ -146,81 +146,81 @@ QString CGraphObjWdgt::getScenePolygonShapePointsString() const
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjWdgt::setWidth( const CPhysVal& i_physValWidth )
-//------------------------------------------------------------------------------
-{
-    setSize( i_physValWidth, getHeight(i_physValWidth.unit()) );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjWdgt::setHeight( const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    setSize( getWidth(i_physValHeight.unit()), i_physValHeight );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjWdgt::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    double fWidth  = i_fWidth;
-    double fHeight = i_fHeight;
-
-    if( hasFixedWidth() && fWidth != getFixedWidth() )
-    {
-        fWidth = getFixedWidth();
-    }
-    else
-    {
-        if( hasMinimumWidth() && fWidth > getMinimumWidth() )
-        {
-            fWidth = getMinimumWidth();
-        }
-        if( hasMaximumWidth() && fWidth > getMaximumWidth() )
-        {
-            fWidth = getMaximumWidth();
-        }
-    }
-
-    if( hasFixedHeight() && fHeight != getFixedHeight() )
-    {
-        fHeight = getFixedHeight();
-    }
-    else
-    {
-        if( hasMinimumHeight() && fHeight > getMinimumHeight() )
-        {
-            fHeight = getMinimumHeight();
-        }
-        if( hasMaximumHeight() && fHeight > getMaximumHeight() )
-        {
-            fHeight = getMaximumHeight();
-        }
-    }
-
-    if( fWidth != m_rctCurr.width() || fHeight != m_rctCurr.height() )
-    {
-        m_rctCurr.setWidth(fWidth);
-        m_rctCurr.setHeight(fHeight);
-
-        m_ptRotOriginCurr = m_rctCurr.center();
-
-        setGeometry(m_rctCurr);
-
-        //updateSelectionPointsOfBoundingRect(m_rctCurr);
-    }
-#endif
-
-} // setSize
-
-//------------------------------------------------------------------------------
-void CGraphObjWdgt::setSize( const CPhysValSize& i_physValSize )
-//------------------------------------------------------------------------------
-{
-    setSize( i_physValSize.width(), i_physValSize.height() );
-}
+////------------------------------------------------------------------------------
+//void CGraphObjWdgt::setWidth( const CPhysVal& i_physValWidth )
+////------------------------------------------------------------------------------
+//{
+//    setSize( i_physValWidth, getHeight(i_physValWidth.unit()) );
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjWdgt::setHeight( const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    setSize( getWidth(i_physValHeight.unit()), i_physValHeight );
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjWdgt::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//    double fWidth  = i_fWidth;
+//    double fHeight = i_fHeight;
+//
+//    if( hasFixedWidth() && fWidth != getFixedWidth() )
+//    {
+//        fWidth = getFixedWidth();
+//    }
+//    else
+//    {
+//        if( hasMinimumWidth() && fWidth > getMinimumWidth() )
+//        {
+//            fWidth = getMinimumWidth();
+//        }
+//        if( hasMaximumWidth() && fWidth > getMaximumWidth() )
+//        {
+//            fWidth = getMaximumWidth();
+//        }
+//    }
+//
+//    if( hasFixedHeight() && fHeight != getFixedHeight() )
+//    {
+//        fHeight = getFixedHeight();
+//    }
+//    else
+//    {
+//        if( hasMinimumHeight() && fHeight > getMinimumHeight() )
+//        {
+//            fHeight = getMinimumHeight();
+//        }
+//        if( hasMaximumHeight() && fHeight > getMaximumHeight() )
+//        {
+//            fHeight = getMaximumHeight();
+//        }
+//    }
+//
+//    if( fWidth != m_rctCurr.width() || fHeight != m_rctCurr.height() )
+//    {
+//        m_rctCurr.setWidth(fWidth);
+//        m_rctCurr.setHeight(fHeight);
+//
+//        m_ptRotOriginCurr = m_rctCurr.center();
+//
+//        setGeometry(m_rctCurr);
+//
+//        //updateSelectionPointsOfBoundingRect(m_rctCurr);
+//    }
+//#endif
+//
+//} // setSize
+//
+////------------------------------------------------------------------------------
+//void CGraphObjWdgt::setSize( const CPhysValSize& i_physValSize )
+////------------------------------------------------------------------------------
+//{
+//    setSize( i_physValSize.width(), i_physValSize.height() );
+//}
 
 /*==============================================================================
 public: // overridables of base class QGraphicsProxyWidget

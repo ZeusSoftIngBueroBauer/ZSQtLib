@@ -77,11 +77,11 @@ public: // must overridables of base class CGraphObj
     //virtual void setIsHit( bool i_bHit ) override;
 public: // overridables
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
-public: // must overridables of base class CGraphObj
-    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
-    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-    virtual void setSize( const CPhysValSize& i_physValSize ) override;
+//public: // must overridables of base class CGraphObj
+//    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
+//    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+//    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+//    virtual void setSize( const CPhysValSize& i_physValSize ) override;
 public: // must overridables of base class QGraphicsItem, overriding implementation of QGraphicsWidget
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;

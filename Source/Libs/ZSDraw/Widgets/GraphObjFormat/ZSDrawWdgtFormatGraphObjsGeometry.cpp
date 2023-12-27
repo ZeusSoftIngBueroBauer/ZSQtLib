@@ -215,7 +215,7 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         //===========================
 
         m_ptPos = m_pGraphObj->getPos(Units.Length.px).toQPointF();
-        m_size  = m_pGraphObj->getSize(Units.Length.px).toQSizeF();
+        //m_size  = m_pGraphObj->getSize(Units.Length.px).toQSizeF();
 
         if( graphObjType != EGraphObjTypeLine && graphObjType != EGraphObjTypeConnectionLine )
         {
@@ -871,12 +871,12 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
                 bHasChanges = true;
             }
 
-            QSizeF siz = m_pGraphObj->getSize(Units.Length.px).toQSizeF();
+            //QSizeF siz = m_pGraphObj->getSize(Units.Length.px).toQSizeF();
 
-            if( m_size != siz )
-            {
-                bHasChanges = true;
-            }
+            //if( m_size != siz )
+            //{
+            //    bHasChanges = true;
+            //}
         }
 
         // Shape Points
@@ -976,7 +976,7 @@ void CWdgtFormatGraphObjsGeometry::onGraphObjChanged()
         /* strAddInfo   */ strMthInArgs );
 
     m_ptPos = m_pGraphicsItem->pos();
-    m_size = m_pGraphObj->getSize(Units.Length.px).toQSizeF();
+    //m_size = m_pGraphObj->getSize(Units.Length.px).toQSizeF();
     m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
     m_fZValue = m_pGraphObj->getStackingOrderValue();
 

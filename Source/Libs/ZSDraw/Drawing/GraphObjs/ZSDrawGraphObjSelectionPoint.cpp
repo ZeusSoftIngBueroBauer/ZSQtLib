@@ -391,104 +391,104 @@ void CGraphObjSelectionPoint::onDrawSettingsChanged(const CDrawSettings& i_drawS
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setWidth( const CPhysVal& i_physValWidth )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValWidth.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setWidth",
-        /* strAddInfo   */ strMthInArgs );
-
-    setSize(i_physValWidth, getHeight(i_physValWidth.unit()));
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setHeight( const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValHeight.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setHeight",
-        /* strAddInfo   */ strMthInArgs );
-
-    setSize(getWidth(i_physValHeight.unit()), i_physValHeight);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setSize",
-        /* strAddInfo   */ strMthInArgs );
-
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-
-    CPhysVal physValWidth = i_physValWidth;
-    CPhysVal physValHeight = i_physValHeight;
-
-    physValWidth.convertValue(drawingSize.unit());
-    physValHeight.convertValue(drawingSize.unit());
-
-    if (hasFixedWidth() && physValWidth != getFixedWidth(drawingSize.unit())) {
-        physValWidth = getFixedWidth(drawingSize.unit());
-    }
-    else {
-        if (hasMinimumWidth() && physValWidth > getMinimumWidth(drawingSize.unit())) {
-            physValWidth = getMinimumWidth(drawingSize.unit());
-        }
-        if (hasMaximumWidth() && physValWidth > getMaximumWidth(drawingSize.unit())) {
-            physValWidth = getMaximumWidth(drawingSize.unit());
-        }
-    }
-
-    if (hasFixedHeight() && physValHeight != getFixedHeight(drawingSize.unit())) {
-        physValHeight = getFixedHeight(drawingSize.unit());
-    }
-    else {
-        if (hasMinimumHeight() && physValHeight > getMinimumHeight(drawingSize.unit())) {
-            physValHeight = getMinimumHeight(drawingSize.unit());
-        }
-        if (hasMaximumHeight() && physValHeight > getMaximumHeight(drawingSize.unit())) {
-            physValHeight = getMaximumHeight(drawingSize.unit());
-        }
-    }
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    if( fWidth != m_rctCurr.width() )
-    {
-        setRadiusInPx( fabs(fWidth) );
-    }
-#endif
-
-} // setSize
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::setSize( const CPhysValSize& i_physValSize )
-//------------------------------------------------------------------------------
-{
-    setSize(i_physValSize.width(), i_physValSize.height());
-}
+////------------------------------------------------------------------------------
+//void CGraphObjSelectionPoint::setWidth( const CPhysVal& i_physValWidth )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setWidth",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    setSize(i_physValWidth, getHeight(i_physValWidth.unit()));
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjSelectionPoint::setHeight( const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setHeight",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    setSize(getWidth(i_physValHeight.unit()), i_physValHeight);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjSelectionPoint::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setSize",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+//
+//    CPhysVal physValWidth = i_physValWidth;
+//    CPhysVal physValHeight = i_physValHeight;
+//
+//    physValWidth.convertValue(drawingSize.unit());
+//    physValHeight.convertValue(drawingSize.unit());
+//
+//    if (hasFixedWidth() && physValWidth != getFixedWidth(drawingSize.unit())) {
+//        physValWidth = getFixedWidth(drawingSize.unit());
+//    }
+//    else {
+//        if (hasMinimumWidth() && physValWidth > getMinimumWidth(drawingSize.unit())) {
+//            physValWidth = getMinimumWidth(drawingSize.unit());
+//        }
+//        if (hasMaximumWidth() && physValWidth > getMaximumWidth(drawingSize.unit())) {
+//            physValWidth = getMaximumWidth(drawingSize.unit());
+//        }
+//    }
+//
+//    if (hasFixedHeight() && physValHeight != getFixedHeight(drawingSize.unit())) {
+//        physValHeight = getFixedHeight(drawingSize.unit());
+//    }
+//    else {
+//        if (hasMinimumHeight() && physValHeight > getMinimumHeight(drawingSize.unit())) {
+//            physValHeight = getMinimumHeight(drawingSize.unit());
+//        }
+//        if (hasMaximumHeight() && physValHeight > getMaximumHeight(drawingSize.unit())) {
+//            physValHeight = getMaximumHeight(drawingSize.unit());
+//        }
+//    }
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//    if( fWidth != m_rctCurr.width() )
+//    {
+//        setRadiusInPx( fabs(fWidth) );
+//    }
+//#endif
+//
+//} // setSize
+//
+////------------------------------------------------------------------------------
+//void CGraphObjSelectionPoint::setSize( const CPhysValSize& i_physValSize )
+////------------------------------------------------------------------------------
+//{
+//    setSize(i_physValSize.width(), i_physValSize.height());
+//}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj

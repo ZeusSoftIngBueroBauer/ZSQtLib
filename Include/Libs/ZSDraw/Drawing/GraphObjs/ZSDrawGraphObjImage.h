@@ -64,11 +64,11 @@ public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
-public: // must overridables of base class CGraphObj
-    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
-    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-    virtual void setSize( const CPhysValSize& i_physValSize ) override;
+//public: // must overridables of base class CGraphObj
+//    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
+//    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+//    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+//    virtual void setSize( const CPhysValSize& i_physValSize ) override;
 public: // must overridables of base class CGraphObj
     //virtual void setIsHit( bool i_bHit ) override;
 public: // overridables of base class CGraphObj

@@ -40,6 +40,43 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
+/*! @brief Container for graphics items that treats a group of items as a single item.
+
+    A group has a bounding rectangle surrounding all child items.
+    The center point of the group is the origin of the group's local coordinate system.
+
+    The origin of the group item's coordinate system is the center of the bounding rectangle.
+    The coordinates of the parent's top left corner is not at (0/0) but at negative pixel values.
+
+    +-Drawing-Scene--------------------------------------------------------------------+
+    |(0/0)                                                                             |
+    |  Scene coordinates     Group's local coordinates   Child's local coordinates     |
+    |                                                                                  |
+    |                        +---Group---------------x-----------------------+         |
+    |                        | (-40/-50) = group.topLeft                     |         |
+    |                        |                                               |         |
+    |                        |                           + (-20/-40) = line.p1         |
+    |                        |                            \                  |         |
+    |                        |                       |     \                 |         |
+    |  (60/60 = group.pos    x (0/0) = group.center--X--    \                |         |
+    |                        | (10/10) = line.pos    |       X (0/0) = line.center     |
+    |                        |                                \              |         |
+    |                        |                                 \             |         |
+    |                        |                                  \            |         |
+    |                        | (40/50) = group.bottomRight       + (20/40) = line.p2   |
+    |                        +---Group---------------x-----------------------+         |
+    |                                                                                  |
+    |                                                                                  |
+    +----------------------------------------------------------------------------------+
+
+    If the coordinates of the child have to be entered via gui controls the coordinates
+    have to be provided not in the item's local coordinate system but relative to
+    the group's top left corner.
+
+    If for example a line belongs to a group, as shown in the picture above, the user enters the
+    coordinates (80/30) for P1 and (120/110) for P2 to position the line within the group.
+    Those coordinates need to be transformed so that the position of the line becomes (10/10).
+*/
 class ZSDRAWDLL_API CGraphObjGroup : public CGraphObj, public QGraphicsItemGroup
 //******************************************************************************
 {
@@ -72,25 +109,22 @@ private: // hiding method of base class QGraphisItemGroup
     void removeFromGroup( QGraphicsItem* i_pGraphicsItem );
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const; // for subsystem test
+public: // instance methods
+    void setRect(const CPhysValRect& i_physValRect);
+    CPhysValRect getRect() const;
+    CPhysValRect getRect(const ZS::PhysVal::CUnit& i_unit) const;
+    //void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    //ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    //void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    //ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    //void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
+    //void setSize(const CPhysValSize& i_physValSize);
+    //CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
-    virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-    virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-    virtual void setSize( const CPhysValSize& i_physValSize ) override;
-    virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const override;
 protected: // overridables
     virtual void applyGeometryChangeToChildrens();
-public: // must overridables of base class CGraphObj
-    //virtual void setIsHit( bool i_bHit ) override;
-public: // overridables of base class CGraphObj
-    //virtual bool isHit( const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr ) const override;
-public: // reimplementing methods of base class QGraphicItem
-    //void setCursor( const QCursor& cursor );
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 public: // overridables of base class CGraphObj
@@ -99,7 +133,7 @@ public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
 protected: // overridables of base class QGraphicsItem
-    //virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
+    virtual bool sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual void hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
     virtual void hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv ) override;
@@ -114,12 +148,23 @@ protected: // overridables of base class QGraphicsItem
     virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+protected: // auxiliary instance methods
+    QRectF rect() const;
+protected: // auxiliary instance methods (method tracing)
+    void setPhysValRect(const CPhysValRect& i_physValRect);
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
          Used to create a unique name for newly created objects of this type.
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
+protected: // instance members
+    /*!< The original, untransformed line coordinates with unit.
+         The coordinates are relative to the top left corner of the
+         parent item's bounding rectange (real shape points only).
+         If the item does not have another graphical object as a 
+         parent, the coordinates are in scene coordinates. */
+    CPhysValRect m_physValRect;
 
 }; // class CGraphObjGroup
 

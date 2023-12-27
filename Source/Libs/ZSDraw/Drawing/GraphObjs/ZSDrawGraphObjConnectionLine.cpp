@@ -483,129 +483,129 @@ void CGraphObjConnectionLine::acceptCurrentAsOriginalCoors()
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjConnectionLine::setWidth( const CPhysVal& i_physValWidth )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValWidth.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setWidth",
-        /* strAddInfo   */ strMthInArgs );
-
-    // This method call does not really make sense for connection lines.
-    // But at least we update the current size member variable.
-    setSize(i_physValWidth, getHeight(i_physValWidth.unit()));
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionLine::setHeight( const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValHeight.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setHeight",
-        /* strAddInfo   */ strMthInArgs );
-
-    // This method call does not really make sense for connection lines.
-    // But at least we update the current size member variable.
-    setSize(getWidth(i_physValHeight.unit()), i_physValHeight);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionLine::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setSize",
-        /* strAddInfo   */ strMthInArgs );
-
-    // This method call does not really make sense for connection lines.
-    // But at least we update the current size member variable.
-
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-
-    CPhysVal physValWidth = i_physValWidth;
-    CPhysVal physValHeight = i_physValHeight;
-
-    physValWidth.convertValue(drawingSize.unit());
-    physValHeight.convertValue(drawingSize.unit());
-
-    if (hasFixedWidth() && physValWidth != getFixedWidth(drawingSize.unit())) {
-        physValWidth = getFixedWidth(drawingSize.unit());
-    }
-    else {
-        if (hasMinimumWidth() && physValWidth > getMinimumWidth(drawingSize.unit())) {
-            physValWidth = getMinimumWidth(drawingSize.unit());
-        }
-        if (hasMaximumWidth() && physValWidth > getMaximumWidth(drawingSize.unit())) {
-            physValWidth = getMaximumWidth(drawingSize.unit());
-        }
-    }
-
-    if (hasFixedHeight() && physValHeight != getFixedHeight(drawingSize.unit())) {
-        physValHeight = getFixedHeight(drawingSize.unit());
-    }
-    else {
-        if (hasMinimumHeight() && physValHeight > getMinimumHeight(drawingSize.unit())) {
-            physValHeight = getMinimumHeight(drawingSize.unit());
-        }
-        if (hasMaximumHeight() && physValHeight > getMaximumHeight(drawingSize.unit())) {
-            physValHeight = getMaximumHeight(drawingSize.unit());
-        }
-    }
-
-    //CPhysValLine physValLine = getLine();
-
-    //CPhysValPoint physValPoint1 = physValLine.p1();
-    //CPhysValPoint physValPoint2 = physValLine.p2();
-
-    //physValPoint2.setX(physValPoint1.x() + physValWidth);
-    //physValPoint2.setY(physValPoint1.y() + physValHeight);
-
-    //setLine(physValLine);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    if( fWidth != m_rctCurr.width() || fHeight != m_rctCurr.height() )
-    {
-        m_rctCurr.setWidth(fWidth);
-        m_rctCurr.setHeight(fHeight);
-
-        m_ptRotOriginCurr = m_rctCurr.center();
-
-        // As this method call doesn't make any sense for connection lines
-        // the polygon shape points have not changed and there is no need
-        // to update the selection points.
-        //updateSelectionPointsOfPolygon(polygon());
-    }
-#endif
-
-} // setSize
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionLine::setSize( const CPhysValSize& i_physValSize )
-//------------------------------------------------------------------------------
-{
-    setSize(i_physValSize.width(), i_physValSize.height());
-}
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionLine::setWidth( const CPhysVal& i_physValWidth )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setWidth",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // This method call does not really make sense for connection lines.
+//    // But at least we update the current size member variable.
+//    setSize(i_physValWidth, getHeight(i_physValWidth.unit()));
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionLine::setHeight( const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setHeight",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // This method call does not really make sense for connection lines.
+//    // But at least we update the current size member variable.
+//    setSize(getWidth(i_physValHeight.unit()), i_physValHeight);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionLine::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setSize",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // This method call does not really make sense for connection lines.
+//    // But at least we update the current size member variable.
+//
+//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+//
+//    CPhysVal physValWidth = i_physValWidth;
+//    CPhysVal physValHeight = i_physValHeight;
+//
+//    physValWidth.convertValue(drawingSize.unit());
+//    physValHeight.convertValue(drawingSize.unit());
+//
+//    if (hasFixedWidth() && physValWidth != getFixedWidth(drawingSize.unit())) {
+//        physValWidth = getFixedWidth(drawingSize.unit());
+//    }
+//    else {
+//        if (hasMinimumWidth() && physValWidth > getMinimumWidth(drawingSize.unit())) {
+//            physValWidth = getMinimumWidth(drawingSize.unit());
+//        }
+//        if (hasMaximumWidth() && physValWidth > getMaximumWidth(drawingSize.unit())) {
+//            physValWidth = getMaximumWidth(drawingSize.unit());
+//        }
+//    }
+//
+//    if (hasFixedHeight() && physValHeight != getFixedHeight(drawingSize.unit())) {
+//        physValHeight = getFixedHeight(drawingSize.unit());
+//    }
+//    else {
+//        if (hasMinimumHeight() && physValHeight > getMinimumHeight(drawingSize.unit())) {
+//            physValHeight = getMinimumHeight(drawingSize.unit());
+//        }
+//        if (hasMaximumHeight() && physValHeight > getMaximumHeight(drawingSize.unit())) {
+//            physValHeight = getMaximumHeight(drawingSize.unit());
+//        }
+//    }
+//
+//    //CPhysValLine physValLine = getLine();
+//
+//    //CPhysValPoint physValPoint1 = physValLine.p1();
+//    //CPhysValPoint physValPoint2 = physValLine.p2();
+//
+//    //physValPoint2.setX(physValPoint1.x() + physValWidth);
+//    //physValPoint2.setY(physValPoint1.y() + physValHeight);
+//
+//    //setLine(physValLine);
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//    if( fWidth != m_rctCurr.width() || fHeight != m_rctCurr.height() )
+//    {
+//        m_rctCurr.setWidth(fWidth);
+//        m_rctCurr.setHeight(fHeight);
+//
+//        m_ptRotOriginCurr = m_rctCurr.center();
+//
+//        // As this method call doesn't make any sense for connection lines
+//        // the polygon shape points have not changed and there is no need
+//        // to update the selection points.
+//        //updateSelectionPointsOfPolygon(polygon());
+//    }
+//#endif
+//
+//} // setSize
+//
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionLine::setSize( const CPhysValSize& i_physValSize )
+////------------------------------------------------------------------------------
+//{
+//    setSize(i_physValSize.width(), i_physValSize.height());
+//}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj

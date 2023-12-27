@@ -541,106 +541,106 @@ void CGraphObjConnectionPoint::onDrawSettingsChanged(const CDrawSettings& i_draw
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setWidth( const CPhysVal& i_physValWidth )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValWidth.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setWidth",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Width and height for circles should be equal:
-    setSize(i_physValWidth, i_physValWidth);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setHeight( const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValHeight.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setHeight",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Width and height for circles should be equal:
-    setSize(i_physValHeight, i_physValHeight);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setSize",
-        /* strAddInfo   */ strMthInArgs );
-
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-
-    CPhysVal physValWidth = i_physValWidth;
-    CPhysVal physValHeight = i_physValHeight;
-
-    physValWidth.convertValue(drawingSize.unit());
-    physValHeight.convertValue(drawingSize.unit());
-
-    if (hasFixedWidth() && physValWidth != getFixedWidth(drawingSize.unit())) {
-        physValWidth = getFixedWidth(drawingSize.unit());
-    }
-    else {
-        if (hasMinimumWidth() && physValWidth > getMinimumWidth(drawingSize.unit())) {
-            physValWidth = getMinimumWidth(drawingSize.unit());
-        }
-        if (hasMaximumWidth() && physValWidth > getMaximumWidth(drawingSize.unit())) {
-            physValWidth = getMaximumWidth(drawingSize.unit());
-        }
-    }
-
-    if (hasFixedHeight() && physValHeight != getFixedHeight(drawingSize.unit())) {
-        physValHeight = getFixedHeight(drawingSize.unit());
-    }
-    else {
-        if (hasMinimumHeight() && physValHeight > getMinimumHeight(drawingSize.unit())) {
-            physValHeight = getMinimumHeight(drawingSize.unit());
-        }
-        if (hasMaximumHeight() && physValHeight > getMaximumHeight(drawingSize.unit())) {
-            physValHeight = getMaximumHeight(drawingSize.unit());
-        }
-    }
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QRectF rct = pGraphicsItem->boundingRect();
-        rct.setWidth(physValWidth.getVal(Units.Length.px));
-        rct.setHeight(physValHeight.getVal(Units.Length.px));
-        setRect(rct);
-    }
-} // setSize
-
-//------------------------------------------------------------------------------
-void CGraphObjConnectionPoint::setSize(const CPhysValSize& i_physValSize )
-//------------------------------------------------------------------------------
-{
-    setSize(i_physValSize.width(), i_physValSize.height());
-}
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionPoint::setWidth( const CPhysVal& i_physValWidth )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setWidth",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // Width and height for circles should be equal:
+//    setSize(i_physValWidth, i_physValWidth);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionPoint::setHeight( const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setHeight",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // Width and height for circles should be equal:
+//    setSize(i_physValHeight, i_physValHeight);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionPoint::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setSize",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+//
+//    CPhysVal physValWidth = i_physValWidth;
+//    CPhysVal physValHeight = i_physValHeight;
+//
+//    physValWidth.convertValue(drawingSize.unit());
+//    physValHeight.convertValue(drawingSize.unit());
+//
+//    if (hasFixedWidth() && physValWidth != getFixedWidth(drawingSize.unit())) {
+//        physValWidth = getFixedWidth(drawingSize.unit());
+//    }
+//    else {
+//        if (hasMinimumWidth() && physValWidth > getMinimumWidth(drawingSize.unit())) {
+//            physValWidth = getMinimumWidth(drawingSize.unit());
+//        }
+//        if (hasMaximumWidth() && physValWidth > getMaximumWidth(drawingSize.unit())) {
+//            physValWidth = getMaximumWidth(drawingSize.unit());
+//        }
+//    }
+//
+//    if (hasFixedHeight() && physValHeight != getFixedHeight(drawingSize.unit())) {
+//        physValHeight = getFixedHeight(drawingSize.unit());
+//    }
+//    else {
+//        if (hasMinimumHeight() && physValHeight > getMinimumHeight(drawingSize.unit())) {
+//            physValHeight = getMinimumHeight(drawingSize.unit());
+//        }
+//        if (hasMaximumHeight() && physValHeight > getMaximumHeight(drawingSize.unit())) {
+//            physValHeight = getMaximumHeight(drawingSize.unit());
+//        }
+//    }
+//
+//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+//    if (pGraphicsItem != nullptr) {
+//        QRectF rct = pGraphicsItem->boundingRect();
+//        rct.setWidth(physValWidth.getVal(Units.Length.px));
+//        rct.setHeight(physValHeight.getVal(Units.Length.px));
+//        setRect(rct);
+//    }
+//} // setSize
+//
+////------------------------------------------------------------------------------
+//void CGraphObjConnectionPoint::setSize(const CPhysValSize& i_physValSize )
+////------------------------------------------------------------------------------
+//{
+//    setSize(i_physValSize.width(), i_physValSize.height());
+//}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj

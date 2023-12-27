@@ -559,11 +559,6 @@ public: // instance methods
     QString getFactoryGroupName() const;
 public: // overridables (for subsystem test)
     virtual QString getScenePolygonShapePointsString() const;
-public: // instance methods
-    //int getSelectedPolygonShapePointIndex() const;
-    //CEnumSelectionPoint getSelectedBoundingRectPoint() const;
-    //QString getToolTip() const;
-    //QString getEditInfo() const;
 public: // overridables
     virtual void onCreateAndExecDlgFormatGraphObjs();
 public: // overridables
@@ -647,18 +642,15 @@ public: // overridables
     virtual void setAlignment(int i_idx, const SGraphObjAlignment& i_alignment);
     virtual void removeAlignment(int i_idx);
     virtual void clearAlignments();
-public: // overridables
-    //virtual void acceptCurrentAsOriginalCoors();
-    //virtual bool hasValidOrigCoors() const { return m_bHasValidOrigCoors; }
 public: // must overridables
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) = 0;
-    virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) = 0;
-    virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight) = 0;
-    virtual void setSize(const CPhysValSize& i_physValSize) = 0;
-    virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    //virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) = 0;
+    //virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    //virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) = 0;
+    //virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight) = 0;
+    //virtual void setSize(const CPhysValSize& i_physValSize) = 0;
+    //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // must overridables
     virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const;
 public: // overridables
@@ -689,13 +681,12 @@ public: // overridables
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, int i_idxPt) const;
 protected: // must overridables
-    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) = 0;
+    virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) = 0;
 protected: // overridables
-    virtual void hideSelectionPoints( ESelectionPoints i_selPts = ESelectionPointsAll );
-    //virtual void bringSelectionPointsToFront( ESelectionPoints i_selPts = ESelectionPointsAll );
+    virtual void hideSelectionPoints(ESelectionPoints i_selPts = ESelectionPointsAll);
 protected: // overridables
-    virtual void showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll );
-    virtual void showSelectionPointsOfPolygon( const QPolygonF& i_plg );
+    virtual void showSelectionPointsOfBoundingRect(const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll);
+    virtual void showSelectionPointsOfPolygon(const QPolygonF& i_plg);
 public: // overridables (text labels)
     QString findUniqueLabelName(const QString& i_strPrefix = "") const;
     QStringList getLabelNames() const;
@@ -760,15 +751,6 @@ protected: // overridables (geometry labels)
     virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
-    //virtual void updateLabelPositionsAndContents();
-protected: // overridables
-    //virtual void updateLabelPositions(QList<CGraphObjLabel*>& i_arpLabels);
-    //virtual void updateLabelPositions(QHash<QString, CGraphObjLabel*>& i_arpLabels);
-    //virtual void updatePositionLabelsContent();
-protected: // auxiliary instance methods
-    //void showLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey, const QString& i_strText, ESelectionPoint i_selPt);
-    //void hideLabel(QHash<QString, CGraphObjLabel*>& i_arpLabels, const QString& i_strKey);
-    //void destroyLabels();
 protected: // auxiliary instance methods
     void emit_aboutToBeDestroyed();
 protected: // auxiliary instance methods (method tracing)

@@ -548,11 +548,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(300, 250)));
     pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(300, 350)));
 
+    ZS::Test::CTestStepGroup* pGrpLine0ShowAndMoveLabels = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Show and Move Labels",
+        /* pTSGrpParent */ pGrpLine0 );
+
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine0, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
+        pGrpLine0ShowAndMoveLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
         QPoint(295, 305), QPoint(320, 260));
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine0, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameDY,
+        pGrpLine0ShowAndMoveLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameDY,
         QPoint(295, 305), QPoint(270, 280));
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
@@ -579,11 +584,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(250, 300)));
     pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(350, 300)));
 
+    ZS::Test::CTestStepGroup* pGrpLine1ShowAndMoveLabels = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Show and Move Labels",
+        /* pTSGrpParent */ pGrpLine1 );
+
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine1, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
+        pGrpLine1ShowAndMoveLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
         QPoint(295, 305), QPoint(340, 290));
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine1, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameDX,
+        pGrpLine1ShowAndMoveLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameDX,
         QPoint(295, 305), QPoint(280, 325));
 
     // Group
@@ -604,10 +614,38 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create, Resize, Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawGroups );
 
-    createTestGroupDrawMouseEventsCreateGroup(
+    ZS::Test::CTestStepGroup* pGrpCreateGroup0 = createTestGroupDrawMouseEventsCreateGroup(
         pGrpDrawGroup0, io_idxGroup,
         strGraphObjName,
         QPoint(240, 240), QPoint(360, 360), 10, QPoint(370, 370));
+
+    ZS::Test::CTestStepGroup* pGrpDrawResizeGroup0 = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Resize " + strGraphObjName,
+        /* pTSGrpParent */ pGrpDrawGroup0 );
+
+    idxStep = 0;
+
+    addTestStepDrawMouseEventsMove(
+        pGrpDrawResizeGroup0, idxStep, QPoint(360, 360), QPoint(350, 350));
+    addTestStepsDrawMouseEventsMovePressMoveRelease(
+        pGrpDrawResizeGroup0, idxStep, QPoint(350, 350), QPoint(400, 400));
+    addTestStepDrawMouseEventsMove(
+        pGrpDrawResizeGroup0, idxStep, QPoint(450, 450), QPoint(460, 460));
+
+    ZS::Test::CTestStepGroup* pGrpDrawMoveGroup0 = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Move " + strGraphObjName,
+        /* pTSGrpParent */ pGrpDrawGroup0 );
+
+    idxStep = 0;
+
+    addTestStepDrawMouseEventsMove(
+        pGrpDrawMoveGroup0, idxStep, QPoint(360, 360), QPoint(350, 350));
+    addTestStepsDrawMouseEventsMovePressMoveRelease(
+        pGrpDrawMoveGroup0, idxStep, QPoint(350, 350), QPoint(300, 300));
+    addTestStepDrawMouseEventsMove(
+        pGrpDrawMoveGroup0, idxStep, QPoint(300, 300), QPoint(310, 300));
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);

@@ -2636,13 +2636,13 @@ void CGraphObj::setMinimumWidth( const CPhysVal& i_physValWidth )
 
     m_physValSizeMinimum.setWidth(i_physValWidth);
 
-    if (m_physValSizeMinimum.width() > 0.0) {
-        CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
-        if (physValSize.width() < m_physValSizeMinimum.width()) {
-            physValSize.setWidth(m_physValSizeMinimum.width());
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeMinimum.width() > 0.0) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
+    //    if (physValSize.width() < m_physValSizeMinimum.width()) {
+    //        physValSize.setWidth(m_physValSizeMinimum.width());
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -2692,13 +2692,13 @@ void CGraphObj::setMinimumHeight( const CPhysVal& i_physValHeight )
 
     m_physValSizeMinimum.setHeight(i_physValHeight);
 
-    if (m_physValSizeMinimum.height() > 0.0) {
-        CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
-        if (physValSize.height() < m_physValSizeMinimum.height()) {
-            physValSize.setHeight(m_physValSizeMinimum.height());
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeMinimum.height() > 0.0) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
+    //    if (physValSize.height() < m_physValSizeMinimum.height()) {
+    //        physValSize.setHeight(m_physValSizeMinimum.height());
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -2748,18 +2748,18 @@ void CGraphObj::setMinimumSize( const CPhysValSize& i_physValSize )
 
     m_physValSizeMinimum = i_physValSize;
 
-    if (m_physValSizeMinimum.isValid()) {
-        CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
-        if (physValSize.width() < m_physValSizeMinimum.width() || physValSize.height() < m_physValSizeMinimum.height()) {
-            if (physValSize.width() < m_physValSizeMinimum.width()) {
-                physValSize.setWidth( m_physValSizeMinimum.width() );
-            }
-            if (physValSize.height() < m_physValSizeMinimum.height()) {
-                physValSize.setHeight( m_physValSizeMinimum.height() );
-            }
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeMinimum.isValid()) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeMinimum.unit());
+    //    if (physValSize.width() < m_physValSizeMinimum.width() || physValSize.height() < m_physValSizeMinimum.height()) {
+    //        if (physValSize.width() < m_physValSizeMinimum.width()) {
+    //            physValSize.setWidth( m_physValSizeMinimum.width() );
+    //        }
+    //        if (physValSize.height() < m_physValSizeMinimum.height()) {
+    //            physValSize.setHeight( m_physValSizeMinimum.height() );
+    //        }
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -2808,13 +2808,13 @@ void CGraphObj::setMaximumWidth( const CPhysVal& i_physValWidth )
 
     m_physValSizeMaximum.setWidth(i_physValWidth);
 
-    if (m_physValSizeMaximum.width() > 0.0) {
-        CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
-        if (physValSize.width() > m_physValSizeMaximum.width()) {
-            physValSize.setWidth( m_physValSizeMaximum.width() );
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeMaximum.width() > 0.0) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
+    //    if (physValSize.width() > m_physValSizeMaximum.width()) {
+    //        physValSize.setWidth( m_physValSizeMaximum.width() );
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -2864,13 +2864,13 @@ void CGraphObj::setMaximumHeight( const CPhysVal& i_physValHeight )
 
     m_physValSizeMaximum.setHeight(i_physValHeight);
 
-    if (m_physValSizeMaximum.height() > 0.0) {
-        CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
-        if (physValSize.height() > m_physValSizeMaximum.height()) {
-            physValSize.setHeight( m_physValSizeMaximum.height() );
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeMaximum.height() > 0.0) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
+    //    if (physValSize.height() > m_physValSizeMaximum.height()) {
+    //        physValSize.setHeight( m_physValSizeMaximum.height() );
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -2920,19 +2920,19 @@ void CGraphObj::setMaximumSize( const CPhysValSize& i_physValSize )
 
     m_physValSizeMaximum = i_physValSize;
 
-    if (m_physValSizeMaximum.isValid()) {
-        CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
-        if (physValSize.width() > m_physValSizeMaximum.width()
-         || physValSize.height() > m_physValSizeMaximum.height()) {
-            if (physValSize.width() > m_physValSizeMaximum.width()) {
-                physValSize.setWidth( m_physValSizeMaximum.width() );
-            }
-            if (physValSize.height() > m_physValSizeMaximum.height()) {
-                physValSize.setHeight( m_physValSizeMaximum.height() );
-            }
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeMaximum.isValid()) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeMaximum.unit());
+    //    if (physValSize.width() > m_physValSizeMaximum.width()
+    //     || physValSize.height() > m_physValSizeMaximum.height()) {
+    //        if (physValSize.width() > m_physValSizeMaximum.width()) {
+    //            physValSize.setWidth( m_physValSizeMaximum.width() );
+    //        }
+    //        if (physValSize.height() > m_physValSizeMaximum.height()) {
+    //            physValSize.setHeight( m_physValSizeMaximum.height() );
+    //        }
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -2981,13 +2981,13 @@ void CGraphObj::setFixedWidth( const CPhysVal& i_physValWidth )
 
     m_physValSizeFixed.setWidth(i_physValWidth);
 
-    if (m_physValSizeFixed.width() > 0.0) {
-        CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
-        if (physValSize.width() != m_physValSizeFixed.width()) {
-            physValSize.setWidth( m_physValSizeFixed.width() );
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeFixed.width() > 0.0) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
+    //    if (physValSize.width() != m_physValSizeFixed.width()) {
+    //        physValSize.setWidth( m_physValSizeFixed.width() );
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -3039,13 +3039,13 @@ void CGraphObj::setFixedHeight( const CPhysVal& i_physValHeight )
 
     m_physValSizeFixed.setHeight(i_physValHeight);
 
-    if (m_physValSizeFixed.height() > 0.0) {
-        CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
-        if (physValSize.height() != m_physValSizeFixed.height()) {
-            physValSize.setHeight( m_physValSizeFixed.height() );
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeFixed.height() > 0.0) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
+    //    if (physValSize.height() != m_physValSizeFixed.height()) {
+    //        physValSize.setHeight( m_physValSizeFixed.height() );
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -3097,19 +3097,19 @@ void CGraphObj::setFixedSize( const CPhysValSize& i_physValSize )
 
     m_physValSizeFixed = i_physValSize;
 
-    if (m_physValSizeFixed.isValid()) {
-        CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
-        if (physValSize.width() != m_physValSizeFixed.width()
-         || physValSize.height() != m_physValSizeFixed.height()) {
-            if (physValSize.width() != m_physValSizeFixed.width()) {
-                physValSize.setWidth( m_physValSizeFixed.width() );
-            }
-            if (physValSize.height() != m_physValSizeFixed.height()) {
-                physValSize.setHeight( m_physValSizeFixed.height() );
-            }
-            setSize(physValSize);
-        }
-    }
+    //if (m_physValSizeFixed.isValid()) {
+    //    CPhysValSize physValSize = getSize(m_physValSizeFixed.unit());
+    //    if (physValSize.width() != m_physValSizeFixed.width()
+    //     || physValSize.height() != m_physValSizeFixed.height()) {
+    //        if (physValSize.width() != m_physValSizeFixed.width()) {
+    //            physValSize.setWidth( m_physValSizeFixed.width() );
+    //        }
+    //        if (physValSize.height() != m_physValSizeFixed.height()) {
+    //            physValSize.setHeight( m_physValSizeFixed.height() );
+    //        }
+    //        setSize(physValSize);
+    //    }
+    //}
 }
 
 //------------------------------------------------------------------------------
@@ -3377,53 +3377,53 @@ CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_vers
 void CGraphObj::setWidth( const CPhysVal& i_physValWidth )
 ------------------------------------------------------------------------------*/
 
-//------------------------------------------------------------------------------
-CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version ) const
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-    }
-    if (i_version == ECoordinatesVersion::Original) {
-        // This method may only be called if overridden by derived classes.
-        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
-    }
-    double fWidth_px = getBoundingRect(true).width();
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValWidth(fWidth_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
-    // A value like width and height can be directly converted without the drawing size.
-    physValWidth.convertValue(i_unit);
-    return physValWidth;
-}
+////------------------------------------------------------------------------------
+//CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version ) const
+////------------------------------------------------------------------------------
+//{
+//#pragma message(__TODO__"Pure virtual")
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem == nullptr) {
+//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+//    }
+//    if (i_version == ECoordinatesVersion::Original) {
+//        // This method may only be called if overridden by derived classes.
+//        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+//    }
+//    double fWidth_px = getBoundingRect(true).width();
+//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+//    CPhysVal physValWidth(fWidth_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+//    // A value like width and height can be directly converted without the drawing size.
+//    physValWidth.convertValue(i_unit);
+//    return physValWidth;
+//}
 
 /*------------------------------------------------------------------------------
 void CGraphObj::setHeight( const CPhysVal& i_physValHeight )
 ------------------------------------------------------------------------------*/
 
-//------------------------------------------------------------------------------
-CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_version ) const
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-    }
-    if (i_version == ECoordinatesVersion::Original) {
-        // This method may only be called if overridden by derived classes.
-        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
-    }
-    double fHeight_px = getBoundingRect(true).height();
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysVal physValHeight(fHeight_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
-    // A value like width and height can be directly converted without the drawing size.
-    physValHeight.convertValue(i_unit);
-    return physValHeight;
-}
+////------------------------------------------------------------------------------
+//CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_version ) const
+////------------------------------------------------------------------------------
+//{
+//#pragma message(__TODO__"Pure virtual")
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem == nullptr) {
+//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+//    }
+//    if (i_version == ECoordinatesVersion::Original) {
+//        // This method may only be called if overridden by derived classes.
+//        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+//    }
+//    double fHeight_px = getBoundingRect(true).height();
+//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+//    CPhysVal physValHeight(fHeight_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+//    // A value like width and height can be directly converted without the drawing size.
+//    physValHeight.convertValue(i_unit);
+//    return physValHeight;
+//}
 
 /*------------------------------------------------------------------------------
 void CGraphObj::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
@@ -3433,28 +3433,28 @@ void CGraphObj::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physV
 void CGraphObj::setSize( const CPhysValSize& i_physValSize )
 ------------------------------------------------------------------------------*/
 
-//------------------------------------------------------------------------------
-CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_version ) const
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
-    if (pGraphicsItem == nullptr) {
-        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-    }
-    if (i_version == ECoordinatesVersion::Original) {
-        // This method may only be called if overridden by derived classes.
-        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
-    }
-    QSizeF size_px = getBoundingRect(true).size();
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValSize physValSize(size_px, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    // Width and height could be directly converted without the drawing size.
-    // But the drawing scene provides a method to convert CPhysValSize which we can also use.
-    m_pDrawingScene->convert(physValSize, i_unit);
-    return physValSize;
-}
+////------------------------------------------------------------------------------
+//CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_version ) const
+////------------------------------------------------------------------------------
+//{
+//#pragma message(__TODO__"Pure virtual")
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem == nullptr) {
+//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+//    }
+//    if (i_version == ECoordinatesVersion::Original) {
+//        // This method may only be called if overridden by derived classes.
+//        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+//    }
+//    QSizeF size_px = getBoundingRect(true).size();
+//    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+//    CPhysValSize physValSize(size_px, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+//    // Width and height could be directly converted without the drawing size.
+//    // But the drawing scene provides a method to convert CPhysValSize which we can also use.
+//    m_pDrawingScene->convert(physValSize, i_unit);
+//    return physValSize;
+//}
 
 /*==============================================================================
 public: // must overridables
@@ -6612,7 +6612,7 @@ void CGraphObj::QGraphicsItem_setPos(const QPointF& i_pos)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "QGraphicsLineItem_setPos",
+        /* strMethod    */ "QGraphicsItem_setPos",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);

@@ -71,11 +71,11 @@ public: // overridables of base class CGraphObj
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
     virtual void acceptCurrentAsOriginalCoors() override;
 #endif
-public: // must overridables of base class CGraphObj
-    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
-    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
-    virtual void setSize( const CPhysValSize& i_physValSize ) override;
+//public: // must overridables of base class CGraphObj
+//    virtual void setWidth( const ZS::PhysVal::CPhysVal& i_physValWidth ) override;
+//    virtual void setHeight( const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+//    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
+//    virtual void setSize( const CPhysValSize& i_physValSize ) override;
 public: // must overridables of base class CGraphObj
     //virtual void setIsHit( bool i_bHit ) override;
 public: // overridables of base class CGraphObj

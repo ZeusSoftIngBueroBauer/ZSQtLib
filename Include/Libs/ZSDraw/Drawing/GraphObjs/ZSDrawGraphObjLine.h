@@ -69,9 +69,9 @@ namespace Draw
     |                                                                                  |
     +----------------------------------------------------------------------------------+
 
-    The origin of the parent item's coordinate system is the center of the parent's
-    bounding rectangle and the coordinates of the parent's top left corner is not
-    at (0/0) but at negative pixel values.
+    If the line has a parent and belongs to a group of items, the origin of the parent
+    item's coordinate system is the center of the parent's bounding rectangle. The
+    coordinates of the parent's top left corner is not at (0/0) but at negative pixel values.
 
     +-Drawing-Scene--------------------------------------------------------------------+
     |(0/0)                                                                             |
@@ -153,19 +153,9 @@ public: // instance methods
     ZS::PhysVal::CPhysVal getAngle(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) override;
-    virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) override;
-    virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight) override;
-    virtual void setSize(const CPhysValSize& i_physValSize) override;
-    virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
-    //virtual void setIsHit(bool i_bHit) override;
-    //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const override;
 public: // overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const override;

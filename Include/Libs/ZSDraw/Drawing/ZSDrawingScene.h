@@ -159,6 +159,8 @@ public: // instance methods
     CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect convert(const CPhysValRect& i_physValLine) const;
+    CPhysValRect convert(const CPhysValRect& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;

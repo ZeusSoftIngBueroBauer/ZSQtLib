@@ -245,83 +245,83 @@ void CGraphObjPoint::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOl
 public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjPoint::setWidth( const CPhysVal& i_physValWidth )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValWidth.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setWidth",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Setting the size of a point makes no sense.
-    // Width and height of a point is mathematically defined as 0.0.
-    // In the graphics scene a point is always one pixel.
-    // To visually resize a point the pen width has to be adjusted.
-    //setSize(i_physValWidth, getHeight());
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjPoint::setHeight( const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValHeight.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setHeight",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Setting the size of a point makes no sense.
-    // Width and height of a point is mathematically defined as 0.0.
-    // In the graphics scene a point is always one pixel.
-    // To visually resize a point the pen width has to be adjusted.
-    //setSize(getWidth(), i_physValHeight);
-
-} // setHeight
-
-//------------------------------------------------------------------------------
-void CGraphObjPoint::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setSize",
-        /* strAddInfo   */ strMthInArgs );
-
-    // Setting the size of a point makes no sense.
-    // Width and height of a point is mathematically defined as 0.0.
-    // In the graphics scene a point is always one pixel.
-    // To visually resize a point the pen width has to be adjusted.
-
-} // setSize
-
-//------------------------------------------------------------------------------
-void CGraphObjPoint::setSize( const CPhysValSize& i_physValSize )
-//------------------------------------------------------------------------------
-{
-    // Setting the size of a point makes no sense.
-    // Width and height of a point is mathematically defined as 0.0.
-    // In the graphics scene a point is always one pixel.
-    // To visually resize a point the pen width has to be adjusted.
-    //setSize(i_physValSize.width(), i_physValSize.height());
-}
+////------------------------------------------------------------------------------
+//void CGraphObjPoint::setWidth( const CPhysVal& i_physValWidth )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setWidth",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // Setting the size of a point makes no sense.
+//    // Width and height of a point is mathematically defined as 0.0.
+//    // In the graphics scene a point is always one pixel.
+//    // To visually resize a point the pen width has to be adjusted.
+//    //setSize(i_physValWidth, getHeight());
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObjPoint::setHeight( const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setHeight",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // Setting the size of a point makes no sense.
+//    // Width and height of a point is mathematically defined as 0.0.
+//    // In the graphics scene a point is always one pixel.
+//    // To visually resize a point the pen width has to be adjusted.
+//    //setSize(getWidth(), i_physValHeight);
+//
+//} // setHeight
+//
+////------------------------------------------------------------------------------
+//void CGraphObjPoint::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString() + ", " + i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setSize",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    // Setting the size of a point makes no sense.
+//    // Width and height of a point is mathematically defined as 0.0.
+//    // In the graphics scene a point is always one pixel.
+//    // To visually resize a point the pen width has to be adjusted.
+//
+//} // setSize
+//
+////------------------------------------------------------------------------------
+//void CGraphObjPoint::setSize( const CPhysValSize& i_physValSize )
+////------------------------------------------------------------------------------
+//{
+//    // Setting the size of a point makes no sense.
+//    // Width and height of a point is mathematically defined as 0.0.
+//    // In the graphics scene a point is always one pixel.
+//    // To visually resize a point the pen width has to be adjusted.
+//    //setSize(i_physValSize.width(), i_physValSize.height());
+//}
 
 /*==============================================================================
 public: // must overridables of base class CGraphObj
