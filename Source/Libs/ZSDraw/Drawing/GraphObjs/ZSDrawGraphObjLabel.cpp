@@ -112,10 +112,10 @@ CGraphObjLabel::CGraphObjLabel(
 
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
-        this, &CGraphObj::onGraphObjParentGeometryChanged);
+        this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObj::onGraphObjParentZValueChanged);
+        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
 
 } // ctor
 
@@ -158,10 +158,10 @@ CGraphObjLabel::CGraphObjLabel(
 
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
-        this, &CGraphObj::onGraphObjParentGeometryChanged);
+        this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObj::onGraphObjParentZValueChanged);
+        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
 }
 
 //------------------------------------------------------------------------------
@@ -200,16 +200,16 @@ CGraphObjLabel::CGraphObjLabel(
 
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
-        this, &CGraphObj::onGraphObjParentGeometryChanged);
+        this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObj::onGraphObjParentZValueChanged);
+        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
     QObject::connect(
         m_labelDscr.m_selPt2.m_pGraphObj, &CGraphObj::geometryChanged,
-        this, &CGraphObj::onGraphObjParentGeometryChanged);
+        this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
     QObject::connect(
         m_labelDscr.m_selPt2.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObj::onGraphObjParentZValueChanged);
+        this, &CGraphObjLabel::onGraphObjParentZValueChanged);
 }
 
 /*==============================================================================

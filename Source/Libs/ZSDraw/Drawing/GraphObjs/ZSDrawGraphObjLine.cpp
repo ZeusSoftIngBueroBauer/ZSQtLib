@@ -1565,7 +1565,7 @@ bool CGraphObjLine::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QEv
 
     CGraphObjSelectionPoint* pGraphObjSelPtWatched = dynamic_cast<CGraphObjSelectionPoint*>(i_pGraphicsItemWatched);
     if (pGraphObjSelPtWatched == nullptr) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObjSelPtWatched == nullptr" );
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "pGraphObjSelPtWatched == nullptr");
     }
 
     SGraphObjSelectionPoint selPt = pGraphObjSelPtWatched->getSelectionPoint();
@@ -1903,6 +1903,66 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
 }
 
 /*==============================================================================
+protected: // overridable slots of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawingSize.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_physValLine.unit() != i_drawingSize.unit()) {
+        m_bForceConversionToSceneCoors = true;
+        setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
+        m_bForceConversionToSceneCoors = false;
+        emit_geometryValuesUnitChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pSelectionPoint->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onSelectionPointGeometryChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
+    QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
+    QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
+    QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
+    QPointF ptParentPosSelPt = mapToParent(ptPosSelPt);
+    CPhysValPoint physValParentSelPt = m_pDrawingScene->toPhysValPoint(ptParentPosSelPt);
+    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
+
+    if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        if (selPt.m_idxPt == 0) {
+            setP1(physValParentSelPt);
+        }
+        else if (selPt.m_idxPt == 1) {
+            setP2(physValParentSelPt);
+        }
+    }
+}
+
+/*==============================================================================
 protected: // instance methods
 ==============================================================================*/
 
@@ -1975,59 +2035,6 @@ void CGraphObjLine::updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_lineP
 /*==============================================================================
 protected: // overridables of base class CGraphObj
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_drawingSize.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "onDrawingSizeChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_physValLine.unit() != i_drawingSize.unit()) {
-        m_bForceConversionToSceneCoors = true;
-        setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
-        m_bForceConversionToSceneCoors = false;
-        emit_geometryValuesUnitChanged();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pSelectionPoint->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "onSelectionPointGeometryChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
-    QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
-    QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
-    QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
-    QPointF ptParentPosSelPt = mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt = m_pDrawingScene->toPhysValPoint(ptParentPosSelPt);
-    SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
-    if (selPt.m_idxPt == 0) {
-        setP1(physValParentSelPt);
-    }
-    else if (selPt.m_idxPt == 1) {
-        setP2(physValParentSelPt);
-    }
-}
 
 ////------------------------------------------------------------------------------
 //void CGraphObjLine::updateToolTip()

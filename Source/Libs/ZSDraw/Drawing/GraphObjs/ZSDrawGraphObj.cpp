@@ -851,12 +851,12 @@ CGraphObj::CGraphObj(
     m_ptRotOriginOnMousePressEvent(),
     m_iItemChangeUpdateOriginalCoorsBlockedCounter(false),
     // Simulation Functions:
-    m_arMousePressEventFunctions(),
-    m_arMouseReleaseEventFunctions(),
-    m_arMouseDoubleClickEventFunctions(),
-    m_arMouseMoveEventFunctions(),
-    m_arKeyPressEventFunctions(),
-    m_arKeyReleaseEventFunctions(),
+    //m_arMousePressEventFunctions(),
+    //m_arMouseReleaseEventFunctions(),
+    //m_arMouseDoubleClickEventFunctions(),
+    //m_arMouseMoveEventFunctions(),
+    //m_arKeyPressEventFunctions(),
+    //m_arKeyReleaseEventFunctions(),
     m_pTrcAdminObjCtorsAndDtor(nullptr),
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
@@ -3525,7 +3525,7 @@ void CGraphObj::setRotationAngleInDegree( double i_fRotAngle_deg )
     m_fRotAngleCurr_deg = i_fRotAngle_deg;
 #endif
 
-    updateTransform();
+    //updateTransform();
 }
 
 //------------------------------------------------------------------------------
@@ -5673,7 +5673,434 @@ bool CGraphObj::isGeometryLabelAnchorLineVisible(const QString& i_strName) const
 }
 
 /*==============================================================================
-public slots: // overridables
+public: // instance methods (simulation methods)
+==============================================================================*/
+
+////------------------------------------------------------------------------------
+//void CGraphObj::addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::addMousePressEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    for (int idx = 0; idx < m_arMousePressEventFunctions.size(); idx++) {
+//        SGraphObjMouseEventFct fctEntry = m_arMousePressEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
+//        }
+//    }
+//    m_arMousePressEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::removeMousePressEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    int idxFct = -1;
+//    for (int idx = 0; idx < m_arMousePressEventFunctions.size(); idx++) {
+//        SGraphObjMouseEventFct fctEntry = m_arMousePressEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            idxFct = idx;
+//            break;
+//        }
+//    }
+//    if (idxFct < 0) {
+//        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
+//    }
+//    m_arMousePressEventFunctions.removeAt(idxFct);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::addMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::addMouseReleaseEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    for (int idx = 0; idx < m_arMouseReleaseEventFunctions.size(); idx++) {
+//        SGraphObjMouseEventFct fctEntry = m_arMouseReleaseEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
+//        }
+//    }
+//    m_arMouseReleaseEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::removeMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::removeMouseReleaseEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    int idxFct = -1;
+//    for (int idx = 0; idx < m_arMouseReleaseEventFunctions.size(); idx++) {
+//        SGraphObjMouseEventFct fctEntry = m_arMouseReleaseEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            idxFct = idx;
+//            break;
+//        }
+//    }
+//    if (idxFct < 0) {
+//        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
+//    }
+//    m_arMouseReleaseEventFunctions.removeAt(idxFct);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::addMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::addMouseDoubleClickEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    for (int idx = 0; idx < m_arMouseDoubleClickEventFunctions.size(); idx++) {
+//        SGraphObjMouseEventFct fctEntry = m_arMouseDoubleClickEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
+//        }
+//    }
+//    m_arMouseDoubleClickEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::removeMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::removeMouseDoubleClickEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    int idxFct = -1;
+//    for (int idx = 0; idx < m_arMouseDoubleClickEventFunctions.size(); idx++) {
+//        SGraphObjMouseEventFct fctEntry = m_arMouseDoubleClickEventFunctions[idxFct];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            idxFct = idx;
+//            break;
+//        }
+//    }
+//    if (idxFct < 0) {
+//        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
+//    }
+//    m_arMouseDoubleClickEventFunctions.removeAt(idxFct);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::addMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::addMouseMoveEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    for (int idx = 0; idx < m_arMouseMoveEventFunctions.size(); idx++) {
+//        SGraphObjMouseEventFct fctEntry = m_arMouseMoveEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
+//        }
+//    }
+//    m_arMouseMoveEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::removeMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::removeMouseMoveEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    int idxFct = -1;
+//    for (int idx = 0; idx < m_arMouseMoveEventFunctions.size(); idx++) {
+//        SGraphObjMouseEventFct fctEntry = m_arMouseMoveEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            idxFct = idx;
+//            break;
+//        }
+//    }
+//    if (idxFct < 0) {
+//        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
+//    }
+//    m_arMouseMoveEventFunctions.removeAt(idxFct);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::addKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::addKeyPressEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    for (int idx = 0; idx < m_arKeyPressEventFunctions.size(); idx++) {
+//        SGraphObjKeyEventFct fctEntry = m_arKeyPressEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
+//        }
+//    }
+//    m_arKeyPressEventFunctions.append( SGraphObjKeyEventFct(i_pFct,i_pvThis,i_pvData) );
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::removeKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::removeKeyPressEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    int idxFct = -1;
+//    for (int idx = 0; idx < m_arKeyPressEventFunctions.size(); idx++) {
+//        SGraphObjKeyEventFct fctEntry = m_arKeyPressEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            idxFct = idx;
+//            break;
+//        }
+//    }
+//    if (idxFct < 0) {
+//        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
+//    }
+//    m_arKeyPressEventFunctions.removeAt(idxFct);
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::addKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::addKeyReleaseEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    for (int idx = 0; idx < m_arKeyReleaseEventFunctions.size(); idx++) {
+//        SGraphObjKeyEventFct fctEntry = m_arKeyReleaseEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
+//        }
+//    }
+//    m_arKeyReleaseEventFunctions.append( SGraphObjKeyEventFct(i_pFct,i_pvThis,i_pvData) );
+//}
+//
+////------------------------------------------------------------------------------
+//void CGraphObj::removeKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::removeKeyReleaseEventFunction",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    int idxFct = -1;
+//    for (int idx = 0; idx < m_arKeyReleaseEventFunctions.size(); idx++) {
+//        SGraphObjKeyEventFct fctEntry = m_arKeyReleaseEventFunctions[idx];
+//        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
+//            idxFct = idx;
+//            break;
+//        }
+//    }
+//    if (idxFct < 0) {
+//        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
+//    }
+//    m_arKeyReleaseEventFunctions.removeAt(idxFct);
+//}
+
+/*==============================================================================
+protected: // overridables (geometry labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a new geometry label with the given name linked to one or two
+           selection point at the bounding rectangle.
+
+    The label is not added to the graphics scene and remains invisible.
+    To add the label also to the graphics scene the label must be shown.
+
+    @param [in] i_strName
+        Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_labelType
+        Range [EGraphObjTypeLabelGeometryPosition,
+               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
+               EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
+        If not empty defines the text to be shown.
+    @param [in] i_selPt1
+        First selection point the label should use to indicate the geometry.
+    @param [in] i_selPt2
+        Second selection point the label should use to indicate the geometry.
+        For position label only one selection point is used and the second selection
+        point is set to invalid.
+
+    @return true, if the label has been created and added, false otherwise.
+*/
+bool CGraphObj::addGeometryLabel(
+    const QString& i_strName, EGraphObjType i_labelType,
+    ESelectionPoint i_selPt1, ESelectionPoint i_selPt2)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
+            + ", " + CEnumSelectionPoint(i_selPt1).toString()
+            + ", " + CEnumSelectionPoint(i_selPt2).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::addGeometryLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
+    if (bCanAdd) {
+        SLabelDscr labelDscr(i_labelType, i_strName);
+        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPt1);
+        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_selPt2);
+        m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bCanAdd);
+    }
+    return bCanAdd;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a new geometry label with the given name linked to one or two
+           shape points.
+
+    The label is not added to the graphics scene and remains invisible.
+    To add the label also to the graphics scene the label must be shown.
+
+    @param [in] i_strName
+        Name of the label. The name must be unique otherwise no label is created.
+    @param [in] i_labelType
+        Range [EGraphObjTypeLabelGeometryPosition,
+               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
+               EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
+        If not empty defines the text to be shown.
+    @param [in] i_idxPt1
+        First selection point the label should use to indicate the geometry.
+    @param [in] i_idxPt2
+        Second selection point the label should use to indicate the geometry.
+        For position label only one selection point is used and the second selection
+        point is set to invalid.
+
+    @return true, if the label has been created and added, false otherwise.
+*/
+bool CGraphObj::addGeometryLabel(
+    const QString& i_strName, EGraphObjType i_labelType,
+    int i_idxPt1, int i_idxPt2)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
+            + ", " + QString::number(i_idxPt1) + ", " + QString::number(i_idxPt2);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::addGeometryLabel",
+        /* strAddInfo   */ strMthInArgs );
+
+    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
+    if (bCanAdd) {
+        SLabelDscr labelDscr(i_labelType, i_strName);
+        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_idxPt1);
+        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_idxPt2);
+        m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
+        if (m_pTree != nullptr) {
+            m_pTree->onTreeEntryChanged(this);
+        }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(bCanAdd);
+    }
+    return bCanAdd;
+}
+
+/*==============================================================================
+protected slots: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -5865,462 +6292,35 @@ void CGraphObj::onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel)
 }
 
 /*==============================================================================
-public: // instance methods (simulation methods)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CGraphObj::addMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addMousePressEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    for (int idx = 0; idx < m_arMousePressEventFunctions.size(); idx++) {
-        SGraphObjMouseEventFct fctEntry = m_arMousePressEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
-        }
-    }
-    m_arMousePressEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::removeMousePressEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::removeMousePressEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idxFct = -1;
-    for (int idx = 0; idx < m_arMousePressEventFunctions.size(); idx++) {
-        SGraphObjMouseEventFct fctEntry = m_arMousePressEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            idxFct = idx;
-            break;
-        }
-    }
-    if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
-    }
-    m_arMousePressEventFunctions.removeAt(idxFct);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::addMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addMouseReleaseEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    for (int idx = 0; idx < m_arMouseReleaseEventFunctions.size(); idx++) {
-        SGraphObjMouseEventFct fctEntry = m_arMouseReleaseEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
-        }
-    }
-    m_arMouseReleaseEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::removeMouseReleaseEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::removeMouseReleaseEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idxFct = -1;
-    for (int idx = 0; idx < m_arMouseReleaseEventFunctions.size(); idx++) {
-        SGraphObjMouseEventFct fctEntry = m_arMouseReleaseEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            idxFct = idx;
-            break;
-        }
-    }
-    if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
-    }
-    m_arMouseReleaseEventFunctions.removeAt(idxFct);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::addMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addMouseDoubleClickEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    for (int idx = 0; idx < m_arMouseDoubleClickEventFunctions.size(); idx++) {
-        SGraphObjMouseEventFct fctEntry = m_arMouseDoubleClickEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
-        }
-    }
-    m_arMouseDoubleClickEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::removeMouseDoubleClickEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::removeMouseDoubleClickEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idxFct = -1;
-    for (int idx = 0; idx < m_arMouseDoubleClickEventFunctions.size(); idx++) {
-        SGraphObjMouseEventFct fctEntry = m_arMouseDoubleClickEventFunctions[idxFct];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            idxFct = idx;
-            break;
-        }
-    }
-    if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
-    }
-    m_arMouseDoubleClickEventFunctions.removeAt(idxFct);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::addMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addMouseMoveEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    for (int idx = 0; idx < m_arMouseMoveEventFunctions.size(); idx++) {
-        SGraphObjMouseEventFct fctEntry = m_arMouseMoveEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
-        }
-    }
-    m_arMouseMoveEventFunctions.append( SGraphObjMouseEventFct(i_pFct,i_pvThis,i_pvData) );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::removeMouseMoveEventFunction( TFctMouseEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::removeMouseMoveEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idxFct = -1;
-    for (int idx = 0; idx < m_arMouseMoveEventFunctions.size(); idx++) {
-        SGraphObjMouseEventFct fctEntry = m_arMouseMoveEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            idxFct = idx;
-            break;
-        }
-    }
-    if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
-    }
-    m_arMouseMoveEventFunctions.removeAt(idxFct);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::addKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addKeyPressEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    for (int idx = 0; idx < m_arKeyPressEventFunctions.size(); idx++) {
-        SGraphObjKeyEventFct fctEntry = m_arKeyPressEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
-        }
-    }
-    m_arKeyPressEventFunctions.append( SGraphObjKeyEventFct(i_pFct,i_pvThis,i_pvData) );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::removeKeyPressEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::removeKeyPressEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idxFct = -1;
-    for (int idx = 0; idx < m_arKeyPressEventFunctions.size(); idx++) {
-        SGraphObjKeyEventFct fctEntry = m_arKeyPressEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            idxFct = idx;
-            break;
-        }
-    }
-    if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
-    }
-    m_arKeyPressEventFunctions.removeAt(idxFct);
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::addKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addKeyReleaseEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    for (int idx = 0; idx < m_arKeyReleaseEventFunctions.size(); idx++) {
-        SGraphObjKeyEventFct fctEntry = m_arKeyReleaseEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultObjAlreadyInList, "Event function already added");
-        }
-    }
-    m_arKeyReleaseEventFunctions.append( SGraphObjKeyEventFct(i_pFct,i_pvThis,i_pvData) );
-}
-
-//------------------------------------------------------------------------------
-void CGraphObj::removeKeyReleaseEventFunction( TFctKeyEvent i_pFct, void* i_pvThis, void* i_pvData )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::removeKeyReleaseEventFunction",
-        /* strAddInfo   */ strMthInArgs );
-
-    int idxFct = -1;
-    for (int idx = 0; idx < m_arKeyReleaseEventFunctions.size(); idx++) {
-        SGraphObjKeyEventFct fctEntry = m_arKeyReleaseEventFunctions[idx];
-        if (fctEntry.m_pFct == i_pFct && fctEntry.m_pvThis == i_pvThis && fctEntry.m_pvData == i_pvData) {
-            idxFct = idx;
-            break;
-        }
-    }
-    if (idxFct < 0) {
-        throw ZS::System::CException(__FILE__, __LINE__, EResultObjNotInList, "Event function not added");
-    }
-    m_arKeyReleaseEventFunctions.removeAt(idxFct);
-}
-
-/*==============================================================================
-protected: // overridables (geometry labels)
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a new geometry label with the given name linked to one or two
-           selection point at the bounding rectangle.
-
-    The label is not added to the graphics scene and remains invisible.
-    To add the label also to the graphics scene the label must be shown.
-
-    @param [in] i_strName
-        Name of the label. The name must be unique otherwise no label is created.
-    @param [in] i_labelType
-        Range [EGraphObjTypeLabelGeometryPosition,
-               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
-               EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
-        If not empty defines the text to be shown.
-    @param [in] i_selPt1
-        First selection point the label should use to indicate the geometry.
-    @param [in] i_selPt2
-        Second selection point the label should use to indicate the geometry.
-        For position label only one selection point is used and the second selection
-        point is set to invalid.
-
-    @return true, if the label has been created and added, false otherwise.
-*/
-bool CGraphObj::addGeometryLabel(
-    const QString& i_strName, EGraphObjType i_labelType,
-    ESelectionPoint i_selPt1, ESelectionPoint i_selPt2)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
-            + ", " + CEnumSelectionPoint(i_selPt1).toString()
-            + ", " + CEnumSelectionPoint(i_selPt2).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addGeometryLabel",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
-    if (bCanAdd) {
-        SLabelDscr labelDscr(i_labelType, i_strName);
-        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_selPt1);
-        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_selPt2);
-        m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bCanAdd);
-    }
-    return bCanAdd;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a new geometry label with the given name linked to one or two
-           shape points.
-
-    The label is not added to the graphics scene and remains invisible.
-    To add the label also to the graphics scene the label must be shown.
-
-    @param [in] i_strName
-        Name of the label. The name must be unique otherwise no label is created.
-    @param [in] i_labelType
-        Range [EGraphObjTypeLabelGeometryPosition,
-               EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
-               EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
-        If not empty defines the text to be shown.
-    @param [in] i_idxPt1
-        First selection point the label should use to indicate the geometry.
-    @param [in] i_idxPt2
-        Second selection point the label should use to indicate the geometry.
-        For position label only one selection point is used and the second selection
-        point is set to invalid.
-
-    @return true, if the label has been created and added, false otherwise.
-*/
-bool CGraphObj::addGeometryLabel(
-    const QString& i_strName, EGraphObjType i_labelType,
-    int i_idxPt1, int i_idxPt2)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strName + ", " + graphObjType2Str(i_labelType)
-            + ", " + QString::number(i_idxPt1) + ", " + QString::number(i_idxPt2);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::addGeometryLabel",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bCanAdd = !m_hshGeometryLabelDscrs.contains(i_strName);
-    if (bCanAdd) {
-        SLabelDscr labelDscr(i_labelType, i_strName);
-        labelDscr.m_selPt1 = SGraphObjSelectionPoint(this, i_idxPt1);
-        labelDscr.m_selPt2 = SGraphObjSelectionPoint(this, i_idxPt2);
-        m_hshGeometryLabelDscrs.insert(i_strName, labelDscr);
-        if (m_pTree != nullptr) {
-            m_pTree->onTreeEntryChanged(this);
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bCanAdd);
-    }
-    return bCanAdd;
-}
-
-/*==============================================================================
 protected: // overridables
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObj::updateTransform()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::updateTransform",
-        /* strAddInfo   */ "" );
-
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-
-    if (pGraphicsItem != nullptr)
-    {
-        QTransform trs;
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        trs.translate( m_ptRotOriginCurr.x(), m_ptRotOriginCurr.y() );
-        trs.rotate(-m_fRotAngleCurr_deg);
-        trs.translate( -m_ptRotOriginCurr.x(), -m_ptRotOriginCurr.y() );
-        //trsNew.scale( m_fScaleFacXCurr, m_fScaleFacYCurr );
-#endif
-        pGraphicsItem->resetTransform();
-        pGraphicsItem->setTransform(trs);
-    }
-} // updateTransform
+////------------------------------------------------------------------------------
+//void CGraphObj::updateTransform()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::updateTransform",
+//        /* strAddInfo   */ "" );
+//
+//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+//
+//    if (pGraphicsItem != nullptr)
+//    {
+//        QTransform trs;
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//        trs.translate( m_ptRotOriginCurr.x(), m_ptRotOriginCurr.y() );
+//        trs.rotate(-m_fRotAngleCurr_deg);
+//        trs.translate( -m_ptRotOriginCurr.x(), -m_ptRotOriginCurr.y() );
+//        //trsNew.scale( m_fScaleFacXCurr, m_fScaleFacYCurr );
+//#endif
+//        pGraphicsItem->resetTransform();
+//        pGraphicsItem->setTransform(trs);
+//    }
+//} // updateTransform
 
 ////------------------------------------------------------------------------------
 //void CGraphObj::updateToolTip()

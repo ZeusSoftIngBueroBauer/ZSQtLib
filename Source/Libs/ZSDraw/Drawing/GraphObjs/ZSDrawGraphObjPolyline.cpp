@@ -2025,7 +2025,7 @@ QVariant CGraphObjPolyline::itemChange( GraphicsItemChange i_change, const QVari
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateTransform();
+        //updateTransform();
 
         QPolygonF plg = polygon();
         QRectF    rctBounding = plg.boundingRect();

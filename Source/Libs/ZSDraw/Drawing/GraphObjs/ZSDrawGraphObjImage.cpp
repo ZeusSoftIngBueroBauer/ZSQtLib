@@ -1460,7 +1460,7 @@ QVariant CGraphObjImage::itemChange( GraphicsItemChange i_change, const QVariant
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateTransform();
+        //updateTransform();
 #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
         updateSelectionPointsOfBoundingRect(m_rctCurr);
 #endif

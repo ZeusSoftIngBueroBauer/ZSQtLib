@@ -113,13 +113,50 @@ public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
     CPhysValRect getRect() const;
     CPhysValRect getRect(const ZS::PhysVal::CUnit& i_unit) const;
-    //void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
-    //ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
-    //ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
-    //void setSize(const CPhysValSize& i_physValSize);
-    //CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    void setWidth(double i_fWidth);
+    void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    ZS::PhysVal::CPhysVal getWidth() const;
+    ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit) const;
+    void setHeight(double i_fHeight);
+    void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    ZS::PhysVal::CPhysVal getHeight() const;
+    ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit) const;
+    void setSize(const QSizeF& i_size);
+    void setSize(const CPhysValSize& i_physValSize);
+    CPhysValSize getSize() const;
+    CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit) const;
+    void setTop(double i_fTop);
+    void setTop(const ZS::PhysVal::CPhysVal& i_physValTop);
+    ZS::PhysVal::CPhysVal getTop() const;
+    ZS::PhysVal::CPhysVal getTop(const ZS::PhysVal::CUnit& i_unit) const;
+    void setBottom(double i_fBottom);
+    void setBottom(const ZS::PhysVal::CPhysVal& i_physValBottom);
+    ZS::PhysVal::CPhysVal getBottom() const;
+    ZS::PhysVal::CPhysVal getBottom(const ZS::PhysVal::CUnit& i_unit) const;
+    void setLeft(double i_fLeft);
+    void setLeft(const ZS::PhysVal::CPhysVal& i_physValLeft);
+    ZS::PhysVal::CPhysVal getLeft() const;
+    ZS::PhysVal::CPhysVal getLeft(const ZS::PhysVal::CUnit& i_unit) const;
+    void setRight(double i_fRight);
+    void setRight(const ZS::PhysVal::CPhysVal& i_physValRight);
+    ZS::PhysVal::CPhysVal getRight() const;
+    ZS::PhysVal::CPhysVal getRight(const ZS::PhysVal::CUnit& i_unit) const;
+    void setTopLeft(const QPointF& i_pt);
+    void setTopLeft(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getTopLeft() const;
+    CPhysValPoint getTopLeft(const ZS::PhysVal::CUnit& i_unit) const;
+    void setTopRight(const QPointF& i_pt);
+    void setTopRight(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getTopRight() const;
+    CPhysValPoint getTopRight(const ZS::PhysVal::CUnit& i_unit) const;
+    void setBottomRight(const QPointF& i_pt);
+    void setBottomRight(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getBottomRight() const;
+    CPhysValPoint getBottomRight(const ZS::PhysVal::CUnit& i_unit) const;
+    void setBottomLeft(const QPointF& i_pt);
+    void setBottomLeft(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getBottomLeft() const;
+    CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
     virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const override;
@@ -127,8 +164,6 @@ protected: // overridables
     virtual void applyGeometryChangeToChildrens();
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
-public: // overridables of base class CGraphObj
-    virtual void onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent ) override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
@@ -148,6 +183,9 @@ protected: // overridables of base class QGraphicsItem
     virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
+protected: // overridable slots of base class CGraphObj
+    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
+    virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
 protected: // auxiliary instance methods
     QRectF rect() const;
 protected: // auxiliary instance methods (method tracing)

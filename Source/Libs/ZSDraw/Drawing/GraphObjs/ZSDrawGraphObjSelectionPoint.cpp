@@ -145,10 +145,10 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
 
     QObject::connect(
         m_selPt.m_pGraphObj, &CGraphObj::geometryChanged,
-        this, &CGraphObj::onGraphObjParentGeometryChanged);
+        this, &CGraphObjSelectionPoint::onGraphObjParentGeometryChanged);
     QObject::connect(
         m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
-        this, &CGraphObj::onGraphObjParentZValueChanged);
+        this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
 
 } // ctor
 

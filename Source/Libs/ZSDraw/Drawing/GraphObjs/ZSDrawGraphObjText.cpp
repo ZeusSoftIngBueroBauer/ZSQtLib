@@ -1463,7 +1463,7 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateTransform();
+        //updateTransform();
         //updateEditInfo();
         //updateToolTip();
     }

@@ -228,6 +228,13 @@ CPhysVal CPhysValRect::height() const
 }
 
 //------------------------------------------------------------------------------
+CPhysValSize CPhysValRect::size() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValSize(m_rect.size(), m_fRes, m_unit);
+}
+
+//------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::topLeft() const
 //------------------------------------------------------------------------------
 {
@@ -272,6 +279,83 @@ CUnit CPhysValRect::unit() const
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setTop(const ZS::PhysVal::CPhysVal& i_physValTop)
+//------------------------------------------------------------------------------
+{
+    m_rect.setTop(i_physValTop.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setBottom(const ZS::PhysVal::CPhysVal& i_physValBottom)
+//------------------------------------------------------------------------------
+{
+    m_rect.setBottom(i_physValBottom.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setLeft(const ZS::PhysVal::CPhysVal& i_physValLeft)
+//------------------------------------------------------------------------------
+{
+    m_rect.setLeft(i_physValLeft.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setRight(const ZS::PhysVal::CPhysVal& i_physValRight)
+//------------------------------------------------------------------------------
+{
+    m_rect.setRight(i_physValRight.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
+//------------------------------------------------------------------------------
+{
+    m_rect.setWidth(i_physValWidth.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
+//------------------------------------------------------------------------------
+{
+    m_rect.setHeight(i_physValHeight.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
+//------------------------------------------------------------------------------
+{
+    m_rect.setSize(QSizeF(i_physValSize.width().getVal(m_unit), i_physValSize.height().getVal(m_unit)));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    m_rect.setTopLeft(QPointF(i_physValPoint.x().getVal(m_unit), i_physValPoint.y().getVal(m_unit)));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    m_rect.setTopRight(QPointF(i_physValPoint.x().getVal(m_unit), i_physValPoint.y().getVal(m_unit)));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    m_rect.setBottomLeft(QPointF(i_physValPoint.x().getVal(m_unit), i_physValPoint.y().getVal(m_unit)));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    m_rect.setBottomRight(QPointF(i_physValPoint.x().getVal(m_unit), i_physValPoint.y().getVal(m_unit)));
+}
 
 //------------------------------------------------------------------------------
 void CPhysValRect::setResolution( double i_fRes )

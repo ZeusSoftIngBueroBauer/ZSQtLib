@@ -29,6 +29,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
 #include "ZSDraw/Common/ZSDrawPhysValLine.h"
+#include "ZSDraw/Common/ZSDrawPhysValSize.h"
 #include "QtCore/qrect.h"
 
 namespace ZS
@@ -74,6 +75,7 @@ public: // instance methods
     ZS::PhysVal::CPhysVal right() const;
     ZS::PhysVal::CPhysVal width() const;
     ZS::PhysVal::CPhysVal height() const;
+    CPhysValSize size() const;
     CPhysValPoint topLeft() const;
     CPhysValPoint topRight() const;
     CPhysValPoint bottomLeft() const;
@@ -81,6 +83,17 @@ public: // instance methods
     double resolution() const;
     ZS::PhysVal::CUnit unit() const;
 public: // instance methods
+    void setTop(const ZS::PhysVal::CPhysVal& i_physValTop);
+    void setBottom(const ZS::PhysVal::CPhysVal& i_physValBottom);
+    void setLeft(const ZS::PhysVal::CPhysVal& i_physValLeft);
+    void setRight(const ZS::PhysVal::CPhysVal& i_physValRight);
+    void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    void setSize(const CPhysValSize& i_physValSize);
+    void setTopLeft(const CPhysValPoint& i_physValPoint);
+    void setTopRight(const CPhysValPoint& i_physValPoint);
+    void setBottomLeft(const CPhysValPoint& i_physValPoint);
+    void setBottomRight(const CPhysValPoint& i_physValPoint);
     void setResolution(double i_fRes);
     void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)

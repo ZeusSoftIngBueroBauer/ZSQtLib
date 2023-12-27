@@ -1455,7 +1455,7 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
           || i_change == ItemScenePositionHasChanged )
           #endif
     {
-        updateTransform();
+        //updateTransform();
         //updateEditInfo();
         //updateToolTip();
     }

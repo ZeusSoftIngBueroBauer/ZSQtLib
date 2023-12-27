@@ -187,12 +187,13 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent* i_pEv) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
+protected: // overridable slots of base class CGraphObj
+    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
+    virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
 protected: // instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
-public: // must overridables of base class CGraphObj
-    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
-    virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
+protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
     void setPhysValLine(const CPhysValLine& i_physValLine);

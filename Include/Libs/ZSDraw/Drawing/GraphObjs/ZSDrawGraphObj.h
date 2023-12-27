@@ -724,7 +724,23 @@ public: // overridables (geometry labels)
     virtual void showGeometryLabelAnchorLine(const QString& i_strName);
     virtual void hideGeometryLabelAnchorLine(const QString& i_strName);
     virtual bool isGeometryLabelAnchorLineVisible(const QString& i_strName) const;
-public slots: // overridables
+public: // instance methods (simulation methods)
+    //void addMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void removeMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void addMouseReleaseEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void removeMouseReleaseEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void addMouseDoubleClickEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void removeMouseDoubleClickEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void addMouseMoveEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void removeMouseMoveEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void addKeyPressEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void removeKeyPressEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void addKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+    //void removeKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
+protected: // overridables (geometry labels)
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
+    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
+protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     virtual void onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
@@ -732,23 +748,8 @@ public slots: // overridables
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
-public: // instance methods (simulation methods)
-    void addMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void removeMousePressEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void addMouseReleaseEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void removeMouseReleaseEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void addMouseDoubleClickEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void removeMouseDoubleClickEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void addMouseMoveEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void removeMouseMoveEventFunction(TFctMouseEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void addKeyPressEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void removeKeyPressEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void addKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-    void removeKeyReleaseEventFunction(TFctKeyEvent i_pFct, void* i_pvThis = nullptr, void* i_pvData = nullptr);
-protected: // overridables (geometry labels)
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
-    virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
-    virtual void updateTransform();
+protected: // overridables
+    //virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
 protected: // auxiliary instance methods
@@ -946,12 +947,12 @@ protected: // instance members
          item coordinates in pixels should be updated by itemChange. */
     int m_iItemChangeUpdateOriginalCoorsBlockedCounter;
     /*!< Simulation Functions. */
-    QList<SGraphObjMouseEventFct> m_arMousePressEventFunctions;
-    QList<SGraphObjMouseEventFct> m_arMouseReleaseEventFunctions;
-    QList<SGraphObjMouseEventFct> m_arMouseDoubleClickEventFunctions;
-    QList<SGraphObjMouseEventFct> m_arMouseMoveEventFunctions;
-    QList<SGraphObjKeyEventFct> m_arKeyPressEventFunctions;
-    QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
+    //QList<SGraphObjMouseEventFct> m_arMousePressEventFunctions;
+    //QList<SGraphObjMouseEventFct> m_arMouseReleaseEventFunctions;
+    //QList<SGraphObjMouseEventFct> m_arMouseDoubleClickEventFunctions;
+    //QList<SGraphObjMouseEventFct> m_arMouseMoveEventFunctions;
+    //QList<SGraphObjKeyEventFct> m_arKeyPressEventFunctions;
+    //QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
