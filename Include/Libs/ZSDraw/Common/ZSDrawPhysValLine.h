@@ -69,6 +69,8 @@ public: // operators
     bool operator == (const CPhysValLine& i_physValLineOther) const;
     bool operator != (const CPhysValLine& i_physValLineOther) const;
 public: // instance methods
+    bool isValid() const;
+public: // instance methods
     CPhysValPoint p1() const;
     CPhysValPoint p2() const;
     ZS::PhysVal::CPhysVal x1() const;

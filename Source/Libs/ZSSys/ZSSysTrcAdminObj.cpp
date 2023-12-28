@@ -72,7 +72,7 @@ static CInitModuleSysTrcAdminObj s_initModule;
 
     This method has been mainly introduced to make the code more readable.
 
-        if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+        if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
 
     The code line above is simply shorter than:
 

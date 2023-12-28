@@ -186,6 +186,21 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns true if the rectangle is valid, otherwise returns false.
+
+    A valid rectangle has a width() > 0 and height() > 0.
+*/
+bool CPhysValRect::isValid() const
+//------------------------------------------------------------------------------
+{
+    return m_rect.isValid();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 CPhysVal CPhysValRect::top() const
 //------------------------------------------------------------------------------
 {
@@ -232,6 +247,13 @@ CPhysValSize CPhysValRect::size() const
 //------------------------------------------------------------------------------
 {
     return CPhysValSize(m_rect.size(), m_fRes, m_unit);
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValRect::center() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(m_rect.center(), m_fRes, m_unit);
 }
 
 //------------------------------------------------------------------------------
@@ -327,6 +349,13 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
 //------------------------------------------------------------------------------
 {
     m_rect.setSize(QSizeF(i_physValSize.width().getVal(m_unit), i_physValSize.height().getVal(m_unit)));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::moveCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    m_rect.moveCenter(QPointF(i_physValPoint.x().getVal(m_unit), i_physValPoint.y().getVal(m_unit)));
 }
 
 //------------------------------------------------------------------------------

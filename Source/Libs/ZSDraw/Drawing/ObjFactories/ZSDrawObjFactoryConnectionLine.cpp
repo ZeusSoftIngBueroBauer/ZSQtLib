@@ -124,7 +124,7 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "GraphObj:" + i_pGraphObj->NameSpace();
         strMthInArgs += "::" + i_pGraphObj->ClassName();

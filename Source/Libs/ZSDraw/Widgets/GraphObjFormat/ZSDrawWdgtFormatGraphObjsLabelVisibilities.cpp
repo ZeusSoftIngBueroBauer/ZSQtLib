@@ -781,7 +781,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::applyChanges()
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -902,7 +902,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::resetChanges()
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -922,7 +922,7 @@ bool CWdgtFormatGraphObjsLabelVisibilities::hasChanges() const
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -1013,7 +1013,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onGraphObjChanged()
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -1044,7 +1044,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbNameLabelAnchorSelPtCurrentInde
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
@@ -1063,7 +1063,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkNameLabelVisibleStateChanged( i
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1082,7 +1082,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkNameLabelAnchorLineVisibleState
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1101,7 +1101,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDimensionPosLabelAnchorSelPtCur
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
@@ -1141,7 +1141,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionPosLabelVisibleStateCh
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1188,7 +1188,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionPosLabelAnchorLineVisi
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1207,7 +1207,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDimensionWidthLabelAnchorSelPtC
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
@@ -1226,7 +1226,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionWidthLabelVisibleState
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1245,7 +1245,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionWidthLabelAnchorLineVi
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1264,7 +1264,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDimensionHeightLabelAnchorSelPt
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
@@ -1283,7 +1283,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionHeightLabelVisibleStat
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1302,7 +1302,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionHeightLabelAnchorLineV
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1321,7 +1321,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onCmbDimensionRotationAngleLabelAnch
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = CEnumSelectionPoint::toString(static_cast<ESelectionPoint>(i_iIdx));
     }
@@ -1340,7 +1340,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionRotationAngleLabelVisi
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1359,7 +1359,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionRotationAngleLabelAnch
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1378,7 +1378,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionLinesBoundingRectVisib
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1397,7 +1397,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionLinesBoundingRectDiago
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1416,7 +1416,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionLinesBoundingRectHoriz
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1435,7 +1435,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::onChkDimensionLinesBoundingRectVerti
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = qCheckState2Str(i_iCheckState);
     }
@@ -1458,7 +1458,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::fillComboAnchorSelPt( QComboBox* i_p
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -1510,7 +1510,7 @@ void CWdgtFormatGraphObjsLabelVisibilities::updateVisibilityCheckStates(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_pCmbSelPt->objectName();
     }

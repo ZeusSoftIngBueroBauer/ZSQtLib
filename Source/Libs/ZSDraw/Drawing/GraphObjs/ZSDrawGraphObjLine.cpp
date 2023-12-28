@@ -95,7 +95,8 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
         /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsLineItem(),
-    m_physValLine(*i_pDrawingScene),
+    m_physValLineOrig(*i_pDrawingScene),
+    m_physValLineCurr(*i_pDrawingScene),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
@@ -194,7 +195,8 @@ CGraphObjLine::~CGraphObjLine()
 
     emit_aboutToBeDestroyed();
 
-    //m_physValLine;
+    //m_physValLineOrig;
+    //m_physValLineCurr;
     //m_plgP1ArrowHead;
     //m_plgP2ArrowHead;
 
@@ -350,7 +352,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
 
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if they have been changed ...
-    if (m_bForceConversionToSceneCoors || m_physValLine != i_physValLine)
+    if (m_bForceConversionToSceneCoors || m_physValLineCurr != i_physValLine)
     {
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
@@ -383,7 +385,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
             pt2 = mapFromParent(pt2);
             CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
             if (pGraphObjParent != nullptr) {
-                QRectF rectBoundingParent = pGraphObjParent->getBoundingRect(true);
+                QRectF rectBoundingParent = pGraphObjParent->getBoundingRect();
                 QPointF ptOriginParent = rectBoundingParent.topLeft();
                 pt1 += ptOriginParent;
                 pt2 += ptOriginParent;
@@ -412,7 +414,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         {   CRefCountGuard refCountGuard(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
 
             // Update original line coordinates in unit of drawing scene.
-            // Please note that the original, untransformed line coordinates m_physValLine,
+            // Please note that the current, untransformed line coordinates m_physValLineCurr,
             // kept in the unit of the drawing scene, is also updated in the "itemChange" method.
             // The line may be moved or transformed by other methods. "itemChange" is a
             // central point to update the coordinates upon those changes.
@@ -570,7 +572,7 @@ void CGraphObjLine::setLine(
 CPhysValLine CGraphObjLine::getLine() const
 //------------------------------------------------------------------------------
 {
-    return m_physValLine;
+    return m_physValLineCurr;
 }
 
 //------------------------------------------------------------------------------
@@ -582,7 +584,7 @@ CPhysValLine CGraphObjLine::getLine() const
 CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    CPhysValLine physValLine = m_physValLine;
+    CPhysValLine physValLine = m_physValLineCurr;
     if (i_unit != physValLine.unit()) {
         physValLine = m_pDrawingScene->convert(physValLine, i_unit);
     }
@@ -611,7 +613,7 @@ void CGraphObjLine::setP1(const QPointF& i_p1)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setP1",
         /* strAddInfo   */ strMthInArgs );
-    setP1(CPhysValPoint(i_p1, m_physValLine.resolution(), m_physValLine.unit()));
+    setP1(CPhysValPoint(i_p1, m_physValLineCurr.resolution(), m_physValLineCurr.unit()));
 }
 
 //------------------------------------------------------------------------------
@@ -637,9 +639,9 @@ void CGraphObjLine::setP1(const CPhysValPoint& i_physValP1)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setP1",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValLine physValLine = m_physValLine;
-    if (i_physValP1.unit() != m_physValLine.unit()) {
-        CPhysValPoint physValP1 = m_pDrawingScene->convert(i_physValP1, m_physValLine.unit());
+    CPhysValLine physValLine = m_physValLineCurr;
+    if (i_physValP1.unit() != m_physValLineCurr.unit()) {
+        CPhysValPoint physValP1 = m_pDrawingScene->convert(i_physValP1, m_physValLineCurr.unit());
         physValLine.setP1(physValP1);
     }
     else {
@@ -691,7 +693,7 @@ void CGraphObjLine::setP2(const QPointF& i_p2)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setP2",
         /* strAddInfo   */ strMthInArgs );
-    setP2(CPhysValPoint(i_p2, m_physValLine.resolution(), m_physValLine.unit()));
+    setP2(CPhysValPoint(i_p2, m_physValLineCurr.resolution(), m_physValLineCurr.unit()));
 }
 
 //------------------------------------------------------------------------------
@@ -717,9 +719,9 @@ void CGraphObjLine::setP2(const CPhysValPoint& i_physValP2)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setP2",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValLine physValLine = m_physValLine;
-    if (i_physValP2.unit() != m_physValLine.unit()) {
-        CPhysValPoint physValP2 = m_pDrawingScene->convert(i_physValP2, m_physValLine.unit());
+    CPhysValLine physValLine = m_physValLineCurr;
+    if (i_physValP2.unit() != m_physValLineCurr.unit()) {
+        CPhysValPoint physValP2 = m_pDrawingScene->convert(i_physValP2, m_physValLineCurr.unit());
         physValLine.setP2(physValP2);
     }
     else {
@@ -801,9 +803,9 @@ void CGraphObjLine::setCenter(const CPhysValPoint& i_physValCenter)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setCenter",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValLine physValLine = m_physValLine;
-    if (i_physValCenter.unit() != m_physValLine.unit()) {
-        CPhysValPoint physValCenter = m_pDrawingScene->convert(i_physValCenter, m_physValLine.unit());
+    CPhysValLine physValLine = m_physValLineCurr;
+    if (i_physValCenter.unit() != m_physValLineCurr.unit()) {
+        CPhysValPoint physValCenter = m_pDrawingScene->convert(i_physValCenter, m_physValLineCurr.unit());
         physValLine.setCenter(physValCenter);
     }
     else {
@@ -855,7 +857,7 @@ void CGraphObjLine::setLength(double i_fLength)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setLength",
         /* strAddInfo   */ strMthInArgs );
-    setLength(CPhysVal(i_fLength, m_physValLine.unit(), m_physValLine.resolution()));
+    setLength(CPhysVal(i_fLength, m_physValLineCurr.unit(), m_physValLineCurr.resolution()));
 }
 
 //------------------------------------------------------------------------------
@@ -880,10 +882,10 @@ void CGraphObjLine::setLength(const CPhysVal& i_physValLength)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setLength",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValLine physValLine = m_physValLine;
-    if (i_physValLength.unit() != m_physValLine.unit()) {
+    CPhysValLine physValLine = m_physValLineCurr;
+    if (i_physValLength.unit() != m_physValLineCurr.unit()) {
         CPhysVal physValLength(i_physValLength);
-        physValLength.convertValue(m_physValLine.unit());
+        physValLength.convertValue(m_physValLineCurr.unit());
         physValLine.setLength(physValLength);
     }
     else {
@@ -960,7 +962,7 @@ void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setAngle",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValLine physValLine = m_physValLine;
+    CPhysValLine physValLine = m_physValLineCurr;
     physValLine.setAngle(i_physValAngle);
     setLine(physValLine);
 }
@@ -971,7 +973,7 @@ void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
 double CGraphObjLine::getAngleInDegrees() const
 //------------------------------------------------------------------------------
 {
-    return m_physValLine.angle().getVal(Units.Angle.Degree);
+    return m_physValLineCurr.angle().getVal(Units.Angle.Degree);
 }
 
 //------------------------------------------------------------------------------
@@ -983,7 +985,7 @@ double CGraphObjLine::getAngleInDegrees() const
 CPhysVal CGraphObjLine::getAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_physValLine.angle().getVal(i_unit), i_unit, 0.1);
+    return CPhysVal(m_physValLineCurr.angle().getVal(i_unit), i_unit, 0.1);
 }
 
 /*==============================================================================
@@ -1006,29 +1008,27 @@ public: // must overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Returns the bounding rectangle of the object.
 
-    This method is used internally to calculate the bounding rectangle which need
-    to be updated for the drawing scene.
+    This method is used by a group to resize its children.
 
     This method is also used by other objects (like the drawing scene on grouping objects)
     to calculate the extent of rectangles with or without labels, selection points or
     things which have to be considered when repainting the dirty rectangle on the
     drawing scene.
 
-    @param [in] i_bOnlyRealShapePoints
-        If set to true only the real shape points are taken account when calculating
-        the bounding rectangle.
-        If set to false also labels and selection points but also the pen width
-        and the line end arrow heads are taken into account.
+    @param [in] i_version
+        Transform (default) will return the current bounding rectangle.
+        For Origin the original line values before adding the object as a child
+        to a group is returned.
 */
-QRectF CGraphObjLine::getBoundingRect(bool i_bOnlyRealShapePoints) const
+QRectF CGraphObjLine::getBoundingRect(ECoordinatesVersion i_version) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "OnlyRealShapePoints: " + bool2Str(i_bOnlyRealShapePoints);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumCoordinatesVersion(i_version).toString();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "getBoundingRect",
@@ -1037,37 +1037,84 @@ QRectF CGraphObjLine::getBoundingRect(bool i_bOnlyRealShapePoints) const
     // Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
     // into account. So we cannot call this method to get the real bounding rectangle of
     // the line if only the real shape points should be considered.
-    QRectF rctBounding;
-    if (i_bOnlyRealShapePoints) {
-        QLineF lineF = line();
-        rctBounding = ZS::Draw::boundingRect(lineF);
+    QLineF lineF;
+    if (i_version == ECoordinatesVersion::Transformed) {
+        lineF = line();
     }
     else {
-        rctBounding = QGraphicsLineItem::boundingRect();
-        for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
-            CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
-            if (pGraphObjSelPt != nullptr) {
-                QRectF rctSelPt = pGraphObjSelPt->boundingRect();
-                QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
-                rctBounding |= plgSelPt.boundingRect();
-            }
-        }
-        if (m_plgP1ArrowHead.size() > 0) {
-            rctBounding |= m_plgP1ArrowHead.boundingRect();
-        }
-        if (m_plgP2ArrowHead.size() > 0) {
-            rctBounding |= m_plgP2ArrowHead.boundingRect();
-        }
-        rctBounding = QRectF(
-            rctBounding.left() - m_drawSettings.getPenWidth()/2,
-            rctBounding.top() - m_drawSettings.getPenWidth()/2,
-            rctBounding.width() + m_drawSettings.getPenWidth(),
-            rctBounding.height() + m_drawSettings.getPenWidth() );
+        // The original coordinates in m_physValLineCurr are relative to the
+        // top left corner of the parent's bounding rectangle.
+        lineF = m_physValLineOrig.toQLineF();
+        // The coordinates must be mapped to local coordinates.
+        lineF = QLineF(mapFromParent(lineF.p1()), mapFromParent(lineF.p2()));
     }
+    QRectF rctBounding = ZS::Draw::boundingRect(lineF);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Pure virtual method which must be overridden by derived classes to
+           set the bounding rectangle of the object.
+
+    The bounding rectangle coordinates must be passed in local coordinates.
+
+    This method is used by a group to resize its children.
+
+    P1 and P2 should not be swapped when invoking this method.
+
+    If P1 is right of P2, P1 should stay right of P1.
+    If P1 is below of P2, P1 should stay below of P1.
+
+    @param [in] i_rectBounding
+        New bounding rectangle of the object.
+*/
+void CGraphObjLine::setBoundingRect(const QRectF& i_rectBounding)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qRect2Str(i_rectBounding);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setBoundingRect",
+        /* strAddInfo   */ strMthInArgs );
+
+    double fXL = i_rectBounding.left();
+    double fYT = i_rectBounding.top();
+    double fXR = i_rectBounding.right();
+    double fYB = i_rectBounding.bottom();
+
+    QLineF lineF = line();
+    QPointF pt1 = lineF.p1();
+    QPointF pt2 = lineF.p2();
+
+    if (pt1.x() < pt2.x()) {
+        pt1.setX(i_rectBounding.left());
+        pt2.setX(i_rectBounding.right());
+    }
+    else {
+        pt1.setX(i_rectBounding.right());
+        pt2.setX(i_rectBounding.left());
+    }
+    if (lineF.y1() < lineF.y2()) {
+        pt1.setY(i_rectBounding.top());
+        pt2.setY(i_rectBounding.bottom());
+    }
+    else {
+        pt1.setY(i_rectBounding.bottom());
+        pt2.setY(i_rectBounding.top());
+    }
+
+    // The coordinates of the bounding rectangle are passed in local coordinates.
+    QGraphicsLineItem_setLine(QLineF(pt1, pt2));
+    //CPhysValLine physValLine(pt1, pt2, m_physValLineCurr.resolution(), m_physValLineCurr.unit());
+    //setLine(physValLine);
 }
 
 /*==============================================================================
@@ -1395,7 +1442,39 @@ public: // must overridables of base class QGraphicsItem
 QRectF CGraphObjLine::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    return getBoundingRect(false);
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "boundingRect",
+        /* strAddInfo   */ "" );
+
+    // Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
+    // into account. So we cannot call this method to get the real bounding rectangle of
+    // the line if only the real shape points should be considered.
+    QRectF rctBounding = QGraphicsLineItem::boundingRect();
+    for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsPolygon) {
+        if (pGraphObjSelPt != nullptr) {
+            QRectF rctSelPt = pGraphObjSelPt->boundingRect();
+            QPolygonF plgSelPt = mapFromItem(pGraphObjSelPt, rctSelPt);
+            rctBounding |= plgSelPt.boundingRect();
+        }
+    }
+    if (m_plgP1ArrowHead.size() > 0) {
+        rctBounding |= m_plgP1ArrowHead.boundingRect();
+    }
+    if (m_plgP2ArrowHead.size() > 0) {
+        rctBounding |= m_plgP2ArrowHead.boundingRect();
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - m_drawSettings.getPenWidth()/2,
+        rctBounding.top() - m_drawSettings.getPenWidth()/2,
+        rctBounding.width() + m_drawSettings.getPenWidth(),
+        rctBounding.height() + m_drawSettings.getPenWidth() );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
 }
 
 //------------------------------------------------------------------------------
@@ -1452,8 +1531,8 @@ void CGraphObjLine::paint(
 
     QLineF lineF = line();
 
-    if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || isSelected())) {
-        if (m_bIsHit || isSelected()) {
+    if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || m_bIsHighlighted || isSelected())) {
+        if (m_bIsHit || m_bIsHighlighted || isSelected()) {
             QPainterPath outline;
             outline.moveTo(lineF.p1());
             outline.lineTo(lineF.p2());
@@ -1836,7 +1915,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // of the parents bounding rectangle.
             CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(parentItem());
             if (pGraphObjGroup != nullptr) {
-                QRectF rectFParent = pGraphObjGroup->getBoundingRect(true);
+                QRectF rectFParent = pGraphObjGroup->getBoundingRect();
                 p1 -= rectFParent.topLeft();
                 p2 -= rectFParent.topLeft();
             }
@@ -1921,9 +2000,9 @@ void CGraphObjLine::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
         /* strMethod    */ "onDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if (m_physValLine.unit() != i_drawingSize.unit()) {
+    if (m_physValLineCurr.unit() != i_drawingSize.unit()) {
         m_bForceConversionToSceneCoors = true;
-        setLine(m_pDrawingScene->convert(m_physValLine, i_drawingSize.unit()));
+        setLine(m_pDrawingScene->convert(m_physValLineCurr, i_drawingSize.unit()));
         m_bForceConversionToSceneCoors = false;
         emit_geometryValuesUnitChanged();
     }
@@ -1935,7 +2014,7 @@ void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pSelectionPoint->keyInTree();
+        strMthInArgs = i_pSelectionPoint->path();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2110,11 +2189,19 @@ void CGraphObjLine::setPhysValLine(const CPhysValLine& i_physValLine)
         /* strAddInfo   */ strMthInArgs );
 
     if (m_pDrawingScene->drawingSize().unit() == i_physValLine.unit()) {
-        m_physValLine = i_physValLine;
+        m_physValLineCurr = i_physValLine;
     }
     else {
         CPhysValLine physValLine = m_pDrawingScene->convert(i_physValLine);
-        m_physValLine = i_physValLine;
+        m_physValLineCurr = i_physValLine;
+    }
+
+    // The first "setLine" call whose passed coordinates are not zero
+    // are taken as the original values. As long as there is are valid
+    // original coordinates childrens cannot be resized by groups.
+    // See also comment at CGraphObjGroup::applyGeometryChangeToChildrens.
+    if (!m_physValLineOrig.isValid()) {
+        m_physValLineOrig = m_physValLineCurr;
     }
 }
 
@@ -2171,12 +2258,12 @@ void CGraphObjLine::tracePositionInfo(
             QPointF ptPos = pGraphicsItem->pos();
             QPointF ptScenePos = pGraphicsItem->scenePos();
             QLineF lineF = line();
-            QRectF rectBounding = getBoundingRect(true);
+            QRectF rectBounding = getBoundingRect();
             QPointF ptCenterPos = rectBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "PhysValLine {" + m_physValLine.toString() + "}" +
+            strRuntimeInfo += "PhysValLine {" + m_physValLineCurr.toString() + "}" +
                 ", Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}" +
                 ", Line {" + qLine2Str(lineF) + "}" +
                 ", BoundingRect {" + qRect2Str(rectBounding) + "}" +
@@ -2188,7 +2275,7 @@ void CGraphObjLine::tracePositionInfo(
             if (pGraphicsItemParent != nullptr && pGraphObjGroup != nullptr) {
                 QPointF ptPosParent = pGraphicsItemParent->pos();
                 QPointF ptScenePosParent = pGraphicsItemParent->scenePos();
-                QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect(true);
+                QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect();
                 QPointF ptCenterPosParent = rectBoundingParent.center();
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

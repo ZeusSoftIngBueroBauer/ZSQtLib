@@ -213,7 +213,7 @@ CModelPhysUnitsGrp::CModelPhysUnitsGrp(QObject* i_pObjParent) :
 
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
     CMethodTracer mthTracer(
@@ -287,7 +287,7 @@ void CModelPhysUnitsGrp::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree 
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strKeyInTree;
     }

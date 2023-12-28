@@ -835,15 +835,15 @@ namespace Draw {
 enum class EAlignmentRef
 //==============================================================================
 {
-    None      = 0,
-    Left      = 1,
-    HCenter   = 2,
-    Right     = 3,
-    Top       = 4,
-    VCenter   = 5,
-    Bottom    = 6,
-    Width     = 7,
-    Height    = 8
+    None    = 0,
+    Left    = 1,
+    HCenter = 2,
+    Right   = 3,
+    Top     = 4,
+    VCenter = 5,
+    Bottom  = 6,
+    Width   = 7,
+    Height  = 8
 };
 } }
 

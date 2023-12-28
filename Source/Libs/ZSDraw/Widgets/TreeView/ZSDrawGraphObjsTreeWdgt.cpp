@@ -135,7 +135,7 @@ CWdgtGraphObjsTree::CWdgtGraphObjsTree(
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_pDrawingView->objectName();
     }
@@ -337,7 +337,7 @@ public: // instance methods
 //{
 //    QString strMthInArgs;
 //
-//    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
 //    {
 //        strMthInArgs = bool2Str(i_bExcludeLeaves);
 //    }
@@ -368,7 +368,7 @@ void CWdgtGraphObjsTree::onBtnViewModeClicked( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -392,7 +392,7 @@ void CWdgtGraphObjsTree::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( boo
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -414,7 +414,7 @@ void CWdgtGraphObjsTree::onBtnTreeViewExpandAllClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -437,7 +437,7 @@ void CWdgtGraphObjsTree::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -457,7 +457,7 @@ void CWdgtGraphObjsTree::onBtnSortOrderClicked( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -497,7 +497,7 @@ void CWdgtGraphObjsTree::onTreeViewSortOrderChanged( EIdxTreeSortOrder i_sortOrd
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
@@ -520,7 +520,7 @@ void CWdgtGraphObjsTree::onTreeViewCurrentRowChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Curr {" + CModelIdxTree::modelIdx2Str(i_modelIdxCurr) + "}";
         strMthInArgs += ", Prev {" + CModelIdxTree::modelIdx2Str(i_modelIdxPrev) + "}";
@@ -545,7 +545,7 @@ void CWdgtGraphObjsTree::emit_currentRowChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Curr {" + CModelIdxTree::modelIdx2Str(i_modelIdxCurr) + "}";
         strMthInArgs += ", Prev {" + CModelIdxTree::modelIdx2Str(i_modelIdxPrev) + "}";

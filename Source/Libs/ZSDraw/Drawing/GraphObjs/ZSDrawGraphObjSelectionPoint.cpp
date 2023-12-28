@@ -497,26 +497,24 @@ public: // must overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Returns the bounding rectangle of the object.
 
-    This method is used internally to calculate the bounding rectangle which need
-    to be updated for the drawing scene.
+    This method is used by a group to resize its children.
 
     This method is also used by other objects (like the drawing scene on grouping objects)
     to calculate the extent of rectangles with or without labels, selection points or
     things which have to be considered when repainting the dirty rectangle on the
     drawing scene.
 
-    @param [in] i_bOnlyRealShapePoints
-        If set to true only the real shape points are taken account when calculating
-        the bounding rectangle.
-        If set to false also labels and selection points but also the pen width
-        and the line end arrow heads are taken into account.
+    @param [in] i_version
+        Transform (default) will return the current bounding rectangle.
+        For Origin the original line values before adding the object as a child
+        to a group is returned.
 */
-QRectF CGraphObjSelectionPoint::getBoundingRect(bool i_bOnlyRealShapePoints) const
+QRectF CGraphObjSelectionPoint::getBoundingRect(ECoordinatesVersion i_version) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "OnlyRealShapePoints: " + bool2Str(i_bOnlyRealShapePoints);
+        strMthInArgs = CEnumCoordinatesVersion(i_version).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
@@ -528,18 +526,7 @@ QRectF CGraphObjSelectionPoint::getBoundingRect(bool i_bOnlyRealShapePoints) con
     // Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
     // into account. So we cannot call this method to get the real bounding rectangle of
     // the line if only the real shape points should be considered.
-    QRectF rctBounding;
-    if (i_bOnlyRealShapePoints) {
-        rctBounding = rect();
-    }
-    else {
-        rctBounding = QGraphicsEllipseItem::boundingRect();
-        rctBounding = QRectF(
-            rctBounding.left() - m_drawSettings.getPenWidth()/2,
-            rctBounding.top() - m_drawSettings.getPenWidth()/2,
-            rctBounding.width() + m_drawSettings.getPenWidth(),
-            rctBounding.height() + m_drawSettings.getPenWidth() );
-    }
+    QRectF rctBounding = rect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -732,7 +719,23 @@ public: // overridables of base class QGraphicsItem
 QRectF CGraphObjSelectionPoint::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    return getBoundingRect(false);
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "boundingRect",
+        /* strAddInfo   */ "" );
+
+    QRectF rctBounding = QGraphicsEllipseItem::boundingRect();
+    rctBounding = QRectF(
+        rctBounding.left() - m_drawSettings.getPenWidth()/2,
+        rctBounding.top() - m_drawSettings.getPenWidth()/2,
+        rctBounding.width() + m_drawSettings.getPenWidth(),
+        rctBounding.height() + m_drawSettings.getPenWidth() );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
 }
 
 //------------------------------------------------------------------------------

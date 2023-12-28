@@ -817,6 +817,7 @@ CGraphObj::CGraphObj(
     m_physValSizeFixed(),
     m_arAlignments(),
     m_bIsHit(false),
+    m_bIsHighlighted(false),
     m_editMode(EEditMode::None),
     //m_editResizeMode(EEditResizeMode::None),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
@@ -1043,6 +1044,7 @@ CGraphObj::~CGraphObj()
     //m_physValSizeFixed;
     //m_arAlignments;
     m_bIsHit = false;
+    m_bIsHighlighted = false;
     m_editMode = static_cast<EEditMode>(0);
     //m_editResizeMode = static_cast<EEditResizeMode>(0);
     //m_arfZValues.clear();
@@ -3193,7 +3195,7 @@ SGraphObjAlignment CGraphObj::getAlignment( int i_idx ) const
 //------------------------------------------------------------------------------
 {
     if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
     }
     return m_arAlignments[i_idx];
 }
@@ -3214,7 +3216,7 @@ void CGraphObj::setAlignment( int i_idx, const SGraphObjAlignment& i_alignment )
         /* strAddInfo   */ strMthInArgs );
 
     if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx));
     }
     m_arAlignments[i_idx] = i_alignment;
 
@@ -3239,7 +3241,7 @@ void CGraphObj::removeAlignment( int i_idx )
         /* strAddInfo   */ strMthInArgs );
 
     if (i_idx < 0 || i_idx >= m_arAlignments.size()) {
-        throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange, "Idx:" + QString::number(i_idx) );
     }
     m_arAlignments.removeAt(i_idx);
 
@@ -3327,8 +3329,21 @@ public: // must overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Returns the position of the item in parent coordinates. If the item has no parent,
-    its position is given in scene coordinates.
+/*! @brief Returns the position of the item in parent coordinates in the current
+           unit of the drawing scene.
+
+    For further details see getPos below.
+*/
+CPhysValPoint CGraphObj::getPos(ECoordinatesVersion i_version) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return getPos(drawingSize.unit(), i_version);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the position of the item in parent coordinates. If the item
+           has no parent, its position is given in scene coordinates.
 
     The position of the item describes its origin (local coordinate (0, 0)) in parent
     coordinates; this function returns the same as mapToParent(0, 0).
@@ -3362,10 +3377,6 @@ CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_vers
     if (pGraphicsItem == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInternalProgramError);
     }
-    if (i_version == ECoordinatesVersion::Original) {
-        // This method may only be called if overridden by derived classes.
-        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
-    }
     QPointF ptPos_px = pGraphicsItem->pos();
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValPoint physValPoint(ptPos_px, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
@@ -3373,11 +3384,48 @@ CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_vers
     return physValPoint;
 }
 
-/*------------------------------------------------------------------------------
-void CGraphObj::setWidth( const CPhysVal& i_physValWidth )
-------------------------------------------------------------------------------*/
-
 ////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived class to set
+//           the width of the object.
+//
+//    This method is used by groups to resize their children.
+//    How the width is interpreted depends on the type of object.
+//    For lines for example width is interpreted as "dX".
+//
+//    @param [in] i_physValWidth
+//        New width of the object.
+//*/
+//void CGraphObj::setWidth( const CPhysVal& i_physValWidth )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValWidth.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::setWidth",
+//        /* strAddInfo   */ strMthInArgs );
+//#pragma message(__TODO__"Pure virtual")
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem == nullptr) {
+//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived class to
+//           return the width of the object.
+//
+//    This method is used by groups to resize their children.
+//    How the width is interpreted depends on the type of object.
+//    For lines for example width is interpreted as "dX".
+//
+//    @return Width of the object.
+//*/
 //CPhysVal CGraphObj::getWidth( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 ////------------------------------------------------------------------------------
 //{
@@ -3398,12 +3446,49 @@ void CGraphObj::setWidth( const CPhysVal& i_physValWidth )
 //    physValWidth.convertValue(i_unit);
 //    return physValWidth;
 //}
-
-/*------------------------------------------------------------------------------
-void CGraphObj::setHeight( const CPhysVal& i_physValHeight )
-------------------------------------------------------------------------------*/
-
+//
 ////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived class to set
+//           the height of the object.
+//
+//    This method is used by a group to resize its children.
+//    How the height is interpreted depends on the type of object.
+//    For lines for example width is interpreted as "dY".
+//
+//    @param [in] i_physValHeight
+//        New height of the object.
+//*/
+//void CGraphObj::setHeight( const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::setHeight",
+//        /* strAddInfo   */ strMthInArgs );
+//#pragma message(__TODO__"Pure virtual")
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem == nullptr) {
+//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived class to
+//           return the width of the object.
+//
+//    This method is used by groups to resize their children.
+//    How the width is interpreted depends on the type of object.
+//    For lines for example height is interpreted as "dY".
+//
+//    @return Height of the object.
+//*/
 //CPhysVal CGraphObj::getHeight( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 ////------------------------------------------------------------------------------
 //{
@@ -3424,16 +3509,83 @@ void CGraphObj::setHeight( const CPhysVal& i_physValHeight )
 //    physValHeight.convertValue(i_unit);
 //    return physValHeight;
 //}
-
-/*------------------------------------------------------------------------------
-void CGraphObj::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
-------------------------------------------------------------------------------*/
-
-/*------------------------------------------------------------------------------
-void CGraphObj::setSize( const CPhysValSize& i_physValSize )
-------------------------------------------------------------------------------*/
-
+//
 ////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived class to set
+//           the size in width and height of the object.
+//
+//    This method is used by a group to resize its children.
+//    How the size is interpreted depends on the type of object.
+//    For lines for example size is interpreted as "dX/dY".
+//
+//    @param [in] i_physValWidth
+//        New width of the object.
+//    @param [in] i_physValHeight
+//        New height of the object.
+//*/
+//void CGraphObj::setSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = "Width: " + i_physValWidth.toString() + ", Height: " + i_physValHeight.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::setSize",
+//        /* strAddInfo   */ strMthInArgs );
+//#pragma message(__TODO__"Pure virtual")
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem == nullptr) {
+//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived class to set
+//           the size in width and height of the object.
+//
+//    This method is used by a group to resize its children.
+//    How the size is interpreted depends on the type of object.
+//    For lines for example size is interpreted as "dX/dY".
+//
+//    @param [in] i_physValSize
+//        New size of the object.
+//*/
+//void CGraphObj::setSize( const CPhysValSize& i_physValSize )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_physValSize.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::setSize",
+//        /* strAddInfo   */ strMthInArgs );
+//#pragma message(__TODO__"Pure virtual")
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+//    if (pGraphicsItem == nullptr) {
+//        throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived class to
+//           return the size of the object.
+//
+//    This method is used by groups to resize their children.
+//    How the size is interpreted depends on the type of object.
+//    For lines for example size is interpreted as "dX/dY".
+//
+//    @return Size of the object.
+//*/
 //CPhysValSize CGraphObj::getSize( const CUnit& i_unit, ECoordinatesVersion i_version ) const
 ////------------------------------------------------------------------------------
 //{
@@ -3464,29 +3616,27 @@ public: // must overridables
 /*! @brief Pure virtual method which must be overridden by derived classes to
            return the bounding rectangle of the object.
 
-    This method is used internally to calculate the bounding rectangle which need
-    to be updated for the drawing scene.
+    This method is used by a group to resize its children.
 
     This method is also used by other objects (like the drawing scene on grouping objects)
     to calculate the extent of rectangles with or without labels, selection points or
     things which have to be considered when repainting the dirty rectangle on the
     drawing scene.
 
-    @param [in] i_bOnlyRealShapePoints
-        If set to true only the real shape points are taken account when calculating
-        the bounding rectangle.
-        If set to false also labels and selection points but also the pen width
-        is taken into account.
+    @param [in] i_version
+        Transform (default) will return the current bounding rectangle.
+        For Origin the original line values before adding the object as a child
+        to a group is returned.
 */
-QRectF CGraphObj::getBoundingRect(bool i_bOnlyRealShapePoints) const
+QRectF CGraphObj::getBoundingRect(ECoordinatesVersion i_version) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "OnlyRealShapePoints: " + bool2Str(i_bOnlyRealShapePoints);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumCoordinatesVersion(i_version).toString();
     }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "getBoundingRect",
@@ -3500,6 +3650,33 @@ QRectF CGraphObj::getBoundingRect(bool i_bOnlyRealShapePoints) const
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Pure virtual method which must be overridden by derived classes to
+           set the bounding rectangle of the object.
+
+    This method is used by a group to resize its children.
+
+    @param [in] i_rectBounding
+        New bounding rectangle of the object.
+*/
+void CGraphObj::setBoundingRect(const QRectF& i_rectBounding)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qRect2Str(i_rectBounding);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "setBoundingRect",
+        /* strAddInfo   */ strMthInArgs );
+
+#pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 }
 
 /*==============================================================================
@@ -3795,6 +3972,37 @@ bool CGraphObj::isHit() const
 //    return bIsHit;
 //}
 
+//------------------------------------------------------------------------------
+void CGraphObj::setIsHighlighted(bool i_bIsHighlighted)
+//-----------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bIsHighlighted);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::setIsHighlighted",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (m_bIsHighlighted != i_bIsHighlighted) {
+        m_bIsHighlighted = i_bIsHighlighted;
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItemThis != nullptr) {
+            pGraphicsItemThis->update();
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+bool CGraphObj::isHighlighted() const
+//------------------------------------------------------------------------------
+{
+    return m_bIsHighlighted;
+}
+
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
@@ -4022,7 +4230,7 @@ QPointF CGraphObj::getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
-    QRectF rectBounding = getBoundingRect(true);
+    QRectF rectBounding = getBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, i_selPt);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
@@ -4042,7 +4250,7 @@ QPointF CGraphObj::getSelectionPointCoorsInSceneCoors( int i_idxPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
-    QRectF rectBounding = getBoundingRect(true);
+    QRectF rectBounding = getBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, ESelectionPoint::Center);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
@@ -6175,7 +6383,7 @@ void CGraphObj::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pSelectionPoint->keyInTree();
+        strMthInArgs = i_pSelectionPoint->path();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -6637,7 +6845,7 @@ void CGraphObj::tracePositionInfo(
 
             QPointF ptPos = pGraphicsItemThis->pos();
             QPointF ptScenePos = pGraphicsItemThis->scenePos();
-            QRectF rectBounding = getBoundingRect(true);
+            QRectF rectBounding = getBoundingRect();
             QPointF ptCenterPos = rectBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -6652,7 +6860,7 @@ void CGraphObj::tracePositionInfo(
             if (pGraphicsItemParent != nullptr && pGraphObjParent != nullptr) {
                 QPointF ptPosParent = pGraphicsItemParent->pos();
                 QPointF ptScenePosParent = pGraphicsItemParent->scenePos();
-                QRectF rectBoundingParent = pGraphObjParent->getBoundingRect(true);
+                QRectF rectBoundingParent = pGraphObjParent->getBoundingRect();
                 QPointF ptCenterPosParent = rectBoundingParent.center();
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -6713,7 +6921,7 @@ void CGraphObj::traceGraphObjStates(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
-        strRuntimeInfo += "IsHit: " + bool2Str(m_bIsHit);
+        strRuntimeInfo += "IsHit: " + bool2Str(m_bIsHit) + ", IsHighlighted: " + bool2Str(m_bIsHighlighted);
         i_mthTracer.trace(strRuntimeInfo);
 
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
@@ -6721,66 +6929,5 @@ void CGraphObj::traceGraphObjStates(
         else strRuntimeInfo = "   ";
         strRuntimeInfo += "ItemChangeUpdateOriginalCoorsBlockedCounter: " + QString::number(m_iItemChangeUpdateOriginalCoorsBlockedCounter);
         i_mthTracer.trace(strRuntimeInfo);
-
-        //if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-        //else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        //else strRuntimeInfo = "";
-        //strRuntimeInfo +=
-        //    "  IsHit: " + bool2Str(m_bIsHit) +
-        //    ", EditMode: " + m_editMode.toString() +
-        //    ", ResizeMode: " + m_editResizeMode.toString();
-        //i_mthTracer.trace(strRuntimeInfo);
-
-        //if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-        //else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        //else strRuntimeInfo = "";
-        //strRuntimeInfo +=
-        //    "  SelPtPolygon: " + QString::number(m_idxSelPtSelectedPolygon) +
-        //    ", SelPts [" + QString::number(m_arpSelPtsPolygon.size()) + "]";
-        //if (m_arpSelPtsPolygon.size() > 0 && i_detailLevel > ELogDetailLevel::Debug) {
-        //    strRuntimeInfo += "(";
-        //    for (int idx = 0; idx < m_arpSelPtsPolygon.size(); ++idx) {
-        //        if (idx > 0) strRuntimeInfo += ", ";
-        //        strRuntimeInfo += "[" + QString::number(idx) + "] {";
-        //        if (m_arpSelPtsPolygon[idx] == nullptr) {
-        //            strRuntimeInfo +=  "null}";
-        //        } else {
-        //            strRuntimeInfo += point2Str(m_arpSelPtsPolygon[idx]->pos()) + "}";
-        //        }
-        //    }
-        //    strRuntimeInfo += ")";
-        //}
-        //i_mthTracer.trace(strRuntimeInfo);
-
-        //if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-        //else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        //else strRuntimeInfo = "";
-        //strRuntimeInfo +=
-        //    "  SelPtBoundingRect: " + QString(m_selPtSelectedBoundingRect.isValid() ? m_selPtSelectedBoundingRect.toString() : "None") +
-        //    ", SelPts [" + QString::number(m_arpSelPtsBoundingRect.size()) + "]";
-        //if (m_arpSelPtsBoundingRect.size() > 0 && i_detailLevel > ELogDetailLevel::Debug) {
-        //    strRuntimeInfo += "(";
-        //    for (int idx = 0; idx < m_arpSelPtsBoundingRect.size(); ++idx) {
-        //        if (idx > 0) strRuntimeInfo += ", ";
-        //        strRuntimeInfo += "[" + QString::number(idx) + "] {";
-        //        if (m_arpSelPtsBoundingRect[idx] == nullptr) {
-        //            strRuntimeInfo +=  "null}";
-        //        } else {
-        //            strRuntimeInfo += point2Str(m_arpSelPtsBoundingRect[idx]->pos()) + "}";
-        //        }
-        //    }
-        //    strRuntimeInfo += ")";
-        //}
-        //i_mthTracer.trace(strRuntimeInfo);
-
-        //if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-        //else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-        //else strRuntimeInfo = "";
-        //strRuntimeInfo += QString("MousePressEvents: ") +
-        //    "  ScenePos {" + qPoint2Str(m_ptScenePosOnMousePressEvent) + "}" +
-        //    ", MouseEvScenePos {" + qPoint2Str(m_ptMouseEvScenePosOnMousePressEvent) + "}" +
-        //    ", Rect {" + qRect2Str(m_rctOnMousePressEvent) + "}" +
-        //    ", RotPos {" + qPoint2Str(m_ptRotOriginOnMousePressEvent) + "}";
-        //i_mthTracer.trace(strRuntimeInfo);
     }
 }

@@ -125,6 +125,10 @@ public: // instance methods
     void setSize(const CPhysValSize& i_physValSize);
     CPhysValSize getSize() const;
     CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit) const;
+    void moveCenter(const QPointF& i_pt);
+    void moveCenter(const CPhysValPoint& i_physValPoint);
+    CPhysValPoint getCenter() const;
+    CPhysValPoint getCenter(const ZS::PhysVal::CUnit& i_unit) const;
     void setTop(double i_fTop);
     void setTop(const ZS::PhysVal::CPhysVal& i_physValTop);
     ZS::PhysVal::CPhysVal getTop() const;
@@ -159,9 +163,7 @@ public: // instance methods
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const override;
-protected: // overridables
-    virtual void applyGeometryChangeToChildrens();
+    virtual QRectF getBoundingRect(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 public: // must overridables of base class QGraphicsItem
@@ -190,6 +192,9 @@ protected: // auxiliary instance methods
     QRectF rect() const;
 protected: // auxiliary instance methods (method tracing)
     void setPhysValRect(const CPhysValRect& i_physValRect);
+    void applyGeometryChangeToChildrens();
+    QRectF getScaledChildRect(CGraphObj* i_pGraphObjChild) const;
+    QRectF getAlignedChildRect(CGraphObj* i_pGraphObjChild) const;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
@@ -197,12 +202,27 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
-    /*!< The original, untransformed line coordinates with unit.
-         The coordinates are relative to the top left corner of the
-         parent item's bounding rectange (real shape points only).
-         If the item does not have another graphical object as a 
-         parent, the coordinates are in scene coordinates. */
-    CPhysValRect m_physValRect;
+    /*!< The original, untransformed group coordinates with unit.
+         The coordinates are relative to the top left corner of the parent item's
+         bounding rectange (real shape points only). If the item does not have another
+         graphical object as a  parent, the coordinates are in scene coordinates.
+         If a group is going to be resized at any time the group's width or height may
+         become zero. Once the width or height of the group becomes zero resizing the
+         children to fit the new groups size would no longer be possible.
+         For this the original size of the group must be stored and the current
+         scale factor to resize the children is calculated using the current and
+         the original size.
+         The first "setRect" call whose passed rectangle width and height is not zero
+         is taken as the original group size.
+         When the group is added to or removed from a another group the current
+         coordinates are also taken over as the original coordinates.
+         As long as there is no valid original rectangle childrens cannot be resized. */
+    CPhysValRect m_physValRectOrig;
+    /*!< The current, untransformed group coordinates with unit.
+         The coordinates are relative to the top left corner of the parent item's
+         bounding rectange (real shape points only). If the item does not have another
+         graphical object as a  parent, the coordinates are in scene coordinates. */
+    CPhysValRect m_physValRectCurr;
 
 }; // class CGraphObjGroup
 

@@ -248,7 +248,7 @@ CWindowsStyle::CWindowsStyle(
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTreeStyles == nullptr ? "nullptr" : i_pIdxTreeStyles->objectName());
     }

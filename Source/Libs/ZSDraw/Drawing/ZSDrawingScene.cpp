@@ -4994,7 +4994,7 @@ QRectF CDrawingScene::getBoundingRectangle(const QList<QGraphicsItem*>& i_arpGra
         }
         if (!pGraphObj->isConnectionLine() && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
             QPointF ptScenePosItem = pGraphicsItem->scenePos();
-            QRectF rectBounding = pGraphObj->getBoundingRect(true);
+            QRectF rectBounding = pGraphObj->getBoundingRect();
             QRectF rectSceneItem = pGraphicsItem->mapToScene(rectBounding).boundingRect();
             //QSizeF sizItem = rectBoundingGraphObj.size();
             //QRectF rectSceneItem = QRectF(ptScenePosItem, sizItem);
@@ -5618,7 +5618,7 @@ void CDrawingScene::emit_modeChanged(const ZS::System::CEnumMode& i_eMode)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_eMode.toString();
     }
     CMethodTracer mthTracer(

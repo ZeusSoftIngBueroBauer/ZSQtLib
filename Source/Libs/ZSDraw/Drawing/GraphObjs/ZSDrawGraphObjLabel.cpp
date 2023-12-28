@@ -530,7 +530,7 @@ public: // overridables of base class CGraphObj
 QString CGraphObjLabel::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
-    QRectF rct = getBoundingRect(true);
+    QRectF rct = getBoundingRect();
     QPolygonF plgScene = mapToScene(rct);
     return polygon2Str(plgScene);
 }
@@ -724,26 +724,24 @@ public: // must overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Returns the bounding rectangle of the object.
 
-    This method is used internally to calculate the bounding rectangle which need
-    to be updated for the drawing scene.
+    This method is used by a group to resize its children.
 
     This method is also used by other objects (like the drawing scene on grouping objects)
     to calculate the extent of rectangles with or without labels, selection points or
     things which have to be considered when repainting the dirty rectangle on the
     drawing scene.
 
-    @param [in] i_bOnlyRealShapePoints
-        If set to true only the real shape points are taken account when calculating
-        the bounding rectangle.
-        If set to false also labels and selection points but also the pen width
-        and the line end arrow heads are taken into account.
+    @param [in] i_version
+        Transform (default) will return the current bounding rectangle.
+        For Origin the original line values before adding the object as a child
+        to a group is returned.
 */
-QRectF CGraphObjLabel::getBoundingRect(bool i_bOnlyRealShapePoints) const
+QRectF CGraphObjLabel::getBoundingRect(ECoordinatesVersion i_version) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "OnlyRealShapePoints: " + bool2Str(i_bOnlyRealShapePoints);
+        strMthInArgs = CEnumCoordinatesVersion(i_version).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
@@ -753,21 +751,6 @@ QRectF CGraphObjLabel::getBoundingRect(bool i_bOnlyRealShapePoints) const
         /* strAddInfo   */ strMthInArgs );
 
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
-    if (!i_bOnlyRealShapePoints) {
-        rctBounding = QGraphicsSimpleTextItem::boundingRect();
-        // If the object is hit and the anchor line is visible also this area need to be updated.
-        if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
-            for (const QLineF& anchorLine : m_anchorLines) {
-                QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
-                rctBounding |= rctBoundingAnchorLine;
-            }
-        }
-        rctBounding = QRectF(
-            rctBounding.left() - m_drawSettings.getPenWidth()/2,
-            rctBounding.top() - m_drawSettings.getPenWidth()/2,
-            rctBounding.width() + m_drawSettings.getPenWidth(),
-            rctBounding.height() + m_drawSettings.getPenWidth() );
-    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -796,7 +779,30 @@ public: // must overridables of base class QGraphicsItem
 QRectF CGraphObjLabel::boundingRect() const
 //------------------------------------------------------------------------------
 {
-    return getBoundingRect(false);
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "boundingRect",
+        /* strAddInfo   */ "" );
+
+    QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
+    // If the object is hit and the anchor line is visible also this area need to be updated.
+    if (m_bIsHit || isSelected() || m_labelDscr.m_bShowAnchorLine) {
+        for (const QLineF& anchorLine : m_anchorLines) {
+            QRectF rctBoundingAnchorLine(anchorLine.p1(), anchorLine.p2());
+            rctBounding |= rctBoundingAnchorLine;
+        }
+    }
+    rctBounding = QRectF(
+        rctBounding.left() - m_drawSettings.getPenWidth()/2,
+        rctBounding.top() - m_drawSettings.getPenWidth()/2,
+        rctBounding.width() + m_drawSettings.getPenWidth(),
+        rctBounding.height() + m_drawSettings.getPenWidth() );
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
 }
 
 //------------------------------------------------------------------------------
@@ -848,7 +854,7 @@ void CGraphObjLabel::paint(
     i_pPainter->save();
     i_pPainter->setRenderHint(QPainter::Antialiasing);
 
-    QRectF rct = getBoundingRect(true);
+    QRectF rct = getBoundingRect();
 
     // Draw bounding rectangle in dotted line style if the label is hit by
     // mouse move (hover) or if the label is selected or if no text is assigned.
@@ -1203,7 +1209,7 @@ void CGraphObjLabel::updatePosition()
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
     // Move text item so that its center point is at the line end point of the anchor line.
-    QRectF rctBoundingThis = getBoundingRect(true);
+    QRectF rctBoundingThis = getBoundingRect();
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     setPos(anchorLineP2ScenePos);
 
@@ -1249,7 +1255,7 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
-    QRectF rctBoundingThis = getBoundingRect(true);
+    QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
 
@@ -1291,7 +1297,7 @@ void CGraphObjLabel::updateAnchorLines()
         ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
-    QRectF rctBoundingThis = getBoundingRect(true);
+    QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QLineF anchorLine(ptCenterThis, mapFromScene(ptSelScenePosParent));
 

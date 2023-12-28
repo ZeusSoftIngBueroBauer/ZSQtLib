@@ -83,7 +83,7 @@ CDelegateGraphObjsTreeView::CDelegateGraphObjsTreeView( QObject* i_pObjParent ) 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Widgets::TreeView", ClassName(), objectName());
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Parent: " + QString(i_pObjParent == nullptr ? "nullptr" : i_pObjParent->objectName());
     }
@@ -142,7 +142,7 @@ QWidget* CDelegateGraphObjsTreeView::createEditor(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -192,7 +192,7 @@ void CDelegateGraphObjsTreeView::setEditorData(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -216,7 +216,7 @@ void CDelegateGraphObjsTreeView::setModelData(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
         strMthInArgs += ", ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
@@ -271,7 +271,7 @@ void CDelegateGraphObjsTreeView::updateEditorGeometry(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -344,12 +344,9 @@ CTreeViewGraphObjs::CTreeViewGraphObjs(
         NameSpace() + "::Widgets::TreeView", ClassName() + "::Event", objectName());
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString(i_pDrawingScene == nullptr ? "nullptr" : i_pDrawingScene->objectName());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -486,20 +483,16 @@ void CTreeViewGraphObjs::setSortOrder( EIdxTreeSortOrder i_sortOrder )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "SortOrder: " + idxTreeSortOrder2Str(i_sortOrder);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setSortOrder",
         /* strMthInArgs */ strMthInArgs );
 
-    if( static_cast<int>(i_sortOrder) < 0 || i_sortOrder >= EIdxTreeSortOrder::Count )
-    {
+    if (static_cast<int>(i_sortOrder) < 0 || i_sortOrder >= EIdxTreeSortOrder::Count) {
         QString strAddErrInfo = "SortOrder: " + idxTreeSortOrder2Str(i_sortOrder);
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange, strAddErrInfo);
     }
@@ -515,35 +508,25 @@ void CTreeViewGraphObjs::setSortOrder( EIdxTreeSortOrder i_sortOrder )
     // is saved. After the model has been sorted the expanded states are recalled.
 
     QMap<QString, CModelIdxTreeEntry*> mappTreeEntries = pModel->treeEntriesMap();
-
     QStringList strlstKeysOfExpandedModelEntries;
-
     CModelIdxTreeEntry* pModelBranch;
 
-    for( auto pModelTreeEntry : mappTreeEntries )
-    {
-        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-        {
+    for (auto pModelTreeEntry : mappTreeEntries) {
+        if (pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch()) {
             pModelBranch = pModelTreeEntry;
-
-            if( pModelBranch->isExpanded() && pModel->areAllParentBranchesExpanded(pModelBranch) )
-            {
+            if (pModelBranch->isExpanded() && pModel->areAllParentBranchesExpanded(pModelBranch)) {
                 strlstKeysOfExpandedModelEntries << pModelTreeEntry->keyInTree();
             }
         }
     }
-
     pModel->setSortOrder(i_sortOrder);
 
     QModelIndex modelIdx;
-
-    for( auto strKey : strlstKeysOfExpandedModelEntries )
-    {
+    for (auto strKey : strlstKeysOfExpandedModelEntries) {
         modelIdx = pModel->index(strKey, 0);
         expand(modelIdx);
     }
-
-} // setSortOrder
+}
 
 //------------------------------------------------------------------------------
 EIdxTreeSortOrder CTreeViewGraphObjs::sortOrder() const
@@ -562,21 +545,16 @@ void CTreeViewGraphObjs::setSilentlyExecuteDeleteRequests( bool i_bExecuteSilent
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ExecuteSilently: " + bool2Str(i_bExecuteSilently);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "setSilentlyExecuteDeleteRequests",
         /* strMthInArgs */ strMthInArgs );
-
     m_bSilentlyExecuteDeleteRequests = i_bExecuteSilently;
-
-} // setSilentlyExecuteDeleteRequests
+}
 
 /*==============================================================================
 public: // overridable slots of base class QTreeView
@@ -586,43 +564,30 @@ public: // overridable slots of base class QTreeView
 void CTreeViewGraphObjs::expandAll()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "expandAll",
-        /* strMthInArgs */ strMthInArgs );
-
+        /* strMthInArgs */ "" );
     QTreeView::expandAll();
-
     QModelIndex modelIdxRoot = model()->index(0, 0, QModelIndex());
-
     //expand(modelIdxRoot);
-
     expandRecursive(modelIdxRoot);
-
-} // expandAll
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewGraphObjs::collapseAll()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "collapseAll",
-        /* strMthInArgs */ strMthInArgs );
-
+        /* strMthInArgs */ "" );
     QTreeView::collapseAll();
-
     QModelIndex modelIdxRoot = model()->index(0, 0, QModelIndex());
-
     collapseRecursive(modelIdxRoot);
-
-} // collapseAll
+}
 
 /*==============================================================================
 public: // overridables
@@ -633,12 +598,9 @@ void CTreeViewGraphObjs::expandRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -646,44 +608,31 @@ void CTreeViewGraphObjs::expandRecursive( const QModelIndex& i_modelIdx )
         /* strMthInArgs */ strMthInArgs );
 
     CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-
-    if( pModelTreeEntry != nullptr )
-    {
-        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-        {
+    if (pModelTreeEntry != nullptr) {
+        if (pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch()) {
             expand(i_modelIdx);
-
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             CModelIdxTreeEntry* pModelTreeEntryChild;
-
             QModelIndex modelIdxChild;
-
-            for( int idxEntry = 0; idxEntry < pModelBranch->count(); ++idxEntry )
-            {
+            for (int idxEntry = 0; idxEntry < pModelBranch->count(); ++idxEntry) {
                 pModelTreeEntryChild = pModelBranch->at(idxEntry);
-
-                if( pModelTreeEntryChild->isRoot() || pModelTreeEntryChild->isBranch() )
-                {
+                if (pModelTreeEntryChild->isRoot() || pModelTreeEntryChild->isBranch()) {
                     modelIdxChild = model()->index(idxEntry, 0, i_modelIdx);
                     expandRecursive(modelIdxChild);
                 }
             }
-        } // if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-    } // if( pModelTreeEntry != nullptr )
-
-} // expandRecursive
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewGraphObjs::collapseRecursive( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -691,31 +640,21 @@ void CTreeViewGraphObjs::collapseRecursive( const QModelIndex& i_modelIdx )
         /* strMthInArgs */ strMthInArgs );
 
     CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-
-    if( pModelTreeEntry != nullptr )
-    {
-        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-        {
+    if (pModelTreeEntry != nullptr) {
+        if (pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch()) {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             QModelIndex modelIdx;
-
-            for( int idxEntry = 0; idxEntry < pModelBranch->count(); ++idxEntry )
-            {
+            for (int idxEntry = 0; idxEntry < pModelBranch->count(); ++idxEntry) {
                 pModelTreeEntry = pModelBranch->at(idxEntry);
-
-                if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-                {
+                if (pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch()) {
                     modelIdx = model()->index(idxEntry, 0, i_modelIdx);
                     collapseRecursive(modelIdx);
                 }
             }
-
             collapse(i_modelIdx);
-
-        } // if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-    } // if( pModelTreeEntry != nullptr )
-
-} // collapseRecursive
+        }
+    }
+}
 
 /*==============================================================================
 public: // slots (hiding not overridable slots with same name in QTreeView)
@@ -726,12 +665,9 @@ void CTreeViewGraphObjs::expand( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -744,25 +680,19 @@ void CTreeViewGraphObjs::expand( const QModelIndex& i_modelIdx )
     // the sort order of the model.
 
     QTreeView::expand(i_modelIdx);
-
-    if( i_modelIdx.isValid() )
-    {
+    if (i_modelIdx.isValid()) {
         onExpanded(i_modelIdx);
     }
-
-} // expand
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewGraphObjs::collapse( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -775,13 +705,10 @@ void CTreeViewGraphObjs::collapse( const QModelIndex& i_modelIdx )
     // the sort order of the model.
 
     QTreeView::collapse(i_modelIdx);
-
-    if( i_modelIdx.isValid() )
-    {
+    if (i_modelIdx.isValid()) {
         onCollapsed(i_modelIdx);
     }
-
-} // collapse
+}
 
 /*==============================================================================
 protected slots:
@@ -792,52 +719,40 @@ void CTreeViewGraphObjs::onCollapsed( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onCollapsed",
         /* strMthInArgs */ strMthInArgs );
 
-    if( i_modelIdx.isValid() )
-    {
+    if (i_modelIdx.isValid()) {
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-
-        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-        {
+        if (pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch()) {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, false);
         }
-    } // if( i_modelIdx.isValid() )
-
-} // onCollapsed
+    }
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewGraphObjs::onExpanded( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "ModelIdx {" + CModelIdxTree::modelIdx2Str(i_modelIdx) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onExpanded",
         /* strMthInArgs */ strMthInArgs );
 
-    if( i_modelIdx.isValid() )
-    {
+    if (i_modelIdx.isValid()) {
         #if QT_VERSION >= 0x040000 && QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
         //resizeColumnToContents(i_modelIdx.column());
         #elif QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -845,17 +760,13 @@ void CTreeViewGraphObjs::onExpanded( const QModelIndex& i_modelIdx )
         #endif
 
         CModelIdxTree* pModelIdxTree = dynamic_cast<CModelIdxTree*>(model());
-
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(i_modelIdx.internalPointer());
-
-        if( pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch() )
-        {
+        if (pModelTreeEntry->isRoot() || pModelTreeEntry->isBranch()) {
             CModelIdxTreeEntry* pModelBranch = pModelTreeEntry;
             pModelIdxTree->setIsExpanded(pModelBranch, true);
         }
-    } // if( i_modelIdx.isValid() )
-
-} // onExpanded
+    }
+}
 
 /*==============================================================================
 protected slots:
@@ -878,7 +789,6 @@ void CTreeViewGraphObjs::onDrawingSceneSelectionChanged()
     //clearSelection();
 
     QList<QGraphicsItem*> arpSelectedItems = m_pDrawingScene->selectedItems();
-
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         QString strRuntimeInfo = "SelectedItems [" + QString::number(arpSelectedItems.size()) + "]";
         if (arpSelectedItems.size() > 0) {
@@ -925,21 +835,16 @@ bool CTreeViewGraphObjs::event( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_pTrcAdminObjEvent != nullptr && m_pTrcAdminObjEvent->areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjEvent, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Event {" + qEvent2Str(i_pEv) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "event",
         /* strMthInArgs */ strMthInArgs );
-
     return QTreeView::event(i_pEv);
-
-} // event
+}
 
 /*==============================================================================
 protected: // overridables of base class QTreeView
@@ -962,47 +867,32 @@ void CTreeViewGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
     bool bEventHandled = false;
 
     QItemSelectionModel* pSelModel = selectionModel();
-
     QModelIndex modelIdxSelected = pSelModel->currentIndex();
-
-    if( modelIdxSelected.isValid() )
-    {
+    if (modelIdxSelected.isValid()) {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdxSelected.internalPointer());
-
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-        {
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(modelIdxSelected) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
-        if( pModelTreeEntry != nullptr )
-        {
-            switch( i_pEv->key() )
-            {
-                case Qt::Key_F2: // Rename
-                {
+        if (pModelTreeEntry != nullptr) {
+            switch (i_pEv->key()) {
+                case Qt::Key_F2: { // Rename
                     // Handled by delegate.
                     break;
                 }
-                case Qt::Key_Escape: // Undo selection
-                {
+                case Qt::Key_Escape: { // Undo selection
                     // Not handled by TreeView but BranchContentView.
                     break;
                 }
-                case Qt::Key_Delete:
-                {
+                case Qt::Key_Delete: {
                     CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
-
-                    if( pGraphObj != nullptr && !pGraphObj->isRoot() )
-                    {
+                    if (pGraphObj != nullptr && !pGraphObj->isRoot()) {
                         // Selection points and labels cannot be deleted by the user
                         // but will be implicitly deleted if the item is deselected.
-                        if( !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() )
-                        {
+                        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
                             int iRet = QMessageBox::Yes;
-
-                            if( !m_bSilentlyExecuteDeleteRequests )
-                            {
+                            if (!m_bSilentlyExecuteDeleteRequests) {
                                 QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
                                 iRet = QMessageBox::question(
                                     /* pWdgtParent     */ this,
@@ -1011,37 +901,30 @@ void CTreeViewGraphObjs::keyPressEvent( QKeyEvent* i_pEv )
                                     /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
                                     /* defaultButton   */ QMessageBox::No );
                             }
-                            if( iRet == QMessageBox::Yes )
-                            {
+                            if (iRet == QMessageBox::Yes) {
                                 delete pGraphObj;
                                 pGraphObj = nullptr;
                                 pModelTreeEntry = nullptr;
                             }
-                        } // if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
-                    } // if( pGraphObj != nullptr && !pGraphObj->isRoot() )
+                        }
+                    }
                     bEventHandled = true;
                     break;
                 }
-                default:
-                {
+                default: {
                     break;
                 }
-            } // switch( i_pEv->key() )
-        } // if( pModelTreeEntry != nullptr )
-    } // if( modelIdxSelected.isValid() )
-
-    if( !bEventHandled )
-    {
-        if( i_pEv->key() != Qt::Key_F2 )
-        {
+            }
+        }
+    }
+    if (!bEventHandled) {
+        if (i_pEv->key() != Qt::Key_F2) {
             QTreeView::keyPressEvent(i_pEv);
         }
-        else
-        {
+        else {
             QTreeView::keyPressEvent(i_pEv);
         }
     }
-
 } // keyPressEvent
 
 /*==============================================================================
@@ -1213,33 +1096,26 @@ void CTreeViewGraphObjs::selectionChanged(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Selected: " + QString::number(i_selected.indexes().size());
-        if( i_selected.indexes().size() > 0 )
-        {
-            strMthInArgs += " [";
-            for( const auto& modelIdx : i_selected.indexes() )
-            {
-                if( !strMthInArgs.endsWith("[") ) strMthInArgs += ", ";
-                strMthInArgs += CModelIdxTree::modelIdx2Str(modelIdx);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Selected [" + QString::number(i_selected.indexes().size()) + "]";
+        if (i_selected.indexes().size() > 0) {
+            strMthInArgs += "(";
+            for (const auto& modelIdx : i_selected.indexes()) {
+                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                strMthInArgs += "{" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
             }
-            strMthInArgs += "]";
+            strMthInArgs += ")";
         }
-        strMthInArgs += ", Deselected: " + QString::number(i_deselected.indexes().size());
-        if( i_deselected.indexes().size() > 0 )
-        {
-            strMthInArgs += " [";
-            for( const auto& modelIdx : i_deselected.indexes() )
-            {
-                if( !strMthInArgs.endsWith("[") ) strMthInArgs += ", ";
-                strMthInArgs += CModelIdxTree::modelIdx2Str(modelIdx);
+        strMthInArgs += ", Deselected [" + QString::number(i_deselected.indexes().size()) + "]";
+        if (i_deselected.indexes().size() > 0) {
+            strMthInArgs += "(";
+            for (const auto& modelIdx : i_deselected.indexes()) {
+                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                strMthInArgs += "{" + CModelIdxTree::modelIdx2Str(modelIdx) + "}";
             }
-            strMthInArgs += "]";
+            strMthInArgs += ")";
         }
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -1249,94 +1125,58 @@ void CTreeViewGraphObjs::selectionChanged(
     // The selection contains each cell (each column).
     // We are only interested in the rows and duplicate entries will be removed.
 
-    QHash<QString, QGraphicsItem*> hshGraphicsItemsSelected;
-
-    for( const auto& modelIdx : i_selected.indexes() )
-    {
+    QHash<QString, CGraphObj*> hshpGraphObjsSelected;
+    for (const auto& modelIdx : i_selected.indexes()) {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
-
-        if( pModelTreeEntry != nullptr && !pModelTreeEntry->getIdxTreeEntry()->isAboutToBeDestroyed() )
-        {
-            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
-
-            if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
-            {
-                QGraphicsItem* pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
-
-                CGraphObj*     pGraphObj = pGraphObjSelected;
-                QGraphicsItem* pGraphicsItem = pGraphicsItemSelected;
-
+        if (pModelTreeEntry != nullptr && !pModelTreeEntry->getIdxTreeEntry()->isAboutToBeDestroyed()) {
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
+            if (pGraphObj != nullptr && !pGraphObj->isRoot()) {
                 // Selection points and labels cannot be selected but instead select their parents (if not already selected).
-                if( pGraphObj->isSelectionPoint() || pGraphObj->isLabel() )
-                {
-                    pGraphObj = pGraphObj->parentGraphObj();
+                if (pGraphObj->isSelectionPoint() || pGraphObj->isLabel()) {
                     // Selection points and labels don't have graphics item as a parent.
                     // Instead we must use the parent graph object in the index tree.
-                    pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+                    pGraphObj = pGraphObj->parentGraphObj();
                 }
-
-                if( pGraphicsItem != nullptr )
-                {
-                    if( !hshGraphicsItemsSelected.contains(pGraphObj->keyInTree()) )
-                    {
-                        hshGraphicsItemsSelected.insert(pGraphObj->keyInTree(), pGraphicsItem);
+                if (pGraphObj != nullptr) {
+                    if (!hshpGraphObjsSelected.contains(pGraphObj->keyInTree())) {
+                        hshpGraphObjsSelected.insert(pGraphObj->keyInTree(), pGraphObj);
                     }
                 }
-            } // if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
-        } // if( pModelTreeEntry != nullptr && !pModelTreeEntry->isAboutToBeDestroyed() )
-    } // for( const auto& modelIdx : i_selected.indexes() )
+            }
+        }
+    }
 
-    QHash<QString, QGraphicsItem*> hshGraphicsItemsDeselected;
-
-    for( const auto& modelIdx : i_deselected.indexes() )
-    {
+    QHash<QString, CGraphObj*> hshpGraphObjsDeselected;
+    for (const auto& modelIdx : i_deselected.indexes()) {
         CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(modelIdx.internalPointer());
-
-        if( pModelTreeEntry != nullptr && !pModelTreeEntry->getIdxTreeEntry()->isAboutToBeDestroyed() )
-        {
-            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
-
-            if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
-            {
-                QGraphicsItem* pGraphicsItemSelected = dynamic_cast<QGraphicsItem*>(pGraphObjSelected);
-
-                CGraphObj*     pGraphObj = pGraphObjSelected;
-                QGraphicsItem* pGraphicsItem = pGraphicsItemSelected;
-
+        if (pModelTreeEntry != nullptr && !pModelTreeEntry->getIdxTreeEntry()->isAboutToBeDestroyed()) {
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
+            if (pGraphObj != nullptr && !pGraphObj->isRoot()) {
                 // Selection points and labels can neither be selected nor deselected.
-                if( pGraphObj->isSelectionPoint() || pGraphObj->isLabel() )
-                {
-                    pGraphObj = pGraphObj->parentGraphObj();
+                if (pGraphObj->isSelectionPoint() || pGraphObj->isLabel()) {
                     // Selection points and labels don't have graphics item as a parent.
                     // Instead we must use the parent graph object in the index tree.
-                    pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+                    pGraphObj = pGraphObj->parentGraphObj();
                 }
-
-                if( pGraphicsItem != nullptr )
-                {
+                if (pGraphObj != nullptr) {
                     // If the tree view entry for a selection point or label is deselected it might be that
                     // the parent is still selected or has been selected by selecting one of its child
                     // selection points or labels. So we add the parent object only to the hash of items
                     // to be deselected if the item has not inserted into the hash of selected items.
-                    if( !hshGraphicsItemsSelected.contains(pGraphObj->keyInTree()) && !hshGraphicsItemsDeselected.contains(pGraphObj->keyInTree()) )
-                    {
-                        hshGraphicsItemsDeselected.insert(pGraphObj->keyInTree(), pGraphicsItem);
+                    if (!hshpGraphObjsSelected.contains(pGraphObj->keyInTree())
+                     && !hshpGraphObjsDeselected.contains(pGraphObj->keyInTree())) {
+                        hshpGraphObjsDeselected.insert(pGraphObj->keyInTree(), pGraphObj);
                     }
                 }
-            } // if( pGraphObjSelected != nullptr && !pGraphObjSelected->isRoot() )
-        } // if( pModelTreeEntry != nullptr && !pModelTreeEntry->isAboutToBeDestroyed() )
-    } // for( const auto& modelIdx : i_deselected.indexes() )
-
-    for( auto* pGraphicsItem : hshGraphicsItemsDeselected )
-    {
-        pGraphicsItem->setSelected(false);
+            }
+        }
     }
-
-    for( auto* pGraphicsItem : hshGraphicsItemsSelected )
-    {
-        pGraphicsItem->setSelected(true);
+    for (CGraphObj* pGraphObj : hshpGraphObjsDeselected) {
+        pGraphObj->setIsHighlighted(false);
     }
-
+    for (CGraphObj* pGraphObj : hshpGraphObjsSelected) {
+        pGraphObj->setIsHighlighted(true);
+    }
 } // selectionChanged
 
 /*==============================================================================
@@ -1348,51 +1188,41 @@ void CTreeViewGraphObjs::onActionGraphObjExpandTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionGraphObjExpandTriggered",
         /* strMthInArgs */ strMthInArgs );
 
-    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-    {
+    if (m_modelIdxSelectedOnMousePressEvent.isValid()) {
         expandRecursive(m_modelIdxSelectedOnMousePressEvent);
-
-        for( int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++ )
-        {
+        for (int idxClm = 0; idxClm < CModelIdxTree::EColumnCount; idxClm++) {
             resizeColumnToContents(idxClm);
         }
     }
-} // onActionGraphObjExpandTriggered
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewGraphObjs::onActionGraphObjCollapseTriggered( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onActionGraphObjCollapseTriggered",
         /* strMthInArgs */ strMthInArgs );
 
-    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-    {
+    if (m_modelIdxSelectedOnMousePressEvent.isValid()) {
         collapseRecursive(m_modelIdxSelectedOnMousePressEvent);
     }
-} // onActionGraphObjCollapseTriggered
+}
 
 //------------------------------------------------------------------------------
 void CTreeViewGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
@@ -1408,30 +1238,22 @@ void CTreeViewGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
         /* strMethod    */ "onActionGraphObjDeleteTriggered",
         /* strMthInArgs */ strMthInArgs );
 
-    if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-    {
-        if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-        {
+    if (m_modelIdxSelectedOnMousePressEvent.isValid()) {
+        if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
             strMthInArgs = "ModelIdxSelected {" + CModelIdxTree::modelIdx2Str(m_modelIdxSelectedOnMousePressEvent) + "}";
             mthTracer.trace(strMthInArgs);
         }
 
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
-
-        if( pModelTreeEntry != nullptr )
-        {
+        CModelIdxTreeEntry* pModelTreeEntry =
+            static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMousePressEvent.internalPointer());
+        if (pModelTreeEntry != nullptr) {
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pModelTreeEntry->getIdxTreeEntry());
-
-            if( pGraphObj != nullptr && !pGraphObj->isRoot() )
-            {
+            if (pGraphObj != nullptr && !pGraphObj->isRoot()) {
                 // Selection points and labels cannot be deleted by the user
                 // but will be implicitly deleted if the item is deselected.
-                if( !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() )
-                {
+                if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
                     int iRet = QMessageBox::Yes;
-
-                    if( !m_bSilentlyExecuteDeleteRequests )
-                    {
+                    if (!m_bSilentlyExecuteDeleteRequests) {
                         QString strMsg = "Do you really want to delete \"" + pModelTreeEntry->keyInTree() + "\"?";
                         iRet = QMessageBox::question(
                             /* pWdgtParent     */ this,
@@ -1440,15 +1262,13 @@ void CTreeViewGraphObjs::onActionGraphObjDeleteTriggered( bool i_bChecked )
                             /* standardButtons */ QMessageBox::Yes | QMessageBox::No,
                             /* defaultButton   */ QMessageBox::No );
                     }
-                    if( iRet == QMessageBox::Yes )
-                    {
+                    if (iRet == QMessageBox::Yes) {
                         delete pGraphObj;
                         pGraphObj = nullptr;
                         pModelTreeEntry = nullptr;
                     }
-                } // if( pGraphObj->getType() != EGraphObjTypeSelectionPoint && pGraphObj->getType() != EGraphObjTypeLabel )
-            } // if( pGraphObj != nullptr && !pGraphObj->isRoot() )
-        } // if( pModelTreeEntry != nullptr )
-    } // if( m_modelIdxSelectedOnMousePressEvent.isValid() )
-
+                }
+            }
+        }
+    }
 } // onActionGraphObjDeleteTriggered

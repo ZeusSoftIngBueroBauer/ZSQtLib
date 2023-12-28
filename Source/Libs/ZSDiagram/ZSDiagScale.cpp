@@ -425,7 +425,7 @@ CDiagScale::CDiagScale(
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", ScaleAxis: " + CEnumScaleAxis(i_scaleAxis).toString();

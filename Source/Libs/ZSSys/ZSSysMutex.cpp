@@ -162,7 +162,7 @@ void CMutex::setObjectName(const QString& i_strObjName)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strObjName;
     }
@@ -620,7 +620,7 @@ void CRecursiveMutex::setObjectName(const QString& i_strObjName)
 {
     #ifdef ZS_TRACE_MUTEXES
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strObjName;
     }

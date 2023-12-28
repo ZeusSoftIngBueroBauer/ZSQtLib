@@ -128,7 +128,7 @@ SErrResultInfo CObjFactoryWdgtCheckBox::saveGraphObj(
 
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "GraphObj:" + i_pGraphObj->NameSpace();
         strAddTrcInfo += "::" + i_pGraphObj->ClassName();

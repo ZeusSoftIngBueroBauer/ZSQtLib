@@ -504,6 +504,11 @@ CMainWindow::~CMainWindow()
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = __FILE__ + QString(":") + QString::number(__LINE__);
+        mthTracer.trace(strRuntimeInfo);
+    }
+
     CDialog::DestroyAllInstances();
 
     try {
@@ -513,7 +518,17 @@ CMainWindow::~CMainWindow()
     }
     m_pDlgTest = nullptr;
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = __FILE__ + QString(":") + QString::number(__LINE__);
+        mthTracer.trace(strRuntimeInfo);
+    }
+
     destroyDockWidgets();
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = __FILE__ + QString(":") + QString::number(__LINE__);
+        mthTracer.trace(strRuntimeInfo);
+    }
 
     try {
         delete m_pModelObjFactories;
@@ -521,6 +536,11 @@ CMainWindow::~CMainWindow()
     catch(...) {
     }
     m_pModelObjFactories = nullptr;
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = __FILE__ + QString(":") + QString::number(__LINE__);
+        mthTracer.trace(strRuntimeInfo);
+    }
 
     try {
         delete m_pObjFactoryPoint;
@@ -689,6 +709,11 @@ CMainWindow::~CMainWindow()
     catch(...) {
     }
     m_pObjFactoryElectricityVoltageSource = nullptr;
+
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = __FILE__ + QString(":") + QString::number(__LINE__);
+        mthTracer.trace(strRuntimeInfo);
+    }
 
     // Remove status bar section.
     if( m_pLblStatusBarMainWindowSize != nullptr ) {

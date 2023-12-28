@@ -153,7 +153,8 @@ public: // instance methods
     ZS::PhysVal::CPhysVal getAngle(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const override;
+    virtual QRectF getBoundingRect(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
+    virtual void setBoundingRect(const QRectF& i_rectBounding) override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
 public: // overridables of base class CGraphObj
@@ -212,11 +213,27 @@ public: // class members
     static qint64 s_iInstCount;
 protected: // instance members
     /*!< The original, untransformed line coordinates with unit.
-         The coordinates are relative to the top left corner of the
-         parent item's bounding rectange (real shape points only).
-         If the item does not have another graphical object as a 
-         parent, the coordinates are in scene coordinates. */
-    CPhysValLine m_physValLine;
+         The coordinates are relative to the top left corner of the parent item's
+         bounding rectange (real shape points only). If the item does not have another
+         graphical object as a  parent, the coordinates are in scene coordinates.
+         If a group is going to be resized at any time the group's width or height may
+         become zero. Once the width or height of the group becomes zero resizing the
+         children to fit the new groups size would no longer be possible.
+         For this the original size of the child item must be stored and the current
+         scale factor to resize the children is calculated using the current and
+         the original size.
+         As long as the item is not added to a group, the original and current
+         coordinates are equal.
+         When the item is added to or removed from a group the current coordinates
+         are taken over as the original coordinates.
+         When resizing the group many times using the original coordinates also avoids
+         rounding errors. */
+    CPhysValLine m_physValLineOrig;
+    /*!< The current, untransformed line coordinates with unit.
+         The coordinates are relative to the top left corner of the parent item's
+         bounding rectange (real shape points only). If the item does not belong as
+         a child to a group, the coordinates are in scene coordinates. */
+    CPhysValLine m_physValLineCurr;
     /*!< Polygon points for arrow head at P1 (line start) */
     QPolygonF m_plgP1ArrowHead;
     /*!< Polygon points for arrow head at P2 (line end) */

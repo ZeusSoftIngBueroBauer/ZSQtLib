@@ -465,6 +465,24 @@ public: // struct members
     It is also possible to show the geometry information for the graphical objects
     within the drawing view.
 
+    Current and Original Coordinates
+    ================================
+
+    Items may be added to groups. If the group is resized or rotated the geometry
+    of the childs must also be adjusted coorrespondingly. If a group is resized
+    to twice the size also the childrens should become twice the size. Same applies
+    when shrinking the group's bounding rectangle.
+
+    To avoid rounding errors and to be able to calculate a scale factor the
+    items must keep original and current coordinates of their shape points.
+
+    As long as an item is not added to a group the current and original coordinates
+    are equal.
+
+    If the item is added to a group the current coordinates will be taken over as
+    the original coordinates. When modifying the group only the current coordinates
+    are updated. If the item is removed again from the group the current coordinates
+    are again taken over as original coordinates.
 */
 class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
@@ -643,16 +661,18 @@ public: // overridables
     virtual void removeAlignment(int i_idx);
     virtual void clearAlignments();
 public: // must overridables
+    virtual CPhysValPoint getPos(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth) = 0;
+    //virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     //virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight) = 0;
+    //virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
     //virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight) = 0;
-    //virtual void setSize(const CPhysValSize& i_physValSize) = 0;
+    //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
+    //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // must overridables
-    virtual QRectF getBoundingRect(bool i_bOnlyRealShapePoints) const;
+    virtual QRectF getBoundingRect(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    virtual void setBoundingRect(const QRectF& i_rectBounding);
 public: // overridables
     virtual void setRotationAngleInDegree(double i_fRotAngle_deg);
     virtual double getRotationAngleInDegree(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed);
@@ -664,6 +684,8 @@ public: // overridables
     virtual void setIsHit(bool i_bIsHit);
     bool isHit() const;
     //virtual bool isHit(const QPointF& i_pt, SGraphObjHitInfo* o_pHitInfo = nullptr) const;
+    virtual void setIsHighlighted(bool i_bIsHighlighted);
+    bool isHighlighted() const;
 public: // overridables
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const;
 public: // overridables
@@ -838,6 +860,10 @@ protected: // instance members
     /*!< Flag indicating whether the graphical object is hit by the mouse cursor
          (between hoverEnterEvent and hoverLeaveEvent). */
     bool m_bIsHit;
+    /*!< Flag indicating whether the graphical object is highlighted.
+         Objects are highlighted if they are selected via the graph objects index tree.
+         A highlighted but not selected object does not show selection points. */
+    bool m_bIsHighlighted;
     /*!< Current edit mode. The current edit mode defines how the graphical object for example
          handels mouse events passed to the selection points. */
     CEnumEditMode m_editMode;

@@ -206,7 +206,7 @@ CPixmapDiagram::CPixmapDiagram(
         NameSpace(), ClassName() + "::Validate", m_strObjName);
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", UpdateType: " + diagramUpdateType2Str(i_updateType);

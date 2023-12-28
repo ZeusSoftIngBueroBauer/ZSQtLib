@@ -69,6 +69,8 @@ public: // operators
     bool operator == (const CPhysValRect& i_physValRectOther) const;
     bool operator != (const CPhysValRect& i_physValRectOther) const;
 public: // instance methods
+    bool isValid() const;
+public: // instance methods
     ZS::PhysVal::CPhysVal top() const;
     ZS::PhysVal::CPhysVal bottom() const;
     ZS::PhysVal::CPhysVal left() const;
@@ -76,6 +78,7 @@ public: // instance methods
     ZS::PhysVal::CPhysVal width() const;
     ZS::PhysVal::CPhysVal height() const;
     CPhysValSize size() const;
+    CPhysValPoint center() const;
     CPhysValPoint topLeft() const;
     CPhysValPoint topRight() const;
     CPhysValPoint bottomLeft() const;
@@ -90,6 +93,7 @@ public: // instance methods
     void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
     void setSize(const CPhysValSize& i_physValSize);
+    void moveCenter(const CPhysValPoint& i_physValPoint);
     void setTopLeft(const CPhysValPoint& i_physValPoint);
     void setTopRight(const CPhysValPoint& i_physValPoint);
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
