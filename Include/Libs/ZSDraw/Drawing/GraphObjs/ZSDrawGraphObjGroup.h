@@ -162,8 +162,11 @@ public: // instance methods
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
-    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual QRectF getBoundingRect(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
+    virtual CPhysValPoint getPos() const override;
+    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
+public: // must overridables of base class CGraphObj
+    virtual QRectF getCurrentBoundingRect() const override;
+    virtual QRectF getOriginalBoundingRectInParent() const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 public: // must overridables of base class QGraphicsItem
@@ -191,7 +194,7 @@ protected: // overridable slots of base class CGraphObj
 protected: // auxiliary instance methods
     QRectF rect() const;
 protected: // auxiliary instance methods (method tracing)
-    void setPhysValRect(const CPhysValRect& i_physValRect);
+    void setPhysValRect(const CPhysValRect& i_physValRect, const CEnumCoordinatesVersion& i_eVersion);
     void applyGeometryChangeToChildrens();
     QRectF getScaledChildRect(CGraphObj* i_pGraphObjChild) const;
     QRectF getAlignedChildRect(CGraphObj* i_pGraphObjChild) const;

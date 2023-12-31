@@ -152,9 +152,12 @@ public: // instance methods
     double getAngleInDegrees() const;
     ZS::PhysVal::CPhysVal getAngle(const ZS::PhysVal::CUnit& i_unit) const;
 public: // must overridables of base class CGraphObj
-    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual QRectF getBoundingRect(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const override;
-    virtual void setBoundingRect(const QRectF& i_rectBounding) override;
+    virtual CPhysValPoint getPos() const override;
+    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
+public: // must overridables of base class CGraphObj
+    virtual QRectF getCurrentBoundingRect() const override;
+    virtual QRectF getOriginalBoundingRectInParent() const override;
+    virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding) override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
 public: // overridables of base class CGraphObj
@@ -197,7 +200,7 @@ protected: // instance methods
 protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
-    void setPhysValLine(const CPhysValLine& i_physValLine);
+    void setPhysValLine(const CPhysValLine& i_physValLine, const CEnumCoordinatesVersion& i_eVersion);
     void QGraphicsLineItem_setLine(const QLineF& i_line);
     void QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)

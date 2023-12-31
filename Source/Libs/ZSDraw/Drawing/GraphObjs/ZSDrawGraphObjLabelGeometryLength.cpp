@@ -366,7 +366,7 @@ void CGraphObjLabelGeometryLength::updatePosition()
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
     // Move text item so that its center point is at the line end point of the anchor line.
-    QRectF rctBoundingThis = getBoundingRect();
+    QRectF rctBoundingThis = getCurrentBoundingRect();
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     setPos(anchorLineP2ScenePos);
 
@@ -434,7 +434,7 @@ void CGraphObjLabelGeometryLength::updatePolarCoorsToLinkedSelPt()
     QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);
     QPointF ptSelPtSceneCoors = lineSelPtSceneCoors.center();
 
-    QRectF rctBoundingThis = getBoundingRect();
+    QRectF rctBoundingThis = getCurrentBoundingRect();
     QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
 
     // The start point of the anchor line should be the center point of the line
@@ -497,7 +497,7 @@ void CGraphObjLabelGeometryLength::updateAnchorLines()
     QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);
 
     // The distances to the parent's selection points must be calculated in scene coordinates.
-    QRectF rctBoundingThis = getBoundingRect();
+    QRectF rctBoundingThis = getCurrentBoundingRect();
     QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
     // The shortest distance to the line from the labels center point is the perpendicular line
     // which goes through the center of the labels bounding rectangle.

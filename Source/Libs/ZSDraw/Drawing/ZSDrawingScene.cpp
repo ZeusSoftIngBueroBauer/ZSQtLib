@@ -2374,7 +2374,7 @@ int CDrawingScene::groupGraphObjsSelected()
             }
 
             // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
-            QRectF rctGroupSceneCoors = getBoundingRectangle(arpGraphicsItemsSelected);
+            QRectF rctGroupSceneCoors = getBoundingRect(arpGraphicsItemsSelected);
 
             CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactoryGroup->createGraphObj(
                 /* pDrawingScene */ this,
@@ -4957,7 +4957,7 @@ void CDrawingScene::paintGridLines(QPainter* i_pPainter)
 
     Labels and selection points are not taken into account.
 */
-QRectF CDrawingScene::getBoundingRectangle(const QList<QGraphicsItem*>& i_arpGraphicsItems) const
+QRectF CDrawingScene::getBoundingRect(const QList<QGraphicsItem*>& i_arpGraphicsItems) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4978,7 +4978,7 @@ QRectF CDrawingScene::getBoundingRectangle(const QList<QGraphicsItem*>& i_arpGra
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "getBoundingRectangle",
+        /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
     QRectF rectBoundingSceneCoors;
@@ -4994,7 +4994,7 @@ QRectF CDrawingScene::getBoundingRectangle(const QList<QGraphicsItem*>& i_arpGra
         }
         if (!pGraphObj->isConnectionLine() && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
             QPointF ptScenePosItem = pGraphicsItem->scenePos();
-            QRectF rectBounding = pGraphObj->getBoundingRect();
+            QRectF rectBounding = pGraphObj->getCurrentBoundingRect();
             QRectF rectSceneItem = pGraphicsItem->mapToScene(rectBounding).boundingRect();
             //QSizeF sizItem = rectBoundingGraphObj.size();
             //QRectF rectSceneItem = QRectF(ptScenePosItem, sizItem);

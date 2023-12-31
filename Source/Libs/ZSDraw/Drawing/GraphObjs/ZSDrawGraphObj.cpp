@@ -26,6 +26,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDY.h"
@@ -3334,41 +3335,23 @@ public: // must overridables
 
     For further details see getPos below.
 */
-CPhysValPoint CGraphObj::getPos(ECoordinatesVersion i_version) const
+CPhysValPoint CGraphObj::getPos() const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    return getPos(drawingSize.unit(), i_version);
+    return getPos(drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the position of the item in parent coordinates. If the item
-           has no parent, its position is given in scene coordinates.
+/*! @brief Returns the position of the item in parent coordinates in the given unit.
+           If the item has no parent, its position is given in scene coordinates.
 
-    The position of the item describes its origin (local coordinate (0, 0)) in parent
-    coordinates; this function returns the same as mapToParent(0, 0).
-
-    Items may be transformed (rotated, resized, etc.). Each transformation step may
-    include inaccuracy when calculating the resulting position. The more often
-    it is transformed, the greater the inaccuracy.
-
-    Assuming rotation transformation:
-
-    If the original rotation angle of 0.0 will be reached after some rotation steps
-    the resulting position in scene coordinates should be equal to the original
-    position before any rotation step. To achieve that the original coordinates of the
-    items are stored.
-
-    The given version either selects the current (transformed) position or the orignal
-    (not transformed) position of the item.
-
-    @param i_version [in]
-        Original ...... Return the original coordinates without transformation.
-        Transformed ... Return the current coordinates calculated with transformation.
+    @param i_unit [in]
+        Desired unit.
 
     @return Position of the item in parent coordinates.
 */
-CPhysValPoint CGraphObj::getPos( const CUnit& i_unit, ECoordinatesVersion i_version ) const
+CPhysValPoint CGraphObj::getPos(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Pure virtual")
@@ -3614,33 +3597,19 @@ public: // must overridables
 
 //------------------------------------------------------------------------------
 /*! @brief Pure virtual method which must be overridden by derived classes to
-           return the bounding rectangle of the object.
+           return the current bounding rectangle of the object in local coordinates.
 
-    This method is used by a group to resize its children.
-
-    This method is also used by other objects (like the drawing scene on grouping objects)
-    to calculate the extent of rectangles with or without labels, selection points or
-    things which have to be considered when repainting the dirty rectangle on the
-    drawing scene.
-
-    @param [in] i_version
-        Transform (default) will return the current bounding rectangle.
-        For Origin the original line values before adding the object as a child
-        to a group is returned.
+    @return Bounding rectangle in local coordinates.
 */
-QRectF CGraphObj::getBoundingRect(ECoordinatesVersion i_version) const
+QRectF CGraphObj::getCurrentBoundingRect() const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumCoordinatesVersion(i_version).toString();
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "getBoundingRect",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMethod    */ "getCurrentBoundingRect",
+        /* strAddInfo   */ "" );
 
 #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
@@ -3652,16 +3621,48 @@ QRectF CGraphObj::getBoundingRect(ECoordinatesVersion i_version) const
     return rctBounding;
 }
 
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 /*! @brief Pure virtual method which must be overridden by derived classes to
-           set the bounding rectangle of the object.
+           return the original bounding rectangle of the object in local coordinates.
+
+    This method is used by a group to resize its children.
+
+    Please refer to documentation about the difference between current (transformed)
+    and original coordinates at base class CGraphObj.
+
+    @return Original bounding rectangle in local coordinates.
+*/
+QRectF CGraphObj::getOriginalBoundingRectInParent() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "getOriginalBoundingRectInParent",
+        /* strAddInfo   */ "" );
+
+    QRectF rctBounding = getCurrentBoundingRect();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Pure virtual method which must be overridden by derived classes to
+           set the bounding rectangle of the object in local coordinates.
 
     This method is used by a group to resize its children.
 
     @param [in] i_rectBounding
-        New bounding rectangle of the object.
+        New bounding rectangle of the object in local coordinates.
 */
-void CGraphObj::setBoundingRect(const QRectF& i_rectBounding)
+void CGraphObj::setCurrentBoundingRectInParent(const QRectF& i_rectBounding)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3672,11 +3673,8 @@ void CGraphObj::setBoundingRect(const QRectF& i_rectBounding)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setBoundingRect",
+        /* strMethod    */ "setCurrentBoundingRectInParent",
         /* strAddInfo   */ strMthInArgs );
-
-#pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 }
 
 /*==============================================================================
@@ -3706,7 +3704,7 @@ void CGraphObj::setRotationAngleInDegree( double i_fRotAngle_deg )
 }
 
 //------------------------------------------------------------------------------
-double CGraphObj::getRotationAngleInDegree( ECoordinatesVersion i_version )
+double CGraphObj::getRotationAngleInDegree()
 //------------------------------------------------------------------------------
 {
     double fRotAngle_deg = 0.0;
@@ -4230,7 +4228,7 @@ QPointF CGraphObj::getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
-    QRectF rectBounding = getBoundingRect();
+    QRectF rectBounding = getCurrentBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, i_selPt);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
@@ -4250,7 +4248,7 @@ QPointF CGraphObj::getSelectionPointCoorsInSceneCoors( int i_idxPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
-    QRectF rectBounding = getBoundingRect();
+    QRectF rectBounding = getCurrentBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, ESelectionPoint::Center);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
@@ -6845,7 +6843,7 @@ void CGraphObj::tracePositionInfo(
 
             QPointF ptPos = pGraphicsItemThis->pos();
             QPointF ptScenePos = pGraphicsItemThis->scenePos();
-            QRectF rectBounding = getBoundingRect();
+            QRectF rectBounding = getCurrentBoundingRect();
             QPointF ptCenterPos = rectBounding.center();
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
@@ -6860,7 +6858,7 @@ void CGraphObj::tracePositionInfo(
             if (pGraphicsItemParent != nullptr && pGraphObjParent != nullptr) {
                 QPointF ptPosParent = pGraphicsItemParent->pos();
                 QPointF ptScenePosParent = pGraphicsItemParent->scenePos();
-                QRectF rectBoundingParent = pGraphObjParent->getBoundingRect();
+                QRectF rectBoundingParent = pGraphObjParent->getCurrentBoundingRect();
                 QPointF ptCenterPosParent = rectBoundingParent.center();
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";

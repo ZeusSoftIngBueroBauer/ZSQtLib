@@ -495,33 +495,17 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the bounding rectangle of the object.
-
-    This method is used by a group to resize its children.
-
-    This method is also used by other objects (like the drawing scene on grouping objects)
-    to calculate the extent of rectangles with or without labels, selection points or
-    things which have to be considered when repainting the dirty rectangle on the
-    drawing scene.
-
-    @param [in] i_version
-        Transform (default) will return the current bounding rectangle.
-        For Origin the original line values before adding the object as a child
-        to a group is returned.
+/*! @brief Returns the current bounding rectangle of the object.
 */
-QRectF CGraphObjSelectionPoint::getBoundingRect(ECoordinatesVersion i_version) const
+QRectF CGraphObjSelectionPoint::getCurrentBoundingRect() const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumCoordinatesVersion(i_version).toString();
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "getBoundingRect",
-        /* strAddInfo   */ strMthInArgs );
+        /* strAddInfo   */ "" );
 
     // Please note that the boundingRect call of QGraphicsLineItem als takes the pen width
     // into account. So we cannot call this method to get the real bounding rectangle of

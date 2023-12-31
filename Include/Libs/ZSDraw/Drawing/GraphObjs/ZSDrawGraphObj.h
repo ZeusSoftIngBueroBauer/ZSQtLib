@@ -49,6 +49,7 @@ namespace Draw
 class CDrawingScene;
 class CDrawingSize;
 class CGraphObj;
+class CGraphObjGroup;
 class CGraphObjLabel;
 class CGraphObjSelectionPoint;
 
@@ -473,16 +474,27 @@ public: // struct members
     to twice the size also the childrens should become twice the size. Same applies
     when shrinking the group's bounding rectangle.
 
-    To avoid rounding errors and to be able to calculate a scale factor the
-    items must keep original and current coordinates of their shape points.
+    To avoid rounding errors and to be able to calculate a scale factor the items
+    must keep the original coordinates in addition to the current, transformed
+    coordinates of their shape points.
 
-    As long as an item is not added to a group the current and original coordinates
-    are equal.
+    If the item is not a group (and not a label or selection point)
+    - and the item is not a child of a group
+      - the current (transformed) and original coordinates are equal.
+    - If the item is added to or removed from a group as a child
+      - the current (transformed) coordinates are set as the original coordinates.
+    - If the item already belongs as a child to a group
+      - only the current (transformed) coordinates are updated.
 
-    If the item is added to a group the current coordinates will be taken over as
-    the original coordinates. When modifying the group only the current coordinates
-    are updated. If the item is removed again from the group the current coordinates
-    are again taken over as original coordinates.
+    If the item is a group
+    - the current (transformed) coordinates are set as the original coordinates
+      right after the group has been initially created or right after adding the
+      group to or removing the group from another group.
+    - At any other time the current (transformed) coordinates are not taken over
+      as the original coordinates. When modifying (resizing) the group, the current
+      scale factor can be evaluated by the parent group using the current and
+      original coordinates and can than be used to apply the geometry changes to
+      the group items without rounding errors.
 */
 class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
 //******************************************************************************
@@ -661,8 +673,10 @@ public: // overridables
     virtual void removeAlignment(int i_idx);
     virtual void clearAlignments();
 public: // must overridables
-    virtual CPhysValPoint getPos(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    virtual CPhysValPoint getPos() const;
+    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const;
+    //virtual CPhysValPoint getPos(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+    //virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
     //virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     //virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
     //virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
@@ -671,11 +685,13 @@ public: // must overridables
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // must overridables
-    virtual QRectF getBoundingRect(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    virtual void setBoundingRect(const QRectF& i_rectBounding);
+    virtual QRectF getCurrentBoundingRect() const;
 public: // overridables
+    virtual QRectF getOriginalBoundingRectInParent() const;
+    virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding);
     virtual void setRotationAngleInDegree(double i_fRotAngle_deg);
-    virtual double getRotationAngleInDegree(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed);
+    virtual double getRotationAngleInDegree();
+    //virtual double getRotationAngleInDegree(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed);
 public: // overridables
     virtual void setEditMode(const CEnumEditMode& i_eMode);
     CEnumEditMode editMode() const;

@@ -530,7 +530,7 @@ public: // overridables of base class CGraphObj
 QString CGraphObjLabel::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
-    QRectF rct = getBoundingRect();
+    QRectF rct = getCurrentBoundingRect();
     QPolygonF plgScene = mapToScene(rct);
     return polygon2Str(plgScene);
 }
@@ -723,32 +723,16 @@ public: // must overridables of base class CGraphObj
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the bounding rectangle of the object.
-
-    This method is used by a group to resize its children.
-
-    This method is also used by other objects (like the drawing scene on grouping objects)
-    to calculate the extent of rectangles with or without labels, selection points or
-    things which have to be considered when repainting the dirty rectangle on the
-    drawing scene.
-
-    @param [in] i_version
-        Transform (default) will return the current bounding rectangle.
-        For Origin the original line values before adding the object as a child
-        to a group is returned.
 */
-QRectF CGraphObjLabel::getBoundingRect(ECoordinatesVersion i_version) const
+QRectF CGraphObjLabel::getCurrentBoundingRect() const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumCoordinatesVersion(i_version).toString();
-    }
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "getBoundingRect",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMethod    */ "getCurrentBoundingRect",
+        /* strAddInfo   */ "" );
 
     QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -854,7 +838,7 @@ void CGraphObjLabel::paint(
     i_pPainter->save();
     i_pPainter->setRenderHint(QPainter::Antialiasing);
 
-    QRectF rct = getBoundingRect();
+    QRectF rct = getCurrentBoundingRect();
 
     // Draw bounding rectangle in dotted line style if the label is hit by
     // mouse move (hover) or if the label is selected or if no text is assigned.
@@ -1209,7 +1193,7 @@ void CGraphObjLabel::updatePosition()
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
     // Move text item so that its center point is at the line end point of the anchor line.
-    QRectF rctBoundingThis = getBoundingRect();
+    QRectF rctBoundingThis = getCurrentBoundingRect();
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     setPos(anchorLineP2ScenePos);
 
@@ -1255,7 +1239,7 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
-    QRectF rctBoundingThis = getBoundingRect();
+    QRectF rctBoundingThis = getCurrentBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
 
@@ -1297,7 +1281,7 @@ void CGraphObjLabel::updateAnchorLines()
         ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
-    QRectF rctBoundingThis = getBoundingRect();
+    QRectF rctBoundingThis = getCurrentBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QLineF anchorLine(ptCenterThis, mapFromScene(ptSelScenePosParent));
 
