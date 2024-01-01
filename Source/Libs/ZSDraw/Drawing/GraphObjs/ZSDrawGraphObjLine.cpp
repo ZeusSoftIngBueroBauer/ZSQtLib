@@ -1610,22 +1610,20 @@ void CGraphObjLine::paint(
     QLineF lineF = line();
 
     if (m_pDrawingScene->getMode() == EMode::Edit && (m_bIsHit || m_bIsHighlighted || isSelected())) {
-        if (m_bIsHit || m_bIsHighlighted || isSelected()) {
-            QPainterPath outline;
-            outline.moveTo(lineF.p1());
-            outline.lineTo(lineF.p2());
-            if (isSelected()) {
-                pn.setColor(Qt::magenta);
-                pn.setWidth(3 + m_drawSettings.getPenWidth());
-            }
-            else {
-                pn.setColor(Qt::cyan);
-                pn.setWidth(3 + m_drawSettings.getPenWidth());
-            }
-            pn.setStyle(Qt::SolidLine);
-            i_pPainter->strokePath(outline, pn);
-            pn.setWidth(1 + m_drawSettings.getPenWidth());
+        QPainterPath outline;
+        outline.moveTo(lineF.p1());
+        outline.lineTo(lineF.p2());
+        if (isSelected()) {
+            pn.setColor(Qt::magenta);
+            pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
+        else {
+            pn.setColor(Qt::cyan);
+            pn.setWidth(3 + m_drawSettings.getPenWidth());
+        }
+        pn.setStyle(Qt::SolidLine);
+        i_pPainter->strokePath(outline, pn);
+        pn.setWidth(1 + m_drawSettings.getPenWidth());
     }
     else {
         pn.setWidth(m_drawSettings.getPenWidth());

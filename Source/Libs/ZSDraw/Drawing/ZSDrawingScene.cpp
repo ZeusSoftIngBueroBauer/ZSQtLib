@@ -2369,8 +2369,27 @@ int CDrawingScene::groupGraphObjsSelected()
         CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
         if (pObjFactoryGroup != nullptr) {
             // First unselect all child items which will be added to the group.
+            // In addition items which already belong as childs to a group got to be removed
+            // from the list of selected items as those childs will be added to the new group
+            // as childs of the item. Also selection points, labels and connection lines will
+            // not become part of the newly created group and will be removed from the list
+            // of selected items.
+            QList<QGraphicsItem*> arpGraphicsItemsToBeRemoved;
             for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
                 pGraphicsItemSelected->setSelected(false);
+                CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+                if (pGraphObjSelected->isConnectionLine() || pGraphObjSelected->isSelectionPoint() || pGraphObjSelected->isLabel()) {
+                    arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
+                }
+                else if (pGraphicsItemSelected->parentItem() != nullptr) {
+                    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemSelected->parentItem());
+                    if (pGraphObjGroup != nullptr) {
+                        arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
+                    }
+                }
+            }
+            for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsToBeRemoved) {
+                arpGraphicsItemsSelected.removeOne(pGraphicsItemSelected);
             }
 
             // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
@@ -2430,38 +2449,36 @@ int CDrawingScene::groupGraphObjsSelected()
             for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
                 CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
                 if (pGraphObjSelected != nullptr) {
-                    if (!pGraphObjSelected->isConnectionLine() && !pGraphObjSelected->isSelectionPoint() && !pGraphObjSelected->isLabel()) {
-                        pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
-                        m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
+                    pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
+                    m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
-                        //alignmentLeft.m_fVal = 0.0;
-                        //alignmentTop.m_fVal = 0.0;
-                        //alignmentWidth.m_fVal = 0.0;
-                        //alignmentHeight.m_fVal = 0.0;
+                    //alignmentLeft.m_fVal = 0.0;
+                    //alignmentTop.m_fVal = 0.0;
+                    //alignmentWidth.m_fVal = 0.0;
+                    //alignmentHeight.m_fVal = 0.0;
 
-                        //if (rctGroupSceneCoors.width() != 0.0) {
-                        //    alignmentLeft.m_fVal = posItem.x() / rctGroupSceneCoors.width();
-                        //}
-                        //if (rctGroupSceneCoors.height() != 0.0) {
-                        //    alignmentTop.m_fVal = posItem.y() / rctGroupSceneCoors.height();
-                        //}
-                        //if (rctGroupSceneCoors.width() != 0.0) {
-                        //    alignmentWidth.m_fVal = sizItem.width() / rctGroupSceneCoors.width();
-                        //}
-                        //if (rctGroupSceneCoors.height() != 0.0) {
-                        //    alignmentHeight.m_fVal = sizItem.height() / rctGroupSceneCoors.height();
-                        //}
+                    //if (rctGroupSceneCoors.width() != 0.0) {
+                    //    alignmentLeft.m_fVal = posItem.x() / rctGroupSceneCoors.width();
+                    //}
+                    //if (rctGroupSceneCoors.height() != 0.0) {
+                    //    alignmentTop.m_fVal = posItem.y() / rctGroupSceneCoors.height();
+                    //}
+                    //if (rctGroupSceneCoors.width() != 0.0) {
+                    //    alignmentWidth.m_fVal = sizItem.width() / rctGroupSceneCoors.width();
+                    //}
+                    //if (rctGroupSceneCoors.height() != 0.0) {
+                    //    alignmentHeight.m_fVal = sizItem.height() / rctGroupSceneCoors.height();
+                    //}
 
-                        //// The alignments will be adjusted in the order they are added. The order
-                        //// takes effect on the result. Usually the size should be adjusted before
-                        //// the positions to get relative adjustments working as expected.
-                        //pGraphObj->addAlignment(alignmentWidth);
-                        //pGraphObj->addAlignment(alignmentHeight);
-                        //pGraphObj->addAlignment(alignmentLeft);
-                        //pGraphObj->addAlignment(alignmentTop);
+                    //// The alignments will be adjusted in the order they are added. The order
+                    //// takes effect on the result. Usually the size should be adjusted before
+                    //// the positions to get relative adjustments working as expected.
+                    //pGraphObj->addAlignment(alignmentWidth);
+                    //pGraphObj->addAlignment(alignmentHeight);
+                    //pGraphObj->addAlignment(alignmentLeft);
+                    //pGraphObj->addAlignment(alignmentTop);
 
-                        iObjsGroupedCount++;
-                    }
+                    iObjsGroupedCount++;
                 }
             }
 

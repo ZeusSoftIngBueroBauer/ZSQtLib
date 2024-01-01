@@ -643,9 +643,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     addTestStepDrawMouseEventsMove(
         pGrpDrawMoveGroup0, idxStep, QPoint(360, 360), QPoint(350, 350));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawMoveGroup0, idxStep, QPoint(350, 350), QPoint(300, 300));
+        pGrpDrawMoveGroup0, idxStep, QPoint(350, 350), QPoint(325, 325));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveGroup0, idxStep, QPoint(300, 300), QPoint(310, 300));
+        pGrpDrawMoveGroup0, idxStep, QPoint(325, 325), QPoint(310, 325));
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -738,9 +738,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     int idxStep = 0;
 
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine0, idxStep, QPoint(90, 140), QPoint(100, 150));
+        pGrpDrawResizeLine0, idxStep, QPoint(90, 140), QPoint(100, 148));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawResizeLine0, idxStep, QPoint(100, 150), QPoint(200, 200));
+        pGrpDrawResizeLine0, idxStep, QPoint(100, 148), QPoint(200, 200));
     addTestStepDrawMouseEventsMove(
         pGrpDrawResizeLine0, idxStep, QPoint(200, 200), QPoint(210, 210));
 
@@ -813,9 +813,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     idxStep = 0;
 
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine1, idxStep, QPoint(490, 140), QPoint(500, 150));
+        pGrpDrawResizeLine1, idxStep, QPoint(490, 140), QPoint(500, 148));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawResizeLine1, idxStep, QPoint(500, 150), QPoint(400, 200));
+        pGrpDrawResizeLine1, idxStep, QPoint(500, 148), QPoint(400, 200));
     addTestStepDrawMouseEventsMove(
         pGrpDrawResizeLine1, idxStep, QPoint(400, 200), QPoint(390, 210));
 
@@ -888,9 +888,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     idxStep = 0;
 
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine2, idxStep, QPoint(490, 440), QPoint(500, 450));
+        pGrpDrawResizeLine2, idxStep, QPoint(490, 440), QPoint(500, 452));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawResizeLine2, idxStep, QPoint(500, 450), QPoint(400, 400));
+        pGrpDrawResizeLine2, idxStep, QPoint(500, 452), QPoint(400, 400));
     addTestStepDrawMouseEventsMove(
         pGrpDrawResizeLine2, idxStep, QPoint(400, 400), QPoint(390, 390));
 
@@ -953,7 +953,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
         QPoint(105, 475), QPoint(125, 475));
     createTestGroupShowAndMoveGeometryLabel(
         pGrpLine3ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strGeometryLabelNameAngle,
-        QPoint(92, 475), QPoint(70, 475));
+        QPoint(92, 475), QPoint(80, 475));
 
     ZS::Test::CTestStepGroup* pGrpDrawResizeLine3 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -963,9 +963,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
     idxStep = 0;
 
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine3, idxStep, QPoint(90, 440), QPoint(100, 450));
+        pGrpDrawResizeLine3, idxStep, QPoint(90, 440), QPoint(100, 452));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawResizeLine3, idxStep, QPoint(100, 450), QPoint(200, 400));
+        pGrpDrawResizeLine3, idxStep, QPoint(100, 452), QPoint(200, 400));
     addTestStepDrawMouseEventsMove(
         pGrpDrawResizeLine3, idxStep, QPoint(200, 400), QPoint(210, 390));
 

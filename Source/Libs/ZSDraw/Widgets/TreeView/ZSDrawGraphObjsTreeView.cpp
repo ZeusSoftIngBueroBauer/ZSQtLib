@@ -447,12 +447,10 @@ CTreeViewGraphObjs::~CTreeViewGraphObjs()
 
     mthTracer.onAdminObjAboutToBeReleased();
 
-    try
-    {
+    try {
         delete m_pModelIdxTreeGraphObjs;
     }
-    catch(...)
-    {
+    catch(...) {
     }
     m_pModelIdxTreeGraphObjs = nullptr;
 

@@ -1452,43 +1452,67 @@ void CGraphObjGroup::paint(
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
 
-    //if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
-        i_pPainter->save();
-        QPen pn(Qt::DotLine);
-        if (m_bIsHit || m_bIsHighlighted || isSelected()) {
-            pn.setColor(Qt::blue);
+    i_pPainter->save();
+    i_pPainter->setRenderHint(QPainter::Antialiasing);
+
+    QPen pn(Qt::DotLine);
+    pn.setColor(Qt::black);
+
+    QRectF rctBounding = getCurrentBoundingRect();
+
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
+        QPainterPath outline;
+        outline.moveTo(rctBounding.topLeft());
+        outline.lineTo(rctBounding.topRight());
+        outline.lineTo(rctBounding.bottomRight());
+        outline.lineTo(rctBounding.bottomLeft());
+        outline.lineTo(rctBounding.topLeft());
+        if (isSelected()) {
+            pn.setColor(Qt::magenta);
+            pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
         else {
-            pn.setColor(Qt::black);
+            pn.setColor(Qt::cyan);
+            pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
-        i_pPainter->setPen(pn);
-        i_pPainter->setBrush(Qt::NoBrush);
-        QRectF rctBounding = getCurrentBoundingRect();
-        i_pPainter->drawRect(rctBounding);
-        if (isSelected()) {
-            if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
-             && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
-                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
-                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
-                QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-                QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-                QPointF ptRctM = mapFromScene(ptRct);
-                QPointF ptRotM = mapFromScene(ptRot);
-                i_pPainter->drawLine(ptRctM, ptRotM);
-            }
-            if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
-             && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
-                CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
-                CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
-                QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
-                QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
-                QPointF ptRctM = mapFromScene(ptRct);
-                QPointF ptRotM = mapFromScene(ptRot);
-                i_pPainter->drawLine(ptRctM, ptRotM);
-            }
+        pn.setStyle(Qt::SolidLine);
+        i_pPainter->strokePath(outline, pn);
+        pn.setWidth(1 + m_drawSettings.getPenWidth());
+    }
+
+    pn.setColor(Qt::black);
+    i_pPainter->setPen(pn);
+    i_pPainter->setBrush(Qt::NoBrush);
+    i_pPainter->drawRect(rctBounding);
+
+    if ((m_pDrawingScene->getMode() == EMode::Edit) && isSelected()) {
+        pn.setColor(Qt::blue);
+        pn.setStyle(Qt::DotLine);
+        pn.setWidth(1);
+        if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)] != nullptr
+            && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)] != nullptr) {
+            CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::TopCenter)];
+            CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateTop)];
+            QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
+            QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
+            QPointF ptRctM = mapFromScene(ptRct);
+            QPointF ptRotM = mapFromScene(ptRot);
+            i_pPainter->drawLine(ptRctM, ptRotM);
         }
-        i_pPainter->restore();
-    //}
+        if (m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)] != nullptr
+            && m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)] != nullptr) {
+            CGraphObjSelectionPoint* pGraphObjSelPtRct = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::BottomCenter)];
+            CGraphObjSelectionPoint* pGraphObjSelPtRot = m_arpSelPtsBoundingRect[static_cast<int>(ESelectionPoint::RotateBottom)];
+            QPointF ptRct = QPointF(pGraphObjSelPtRct->scenePos().x(), pGraphObjSelPtRct->scenePos().y());
+            QPointF ptRot = QPointF(pGraphObjSelPtRot->scenePos().x(), pGraphObjSelPtRot->scenePos().y());
+            QPointF ptRctM = mapFromScene(ptRct);
+            QPointF ptRotM = mapFromScene(ptRot);
+            i_pPainter->drawLine(ptRctM, ptRotM);
+        }
+    }
+
+    i_pPainter->restore();
+
 } // paint
 
 /*==============================================================================
