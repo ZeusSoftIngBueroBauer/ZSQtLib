@@ -140,9 +140,11 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     }
 
     double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
-    //double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
     setStackingOrderValue(fZValueParent + 0.1, ERowVersion::Original);
 
+    QObject::connect(
+        m_selPt.m_pGraphObj, &CGraphObj::scenePosChanged,
+        this, &CGraphObjSelectionPoint::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_selPt.m_pGraphObj, &CGraphObj::geometryChanged,
         this, &CGraphObjSelectionPoint::onGraphObjParentGeometryChanged);
@@ -875,6 +877,24 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjSelectionPoint::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onGraphObjParentScenePosChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    updatePosition();
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjSelectionPoint::onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
@@ -909,7 +929,7 @@ void CGraphObjSelectionPoint::onGraphObjParentZValueChanged(CGraphObj* i_pGraphO
 
     // The selectin point should be drawn after the parent object is drawn.
     double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent + 0.05);
+    setStackingOrderValue(fZValueParent + 0.1);
 }
 
 /*==============================================================================

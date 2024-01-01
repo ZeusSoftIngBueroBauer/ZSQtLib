@@ -1189,7 +1189,7 @@ QRectF CGraphObjGroup::getCurrentBoundingRect() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "getCurrentBoundingRect",
@@ -2031,6 +2031,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             else {
                 setPhysValRect(CPhysValRect(physValPTL, physValPBR), ECoordinatesVersion::Transformed);
             }
+            applyGeometryChangeToChildrens();
         }
         bGeometryChanged = true;
         bTreeEntryChanged = true;
@@ -2103,6 +2104,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
 
     if (bGeometryChanged) {
+        updateInternalScenePos();
         emit_geometryChanged();
     }
     if (bSelectedChanged) {

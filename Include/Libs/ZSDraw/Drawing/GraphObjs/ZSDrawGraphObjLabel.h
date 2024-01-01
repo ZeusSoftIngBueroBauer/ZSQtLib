@@ -158,6 +158,7 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 public slots: // overridables of base class CGraphObj
+    void onGraphObjParentScenePosChanged( CGraphObj* i_pGraphObjParent ) override;
     void onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent ) override;
     void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
 protected: // overridables of base class QGraphicsItem

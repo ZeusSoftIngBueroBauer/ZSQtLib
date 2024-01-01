@@ -442,7 +442,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
             // "setPos" will trigger an itemChange call which will update the position of the
             // selection points and labels. To position the selection points and labels correctly
             // the local coordinate system must be up-to-date.
-            // Also note that itemChange must not overwrite the current line value (revCountGuard).
+            // Also note that itemChange must not overwrite the current line value (refCountGuard).
             QGraphicsItem_setPos(ptPos);
         }
     }
@@ -1033,7 +1033,7 @@ QRectF CGraphObjLine::getCurrentBoundingRect() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "getBoundingRect",
@@ -1184,13 +1184,15 @@ void CGraphObjLine::setCurrentBoundingRectInParent(const QRectF& i_rectBounding)
         physValLine = m_pDrawingScene->convert(physValLine);
     }
 
-
     if (m_physValLineCurr != physValLine) {
         setPhysValLine(physValLine, ECoordinatesVersion::Transformed);
         // The coordinates of the bounding rectangle are passed in local coordinates.
         QGraphicsLineItem_setLine(lineF);
         emit_geometryChanged();
     }
+
+    // If the scene position has been changed, the position of the labels got to be updated.
+    updateInternalScenePos();
 }
 
 /*==============================================================================
@@ -2050,6 +2052,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         plg.append(lineF.p1());
         plg.append(lineF.p2());
         updateLineEndArrowHeadPolygons();
+        updateInternalScenePos();
         emit_geometryChanged();
     }
     if (bSelectedChanged) {

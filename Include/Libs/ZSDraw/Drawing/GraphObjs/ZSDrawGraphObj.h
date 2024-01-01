@@ -386,25 +386,40 @@ public: // struct members
     ================
 
     Selection points are used to change the shape of the objects.
-    Selection points are always position in scene coordinates and never belong to groups.
-    If located at the edge or center points of the outer lines of the bounding rectangle
-    they are used to resize the objects.
-    For polygons they are also located on the polygon shape points and will be used
-    to move this single shape point.
-    Selection points will be dynamically created by the object if the object is selected.
-    When moving the parent the selection points must also be moved to keep their position
-    on the bounding rectangle or on the polygon shape points.
-    When moving a selection point the parent got to be informed that the selection point
-    has been moved to adapt its shape.
 
-    When creating objects on the drawing scene using mouse move events the mouse events
+    Selection points will be dynamically created if an object is selected and
+    will never belong as childs to groups.
+
+    The position of selection point's is always defined in scene coordinates.
+
+    If located at the edge or center points of the outer lines of the object's
+    bounding rectangle, selection points are used to resize the objects.
+    For polygons selection points are also located on the polygon shape points
+    and will be used to move this single shape point.
+
+    If the geometry or position of an object is changed, the selection points
+    must be informed about this geometry and position change to keep their
+    positions on the bounding rectangle or on the polygon shape points of the object.
+    This also applies if the object's geometry is not changed but just moved on the
+    drawing scene as a child of a group. If the object is a child of a group and the
+    group's shape is not changed but just moved on the scene, the geometry and the
+    relative position of the object within the parent group remains the same.
+    To be able to detect the scene position change the graphical object need to track
+    their current scene position, emitting a scenePosChanged signal if the scene
+    position has been changed, and the parent group must inform their childs if the
+    group's scene position has been changed.
+
+    When moving a selection point the object they belong to got to be informed that
+    the selection point has been moved to adapt its shape.
+
+    When creating objects on the drawing scene using mouse move events, the mouse events
     will be passed to the selection points and the selection points will be moved.
     The object under construction will receive the geometry changed signals by the
     selection point and will update its shape.
 
     The mouse event finishing the creation of the object depends on the type of graphical
-    object being created. For lines for example the creation is finished if the mouse release
-    event is received by the selection point previously moved. To handle the mouse event the
+    object being created. For lines for example, the creation is finished if the mouse release
+    event is received by the selection point previously moved. To handle the mouse event, the
     object under construction installs a scene event filter on the selection point.
 
     In order to handle the mouse event correctly the graphical object need to know that it
@@ -420,7 +435,19 @@ public: // struct members
     - Position labels
     - Dimension labels
 
-    Labels are always position in scene coordinates and never belong to groups.
+    The position of labels is always defined in scene coordinates.
+    Labels will never belong as childs to groups.
+
+    If the geometry or position of a labels graphical object is changed, the labels must be
+    informed about this geometry and position change to keep their relative positions of their
+    graphical objects on the drawing scene. This also applies if the graphical object's
+    geometry is not changed but just moved on the drawing scene as a child of a group.
+    If the graphical object is a child of a group and the group's shape is not changed but just
+    moved on the scene, the geometry and the relative position of the object within the parent
+    group remains the same. To be able to detect the scene position change the graphical object
+    need to track their current scene position, emitting a scenePosChanged signal if the scene
+    position has been changed, and the parent group must inform their childs if the group's
+    scene position has been changed.
 
     Text Labels
     -----------
@@ -535,6 +562,10 @@ signals:
     void editModeChanged(CGraphObj* i_pGraphObj, const CEnumEditMode& i_eMode);
     /*!< This signal is emitted if the selected state of the object has been changed. */
     void selectedChanged(CGraphObj* i_pGraphObj, bool i_bIsSelected);
+    /*!< This signal is emitted if the position of the object on the drawing scene is changed.
+         Used to update the position of selection points and labels if the object's geometry
+         is not changed but has been moved on the drawing scene as a child of a group. */
+    void scenePosChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the geometry of the object has been changed. */
     void geometryChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the physical unit of the drawing scene's size has been changed
@@ -580,7 +611,7 @@ public: // instance methods
     CDrawingScene* drawingScene();
     CGraphObj* parentGraphObj();
 public: // overridables
-    virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
+    //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
     virtual void rename(const QString& i_strNameNew);
 protected: // overridables of base class CIdxTreeEntry
     virtual void setName(const QString& i_strName) override;
@@ -780,6 +811,7 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
+    virtual void onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
@@ -795,6 +827,7 @@ protected: // auxiliary instance methods
 protected: // auxiliary instance methods (method tracing)
     void emit_editModeChanged(const CEnumEditMode& i_eMode);
     void emit_selectedChanged(bool i_bIsSelected);
+    void emit_scenePosChanged();
     void emit_geometryChanged();
     void emit_geometryValuesUnitChanged();
     void emit_zValueChanged(double i_fZValue);
@@ -805,6 +838,8 @@ protected: // auxiliary instance methods (method tracing)
     void emit_labelChanged(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
+    virtual void updateInternalScenePos();
+    virtual void setInternalScenePos(const QPointF& i_pos);
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
 public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
@@ -847,7 +882,7 @@ protected: // instance members
     /*!< Graphical parent object.
          nullptr, if the object is not added as a child to a group.
          If the object is added as a child to a group the parent is the group object. */
-    CGraphObj* m_pGraphObjParent;
+    //CGraphObj* m_pGraphObjParent;
     /*!< Draw settings like pen and brush used to draw the graphical object.
          Set by ctor or setSettings. Changed also by graphics items methods "setPen", "setBrush", etc..
          Call "updateSettings" before accessing settings to keep this struct up to date with graphics
@@ -893,6 +928,13 @@ protected: // instance members
          which is currently set at the graphics item. The current and original versions are mainly
          used to temporarily modify the ZValue to bring the object in front and back again. */
     QVector<double> m_arfZValues;
+    /*!< Current scene position of the object. To keep the relative position of selection points
+         and labels to their "parent" objects up to date on the scene, the objects need to track
+         their current scene position. If the objects are childs of groups and the groups are
+         moved, the geometry of the object within their parent groups is not changed. But their
+         scene position is changed and this change must be forwarded to their selection points
+         and labels by emitting the scenePosChanged signal. */
+    QPointF m_ptScenePos;
     /*!< Currently selected selection point of the items polygon. */
     //int m_idxSelPtSelectedPolygon;
     /*!< List of selections points. Selection points are used to resize the graphical object
@@ -971,23 +1013,20 @@ protected: // !!! OBSOLETE !!! instance members
     double m_fRotAngleOrig_deg;
     /*!< In item's coordinate system. */
     QPointF m_ptRotOriginOrig;
-#endif
-protected: // instance members
     /*!< Coordinates stored on mouse press events:
          In scene's coordinate system (for moving by my mouse move events). */
-    QPointF m_ptScenePosOnMousePressEvent;
+    //QPointF m_ptScenePosOnMousePressEvent;
     /*!< In scene's coordinate system (for moving by my mouse move events). */
-    QPointF m_ptMouseEvScenePosOnMousePressEvent;
+    //QPointF m_ptMouseEvScenePosOnMousePressEvent;
     /*!< In item's coordinate system (for resizing by mouse move events). */
-    QRectF m_rctOnMousePressEvent;
+    //QRectF m_rctOnMousePressEvent;
     /*!< In scene's coordinate system (for rotation by mouse move events). */
-    QPointF m_ptRotOriginOnMousePressEvent;
+    //QPointF m_ptRotOriginOnMousePressEvent;
     /*!< Counts how ofter the "itemChange" method has been blocked from updating
          the original object coordinates. A value greater than 0 for the counter means
          that the itemChange method must not update the original coordinates as they
          have been expliticely set by a method call whereupon the objects, transformed
          item coordinates in pixels should be updated by itemChange. */
-    int m_iItemChangeUpdateOriginalCoorsBlockedCounter;
     /*!< Simulation Functions. */
     //QList<SGraphObjMouseEventFct> m_arMousePressEventFunctions;
     //QList<SGraphObjMouseEventFct> m_arMouseReleaseEventFunctions;
@@ -995,6 +1034,9 @@ protected: // instance members
     //QList<SGraphObjMouseEventFct> m_arMouseMoveEventFunctions;
     //QList<SGraphObjKeyEventFct> m_arKeyPressEventFunctions;
     //QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
+#endif
+protected: // instance members
+    int m_iItemChangeUpdateOriginalCoorsBlockedCounter;
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;

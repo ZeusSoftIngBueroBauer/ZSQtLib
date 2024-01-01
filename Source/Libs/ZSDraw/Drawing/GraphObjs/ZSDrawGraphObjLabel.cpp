@@ -108,8 +108,11 @@ CGraphObjLabel::CGraphObjLabel(
     setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
-    setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);
+    setStackingOrderValue(fZValueParent + 0.2, ERowVersion::Original);
 
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
+        this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
         this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
@@ -154,8 +157,11 @@ CGraphObjLabel::CGraphObjLabel(
     setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
-    setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);
+    setStackingOrderValue(fZValueParent + 0.2, ERowVersion::Original);
 
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
+        this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
         this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
@@ -196,14 +202,21 @@ CGraphObjLabel::CGraphObjLabel(
     setAcceptHoverEvents(true);
 
     double fZValueParent = i_selPt1.m_pGraphObj->getStackingOrderValue(ERowVersion::Original);
-    setStackingOrderValue(fZValueParent - 0.1, ERowVersion::Original);
+    setStackingOrderValue(fZValueParent + 0.2, ERowVersion::Original);
 
+    QObject::connect(
+        m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::scenePosChanged,
+        this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::geometryChanged,
         this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
     QObject::connect(
         m_labelDscr.m_selPt1.m_pGraphObj, &CGraphObj::zValueChanged,
         this, &CGraphObjLabel::onGraphObjParentZValueChanged);
+
+    QObject::connect(
+        m_labelDscr.m_selPt2.m_pGraphObj, &CGraphObj::scenePosChanged,
+        this, &CGraphObjLabel::onGraphObjParentScenePosChanged);
     QObject::connect(
         m_labelDscr.m_selPt2.m_pGraphObj, &CGraphObj::geometryChanged,
         this, &CGraphObjLabel::onGraphObjParentGeometryChanged);
@@ -728,7 +741,7 @@ QRectF CGraphObjLabel::getCurrentBoundingRect() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "getCurrentBoundingRect",
@@ -1050,6 +1063,29 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CGraphObjLabel::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObjParent->keyInTree();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onGraphObjParentScenePosChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    // If the position is updated because the parent's geometry is changed,
+    // the relative distance in polar coordinates (length and angle) to the
+    // linked selection point must not be changed.
+    m_bPositionUpdateOnParentGeometryChanged = true;
+    updatePosition();
+    m_bPositionUpdateOnParentGeometryChanged = false;
+}
+
+//------------------------------------------------------------------------------
 void CGraphObjLabel::onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
@@ -1090,7 +1126,7 @@ void CGraphObjLabel::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
     // The labels anchor line should be drawn before the parent object is drawn.
     // Otherwise the anchor lines may cover the painting of the parent object.
     double fZValueParent = m_labelDscr.m_selPt1.m_pGraphObj->getStackingOrderValue();
-    setStackingOrderValue(fZValueParent - 0.1);
+    setStackingOrderValue(fZValueParent + 0.2);
 }
 
 /*==============================================================================
