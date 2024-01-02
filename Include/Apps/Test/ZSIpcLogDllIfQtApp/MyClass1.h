@@ -63,9 +63,6 @@ public: // ctors and dtor
     virtual ~CMyClass1();
 signals:
     void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods
     CMyClass2Thread* getMyClass2Thread() const { return m_pMyClass2Thread; }
     CMyClass2* getMyClass2() const { return m_pMyClass2; }

@@ -308,12 +308,12 @@ QPixmap ZS::System::GUI::mode2Pixmap( int i_iMode, int i_iSize )
 
     if( i_iMode == static_cast<int>(EMode::Edit) )
     {
-        pxm = QPixmap( ":/ZS/App/ModeEdit" + strSize + ".bmp" );
+        pxm = QPixmap( ":/ZS/App/ModeEdit" + strSize + ".png" );
         pxm.setMask(pxm.createHeuristicMask());
     }
     else if( i_iMode == static_cast<int>(EMode::View) )
     {
-        pxm = QPixmap( ":/ZS/App/ModeView" + strSize + ".bmp" );
+        pxm = QPixmap( ":/ZS/App/ModeView" + strSize + ".png" );
         pxm.setMask(pxm.createHeuristicMask());
     }
     return pxm;

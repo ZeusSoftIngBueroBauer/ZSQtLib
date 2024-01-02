@@ -52,9 +52,6 @@ public: // class methods
 public: // ctors and dtor
     CTestStepIdxTree( CTest* i_pTest );
     virtual ~CTestStepIdxTree();
-public: // overridables
-    virtual QString nameSpace() const { return CTestStepIdxTree::NameSpace(); }
-    virtual QString className() const { return CTestStepIdxTree::ClassName(); }
 public: // instance methods
     CTest* getTest() { return m_pTest; }
 public: // instance methods find test step groups

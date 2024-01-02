@@ -234,7 +234,7 @@ void CIdxTreeEntry::clear()
     {
         if( CErrLog::GetInstance() != nullptr ) {
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-                nameSpace(), className(), keyInTree(), "dtor",
+                NameSpace(), ClassName(), keyInTree(), "dtor",
                 EResultListNotEmpty, ZS::System::EResultSeverityCritical, "");
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
@@ -616,7 +616,7 @@ int CIdxTreeEntry::indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const
     {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "indexOf",
+            NameSpace(), ClassName(), keyInTree(), "indexOf",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -627,7 +627,7 @@ int CIdxTreeEntry::indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const
     {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "indexOf",
+            NameSpace(), ClassName(), keyInTree(), "indexOf",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -671,7 +671,7 @@ int CIdxTreeEntry::indexOf( const QString& i_strKeyInParentBranch ) const
         {
             QString strAddErrInfo = pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-                nameSpace(), className(), keyInTree(), "indexOf",
+                NameSpace(), ClassName(), keyInTree(), "indexOf",
                 EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
             throw CException(__FILE__, __LINE__, errResultInfo);
         }
@@ -680,7 +680,7 @@ int CIdxTreeEntry::indexOf( const QString& i_strKeyInParentBranch ) const
         {
             QString strAddErrInfo = pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-                nameSpace(), className(), keyInTree(), "indexOf",
+                NameSpace(), ClassName(), keyInTree(), "indexOf",
                 EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
             throw CException(__FILE__, __LINE__, errResultInfo);
         }
@@ -727,7 +727,7 @@ int CIdxTreeEntry::indexOf( const QString& i_strEntryTypeSymbol, const QString& 
         {
             QString strAddErrInfo = pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-                nameSpace(), className(), keyInTree(), "indexOf",
+                NameSpace(), ClassName(), keyInTree(), "indexOf",
                 EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
             throw CException(__FILE__, __LINE__, errResultInfo);
         }
@@ -736,7 +736,7 @@ int CIdxTreeEntry::indexOf( const QString& i_strEntryTypeSymbol, const QString& 
         {
             QString strAddErrInfo = pTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
             SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-                nameSpace(), className(), keyInTree(), "indexOf",
+                NameSpace(), ClassName(), keyInTree(), "indexOf",
                 EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
             throw CException(__FILE__, __LINE__, errResultInfo);
         }
@@ -861,7 +861,7 @@ int CIdxTreeEntry::addChild( CIdxTreeEntry* i_pChildTreeEntry )
     {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + " already belongs to " + i_pChildTreeEntry->parentBranch()->keyInTree();
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "addChild",
+            NameSpace(), ClassName(), keyInTree(), "addChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -869,7 +869,7 @@ int CIdxTreeEntry::addChild( CIdxTreeEntry* i_pChildTreeEntry )
     if( m_mappTreeEntries.contains(strKeyInParentBranch) )
     {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "addChild",
+            NameSpace(), ClassName(), keyInTree(), "addChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strKeyInParentBranch);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -931,7 +931,7 @@ int CIdxTreeEntry::insertChild( int i_iIdx, CIdxTreeEntry* i_pChildTreeEntry )
     {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + " already belongs to " + i_pChildTreeEntry->parentBranch()->keyInTree();
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "insertChild",
+            NameSpace(), ClassName(), keyInTree(), "insertChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -939,7 +939,7 @@ int CIdxTreeEntry::insertChild( int i_iIdx, CIdxTreeEntry* i_pChildTreeEntry )
     if( m_mappTreeEntries.contains(strKeyInParentBranch) )
     {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "insertChild",
+            NameSpace(), ClassName(), keyInTree(), "insertChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strKeyInParentBranch);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -1010,7 +1010,7 @@ void CIdxTreeEntry::removeChild( CIdxTreeEntry* i_pChildTreeEntry )
     {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "removeChild",
+            NameSpace(), ClassName(), keyInTree(), "removeChild",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -1019,7 +1019,7 @@ void CIdxTreeEntry::removeChild( CIdxTreeEntry* i_pChildTreeEntry )
     {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "removeChild",
+            NameSpace(), ClassName(), keyInTree(), "removeChild",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -1029,7 +1029,7 @@ void CIdxTreeEntry::removeChild( CIdxTreeEntry* i_pChildTreeEntry )
     if( !m_mappTreeEntries.contains(strKeyInParentBranch) )
     {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "removeChild",
+            NameSpace(), ClassName(), keyInTree(), "removeChild",
             EResultObjNotInList, ZS::System::EResultSeverityCritical,
             i_pChildTreeEntry->keyInParentBranch());
         throw CException(__FILE__, __LINE__, errResultInfo);
@@ -1082,7 +1082,7 @@ void CIdxTreeEntry::renameChild( CIdxTreeEntry* i_pChildTreeEntry, const QString
     {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "renameChild",
+            NameSpace(), ClassName(), keyInTree(), "renameChild",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -1091,7 +1091,7 @@ void CIdxTreeEntry::renameChild( CIdxTreeEntry* i_pChildTreeEntry, const QString
     {
         QString strAddErrInfo = i_pChildTreeEntry->keyInTree() + ".indexInParentBranch: " + QString::number(idxInParentBranch);
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "renameChild",
+            NameSpace(), ClassName(), keyInTree(), "renameChild",
             EResultIdxOutOfRange, ZS::System::EResultSeverityCritical, strAddErrInfo);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -1101,7 +1101,7 @@ void CIdxTreeEntry::renameChild( CIdxTreeEntry* i_pChildTreeEntry, const QString
     if( !m_mappTreeEntries.contains(strKeyInParentBranchOrig) )
     {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "renameChild",
+            NameSpace(), ClassName(), keyInTree(), "renameChild",
             EResultObjNotInList, ZS::System::EResultSeverityCritical, strKeyInParentBranchOrig);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }
@@ -1112,7 +1112,7 @@ void CIdxTreeEntry::renameChild( CIdxTreeEntry* i_pChildTreeEntry, const QString
     if( m_mappTreeEntries.contains(strKeyInParentBranchNew) )
     {
         SErrResultInfo errResultInfo = ZS::System::SErrResultInfo(
-            nameSpace(), className(), keyInTree(), "renameChild",
+            NameSpace(), ClassName(), keyInTree(), "renameChild",
             EResultObjAlreadyInList, ZS::System::EResultSeverityCritical, strKeyInParentBranchNew);
         throw CException(__FILE__, __LINE__, errResultInfo);
     }

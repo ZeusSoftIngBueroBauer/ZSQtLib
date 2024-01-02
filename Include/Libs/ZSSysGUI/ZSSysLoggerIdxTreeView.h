@@ -59,9 +59,6 @@ public: // class methods
 public: // ctors and dtor
     CDelegateIdxTreeLoggers(QObject* i_pObjParent = nullptr);
     virtual ~CDelegateIdxTreeLoggers();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     bool isCheckBoxEnabledHit(
         const QRect&       i_rectVisual,
@@ -114,9 +111,6 @@ public: // class methods
 public: // ctors and dtor
     CTreeViewIdxTreeLoggers(CModelIdxTreeLoggers* i_pModel, QWidget* i_pWdgtParent = nullptr);
     virtual ~CTreeViewIdxTreeLoggers();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods (hiding not overridable methods with same name in QTreeView)
     virtual void expandAll();
     virtual void collapseAll();

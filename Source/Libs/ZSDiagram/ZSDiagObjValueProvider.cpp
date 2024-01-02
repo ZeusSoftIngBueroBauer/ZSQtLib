@@ -54,20 +54,20 @@ CDiagObjValueProvider::CDiagObjValueProvider(
     const QString&       i_strObjName,
     EMathOp              i_mathOp,
     CDiagObj*            i_pDiagObjOp1,
-    const CEnumScaleDir& i_scaleDirOp1,
+    const CEnumScaleAxis& i_scaleAxisOp1,
     CDiagObj*            i_pDiagObjOp2,
-    const CEnumScaleDir& i_scaleDirOp2 ) :
+    const CEnumScaleAxis& i_scaleAxisOp2 ) :
 //------------------------------------------------------------------------------
     CDiagObj(
         /* strClassName */ CDiagObjValueProvider::ClassName(),
         /* strObjName   */ i_strObjName,
         /* pDiagTrace   */ nullptr,
-        /* layoutPos    */ ELayoutPosUndefined ),
+        /* layoutPos    */ ELayoutPos::Center ),
     m_mathOp(i_mathOp),
     m_pDiagObjOp1(i_pDiagObjOp1),
-    m_scaleDirOp1(i_scaleDirOp1.enumerator()),
+    m_scaleAxisOp1(i_scaleAxisOp1.enumerator()),
     m_pDiagObjOp2(i_pDiagObjOp2),
-    m_scaleDirOp2(i_scaleDirOp2.enumerator()),
+    m_scaleAxisOp2(i_scaleAxisOp2.enumerator()),
     m_valueFormat(),
     m_physVal(),
     m_strVal("---")
@@ -80,13 +80,13 @@ CDiagObjValueProvider::CDiagObjValueProvider(
 
     if( m_pDiagObjOp1 != nullptr )
     {
-        if( m_scaleDirOp1 == EScaleDir::X )
+        if( m_scaleAxisOp1 == EScaleAxis::X )
         {
             QObject::connect(
                 m_pDiagObjOp1, &CDiagObj::valueXChanged,
                 this, &CDiagObjValueProvider::op1ValueXChanged);
         }
-        else if( m_scaleDirOp1 == EScaleDir::Y )
+        else if( m_scaleAxisOp1 == EScaleAxis::Y )
         {
             QObject::connect(
                 m_pDiagObjOp1, &CDiagObj::valueYChanged,
@@ -98,13 +98,13 @@ CDiagObjValueProvider::CDiagObjValueProvider(
     }
     if( m_pDiagObjOp2 != nullptr )
     {
-        if( m_scaleDirOp2 == EScaleDir::X )
+        if( m_scaleAxisOp2 == EScaleAxis::X )
         {
             QObject::connect(
                 m_pDiagObjOp2, &CDiagObj::valueXChanged,
                 this, &CDiagObjValueProvider::op2ValueXChanged);
         }
-        else if( m_scaleDirOp2 == EScaleDir::Y )
+        else if( m_scaleAxisOp2 == EScaleAxis::Y )
         {
             QObject::connect(
                 m_pDiagObjOp2, &CDiagObj::valueYChanged,
@@ -129,9 +129,9 @@ CDiagObjValueProvider::~CDiagObjValueProvider()
 
     m_mathOp = EMathOpNone;
     m_pDiagObjOp1 = nullptr;
-    m_scaleDirOp1 = static_cast<EScaleDir>(0);
+    m_scaleAxisOp1 = static_cast<EScaleAxis>(0);
     m_pDiagObjOp2 = nullptr;
-    m_scaleDirOp2 = static_cast<EScaleDir>(0);
+    m_scaleAxisOp2 = static_cast<EScaleAxis>(0);
     //m_valueFormat;
     //m_physVal;
     //m_strVal;
@@ -160,18 +160,18 @@ CDiagObjValueProvider::EMathOp CDiagObjValueProvider::getMathOp() const
 }
 
 //------------------------------------------------------------------------------
-void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir )
+void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, const CEnumScaleAxis& i_scaleAxis )
 //------------------------------------------------------------------------------
 {
     if( m_pDiagObjOp1 != nullptr )
     {
-        if( m_scaleDirOp1 == EScaleDir::X )
+        if( m_scaleAxisOp1 == EScaleAxis::X )
         {
             QObject::disconnect(
                 m_pDiagObjOp1, &CDiagObj::valueXChanged,
                 this, &CDiagObjValueProvider::op1ValueXChanged);
         }
-        else if( m_scaleDirOp1 == EScaleDir::Y )
+        else if( m_scaleAxisOp1 == EScaleAxis::Y )
         {
             QObject::disconnect(
                 m_pDiagObjOp1, &CDiagObj::valueYChanged,
@@ -182,17 +182,17 @@ void CDiagObjValueProvider::setOp1( CDiagObj* i_pDiagObj, const CEnumScaleDir& i
             this, &CDiagObjValueProvider::op1VisibilityChanged);
     }
     m_pDiagObjOp1 = i_pDiagObj;
-    m_scaleDirOp1 = i_scaleDir.enumerator();
+    m_scaleAxisOp1 = i_scaleAxis.enumerator();
 
     if( m_pDiagObjOp1 != nullptr )
     {
-        if( m_scaleDirOp1 == EScaleDir::X )
+        if( m_scaleAxisOp1 == EScaleAxis::X )
         {
             QObject::connect(
                 m_pDiagObjOp1, &CDiagObj::valueXChanged,
                 this, &CDiagObjValueProvider::op1ValueXChanged);
         }
-        else if( m_scaleDirOp1 == EScaleDir::Y )
+        else if( m_scaleAxisOp1 == EScaleAxis::Y )
         {
             QObject::connect(
                 m_pDiagObjOp1, &CDiagObj::valueYChanged,
@@ -215,25 +215,25 @@ CDiagObj* CDiagObjValueProvider::getDiagObjOp1()
 }
 
 //------------------------------------------------------------------------------
-EScaleDir CDiagObjValueProvider::getScaleDirOp1() const
+EScaleAxis CDiagObjValueProvider::getScaleAxisOp1() const
 //------------------------------------------------------------------------------
 {
-    return m_scaleDirOp1;
+    return m_scaleAxisOp1;
 }
 
 //------------------------------------------------------------------------------
-void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, const CEnumScaleDir& i_scaleDir )
+void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, const CEnumScaleAxis& i_scaleAxis )
 //------------------------------------------------------------------------------
 {
     if( m_pDiagObjOp2 != nullptr )
     {
-        if( m_scaleDirOp2 == EScaleDir::X )
+        if( m_scaleAxisOp2 == EScaleAxis::X )
         {
             QObject::disconnect(
                 m_pDiagObjOp2, &CDiagObj::valueXChanged,
                 this, &CDiagObjValueProvider::op2ValueXChanged);
         }
-        else if( m_scaleDirOp1 == EScaleDir::Y )
+        else if( m_scaleAxisOp1 == EScaleAxis::Y )
         {
             QObject::disconnect(
                 m_pDiagObjOp2, &CDiagObj::valueYChanged,
@@ -244,17 +244,17 @@ void CDiagObjValueProvider::setOp2( CDiagObj* i_pDiagObj, const CEnumScaleDir& i
             this, &CDiagObjValueProvider::op2VisibilityChanged);
     }
     m_pDiagObjOp2 = i_pDiagObj;
-    m_scaleDirOp2 = i_scaleDir.enumerator();
+    m_scaleAxisOp2 = i_scaleAxis.enumerator();
 
     if( m_pDiagObjOp2 != nullptr )
     {
-        if( m_scaleDirOp2 == EScaleDir::X )
+        if( m_scaleAxisOp2 == EScaleAxis::X )
         {
             QObject::connect(
                 m_pDiagObjOp2, &CDiagObj::valueXChanged,
                 this, &CDiagObjValueProvider::op2ValueXChanged);
         }
-        else if( m_scaleDirOp1 == EScaleDir::Y )
+        else if( m_scaleAxisOp1 == EScaleAxis::Y )
         {
             QObject::connect(
                 m_pDiagObjOp2, &CDiagObj::valueYChanged,
@@ -277,10 +277,10 @@ CDiagObj* CDiagObjValueProvider::getDiagObjOp2()
 }
 
 //------------------------------------------------------------------------------
-EScaleDir CDiagObjValueProvider::getScaleDirOp2() const
+EScaleAxis CDiagObjValueProvider::getScaleAxisOp2() const
 //------------------------------------------------------------------------------
 {
-    return m_scaleDirOp2;
+    return m_scaleAxisOp2;
 }
 
 //------------------------------------------------------------------------------
@@ -345,9 +345,9 @@ CDiagObj* CDiagObjValueProvider::clone( CDataDiagram* i_pDiagramTrg ) const
         /* strObjName  */ m_strObjName,
         /* mathOp      */ m_mathOp,
         /* pDiagObjOp1 */ pDiagObjOp1,
-        /* scaleDirOp1 */ m_scaleDirOp1,
+        /* scaleAxisOp1 */ m_scaleAxisOp1,
         /* pDiagObjOp2 */ pDiagObjOp2,
-        /* scaleDirOp2 */ m_scaleDirOp2 );
+        /* scaleAxisOp2 */ m_scaleAxisOp2 );
 
     // Members from base class CDiagObj:
     pDiagObjCloned->m_layoutPos = m_layoutPos;
@@ -432,12 +432,12 @@ void CDiagObjValueProvider::update( unsigned int i_uUpdateFlags, QPaintDevice* i
         m_strVal = "---";
 
         // Get the value from operand 1:
-        physValOp1 = m_pDiagObjOp1->getVal(m_scaleDirOp1);
+        physValOp1 = m_pDiagObjOp1->getVal(m_scaleAxisOp1);
 
         // Get the value from operand 2:
         if( m_pDiagObjOp2 != nullptr )
         {
-            physValOp2 = m_pDiagObjOp2->getVal(m_scaleDirOp2);
+            physValOp2 = m_pDiagObjOp2->getVal(m_scaleAxisOp2);
         }
 
         // Calculate the resulting value

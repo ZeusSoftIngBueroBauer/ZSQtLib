@@ -96,9 +96,6 @@ signals: // of the remote connection
     void stateChanged( QObject* i_pServer, int i_iState );
     void requestInProgressChanged( QObject* i_pServer, ZS::System::SRequestDscr i_reqDscr );
     void receivedData( QObject* i_pServer, int i_iSocketId, const QByteArray& i_byteArr );
-public: // overridables
-    virtual QString nameSpace() const { return CServer::NameSpace(); }
-    virtual QString className() const { return CServer::ClassName(); }
 public: // instance methods
     QString getName() const { return m_strObjName; }
 public: // instance methods

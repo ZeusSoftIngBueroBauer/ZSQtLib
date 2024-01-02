@@ -51,9 +51,6 @@ public: // class methods
 public: // ctors and dtor
     CModelIdxTreeEntry( CIdxTreeEntry* i_pTreeEntry );
     virtual ~CModelIdxTreeEntry();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     CIdxTreeEntry* getIdxTreeEntry();
 public: // instance methods

@@ -64,9 +64,6 @@ public: // class methods
 public: // ctors and dtor
     CWdgtUnitsTree(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtUnitsTree();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 signals:
     void currentRowChanged( const QModelIndex& i_modelIdxCurr, const QModelIndex& i_modelIdxPrev );
 public: // instance methods

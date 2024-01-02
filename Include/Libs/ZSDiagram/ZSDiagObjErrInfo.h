@@ -48,7 +48,7 @@ public: // class methods
 public: // ctors and dtor
     CDiagObjErrInfo(
         const QString& i_strObjName,
-        ELayoutPos     i_layoutPos );
+        ZS::System::ELayoutPos i_layoutPos );
     virtual ~CDiagObjErrInfo();
 public: // instance methods
     void setErrResultInfo( const ZS::System::SErrResultInfo& i_errResultInfo );

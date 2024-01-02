@@ -106,21 +106,21 @@ protected: // ctors
     CDiagObj(
         const QString& i_strClassName,
         const QString& i_strObjName,
-        CDiagTrace*    i_pDiagTrace,
-        ELayoutPos     i_layoutPos );
+        CDiagTrace* i_pDiagTrace,
+        ZS::System::ELayoutPos i_layoutPos );
     CDiagObj(
         const QString& i_strClassName,
         const QString& i_strObjName,
-        CDiagScale*    i_pDiagScaleX,
-        CDiagScale*    i_pDiagScaleY,
-        ELayoutPos     i_layoutPos );
+        CDiagScale* i_pDiagScaleX,
+        CDiagScale* i_pDiagScaleY,
+        ZS::System::ELayoutPos i_layoutPos );
 public: // dtor
     virtual ~CDiagObj();
 signals:
     // Please note that the following signals may only be thrown by the
     // derived classed after updating its internal data.
     void valueChanged( ZS::Diagram::CDiagObj* );
-    void valueChanged( ZS::System::EScaleDir, ZS::Diagram::CDiagObj* );
+    void valueChanged( ZS::System::EScaleAxis, ZS::Diagram::CDiagObj* );
     void valueXChanged( ZS::Diagram::CDiagObj* );
     void valueYChanged( ZS::Diagram::CDiagObj* );
     void visibilityChanged( ZS::Diagram::CDiagObj* );
@@ -130,13 +130,13 @@ public: // instance methods
     void setObjName( const QString& i_strObjName );
     QString getObjName() const;
     CDataDiagram* getDiagram();
-    CDiagScale* getDiagScale( const ZS::System::CEnumScaleDir& i_scaleDir );
+    CDiagScale* getDiagScale( const ZS::System::CEnumScaleAxis& i_scaleAxis );
     virtual void setDiagTrace( CDiagTrace* i_pDiagTrace );
     CDiagTrace* getDiagTrace();
-    ELayoutPos getLayoutPos() const;
+    ZS::System::ELayoutPos getLayoutPos() const;
 public: // overridables
-    virtual PhysVal::CPhysValRes getValRes( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
-    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleDir& i_scaleDir ) const;
+    virtual PhysVal::CPhysValRes getValRes( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
+    virtual PhysVal::CPhysVal getVal( const ZS::System::CEnumScaleAxis& i_scaleAxis ) const;
 public: // overridables
     virtual void setAdjustContentRect2DiagPartCenter( bool i_bAdjust );
     virtual bool getAdjustContentRect2DiagPartCenter() const;
@@ -196,7 +196,7 @@ protected:  // instance members
     /*!< Bitmap with flags from Diagram::EUpdate to indicate which process depth need to be recalculated. */
     unsigned int m_uUpdateFlags;
     /*!< Layout position of the object within the diagram. */
-    ELayoutPos m_layoutPos;
+    ZS::System::ELayoutPos m_layoutPos;
     /*!< Rectangle used by the object to indicate the object within the diagram. */
     QRect m_rectContent;
     /*!< To decide whether the object needs repainting the previous rectangle are is stored here. */

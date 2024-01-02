@@ -56,7 +56,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSSysErrLog")
+    ZS::Test::CTest(NameSpace(), "theInst")
 {
     int idxStep = 0;
 
@@ -184,7 +184,7 @@ void CTest::doTestStepAddErrLogEntries( ZS::Test::CTestStep* i_pTestStep )
         try
         {
             SErrResultInfo errResultInfoTmp(
-                /* errSource  */ pErrLog->nameSpace(), pErrLog->className(), pErrLog->objectName(), "addEntry",
+                /* errSource  */ pErrLog->NameSpace(), pErrLog->ClassName(), pErrLog->objectName(), "addEntry",
                 /* result     */ EResultListIsFull,
                 /* severity   */ EResultSeverityError,
                 /* strAddInfo */ "Maximum number of error log entries for severity " + resultSeverity2Str(errResultInfo.getSeverity()) + " reached." );

@@ -145,7 +145,7 @@ public: // class methods
 public: // ctors and dtor
     CDiagScale(
         const QString&        i_strObjName,
-        ZS::System::EScaleDir i_scaleDir,
+        ZS::System::EScaleAxis i_scaleAxis,
         const CScale&         i_scale);
     virtual ~CDiagScale();
 public: // overridables
@@ -157,7 +157,7 @@ signals:
     void divLineDistMinPixChanged( ZS::System::EDivLineLayer i_layer, int i_iDivLineDistMin_px );
 public: // instance methods (common properties)
     QString getObjName() const;
-    ZS::System::EScaleDir getScaleDir() const;
+    ZS::System::EScaleAxis getScaleAxis() const;
     CDataDiagram* getDiagram();
     void setSpacing( const ZS::System::CEnumSpacing& i_spacing );
     ZS::System::ESpacing getSpacing() const;

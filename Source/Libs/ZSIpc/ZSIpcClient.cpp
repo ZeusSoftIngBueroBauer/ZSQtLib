@@ -191,7 +191,7 @@ CClient::CClient(
     }
     else
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
 
     CMethodTracer mthTracer(
@@ -199,8 +199,8 @@ CClient::CClient(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
@@ -281,8 +281,8 @@ CClient::~CClient()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strAddInfo         */ strAddTrcInfo );
@@ -397,8 +397,8 @@ void CClient::setKeepReqDscrInExecTree( bool i_bKeep )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setKeepReqDscrInExecTree",
         /* strAddInfo         */ strAddTrcInfo );
@@ -446,8 +446,8 @@ CRequest* CClient::connect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqIdPar
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "connect_",
         /* strAddInfo         */ strAddTrcInfo );
@@ -600,8 +600,8 @@ CRequest* CClient::disconnect_( int i_iTimeout_ms, bool i_bWait, qint64 i_iReqId
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "disconnect_",
         /* strAddInfo         */ strAddTrcInfo );
@@ -756,8 +756,8 @@ CRequest* CClient::changeSettings( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "changeSettings",
         /* strAddInfo         */ strAddTrcInfo );
@@ -909,8 +909,8 @@ CRequest* CClient::sendData( const QByteArray& i_byteArr, int i_iTimeout_ms, boo
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendData",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1080,8 +1080,8 @@ void CClient::setOnlyLocalHostConnectionsAreAllowed( bool i_bAllowOnlyLocalHostC
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setOnlyLocalHostConnectionsAreAllowed",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1226,8 +1226,8 @@ void CClient::setHostSettings( const SClientHostSettings& i_hostSettings )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setHostSettings",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1319,8 +1319,8 @@ void CClient::setWatchDogTimerUsed( bool i_bUsed )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setWatchDogTimerUsed",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1401,8 +1401,8 @@ void CClient::setWatchDogSettings( const STimerSettings& i_settings )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setWatchDogSettings",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1453,8 +1453,8 @@ void CClient::setBlkType( CBlkType* i_pBlkType ) // The class takes ownership of
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setBlkType",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1632,8 +1632,8 @@ void CClient::abortRequest( qint64 i_iRequestId )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1695,8 +1695,8 @@ void CClient::abortRequestInProgress()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequestInProgress",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1749,8 +1749,8 @@ void CClient::abortAllRequests()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortAllRequests",
         /* strAddInfo         */ strAddTrcInfo );
@@ -1917,8 +1917,8 @@ void CClient::onReceivedData( const QByteArray& i_byteArr )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onReceivedData",
         /* strAddInfo         */ strMthInArgs );
@@ -1957,8 +1957,8 @@ void CClient::executeNextPostponedRequest()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeNextPostponedRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2019,8 +2019,8 @@ void CClient::executeConnectRequest( CRequest* i_pReq )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeConnectRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2219,8 +2219,8 @@ void CClient::executeDisconnectRequest( CRequest* i_pReq )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeDisconnectRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2423,8 +2423,8 @@ void CClient::executeChangeSettingsRequest( CRequest* i_pReq )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeChangeSettingsRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2672,8 +2672,8 @@ void CClient::executeSendDataRequest( CRequest* i_pReq )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "executeSendDataRequest",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2884,8 +2884,8 @@ CSrvCltBaseGatewayThread* CClient::createGatewayThread()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "createGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
@@ -2920,8 +2920,8 @@ SErrResultInfo CClient::startGatewayThread(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "startGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3027,8 +3027,8 @@ SErrResultInfo CClient::stopGatewayThread(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "stopGatewayThread",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3118,8 +3118,8 @@ CRequest* CClient::connectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "connectGateway",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3326,8 +3326,8 @@ CRequest* CClient::disconnectGateway( int i_iTimeout_ms, bool i_bWait, qint64 i_
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "disconnectGateway",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3529,8 +3529,8 @@ void CClient::onRequestTimeout()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onRequestTimeout",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3613,8 +3613,8 @@ void CClient::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onRequestChanged",
         /* strAddInfo         */ strAddTrcInfo );
@@ -3739,7 +3739,7 @@ void CClient::onRequestChanged( ZS::System::SRequestDscr i_reqDscr )
         // The Ipc server does not trigger requests from "foreign" classes.
         // So the following string compare is unnecessary as this slot may only
         // be called if the server itself updates the request.
-        //if( i_reqDscr.m_strCreatorClassName.compare(className(),Qt::CaseInsensitive) == 0 )
+        //if( i_reqDscr.m_strCreatorClassName.compare(ClassName(),Qt::CaseInsensitive) == 0 )
 
         if( !bIsPostponedRequest )
         {
@@ -4105,8 +4105,8 @@ bool CClient::event( QEvent* i_pMsg )
             /* pTrcMthFile        */ m_pTrcMthFile,
             /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
             /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-            /* strNameSpace       */ nameSpace(),
-            /* strClassName       */ className(),
+            /* strNameSpace       */ NameSpace(),
+            /* strClassName       */ ClassName(),
             /* strObjName         */ objectName(),
             /* strMethod          */ "event",
             /* strAddInfo         */ strAddTrcInfo );

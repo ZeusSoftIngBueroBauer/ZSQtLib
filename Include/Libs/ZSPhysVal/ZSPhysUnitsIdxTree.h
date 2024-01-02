@@ -61,9 +61,6 @@ public: // ctors and dtor
     CIdxTreeUnits(ZS::System::CIdxTreeEntry* i_pRootTreeEntry = nullptr);
     ~CIdxTreeUnits();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     CUnitsTreeEntryGrpBase* findUnitGrp( const QString& i_strUniqueName );
     CUnitsTreeEntryGrpScienceField* findPhysScienceField( const QString& i_strUniqueName );
     CUnitsTreeEntryGrpPhysUnits* findPhysUnitsGroup( const QString& i_strUniqueName );

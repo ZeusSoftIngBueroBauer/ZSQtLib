@@ -56,7 +56,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSSysTemplate")
+    ZS::Test::CTest(NameSpace(), "theInst")
 {
     int idxGroup = 0;
 

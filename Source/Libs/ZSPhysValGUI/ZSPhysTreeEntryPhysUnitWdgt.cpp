@@ -25,7 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSPhysValGUI/ZSPhysTreeEntryPhysUnitWdgt.h"
-#include "ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h"
+#include "ZSPhysValGUI/ZSPhysValEditWdgt.h"
 #include "ZSPhysValGUI/ZSPhysUnitFctConvertInternalModel.h"
 #include "ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.h"
 #include "ZSPhysVal/ZSPhysTreeEntryPhysUnit.h"

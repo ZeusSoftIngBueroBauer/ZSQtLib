@@ -80,6 +80,8 @@ class CTest : public ZS::Test::CTest
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::Apps::Test::IdxTree"; }
 public: // type definitions and constants
     static const QString c_strTrcAdmObjIdxTreeName;
 public: // ctors and dtor

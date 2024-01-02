@@ -60,9 +60,6 @@ protected: // ctors and dtor
         bool           i_bCreateMutex,
         QObject*       i_pObjParent );
     virtual ~CEnumerationIdxTree();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 protected: // class members
     /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
     static QRecursiveMutex s_mtx;

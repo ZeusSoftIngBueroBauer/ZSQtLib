@@ -1087,7 +1087,7 @@ CMsgCon::CMsgCon( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
     CMsg(i_pMsgHdr),
     m_iReqId(i_pMsgHdr->m_idRequest),
     m_errResultInfo(
-        /* errSource */ nameSpace(), className(), objectName(), "ctor",
+        /* errSource */ NameSpace(), ClassName(), objectName(), "ctor",
         /* result    */ static_cast<ZS::System::EResult>(i_pMsgHdr->m_result),
         /* severity  */ static_cast<ZS::System::EResultSeverity>(i_pMsgHdr->m_resultSeverity) ),
     m_iProgressInPerCent(i_pMsgHdr->m_iProgress_perCent)
@@ -1371,7 +1371,7 @@ CMsgAck::CMsgAck( const MsgProtocol::SMsgHeader* i_pMsgHdr ) :
     CMsg(i_pMsgHdr),
     m_iReqId(i_pMsgHdr->m_idRequest),
     m_errResultInfo(
-        /* errSource */ nameSpace(), className(), objectName(), "ctor",
+        /* errSource */ NameSpace(), ClassName(), objectName(), "ctor",
         /* result    */ static_cast<ZS::System::EResult>(i_pMsgHdr->m_result),
         /* severity  */ static_cast<ZS::System::EResultSeverity>(i_pMsgHdr->m_resultSeverity) ),
     m_iProgressInPerCent(i_pMsgHdr->m_iProgress_perCent)

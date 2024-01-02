@@ -64,9 +64,6 @@ public: // class methods
 public: // ctors and dtor
     CWdgtIdxTreeLoggers(CIdxTreeLoggers* i_pIdxTree, QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtIdxTreeLoggers();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 protected slots:
     void onTreeViewExpanded( const QModelIndex& i_modelIdx );
 protected slots:

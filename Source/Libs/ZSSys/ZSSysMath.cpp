@@ -35,6 +35,7 @@ may result in using the software modules.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <cmath>
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -51,6 +52,23 @@ double Math::sqr( double i_fVal )
 //------------------------------------------------------------------------------
 {
     return i_fVal*i_fVal;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the square root of the given value.
+
+    @param i_fVal [in]
+        Value whose square root is computed.
+    @return Square of given value.
+*/
+double Math::sqrt( double i_fVal )
+//------------------------------------------------------------------------------
+{
+    if (i_fVal < 0) {
+        QString strAddErrInfo = "Math::sqrt(" + QString::number(i_fVal) + ")";
+        throw ZS::System::CException(__FILE__, __LINE__, EResultValueOutOfRange, strAddErrInfo);
+    }
+    return ::sqrt(i_fVal);
 }
 
 //------------------------------------------------------------------------------

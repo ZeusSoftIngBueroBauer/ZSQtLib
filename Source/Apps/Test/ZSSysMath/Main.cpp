@@ -35,7 +35,7 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Apps::Test::Template;
+using namespace ZS::Apps::Test::Math;
 
 
 /*******************************************************************************

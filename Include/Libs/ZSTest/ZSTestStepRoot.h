@@ -43,9 +43,6 @@ public: // class methods
 public: // ctors and dtor
     CTestStepRoot( CTest* i_pTest, const QString&  i_strName );
     virtual ~CTestStepRoot();
-public: // overridables
-    virtual QString nameSpace() const { return CTestStepRoot::NameSpace(); }
-    virtual QString className() const { return CTestStepRoot::ClassName(); }
 private: // default ctor not allowed
     CTestStepRoot();
 private: // copy ctor not allowed

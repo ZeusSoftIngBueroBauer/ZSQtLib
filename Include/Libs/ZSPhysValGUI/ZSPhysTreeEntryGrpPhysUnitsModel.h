@@ -80,9 +80,6 @@ public: // class methods
 public: // ctors and dtor
     CModelPhysUnitsGrp( QObject* i_pObjParent = nullptr );
     virtual ~CModelPhysUnitsGrp();
-public: // overridables
-    virtual QString nameSpace() const { return CModelPhysUnitsGrp::NameSpace(); }
-    virtual QString className() const { return CModelPhysUnitsGrp::ClassName(); }
 public: // instance methods
     void setViewMode( EViewMode i_viewMode );
     EViewMode getViewMode() const;

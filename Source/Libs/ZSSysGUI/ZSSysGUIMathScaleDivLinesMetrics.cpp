@@ -51,12 +51,12 @@ public: // ctors and dtor
 
     @param i_strObjName [in]
         Name of the object.
-    @param i_scaleDir [in]
+    @param i_scaleAxis [in]
         Range [X, Y]
 */
-CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScaleDir i_scaleDir) :
+CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScaleAxis i_scaleAxis) :
 //------------------------------------------------------------------------------
-    CScaleDivLines(NameSpace(), ClassName(), i_strObjName, i_scaleDir),
+    CScaleDivLines(NameSpace(), ClassName(), i_strObjName, i_scaleAxis),
     // config values
     m_fnt(),
     m_iDigitsCountMax(0),
@@ -75,7 +75,7 @@ CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScale
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumScaleDir(i_scaleDir).toString();
+        strMthInArgs = CEnumScaleAxis(i_scaleAxis).toString();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -84,6 +84,43 @@ CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScale
         /* strAddInfo   */ strMthInArgs );
 
 } // ctor
+
+//------------------------------------------------------------------------------
+/*! @brief Assignment operator.
+
+    @param i_other [in]
+        Reference to base class object whose current internal data should be taken over.
+*/
+CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, const CScaleDivLinesMetrics& i_other) :
+//------------------------------------------------------------------------------
+    CScaleDivLines(i_strObjName, i_other),
+    // config values
+    m_fnt(i_other.m_fnt),
+    m_iDigitsCountMax(i_other.m_iDigitsCountMax),
+    m_bUseEngineeringFormat(i_other.m_bUseEngineeringFormat),
+    m_sizeMinTextExtent(i_other.m_sizeMinTextExtent),
+    // calculated
+    m_iTrailingDigits(i_other.m_iTrailingDigits),
+    m_iExponentDigits(i_other.m_iExponentDigits),
+    m_sizeMaxTextExtent(i_other.m_sizeMaxTextExtent),
+    m_iSpacing_px(i_other.m_iSpacing_px),
+    m_ararrectLabels(i_other.m_ararrectLabels),
+    m_ararstrLabels(i_other.m_ararstrLabels),
+    m_ararbLabelsVisible(i_other.m_ararbLabelsVisible),
+    m_arstrScaleMinMaxVal(i_other.m_arstrScaleMinMaxVal),
+    m_arrectScaleMinMaxVal(i_other.m_arrectScaleMinMaxVal)
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_other.objectName();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "=",
+        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
+
+} // copy ctor
 
 //------------------------------------------------------------------------------
 /*! @brief Destructor.
@@ -166,7 +203,20 @@ CScaleDivLinesMetrics& CScaleDivLinesMetrics::operator = (const CScaleDivLinesMe
         /* strMethod    */ "=",
         /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
 
-    static_cast<CScaleDivLines&>(*this) = static_cast<CScaleDivLines>(i_other);
+    m_scaleAxis = i_other.m_scaleAxis;
+    m_spacing = i_other.m_spacing;
+    m_fScaleMin = i_other.m_fScaleMin;
+    m_fScaleMax = i_other.m_fScaleMax;
+    m_fScaleRes = i_other.m_fScaleRes;
+    m_fMin_px = i_other.m_fMin_px;
+    m_fMax_px = i_other.m_fMax_px;
+    m_ariDivLinesDistMin_px = i_other.m_ariDivLinesDistMin_px;
+    m_bDivLinesCalculated = i_other.m_bDivLinesCalculated;
+    m_ariDivLinesCount = i_other.m_ariDivLinesCount;
+    m_arfDivLinesDistMinVal = i_other.m_arfDivLinesDistMinVal;
+    m_ararfDivLinesVals = i_other.m_ararfDivLinesVals;
+    m_arfDivLinesValsSorted = i_other.m_arfDivLinesValsSorted;
+    m_ararfDivLines_px = i_other.m_ararfDivLines_px;
 
     m_fnt = i_other.m_fnt;
     m_iDigitsCountMax = i_other.m_iDigitsCountMax;
@@ -893,7 +943,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
         }
     }
 
-    if (m_scaleDir == EScaleDir::X)
+    if (m_scaleAxis == EScaleAxis::X)
     {
         QFontMetrics fntmtr(m_fnt);
 
@@ -903,6 +953,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
             QRect rectDivLineLabel;
 
             rectDivLineLabel.setHeight(m_sizeMaxTextExtent.height());
+            rectDivLineLabel.setWidth(m_sizeMaxTextExtent.width());
 
             for (int idxDivLine = 0; idxDivLine < m_ariDivLinesCount[iLayer]; idxDivLine++)
             {
@@ -912,8 +963,8 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
                 // At the horizontal (X) axis the labels will be output centered below the division lines
                 // and we can remove trailing zeros:
                 removeTrailingZeros(&strDivLineLabel);
-                rectDivLineLabel = fntmtr.boundingRect(strDivLineLabel);
-                rectDivLineLabel.setWidth(rectDivLineLabel.width() + m_iSpacing_px);
+                //rectDivLineLabel = fntmtr.boundingRect(strDivLineLabel);
+                //rectDivLineLabel.setWidth(rectDivLineLabel.width() + m_iSpacing_px);
                 rectDivLineLabel.moveLeft(xDivLine_px - rectDivLineLabel.width()/2);
 
                 // To discover overlapping division line labels the rectangle extents of the
@@ -923,7 +974,7 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
             }
         }
     }
-    else // if (m_scaleDir == EScaleDir::Y)
+    else // if (m_scaleAxis == EScaleAxis::Y)
     {
         for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++)
         {
@@ -1050,7 +1101,7 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
 
     QFontMetrics fntmtr(m_fnt);
 
-    if (m_scaleDir == EScaleDir::X)
+    if (m_scaleAxis == EScaleAxis::X)
     {
         for (int idxMinMax = 0; idxMinMax < 2; ++idxMinMax)
         {
@@ -1082,7 +1133,7 @@ void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
             //}
         }
     }
-    else // if (m_scaleDir == EScaleDir::Y)
+    else // if (m_scaleAxis == EScaleAxis::Y)
     {
         for (int idxMinMax = 0; idxMinMax < 2; ++idxMinMax)
         {

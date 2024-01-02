@@ -316,8 +316,8 @@ QSize CDiagObjProgressBar::sizeHint()
     // a diagram just designed to analyze data.
     switch( m_layoutPos )
     {
-        case ELayoutPosTop:
-        case ELayoutPosBottom:
+        case ELayoutPos::Top:
+        case ELayoutPos::Bottom:
         {
             cyHeight = m_iIndentTop + m_iIndentBottom + m_iWidth;
             if( m_pFrameStyle != nullptr )
@@ -326,8 +326,8 @@ QSize CDiagObjProgressBar::sizeHint()
             }
             break;
         }
-        case ELayoutPosLeft:
-        case ELayoutPosRight:
+        case ELayoutPos::Left:
+        case ELayoutPos::Right:
         {
             cxWidth = m_iIndentLeft + m_iIndentRight + m_iWidth;
             if( m_pFrameStyle != nullptr )
@@ -499,15 +499,15 @@ void CDiagObjProgressBar::update( unsigned int i_uUpdateFlags, QPaintDevice* i_p
                 {
                     switch( m_layoutPos )
                     {
-                        case ELayoutPosTop:
-                        case ELayoutPosBottom:
+                        case ELayoutPos::Top:
+                        case ELayoutPos::Bottom:
                         {
                             m_rectBarContent.setLeft(pPixmapDiagram->getRectPartCenter().left());
                             m_rectBarContent.setWidth(pPixmapDiagram->getRectPartCenter().width());
                             break;
                         }
-                        case ELayoutPosLeft:
-                        case ELayoutPosRight:
+                        case ELayoutPos::Left:
+                        case ELayoutPos::Right:
                         {
                             m_rectBarContent.setTop(pPixmapDiagram->getRectPartCenter().top());
                             m_rectBarContent.setHeight(pPixmapDiagram->getRectPartCenter().height());

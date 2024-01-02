@@ -159,9 +159,6 @@ signals:
     void sortOrderChanged(const QString& i_strSortOrder);
     void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
     void excludeLeavesChanged(bool i_bExcludeLeaves);
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     Q_PROPERTY(QObject* idxTree READ idxTree WRITE setIdxTree NOTIFY idxTreeChanged)
     void setIdxTree( QObject* i_pIdxTree );

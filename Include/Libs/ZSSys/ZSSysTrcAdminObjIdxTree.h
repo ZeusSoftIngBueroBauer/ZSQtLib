@@ -54,9 +54,6 @@ public: // ctors and dtor
         EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
         EMethodTraceDetailLevel i_eTrcDetailLevelMutex = EMethodTraceDetailLevel::None );
     virtual ~CIdxTreeTrcAdminObjs();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods to get and release admin objects
     CTrcAdminObj* getTraceAdminObj(
         const QString& i_strNameSpace,

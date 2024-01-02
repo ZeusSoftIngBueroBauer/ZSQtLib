@@ -509,11 +509,10 @@ CModelIdxTree::CModelIdxTree(
     m_pTrcAdminObjNoisyMethods = CTrcServer::GetTraceAdminObj(
         NameSpace(), ClassName() + "::NoisyMethods", objectName());
     QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
-        strMthInArgs += ", NamesAreEditable: " + bool2Str(i_bNamesAreEditable);
-        strMthInArgs += ", DropActions: " + qDropActions2Str(m_supportedDropActions);
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName()) +
+                       ", NamesAreEditable: " + bool2Str(i_bNamesAreEditable) +
+                       ", DropActions: " + qDropActions2Str(m_supportedDropActions);
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,

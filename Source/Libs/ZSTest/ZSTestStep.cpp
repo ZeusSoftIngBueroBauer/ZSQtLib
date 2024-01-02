@@ -199,6 +199,19 @@ QStringList CTestStep::getConfigValueKeys() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether a config value with the given key exists.
+
+    @param i_strKey [in] Key to be checked.
+
+    @return true, if the config value exists, false otherwise.
+*/
+bool CTestStep::hasConfigValue( const QString& i_strKey ) const
+//------------------------------------------------------------------------------
+{
+    return m_hshConfigValues.contains(i_strKey);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Return the config value for the given key.
 
     @param i_strKey [in] Key for which the config value should be returned.

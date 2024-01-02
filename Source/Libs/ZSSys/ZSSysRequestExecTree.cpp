@@ -222,7 +222,7 @@ CRequestExecTree::~CRequestExecTree()
         {
             QString strAddErrInfo = "Request {" + pReqDscr->getAddTrcInfoStr(2) + "} has not been destroyed.";
             SErrResultInfo errResultInfo(
-                /* errSource  */ nameSpace(), className(), objectName(), "dtor",
+                /* errSource  */ NameSpace(), ClassName(), objectName(), "dtor",
                 /* result     */ EResultMemLeak,
                 /* severtiy   */ EResultSeverityError,
                 /* strAddInfo */ strAddErrInfo );

@@ -71,9 +71,6 @@ protected: // ctor
         ZS::System::EMethodTraceDetailLevel i_eTrcDetailLevelNoisyMethods = ZS::System::EMethodTraceDetailLevel::None );
 public: // dtor
     virtual ~CDlgIdxTreeLoggers();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() override { return NameSpace(); }
-    virtual QString className() override { return ClassName(); }
 protected: // instance members
     CIdxTreeLoggers*     m_pIdxTree;
     QVBoxLayout*         m_pLyt;

@@ -854,7 +854,7 @@ bool CLogger::blockTreeEntryChangedSignal( bool i_bBlock )
         if( m_iBlockTreeEntryChangedSignalCounter <= 0 )
         {
             SErrResultInfo errResultInfo(
-                /* errSource     */ nameSpace(), className(), keyInTree(), "blockTreeEntryChangedSignal",
+                /* errSource     */ NameSpace(), ClassName(), keyInTree(), "blockTreeEntryChangedSignal",
                 /* result        */ EResultObjRefCounterIsNotZero,
                 /* severity      */ EResultSeverityError,
                 /* strAddErrInfo */ "Unblock tree entry changed signal counter becomes less than 0" );

@@ -179,7 +179,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
 
     if (i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty()) {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
@@ -209,8 +209,9 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
         else  {
             QStringList strlstBranchNames = strParentBranchPath.split(m_strNodeSeparator);
             QString strParentPathTmp;
+            QString strPathTmp;
             for (const QString& strBranchName : strlstBranchNames) {
-                QString strPathTmp = buildPathStr(strPathTmp, strBranchName);
+                strPathTmp = buildPathStr(strPathTmp, strBranchName);
                 CIdxTreeEntry* pBranch = findBranch(strPathTmp);
                 if (pBranch == nullptr) {
                     pBranch = createBranch(strBranchName);
@@ -351,7 +352,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::renameTraceAdminObj(
     CTrcAdminObj* pTrcAdminObj = i_pTrcAdminObj;
     if (pTrcAdminObj == nullptr) {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "renameTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "renameTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "No TraceAdminObj defined");
@@ -361,7 +362,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::renameTraceAdminObj(
     }
     else if (i_strNewObjName.isEmpty()) {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "renameTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "renameTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "New ObjectName is empty");
@@ -371,7 +372,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::renameTraceAdminObj(
     }
     else if (pTrcAdminObj->getObjectName().isEmpty()) {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "renameTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "renameTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Cannot rename an object with an empty object name");
@@ -381,7 +382,7 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::renameTraceAdminObj(
     }
     else if (pTrcAdminObj->getRefCount() < 1) {
         SErrResultInfo errResultInfo(
-            /* errSource     */ nameSpace(), className(), objectName(), "renameTraceAdminObj",
+            /* errSource     */ NameSpace(), ClassName(), objectName(), "renameTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Only instances referencing the trace admin object may rename the object");
@@ -1165,7 +1166,7 @@ SErrResultInfo CIdxTreeTrcAdminObjs::save( const QString& i_strAbsFilePath ) con
     CMutexLocker mtxLocker(m_pMtx);
 
     QString strMth = "save";
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
     if (i_strAbsFilePath.isEmpty()) {
@@ -1227,7 +1228,7 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
 
     QString strMth = "recall";
     QString strAddErrInfo;
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
     if (i_strAbsFilePath.isEmpty()) {

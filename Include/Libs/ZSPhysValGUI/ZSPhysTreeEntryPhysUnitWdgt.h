@@ -60,9 +60,6 @@ public: // ctors and dtor
     CWdgtPhysUnit(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtPhysUnit();
 public: // overridables
-    virtual QString nameSpace() const { return CWdgtPhysUnit::NameSpace(); }
-    virtual QString className() const { return CWdgtPhysUnit::ClassName(); }
-public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree ) override;
 protected slots:
     void onEdtPhysValSrcEditingFinished();

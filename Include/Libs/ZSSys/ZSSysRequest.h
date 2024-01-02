@@ -490,9 +490,6 @@ public: // ctors and dtor
         bool           i_bIsBlocking = false );
     CRequest( const SRequestDscr& i_reqDscr );
     virtual ~CRequest();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 private: // ctors and operators which are not allowed
     CRequest( const CRequest& i_other );
     CRequest& operator = ( const CRequest& i_other );

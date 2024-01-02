@@ -1555,7 +1555,7 @@ void CRequestSequencer::clear( SRequestSeqEntry* i_pReqSeqEntry )
         if( pReq->getProgressInPerCent() < 100 )
         {
             SErrResultInfo errResultInfo(
-                /* errSource     */ nameSpace(), className(), objectName(), strMth,
+                /* errSource     */ NameSpace(), ClassName(), objectName(), strMth,
                 /* result        */ EResultRequestAborted,
                 /* severity      */ EResultSeverityError,
                 /* strAddErrInfo */ "Removed from request sequencer" );

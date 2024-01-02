@@ -61,9 +61,6 @@ protected: // ctor
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
     virtual ~CDlgRequestExecTree();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() override { return NameSpace(); }
-    virtual QString className() override { return ClassName(); }
 protected: // instance members
     QVBoxLayout*          m_pLyt;
     CWdgtRequestExecTree* m_pWdgtRequests;

@@ -57,19 +57,19 @@ public: // ctors and dtor
         const QString& i_strObjName,
         EMathOp i_mathOp,
         CDiagObj* i_pDiagObjOp1,
-        const ZS::System::CEnumScaleDir& i_scaleDirOp1,
+        const ZS::System::CEnumScaleAxis& i_scaleAxisOp1,
         CDiagObj* i_pDiagObjOp2 = nullptr,
-        const ZS::System::CEnumScaleDir& i_scaleDirOp2 = ZS::System::CEnumScaleDir() );
+        const ZS::System::CEnumScaleAxis& i_scaleAxisOp2 = ZS::System::CEnumScaleAxis() );
     virtual ~CDiagObjValueProvider();
 public: // instance methods
     void setMathOp( EMathOp i_mathOp );
     EMathOp getMathOp() const;
-    void setOp1( CDiagObj* i_pDiagObj, const ZS::System::CEnumScaleDir& i_scaleDir );
+    void setOp1( CDiagObj* i_pDiagObj, const ZS::System::CEnumScaleAxis& i_scaleAxis );
     CDiagObj* getDiagObjOp1();
-    ZS::System::EScaleDir getScaleDirOp1() const;
-    void setOp2( CDiagObj* i_pDiagObj, const ZS::System::CEnumScaleDir& i_scaleDir );
+    ZS::System::EScaleAxis getScaleAxisOp1() const;
+    void setOp2( CDiagObj* i_pDiagObj, const ZS::System::CEnumScaleAxis& i_scaleAxis );
     CDiagObj* getDiagObjOp2();
-    ZS::System::EScaleDir getScaleDirOp2() const;
+    ZS::System::EScaleAxis getScaleAxisOp2() const;
     void setValueFormatProvider( const PhysVal::SValueFormatProvider& i_valueFormat );
     PhysVal::SValueFormatProvider getValueFormatProvider() const;
 public: // overridables
@@ -92,9 +92,9 @@ private: // assignment operator not allowed
 protected:  // instance members
     EMathOp                       m_mathOp;
     CDiagObj*                     m_pDiagObjOp1;
-    ZS::System::EScaleDir         m_scaleDirOp1;
+    ZS::System::EScaleAxis        m_scaleAxisOp1;
     CDiagObj*                     m_pDiagObjOp2;
-    ZS::System::EScaleDir         m_scaleDirOp2;
+    ZS::System::EScaleAxis        m_scaleAxisOp2;
     PhysVal::SValueFormatProvider m_valueFormat;
     PhysVal::CPhysVal             m_physVal;
     QString                       m_strVal;

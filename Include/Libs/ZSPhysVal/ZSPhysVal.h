@@ -140,6 +140,7 @@ public: // class methods
 public: // ctors and dtor
     CPhysVal( EResType i_resType = EResType::Resolution );
     CPhysVal( const CUnit& i_unit, EResType i_resType = EResType::Resolution );
+    CPhysVal( const CUnit& i_unit, double i_fResVal, EResType i_resType = EResType::Resolution );
     CPhysVal( const CUnit& i_unitVal, const CUnit& i_unitRes, EResType i_resType = EResType::Resolution );
     CPhysVal( double i_fVal, EResType i_resType = EResType::Resolution );
     CPhysVal( double i_fVal, double i_fResVal, EResType i_resType = EResType::Resolution );
@@ -268,6 +269,8 @@ protected: // instance members
     CPhysValRes m_physValRes;
 
 }; // class CPhysVal
+
+Q_DECLARE_METATYPE(CPhysVal);
 
 } // namespace PhysVal
 

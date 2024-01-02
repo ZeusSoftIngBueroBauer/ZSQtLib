@@ -64,7 +64,7 @@ using namespace ZS::System::GUI;
 using namespace ZS::Trace;
 using namespace ZS::Trace::GUI;
 using namespace ZS::Test;
-using namespace ZS::Apps::Test::Template;
+using namespace ZS::Apps::Test::Math;
 
 
 /*******************************************************************************
@@ -196,7 +196,7 @@ CMainWindow::CMainWindow(
 
     QIcon iconDebugErrorLog;
 
-    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.bmp");
+    QPixmap pxmDebugErrorLog16x16(":/ZS/App/Zeus16x16.png");
 
     pxmDebugErrorLog16x16.setMask(pxmDebugErrorLog16x16.createHeuristicMask());
 

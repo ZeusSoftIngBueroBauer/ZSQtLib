@@ -48,9 +48,10 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitFctConvertInternalModel.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysUnitFctConvertRefValsModel.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysValDlgEditPhysVal.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysValEditDlg.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysValEditItemDelegate.h
+    ${_HeadersPath}/ZSPhysValGUI/ZSPhysValEditWdgt.h
     ${_HeadersPath}/ZSPhysValGUI/ZSPhysValGUIDllMain.h
-    ${_HeadersPath}/ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.h
 )
 
 list(APPEND _Sources
@@ -69,9 +70,10 @@ list(APPEND _Sources
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitFctConvertInternalModel.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitFctConvertExternalModel.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysUnitFctConvertRefValsModel.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysValDlgEditPhysVal.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysValEditDlg.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysValEditItemDelegate.cpp
+    ${_SourcesPath}/ZSPhysValGUI/ZSPhysValEditWdgt.cpp
     ${_SourcesPath}/ZSPhysValGUI/ZSPhysValGUIDllMain.cpp
-    ${_SourcesPath}/ZSPhysValGUI/ZSPhysValWdgtEditPhysVal.cpp
 )
 
 list(APPEND _Resources

@@ -538,15 +538,44 @@ template<> const QVector<SEnumEntry> CEnum<EOrientation>::s_arEnumEntries =
 
 
 /*==============================================================================
-Enum EScaleDir
+Enum ELayoutPos
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<EScaleDir>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELayoutPos>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(EScaleDir::X), "X" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EScaleDir::Y), "Y" )
+    /* 0 */ SEnumEntry( static_cast<int>(ELayoutPos::Top), "Top" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ELayoutPos::Bottom), "Bottom" ),
+    /* 2 */ SEnumEntry( static_cast<int>(ELayoutPos::Left), "Left" ),
+    /* 3 */ SEnumEntry( static_cast<int>(ELayoutPos::Right), "Right" ),
+    /* 4 */ SEnumEntry( static_cast<int>(ELayoutPos::Center), "Center" )
+};
+
+
+/*==============================================================================
+Enum EScaleAxis
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EScaleAxis>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EScaleAxis::X), "X" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EScaleAxis::Y), "Y" )
+};
+
+
+/*==============================================================================
+Enum EYScaleAxisOrientation
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EYScaleAxisOrientation>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EYScaleAxisOrientation::TopDown), "TopDown", "TD", "Top Down" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EYScaleAxisOrientation::BottomUp), "BottomUp", "BU", "Bottom Up" )
 };
 
 

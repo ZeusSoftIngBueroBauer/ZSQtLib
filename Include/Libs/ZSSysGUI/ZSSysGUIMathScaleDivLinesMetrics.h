@@ -64,7 +64,9 @@ public: // class methods
     static QString NameSpace() { return "ZS::System::GUI::Math"; }
     static QString ClassName() { return "CScaleDivLinesMetrics"; }
 public: // ctors and dtor
-    CScaleDivLinesMetrics(const QString& i_strObjName, EScaleDir i_scaleDir);
+    CScaleDivLinesMetrics(const QString& i_strObjName, EScaleAxis i_scaleAxis);
+    CScaleDivLinesMetrics(const QString& i_strObjName, const CScaleDivLinesMetrics& i_other);
+    CScaleDivLinesMetrics(const CScaleDivLinesMetrics& i_other) = delete;
     ~CScaleDivLinesMetrics();
 public: // operators
     CScaleDivLinesMetrics& operator = (const ZS::System::Math::CScaleDivLines& i_other);

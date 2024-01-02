@@ -85,15 +85,6 @@ public: // ctors and dtor
     virtual ~CIdxTreeEntry();
 protected: // destructor
     void clear();
-public: // instance methods
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
 public: // overridable instance methods
     /*! Virtual method which must be reimplemented by derived classes to
         create an instance of the derived class. */
@@ -174,6 +165,8 @@ public: // instance methods (for branch entries)
     int size() const { return m_arpTreeEntries.size(); }
     /*! Returns the child entry at the given index. */
     CIdxTreeEntry* at( int i_idx ) const { return m_arpTreeEntries.at(i_idx); }
+    /*! Returns the child items. */
+    QVector<CIdxTreeEntry*> childs() const { return m_arpTreeEntries; }
 public: // instance methods (for branch entries)
     int indexOf( const CIdxTreeEntry* i_pChildTreeEntry ) const;
     int indexOf( const QString& i_strKeyInParentBranch ) const;

@@ -63,9 +63,6 @@ protected: // ctors
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 public: // dtor
     virtual ~CDlgRequestSequencer();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() override { return NameSpace(); }
-    virtual QString className() override { return ClassName(); }
 public: // instance methods (content of edit fields)
     void setSequencer( CRequestSequencer* i_pReqSeq );
 protected: // instance members

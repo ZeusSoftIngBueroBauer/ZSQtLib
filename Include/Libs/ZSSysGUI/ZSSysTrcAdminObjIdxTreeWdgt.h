@@ -68,9 +68,6 @@ public: // ctors and dtor
         CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr );
     virtual ~CWdgtIdxTreeTrcAdminObjs();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 protected slots:
     void onTreeViewExpanded( const QModelIndex& i_modelIdx );
 protected slots:

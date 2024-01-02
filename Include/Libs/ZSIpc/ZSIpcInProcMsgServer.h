@@ -91,9 +91,6 @@ public: // class methods
 public: // ctors and dtor
     CInProcMsgServer( const QString& i_strObjName, bool i_bTracingEnabled = true );
     virtual ~CInProcMsgServer();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 signals:
     void newConnection();
 public: // instance methods

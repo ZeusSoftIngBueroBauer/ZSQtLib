@@ -103,7 +103,7 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
     m_colUnitAtDivLines(Qt::black),
     m_fntUnitAtDivLines(),
     m_bShowUnitAtAxisLabel(false),
-    m_divLinesMetrics(i_strObjName, EScaleDir::X),
+    m_divLinesMetrics(i_strObjName, EScaleAxis::X),
     // calculated
     m_sizeDivLineLabelsMaxTextExtent(),
     m_rectAxisLabel(),
@@ -124,16 +124,16 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
     // label class. But the diagram needs to know to which scale object the
     // axis label object is linked to. So we need to set the member element of
     // the base class correspondingly.
-    switch( m_pDiagScale->getScaleDir() )
+    switch( m_pDiagScale->getScaleAxis() )
     {
-        case EScaleDir::X:
+        case EScaleAxis::X:
         {
-            m_arpDiagScale[static_cast<int>(EScaleDir::X)] = m_pDiagScale;
+            m_arpDiagScale[static_cast<int>(EScaleAxis::X)] = m_pDiagScale;
             break;
         }
-        case EScaleDir::Y:
+        case EScaleAxis::Y:
         {
-            m_arpDiagScale[static_cast<int>(EScaleDir::Y)] = m_pDiagScale;
+            m_arpDiagScale[static_cast<int>(EScaleAxis::Y)] = m_pDiagScale;
             break;
         }
         default:
@@ -149,11 +149,11 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
     m_bShowAxisLabel = !i_strAxisLabel.isEmpty();
     m_bShowUnitAtDivLines = true;
 
-    if (i_layoutPos == ELayoutPosTop || i_layoutPos == ELayoutPosBottom) {
+    if (i_layoutPos == ELayoutPos::Top || i_layoutPos == ELayoutPos::Bottom) {
         m_iSpacingDiagPartCenter2DivLineLabels = 6;
         m_iSpacingDivLineLabels2AxisLabel = 4;
     }
-    else if (i_layoutPos == ELayoutPosLeft || i_layoutPos == ELayoutPosRight) {
+    else if (i_layoutPos == ELayoutPos::Left || i_layoutPos == ELayoutPos::Right) {
             m_iSpacingDiagPartCenter2DivLineLabels = 4;
             m_iSpacingDivLineLabels2AxisLabel = 2;
     }
@@ -1353,7 +1353,7 @@ QSize CDiagObjAxisLabel::sizeHint()
         {
             bool bShowDivLineLabels = m_arbShowDivLineLabels[EDivLineLayerMain];
 
-            if (m_pDiagScale->getScaleDir() == EScaleDir::X)
+            if (m_pDiagScale->getScaleAxis() == EScaleAxis::X)
             {
                 // The axis label coveres the whole horizontal extent of the diagram.
                 cxWidth = pPixmapDiagram->getWidth();
@@ -1399,7 +1399,7 @@ QSize CDiagObjAxisLabel::sizeHint()
                         + m_sizeDivLineLabelsMaxTextExtent.height());
                 }
             }
-            else if (m_pDiagScale->getScaleDir() == EScaleDir::Y)
+            else if (m_pDiagScale->getScaleAxis() == EScaleAxis::Y)
             {
                 // The axis label coveres the whole vertical extent of the diagram.
                 cyHeight = pPixmapDiagram->getHeight();
@@ -1712,9 +1712,8 @@ void CDiagObjAxisLabel::updateLayout()
     {
         CScale scale = m_pDiagScale->getScale();
         scale.setUnit(m_unitLabels);
-        m_divLinesMetrics.setScaleMin(scale.minVal().getVal());
-        m_divLinesMetrics.setScaleMax(scale.maxVal().getVal());
-        m_divLinesMetrics.setScaleRes(scale.res().getVal());
+        m_divLinesMetrics.setScale(
+            scale.minVal().getVal(), scale.maxVal().getVal(), scale.res().getVal());
     }
 
     // If the unit string should be indicated in the area of the division line labels
@@ -1737,12 +1736,12 @@ void CDiagObjAxisLabel::updateLayout()
     // lines metrics calculator may have to be adjusted.
     m_sizeDivLineLabelsMaxTextExtent = m_divLinesMetrics.getDivLineLabelsMaxTextExtent();
     if (sizeDivLineLabelsPhysUnit.isValid()) {
-        if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom) {
+        if (m_layoutPos == ELayoutPos::Top || m_layoutPos == ELayoutPos::Bottom) {
             if (sizeDivLineLabelsPhysUnit.height() > m_sizeDivLineLabelsMaxTextExtent.height()) {
                 m_sizeDivLineLabelsMaxTextExtent.setHeight(sizeDivLineLabelsPhysUnit.height());
             }
         }
-        else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+        else if (m_layoutPos == ELayoutPos::Left || m_layoutPos == ELayoutPos::Right) {
             if (sizeDivLineLabelsPhysUnit.width() > m_sizeDivLineLabelsMaxTextExtent.width()) {
                 m_sizeDivLineLabelsMaxTextExtent.setWidth(sizeDivLineLabelsPhysUnit.width());
             }
@@ -2153,7 +2152,7 @@ QRect CDiagObjAxisLabel::getDivLineLabelsUnitBoundingRect() const
         //rect.setHeight(rect.height() + 2);
         //rect.setWidth(rect.width() + 2);
 
-        //if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+        //if (m_layoutPos == ELayoutPos::Left || m_layoutPos == ELayoutPos::Right) {
         //    // The label will be drawn rotated by 90 degrees.
         //    // The width becomes the height.
         //    int cyHeight = rect.height();
@@ -2207,7 +2206,7 @@ QSize CDiagObjAxisLabel::getAxisLabelTextExtent() const
         size.setHeight(size.height() + 2);
         size.setWidth(size.width() + 2);
 
-        if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+        if (m_layoutPos == ELayoutPos::Left || m_layoutPos == ELayoutPos::Right) {
             // The label will be drawn rotated by 90 degrees.
             // The width becomes the height.
             int cyHeight = size.height();
@@ -2248,7 +2247,7 @@ QRect CDiagObjAxisLabel::getAxisLabelBoundingRect() const
     {
         rect = m_rectAxisLabel;
 
-        if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom)
+        if (m_layoutPos == ELayoutPos::Top || m_layoutPos == ELayoutPos::Bottom)
         {
             int cyOffset = m_iSpacingDiagPartCenter2DivLineLabels
                          + m_sizeDivLineLabelsMaxTextExtent.height()
@@ -2258,14 +2257,14 @@ QRect CDiagObjAxisLabel::getAxisLabelBoundingRect() const
             }
             rect.moveLeft(m_rectContent.left() + m_rectContent.width()/2 - m_rectAxisLabel.width()/2);
 
-            if (m_layoutPos == ELayoutPosTop) {
+            if (m_layoutPos == ELayoutPos::Top) {
                 rect.moveBottom(m_rectContent.bottom() - cyOffset);
             }
             else {
                 rect.moveBottom(m_rectContent.top() + cyOffset);
             }
         }
-        else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight)
+        else if (m_layoutPos == ELayoutPos::Left || m_layoutPos == ELayoutPos::Right)
         {
             int cxOffset = m_iSpacingDiagPartCenter2DivLineLabels
                          + m_sizeDivLineLabelsMaxTextExtent.width()
@@ -2275,7 +2274,7 @@ QRect CDiagObjAxisLabel::getAxisLabelBoundingRect() const
             }
             rect.moveTop(m_rectContent.top() + m_rectContent.height()/2 - m_rectAxisLabel.height()/2);
 
-            if (m_layoutPos == ELayoutPosLeft) {
+            if (m_layoutPos == ELayoutPos::Left) {
                 rect.moveLeft(m_rectContent.right() - cxOffset);
             }
             else {
@@ -2401,22 +2400,22 @@ void CDiagObjAxisLabel::paintDivisionLines(QPaintDevice* i_pPaintDevice)
                 int iDivLine_px = m_divLinesMetrics.getDivLineInPix(iLayer, idxDivLine);
                 int x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 
-                if (m_layoutPos == ELayoutPosTop) {
+                if (m_layoutPos == ELayoutPos::Top) {
                     x1 = x2 = iDivLine_px;
                     y2 = m_rectContent.bottom();
                     y1 = y2 - m_iSpacingDiagPartCenter2DivLineLabels + 2;
                 }
-                else if (m_layoutPos == ELayoutPosBottom) {
+                else if (m_layoutPos == ELayoutPos::Bottom) {
                     x1 = x2 = iDivLine_px;
                     y1 = m_rectContent.top();
                     y2 = m_rectContent.top() + m_iSpacingDiagPartCenter2DivLineLabels - 2;
                 }
-                else if (m_layoutPos == ELayoutPosLeft) {
+                else if (m_layoutPos == ELayoutPos::Left) {
                     y1 = y2 = iDivLine_px;
                     x1 = m_rectContent.right();
                     x2 = x1 - m_iSpacingDiagPartCenter2DivLineLabels + 2;
                 }
-                else if (m_layoutPos == ELayoutPosRight) {
+                else if (m_layoutPos == ELayoutPos::Right) {
                     y1 = y2 = iDivLine_px;
                     x2 = m_rectContent.left();
                     x1 = x2 + m_iSpacingDiagPartCenter2DivLineLabels - 2;
@@ -2464,34 +2463,34 @@ void CDiagObjAxisLabel::paintDivisionLineLabels(QPaintDevice* i_pPaintDevice)
                     QRect rectDivLineLabel = m_divLinesMetrics.getDivLineLabelBoundingRect(iLayer, idxDivLine);
                     QRect rect;
 
-                    if (m_layoutPos == ELayoutPosTop) {
+                    if (m_layoutPos == ELayoutPos::Top) {
                         rect.setLeft(rectDivLineLabel.left());
                         rect.setRight(rect.left() + rectDivLineLabel.width());
                         rect.setBottom(m_rectContent.bottom() - m_iSpacingDiagPartCenter2DivLineLabels);
                         rect.setTop(rect.top() - rectDivLineLabel.height());
                     }
-                    else if (m_layoutPos == ELayoutPosBottom) {
+                    else if (m_layoutPos == ELayoutPos::Bottom) {
                         rect.setLeft(rectDivLineLabel.left());
                         rect.setRight(rect.left() + rectDivLineLabel.width());
                         rect.setTop(m_rectContent.top() + m_iSpacingDiagPartCenter2DivLineLabels);
                         rect.setBottom(rect.top() + rectDivLineLabel.height());
                     }
-                    else if (m_layoutPos == ELayoutPosLeft) {
+                    else if (m_layoutPos == ELayoutPos::Left) {
                         rect.setTop(rectDivLineLabel.top());
                         rect.setBottom(rect.top() + rectDivLineLabel.height());
                         rect.setRight(m_rectContent.right() - m_iSpacingDiagPartCenter2DivLineLabels);
                         rect.setLeft(rect.right() - rectDivLineLabel.width());
                     }
-                    else if (m_layoutPos == ELayoutPosRight) {
+                    else if (m_layoutPos == ELayoutPos::Right) {
                         rect.setTop( rectDivLineLabel.top());
                         rect.setBottom(rect.top() + rectDivLineLabel.height());
                         rect.setLeft(m_rectContent.left() + m_iSpacingDiagPartCenter2DivLineLabels);
                         rect.setRight(rect.left() + rectDivLineLabel.width());
                     }
-                    if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom) {
+                    if (m_layoutPos == ELayoutPos::Top || m_layoutPos == ELayoutPos::Bottom) {
                         painter.drawText(rect, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
                     }
-                    else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+                    else if (m_layoutPos == ELayoutPos::Left || m_layoutPos == ELayoutPos::Right) {
                         painter.drawText(rect, Qt::AlignVCenter|Qt::AlignRight, strDivLineLabel);
                     }
                 }
@@ -2516,7 +2515,7 @@ void CDiagObjAxisLabel::paintDivisionLineLabelsUnit(QPaintDevice* i_pPaintDevice
 
     QPainter painter(i_pPaintDevice);
 
-    //if (m_divLinesMetrics.scaleDir() == EScaleDir::Y) {
+    //if (m_divLinesMetrics.scaleAxis() == EScaleAxis::Y) {
     //    painter.setPen(Qt::red);
     //    painter.setBrush(Qt::yellow);
     //    painter.drawRect(m_rectContent);
@@ -2546,7 +2545,7 @@ void CDiagObjAxisLabel::paintScaleMinMaxVals(QPaintDevice* i_pPaintDevice)
 
     QPainter painter(i_pPaintDevice);
 
-    //if (m_divLinesMetrics.scaleDir() == EScaleDir::Y) {
+    //if (m_divLinesMetrics.scaleAxis() == EScaleAxis::Y) {
     //    painter.setPen(Qt::red);
     //    painter.setBrush(Qt::yellow);
     //    painter.drawRect(m_rectContent);
@@ -2589,10 +2588,10 @@ void CDiagObjAxisLabel::paintAxisLabel(QPaintDevice* i_pPaintDevice)
         QPainter painter(i_pPaintDevice);
         painter.setFont(m_fntAxisLabel);
         painter.setPen(m_colAxisLabel);
-        if (m_layoutPos == ELayoutPosTop || m_layoutPos == ELayoutPosBottom) {
+        if (m_layoutPos == ELayoutPos::Top || m_layoutPos == ELayoutPos::Bottom) {
             painter.drawText(m_rectAxisLabel, Qt::AlignVCenter|Qt::AlignHCenter, strAxisLabel);
         }
-        else if (m_layoutPos == ELayoutPosLeft || m_layoutPos == ELayoutPosRight) {
+        else if (m_layoutPos == ELayoutPos::Left || m_layoutPos == ELayoutPos::Right) {
             #if QT_VERSION < 0x050000
             QMatrix matrix;
             #else

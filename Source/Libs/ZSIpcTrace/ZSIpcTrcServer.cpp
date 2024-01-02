@@ -397,8 +397,8 @@ CIpcTrcServer::CIpcTrcServer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strMthInArgs       */ "" );
@@ -461,8 +461,8 @@ CIpcTrcServer::~CIpcTrcServer()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strMthInArgs       */ "" );
@@ -566,8 +566,8 @@ void CIpcTrcServer::setEnabled( bool i_bEnabled )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setEnabled",
         /* strMthInArgs       */ strMthInArgs );
@@ -607,8 +607,8 @@ void CIpcTrcServer::setNewTrcAdminObjsEnabledAsDefault( bool i_bEnabled )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setNewTrcAdminObjsEnabledAsDefault",
         /* strMthInArgs       */ strMthInArgs );
@@ -648,8 +648,8 @@ void CIpcTrcServer::setNewTrcAdminObjsMethodCallsDefaultDetailLevel( EMethodTrac
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setNewTrcAdminObjsMethodCallsDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
@@ -690,8 +690,8 @@ void CIpcTrcServer::setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel( ELogDetailL
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setNewTrcAdminObjsRuntimeInfoDefaultDetailLevel",
         /* strMthInArgs       */ strMthInArgs );
@@ -736,8 +736,8 @@ void CIpcTrcServer::setAdminObjFileAbsoluteFilePath( const QString& i_strAbsFile
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setAdminObjFileAbsoluteFilePath",
         /* strMthInArgs       */ strMthInArgs );
@@ -781,8 +781,8 @@ void CIpcTrcServer::setUseLocalTrcFile( bool i_bUse )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setUseLocalTrcFile",
         /* strMthInArgs       */ strMthInArgs );
@@ -822,8 +822,8 @@ void CIpcTrcServer::setLocalTrcFileAbsoluteFilePath( const QString& i_strAbsFile
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileAbsoluteFilePath",
         /* strMthInArgs       */ strMthInArgs );
@@ -864,8 +864,8 @@ void CIpcTrcServer::setLocalTrcFileAutoSaveIntervalInMs( int i_iAutoSaveInterval
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileAutoSaveIntervalInMs",
         /* strMthInArgs       */ strMthInArgs );
@@ -905,8 +905,8 @@ void CIpcTrcServer::setLocalTrcFileSubFileCountMax( int i_iCountMax )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileSubFileCountMax",
         /* strMthInArgs       */ strMthInArgs );
@@ -946,8 +946,8 @@ void CIpcTrcServer::setLocalTrcFileSubFileLineCountMax( int i_iCountMax )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileSubFileLineCountMax",
         /* strMthInArgs       */ strMthInArgs );
@@ -987,8 +987,8 @@ void CIpcTrcServer::setLocalTrcFileCloseFileAfterEachWrite( bool i_bCloseFile )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setLocalTrcFileCloseFileAfterEachWrite",
         /* strMthInArgs       */ strMthInArgs );
@@ -1032,8 +1032,8 @@ void CIpcTrcServer::setUseIpcServer( bool i_bUse )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setUseIpcServer",
         /* strMthInArgs       */ strMthInArgs );
@@ -1073,8 +1073,8 @@ void CIpcTrcServer::setCacheTrcDataIfNotConnected( bool i_bCacheData )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setCacheTrcDataIfNotConnected",
         /* strMthInArgs       */ strMthInArgs );
@@ -1114,8 +1114,8 @@ void CIpcTrcServer::setCacheTrcDataMaxArrLen( int i_iMaxArrLen )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setCacheTrcDataMaxArrLen",
         /* strMthInArgs       */ strMthInArgs );
@@ -1158,8 +1158,8 @@ void CIpcTrcServer::setTraceSettings( const STrcServerSettings& i_settings )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setTraceSettings",
         /* strMthInArgs       */ strMthInArgs );
@@ -1665,8 +1665,8 @@ CRequest* CIpcTrcServer::startup( int i_iTimeout_ms, bool i_bWait, qint64 i_iReq
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "startup",
         /* strMthInArgs       */ strMthInArgs );
@@ -1692,8 +1692,8 @@ CRequest* CIpcTrcServer::shutdown( int i_iTimeout_ms, bool i_bWait, qint64 i_iRe
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "shutdown",
         /* strMthInArgs       */ strMthInArgs );
@@ -1870,8 +1870,8 @@ void CIpcTrcServer::abortRequest( qint64 i_iRequestId )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequest",
         /* strMthInArgs       */ strMthInArgs );
@@ -1894,8 +1894,8 @@ void CIpcTrcServer::abortRequestInProgress()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortRequestInProgress",
         /* strMthInArgs       */ strMthInArgs );
@@ -1918,8 +1918,8 @@ void CIpcTrcServer::abortAllRequests()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "abortAllRequests",
         /* strMthInArgs       */ strMthInArgs );
@@ -1954,8 +1954,8 @@ void CIpcTrcServer::sendBranch(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendBranch",
         /* strMthInArgs       */ strMthInArgs );
@@ -2047,8 +2047,8 @@ void CIpcTrcServer::sendAdminObj(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendAdminObj",
         /* strMthInArgs       */ strMthInArgs );
@@ -2120,8 +2120,8 @@ void CIpcTrcServer::sendServerSettings(int i_iSocketId)
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendServerSettings",
         /* strMthInArgs       */ strMthInArgs );
@@ -2172,8 +2172,8 @@ void CIpcTrcServer::sendCachedTrcData(int i_iSocketId)
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendCachedTrcData",
         /* strMthInArgs       */ strMthInArgs );
@@ -2235,8 +2235,8 @@ CRequest* CIpcTrcServer::sendData( int i_iSocketId, const QByteArray& i_byteArr,
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "sendData",
         /* strMthInArgs       */ strMthInArgs );
@@ -2270,8 +2270,8 @@ void CIpcTrcServer::onIpcServerConnected( QObject* /*i_pServer*/, const SSocketD
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerConnected",
         /* strMthInArgs       */ strMthInArgs );
@@ -2320,8 +2320,8 @@ void CIpcTrcServer::onIpcServerDisconnected( QObject* /*i_pServer*/, const SSock
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerDisconnected",
         /* strMthInArgs       */ strMthInArgs );
@@ -2363,8 +2363,8 @@ void CIpcTrcServer::onIpcServerReceivedData(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerReceivedData",
         /* strMthInArgs       */ strMthInArgs );
@@ -2456,8 +2456,8 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerReceivedReqSelect",
         /* strMthInArgs       */ strMthInArgs );
@@ -2527,7 +2527,7 @@ void CIpcTrcServer::onIpcServerReceivedReqSelect( int i_iSocketId, const QString
     {
         if( CErrLog::GetInstance() != nullptr )
         {
-            SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+            SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileReadContent);
@@ -2558,8 +2558,8 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onIpcServerReceivedReqUpdate",
         /* strMthInArgs       */ strMthInArgs );
@@ -2923,7 +2923,7 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
     {
         if( CErrLog::GetInstance() != nullptr )
         {
-            SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+            SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
             errResultInfo.setSeverity(EResultSeverityError);
             errResultInfo.setResult(EResultFileReadContent);
@@ -2965,8 +2965,8 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAdded( const QString& i_strKeyInTre
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryAdded",
         /* strMthInArgs       */ strMthInArgs );
@@ -3025,8 +3025,8 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryAboutToBeRemoved(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryAboutToBeRemoved",
         /* strMthInArgs       */ strMthInArgs );
@@ -3081,8 +3081,8 @@ void CIpcTrcServer::onTrcAdminObjIdxTreeEntryChanged( const QString& i_strKeyInT
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onTrcAdminObjIdxTreeEntryChanged",
         /* strMthInArgs       */ strMthInArgs );
@@ -3163,8 +3163,8 @@ bool CIpcTrcServer::event( QEvent* i_pMsg )
             /* pTrcMthFile        */ m_pTrcMthFile,
             /* eTrcDetailLevel    */ m_eTrcDetailLevel,
             /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-            /* strNameSpace       */ nameSpace(),
-            /* strClassName       */ className(),
+            /* strNameSpace       */ NameSpace(),
+            /* strClassName       */ ClassName(),
             /* strObjName         */ objectName(),
             /* strMethod          */ "event",
             /* strAddInfo         */ strAddTrcInfo );

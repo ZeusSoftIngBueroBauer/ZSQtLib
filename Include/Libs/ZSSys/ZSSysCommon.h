@@ -111,10 +111,9 @@ namespace System {
 enum class EMode
 //==============================================================================
 {
-    Edit       = 0, /*!< Indicates that the control is in Edit mode. */
-    View       = 1, /*!< Indicates that the control is in View mode (alias for Simulation mode). */
-    Undefined  = 2, /*!< Indicates that the control is in Undefined mode. */
-    Ignore     = 2  /*!< Indicates that the Mode parameter should be ignored (alias for Undefined mode). */
+    Edit      = 0, /*!< Indicates that the control is in Edit mode. */
+    View      = 1, /*!< Indicates that the control is in View mode. */
+    Undefined = 2 /*!< Indicates that the control is in Undefined mode. */
 };
 } }
 
@@ -434,7 +433,6 @@ namespace System {
 typedef CEnum<ESearchDirection> CEnumSearchDirection;
 } }
 
-
 namespace ZS {
 namespace System {
 //==============================================================================
@@ -552,13 +550,35 @@ typedef CEnum<EOrientation> CEnumOrientation;
 namespace ZS {
 namespace System {
 //==============================================================================
-/*! Scale orientations.
+/*! Layout positions
+*/
+enum class ELayoutPos {
+//==============================================================================
+    Top    = 0,
+    Bottom = 1,
+    Left   = 2,
+    Right  = 3,
+    Center = 4,
+};
+} } // ZS::System
+
+template class ZSSYSDLL_API CEnum<ZS::System::ELayoutPos>;
+namespace ZS {
+namespace System {
+typedef CEnum<ELayoutPos> CEnumLayoutPos;
+} } // ZS::System
+
+
+namespace ZS {
+namespace System {
+//==============================================================================
+/*! Scale axis.
 
     @see ZS::System::SEnumEntry
     @see ZS::System::CEnum
     @see _GRP_BasicConcepts_Enumerations
 */
-enum class EScaleDir {
+enum class EScaleAxis {
 //==============================================================================
     X,  /*!< X (horizontal) scale orientation. */
     Y   /*!< Y (vertical ) scale orientation. */
@@ -566,21 +586,43 @@ enum class EScaleDir {
 } }
 
 // template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
-template class ZSSYSDLL_API CEnum<ZS::System::EScaleDir>;
+template class ZSSYSDLL_API CEnum<ZS::System::EScaleAxis>;
 namespace ZS {
 namespace System {
-typedef CEnum<EScaleDir> CEnumScaleDir;
+typedef CEnum<EScaleAxis> CEnumScaleAxis;
 
 // To make the code more readable:
-const int EScaleDirX = static_cast<int>(EScaleDir::X);
-const int EScaleDirY = static_cast<int>(EScaleDir::Y);
+const int EScaleAxisX = static_cast<int>(EScaleAxis::X);
+const int EScaleAxisY = static_cast<int>(EScaleAxis::Y);
+} }
+
+namespace ZS {
+namespace System {
+//==============================================================================
+/*! Orientation of the Y scale axis.
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EYScaleAxisOrientation {
+//==============================================================================
+    TopDown, /*!< Y scale orientation is from top to bottom. */
+    BottomUp /*!< Y scale orientation is from bottom to top. */
+};
+} }
+
+template class ZSSYSDLL_API CEnum<ZS::System::EYScaleAxisOrientation>;
+namespace ZS {
+namespace System {
+typedef CEnum<EYScaleAxisOrientation> CEnumYScaleAxisOrientation;
 } }
 
 
 namespace ZS {
 namespace System {
 //==============================================================================
-/*! Spacing of diagram scales which could be either linear or logarithmic.
+/*! Spacing of scales which could be either linear or logarithmic.
 
     @see ZS::System::SEnumEntry
     @see ZS::System::CEnum
@@ -709,14 +751,6 @@ enum class EDimensionType
 };
 } }
 
-//#ifdef _WINDOWS
-//#pragma warning( push )
-//#pragma warning( disable : 4661 )
-//#elif defined __linux__
-//#pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wunused-result"
-//#pragma GCC diagnostic pop
-//#endif
 // template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
 template class ZSSYSDLL_API CEnum<ZS::System::EDimensionType>;
 namespace ZS {
@@ -743,7 +777,10 @@ ZSSYSDLL_API void getMinMaxArrayRange( int i_iArrIdx, int i_iArrLen, int* o_pIdx
 ZSSYSDLL_API void getMinMaxArrayRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, int* o_pIdxMin, int* o_pIdxMax );
 ZSSYSDLL_API void getMinCountArrayRange( int i_idxStart, int i_iArrLen, int* o_pIdxMin, int* o_piIdxCount );
 ZSSYSDLL_API void getMinCountArrayRange( int i_idxStart, int i_iIdxCount, int i_iArrLen, int* o_pIdxMin, int* o_pIdxCount );
+} }
 
+namespace ZS {
+namespace System {
 //==============================================================================
 /*! Predefined trace detail levels for method calls.
 
@@ -822,10 +859,6 @@ namespace ZS {
 namespace System {
 typedef CEnum<ELogDetailLevel> CEnumLogDetailLevel;
 } }
-
-//} // namespace System
-
-//} // namespace ZS
 
 #ifdef _WINDOWS
 #pragma warning( pop )

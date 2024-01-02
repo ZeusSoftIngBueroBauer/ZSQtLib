@@ -101,6 +101,7 @@ const QString c_strSymbolDegree = QString::fromLatin1("\u00b0");
 const QString c_strSymbolMicro = QString::fromLatin1("\u00b5");
 
 double ZSSYSDLL_API sqr( double i_fVal );
+double ZSSYSDLL_API sqrt( double i_fVal );
 double ZSSYSDLL_API abs( double i_fVal );
 double ZSSYSDLL_API rad2Deg( double i_fVal_rad, bool i_bNormalize = true );
 double ZSSYSDLL_API deg2Rad( double i_fVal_deg, bool i_bNormalize = true );
