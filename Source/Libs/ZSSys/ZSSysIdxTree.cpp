@@ -1046,7 +1046,7 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strPath ) const
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
     }
 
@@ -1140,7 +1140,7 @@ CIdxTreeEntry* CIdxTree::findBranch( const QString& i_strParentPath, const QStri
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
     }
 
@@ -1228,7 +1228,7 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strPath ) const
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
     }
 
@@ -1322,7 +1322,7 @@ CIdxTreeEntry* CIdxTree::findLeave( const QString& i_strParentPath, const QStrin
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(pTreeEntry == nullptr ? "null" : pTreeEntry->keyInTree());
     }
 

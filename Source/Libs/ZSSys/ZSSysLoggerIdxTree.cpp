@@ -574,7 +574,7 @@ void CIdxTreeLoggers::setDataFilter(
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
     } // if( i_pBranch != nullptr )
-} // setTraceDataFilter
+} // setDataFilter
 
 /*==============================================================================
 public: // overridables

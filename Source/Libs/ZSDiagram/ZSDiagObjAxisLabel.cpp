@@ -1471,7 +1471,7 @@ QSize CDiagObjAxisLabel::sizeHint()
     } // if( isVisible() )
 
     QSize size(cxWidth, cyHeight);
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(qSize2Str(size));
     }

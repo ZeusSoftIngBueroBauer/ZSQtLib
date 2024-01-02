@@ -967,18 +967,14 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strMthRet;
-
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "NameSpace: " + i_strNameSpace;
-        strMthInArgs += ", ClassName: " + i_strClassName;
-        strMthInArgs += ", ObjName: " + i_strObjName;
-        strMthInArgs += ", EnabledAsDefault: " + i_strEnabledAsDefault;
-        strMthInArgs += ", MethodCallsDefault: " + i_strMethodCallsDefaultDetailLevel;
-        strMthInArgs += ", RuntimeInfoDefault: " + i_strRuntimeInfoDefaultDetailLevel;
+    if (m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "NameSpace: " + i_strNameSpace +
+            ", ClassName: " + i_strClassName +
+            ", ObjName: " + i_strObjName +
+            ", EnabledAsDefault: " + i_strEnabledAsDefault +
+            ", MethodCallsDefault: " + i_strMethodCallsDefaultDetailLevel +
+            ", RuntimeInfoDefault: " + i_strRuntimeInfoDefaultDetailLevel;
     }
-
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
@@ -997,70 +993,58 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
-    if( !eEnabledAsDefault.isValid() )
-    {
+    if( !eEnabledAsDefault.isValid() ) {
         SErrResultInfo errResultInfo(
             /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "EnabledAsDefault " + i_strEnabledAsDefault + " is out of range");
-        if( CErrLog::GetInstance() != nullptr )
-        {
+        if( CErrLog::GetInstance() != nullptr ) {
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-    else if( !eMethodCallsDefaultDetailLevel.isValid() )
-    {
+    else if( !eMethodCallsDefaultDetailLevel.isValid() ) {
         SErrResultInfo errResultInfo(
             /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "MethodCallsDefaultDetailLevel " + i_strMethodCallsDefaultDetailLevel + " is out of range");
-        if( CErrLog::GetInstance() != nullptr )
-        {
+        if( CErrLog::GetInstance() != nullptr ) {
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-    else if( !eRuntimeInfoDefaultDetailLevel.isValid() )
-    {
+    else if( !eRuntimeInfoDefaultDetailLevel.isValid() ) {
         SErrResultInfo errResultInfo(
             /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "RuntimeInfoDefaultDetailLevel " + i_strRuntimeInfoDefaultDetailLevel + " is out of range");
-        if( CErrLog::GetInstance() != nullptr )
-        {
+        if( CErrLog::GetInstance() != nullptr ) {
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-    else if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
-    {
+    else if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() ) {
         SErrResultInfo errResultInfo(
             /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
-        if( CErrLog::GetInstance() != nullptr )
-        {
+        if( CErrLog::GetInstance() != nullptr ) {
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-    else
-    {
+    else {
         EEnabled eEnabled = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
         EMethodTraceDetailLevel eDetailLevelMethodCalls = m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;
         ELogDetailLevel eDetailLevelRuntimeInfo = m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
 
-        if( eEnabledAsDefault != EEnabled::Undefined )
-        {
+        if( eEnabledAsDefault != EEnabled::Undefined ) {
             eEnabled = eEnabledAsDefault.enumerator();
         }
-        if( eMethodCallsDefaultDetailLevel != EMethodTraceDetailLevel::Undefined )
-        {
+        if( eMethodCallsDefaultDetailLevel != EMethodTraceDetailLevel::Undefined ) {
             eDetailLevelMethodCalls = eMethodCallsDefaultDetailLevel.enumerator();
         }
-        if( eRuntimeInfoDefaultDetailLevel != ELogDetailLevel::Undefined )
-        {
+        if( eRuntimeInfoDefaultDetailLevel != ELogDetailLevel::Undefined ) {
             eDetailLevelRuntimeInfo = eRuntimeInfoDefaultDetailLevel.enumerator();
         }
 
@@ -1071,24 +1055,23 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
             /* bEnabledAsDefault              */ eEnabled,
             /* eDefaultDetailLevelMethodCalls */ eDetailLevelMethodCalls,
             /* eDefaultDetailLevelRuntimeInfo */ eDetailLevelRuntimeInfo,
+            /* strObjNameilter                */ QString(),
+            /* strMethodNameFilter            */ QString(),
             /* strDefaultDataFilter           */ QString(),
             /* bIncrementRefCount             */ true );
         QQmlEngine::setObjectOwnership(pTrcAdminObj, QQmlEngine::CppOwnership);
 
-        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-        {
-            if( pTrcAdminObj != nullptr )
-            {
+        if (m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+            QString strMthRet;
+            if (pTrcAdminObj != nullptr) {
                 strMthRet = pTrcAdminObj->getCalculatedKeyInTree();
             }
-            else
-            {
+            else {
                 strMthRet = "nullptr";
             }
             mthTracer.setMethodReturn(strMthRet);
         }
-    } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
-
+    }
     return pTrcAdminObj;
 
 } // getTraceAdminObj
@@ -1105,12 +1088,9 @@ void CTrcServer::releaseTraceAdminObj( CTrcAdminObj* i_pTrcAdminObj )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal ) {
         strMthInArgs = i_pTrcAdminObj == nullptr ? "nullptr" : i_pTrcAdminObj->getCalculatedKeyInTree();
     }
-
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
@@ -1157,18 +1137,14 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-    QString strMthRet;
-
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs  = "NameSpace: " + i_strNameSpace;
-        strMthInArgs += ", ClassName: " + i_strClassName;
-        strMthInArgs += ", ObjName: " + i_strObjName;
-        strMthInArgs += ", EnabledAsDefault: " + CEnumEnabled::toString(i_eEnabledAsDefault);
-        strMthInArgs += ", MethodCallsDefault: " + CEnumMethodTraceDetailLevel(i_eMethodCallsDefaultDetailLevel).toString();
-        strMthInArgs += ", RuntimeInfoDefault: " + CEnumLogDetailLevel(i_eRuntimeInfoDefaultDetailLevel).toString();
+    if (m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strMthInArgs = "NameSpace: " + i_strNameSpace +
+            ", ClassName: " + i_strClassName +
+            ", ObjName: " + i_strObjName +
+            ", EnabledAsDefault: " + CEnumEnabled::toString(i_eEnabledAsDefault) +
+            ", MethodCallsDefault: " + CEnumMethodTraceDetailLevel(i_eMethodCallsDefaultDetailLevel).toString() +
+            ", RuntimeInfoDefault: " + CEnumLogDetailLevel(i_eRuntimeInfoDefaultDetailLevel).toString();
     }
-
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,
@@ -1183,35 +1159,28 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
 
     CTrcAdminObj* pTrcAdminObj = nullptr;
 
-    if( i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty() )
-    {
+    if (i_strObjName.isEmpty() && i_strClassName.isEmpty() && i_strNameSpace.isEmpty()) {
         SErrResultInfo errResultInfo(
             /* errSource     */ nameSpace(), className(), objectName(), "getTraceAdminObj",
             /* result        */ EResultArgOutOfRange,
             /* severity      */ EResultSeverityError,
             /* strAddErrInfo */ "Neither NameSpace nor ClassName nor ObjectName defined");
-
-        if( CErrLog::GetInstance() != nullptr )
-        {
+        if (CErrLog::GetInstance() != nullptr) {
             CErrLog::GetInstance()->addEntry(errResultInfo);
         }
     }
-    else // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
-    {
+    else {
         EEnabled eEnabled = m_trcSettings.m_bNewTrcAdminObjsEnabledAsDefault ? EEnabled::Yes : EEnabled::No;
         EMethodTraceDetailLevel eDetailLevelMethodCalls = m_trcSettings.m_eNewTrcAdminObjsMethodCallsDefaultDetailLevel;
         ELogDetailLevel eDetailLevelRuntimeInfo = m_trcSettings.m_eNewTrcAdminObjsRuntimeInfoDefaultDetailLevel;
 
-        if( i_eEnabledAsDefault != EEnabled::Undefined )
-        {
+        if( i_eEnabledAsDefault != EEnabled::Undefined ) {
             eEnabled = i_eEnabledAsDefault;
         }
-        if( i_eMethodCallsDefaultDetailLevel != EMethodTraceDetailLevel::Undefined )
-        {
+        if( i_eMethodCallsDefaultDetailLevel != EMethodTraceDetailLevel::Undefined ) {
             eDetailLevelMethodCalls = i_eMethodCallsDefaultDetailLevel;
         }
-        if( i_eRuntimeInfoDefaultDetailLevel != ELogDetailLevel::Undefined )
-        {
+        if( i_eRuntimeInfoDefaultDetailLevel != ELogDetailLevel::Undefined ) {
             eDetailLevelRuntimeInfo = i_eRuntimeInfoDefaultDetailLevel;
         }
 
@@ -1222,24 +1191,23 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
             /* eEnabledAsDefault              */ eEnabled,
             /* eDefaultDetailLevelMethodCalls */ eDetailLevelMethodCalls,
             /* eDefaultDetailLevelRuntimeInfo */ eDetailLevelRuntimeInfo,
+            /* strObjNameFilter               */ QString(),
+            /* strMethodNameFilter            */ QString(),
             /* strDefaultDataFilter           */ QString(),
             /* bIncrementRefCount             */ true );
         QQmlEngine::setObjectOwnership(pTrcAdminObj, QQmlEngine::CppOwnership);
 
-        if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-        {
-            if( pTrcAdminObj != nullptr )
-            {
+        if (m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+            QString strMthRet;
+            if (pTrcAdminObj != nullptr) {
                 strMthRet = pTrcAdminObj->getCalculatedKeyInTree();
             }
-            else
-            {
+            else {
                 strMthRet = "nullptr";
             }
             mthTracer.setMethodReturn(strMthRet);
         }
-    } // if( !i_strObjName.isEmpty() || !i_strClassName.isEmpty() || !i_strNameSpace.isEmpty() )
-
+    }
     return pTrcAdminObj;
 
 } // getTraceAdminObj
@@ -1269,13 +1237,10 @@ CTrcAdminObj* CTrcServer::renameTraceAdminObj(
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strMthInArgs = QString(i_pTrcAdminObj == nullptr ? "nullptr" : (i_pTrcAdminObj)->getCalculatedKeyInTree());
-        strMthInArgs += ", NewObjName: " + i_strNewObjName;
+    if( m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal ) {
+        strMthInArgs = QString(i_pTrcAdminObj == nullptr ? "nullptr" : (i_pTrcAdminObj)->getCalculatedKeyInTree()) +
+            ", NewObjName: " + i_strNewObjName;
     }
-
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcDetailLevel,

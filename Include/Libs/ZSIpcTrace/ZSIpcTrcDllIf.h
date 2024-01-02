@@ -198,6 +198,12 @@ public: // instance methods
     ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
+    void setObjectNameFilter( const char* i_szFilter );
+    char* getObjectNameFilter() const;  // returned character string must be freed by caller
+    bool isObjectNameSuppressedByFilter( const char* i_szObjName ) const;
+    void setMethodNameFilter( const char* i_szFilter );
+    char* getMethodNameFilter() const;  // returned character string must be freed by caller
+    bool isMethodNameSuppressedByFilter( const char* i_szMethodName ) const;
     void setTraceDataFilter( const char* i_szFilter );
     char* getTraceDataFilter() const;  // returned character string must be freed by caller
     bool isTraceDataSuppressedByFilter( const char* i_szTraceData ) const;
@@ -231,6 +237,8 @@ public: // ctors and dtor
     ~CMethodTracer();
 public: // instance methods
     void onAdminObjAboutToBeReleased();
+    bool isObjectNameSuppressedByFilter( const char* i_szObjName ) const;
+    bool isMethodNameSuppressedByFilter( const char* i_szMethodName ) const;
     bool isTraceDataSuppressedByFilter( const char* i_szTraceData ) const;
 public: // instance methods
     EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;

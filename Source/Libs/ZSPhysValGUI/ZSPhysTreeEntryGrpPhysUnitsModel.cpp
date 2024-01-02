@@ -213,7 +213,7 @@ CModelPhysUnitsGrp::CModelPhysUnitsGrp(QObject* i_pObjParent) :
 
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
     CMethodTracer mthTracer(
@@ -287,7 +287,7 @@ void CModelPhysUnitsGrp::setKeyInTreeOfRootEntry( const QString& i_strKeyInTree 
 {
     #ifdef ZS_TRACE_GUI_MODELS
     QString strMthInArgs;
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strKeyInTree;
     }
@@ -406,7 +406,7 @@ int CModelPhysUnitsGrp::columnCount( const QModelIndex& i_modelIdxParent ) const
     }
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(iClmCount);
     }
     #endif
@@ -512,7 +512,7 @@ QVariant CModelPhysUnitsGrp::headerData(
     } // if( m_viewMode == EViewModeContingencyTable )
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(varData.toString());
     }
     #endif
@@ -649,7 +649,7 @@ QVariant CModelPhysUnitsGrp::data( const QModelIndex& i_modelIdx, int i_iRole ) 
     } // if( pUnit != nullptr && s_rolesHandled.contains(iRole) )
 
     #ifdef ZS_TRACE_GUI_MODELS
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) ) {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(varData.toString());
     }
     #endif

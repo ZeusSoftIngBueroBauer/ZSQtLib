@@ -1934,20 +1934,20 @@ protected: // instance methods to recursively send index tree entries to the con
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::sendBranch(
-    int                         i_iSocketId,
+    int i_iSocketId,
     MsgProtocol::TSystemMsgType i_systemMsgType,
-    MsgProtocol::TCommand       i_cmd,
-    CIdxTreeEntry*              i_pBranch )
+    MsgProtocol::TCommand i_cmd,
+    CIdxTreeEntry* i_pBranch )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
-        strMthInArgs += ", MsgType: " + systemMsgType2Str(i_systemMsgType);
-        strMthInArgs += ", Cmd: " + command2Str(i_cmd);
-        strMthInArgs += ", Branch: " + QString(i_pBranch == nullptr ? "null" : i_pBranch->keyInTree());
+        strMthInArgs = "SocketId: " + QString::number(i_iSocketId) +
+            ", MsgType: " + systemMsgType2Str(i_systemMsgType) +
+            ", Cmd: " + command2Str(i_cmd) +
+            ", Branch: " + QString(i_pBranch == nullptr ? "null" : i_pBranch->keyInTree());
     }
 
     CMethodTracer mthTracer(
@@ -2025,22 +2025,22 @@ protected: // instance methods to send admin objects to the connected clients
 
 //------------------------------------------------------------------------------
 void CIpcTrcServer::sendAdminObj(
-    int                         i_iSocketId,
+    int i_iSocketId,
     MsgProtocol::TSystemMsgType i_systemMsgType,
-    MsgProtocol::TCommand       i_cmd,
-    const QString&              i_strKeyInTree,
-    int                         i_idxInTree )
+    MsgProtocol::TCommand i_cmd,
+    const QString& i_strKeyInTree,
+    int i_idxInTree )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if( m_pTrcMthFile != nullptr && m_eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
-        strMthInArgs  = "SocketId: " + QString::number(i_iSocketId);
-        strMthInArgs += ", MsgType: " + systemMsgType2Str(i_systemMsgType);
-        strMthInArgs += ", Cmd: " + command2Str(i_cmd);
-        strMthInArgs += ", TrcAdminObj: " + i_strKeyInTree;
-        strMthInArgs += ", IdxInTree: " + QString::number(i_idxInTree);
+        strMthInArgs = "SocketId: " + QString::number(i_iSocketId) +
+            ", MsgType: " + systemMsgType2Str(i_systemMsgType) +
+            ", Cmd: " + command2Str(i_cmd) +
+            ", TrcAdminObj: " + i_strKeyInTree +
+            ", IdxInTree: " + QString::number(i_idxInTree);
     }
 
     CMethodTracer mthTracer(
@@ -2084,6 +2084,8 @@ void CIpcTrcServer::sendAdminObj(
             strMsg += " Enabled=\"" + CEnumEnabled::toString(pTrcAdminObj->getEnabled()) + "\"";
             strMsg += " MethodCallsDetailLevel=\"" + CEnumMethodTraceDetailLevel(pTrcAdminObj->getMethodCallsTraceDetailLevel()).toString() + "\"";
             strMsg += " RuntimeInfoDetailLevel=\"" + CEnumLogDetailLevel(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()).toString() + "\"";
+            strMsg += " ObjectNameFilter=\"" + pTrcAdminObj->getObjectNameFilter() + "\"";
+            strMsg += " MethodNameFilter=\"" + pTrcAdminObj->getMethodNameFilter() + "\"";
             strMsg += " DataFilter=\"" + pTrcAdminObj->getTraceDataFilter() + "\"";
             strMsg += " RefCount=\"" + QString::number(pTrcAdminObj->getRefCount()) + "\"";
         }
@@ -2579,6 +2581,10 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
     int      iVal;
     int      iObjId;
     EEnabled enabled;
+    bool     bSetObjNameFilter;
+    QString  strObjNameFilter;
+    bool     bSetMethodNameFilter;
+    QString  strMethodNameFilter;
     bool     bSetDataFilter;
     QString  strDataFilter;
     bool     bOk;
@@ -2720,6 +2726,10 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                 {
                     iObjId = -1;
                     enabled = EEnabled::Undefined;
+                    bSetObjNameFilter = false;
+                    strObjNameFilter = "";
+                    bSetMethodNameFilter = false;
+                    strMethodNameFilter = "";
                     bSetDataFilter = false;
                     strDataFilter = "";
                     eDetailLevelMethodCalls = EMethodTraceDetailLevel::None;
@@ -2760,6 +2770,16 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         {
                             xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjectNameFilter") )
+                    {
+                        strObjNameFilter = xmlStreamReader.attributes().value("ObjectNameFilter").toString();
+                        bSetObjNameFilter = true;
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("MethodNameFilter") )
+                    {
+                        strMethodNameFilter = xmlStreamReader.attributes().value("MethodNameFilter").toString();
+                        bSetMethodNameFilter = true;
                     }
                     if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
                     {
@@ -2784,6 +2804,12 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             pTrcAdminObj->setEnabled(enabled);
                             pTrcAdminObj->setMethodCallsTraceDetailLevel(eDetailLevelMethodCalls);
                             pTrcAdminObj->setRuntimeInfoTraceDetailLevel(eDetailLevelRuntimeInfo);
+                            if( bSetObjNameFilter ) {
+                                pTrcAdminObj->setObjectNameFilter(strObjNameFilter);
+                            }
+                            if( bSetMethodNameFilter ) {
+                                pTrcAdminObj->setMethodNameFilter(strMethodNameFilter);
+                            }
                             if( bSetDataFilter ) {
                                 pTrcAdminObj->setTraceDataFilter(strDataFilter);
                             }
@@ -2795,6 +2821,10 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                 {
                     iObjId = -1;
                     enabled = EEnabled::Undefined;
+                    bSetObjNameFilter = false;
+                    strObjNameFilter = "";
+                    bSetMethodNameFilter = false;
+                    strMethodNameFilter = "";
                     bSetDataFilter = false;
                     strDataFilter = "";
                     eDetailLevelMethodCalls = EMethodTraceDetailLevel::None;
@@ -2835,6 +2865,16 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                         {
                             xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strElemName + "\" is out of range");
                         }
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("ObjectNameFilter") )
+                    {
+                        strObjNameFilter = xmlStreamReader.attributes().value("ObjectNameFilter").toString();
+                        bSetObjNameFilter = true;
+                    }
+                    if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("MethodNameFilter") )
+                    {
+                        strMethodNameFilter = xmlStreamReader.attributes().value("MethodNameFilter").toString();
+                        bSetMethodNameFilter = true;
                     }
                     if( !xmlStreamReader.hasError() && xmlStreamReader.attributes().hasAttribute("DataFilter") )
                     {
@@ -2863,6 +2903,12 @@ void CIpcTrcServer::onIpcServerReceivedReqUpdate( int i_iSocketId, const QString
                             m_pTrcAdminObjIdxTree->setEnabled(iObjId, enabled);
                             m_pTrcAdminObjIdxTree->setMethodCallsTraceDetailLevel(iObjId, eDetailLevelMethodCalls);
                             m_pTrcAdminObjIdxTree->setRuntimeInfoTraceDetailLevel(iObjId, eDetailLevelRuntimeInfo);
+                            if( bSetObjNameFilter ) {
+                                m_pTrcAdminObjIdxTree->setObjectNameFilter(iObjId, strObjNameFilter);
+                            }
+                            if( bSetMethodNameFilter ) {
+                                m_pTrcAdminObjIdxTree->setMethodNameFilter(iObjId, strMethodNameFilter);
+                            }
                             if( bSetDataFilter ) {
                                 m_pTrcAdminObjIdxTree->setTraceDataFilter(iObjId, strDataFilter);
                             }

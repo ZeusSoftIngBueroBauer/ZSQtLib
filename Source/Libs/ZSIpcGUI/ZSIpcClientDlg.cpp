@@ -162,7 +162,7 @@ void CDlgIpcClient::setClient( CClient* i_pClient )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Client: " + QString( i_pClient == nullptr ? "nullptr" : i_pClient->objectName() );
     }
@@ -187,7 +187,7 @@ void CDlgIpcClient::setProtocolTypeImage( const QPixmap& i_pxm )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -207,7 +207,7 @@ void CDlgIpcClient::setProtocolTypeImageVisible( bool i_bVisible )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = bool2Str(i_bVisible);
     }
@@ -271,7 +271,7 @@ void CDlgIpcClient::onWdgtIpcClientDetailsVisibilityChanged( bool i_bDetailsVisi
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = bool2Str(i_bDetailsVisible);
     }

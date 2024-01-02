@@ -36,6 +36,8 @@ list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysDialog.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditFilterExpressionsDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditFilterExpressionsWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditStringValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrDlg.h
@@ -81,6 +83,8 @@ list(APPEND _Headers
 list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysDialog.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditFilterExpressionsDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditFilterExpressionsWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditStringValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrDlg.cpp

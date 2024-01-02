@@ -49,16 +49,18 @@ public: // class methods
     static QString ClassName() { return "CModelIdxTreeTrcAdminObjs"; }
 public: // type definitions and constants
     enum EColumn {
-        EColumnRefCount               = CModelIdxTree::EColumnCount + 0,
-        EColumnEnabled                = CModelIdxTree::EColumnCount + 1,
-        EColumnMethodCallsDetailLevel = CModelIdxTree::EColumnCount + 2,
-        EColumnRuntimeInfoDetailLevel = CModelIdxTree::EColumnCount + 3,
-        EColumnDataFilter             = CModelIdxTree::EColumnCount + 4,
-        EColumnNameSpace              = CModelIdxTree::EColumnCount + 5,
-        EColumnClassName              = CModelIdxTree::EColumnCount + 6,
-        EColumnObjName                = CModelIdxTree::EColumnCount + 7,
-        EColumnObjThreadName          = CModelIdxTree::EColumnCount + 8,
-        EColumnObjAddress             = CModelIdxTree::EColumnCount + 9,
+        EColumnRefCount               = CModelIdxTree::EColumnCount +  0,
+        EColumnEnabled                = CModelIdxTree::EColumnCount +  1,
+        EColumnMethodCallsDetailLevel = CModelIdxTree::EColumnCount +  2,
+        EColumnRuntimeInfoDetailLevel = CModelIdxTree::EColumnCount +  3,
+        EColumnObjNameFilter          = CModelIdxTree::EColumnCount +  4,
+        EColumnMethodNameFilter       = CModelIdxTree::EColumnCount +  5,
+        EColumnDataFilter             = CModelIdxTree::EColumnCount +  6,
+        EColumnNameSpace              = CModelIdxTree::EColumnCount +  7,
+        EColumnClassName              = CModelIdxTree::EColumnCount +  8,
+        EColumnObjName                = CModelIdxTree::EColumnCount +  9,
+        EColumnObjThreadName          = CModelIdxTree::EColumnCount + 10,
+        EColumnObjAddress             = CModelIdxTree::EColumnCount + 11,
         EColumnCount
     };
 public: // class methods

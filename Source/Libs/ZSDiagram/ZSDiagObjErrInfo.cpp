@@ -360,7 +360,7 @@ QSize CDiagObjErrInfo::sizeHint()
         }
     } // if( isVisible() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg  = "Size[w,h]=";
         strTrcMsg += QString::number(cxWidth) + ",";

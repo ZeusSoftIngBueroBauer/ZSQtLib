@@ -47,8 +47,29 @@ class CTrcServer;
 // Global methods
 //******************************************************************************
 
-ZSSYSDLL_API bool areMethodCallsActive(CTrcAdminObj* i_pTrcAdminObj, EMethodTraceDetailLevel i_filterDetailLevel );
-ZSSYSDLL_API bool isRuntimeInfoActive(CTrcAdminObj* i_pTrcAdminObj, ELogDetailLevel i_filterDetailLevel );
+ZSSYSDLL_API bool areMethodCallsActive(
+    CTrcAdminObj* i_pTrcAdminObj,
+    EMethodTraceDetailLevel i_filterDetailLevel = EMethodTraceDetailLevel::ArgsNormal);
+ZSSYSDLL_API bool areMethodCallsActive(
+    CTrcAdminObj* i_pTrcAdminObj,
+    const QString& i_strObjName,
+    EMethodTraceDetailLevel i_filterDetailLevel = EMethodTraceDetailLevel::ArgsNormal);
+ZSSYSDLL_API bool areMethodCallsActive(
+    CTrcAdminObj* i_pTrcAdminObj,
+    const QString& i_strObjName, const QString& i_strMethodName,
+    EMethodTraceDetailLevel i_filterDetailLevel = EMethodTraceDetailLevel::ArgsNormal);
+
+ZSSYSDLL_API bool isRuntimeInfoActive(
+    CTrcAdminObj* i_pTrcAdminObj,
+    ELogDetailLevel i_filterDetailLevel = ELogDetailLevel::Debug);
+ZSSYSDLL_API bool isRuntimeInfoActive(
+    CTrcAdminObj* i_pTrcAdminObj,
+    const QString& i_strObjName,
+    ELogDetailLevel i_filterDetailLevel = ELogDetailLevel::Debug);
+ZSSYSDLL_API bool isRuntimeInfoActive(
+    CTrcAdminObj* i_pTrcAdminObj,
+    const QString& i_strObjName, const QString& i_strMethodName,
+    ELogDetailLevel i_filterDetailLevel = ELogDetailLevel::Debug);
 
 
 //******************************************************************************
@@ -93,6 +114,8 @@ friend class CTrcServer;
     Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(QString methodCallsTraceDetailLevel READ getMethodCallsTraceDetailLevelStr WRITE setMethodCallsTraceDetailLevel NOTIFY methodCallsTraceDetailLevelChanged)
     Q_PROPERTY(QString runtimeInfoTraceDetailLevel READ getRuntimeInfoTraceDetailLevelStr WRITE setRuntimeInfoTraceDetailLevel NOTIFY runtimeInfoTraceDetailLevelChanged)
+    Q_PROPERTY(QString objectNameFilter READ getObjectNameFilter WRITE setObjectNameFilter NOTIFY objectNameFilterChanged)
+    Q_PROPERTY(QString methodNameFilter READ getMethodNameFilter WRITE setMethodNameFilter NOTIFY methodNameFilterChanged)
     Q_PROPERTY(QString traceDataFilter READ getTraceDataFilter WRITE setTraceDataFilter NOTIFY traceDataFilterChanged)
 public: // class methods
     /*! Returns the name space of the class. */
@@ -122,6 +145,10 @@ signals:
     void methodCallsTraceDetailLevelChanged( const QString& i_strDetailLevel );
     /*! @brief Emitted if RuntimeInfoTraceDetailLevel has been changed. */
     void runtimeInfoTraceDetailLevelChanged( const QString& i_strDetailLevel );
+    /*! @brief Emitted if the object name filter has been changed. */
+    void objectNameFilterChanged( const QString& i_strFilter );
+    /*! @brief Emitted if the method name filter has been changed. */
+    void methodNameFilterChanged( const QString& i_strFilter );
     /*! @brief Emitted if RuntimeInfoTraceDetailLevel has been changed. */
     void traceDataFilterChanged( const QString& i_strFilter );
     /*! @brief Emitted if the object is going to be destroyed. */
@@ -228,12 +255,22 @@ public: // instance methods
     EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
     QString getMethodCallsTraceDetailLevelStr() const;
     bool areMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    bool areMethodCallsActive( const QString& i_strObjName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    bool areMethodCallsActive( const QString& i_strObjName, const QString& i_strMethodName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
     void setRuntimeInfoTraceDetailLevel( ELogDetailLevel i_eTrcDetailLevel );
     void setRuntimeInfoTraceDetailLevel( const QString& i_strDetailLevel );
     ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
     QString getRuntimeInfoTraceDetailLevelStr() const;
     bool isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const;
+    bool isRuntimeInfoActive( const QString& i_strObjName, ELogDetailLevel i_eFilterDetailLevel ) const;
+    bool isRuntimeInfoActive( const QString& i_strObjName, const QString& i_strMethodName, ELogDetailLevel i_eFilterDetailLevel ) const;
 public: // instance methods
+    void setObjectNameFilter( const QString& i_strFilter = "" );
+    QString getObjectNameFilter() const;
+    bool isObjectNameSuppressedByFilter( const QString& i_strObjName ) const;
+    void setMethodNameFilter( const QString& i_strFilter = "" );
+    QString getMethodNameFilter() const;
+    bool isMethodNameSuppressedByFilter( const QString& i_strMethodName ) const;
     void setTraceDataFilter( const QString& i_strFilter = "" );
     QString getTraceDataFilter() const;
     bool isTraceDataSuppressedByFilter( const QString& i_strData ) const;
@@ -274,7 +311,7 @@ protected: // instance members
          also be enabled or disabled by this flag. This is useful if a group of
          objects belonging to a namespace should be temporarily disabled and enabled
          later on restoring the previous detail level. */
-    EEnabled  m_enabled;
+    EEnabled m_enabled;
     /*!< Defines the current detail level of the method trace outputs for the
          module, class or instance referencing this object. If set to
          None method trace output is disabled. */
@@ -283,24 +320,41 @@ protected: // instance members
          module, class or instance referencing this object. If set to
          None method trace output is disabled. */
     ELogDetailLevel m_eTrcDetailLevelRuntimeInfo;
+    /*!< Trace data may be suppressed or explicitly allowed for certain object names by
+         applying a filter. This filter is a regular expression which allows to define a
+         positive pattern where only the object names will be traced matching the expression
+         or a negative pattern suppressing the trace output. */
+    QString m_strObjNameFilter;
+    /*!< When applying the object name filter the filter will be split into strings which
+         must be included or excluded. The "Must Include" strings are stored in this list. */
+    QStringList m_strlstObjNameFilterInclude;
+    /*!< When applying the object name filter the filter will be split into strings which
+         must be included or excluded. The "Must Not Include" strings are stored in this list. */
+    QStringList m_strlstObjNameFilterExclude;
+    /*!< Trace data may be suppressed or explicitly allowed for certain methods by
+         applying a filter. This filter is a regular expression which allows to define a
+         positive pattern where only the method will be traced whose names matching the
+         expression or a negative pattern suppressing the trace output. */
+    QString m_strMethodNameFilter;
+    /*!< When applying the method name filter the filter will be split into strings which
+         must be included or excluded. The "Must Include" strings are stored in this list. */
+    QStringList m_strlstMethodNameFilterInclude;
+    /*!< When applying the method name filter the filter will be split into strings which
+         must be included or excluded. The "Must Not Include" strings are stored in this list. */
+    QStringList m_strlstMethodNameFilterExclude;
     /*!< Data may also be suppressed by applying a filter.
          Filtering can be done in two ways:
          - Strings may be defined which must occur in the log entry.
          - Strings may be defined which may not occur in the log entry.
-    */
-    /*!< Trace data may also be suppressed by applying a filter.
-         This filter is a regular expression which allows to define a positive
-         pattern where only the data will be traced which mets the expression
-         or a negative pattern which supporessed the trace output if the
-         filter does not match. */
+         The filter is a regular expression which allows to define a positive pattern where
+         only the data will be traced matching the expression or a negative pattern suppressing
+         the trace output. */
     QString m_strDataFilter;
-    /*!< When applying the data filter the data filter will be split into
-         strings which must be included or excluded. The "Must Include"
-         strings are stored in this string list. */
+    /*!< When applying the data filter the data filter will be split into strings which
+         must be included or excluded. The "Must Include" strings are stored in this list. */
     QStringList m_strlstDataFilterInclude;
-    /*!< When applying the data filter the data filter will be split into
-         strings which must be included or excluded. The "Must Not Include"
-         strings are stored in this string list. */
+    /*!< When applying the data filter the data filter will be split into strings which
+         must be included or excluded. The "Must Not Include" strings are stored in this list. */
     QStringList m_strlstDataFilterExclude;
 
 }; // class CTrcAdminObj

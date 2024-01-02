@@ -87,7 +87,7 @@ CWdgtDiagramItems::CWdgtDiagramItems(
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs =  QString(i_pDiagram->objectName());
     }
@@ -194,7 +194,7 @@ void CWdgtDiagramItems::onWdgtTreeViewCurrentRowChanged(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Curr {" + CModelDiagramItems::modelIdx2Str(i_modelIdxCurr) + "}";
         strMthInArgs += ", Prev {" + CModelDiagramItems::modelIdx2Str(i_modelIdxPrev) + "}";

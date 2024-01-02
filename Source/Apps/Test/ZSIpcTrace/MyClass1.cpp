@@ -80,7 +80,7 @@ QString CMyClass1::classMethod(const QString& i_strMthInArgs)
 
     strResult = "Hello World";
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = strResult;
         mthTracer.setMethodReturn(strMthRet);
@@ -246,7 +246,7 @@ CMyClass2* CMyClass1::startClass2Thread(const QString& i_strMyClass2ObjName)
         m_pMyClass2 = m_pMyClass2Thread->waitForMyClass2Created();
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthRet = QString(m_pMyClass2 == nullptr ? "null" : m_pMyClass2->objectName());
         mthTracer.setMethodReturn(strMthRet);
