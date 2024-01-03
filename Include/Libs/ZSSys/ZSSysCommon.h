@@ -473,11 +473,7 @@ enum class ETransmitDir
 //==============================================================================
 {
     Receive   = 0,  /*!< The data (message) is received. */
-    In        = 0,  /*!< The data (message) is input (alias for Receive). */
-    Read      = 0,  /*!< The data (message) is read (alias for Receive). */
     Send      = 1,  /*!< The data (message) is sent. */
-    Out       = 1,  /*!< The data (message) is output (alias for Send). */
-    Write     = 1,  /*!< The data (message) is written (alias for Send). */
     Undefined = 2   /*!< The transmission direction is undefined. */
 };
 } }
@@ -504,13 +500,7 @@ enum class EIODir
 //==============================================================================
 {
     In        = 0,  /*!< The data (message) is input. */
-    Receive   = 0,  /*!< The data (message) is received (alias for In). */
-    Get       = 0,  /*!< The data (message) is get (alias for In). */
-    Read      = 0,  /*!< The data (message) is read (alias for In). */
     Out       = 1,  /*!< The data (message) is output. */
-    Send      = 1,  /*!< The data (message) is send (alias for Out). */
-    Set       = 1,  /*!< The data (message) is set (alias for Out). */
-    Write     = 1,  /*!< The data (message) is written (alias for Out). */
     Undefined = 2   /*!< The IO direction is undefined. */
 };
 } }
@@ -858,6 +848,59 @@ template class ZSSYSDLL_API CEnum<ZS::System::ELogDetailLevel>;
 namespace ZS {
 namespace System {
 typedef CEnum<ELogDetailLevel> CEnumLogDetailLevel;
+} }
+
+namespace ZS {
+namespace System {
+//==============================================================================
+/*! Filter properties which can be changed for trace admin objects.
+
+    @ingroup _GRP_Libs_ZSSys_MethodTracing
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EMethodTraceFilterProperty {
+//==============================================================================
+    Undefined   = 0,    /*!< Used to indicate that no filter property has been selected. */
+    ObjectName  = 1,    /*!< Filter expression valid for object names. */
+    MethodName  = 2,    /*!< Filter expression valid for method names. */
+    TraceData   = 3     /*!< Filter expression for trace data. */
+};
+} }
+
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
+template class ZSSYSDLL_API CEnum<ZS::System::EMethodTraceFilterProperty>;
+namespace ZS {
+namespace System {
+typedef CEnum<EMethodTraceFilterProperty> CEnumMethodTraceFilterProperty;
+} }
+
+namespace ZS {
+namespace System {
+//==============================================================================
+/*! Filter expressions are used to either include or exclude patterns.
+
+    @ingroup _GRP_Libs_ZSSys_MethodTracing
+
+    @see ZS::System::SEnumEntry
+    @see ZS::System::CEnum
+    @see _GRP_BasicConcepts_Enumerations
+*/
+enum class EMethodTraceFilterExpressionType {
+//==============================================================================
+    Undefined = 0,  /*!< Used to indicate that the filter expression has not been set. */
+    Include   = 1,  /*!< Filter expression used to include patterns. */
+    Exclude   = 2   /*!< Filter expression used to exclude patterns. */
+};
+} }
+
+// template is out of namespace as gcc complains with error: "Explicit instantiation of 'CEnum" must occur at global scope."
+template class ZSSYSDLL_API CEnum<ZS::System::EMethodTraceFilterExpressionType>;
+namespace ZS {
+namespace System {
+typedef CEnum<EMethodTraceFilterExpressionType> CEnumMethodTraceFilterExpressionType;
 } }
 
 #ifdef _WINDOWS

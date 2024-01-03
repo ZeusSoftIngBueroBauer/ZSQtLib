@@ -24,10 +24,11 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSSysGUI_EditFilterExpressionsWdgt_h
-#define ZSSysGUI_EditFilterExpressionsWdgt_h
+#ifndef ZSSysGUI_TrcAdminObjEditFilterExpressionsWdgt_h
+#define ZSSysGUI_TrcAdminObjEditFilterExpressionsWdgt_h
 
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
+#include "ZSSys/ZSSysCommon.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qwidget.h>
@@ -35,20 +36,24 @@ may result in using the software modules.
 #include <QtWidgets/qwidget.h>
 #endif
 
+class QLabel;
+class QPushButton;
 class QHBoxLayout;
 class QVBoxLayout;
-class QPushButton;
 
 namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
+class CSepLine;
 class CTableView;
 
 //******************************************************************************
-class ZSSYSGUIDLL_API CWdgtEditFilterExpressions : public QWidget
+class ZSSYSGUIDLL_API CWdgtTrcAdminObjEditFilterExpressions : public QWidget
 //******************************************************************************
 {
     Q_OBJECT
@@ -56,11 +61,14 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::System::GUI"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CWdgtEditFilterExpressions"; }
+    static QString ClassName() { return "CWdgtTrcAdminObjEditFilterExpressions"; }
 public: // ctors and dtor
-    CWdgtEditFilterExpressions(QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtEditFilterExpressions();
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+    CWdgtTrcAdminObjEditFilterExpressions(QWidget* i_pWdgtParent = nullptr);
+    virtual ~CWdgtTrcAdminObjEditFilterExpressions();
+public: // instance methods
+    void setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj);
+    void setFilterToEdit(EMethodTraceFilterProperty i_filter);
+public: // instance methods
     bool hasErrors() const;
     bool hasChanges() const;
     void acceptChanges();
@@ -69,18 +77,26 @@ protected slots:
     void onBtnResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
     void onBtnAddFilterExpressionClicked(bool i_bChecked = false);
     void onBtnRemoveFilterExpressionClicked(bool i_bChecked = false);
+private: // auxiliary instance methods
+    void setHeadlineText();
 private: // instance members
+    CTrcAdminObj* m_pTrcAdminObj;
+    CEnumMethodTraceFilterProperty m_eFilter;
     QVBoxLayout* m_pLyt;
+    QHBoxLayout* m_pLytLineTrcAdminObjPath;
+    QLabel* m_pLblTrcAdminObjPath;
+    ZS::System::GUI::CSepLine* m_pSepLineTrcAdminObjPath;
     QWidget* m_pWdgtFilterExpressions;
     QVBoxLayout* m_pLytWdgtFilterExpressions;
     QHBoxLayout* m_pLytLineEditButtons;
     QPushButton* m_pBtnResizeRowsAndColumnsToContents;
     QPushButton* m_pBtnAddLabel;
     QPushButton* m_pBtnRemoveLabels;
+    QLabel* m_pLblFilterProperty;
     QVBoxLayout* m_pLytTableView;
     CTableView* m_pTableView;
 
-}; // class CWdgtEditFilterExpressions
+}; // class CWdgtTrcAdminObjEditFilterExpressions
 
 } // namespace GUI
 
@@ -88,4 +104,4 @@ private: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSSysGUI_EditFilterExpressionsWdgt_h
+#endif // #ifndef ZSSysGUI_TrcAdminObjEditFilterExpressionsWdgt_h

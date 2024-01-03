@@ -51,6 +51,7 @@ namespace GUI
 {
 class CModelIdxTreeTrcAdminObjs;
 
+#if 0
 //******************************************************************************
 class ZSSYSGUIDLL_API CDelegateIdxTreeTrcAdminObjs : public QStyledItemDelegate
 //******************************************************************************
@@ -69,9 +70,9 @@ public: // instance methods
         const QModelIndex& i_modelIdx );
 public: // overridables of base class QItemDelegate
     virtual void paint(
-        QPainter*                   i_pPainter,
+        QPainter* i_pPainter,
         const QStyleOptionViewItem& i_styleOption,
-        const QModelIndex&          i_modelIdx ) const;
+        const QModelIndex& i_modelIdx ) const;
     QWidget* createEditor( QWidget* i_pWdgtParent, const QStyleOptionViewItem& i_styleOption, const QModelIndex& i_modelIdx ) const;
     void setEditorData( QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx ) const;
     void setModelData(QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx ) const;
@@ -91,6 +92,7 @@ protected: // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CDelegateIdxTreeTrcAdminObjs
+#endif
 
 //******************************************************************************
 class ZSSYSGUIDLL_API CTreeViewIdxTreeTrcAdminObjs : public QTreeView
@@ -133,7 +135,7 @@ protected slots:
     void onActionNameSpaceSetAdminObjsTraceDataFilterTriggered( bool i_bChecked );
 protected: // instance members
     CIdxTreeTrcAdminObjs* m_pIdxTree;
-    CDelegateIdxTreeTrcAdminObjs* m_pDelegate;
+    //CDelegateIdxTreeTrcAdminObjs* m_pDelegate;
     CModelIdxTreeTrcAdminObjs* m_pModel;
     QMenu* m_pMenuNameSpaceContext;
     QAction* m_pActionNameSpaceTitle;

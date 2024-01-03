@@ -1281,3 +1281,71 @@ template<> const QVector<SEnumEntry> CEnum<ELogDetailLevel>::s_arEnumEntries =
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */
+
+/*==============================================================================
+Enum EMethodTraceFilterProperty
+==============================================================================*/
+
+/*! @cond */
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> CEnum<EMethodTraceFilterProperty>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumMethodTraceFilterProperty
+{
+public: // ctor
+    CInitEnumMethodTraceFilterProperty() {
+    //------------------------------------------------------------------------------() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<EMethodTraceFilterProperty>::s_arEnumEntries);
+        pVEnumEntries->append(/* 0 */ SEnumEntry( static_cast<int>(EMethodTraceFilterProperty::Undefined),  "Undefined",  "-"),
+        pVEnumEntries->append(/* 1 */ SEnumEntry( static_cast<int>(EMethodTraceFilterProperty::ObjectName), "ObjectName", "O"),
+        pVEnumEntries->append(/* 2 */ SEnumEntry( static_cast<int>(EMethodTraceFilterProperty::MethodName), "MethodName", "M")
+        pVEnumEntries->append(/* 3 */ SEnumEntry( static_cast<int>(EMethodTraceFilterProperty::TraceData),  "TraceData",  "D"),
+    }
+};
+static CInitEnumMethodTraceFilterProperty s_initEnumMethodTraceFilterProperty;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EMethodTraceFilterProperty>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry(static_cast<int>(EMethodTraceFilterProperty::Undefined),  "Undefined",  "-"),
+    /* 1 */ SEnumEntry(static_cast<int>(EMethodTraceFilterProperty::ObjectName), "ObjectName", "O"),
+    /* 2 */ SEnumEntry(static_cast<int>(EMethodTraceFilterProperty::MethodName), "MethodName", "M"),
+    /* 3 */ SEnumEntry(static_cast<int>(EMethodTraceFilterProperty::TraceData),  "TraceData",  "D")
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
+
+/*==============================================================================
+Enum EMethodTraceFilterExpression
+==============================================================================*/
+
+/*! @cond */
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> CEnum<EMethodTraceFilterExpressionType>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumMethodTraceFilterExpressionType
+{
+public: // ctor
+    CInitEnumMethodTraceFilterExpressionType() {
+    //------------------------------------------------------------------------------() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<EMethodTraceFilterExpressionType>::s_arEnumEntries);
+        pVEnumEntries->append(/* 0 */ SEnumEntry( static_cast<int>(EMethodTraceFilterExpressionType::Undefined), "Undefined", "-"),
+        pVEnumEntries->append(/* 1 */ SEnumEntry( static_cast<int>(EMethodTraceFilterExpressionType::Include),   "Include",   "I"),
+        pVEnumEntries->append(/* 2 */ SEnumEntry( static_cast<int>(EMethodTraceFilterExpressionType::Exclude),   "Exclude",   "E")
+    }
+};
+static CInitEnumMethodTraceFilterExpressionType s_initEnumMethodTraceFilterExpressionType;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EMethodTraceFilterExpressionType>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry(static_cast<int>(EMethodTraceFilterExpressionType::Undefined), "Undefined", "-"),
+    /* 1 */ SEnumEntry(static_cast<int>(EMethodTraceFilterExpressionType::Include),   "Include",   "I"),
+    /* 2 */ SEnumEntry(static_cast<int>(EMethodTraceFilterExpressionType::Exclude),   "Exclude",   "E")
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */

@@ -1868,53 +1868,19 @@ void CTrcAdminObj::setObjectNameFilter( const QString& i_strFilter )
 {
     QMutexLocker mtxLocker(m_pMtx);
     if (m_strObjNameFilter != i_strFilter) {
-        m_strObjNameFilter = i_strFilter;
-        m_strlstObjNameFilterInclude.clear();
-        m_strlstObjNameFilterExclude.clear();
-        if (!m_strObjNameFilter.isEmpty()) {
-            QString strObjNameFilter = m_strObjNameFilter;
-            while (!strObjNameFilter.isEmpty()) {
-                int idxStart = strObjNameFilter.indexOf("$I{");
-                if (idxStart < 0) {
-                    break;
-                }
-                int idxEnd = strObjNameFilter.indexOf("}I$", idxStart);
-                if (idxEnd < 0) {
-                    break;
-                }
-                idxStart += 3;
-                int iLength = idxEnd - idxStart;
-                m_strlstObjNameFilterInclude.append(strObjNameFilter.mid(idxStart, iLength));
-                idxStart -= 3;
-                iLength += 6;
-                strObjNameFilter.remove(idxStart, iLength);
+        QStringList strlstInclude;
+        QStringList strlstExclude;
+        SErrResultInfo errResultInfo = splitMethodTraceFilterExpressionString(
+            i_strFilter, strlstInclude, strlstExclude);
+        if (errResultInfo.isErrorResult()) {
+            if (CErrLog::GetInstance() != nullptr) {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
             }
-            while (!strObjNameFilter.isEmpty()) {
-                int idxStart = strObjNameFilter.indexOf("$!I{");
-                if (idxStart < 0) {
-                    break;
-                }
-                int idxEnd = strObjNameFilter.indexOf("}I!$", idxStart);
-                if (idxEnd < 0) {
-                    break;
-                }
-                idxStart += 4;
-                int iLength = idxEnd - idxStart;
-                m_strlstObjNameFilterExclude.append(strObjNameFilter.mid(idxStart, iLength));
-                idxStart -= 4;
-                iLength += 8;
-                strObjNameFilter.remove(idxStart, iLength);
-            }
-            if (m_strlstObjNameFilterInclude.isEmpty() && m_strlstObjNameFilterExclude.isEmpty()) {
-                SErrResultInfo errResultInfo(
-                    /* errSource         */ NameSpace(), ClassName(), keyInTree(), "setObjectNameFilter",
-                    /* result            */ EResultArgOutOfRange,
-                    /* severity          */ EResultSeverityError,
-                    /* strAddErrInfoDscr */ "Invalid filter expression");
-                if (CErrLog::GetInstance() != nullptr) {
-                    CErrLog::GetInstance()->addEntry(errResultInfo);
-                }
-            }
+        }
+        else {
+            m_strObjNameFilter = i_strFilter;
+            m_strlstObjNameFilterInclude = strlstInclude;
+            m_strlstObjNameFilterExclude = strlstExclude;
         }
         emit objectNameFilterChanged(m_strObjNameFilter);
         if (m_pTree != nullptr) {
@@ -2026,53 +1992,19 @@ void CTrcAdminObj::setMethodNameFilter( const QString& i_strFilter )
 {
     QMutexLocker mtxLocker(m_pMtx);
     if (m_strMethodNameFilter != i_strFilter) {
-        m_strMethodNameFilter = i_strFilter;
-        m_strlstMethodNameFilterInclude.clear();
-        m_strlstMethodNameFilterExclude.clear();
-        if (!m_strMethodNameFilter.isEmpty()) {
-            QString strMethodNameFilter = m_strMethodNameFilter;
-            while (!strMethodNameFilter.isEmpty()) {
-                int idxStart = strMethodNameFilter.indexOf("$I{");
-                if (idxStart < 0) {
-                    break;
-                }
-                int idxEnd = strMethodNameFilter.indexOf("}I$", idxStart);
-                if (idxEnd < 0) {
-                    break;
-                }
-                idxStart += 3;
-                int iLength = idxEnd - idxStart;
-                m_strlstMethodNameFilterInclude.append(strMethodNameFilter.mid(idxStart, iLength));
-                idxStart -= 3;
-                iLength += 6;
-                strMethodNameFilter.remove(idxStart, iLength);
+        QStringList strlstInclude;
+        QStringList strlstExclude;
+        SErrResultInfo errResultInfo = splitMethodTraceFilterExpressionString(
+            i_strFilter, strlstInclude, strlstExclude);
+        if (errResultInfo.isErrorResult()) {
+            if (CErrLog::GetInstance() != nullptr) {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
             }
-            while (!strMethodNameFilter.isEmpty()) {
-                int idxStart = strMethodNameFilter.indexOf("$!I{");
-                if (idxStart < 0) {
-                    break;
-                }
-                int idxEnd = strMethodNameFilter.indexOf("}I!$", idxStart);
-                if (idxEnd < 0) {
-                    break;
-                }
-                idxStart += 4;
-                int iLength = idxEnd - idxStart;
-                m_strlstMethodNameFilterExclude.append(strMethodNameFilter.mid(idxStart, iLength));
-                idxStart -= 4;
-                iLength += 8;
-                strMethodNameFilter.remove(idxStart, iLength);
-            }
-            if (m_strlstMethodNameFilterInclude.isEmpty() && m_strlstMethodNameFilterExclude.isEmpty()) {
-                SErrResultInfo errResultInfo(
-                    /* errSource         */ NameSpace(), ClassName(), keyInTree(), "setMethodNameFilter",
-                    /* result            */ EResultArgOutOfRange,
-                    /* severity          */ EResultSeverityError,
-                    /* strAddErrInfoDscr */ "Invalid filter expression");
-                if (CErrLog::GetInstance() != nullptr) {
-                    CErrLog::GetInstance()->addEntry(errResultInfo);
-                }
-            }
+        }
+        else {
+            m_strMethodNameFilter = i_strFilter;
+            m_strlstMethodNameFilterInclude = strlstInclude;
+            m_strlstMethodNameFilterExclude = strlstExclude;
         }
         emit methodNameFilterChanged(m_strMethodNameFilter);
         if (m_pTree != nullptr) {
@@ -2184,53 +2116,19 @@ void CTrcAdminObj::setTraceDataFilter( const QString& i_strFilter )
     QMutexLocker mtxLocker(m_pMtx);
 
     if (m_strDataFilter != i_strFilter) {
-        m_strDataFilter = i_strFilter;
-        m_strlstDataFilterInclude.clear();
-        m_strlstDataFilterExclude.clear();
-        if (!m_strDataFilter.isEmpty()) {
-            QString strDataFilter = m_strDataFilter;
-            while (!strDataFilter.isEmpty()) {
-                int idxStart = strDataFilter.indexOf("$I{");
-                if (idxStart < 0) {
-                    break;
-                }
-                int idxEnd = strDataFilter.indexOf("}I$", idxStart);
-                if (idxEnd < 0) {
-                    break;
-                }
-                idxStart += 3;
-                int iLength = idxEnd - idxStart;
-                m_strlstDataFilterInclude.append(strDataFilter.mid(idxStart, iLength));
-                idxStart -= 3;
-                iLength += 6;
-                strDataFilter.remove(idxStart, iLength);
+        QStringList strlstInclude;
+        QStringList strlstExclude;
+        SErrResultInfo errResultInfo = splitMethodTraceFilterExpressionString(
+            i_strFilter, strlstInclude, strlstExclude);
+        if (errResultInfo.isErrorResult()) {
+            if (CErrLog::GetInstance() != nullptr) {
+                CErrLog::GetInstance()->addEntry(errResultInfo);
             }
-            while (!strDataFilter.isEmpty()) {
-                int idxStart = strDataFilter.indexOf("$!I{");
-                if (idxStart < 0) {
-                    break;
-                }
-                int idxEnd = strDataFilter.indexOf("}I!$", idxStart);
-                if (idxEnd < 0) {
-                    break;
-                }
-                idxStart += 4;
-                int iLength = idxEnd - idxStart;
-                m_strlstDataFilterExclude.append(strDataFilter.mid(idxStart, iLength));
-                idxStart -= 4;
-                iLength += 8;
-                strDataFilter.remove(idxStart, iLength);
-            }
-            if (m_strlstDataFilterInclude.isEmpty() && m_strlstDataFilterExclude.isEmpty()) {
-                SErrResultInfo errResultInfo(
-                    /* errSource         */ NameSpace(), ClassName(), keyInTree(), "setDataFilter",
-                    /* result            */ EResultArgOutOfRange,
-                    /* severity          */ EResultSeverityError,
-                    /* strAddErrInfoDscr */ "Invalid data filter expression");
-                if (CErrLog::GetInstance() != nullptr) {
-                    CErrLog::GetInstance()->addEntry(errResultInfo);
-                }
-            }
+        }
+        else {
+            m_strDataFilter = i_strFilter;
+            m_strlstDataFilterInclude.clear();
+            m_strlstDataFilterExclude.clear();
         }
         emit traceDataFilterChanged(m_strDataFilter);
         if (m_pTree != nullptr) {

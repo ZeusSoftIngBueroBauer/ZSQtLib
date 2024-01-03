@@ -24,28 +24,26 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSSysGUI/ZSSysEditFilterExpressionsWdgt.h"
-//#include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
-//#include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
-//#include "ZSSysGUI/ZSSysTableView.h"
-
+#include "ZSSysGUI/ZSSysTrcAdminObjEditFilterExpressionsWdgt.h"
+#include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
+#include "ZSSysGUI/ZSSysSepLine.h"
+#include "ZSSysGUI/ZSSysTableView.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
 
 #if QT_VERSION < 0x050000
 //#include <QtGui/qcheckbox.h>
 //#include <QtGui/qcombobox.h>
-//#include <QtGui/qlabel.h>
+#include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 //#include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
-//#include <QtGui/qtableview.h>
 #else
 //#include <QtWidgets/qcheckbox.h>
 //#include <QtWidgets/qcombobox.h>
-//#include <QtWidgets/qlabel.h>
+#include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 //#include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qpushbutton.h>
-//#include <QtWidgets/qtableview.h>
 #endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -56,7 +54,7 @@ using namespace ZS::System::GUI;
 
 
 /*******************************************************************************
-class CWdgtEditFilterExpressions : public CWdgtGraphObjPropertiesAbstract
+class CWdgtTrcAdminObjEditFilterExpressions : public QWidget
 *******************************************************************************/
 
 /*==============================================================================
@@ -64,23 +62,43 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtEditFilterExpressions::CWdgtEditFilterExpressions( QWidget* i_pWdgtParent) :
+CWdgtTrcAdminObjEditFilterExpressions::CWdgtTrcAdminObjEditFilterExpressions( QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
+    m_pTrcAdminObj(nullptr),
+    m_eFilter(EMethodTraceFilterProperty::Undefined),
     m_pLyt(nullptr),
+    m_pLytLineTrcAdminObjPath(nullptr),
+    m_pLblTrcAdminObjPath(nullptr),
+    m_pSepLineTrcAdminObjPath(nullptr),
     m_pWdgtFilterExpressions(nullptr),
     m_pLytWdgtFilterExpressions(nullptr),
     m_pLytLineEditButtons(nullptr),
     m_pBtnResizeRowsAndColumnsToContents(nullptr),
     m_pBtnAddLabel(nullptr),
     m_pBtnRemoveLabels(nullptr),
+    m_pLblFilterProperty(nullptr),
     m_pLytTableView(nullptr),
     m_pTableView(nullptr)
 {
-    int cxLblWidth = 60;
-
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
+
+    // <Widget> Headline
+    //==================
+
+    m_pLytLineTrcAdminObjPath = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineTrcAdminObjPath);
+
+    m_pLblTrcAdminObjPath = new QLabel("Trace Admin Object Path");
+    QFont fntHeadline = m_pLblTrcAdminObjPath->font();
+    fntHeadline.setPointSize(fntHeadline.pointSize() + 2);
+    m_pLblTrcAdminObjPath->setFont(fntHeadline);
+    m_pLytLineTrcAdminObjPath->addWidget(m_pLblTrcAdminObjPath);
+    m_pLytLineTrcAdminObjPath->addStretch();
+
+    m_pSepLineTrcAdminObjPath = new CSepLine();
+    m_pLyt->addWidget(m_pSepLineTrcAdminObjPath, 1);
 
     // <Widget> Filter Expressions
     //============================
@@ -106,7 +124,7 @@ CWdgtEditFilterExpressions::CWdgtEditFilterExpressions( QWidget* i_pWdgtParent) 
     m_pLytLineEditButtons->addSpacing(10);
     QObject::connect(
         m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtEditFilterExpressions::onBtnResizeRowsAndColumnsToContentsClicked );
+        this, &CWdgtTrcAdminObjEditFilterExpressions::onBtnResizeRowsAndColumnsToContentsClicked );
 
     QPixmap pxmAddExpression(":/ZS/Button/ButtonAdd24x24.png");
     m_pBtnAddLabel = new QPushButton();
@@ -117,7 +135,7 @@ CWdgtEditFilterExpressions::CWdgtEditFilterExpressions( QWidget* i_pWdgtParent) 
     m_pLytLineEditButtons->addSpacing(10);
     QObject::connect(
         m_pBtnAddLabel, &QPushButton::clicked,
-        this, &CWdgtEditFilterExpressions::onBtnAddFilterExpressionClicked );
+        this, &CWdgtTrcAdminObjEditFilterExpressions::onBtnAddFilterExpressionClicked );
 
     QPixmap pxmRemoveExpression(":/ZS/Button/ButtonDelete24x24.png");
     m_pBtnRemoveLabels = new QPushButton();
@@ -126,18 +144,24 @@ CWdgtEditFilterExpressions::CWdgtEditFilterExpressions( QWidget* i_pWdgtParent) 
     m_pBtnRemoveLabels->setToolTip("Press to remove the selected filter expression");
     m_pBtnRemoveLabels->setEnabled(false);
     m_pLytLineEditButtons->addWidget(m_pBtnRemoveLabels);
-    m_pLytLineEditButtons->addStretch();
+    m_pLytLineEditButtons->addSpacing(10);
     QObject::connect(
         m_pBtnRemoveLabels, &QPushButton::clicked,
-        this, &CWdgtEditFilterExpressions::onBtnRemoveFilterExpressionClicked );
+        this, &CWdgtTrcAdminObjEditFilterExpressions::onBtnRemoveFilterExpressionClicked );
+
+    m_pLblFilterProperty = new QLabel("Filter Property");
+    m_pLblFilterProperty->setFont(fntHeadline);
+    m_pLytLineEditButtons->addWidget(m_pLblFilterProperty);
+    m_pLytLineEditButtons->addStretch();
 
     // <Line> Table View
     //------------------
 
     m_pLytTableView = new QVBoxLayout();
-    m_pLytWdgtFilterExpressions->addLayout(m_pLytTableView);
+    m_pLytWdgtFilterExpressions->addLayout(m_pLytTableView, 1);
 
-    //m_pTableView = new CTableView(i_strObjName);
+    m_pTableView = new CTableView("TrcAdminObjEditFilterExpression");
+    m_pLytTableView->addWidget(m_pTableView);
     //m_pTableView->setModel(m_pModel);
 
     //m_pTableView->setItemDelegateForColumn(
@@ -171,31 +195,61 @@ CWdgtEditFilterExpressions::CWdgtEditFilterExpressions( QWidget* i_pWdgtParent) 
 
     //QObject::connect(
     //    m_pModel, &CModelGraphObjLabels::contentChanged,
-    //    this, &CWdgtEditFilterExpressions::onModelLabelsContentChanged);
+    //    this, &CWdgtTrcAdminObjEditFilterExpressions::onModelLabelsContentChanged);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtEditFilterExpressions::~CWdgtEditFilterExpressions()
+CWdgtTrcAdminObjEditFilterExpressions::~CWdgtTrcAdminObjEditFilterExpressions()
 //------------------------------------------------------------------------------
 {
+    m_pTrcAdminObj = nullptr;
+    m_eFilter = static_cast<EMethodTraceFilterProperty>(0);
     m_pLyt = nullptr;
+    m_pLytLineTrcAdminObjPath = nullptr;
+    m_pLblTrcAdminObjPath = nullptr;
+    m_pSepLineTrcAdminObjPath = nullptr;
     m_pWdgtFilterExpressions = nullptr;
     m_pLytWdgtFilterExpressions = nullptr;
     m_pLytLineEditButtons = nullptr;
     m_pBtnResizeRowsAndColumnsToContents = nullptr;
     m_pBtnAddLabel = nullptr;
     m_pBtnRemoveLabels = nullptr;
+    m_pLblFilterProperty = nullptr;
     m_pLytTableView = nullptr;
     m_pTableView = nullptr;
 }
 
 /*==============================================================================
-public: // overridables of base class CWdgtGraphObjPropertiesAbstract
+public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtEditFilterExpressions::hasErrors() const
+void CWdgtTrcAdminObjEditFilterExpressions::setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj)
+//------------------------------------------------------------------------------
+{
+    if (m_pTrcAdminObj != i_pTrcAdminObj) {
+        m_pTrcAdminObj = i_pTrcAdminObj;
+        setHeadlineText();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtTrcAdminObjEditFilterExpressions::setFilterToEdit(EMethodTraceFilterProperty i_filter)
+//------------------------------------------------------------------------------
+{
+    if (m_eFilter != i_filter) {
+        m_eFilter = i_filter;
+        setHeadlineText();
+    }
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CWdgtTrcAdminObjEditFilterExpressions::hasErrors() const
 //------------------------------------------------------------------------------
 {
     bool bHasErrors = false;
@@ -203,7 +257,7 @@ bool CWdgtEditFilterExpressions::hasErrors() const
 }
 
 //------------------------------------------------------------------------------
-bool CWdgtEditFilterExpressions::hasChanges() const
+bool CWdgtTrcAdminObjEditFilterExpressions::hasChanges() const
 //------------------------------------------------------------------------------
 {
     bool bHasChanges = false;
@@ -211,13 +265,13 @@ bool CWdgtEditFilterExpressions::hasChanges() const
 }
 
 //------------------------------------------------------------------------------
-void CWdgtEditFilterExpressions::acceptChanges()
+void CWdgtTrcAdminObjEditFilterExpressions::acceptChanges()
 //------------------------------------------------------------------------------
 {
 }
 
 //------------------------------------------------------------------------------
-void CWdgtEditFilterExpressions::rejectChanges()
+void CWdgtTrcAdminObjEditFilterExpressions::rejectChanges()
 //------------------------------------------------------------------------------
 {
 }
@@ -227,7 +281,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtEditFilterExpressions::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
+void CWdgtTrcAdminObjEditFilterExpressions::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     //m_pTableView->resizeColumnsToContents();
@@ -235,15 +289,37 @@ void CWdgtEditFilterExpressions::onBtnResizeRowsAndColumnsToContentsClicked(bool
 }
 
 //------------------------------------------------------------------------------
-void CWdgtEditFilterExpressions::onBtnAddFilterExpressionClicked(bool /*i_bChecked*/)
+void CWdgtTrcAdminObjEditFilterExpressions::onBtnAddFilterExpressionClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     //m_pModel->addLabel();
 }
 
 //------------------------------------------------------------------------------
-void CWdgtEditFilterExpressions::onBtnRemoveFilterExpressionClicked(bool /*i_bChecked*/)
+void CWdgtTrcAdminObjEditFilterExpressions::onBtnRemoveFilterExpressionClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     //m_pModel->removeSelectedLabels();
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtTrcAdminObjEditFilterExpressions::setHeadlineText()
+//------------------------------------------------------------------------------
+{
+    if (m_pTrcAdminObj == nullptr) {
+        m_pLblTrcAdminObjPath->setText("Trace Admin Object Path");
+    }
+    else {
+        m_pLblTrcAdminObjPath->setText(m_pTrcAdminObj->path());
+    }
+    if (m_eFilter == EMethodTraceFilterProperty::Undefined) {
+        m_pLblFilterProperty->setText("Filter Property");
+    }
+    else {
+        m_pLblFilterProperty->setText("Set Filter for " + m_eFilter.toString() + "s");
+    }
 }

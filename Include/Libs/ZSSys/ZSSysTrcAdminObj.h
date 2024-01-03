@@ -103,8 +103,7 @@ limited screen.
 class ZSSYSDLL_API CTrcAdminObj : public QObject, public CIdxTreeEntry
 //******************************************************************************
 {
-friend class CIdxTreeTrcAdminObjs;
-friend class CTrcServer;
+friend class CIdxTreeTrcAdminObjs; // Needs access to protected ctor
     Q_OBJECT
     Q_PROPERTY(QString nameSpace READ getNameSpace WRITE setNameSpace NOTIFY nameSpaceChanged)
     Q_PROPERTY(QString className READ getClassName WRITE setClassName NOTIFY classNameChanged)

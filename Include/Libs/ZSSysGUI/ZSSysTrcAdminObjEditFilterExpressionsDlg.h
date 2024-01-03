@@ -24,10 +24,11 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSSysGUI_EditFilterExpressionsDlg_h
-#define ZSSysGUI_EditFilterExpressionsDlg_h
+#ifndef ZSSysGUI_TrcAdminObjEditFilterExpressionsDlg_h
+#define ZSSysGUI_TrcAdminObjEditFilterExpressionsDlg_h
 
 #include "ZSSysGUI/ZSSysDialog.h"
+#include "ZSSys/ZSSysCommon.h"
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #else
@@ -41,25 +42,29 @@ namespace ZS
 {
 namespace System
 {
+class CTrcAdminObj;
+
 namespace GUI
 {
+class CWdgtTrcAdminObjEditFilterExpressions;
+
 //******************************************************************************
-class ZSSYSGUIDLL_API CDlgEditFilterExpressions : public CDialog
+class ZSSYSGUIDLL_API CDlgTrcAdminObjEditFilterExpressions : public CDialog
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::System::GUI"; }
-    static QString ClassName() { return "CDlgEditFilterExpressions"; }
+    static QString ClassName() { return "CDlgTrcAdminObjEditFilterExpressions"; }
 public: // class methods
-    static CDlgEditFilterExpressions* CreateInstance(
+    static CDlgTrcAdminObjEditFilterExpressions* CreateInstance(
         const QString& i_strDlgTitle,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
-    static CDlgEditFilterExpressions* GetInstance( const QString& i_strObjName );
+    static CDlgTrcAdminObjEditFilterExpressions* GetInstance( const QString& i_strObjName );
 protected: // ctor
-    CDlgEditFilterExpressions(
+    CDlgTrcAdminObjEditFilterExpressions(
         const QString& i_strDlgTitle,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr,
@@ -69,20 +74,25 @@ signals:
     //void accepted(); inherited from QDialog
     //void rejected(); inherited from QDialog
 public: // dtor
-    virtual ~CDlgEditFilterExpressions();
+    virtual ~CDlgTrcAdminObjEditFilterExpressions();
 public: // instance methods
+    void setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj);
+    void setFilterToEdit(EMethodTraceFilterProperty i_filter);
 protected slots:
     void onBtnApplyClicked( bool i_bChecked );
     void onBtnOkClicked( bool i_bChecked );
     void onBtnCancelClicked( bool i_bChecked );
 protected: // instance members
+    CTrcAdminObj* m_pTrcAdminObj;
+    EMethodTraceFilterProperty m_filter;
     QVBoxLayout* m_pLyt;
+    CWdgtTrcAdminObjEditFilterExpressions* m_pWdgtEditFilterExpressions;
     QHBoxLayout* m_pLytBtns;
     QPushButton* m_pBtnApply;
     QPushButton* m_pBtnOk;
     QPushButton* m_pBtnCancel;
 
-}; // class CDlgEditFilterExpressions
+}; // class CDlgTrcAdminObjEditFilterExpressions
 
 } // namespace GUI
 
@@ -90,4 +100,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSSysGUI_EditFilterExpressionsDlg_h
+#endif // #ifndef ZSSysGUI_TrcAdminObjEditFilterExpressionsDlg_h

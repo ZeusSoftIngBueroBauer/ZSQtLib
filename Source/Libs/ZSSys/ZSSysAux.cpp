@@ -3879,3 +3879,71 @@ void ZS::System::formatString(
         *o_piDigitsExponent = iDigitsExponent;
     }
 }
+
+//------------------------------------------------------------------------------
+SErrResultInfo ZS::System::splitMethodTraceFilterExpressionString(
+    const QString& i_strFilter, QStringList& i_strlstInclude, QStringList& i_strlstExclude)
+//------------------------------------------------------------------------------
+{
+    SErrResultInfo errResultInfo;
+    i_strlstInclude.clear();
+    i_strlstExclude.clear();
+    if (!i_strFilter.isEmpty()) {
+        QString strFilter = i_strFilter;
+        while (!strFilter.isEmpty()) {
+            int idxStart = strFilter.indexOf("$I{");
+            if (idxStart < 0) {
+                break;
+            }
+            int idxEnd = strFilter.indexOf("}I$", idxStart);
+            if (idxEnd < 0) {
+                break;
+            }
+            idxStart += 3;
+            int iLength = idxEnd - idxStart;
+            i_strlstInclude.append(strFilter.mid(idxStart, iLength));
+            idxStart -= 3;
+            iLength += 6;
+            strFilter.remove(idxStart, iLength);
+        }
+        while (!strFilter.isEmpty()) {
+            int idxStart = strFilter.indexOf("$!I{");
+            if (idxStart < 0) {
+                break;
+            }
+            int idxEnd = strFilter.indexOf("}I!$", idxStart);
+            if (idxEnd < 0) {
+                break;
+            }
+            idxStart += 4;
+            int iLength = idxEnd - idxStart;
+            i_strlstExclude.append(strFilter.mid(idxStart, iLength));
+            idxStart -= 4;
+            iLength += 8;
+            strFilter.remove(idxStart, iLength);
+        }
+        if (i_strlstInclude.isEmpty() && i_strlstExclude.isEmpty()) {
+            errResultInfo = SErrResultInfo(
+                /* errSource         */ "ZS::System", "Aux", "FilterExpression", "splitMethodTraceFilterExpressionString",
+                /* result            */ EResultArgOutOfRange,
+                /* severity          */ EResultSeverityError,
+                /* strAddErrInfoDscr */ "Invalid filter expression");
+        }
+    }
+    return errResultInfo;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::joinMethodTraceFilterExpressionStrings(
+    QStringList& i_strlstInclude, QStringList& i_strlstExclude)
+//------------------------------------------------------------------------------
+{
+    QString strFilter;
+    for (const QString& strExpr : i_strlstInclude) {
+        strFilter += "$I{" + strExpr + "}I$";
+    }
+    for (const QString& strExpr : i_strlstExclude) {
+        strFilter += "$!I{" + strExpr + "}I!$";
+    }
+    return strFilter;
+}

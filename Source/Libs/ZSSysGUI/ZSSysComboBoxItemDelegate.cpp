@@ -176,7 +176,7 @@ void CComboBoxItemDelegate::paint(
         /* strMethodInArgs    */ strMthInArgs );
 
     QStyleOptionViewItem option = i_option;
-    option.text = i_modelIdx.data(Qt::DisplayRole).toString();
+    option.text = i_modelIdx.model()->data(i_modelIdx, Qt::DisplayRole).toString();
     QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &option, i_pPainter);
 }
 

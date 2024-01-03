@@ -24,13 +24,11 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSSysGUI/ZSSysEditFilterExpressionsDlg.h"
+#include "ZSSysGUI/ZSSysTrcAdminObjEditFilterExpressionsDlg.h"
+#include "ZSSysGUI/ZSSysTrcAdminObjEditFilterExpressionsWdgt.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
-
-//#include <QtCore/qcoreapplication.h>
-//#include <QtCore/qsettings.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qlayout.h>
@@ -48,7 +46,7 @@ using namespace ZS::System::GUI;
 
 
 /*******************************************************************************
-class CDlgEditFilterExpressions : public QDialog
+class CDlgTrcAdminObjEditFilterExpressions : public CDialog
 *******************************************************************************/
 
 /*==============================================================================
@@ -56,7 +54,7 @@ public: // class methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgEditFilterExpressions* CDlgEditFilterExpressions::CreateInstance(
+CDlgTrcAdminObjEditFilterExpressions* CDlgTrcAdminObjEditFilterExpressions::CreateInstance(
     const QString& i_strDlgTitle,
     const QString& i_strObjName,
     QWidget* i_pWdgtParent,
@@ -67,7 +65,7 @@ CDlgEditFilterExpressions* CDlgEditFilterExpressions::CreateInstance(
         QString strKey = buildPathStr("::", NameSpace(), ClassName(), i_strObjName);
         throw CException(__FILE__, __LINE__, EResultObjAlreadyInList, strKey);
     }
-    return new CDlgEditFilterExpressions(
+    return new CDlgTrcAdminObjEditFilterExpressions(
         /* strDlgTitle */ i_strDlgTitle,
         /* strObjName  */ i_strObjName,
         /* pWdgtParent */ i_pWdgtParent,
@@ -75,10 +73,10 @@ CDlgEditFilterExpressions* CDlgEditFilterExpressions::CreateInstance(
 }
 
 //------------------------------------------------------------------------------
-CDlgEditFilterExpressions* CDlgEditFilterExpressions::GetInstance( const QString& i_strObjName )
+CDlgTrcAdminObjEditFilterExpressions* CDlgTrcAdminObjEditFilterExpressions::GetInstance( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
-    return dynamic_cast<CDlgEditFilterExpressions*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
+    return dynamic_cast<CDlgTrcAdminObjEditFilterExpressions*>(CDialog::GetInstance(NameSpace(), ClassName(), i_strObjName));
 }
 
 /*==============================================================================
@@ -86,7 +84,7 @@ protected: // ctor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgEditFilterExpressions::CDlgEditFilterExpressions(
+CDlgTrcAdminObjEditFilterExpressions::CDlgTrcAdminObjEditFilterExpressions(
     const QString& i_strDlgTitle,
     const QString& i_strObjName,
     QWidget* i_pWdgtParent,
@@ -99,7 +97,10 @@ CDlgEditFilterExpressions::CDlgEditFilterExpressions(
         /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
+    m_pTrcAdminObj(nullptr),
+    m_filter(EMethodTraceFilterProperty::Undefined),
     m_pLyt(nullptr),
+    m_pWdgtEditFilterExpressions(nullptr),
     m_pLytBtns(nullptr),
     m_pBtnApply(nullptr),
     m_pBtnOk(nullptr),
@@ -107,6 +108,9 @@ CDlgEditFilterExpressions::CDlgEditFilterExpressions(
 {
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
+
+    m_pWdgtEditFilterExpressions = new CWdgtTrcAdminObjEditFilterExpressions();
+    m_pLyt->addWidget(m_pWdgtEditFilterExpressions);
 
     m_pLyt->addWidget(new CSepLine(5, this));
 
@@ -117,19 +121,19 @@ CDlgEditFilterExpressions::CDlgEditFilterExpressions(
     m_pLytBtns->addWidget(m_pBtnApply);
     QObject::connect(
         m_pBtnApply, &QPushButton::clicked,
-        this, &CDlgEditFilterExpressions::onBtnApplyClicked);
+        this, &CDlgTrcAdminObjEditFilterExpressions::onBtnApplyClicked);
 
     m_pBtnOk = new QPushButton("Ok");
     m_pLytBtns->addWidget(m_pBtnOk);
     QObject::connect(
         m_pBtnOk, &QPushButton::clicked,
-        this, &CDlgEditFilterExpressions::onBtnOkClicked);
+        this, &CDlgTrcAdminObjEditFilterExpressions::onBtnOkClicked);
 
     m_pBtnCancel = new QPushButton("Cancel");
     m_pLytBtns->addWidget(m_pBtnCancel);
     QObject::connect(
         m_pBtnCancel, &QPushButton::clicked,
-        this, &CDlgEditFilterExpressions::onBtnCancelClicked);
+        this, &CDlgTrcAdminObjEditFilterExpressions::onBtnCancelClicked);
 
 } // ctor
 
@@ -138,10 +142,13 @@ public: // dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDlgEditFilterExpressions::~CDlgEditFilterExpressions()
+CDlgTrcAdminObjEditFilterExpressions::~CDlgTrcAdminObjEditFilterExpressions()
 //------------------------------------------------------------------------------
 {
+    m_pTrcAdminObj = nullptr;
+    m_filter = static_cast<EMethodTraceFilterProperty>(0);
     m_pLyt = nullptr;
+    m_pWdgtEditFilterExpressions = nullptr;
     m_pLytBtns = nullptr;
     m_pBtnApply = nullptr;
     m_pBtnOk = nullptr;
@@ -150,18 +157,42 @@ CDlgEditFilterExpressions::~CDlgEditFilterExpressions()
 } // dtor
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDlgTrcAdminObjEditFilterExpressions::setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj)
+//------------------------------------------------------------------------------
+{
+    if (m_pTrcAdminObj != i_pTrcAdminObj) {
+        m_pTrcAdminObj = i_pTrcAdminObj;
+        m_pWdgtEditFilterExpressions->setTraceAdminObj(m_pTrcAdminObj);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CDlgTrcAdminObjEditFilterExpressions::setFilterToEdit(EMethodTraceFilterProperty i_filter)
+//------------------------------------------------------------------------------
+{
+    if (m_filter != i_filter) {
+        m_filter = i_filter;
+        m_pWdgtEditFilterExpressions->setFilterToEdit(m_filter);
+    }
+}
+
+/*==============================================================================
 protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgEditFilterExpressions::onBtnApplyClicked( bool /*i_bChecked*/ )
+void CDlgTrcAdminObjEditFilterExpressions::onBtnApplyClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     //emit applied();
 }
 
 //------------------------------------------------------------------------------
-void CDlgEditFilterExpressions::onBtnOkClicked( bool /*i_bChecked*/ )
+void CDlgTrcAdminObjEditFilterExpressions::onBtnOkClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     if (isModal()) {
@@ -173,7 +204,7 @@ void CDlgEditFilterExpressions::onBtnOkClicked( bool /*i_bChecked*/ )
 }
 
 //------------------------------------------------------------------------------
-void CDlgEditFilterExpressions::onBtnCancelClicked( bool /*i_bChecked*/ )
+void CDlgTrcAdminObjEditFilterExpressions::onBtnCancelClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     if (isModal()) {

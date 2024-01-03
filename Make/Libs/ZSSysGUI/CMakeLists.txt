@@ -38,8 +38,6 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysComboBoxItemDelegate.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysDialog.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditFilterExpressionsDlg.h
-    ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditFilterExpressionsWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysEditStringValueDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysErrDlg.h
@@ -77,6 +75,9 @@ list(APPEND _Headers
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysSepLine.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTableView.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTextEdit.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjEditFilterExpressionsDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjEditFilterExpressionsModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjEditFilterExpressionsWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeDlg.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeModel.h
     ${_HeadersPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeView.h
@@ -88,8 +89,6 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysComboBoxItemDelegate.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysDialog.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditEnumValueDlg.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditFilterExpressionsDlg.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditFilterExpressionsWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditIntValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysEditStringValueDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysErrDlg.cpp
@@ -127,6 +126,9 @@ list(APPEND _Sources
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysSepLine.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTableView.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTextEdit.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjEditFilterExpressionsDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjEditFilterExpressionsModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjEditFilterExpressionsWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeDlg.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/ZSSysTrcAdminObjIdxTreeView.cpp
