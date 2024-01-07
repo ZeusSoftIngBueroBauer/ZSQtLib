@@ -58,10 +58,10 @@ public: // ctors and dtor
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*           i_pTrcAdminObj,
+    CTrcAdminObj* i_pTrcAdminObj,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&          i_strMethod,
-    const QString&          i_strMethodInArgs ) :
+    const QString& i_strMethod,
+    const QString& i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
@@ -76,19 +76,16 @@ CMethodTracer::CMethodTracer(
     m_strMethodReturn(),
     m_strMethodOutArgs()
 {
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         QObject::connect(
             m_pTrcAdminObj, &CTrcAdminObj::aboutToBeDestroyed,
             this, &CMethodTracer::onAdminObjAboutToBeDestroyed,
             Qt::DirectConnection);
 
-        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
-         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
-        {
+        if (m_pTrcAdminObj->areMethodCallsActive(m_strObjName, m_strMethod, m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs)) {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-            if( pTrcServer != nullptr )
-            {
+            if (pTrcServer != nullptr) {
                 pTrcServer->traceMethodEnter(
                     /* pAdminObj    */ m_pTrcAdminObj,
                     /* strMethod    */ m_strMethod,
@@ -116,11 +113,11 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*           i_pTrcAdminObj,
+    CTrcAdminObj* i_pTrcAdminObj,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&          i_strObjName,
-    const QString&          i_strMethod,
-    const QString&          i_strMethodInArgs ) :
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
@@ -135,19 +132,16 @@ CMethodTracer::CMethodTracer(
     m_strMethodReturn(),
     m_strMethodOutArgs()
 {
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         QObject::connect(
             m_pTrcAdminObj, &CTrcAdminObj::aboutToBeDestroyed,
             this, &CMethodTracer::onAdminObjAboutToBeDestroyed,
             Qt::DirectConnection);
 
-        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
-         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
-        {
+        if (m_pTrcAdminObj->areMethodCallsActive(m_strObjName, m_strMethod, m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs)) {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-            if( pTrcServer != nullptr )
-            {
+            if (pTrcServer != nullptr) {
                 pTrcServer->traceMethodEnter(
                     /* pAdminObj    */ m_pTrcAdminObj,
                     /* strObjName   */ m_strObjName,
@@ -188,14 +182,14 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcMthFile*            i_pTrcMthFile,
+    CTrcMthFile* i_pTrcMthFile,
     EMethodTraceDetailLevel i_eTrcDetailLevel,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&          i_strNameSpace,
-    const QString&          i_strClassName,
-    const QString&          i_strObjName,
-    const QString&          i_strMethod,
-    const QString&          i_strMethodInArgs ) :
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(nullptr),
@@ -210,11 +204,9 @@ CMethodTracer::CMethodTracer(
     m_strMethodReturn(),
     m_strMethodOutArgs()
 {
-    if( m_pTrcMthFile != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
-    {
+    if (m_pTrcMthFile != nullptr && m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel) {
         QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-        if( !strMth.isEmpty() && !m_strMethod.isEmpty() )
-        {
+        if (!strMth.isEmpty() && !m_strMethod.isEmpty()) {
             strMth += "." + m_strMethod;
         }
         m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
@@ -255,15 +247,15 @@ CMethodTracer::CMethodTracer(
         String describing the input arguments passed to the method to be traced.
 */
 CMethodTracer::CMethodTracer(
-    CTrcAdminObj*           i_pTrcAdminObj,
-    CTrcMthFile*            i_pTrcMthFile,
+    CTrcAdminObj* i_pTrcAdminObj,
+    CTrcMthFile* i_pTrcMthFile,
     EMethodTraceDetailLevel i_eTrcDetailLevel,
     EMethodTraceDetailLevel i_eFilterDetailLevel,
-    const QString&          i_strNameSpace,
-    const QString&          i_strClassName,
-    const QString&          i_strObjName,
-    const QString&          i_strMethod,
-    const QString&          i_strMethodInArgs ) :
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName,
+    const QString& i_strMethod,
+    const QString& i_strMethodInArgs ) :
 //------------------------------------------------------------------------------
     QObject(),
     m_pTrcAdminObj(i_pTrcAdminObj),
@@ -278,19 +270,16 @@ CMethodTracer::CMethodTracer(
     m_strMethodReturn(),
     m_strMethodOutArgs()
 {
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         QObject::connect(
             m_pTrcAdminObj, &CTrcAdminObj::aboutToBeDestroyed,
             this, &CMethodTracer::onAdminObjAboutToBeDestroyed,
             Qt::DirectConnection);
 
-        if( m_pTrcAdminObj->areMethodCallsActive(m_eEnterLeaveFilterDetailLevel)
-         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs) )
-        {
+        if (m_pTrcAdminObj->areMethodCallsActive(m_strObjName, m_strMethod, m_eEnterLeaveFilterDetailLevel)
+         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strMethodInArgs)) {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-            if( pTrcServer != nullptr )
-            {
+            if (pTrcServer != nullptr) {
                 pTrcServer->traceMethodEnter(
                     /* pAdminObj    */ m_pTrcAdminObj,
                     /* strObjName   */ m_strObjName.isEmpty() ? m_pTrcAdminObj->getObjectName() : m_strObjName,
@@ -301,13 +290,10 @@ CMethodTracer::CMethodTracer(
         }
         m_pTrcAdminObj->lock();
     }
-    else if( m_pTrcMthFile != nullptr )
-    {
-        if( m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel )
-        {
+    else if (m_pTrcMthFile != nullptr) {
+        if (m_eMethodCallsTrcDetailLevel >= m_eEnterLeaveFilterDetailLevel) {
             QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-            if( !strMth.isEmpty() && !m_strMethod.isEmpty() )
-            {
+            if (!strMth.isEmpty() && !m_strMethod.isEmpty()) {
                 strMth += "." + m_strMethod;
             }
             m_pTrcMthFile->traceMethodEnter(strMth, i_strMethodInArgs);
@@ -332,17 +318,13 @@ CMethodTracer::CMethodTracer(
 CMethodTracer::~CMethodTracer()
 //------------------------------------------------------------------------------
 {
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         onAdminObjAboutToBeReleased(); // Sets m_pTrcAdminObj to nullptr
     }
-    else if( m_pTrcMthFile != nullptr )
-    {
-        if( m_bEnterTraced )
-        {
+    else if (m_pTrcMthFile != nullptr) {
+        if (m_bEnterTraced) {
             QString strMth = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
-            if( !strMth.isEmpty() && !m_strMethod.isEmpty() )
-            {
+            if (!strMth.isEmpty() && !m_strMethod.isEmpty()) {
                 strMth += "." + m_strMethod;
             }
             m_pTrcMthFile->traceMethodLeave(strMth, m_strMethodReturn, m_strMethodOutArgs);
@@ -378,17 +360,14 @@ public: // instance methods
 void CMethodTracer::onAdminObjAboutToBeReleased()
 //------------------------------------------------------------------------------
 {
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         QObject::disconnect(
             m_pTrcAdminObj, &CTrcAdminObj::aboutToBeDestroyed,
             this, &CMethodTracer::onAdminObjAboutToBeDestroyed);
 
-        if( m_bEnterTraced )
-        {
+        if (m_bEnterTraced) {
             CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-            if( pTrcServer != nullptr )
-            {
+            if (pTrcServer != nullptr) {
                 pTrcServer->traceMethodLeave(
                     /* pAdminObj     */ m_pTrcAdminObj,
                     /* strObjName    */ m_strObjName.isEmpty() ? m_pTrcAdminObj->getObjectName() : m_strObjName,
@@ -398,8 +377,7 @@ void CMethodTracer::onAdminObjAboutToBeReleased()
             }
         }
         m_pTrcAdminObj->unlock();
-        if( m_pTrcAdminObj->deleteOnUnlock() )
-        {
+        if (m_pTrcAdminObj->deleteOnUnlock()) {
             CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         }
         m_pTrcAdminObj = nullptr;
@@ -420,13 +398,10 @@ EMethodTraceDetailLevel CMethodTracer::getMethodCallsTraceDetailLevel() const
 //------------------------------------------------------------------------------
 {
     EMethodTraceDetailLevel eDetailLevel = m_eMethodCallsTrcDetailLevel;
-
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         eDetailLevel = m_pTrcAdminObj->getMethodCallsTraceDetailLevel();
     }
-    else
-    {
+    else {
         eDetailLevel = m_eMethodCallsTrcDetailLevel;
     }
     return eDetailLevel;

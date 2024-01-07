@@ -77,16 +77,18 @@ public: // instance methods to set and read trace settings of the server
 protected: // instance methods to send admin objects to the connected server
     void sendAdminObj(
         ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
-        ZS::System::MsgProtocol::TCommand       i_cmd,
-        ZS::System::CTrcAdminObj*               i_pTrcAdminObj );
+        ZS::System::MsgProtocol::TCommand i_cmd,
+        ZS::System::CTrcAdminObj* i_pTrcAdminObj );
     void sendNameSpace(
-        ZS::System::MsgProtocol::TSystemMsgType  i_systemMsgType,
-        ZS::System::MsgProtocol::TCommand        i_cmd,
-        ZS::System::CIdxTreeEntry*               i_pBranch,
-        ZS::System::EEnabled                     i_enabled,
+        ZS::System::MsgProtocol::TSystemMsgType i_systemMsgType,
+        ZS::System::MsgProtocol::TCommand i_cmd,
+        ZS::System::CIdxTreeEntry* i_pBranch,
+        ZS::System::EEnabled i_enabled,
         ZS::System::EMethodTraceDetailLevel i_eDetailLevelMethodCalls,
         ZS::System::ELogDetailLevel i_eDetailLevelRuntimeInfo,
-        const QString&                           i_strDataFilter );
+        const QString& i_strObjNameFilter,
+        const QString& i_strMethodNameFilter,
+        const QString& i_strDataFilter );
 protected: // overridables of base class CClient
     virtual void onReceivedData( const QByteArray& i_byteArr ) override;
 protected slots: // connected to the signals of the IPC client

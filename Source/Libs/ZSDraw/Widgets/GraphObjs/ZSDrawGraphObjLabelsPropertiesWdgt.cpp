@@ -234,7 +234,8 @@ CWdgtGraphObjLabelsProperties::CWdgtGraphObjLabelsProperties(
         CModelGraphObjLabels::EColumnShowAnchorLine, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pTableView->setEditTriggers(
-        QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
+        QAbstractItemView::CurrentChanged|QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked|
+        QAbstractItemView::EditKeyPressed|QAbstractItemView::AnyKeyPressed);
     m_pTableView->resizeColumnsToContents();
     m_pTableView->resizeRowsToContents();
     m_pLytListView->addWidget(m_pTableView);

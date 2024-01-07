@@ -71,6 +71,8 @@ public slots: // test step methods
     void doTestStepTraceClientConnect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceClientDisconnect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepObjectNameFilter( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMethodNameFilter( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepTraceDataFilter( ZS::Test::CTestStep* i_pTestStep );
 private slots:
     void onRequestChanged( ZS::System::SRequestDscr i_reqDscr );

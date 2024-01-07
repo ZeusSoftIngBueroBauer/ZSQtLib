@@ -73,8 +73,6 @@ CIdxTreeTrcAdminObjs::CIdxTreeTrcAdminObjs(
         /* eTrcDetailLevel      */ i_eTrcDetailLevel,
         /* eTrcDetailLevelMutex */ i_eTrcDetailLevelMutex )
 {
-    QString strAddTrcInfo;
-
     CMethodTracer mthTracer(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
@@ -83,7 +81,7 @@ CIdxTreeTrcAdminObjs::CIdxTreeTrcAdminObjs(
         /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
-        /* strMethodInArgs    */ strAddTrcInfo );
+        /* strMethodInArgs    */ "" );
 
 } // ctor
 
@@ -144,28 +142,29 @@ public: // instance methods to get and release admin objects
     @return Pointer to allocated trace admin objecct or nullptr on error.
 */
 CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
-    const QString&          i_strNameSpace,
-    const QString&          i_strClassName,
-    const QString&          i_strObjName,
-    ZS::System::EEnabled    i_bEnabledAsDefault,
+    const QString& i_strNameSpace,
+    const QString& i_strClassName,
+    const QString& i_strObjName,
+    ZS::System::EEnabled i_bEnabledAsDefault,
     EMethodTraceDetailLevel i_eDefaultDetailLevelMethodCalls,
-    ELogDetailLevel         i_eDefaultDetailLevelRuntimeInfo,
-    const QString&          i_strDefaultDataFilter,
-    bool                    i_bIncrementRefCount )
+    ELogDetailLevel i_eDefaultDetailLevelRuntimeInfo,
+    const QString& i_strDefaultObjNameFilter,
+    const QString& i_strDefaultMethodNameFilter,
+    const QString& i_strDefaultDataFilter,
+    bool i_bIncrementRefCount )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
 
-    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
-    {
-        strAddTrcInfo  = "NameSpace: " + i_strNameSpace;
-        strAddTrcInfo += ", ClassName: " + i_strClassName;
-        strAddTrcInfo += ", ObjName: " + i_strObjName;
-        strAddTrcInfo += ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault);
-        strAddTrcInfo += ", DefaultDetailLevelMethodCalls: " + CEnumMethodTraceDetailLevel(i_eDefaultDetailLevelMethodCalls).toString();
-        strAddTrcInfo += ", DefaultDetailLevelRuntimeInfo: " + CEnumLogDetailLevel(i_eDefaultDetailLevelRuntimeInfo).toString();
-        strAddTrcInfo += ", DefaultDataFilter: " + i_strDefaultDataFilter;
-        strAddTrcInfo += ", IncrementRefCount: " + bool2Str(i_bIncrementRefCount);
+    if (m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal) {
+        strAddTrcInfo  = "NameSpace: " + i_strNameSpace +
+            ", ClassName: " + i_strClassName +
+            ", ObjName: " + i_strObjName +
+            ", EnabledAsDefault: " + CEnumEnabled::toString(i_bEnabledAsDefault) +
+            ", DefaultDetailLevelMethodCalls: " + CEnumMethodTraceDetailLevel(i_eDefaultDetailLevelMethodCalls).toString() +
+            ", DefaultDetailLevelRuntimeInfo: " + CEnumLogDetailLevel(i_eDefaultDetailLevelRuntimeInfo).toString() +
+            ", DefaultDataFilter: " + i_strDefaultDataFilter +
+            ", IncrementRefCount: " + bool2Str(i_bIncrementRefCount);
     }
 
     CMethodTracer mthTracer(
@@ -245,6 +244,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
             EEnabled bEnabled = EEnabled::Yes;
             EMethodTraceDetailLevel eDetailLevelMethodCalls = EMethodTraceDetailLevel::None;
             ELogDetailLevel eDetailLevelRuntimeInfo = ELogDetailLevel::None;
+            QString strObjNameFilter = "";
+            QString strMethodNameFilter = "";
             QString strDataFilter = "";
 
             if( i_bEnabledAsDefault != EEnabled::Undefined )
@@ -259,6 +260,12 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
             {
                 eDetailLevelRuntimeInfo = i_eDefaultDetailLevelRuntimeInfo;
             }
+            if (!i_strDefaultObjNameFilter.isNull()) {
+                strObjNameFilter = i_strDefaultObjNameFilter;
+            }
+            if (!i_strDefaultMethodNameFilter.isNull()) {
+                strMethodNameFilter = i_strDefaultMethodNameFilter;
+            }
             if( !i_strDefaultDataFilter.isNull() )
             {
                 strDataFilter = i_strDefaultDataFilter;
@@ -267,6 +274,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::getTraceAdminObj(
             pTrcAdminObj->setEnabled(bEnabled);
             pTrcAdminObj->setMethodCallsTraceDetailLevel(eDetailLevelMethodCalls);
             pTrcAdminObj->setRuntimeInfoTraceDetailLevel(eDetailLevelRuntimeInfo);
+            pTrcAdminObj->setObjectNameFilter(strObjNameFilter);
+            pTrcAdminObj->setMethodNameFilter(strMethodNameFilter);
             pTrcAdminObj->setTraceDataFilter(strDataFilter);
 
             add(pTrcAdminObj, strParentBranchPath);
@@ -446,6 +455,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::renameTraceAdminObj(
         EEnabled bEnabled     = pTrcAdminObj->getEnabled();
         EMethodTraceDetailLevel eDetailLevelMethodCalls = pTrcAdminObj->getMethodCallsTraceDetailLevel();
         ELogDetailLevel eDetailLevelRuntimeInfo = pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
+        QString strObjNameFilter = pTrcAdminObj->getObjectNameFilter();
+        QString strMethodNameFilter = pTrcAdminObj->getMethodNameFilter();
         QString strDataFilter = pTrcAdminObj->getTraceDataFilter();
 
         // The reference counter of the previously referenced trace admin object is decremented.
@@ -497,7 +508,8 @@ CTrcAdminObj* CIdxTreeTrcAdminObjs::renameTraceAdminObj(
             // A new trace admin object has to be created and returned.
             pTrcAdminObj = getTraceAdminObj(
                 strNameSpace, strClassName, i_strNewObjName, bEnabled,
-                eDetailLevelMethodCalls, eDetailLevelRuntimeInfo, strDataFilter);
+                eDetailLevelMethodCalls, eDetailLevelRuntimeInfo,
+                strObjNameFilter, strMethodNameFilter, strDataFilter);
         }
 
         pTrcAdminObj->setObjectName(i_strNewObjName);
@@ -908,8 +920,8 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
 } // setRuntimeInfoTraceDetailLevel
 
 //------------------------------------------------------------------------------
-void CIdxTreeTrcAdminObjs::setTraceDataFilter(
-    int i_iIdxInTree, const QString& i_strDataFilter )
+void CIdxTreeTrcAdminObjs::setObjectNameFilter(
+    int i_iIdxInTree, const QString& i_strFilter )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -917,7 +929,97 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
     if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
-        strAddTrcInfo += ", Filter: " + i_strDataFilter;
+        strAddTrcInfo += ", Filter: " + i_strFilter;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setObjectNameFilter",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iIdxInTree);
+
+    if( pTreeEntry != nullptr )
+    {
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
+        {
+            setObjectNameFilter(pTreeEntry, i_strFilter);
+        }
+        else if( pTreeEntry->isLeave() )
+        {
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                pTrcAdminObj->setObjectNameFilter(i_strFilter);
+            }
+        }
+    }
+} // setObjectNameFilter
+
+//------------------------------------------------------------------------------
+void CIdxTreeTrcAdminObjs::setMethodNameFilter(
+    int i_iIdxInTree, const QString& i_strFilter )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
+        strAddTrcInfo += ", Filter: " + i_strFilter;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setMethodNameFilter",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    CIdxTreeEntry* pTreeEntry = getEntry(i_iIdxInTree);
+
+    if( pTreeEntry != nullptr )
+    {
+        if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
+        {
+            setMethodNameFilter(pTreeEntry, i_strFilter);
+        }
+        else if( pTreeEntry->isLeave() )
+        {
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                pTrcAdminObj->setMethodNameFilter(i_strFilter);
+            }
+        }
+    }
+} // setMethodNameFilter
+
+//------------------------------------------------------------------------------
+void CIdxTreeTrcAdminObjs::setTraceDataFilter(
+    int i_iIdxInTree, const QString& i_strFilter )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strAddTrcInfo  = "IdxInTree: " + QString::number(i_iIdxInTree);
+        strAddTrcInfo += ", Filter: " + i_strFilter;
     }
 
     CMethodTracer mthTracer(
@@ -938,7 +1040,7 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
     {
         if( pTreeEntry->isRoot() || pTreeEntry->isBranch() )
         {
-            setTraceDataFilter(pTreeEntry, i_strDataFilter);
+            setTraceDataFilter(pTreeEntry, i_strFilter);
         }
         else if( pTreeEntry->isLeave() )
         {
@@ -946,7 +1048,7 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
 
             if( pTrcAdminObj != nullptr )
             {
-                pTrcAdminObj->setTraceDataFilter(i_strDataFilter);
+                pTrcAdminObj->setTraceDataFilter(i_strFilter);
             }
         }
     }
@@ -1130,8 +1232,8 @@ void CIdxTreeTrcAdminObjs::setRuntimeInfoTraceDetailLevel(
 } // setRuntimeInfoTraceDetailLevel
 
 //------------------------------------------------------------------------------
-void CIdxTreeTrcAdminObjs::setTraceDataFilter(
-    CIdxTreeEntry* i_pBranch, const QString& i_strDataFilter )
+void CIdxTreeTrcAdminObjs::setObjectNameFilter(
+    CIdxTreeEntry* i_pBranch, const QString& i_strFilter )
 //------------------------------------------------------------------------------
 {
     QString strAddTrcInfo;
@@ -1139,7 +1241,123 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
     if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
     {
         strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
-        strAddTrcInfo += ", Filter: " + i_strDataFilter;
+        strAddTrcInfo += ", Filter: " + i_strFilter;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setObjectNameFilter",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( i_pBranch != nullptr )
+    {
+        CIdxTreeEntry* pTreeEntry;
+        CTrcAdminObj*  pTrcAdminObj;
+        int            idxEntry;
+
+        for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
+        {
+            pTreeEntry = i_pBranch->at(idxEntry);
+
+            if( pTreeEntry != nullptr )
+            {
+                if( pTreeEntry->isLeave() )
+                {
+                    pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        if( pTrcAdminObj->getObjectNameFilter() != i_strFilter )
+                        {
+                            pTrcAdminObj->setObjectNameFilter(i_strFilter);
+                        }
+                    }
+                }
+                else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+                {
+                    setObjectNameFilter(pTreeEntry, i_strFilter);
+                }
+            }
+        } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
+    } // if( i_pBranch != nullptr )
+} // setObjectNameFilter
+
+//------------------------------------------------------------------------------
+void CIdxTreeTrcAdminObjs::setMethodNameFilter(
+    CIdxTreeEntry* i_pBranch, const QString& i_strFilter )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
+        strAddTrcInfo += ", Filter: " + i_strFilter;
+    }
+
+    CMethodTracer mthTracer(
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* eTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ objectName(),
+        /* strMethod          */ "setMethodNameFilter",
+        /* strMethodInArgs    */ strAddTrcInfo );
+
+    CMutexLocker mtxLocker(m_pMtx);
+
+    if( i_pBranch != nullptr )
+    {
+        CIdxTreeEntry* pTreeEntry;
+        CTrcAdminObj*  pTrcAdminObj;
+        int            idxEntry;
+
+        for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
+        {
+            pTreeEntry = i_pBranch->at(idxEntry);
+
+            if( pTreeEntry != nullptr )
+            {
+                if( pTreeEntry->isLeave() )
+                {
+                    pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+                    if( pTrcAdminObj != nullptr )
+                    {
+                        if( pTrcAdminObj->getMethodNameFilter() != i_strFilter )
+                        {
+                            pTrcAdminObj->setMethodNameFilter(i_strFilter);
+                        }
+                    }
+                }
+                else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
+                {
+                    setMethodNameFilter(pTreeEntry, i_strFilter);
+                }
+            }
+        } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
+    } // if( i_pBranch != nullptr )
+} // setMethodNameFilter
+
+//------------------------------------------------------------------------------
+void CIdxTreeTrcAdminObjs::setTraceDataFilter(
+    CIdxTreeEntry* i_pBranch, const QString& i_strFilter )
+//------------------------------------------------------------------------------
+{
+    QString strAddTrcInfo;
+
+    if( m_eTrcMthFileDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+    {
+        strAddTrcInfo  = "Branch: " + QString(i_pBranch == nullptr ? "nullptr" : i_pBranch->path());
+        strAddTrcInfo += ", Filter: " + i_strFilter;
     }
 
     CMethodTracer mthTracer(
@@ -1172,15 +1390,15 @@ void CIdxTreeTrcAdminObjs::setTraceDataFilter(
 
                     if( pTrcAdminObj != nullptr )
                     {
-                        if( pTrcAdminObj->getTraceDataFilter() != i_strDataFilter )
+                        if( pTrcAdminObj->getTraceDataFilter() != i_strFilter )
                         {
-                            pTrcAdminObj->setTraceDataFilter(i_strDataFilter);
+                            pTrcAdminObj->setTraceDataFilter(i_strFilter);
                         }
                     }
                 }
                 else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )
                 {
-                    setTraceDataFilter(pTreeEntry, i_strDataFilter);
+                    setTraceDataFilter(pTreeEntry, i_strFilter);
                 }
             }
         } // for( idxEntry = 0; idxEntry < i_pBranch->count(); ++idxEntry )
@@ -1333,6 +1551,8 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
         QString  strObjName;
         QString  strThread;
         EEnabled enabled;
+        QString  strObjNameFilter;
+        QString  strMethodNameFilter;
         QString  strDataFilter;
         bool     bConverted;
 
@@ -1377,6 +1597,8 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                             enabled = EEnabled::Yes;
                             eDetailLevelMethodCalls = EMethodTraceDetailLevel::None;
                             eDetailLevelRuntimeInfo = ELogDetailLevel::None;
+                            strObjNameFilter = "";
+                            strMethodNameFilter = "";
                             strDataFilter = "";
 
                             if( xmlStreamReader.attributes().hasAttribute("NameSpace") )
@@ -1430,6 +1652,12 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
                                         xmlStreamReader.raiseError("Attribute \"RuntimeInfoDetailLevel\" (" + strAttr + ") for \"" + strPath + "\" is out of range");
                                     }
                                 }
+                                if( xmlStreamReader.attributes().hasAttribute("ObjectNameFilter") ) {
+                                    strObjNameFilter = xmlStreamReader.attributes().value("ObjectNameFilter").toString();
+                                }
+                                if( xmlStreamReader.attributes().hasAttribute("MethodNameFilter") ) {
+                                    strMethodNameFilter = xmlStreamReader.attributes().value("MethodNameFilter").toString();
+                                }
                                 if( xmlStreamReader.attributes().hasAttribute("DataFilter") )
                                 {
                                     strDataFilter = xmlStreamReader.attributes().value("DataFilter").toString();
@@ -1437,7 +1665,8 @@ SErrResultInfo CIdxTreeTrcAdminObjs::recall( const QString& i_strAbsFilePath )
 
                                 CTrcAdminObj* pTrcAdminObj = getTraceAdminObj(
                                     strNameSpace, strClassName, strObjName, enabled,
-                                    eDetailLevelMethodCalls, eDetailLevelRuntimeInfo, strDataFilter, false);
+                                    eDetailLevelMethodCalls, eDetailLevelRuntimeInfo,
+                                    strObjNameFilter, strMethodNameFilter, strDataFilter, false);
 
                                 pTrcAdminObj->setObjectThreadName(strThread);
 
@@ -1486,14 +1715,16 @@ void CIdxTreeTrcAdminObjs::save(
         pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(i_pTreeEntry);
 
         i_xmlStreamWriter.writeStartElement("TrcAdminObj");
-        i_xmlStreamWriter.writeAttribute( "NameSpace", pTrcAdminObj->getNameSpace() );
-        i_xmlStreamWriter.writeAttribute( "ClassName", pTrcAdminObj->getClassName() );
-        i_xmlStreamWriter.writeAttribute( "ObjName", pTrcAdminObj->getObjectName() );
-        i_xmlStreamWriter.writeAttribute( "Thread", pTrcAdminObj->getObjectThreadName() );
-        i_xmlStreamWriter.writeAttribute( "Enabled", CEnumEnabled::toString(pTrcAdminObj->getEnabled()) );
-        i_xmlStreamWriter.writeAttribute( "MethodCallsDetailLevel", CEnumMethodTraceDetailLevel::toString(pTrcAdminObj->getMethodCallsTraceDetailLevel()) );
-        i_xmlStreamWriter.writeAttribute( "RuntimeInfoDetailLevel", CEnumLogDetailLevel::toString(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()) );
-        i_xmlStreamWriter.writeAttribute( "DataFilter", pTrcAdminObj->getTraceDataFilter() );
+        i_xmlStreamWriter.writeAttribute("NameSpace", pTrcAdminObj->getNameSpace());
+        i_xmlStreamWriter.writeAttribute("ClassName", pTrcAdminObj->getClassName());
+        i_xmlStreamWriter.writeAttribute("ObjName", pTrcAdminObj->getObjectName());
+        i_xmlStreamWriter.writeAttribute("Thread", pTrcAdminObj->getObjectThreadName());
+        i_xmlStreamWriter.writeAttribute("Enabled", CEnumEnabled::toString(pTrcAdminObj->getEnabled()));
+        i_xmlStreamWriter.writeAttribute("MethodCallsDetailLevel", CEnumMethodTraceDetailLevel::toString(pTrcAdminObj->getMethodCallsTraceDetailLevel()));
+        i_xmlStreamWriter.writeAttribute("RuntimeInfoDetailLevel", CEnumLogDetailLevel::toString(pTrcAdminObj->getRuntimeInfoTraceDetailLevel()));
+        i_xmlStreamWriter.writeAttribute("ObjectNameFilter", pTrcAdminObj->getObjectNameFilter());
+        i_xmlStreamWriter.writeAttribute("MethodNameFilter", pTrcAdminObj->getMethodNameFilter());
+        i_xmlStreamWriter.writeAttribute("DataFilter", pTrcAdminObj->getTraceDataFilter());
         i_xmlStreamWriter.writeEndElement(/*"TrcAdminObj"*/);
     }
     else // if( pTreeEntry->entryType() == EIdxTreeEntryType::Root || Branch )

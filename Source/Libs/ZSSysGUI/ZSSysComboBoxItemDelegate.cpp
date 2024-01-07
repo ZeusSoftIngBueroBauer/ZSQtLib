@@ -68,7 +68,7 @@ CComboBoxItemDelegate::CComboBoxItemDelegate(QAbstractItemModel* i_pModel, QWidg
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace(), ClassName());
     m_pTrcAdminObjPaint = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName() + "::Pain");
+        NameSpace(), ClassName() + "::Paint");
 
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
@@ -166,7 +166,8 @@ void CComboBoxItemDelegate::paint(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjPaint, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}" +
+            ", Data: " + i_modelIdx.data(Qt::DisplayRole).toString();
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObjPaint,
@@ -175,9 +176,10 @@ void CComboBoxItemDelegate::paint(
         /* strMethod          */ "paint",
         /* strMethodInArgs    */ strMthInArgs );
 
-    QStyleOptionViewItem option = i_option;
-    option.text = i_modelIdx.data(Qt::DisplayRole).toString();
-    QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &option, i_pPainter);
+    //QStyleOptionViewItem option = i_option;
+    //option.text = "Hello World"; //i_modelIdx.model()->data(i_modelIdx, Qt::DisplayRole).toString();
+    //QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &option, i_pPainter);
+    QStyledItemDelegate::paint(i_pPainter, i_option, i_modelIdx);
 }
 
 //------------------------------------------------------------------------------

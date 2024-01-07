@@ -263,6 +263,10 @@ ZSSYSDLL_API void formatString(
     int*           o_piDigitsTrailing,
     int*           o_piDigitsExponent );
 
+ZSSYSDLL_API SErrResultInfo splitMethodTraceFilterExpressionString(
+    const QString& i_strFilter, QStringList& i_strlstInclude, QStringList& i_strlstExclude);
+ZSSYSDLL_API QString joinMethodTraceFilterExpressionStrings(
+    QStringList& i_strlstInclude, QStringList& i_strlstExclude);
 
 } // namespace System
 

@@ -1071,6 +1071,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
             /* bEnabledAsDefault              */ eEnabled,
             /* eDefaultDetailLevelMethodCalls */ eDetailLevelMethodCalls,
             /* eDefaultDetailLevelRuntimeInfo */ eDetailLevelRuntimeInfo,
+            /* strObjNameilter                */ QString(),
+            /* strMethodNameFilter            */ QString(),
             /* strDefaultDataFilter           */ QString(),
             /* bIncrementRefCount             */ true );
         QQmlEngine::setObjectOwnership(pTrcAdminObj, QQmlEngine::CppOwnership);
@@ -1222,6 +1224,8 @@ CTrcAdminObj* CTrcServer::getTraceAdminObj(
             /* eEnabledAsDefault              */ eEnabled,
             /* eDefaultDetailLevelMethodCalls */ eDetailLevelMethodCalls,
             /* eDefaultDetailLevelRuntimeInfo */ eDetailLevelRuntimeInfo,
+            /* strObjNameilter                */ QString(),
+            /* strMethodNameFilter            */ QString(),
             /* strDefaultDataFilter           */ QString(),
             /* bIncrementRefCount             */ true );
         QQmlEngine::setObjectOwnership(pTrcAdminObj, QQmlEngine::CppOwnership);

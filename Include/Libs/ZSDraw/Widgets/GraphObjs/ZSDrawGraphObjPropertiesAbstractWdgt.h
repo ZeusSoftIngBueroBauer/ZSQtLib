@@ -173,8 +173,6 @@ protected: // instance members
          "selectedChanged" signal the flag has to be set in the constructor of the derived class.
          If set to true the widget connects to the "geometryChanged" signal of the graphical object. */
     bool m_bContentUpdateOnGeometryChanged;
-    /*!< Flag to indicate that the content of an edit control has been changed while the "contentChanged"
-         signal was blocked by the "contentChanged" counter. */
     /*!< Flag to filter the indicated properties to the draw settings of the graphical object.
          This flag is set to false as default. If the property widget has to react on
          "drawSettingsChanged" signal the flag has to be set in the constructor of the derived class.
