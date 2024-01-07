@@ -89,12 +89,12 @@ protected: // replacing methods of base class QThread
 protected slots:
     void onClass2AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance members
-    ZS::System::CMutex*         m_pMtxWaitForClass2Created;
+    ZS::System::CMutex* m_pMtxWaitForClass2Created;
     ZS::System::CWaitCondition* m_pWaitConditionClass2Created;
-    CMyClass1*                  m_pMyClass1;
-    QString                     m_strMyClass2ObjName;
-    CMyClass2*                  m_pMyClass2;
-    ZS::System::CTrcAdminObj*   m_pTrcAdminObj;
+    CMyClass1* m_pMyClass1;
+    QString m_strMyClass2ObjName;
+    CMyClass2* m_pMyClass2;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CMyClass2Thread
 
@@ -132,17 +132,17 @@ protected slots:
 protected: // overridables of base class QObject
     virtual bool event( QEvent* i_pEv ) override;
 private: // instance members
-    CMyClass2Thread*             m_pMyClass2Thread;
-    QTimer*                      m_pTmrMessages;
+    CMyClass2Thread* m_pMyClass2Thread;
+    QTimer* m_pTmrMessages;
     ZS::System::CRecursiveMutex* m_pMtxCounters;
-    int                          m_iRecursionCount;
-    int                          m_iMsgCount;
-    QString                      m_strMyClass3ObjName;
-    CMyClass3Thread*             m_pMyClass3Thread;
-    CMyClass3*                   m_pMyClass3;
-    ZS::System::CMutex*          m_pMtxWaitClass3ThreadRunning;
-    ZS::System::CWaitCondition*  m_pWaitClass3ThreadRunning;
-    ZS::System::CTrcAdminObj*    m_pTrcAdminObj;
+    int m_iRecursionCount;
+    int m_iMsgCount;
+    QString m_strMyClass3ObjName;
+    CMyClass3Thread* m_pMyClass3Thread;
+    CMyClass3* m_pMyClass3;
+    ZS::System::CMutex* m_pMtxWaitClass3ThreadRunning;
+    ZS::System::CWaitCondition* m_pWaitClass3ThreadRunning;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CMyClass2
 

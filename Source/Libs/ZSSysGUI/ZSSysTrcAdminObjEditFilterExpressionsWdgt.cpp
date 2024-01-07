@@ -25,9 +25,12 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSSysGUI/ZSSysTrcAdminObjEditFilterExpressionsWdgt.h"
+#include "ZSSysGUI/ZSSysTrcAdminObjEditFilterExpressionsModel.h"
+#include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
 #include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSysGUI/ZSSysTableView.h"
+#include "ZSSys/ZSSysRefCountGuard.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 
 #if QT_VERSION < 0x050000
@@ -79,7 +82,8 @@ CWdgtTrcAdminObjEditFilterExpressions::CWdgtTrcAdminObjEditFilterExpressions( QW
     m_pBtnRemoveLabels(nullptr),
     m_pLblFilterProperty(nullptr),
     m_pLytTableView(nullptr),
-    m_pTableView(nullptr)
+    m_pTableView(nullptr),
+    m_pModel(nullptr)
 {
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
@@ -160,42 +164,34 @@ CWdgtTrcAdminObjEditFilterExpressions::CWdgtTrcAdminObjEditFilterExpressions( QW
     m_pLytTableView = new QVBoxLayout();
     m_pLytWdgtFilterExpressions->addLayout(m_pLytTableView, 1);
 
+    m_pModel = new CModelTrcAdminObjEditFilterExpressions(this);
     m_pTableView = new CTableView("TrcAdminObjEditFilterExpression");
+    m_pTableView->setModel(m_pModel);
+
+    m_pTableView->setItemDelegateForColumn(
+        CModelTrcAdminObjEditFilterExpressions::EColumnSelected,
+        new CCheckBoxItemDelegate(m_pModel, m_pTableView));
+    m_pTableView->addKeyAsEditTriggerForColumn(
+        CModelTrcAdminObjEditFilterExpressions::EColumnSelected,
+        CTableView::SEditTriggerKey(Qt::Key_Return));
+
+    m_pTableView->setItemDelegateForColumn(
+        CModelTrcAdminObjEditFilterExpressions::EColumnFilterExpressionType,
+        new CComboBoxItemDelegate(m_pModel, m_pTableView));
+    m_pTableView->addKeyAsEditTriggerForColumn(
+        CModelTrcAdminObjEditFilterExpressions::EColumnFilterExpressionType,
+        CTableView::SEditTriggerKey(Qt::Key_Return));
+
+    m_pTableView->setEditTriggers(
+        QAbstractItemView::CurrentChanged|QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked|
+        QAbstractItemView::EditKeyPressed|QAbstractItemView::AnyKeyPressed);
+    m_pTableView->resizeColumnsToContents();
+    m_pTableView->resizeRowsToContents();
     m_pLytTableView->addWidget(m_pTableView);
-    //m_pTableView->setModel(m_pModel);
 
-    //m_pTableView->setItemDelegateForColumn(
-    //    CModelGraphObjLabels::EColumnSelected, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
-    //m_pTableView->addKeyAsEditTriggerForColumn(
-    //    CModelGraphObjLabels::EColumnSelected, CTableView::SEditTriggerKey(Qt::Key_Return));
-
-    //m_pTableView->addKeyAsEditTriggerForColumn(
-    //    CModelGraphObjLabels::EColumnText, CTableView::SEditTriggerKey(Qt::Key_Return));
-
-    //m_pTableView->setItemDelegateForColumn(
-    //    CModelGraphObjLabels::EColumnShow, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
-    //m_pTableView->addKeyAsEditTriggerForColumn(
-    //    CModelGraphObjLabels::EColumnShow, CTableView::SEditTriggerKey(Qt::Key_Return));
-
-    //m_pTableView->setItemDelegateForColumn(
-    //    CModelGraphObjLabels::EColumnAnchor, new CComboBoxItemDelegate(m_pModel, m_pTableView));
-    //m_pTableView->addKeyAsEditTriggerForColumn(
-    //    CModelGraphObjLabels::EColumnAnchor, CTableView::SEditTriggerKey(Qt::Key_Return));
-
-    //m_pTableView->setItemDelegateForColumn(
-    //    CModelGraphObjLabels::EColumnShowAnchorLine, new CCheckBoxItemDelegate(m_pModel, m_pTableView));
-    //m_pTableView->addKeyAsEditTriggerForColumn(
-    //    CModelGraphObjLabels::EColumnShowAnchorLine, CTableView::SEditTriggerKey(Qt::Key_Return));
-
-    //m_pTableView->setEditTriggers(
-    //    QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
-    //m_pTableView->resizeColumnsToContents();
-    //m_pTableView->resizeRowsToContents();
-    //m_pLytTableView->addWidget(m_pTableView);
-
-    //QObject::connect(
-    //    m_pModel, &CModelGraphObjLabels::contentChanged,
-    //    this, &CWdgtTrcAdminObjEditFilterExpressions::onModelLabelsContentChanged);
+    QObject::connect(
+        m_pModel, &CModelTrcAdminObjEditFilterExpressions::contentChanged,
+        this, &CWdgtTrcAdminObjEditFilterExpressions::onModelEditFilterExpressionsContentChanged);
 
 } // ctor
 
@@ -218,6 +214,7 @@ CWdgtTrcAdminObjEditFilterExpressions::~CWdgtTrcAdminObjEditFilterExpressions()
     m_pLblFilterProperty = nullptr;
     m_pLytTableView = nullptr;
     m_pTableView = nullptr;
+    m_pModel = nullptr;
 }
 
 /*==============================================================================
@@ -231,6 +228,9 @@ void CWdgtTrcAdminObjEditFilterExpressions::setTraceAdminObj(CTrcAdminObj* i_pTr
     if (m_pTrcAdminObj != i_pTrcAdminObj) {
         m_pTrcAdminObj = i_pTrcAdminObj;
         setHeadlineText();
+        m_pModel->setTraceAdminObj(m_pTrcAdminObj);
+        m_pTableView->resizeColumnsToContents();
+        m_pTableView->resizeRowsToContents();
     }
 }
 
@@ -241,6 +241,9 @@ void CWdgtTrcAdminObjEditFilterExpressions::setFilterToEdit(EMethodTraceFilterPr
     if (m_eFilter != i_filter) {
         m_eFilter = i_filter;
         setHeadlineText();
+        m_pModel->setFilterToEdit(i_filter);
+        m_pTableView->resizeColumnsToContents();
+        m_pTableView->resizeRowsToContents();
     }
 }
 
@@ -252,28 +255,28 @@ public: // instance methods
 bool CWdgtTrcAdminObjEditFilterExpressions::hasErrors() const
 //------------------------------------------------------------------------------
 {
-    bool bHasErrors = false;
-    return bHasErrors;
+    return m_pModel->hasErrors();
 }
 
 //------------------------------------------------------------------------------
 bool CWdgtTrcAdminObjEditFilterExpressions::hasChanges() const
 //------------------------------------------------------------------------------
 {
-    bool bHasChanges = false;
-    return bHasChanges;
+    return m_pModel->hasChanges();
 }
 
 //------------------------------------------------------------------------------
 void CWdgtTrcAdminObjEditFilterExpressions::acceptChanges()
 //------------------------------------------------------------------------------
 {
+    m_pModel->acceptChanges();
 }
 
 //------------------------------------------------------------------------------
 void CWdgtTrcAdminObjEditFilterExpressions::rejectChanges()
 //------------------------------------------------------------------------------
 {
+    m_pModel->rejectChanges();
 }
 
 /*==============================================================================
@@ -284,22 +287,39 @@ protected slots:
 void CWdgtTrcAdminObjEditFilterExpressions::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
-    //m_pTableView->resizeColumnsToContents();
-    //m_pTableView->resizeRowsToContents();
+    m_pTableView->resizeColumnsToContents();
+    m_pTableView->resizeRowsToContents();
 }
 
 //------------------------------------------------------------------------------
 void CWdgtTrcAdminObjEditFilterExpressions::onBtnAddFilterExpressionClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
-    //m_pModel->addLabel();
+    m_pModel->addFilterExpression();
 }
 
 //------------------------------------------------------------------------------
 void CWdgtTrcAdminObjEditFilterExpressions::onBtnRemoveFilterExpressionClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
-    //m_pModel->removeSelectedLabels();
+    m_pModel->removeSelectedRows();
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtTrcAdminObjEditFilterExpressions::onModelEditFilterExpressionsContentChanged()
+//------------------------------------------------------------------------------
+{
+    if (m_pModel->selectedRows().size() > 0) {
+        m_pBtnRemoveLabels->setEnabled(true);
+    }
+    else {
+        m_pBtnRemoveLabels->setEnabled(false);
+    }
+    emit contentChanged();
 }
 
 /*==============================================================================

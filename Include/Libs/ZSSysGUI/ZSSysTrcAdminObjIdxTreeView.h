@@ -51,49 +51,6 @@ namespace GUI
 {
 class CModelIdxTreeTrcAdminObjs;
 
-#if 0
-//******************************************************************************
-class ZSSYSGUIDLL_API CDelegateIdxTreeTrcAdminObjs : public QStyledItemDelegate
-//******************************************************************************
-{
-    Q_OBJECT
-public: // class methods
-    static QString NameSpace() { return "ZS::System::GUI"; }
-    static QString ClassName() { return "CDelegateIdxTreeTrcAdminObjs"; }
-public: // ctors and dtor
-    CDelegateIdxTreeTrcAdminObjs(QObject* i_pObjParent = nullptr);
-    virtual ~CDelegateIdxTreeTrcAdminObjs();
-public: // instance methods
-    bool isCheckBoxEnabledHit(
-        const QRect&       i_rectVisual,
-        const QPoint&      i_ptPos,
-        const QModelIndex& i_modelIdx );
-public: // overridables of base class QItemDelegate
-    virtual void paint(
-        QPainter* i_pPainter,
-        const QStyleOptionViewItem& i_styleOption,
-        const QModelIndex& i_modelIdx ) const;
-    QWidget* createEditor( QWidget* i_pWdgtParent, const QStyleOptionViewItem& i_styleOption, const QModelIndex& i_modelIdx ) const;
-    void setEditorData( QWidget* i_pWdgtEditor, const QModelIndex& i_modelIdx ) const;
-    void setModelData(QWidget* i_pWdgtEditor, QAbstractItemModel* i_pModel, const QModelIndex& i_modelIdx ) const;
-    void updateEditorGeometry( QWidget* i_pWdgtEditor, const QStyleOptionViewItem& i_styleOption, const QModelIndex& i_modelIdx ) const;
-protected slots:
-    void onComboDetailLevelActivated( int i_idx );
-    void onEdtObjectNameFilterEditingFinished();
-    void onEdtMethodNameFilterEditingFinished();
-    void onEdtDataFilterEditingFinished();
-private: // copy ctor not implemented
-    CDelegateIdxTreeTrcAdminObjs( const CDelegateIdxTreeTrcAdminObjs& );
-private: // assignment operator not implemented
-    CDelegateIdxTreeTrcAdminObjs& operator = ( const CDelegateIdxTreeTrcAdminObjs& );
-protected: // instance members
-    mutable QRect m_rectChkBoxTraceEnabled;
-    /*!< Trace admin object to control trace outputs of the class. */
-    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
-
-}; // class CDelegateIdxTreeTrcAdminObjs
-#endif
-
 //******************************************************************************
 class ZSSYSGUIDLL_API CTreeViewIdxTreeTrcAdminObjs : public QTreeView
 //******************************************************************************
@@ -135,7 +92,6 @@ protected slots:
     void onActionNameSpaceSetAdminObjsTraceDataFilterTriggered( bool i_bChecked );
 protected: // instance members
     CIdxTreeTrcAdminObjs* m_pIdxTree;
-    //CDelegateIdxTreeTrcAdminObjs* m_pDelegate;
     CModelIdxTreeTrcAdminObjs* m_pModel;
     QMenu* m_pMenuNameSpaceContext;
     QAction* m_pActionNameSpaceTitle;

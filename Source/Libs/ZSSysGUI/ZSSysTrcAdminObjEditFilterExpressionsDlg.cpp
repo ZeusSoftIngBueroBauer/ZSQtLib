@@ -101,7 +101,7 @@ CDlgTrcAdminObjEditFilterExpressions::CDlgTrcAdminObjEditFilterExpressions(
     m_filter(EMethodTraceFilterProperty::Undefined),
     m_pLyt(nullptr),
     m_pWdgtEditFilterExpressions(nullptr),
-    m_pLytBtns(nullptr),
+    m_pLytLineBtns(nullptr),
     m_pBtnApply(nullptr),
     m_pBtnOk(nullptr),
     m_pBtnCancel(nullptr)
@@ -111,26 +111,37 @@ CDlgTrcAdminObjEditFilterExpressions::CDlgTrcAdminObjEditFilterExpressions(
 
     m_pWdgtEditFilterExpressions = new CWdgtTrcAdminObjEditFilterExpressions();
     m_pLyt->addWidget(m_pWdgtEditFilterExpressions);
+    QObject::connect(
+        m_pWdgtEditFilterExpressions, &CWdgtTrcAdminObjEditFilterExpressions::contentChanged,
+        this, &CDlgTrcAdminObjEditFilterExpressions::onWdgtEditFilterExpressionsContentChanged);
 
     m_pLyt->addWidget(new CSepLine(5, this));
 
-    m_pLytBtns = new QHBoxLayout();
-    m_pLyt->addLayout(m_pLytBtns);
-
-    m_pBtnApply = new QPushButton("Apply");
-    m_pLytBtns->addWidget(m_pBtnApply);
-    QObject::connect(
-        m_pBtnApply, &QPushButton::clicked,
-        this, &CDlgTrcAdminObjEditFilterExpressions::onBtnApplyClicked);
+    m_pLytLineBtns = new QHBoxLayout();
+    m_pLyt->addLayout(m_pLytLineBtns);
 
     m_pBtnOk = new QPushButton("Ok");
-    m_pLytBtns->addWidget(m_pBtnOk);
+    m_pLytLineBtns->addWidget(m_pBtnOk);
     QObject::connect(
         m_pBtnOk, &QPushButton::clicked,
         this, &CDlgTrcAdminObjEditFilterExpressions::onBtnOkClicked);
 
+    m_pBtnApply = new QPushButton("Apply");
+    m_pLytLineBtns->addWidget(m_pBtnApply);
+    m_pBtnApply->setEnabled(false);
+    QObject::connect(
+        m_pBtnApply, &QPushButton::clicked,
+        this, &CDlgTrcAdminObjEditFilterExpressions::onBtnApplyClicked);
+
+    m_pBtnReset = new QPushButton("Reset");
+    m_pLytLineBtns->addWidget(m_pBtnReset);
+    m_pBtnReset->setEnabled(false);
+    QObject::connect(
+        m_pBtnReset, &QPushButton::clicked,
+        this, &CDlgTrcAdminObjEditFilterExpressions::onBtnResetClicked);
+
     m_pBtnCancel = new QPushButton("Cancel");
-    m_pLytBtns->addWidget(m_pBtnCancel);
+    m_pLytLineBtns->addWidget(m_pBtnCancel);
     QObject::connect(
         m_pBtnCancel, &QPushButton::clicked,
         this, &CDlgTrcAdminObjEditFilterExpressions::onBtnCancelClicked);
@@ -149,7 +160,7 @@ CDlgTrcAdminObjEditFilterExpressions::~CDlgTrcAdminObjEditFilterExpressions()
     m_filter = static_cast<EMethodTraceFilterProperty>(0);
     m_pLyt = nullptr;
     m_pWdgtEditFilterExpressions = nullptr;
-    m_pLytBtns = nullptr;
+    m_pLytLineBtns = nullptr;
     m_pBtnApply = nullptr;
     m_pBtnOk = nullptr;
     m_pBtnCancel = nullptr;
@@ -167,6 +178,7 @@ void CDlgTrcAdminObjEditFilterExpressions::setTraceAdminObj(CTrcAdminObj* i_pTrc
     if (m_pTrcAdminObj != i_pTrcAdminObj) {
         m_pTrcAdminObj = i_pTrcAdminObj;
         m_pWdgtEditFilterExpressions->setTraceAdminObj(m_pTrcAdminObj);
+        onWdgtEditFilterExpressionsContentChanged();
     }
 }
 
@@ -177,6 +189,7 @@ void CDlgTrcAdminObjEditFilterExpressions::setFilterToEdit(EMethodTraceFilterPro
     if (m_filter != i_filter) {
         m_filter = i_filter;
         m_pWdgtEditFilterExpressions->setFilterToEdit(m_filter);
+        onWdgtEditFilterExpressionsContentChanged();
     }
 }
 
@@ -185,32 +198,52 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgTrcAdminObjEditFilterExpressions::onBtnApplyClicked( bool /*i_bChecked*/ )
-//------------------------------------------------------------------------------
-{
-    //emit applied();
-}
-
-//------------------------------------------------------------------------------
 void CDlgTrcAdminObjEditFilterExpressions::onBtnOkClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    if (isModal()) {
-        accept();
-    }
-    else {
-        emit accepted();
-    }
+    m_pWdgtEditFilterExpressions->acceptChanges();
+    QDialog::accept();
+}
+
+//------------------------------------------------------------------------------
+void CDlgTrcAdminObjEditFilterExpressions::onBtnApplyClicked( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    m_pWdgtEditFilterExpressions->acceptChanges();
+
+    // After accepting changes there should be no changes anymore.
+    // Code just added for the sake of clarification.
+    onWdgtEditFilterExpressionsContentChanged();
+}
+
+//------------------------------------------------------------------------------
+void CDlgTrcAdminObjEditFilterExpressions::onBtnResetClicked( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    m_pWdgtEditFilterExpressions->rejectChanges();
+
+    // After rejecting changes there should be no changes anymore.
+    // Code just added for the sake of clarification.
+    onWdgtEditFilterExpressionsContentChanged();
 }
 
 //------------------------------------------------------------------------------
 void CDlgTrcAdminObjEditFilterExpressions::onBtnCancelClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    if (isModal()) {
-        reject();
-    }
-    else {
-        emit rejected();
-    }
+    m_pWdgtEditFilterExpressions->rejectChanges();
+    QDialog::reject();
+}
+
+/*==============================================================================
+protected slots:
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDlgTrcAdminObjEditFilterExpressions::onWdgtEditFilterExpressionsContentChanged()
+//------------------------------------------------------------------------------
+{
+    bool bHasChanges = m_pWdgtEditFilterExpressions->hasChanges();
+    m_pBtnApply->setEnabled(bHasChanges);
+    m_pBtnReset->setEnabled(bHasChanges);
 }

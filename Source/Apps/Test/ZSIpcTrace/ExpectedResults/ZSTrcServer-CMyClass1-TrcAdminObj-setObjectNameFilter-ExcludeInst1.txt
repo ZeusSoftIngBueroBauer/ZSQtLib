@@ -1,0 +1,16 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst2.ctor(Inst2)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst2.ctor()
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst3.ctor(Inst3)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst3.ctor()
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst2.instMethod2(Hello Method 2)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst2.instMethod2(): Hello World
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst3.instMethod3(Hello Method 3)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst3.instMethod3(): Hello World
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst2.dtor()
+<GUIMain                 >    -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst2.stopClass2Thread()
+<GUIMain                 >    <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst2.stopClass2Thread()
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst2.dtor()
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst3.dtor()
+<GUIMain                 >    -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst3.stopClass2Thread()
+<GUIMain                 >    <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst3.stopClass2Thread()
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst3.dtor()

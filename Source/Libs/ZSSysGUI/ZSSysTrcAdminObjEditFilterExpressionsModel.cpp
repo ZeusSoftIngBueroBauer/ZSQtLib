@@ -226,8 +226,7 @@ bool CModelTrcAdminObjEditFilterExpressions::hasChanges() const
 void CModelTrcAdminObjEditFilterExpressions::acceptChanges()
 //------------------------------------------------------------------------------
 {
-    if (m_pTrcAdminObj != nullptr && !hasErrors())
-    {
+    if (m_pTrcAdminObj != nullptr && !hasErrors()) {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
             QString strFilter = toFilterExpression(m_arFilterExpressions);
             if (m_eFilter == EMethodTraceFilterProperty::ObjectName) {
@@ -382,7 +381,9 @@ QVariant CModelTrcAdminObjEditFilterExpressions::data(const QModelIndex& i_model
                     else if (i_iRole == Qt::AccessibleTextRole) {
                         QList<SComboBoxItem> arItems;
                         for (CEnumMethodTraceFilterExpressionType eType = 0; eType < CEnumMethodTraceFilterExpressionType::count(); ++eType) {
-                            arItems.append(SComboBoxItem(eType.toString()));
+                            if (eType != EMethodTraceFilterExpressionType::Undefined) {
+                                arItems.append(SComboBoxItem(eType.toString()));
+                            }
                         }
                         varData.setValue(arItems);
                     }
@@ -494,7 +495,7 @@ QVariant CModelTrcAdminObjEditFilterExpressions::headerData(int i_iSection, Qt::
 //------------------------------------------------------------------------------
 {
     QVariant varData;
-    if (i_orientation == Qt::Horizontal) {
+    if (i_orientation == Qt::Horizontal && i_iRole == Qt::DisplayRole) {
         varData = column2Str(i_iSection);
     }
     return varData;
@@ -683,22 +684,20 @@ QList<CModelTrcAdminObjEditFilterExpressions::SFilterExpression>
 }
 
 //------------------------------------------------------------------------------
-QString CModelTrcAdminObjEditFilterExpressions::toFilterExpression(QList<SFilterExpression>) const
+QString CModelTrcAdminObjEditFilterExpressions::toFilterExpression(const QList<SFilterExpression>& i_arFilterExpressions) const
 //------------------------------------------------------------------------------
 {
-    QString strFilter;
     QStringList strlstInclude;
     QStringList strlstExclude;
-    for (const SFilterExpression& filterExpr : m_arFilterExpressions) {
+    for (const SFilterExpression& filterExpr : i_arFilterExpressions) {
         if (!filterExpr.m_errResultInfo.isErrorResult()) {
             if (filterExpr.m_filterType == EMethodTraceFilterExpressionType::Include) {
                 strlstInclude.append(filterExpr.m_strFilter);
             }
-            else if (filterExpr.m_filterType == EMethodTraceFilterExpressionType::Include) {
+            else if (filterExpr.m_filterType == EMethodTraceFilterExpressionType::Exclude) {
                 strlstExclude.append(filterExpr.m_strFilter);
             }
         }
     }
-    strFilter = joinMethodTraceFilterExpressionStrings(strlstInclude, strlstExclude);
-    return strFilter;
+    return joinMethodTraceFilterExpressionStrings(strlstInclude, strlstExclude);
 }

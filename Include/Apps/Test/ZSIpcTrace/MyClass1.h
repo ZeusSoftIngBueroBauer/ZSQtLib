@@ -51,6 +51,8 @@ public: // class methods
     static QString ClassName() { return "CMyClass1"; }
 public: // class methods
     static QString classMethod(const QString& i_strMthInArgs);
+public: // class methods
+    static ZS::System::CTrcAdminObj* getTrcAdminObj();
 public: // ctors and dtor
     CMyClass1( const QString& i_strObjName );
     virtual ~CMyClass1();
@@ -65,14 +67,17 @@ public: // instance methods
     CMyClass2* startClass2Thread(const QString& i_strMyClass2ObjName);
     void stopClass2Thread();
 public: // instance methods
+    QString instMethod1(const QString& i_strMthInArgs);
+    QString instMethod2(const QString& i_strMthInArgs);
+    QString instMethod3(const QString& i_strMthInArgs);
     void sendTooMuchData();
 private: // class members
     static ZS::System::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchor;
 private: // instance members
-    bool             m_bCtorReady;
-    QString          m_strMyClass2ObjName;
+    bool m_bCtorReady;
+    QString m_strMyClass2ObjName;
     CMyClass2Thread* m_pMyClass2Thread;
-    CMyClass2*       m_pMyClass2;
+    CMyClass2* m_pMyClass2;
 
 }; // class CMyClass1
 

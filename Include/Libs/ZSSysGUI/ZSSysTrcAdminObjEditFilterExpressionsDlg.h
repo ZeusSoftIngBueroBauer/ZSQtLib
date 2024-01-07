@@ -79,17 +79,21 @@ public: // instance methods
     void setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj);
     void setFilterToEdit(EMethodTraceFilterProperty i_filter);
 protected slots:
-    void onBtnApplyClicked( bool i_bChecked );
     void onBtnOkClicked( bool i_bChecked );
+    void onBtnApplyClicked( bool i_bChecked );
+    void onBtnResetClicked( bool i_bChecked );
     void onBtnCancelClicked( bool i_bChecked );
+protected slots:
+    void onWdgtEditFilterExpressionsContentChanged();
 protected: // instance members
     CTrcAdminObj* m_pTrcAdminObj;
     EMethodTraceFilterProperty m_filter;
     QVBoxLayout* m_pLyt;
     CWdgtTrcAdminObjEditFilterExpressions* m_pWdgtEditFilterExpressions;
-    QHBoxLayout* m_pLytBtns;
-    QPushButton* m_pBtnApply;
+    QHBoxLayout* m_pLytLineBtns;
     QPushButton* m_pBtnOk;
+    QPushButton* m_pBtnApply;
+    QPushButton* m_pBtnReset;
     QPushButton* m_pBtnCancel;
 
 }; // class CDlgTrcAdminObjEditFilterExpressions

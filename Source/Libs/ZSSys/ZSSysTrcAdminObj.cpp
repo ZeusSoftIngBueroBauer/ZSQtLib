@@ -1630,7 +1630,7 @@ bool CTrcAdminObj::areMethodCallsActive(
             }
         }
         if (bActive) {
-            if (!i_strMethodName.isEmpty() && isMethodNameSuppressedByFilter(i_strObjName)) {
+            if (!i_strMethodName.isEmpty() && isMethodNameSuppressedByFilter(i_strMethodName)) {
                 bActive = false;
             }
         }
@@ -1917,7 +1917,18 @@ bool CTrcAdminObj::isObjectNameSuppressedByFilter( const QString& i_strObjName )
     if (!m_strlstObjNameFilterInclude.isEmpty()) {
         bSuppressed = true;
         for (const QString& strFilter : m_strlstObjNameFilterInclude) {
-            if (i_strObjName.contains(strFilter)) {
+            int idxMatch = -1;
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QRegExp regExp(strFilter);
+            idxMatch = regExp.indexIn(i_strObjName);
+            #else
+            QRegularExpression regExp(strFilter);
+            QRegularExpressionMatch regExpMatch = regExp.match(i_strObjName);
+            if (regExpMatch.hasMatch()) {
+                idxMatch = regExpMatch.capturedStart();
+            }
+            #endif
+            if (idxMatch >= 0) {
                 bSuppressed = false;
                 break;
             }
@@ -1925,7 +1936,18 @@ bool CTrcAdminObj::isObjectNameSuppressedByFilter( const QString& i_strObjName )
     }
     if (!bSuppressed && !m_strlstObjNameFilterExclude.isEmpty()) {
         for (const QString& strFilter : m_strlstObjNameFilterExclude) {
-            if (i_strObjName.contains(strFilter)) {
+            int idxMatch = -1;
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QRegExp regExp(strFilter);
+            idxMatch = regExp.indexIn(i_strObjName);
+            #else
+            QRegularExpression regExp(strFilter);
+            QRegularExpressionMatch regExpMatch = regExp.match(i_strObjName);
+            if (regExpMatch.hasMatch()) {
+                idxMatch = regExpMatch.capturedStart();
+            }
+            #endif
+            if (idxMatch >= 0) {
                 bSuppressed = true;
                 break;
             }
@@ -2041,7 +2063,18 @@ bool CTrcAdminObj::isMethodNameSuppressedByFilter( const QString& i_strMethodNam
     if (!m_strlstMethodNameFilterInclude.isEmpty()) {
         bSuppressed = true;
         for (const QString& strFilter : m_strlstMethodNameFilterInclude) {
-            if (i_strMethodName.contains(strFilter)) {
+            int idxMatch = -1;
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QRegExp regExp(strFilter);
+            idxMatch = regExp.indexIn(i_strMethodName);
+            #else
+            QRegularExpression regExp(strFilter);
+            QRegularExpressionMatch regExpMatch = regExp.match(i_strMethodName);
+            if (regExpMatch.hasMatch()) {
+                idxMatch = regExpMatch.capturedStart();
+            }
+            #endif
+            if (idxMatch >= 0) {
                 bSuppressed = false;
                 break;
             }
@@ -2049,7 +2082,18 @@ bool CTrcAdminObj::isMethodNameSuppressedByFilter( const QString& i_strMethodNam
     }
     if (!bSuppressed && !m_strlstMethodNameFilterExclude.isEmpty()) {
         for (const QString& strFilter : m_strlstMethodNameFilterExclude) {
-            if (i_strMethodName.contains(strFilter)) {
+            int idxMatch = -1;
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QRegExp regExp(strFilter);
+            idxMatch = regExp.indexIn(i_strMethodName);
+            #else
+            QRegularExpression regExp(strFilter);
+            QRegularExpressionMatch regExpMatch = regExp.match(i_strMethodName);
+            if (regExpMatch.hasMatch()) {
+                idxMatch = regExpMatch.capturedStart();
+            }
+            #endif
+            if (idxMatch >= 0) {
                 bSuppressed = true;
                 break;
             }
@@ -2127,8 +2171,8 @@ void CTrcAdminObj::setTraceDataFilter( const QString& i_strFilter )
         }
         else {
             m_strDataFilter = i_strFilter;
-            m_strlstDataFilterInclude.clear();
-            m_strlstDataFilterExclude.clear();
+            m_strlstDataFilterInclude = strlstInclude;
+            m_strlstDataFilterExclude = strlstExclude;
         }
         emit traceDataFilterChanged(m_strDataFilter);
         if (m_pTree != nullptr) {
@@ -2165,7 +2209,18 @@ bool CTrcAdminObj::isTraceDataSuppressedByFilter( const QString& i_strData ) con
     if (!m_strlstDataFilterInclude.isEmpty()) {
         bSuppressed = true;
         for (const QString& strFilter : m_strlstDataFilterInclude) {
-            if (i_strData.contains(strFilter)) {
+            int idxMatch = -1;
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QRegExp regExp(strFilter);
+            idxMatch = regExp.indexIn(i_strData);
+            #else
+            QRegularExpression regExp(strFilter);
+            QRegularExpressionMatch regExpMatch = regExp.match(i_strData);
+            if (regExpMatch.hasMatch()) {
+                idxMatch = regExpMatch.capturedStart();
+            }
+            #endif
+            if (idxMatch >= 0) {
                 bSuppressed = false;
                 break;
             }
@@ -2173,7 +2228,18 @@ bool CTrcAdminObj::isTraceDataSuppressedByFilter( const QString& i_strData ) con
     }
     if (!bSuppressed && !m_strlstDataFilterExclude.isEmpty()) {
         for (const QString& strFilter : m_strlstDataFilterExclude) {
-            if (i_strData.contains(strFilter)) {
+            int idxMatch = -1;
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+            QRegExp regExp(strFilter);
+            idxMatch = regExp.indexIn(i_strData);
+            #else
+            QRegularExpression regExp(strFilter);
+            QRegularExpressionMatch regExpMatch = regExp.match(i_strData);
+            if (regExpMatch.hasMatch()) {
+                idxMatch = regExpMatch.capturedStart();
+            }
+            #endif
+            if (idxMatch >= 0) {
                 bSuppressed = true;
                 break;
             }
@@ -2437,6 +2503,52 @@ bool CTrcAdminObjRefAnchor::areMethodCallsActive( EMethodTraceDetailLevel i_eFil
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefAnchor::areMethodCallsActive(
+    const QString& i_strObjName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+    bool bActive = false;
+    if (m_pTrcAdminObj != nullptr) {
+        bActive = m_pTrcAdminObj->areMethodCallsActive(i_strObjName, i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefAnchor::areMethodCallsActive(
+    const QString& i_strObjName, const QString& i_strMethodName,
+    EMethodTraceDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+    bool bActive = false;
+    if (m_pTrcAdminObj != nullptr) {
+        bActive = m_pTrcAdminObj->areMethodCallsActive(
+            i_strObjName, i_strMethodName, i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the trace detail level.
 
     This method has no effect if the trace admin object has not yet been allocated.
@@ -2485,6 +2597,52 @@ bool CTrcAdminObjRefAnchor::isRuntimeInfoActive( ELogDetailLevel i_eFilterDetail
     bool bActive = false;
     if (m_pTrcAdminObj != nullptr) {
         bActive = m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefAnchor::isRuntimeInfoActive(
+    const QString& i_strObjName, ELogDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+    bool bActive = false;
+    if (m_pTrcAdminObj != nullptr) {
+        bActive = m_pTrcAdminObj->isRuntimeInfoActive(i_strObjName, i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefAnchor::isRuntimeInfoActive(
+    const QString& i_strObjName, const QString& i_strMethodName,
+    ELogDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&m_mtx);
+    bool bActive = false;
+    if (m_pTrcAdminObj != nullptr) {
+        bActive = m_pTrcAdminObj->isRuntimeInfoActive(
+            i_strObjName, i_strMethodName, i_eFilterDetailLevel);
     }
     return bActive;
 }
@@ -2611,6 +2769,50 @@ bool CTrcAdminObjRefGuard::areMethodCallsActive(EMethodTraceDetailLevel i_eFilte
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefGuard::areMethodCallsActive(
+    const QString& i_strObjName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+    if (m_pRefAnchor != nullptr) {
+        bActive = m_pRefAnchor->areMethodCallsActive(i_strObjName, i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefGuard::areMethodCallsActive(
+    const QString& i_strObjName, const QString& i_strMethodName,
+    EMethodTraceDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+    if (m_pRefAnchor != nullptr) {
+        bActive = m_pRefAnchor->areMethodCallsActive(
+            i_strObjName, i_strMethodName, i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the trace detail level of the trace admin object.
 
     This method has no effect if the trace admin object has not yet been allocated.
@@ -2656,6 +2858,50 @@ bool CTrcAdminObjRefGuard::isRuntimeInfoActive(ELogDetailLevel i_eFilterDetailLe
     bool bActive = false;
     if (m_pRefAnchor != nullptr) {
         bActive = m_pRefAnchor->isRuntimeInfoActive(i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefGuard::isRuntimeInfoActive(
+    const QString& i_strObjName, ELogDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+    if (m_pRefAnchor != nullptr) {
+        bActive = m_pRefAnchor->isRuntimeInfoActive(i_strObjName, i_eFilterDetailLevel);
+    }
+    return bActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether tracing is active for the given filter detail level.
+
+    @param i_eFilterDetailLevel [in]
+        Trace detail level which should be checked. If the trace admin objects
+        detail level is not 0 (None) and is greater or equal the filter level
+        tracing is active.
+
+    @return true if tracing is active, false otherwise.
+*/
+bool CTrcAdminObjRefGuard::isRuntimeInfoActive(
+    const QString& i_strObjName, const QString& i_strMethodName,
+    ELogDetailLevel i_eFilterDetailLevel ) const
+//------------------------------------------------------------------------------
+{
+    bool bActive = false;
+    if (m_pRefAnchor != nullptr) {
+        bActive = m_pRefAnchor->isRuntimeInfoActive(
+            i_strObjName, i_strMethodName, i_eFilterDetailLevel);
     }
     return bActive;
 }

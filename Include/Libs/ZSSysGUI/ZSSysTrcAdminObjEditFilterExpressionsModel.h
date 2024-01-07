@@ -107,7 +107,7 @@ protected: // type definitions and constants
     };
 protected: // auxiliary instance methods
     QList<SFilterExpression> getFilterExpressions(CTrcAdminObj* i_pTrcAdminObj) const;
-    QString toFilterExpression(QList<SFilterExpression>) const;
+    QString toFilterExpression(const QList<SFilterExpression>& i_arFilterExpressions) const;
 protected: // instance members
     CTrcAdminObj* m_pTrcAdminObj;
     CEnumMethodTraceFilterProperty m_eFilter;

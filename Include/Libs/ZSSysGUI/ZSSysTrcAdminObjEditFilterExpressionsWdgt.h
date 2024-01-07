@@ -49,6 +49,7 @@ class CTrcAdminObj;
 
 namespace GUI
 {
+class CModelTrcAdminObjEditFilterExpressions;
 class CSepLine;
 class CTableView;
 
@@ -65,6 +66,9 @@ public: // class methods
 public: // ctors and dtor
     CWdgtTrcAdminObjEditFilterExpressions(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtTrcAdminObjEditFilterExpressions();
+signals:
+    /*! This signal is emitted if the indicated content has been changed. */
+    void contentChanged();
 public: // instance methods
     void setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj);
     void setFilterToEdit(EMethodTraceFilterProperty i_filter);
@@ -77,6 +81,8 @@ protected slots:
     void onBtnResizeRowsAndColumnsToContentsClicked(bool i_bChecked = false);
     void onBtnAddFilterExpressionClicked(bool i_bChecked = false);
     void onBtnRemoveFilterExpressionClicked(bool i_bChecked = false);
+protected slots:
+    void onModelEditFilterExpressionsContentChanged();
 private: // auxiliary instance methods
     void setHeadlineText();
 private: // instance members
@@ -95,6 +101,7 @@ private: // instance members
     QLabel* m_pLblFilterProperty;
     QVBoxLayout* m_pLytTableView;
     CTableView* m_pTableView;
+    CModelTrcAdminObjEditFilterExpressions* m_pModel;
 
 }; // class CWdgtTrcAdminObjEditFilterExpressions
 

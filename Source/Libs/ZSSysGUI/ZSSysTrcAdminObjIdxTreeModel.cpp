@@ -399,11 +399,7 @@ Qt::ItemFlags CModelIdxTreeTrcAdminObjs::flags( const QModelIndex& i_modelIdx ) 
                 uFlags |= Qt::ItemIsUserCheckable;
             }
             else if ((i_modelIdx.column() == EColumnMethodCallsDetailLevel)
-                  || (i_modelIdx.column() == EColumnRuntimeInfoDetailLevel)
-                  || (i_modelIdx.column() == EColumnObjNameFilter)
-                  || (i_modelIdx.column() == EColumnMethodNameFilter)
-                  || (i_modelIdx.column() == EColumnDataFilter))
-            {
+                  || (i_modelIdx.column() == EColumnRuntimeInfoDetailLevel)) {
                 uFlags |= Qt::ItemIsEditable;
             }
         }
@@ -685,18 +681,11 @@ bool CModelIdxTreeTrcAdminObjs::setData( const QModelIndex& i_modelIdx, const QV
             switch (i_modelIdx.column()) {
                 case EColumnEnabled: {
                     if( pTrcAdminObj != nullptr ) {
-                        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-                        if( i_varData.canConvert(QVariant::Bool) ) {
-                        #else
-                        // static_cast to avoid deprecation warning
-                        if( i_varData.canConvert(static_cast<QMetaType>(QMetaType::Bool)) ) {
-                        #endif
-                            try {
-                                CEnumEnabled enabled = static_cast<EEnabled>(i_varData.toBool());
-                                pTrcAdminObj->setEnabled(enabled.enumerator());
-                            }
-                            catch (CException&) {
-                            }
+                        try {
+                            CEnumEnabled enabled = static_cast<EEnabled>(i_varData.toBool());
+                            pTrcAdminObj->setEnabled(enabled.enumerator());
+                        }
+                        catch (CException&) {
                         }
                     }
                     break;

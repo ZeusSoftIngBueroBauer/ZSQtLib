@@ -376,9 +376,13 @@ public: // instance methods
     void setMethodCallsTraceDetailLevel(EMethodTraceDetailLevel i_eTrcDetailLevel);
     EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
     bool areMethodCallsActive(EMethodTraceDetailLevel i_eFilterDetailLevel) const;
+    bool areMethodCallsActive( const QString& i_strObjName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    bool areMethodCallsActive( const QString& i_strObjName, const QString& i_strMethodName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
     void setRuntimeInfoTraceDetailLevel(ELogDetailLevel i_eTrcDetailLevel);
     ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive(ELogDetailLevel i_eFilterDetailLevel) const;
+    bool isRuntimeInfoActive( const QString& i_strObjName, ELogDetailLevel i_eFilterDetailLevel ) const;
+    bool isRuntimeInfoActive( const QString& i_strObjName, const QString& i_strMethodName, ELogDetailLevel i_eFilterDetailLevel ) const;
 private slots:
     void onTrcAdminObjDestroyed(QObject* i_pTrcAdminObj);
 private: // instance members
@@ -405,9 +409,13 @@ public: // instance methods
     void setMethodCallsTraceDetailLevel(EMethodTraceDetailLevel i_eTrcDetailLevel);
     EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
     bool areMethodCallsActive(EMethodTraceDetailLevel i_eFilterDetailLevel) const;
+    bool areMethodCallsActive( const QString& i_strObjName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    bool areMethodCallsActive( const QString& i_strObjName, const QString& i_strMethodName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
     void setRuntimeInfoTraceDetailLevel(ELogDetailLevel i_eTrcDetailLevel);
     ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive(ELogDetailLevel i_eFilterDetailLevel) const;
+    bool isRuntimeInfoActive( const QString& i_strObjName, ELogDetailLevel i_eFilterDetailLevel ) const;
+    bool isRuntimeInfoActive( const QString& i_strObjName, const QString& i_strMethodName, ELogDetailLevel i_eFilterDetailLevel ) const;
 private: // instance members
     CTrcAdminObjRefAnchor* m_pRefAnchor;    /*!< Pointer to reference anchor which should be guarded. */
 };
