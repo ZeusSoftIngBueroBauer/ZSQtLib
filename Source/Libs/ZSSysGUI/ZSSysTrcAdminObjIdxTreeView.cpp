@@ -208,7 +208,7 @@ CTreeViewIdxTreeTrcAdminObjs::CTreeViewIdxTreeTrcAdminObjs(
         m_pActionNameSpaceSetAdminObjsObjNameFilter, &QAction::triggered,
         this, &CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsObjectNameFilterTriggered);
 
-    m_pActionNameSpaceSetAdminObjsMethodNameFilter = new QAction("Recursively Set Object Name Filter of Admin Objects", this);
+    m_pActionNameSpaceSetAdminObjsMethodNameFilter = new QAction("Recursively Set Method Name Filter of Admin Objects", this);
     m_pMenuNameSpaceContext->addAction(m_pActionNameSpaceSetAdminObjsMethodNameFilter);
     QObject::connect(
         m_pActionNameSpaceSetAdminObjsMethodNameFilter, &QAction::triggered,
@@ -575,24 +575,21 @@ void CTreeViewIdxTreeTrcAdminObjs::mousePressEvent( QMouseEvent* i_pEv )
                                 pDlg = CDlgTrcAdminObjEditFilterExpressions::CreateInstance(
                                     /* strDlgTitle */ strDlgTitle,
                                     /* strObjName  */ "TrcAdminObjEditFilterDialog",
+                                    /* pIdxTree    */ m_pIdxTree,
                                     /* pWdgtParent */ this );
-                                pDlg->setTraceAdminObj(pTrcAdminObj);
                                 if (m_modelIdxSelectedOnMousePressEvent.column() == CModelIdxTreeTrcAdminObjs::EColumnObjNameFilter) {
-                                    pDlg->setFilterToEdit(EMethodTraceFilterProperty::ObjectName);
+                                    pDlg->setKeyEntryToEdit(pTrcAdminObj->keyInTree(), EMethodTraceFilterProperty::ObjectName);
                                 }
                                 else if (m_modelIdxSelectedOnMousePressEvent.column() == CModelIdxTreeTrcAdminObjs::EColumnMethodNameFilter) {
-                                    pDlg->setFilterToEdit(EMethodTraceFilterProperty::MethodName);
+                                    pDlg->setKeyEntryToEdit(pTrcAdminObj->keyInTree(), EMethodTraceFilterProperty::MethodName);
                                 }
                                 else if (m_modelIdxSelectedOnMousePressEvent.column() == CModelIdxTreeTrcAdminObjs::EColumnDataFilter) {
-                                    pDlg->setFilterToEdit(EMethodTraceFilterProperty::TraceData);
+                                    pDlg->setKeyEntryToEdit(pTrcAdminObj->keyInTree(), EMethodTraceFilterProperty::TraceData);
                                 }
                                 pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
                                 pDlg->adjustSize();
                                 pDlg->show();
                                 pDlg->move(ptEvGlobalPos);
-                                //QObject::connect(
-                                //    pDlg, &CDlgTrcAdminObjEditFilterExpressions::accepted,
-                                //    this, &CDelegateIdxTreeTrcAdminObjs::onDlgEditFilterExpressionAccepted);
                             }
                             else {
                                 if (pDlg->isHidden()) {
@@ -630,26 +627,6 @@ void CTreeViewIdxTreeTrcAdminObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
 
     m_modelIdxSelectedOnMouseReleaseEvent = indexAt(i_pEv->pos());
     if (m_modelIdxSelectedOnMouseReleaseEvent.isValid()) {
-        CModelIdxTreeEntry* pModelTreeEntry = static_cast<CModelIdxTreeEntry*>(m_modelIdxSelectedOnMouseReleaseEvent.internalPointer());
-        if (pModelTreeEntry != nullptr && pModelTreeEntry->isLeave()) {
-            QAbstractItemModel* pModelAbstract = const_cast<QAbstractItemModel*>(m_modelIdxSelectedOnMouseReleaseEvent.model());
-            //CDelegateIdxTreeTrcAdminObjs* pDelegate = dynamic_cast<CDelegateIdxTreeTrcAdminObjs*>(itemDelegate());
-            //QRect rectVisual = visualRect(m_modelIdxSelectedOnMouseReleaseEvent);
-            //if (m_modelIdxSelectedOnMouseReleaseEvent.column() == CModelIdxTreeTrcAdminObjs::EColumnEnabled) {
-            //    if (pDelegate != nullptr && pDelegate->isCheckBoxEnabledHit(rectVisual, i_pEv->pos(), m_modelIdxSelectedOnMouseReleaseEvent)) {
-            //        QVariant val = pModelAbstract->data(m_modelIdxSelectedOnMouseReleaseEvent, Qt::DisplayRole);
-            //        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-            //        if (val.canConvert(QVariant::Bool)) {
-            //        #else
-            //        // static_cast to avoid deprecation warning
-            //        if (val.canConvert(static_cast<QMetaType>(QMetaType::Bool))) {
-            //        #endif
-            //            pModelAbstract->setData(m_modelIdxSelectedOnMouseReleaseEvent, !val.toBool(), Qt::EditRole);
-            //        }
-            //        bEventHandled = true;
-            //    }
-            //}
-        }
     }
     if (!bEventHandled) {
         QTreeView::mouseReleaseEvent(i_pEv);
@@ -882,22 +859,31 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsObjectNameFilter
                 CIdxTreeLocker idxTreeLocker(pIdxTree);
                 CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
                 if (pBranch != nullptr) {
-                    CDlgEditStringValue* pDlg = CDlgEditStringValue::CreateInstance(
-                        /* strTitle    */ QCoreApplication::applicationName(),
-                        /* strObjName  */ "ObjectNameFilter",
-                        /* pWdgtParent */ this );
-                    pDlg->setValueName("ObjectNameFilter");
-                    pDlg->setValue("");
-                    if (pDlg->exec() == QDialog::Accepted) {
-                        try {
-                            QString strFilter = pDlg->getValue();
-                            pIdxTree->setObjectNameFilter(pBranch, strFilter);
-                        }
-                        catch (CException&) {
-                        }
+                    CDlgTrcAdminObjEditFilterExpressions* pDlg =
+                        CDlgTrcAdminObjEditFilterExpressions::GetInstance("TrcAdminObjEditFilterDialog");
+                    if (pDlg == nullptr) {
+                        QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Edit Filter Expressions";
+                        pDlg = CDlgTrcAdminObjEditFilterExpressions::CreateInstance(
+                            /* strDlgTitle */ strDlgTitle,
+                            /* strObjName  */ "TrcAdminObjEditFilterDialog",
+                            /* pIdxTree    */ pIdxTree,
+                            /* pWdgtParent */ this );
+                        pDlg->setKeyEntryToEdit(pBranch->keyInTree(), EMethodTraceFilterProperty::ObjectName);
+                        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+                        pDlg->adjustSize();
+                        pDlg->show();
+                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMousePressEvent);
+                        QPoint ptMousePos = rectVisual.topLeft();
+                        QPoint ptEvGlobalPos = mapToGlobal(ptMousePos);
+                        pDlg->move(ptEvGlobalPos);
                     }
-                    CDlgEditEnumValue::DestroyInstance(pDlg);
-                    pDlg = nullptr;
+                    else {
+                        if (pDlg->isHidden()) {
+                            pDlg->show();
+                        }
+                        pDlg->raise();
+                        pDlg->activateWindow();
+                    }
                 }
             }
         }
@@ -928,22 +914,31 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsMethodNameFilter
                 CIdxTreeLocker idxTreeLocker(pIdxTree);
                 CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
                 if (pBranch != nullptr) {
-                    CDlgEditStringValue* pDlg = CDlgEditStringValue::CreateInstance(
-                        /* strTitle    */ QCoreApplication::applicationName(),
-                        /* strObjName  */ "MethodNameFilter",
-                        /* pWdgtParent */ this );
-                    pDlg->setValueName("MethodNameFilter");
-                    pDlg->setValue("");
-                    if (pDlg->exec() == QDialog::Accepted) {
-                        try {
-                            QString strFilter = pDlg->getValue();
-                            pIdxTree->setMethodNameFilter(pBranch, strFilter);
-                        }
-                        catch (CException&) {
-                        }
+                    CDlgTrcAdminObjEditFilterExpressions* pDlg =
+                        CDlgTrcAdminObjEditFilterExpressions::GetInstance("TrcAdminObjEditFilterDialog");
+                    if (pDlg == nullptr) {
+                        QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Edit Filter Expressions";
+                        pDlg = CDlgTrcAdminObjEditFilterExpressions::CreateInstance(
+                            /* strDlgTitle */ strDlgTitle,
+                            /* strObjName  */ "TrcAdminObjEditFilterDialog",
+                            /* pIdxTree    */ pIdxTree,
+                            /* pWdgtParent */ this );
+                        pDlg->setKeyEntryToEdit(pBranch->keyInTree(), EMethodTraceFilterProperty::MethodName);
+                        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+                        pDlg->adjustSize();
+                        pDlg->show();
+                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMousePressEvent);
+                        QPoint ptMousePos = rectVisual.topLeft();
+                        QPoint ptEvGlobalPos = mapToGlobal(ptMousePos);
+                        pDlg->move(ptEvGlobalPos);
                     }
-                    CDlgEditEnumValue::DestroyInstance(pDlg);
-                    pDlg = nullptr;
+                    else {
+                        if (pDlg->isHidden()) {
+                            pDlg->show();
+                        }
+                        pDlg->raise();
+                        pDlg->activateWindow();
+                    }
                 }
             }
         }
@@ -974,22 +969,31 @@ void CTreeViewIdxTreeTrcAdminObjs::onActionNameSpaceSetAdminObjsTraceDataFilterT
                 CIdxTreeLocker idxTreeLocker(pIdxTree);
                 CIdxTreeEntry* pBranch = pModelTreeEntry->getIdxTreeEntry();
                 if (pBranch != nullptr) {
-                    CDlgEditStringValue* pDlg = CDlgEditStringValue::CreateInstance(
-                        /* strTitle    */ QCoreApplication::applicationName(),
-                        /* strObjName  */ "TraceDataFilter",
-                        /* pWdgtParent */ this );
-                    pDlg->setValueName("DataFilter");
-                    pDlg->setValue("");
-                    if (pDlg->exec() == QDialog::Accepted) {
-                        try {
-                            QString strFilter = pDlg->getValue();
-                            pIdxTree->setTraceDataFilter(pBranch, strFilter);
-                        }
-                        catch (CException&) {
-                        }
+                    CDlgTrcAdminObjEditFilterExpressions* pDlg =
+                        CDlgTrcAdminObjEditFilterExpressions::GetInstance("TrcAdminObjEditFilterDialog");
+                    if (pDlg == nullptr) {
+                        QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Edit Filter Expressions";
+                        pDlg = CDlgTrcAdminObjEditFilterExpressions::CreateInstance(
+                            /* strDlgTitle */ strDlgTitle,
+                            /* strObjName  */ "TrcAdminObjEditFilterDialog",
+                            /* pIdxTree    */ pIdxTree,
+                            /* pWdgtParent */ this );
+                        pDlg->setKeyEntryToEdit(pBranch->keyInTree(), EMethodTraceFilterProperty::TraceData);
+                        pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
+                        pDlg->adjustSize();
+                        pDlg->show();
+                        QRect rectVisual = visualRect(m_modelIdxSelectedOnMousePressEvent);
+                        QPoint ptMousePos = rectVisual.topLeft();
+                        QPoint ptEvGlobalPos = mapToGlobal(ptMousePos);
+                        pDlg->move(ptEvGlobalPos);
                     }
-                    CDlgEditEnumValue::DestroyInstance(pDlg);
-                    pDlg = nullptr;
+                    else {
+                        if (pDlg->isHidden()) {
+                            pDlg->show();
+                        }
+                        pDlg->raise();
+                        pDlg->activateWindow();
+                    }
                 }
             }
         }

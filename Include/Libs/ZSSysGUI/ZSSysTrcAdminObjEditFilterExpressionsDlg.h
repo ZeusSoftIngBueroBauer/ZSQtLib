@@ -42,6 +42,7 @@ namespace ZS
 {
 namespace System
 {
+class CIdxTreeTrcAdminObjs;
 class CTrcAdminObj;
 
 namespace GUI
@@ -60,6 +61,7 @@ public: // class methods
     static CDlgTrcAdminObjEditFilterExpressions* CreateInstance(
         const QString& i_strDlgTitle,
         const QString& i_strObjName,
+        CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags() );
     static CDlgTrcAdminObjEditFilterExpressions* GetInstance( const QString& i_strObjName );
@@ -67,6 +69,7 @@ protected: // ctor
     CDlgTrcAdminObjEditFilterExpressions(
         const QString& i_strDlgTitle,
         const QString& i_strObjName,
+        CIdxTreeTrcAdminObjs* i_pIdxTree,
         QWidget* i_pWdgtParent = nullptr,
         Qt::WindowFlags i_wFlags = Qt::WindowFlags());
 signals:
@@ -76,8 +79,7 @@ signals:
 public: // dtor
     virtual ~CDlgTrcAdminObjEditFilterExpressions();
 public: // instance methods
-    void setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj);
-    void setFilterToEdit(EMethodTraceFilterProperty i_filter);
+    void setKeyEntryToEdit(const QString& i_strKeyInTree, EMethodTraceFilterProperty i_filter);
 protected slots:
     void onBtnOkClicked( bool i_bChecked );
     void onBtnApplyClicked( bool i_bChecked );
@@ -86,8 +88,9 @@ protected slots:
 protected slots:
     void onWdgtEditFilterExpressionsContentChanged();
 protected: // instance members
-    CTrcAdminObj* m_pTrcAdminObj;
-    EMethodTraceFilterProperty m_filter;
+    CIdxTreeTrcAdminObjs* m_pIdxTree;
+    QString m_strKeyInTree;
+    CEnumMethodTraceFilterProperty m_eFilter;
     QVBoxLayout* m_pLyt;
     CWdgtTrcAdminObjEditFilterExpressions* m_pWdgtEditFilterExpressions;
     QHBoxLayout* m_pLytLineBtns;

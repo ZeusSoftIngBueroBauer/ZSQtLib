@@ -17,6 +17,7 @@ Content: This file is part of the ZSQtLib.
 #include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
+#include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -115,10 +116,12 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CModelTrcAdminObjEditFilterExpressions::CModelTrcAdminObjEditFilterExpressions(QObject* i_pObjParent) :
+CModelTrcAdminObjEditFilterExpressions::CModelTrcAdminObjEditFilterExpressions(
+    CIdxTreeTrcAdminObjs* i_pIdxTree, QObject* i_pObjParent) :
 //------------------------------------------------------------------------------
     QAbstractTableModel(i_pObjParent),
-    m_pTrcAdminObj(nullptr),
+    m_pIdxTree(i_pIdxTree),
+    m_strKeyInTree(),
     m_eFilter(EMethodTraceFilterProperty::Undefined),
     m_arFilterExpressions(),
     m_bContentChanged(false),
@@ -131,7 +134,8 @@ CModelTrcAdminObjEditFilterExpressions::CModelTrcAdminObjEditFilterExpressions(Q
 CModelTrcAdminObjEditFilterExpressions::~CModelTrcAdminObjEditFilterExpressions()
 //------------------------------------------------------------------------------
 {
-    m_pTrcAdminObj = nullptr;
+    m_pIdxTree = nullptr;
+    //m_strKeyInTree;
     m_eFilter = static_cast<EMethodTraceFilterProperty>(0);
     //m_arFilterExpressions;
     m_bContentChanged = false;
@@ -143,23 +147,13 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelTrcAdminObjEditFilterExpressions::setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj)
+void CModelTrcAdminObjEditFilterExpressions::setKeyEntryToEdit(
+    const QString& i_strKeyInTree, EMethodTraceFilterProperty i_filter)
 //------------------------------------------------------------------------------
 {
-    if (m_pTrcAdminObj != i_pTrcAdminObj) {
+    if (m_strKeyInTree != i_strKeyInTree || m_eFilter != i_filter) {
         disconnectFromTraceAdminObjFilterChangedSignal();
-        m_pTrcAdminObj = i_pTrcAdminObj;
-        fillModel();
-        connectWithTraceAdminObjFilterChangedSignal();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CModelTrcAdminObjEditFilterExpressions::setFilterToEdit(EMethodTraceFilterProperty i_filter)
-//------------------------------------------------------------------------------
-{
-    if (m_eFilter != i_filter) {
-        disconnectFromTraceAdminObjFilterChangedSignal();
+        m_strKeyInTree = i_strKeyInTree;
         m_eFilter = i_filter;
         fillModel();
         connectWithTraceAdminObjFilterChangedSignal();
@@ -202,9 +196,18 @@ bool CModelTrcAdminObjEditFilterExpressions::hasChanges() const
 //------------------------------------------------------------------------------
 {
     bool bHasChanges = false;
-    if (m_pTrcAdminObj != nullptr) {
-        QList<SFilterExpression> arFilterExpressions = getFilterExpressions(m_pTrcAdminObj);
-        bHasChanges = (arFilterExpressions != m_arFilterExpressions);
+    CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+    if (pTreeEntry != nullptr) {
+        if (pTreeEntry->isLeave()) {
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+            if (pTrcAdminObj != nullptr) {
+                QList<SFilterExpression> arFilterExpressions = getFilterExpressions(pTrcAdminObj);
+                bHasChanges = (arFilterExpressions != m_arFilterExpressions);
+            }
+        }
+        else {
+            bHasChanges = (m_arFilterExpressions.size() > 0);
+        }
     }
     return bHasChanges;
 }
@@ -226,17 +229,36 @@ bool CModelTrcAdminObjEditFilterExpressions::hasChanges() const
 void CModelTrcAdminObjEditFilterExpressions::acceptChanges()
 //------------------------------------------------------------------------------
 {
-    if (m_pTrcAdminObj != nullptr && !hasErrors()) {
-        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+    bool bHasChanges = false;
+    CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+    if (pTreeEntry != nullptr) {
+        if (pTreeEntry->isLeave()) {
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+            if (pTrcAdminObj != nullptr && !hasErrors()) {
+                CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+                QString strFilter = toFilterExpression(m_arFilterExpressions);
+                if (m_eFilter == EMethodTraceFilterProperty::ObjectName) {
+                    pTrcAdminObj->setObjectNameFilter(strFilter);
+                }
+                else if (m_eFilter == EMethodTraceFilterProperty::MethodName) {
+                    pTrcAdminObj->setMethodNameFilter(strFilter);
+                }
+                else if (m_eFilter == EMethodTraceFilterProperty::TraceData) {
+                    pTrcAdminObj->setTraceDataFilter(strFilter);
+                }
+            }
+        }
+        else {
+            CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
             QString strFilter = toFilterExpression(m_arFilterExpressions);
             if (m_eFilter == EMethodTraceFilterProperty::ObjectName) {
-                m_pTrcAdminObj->setObjectNameFilter(strFilter);
+                m_pIdxTree->setObjectNameFilter(pTreeEntry, strFilter);
             }
             else if (m_eFilter == EMethodTraceFilterProperty::MethodName) {
-                m_pTrcAdminObj->setMethodNameFilter(strFilter);
+                m_pIdxTree->setMethodNameFilter(pTreeEntry, strFilter);
             }
             else if (m_eFilter == EMethodTraceFilterProperty::TraceData) {
-                m_pTrcAdminObj->setTraceDataFilter(strFilter);
+                m_pIdxTree->setTraceDataFilter(pTreeEntry, strFilter);
             }
         }
     }
@@ -355,8 +377,7 @@ QVariant CModelTrcAdminObjEditFilterExpressions::data(const QModelIndex& i_model
 //------------------------------------------------------------------------------
 {
     QVariant varData;
-
-    if (m_pTrcAdminObj != nullptr && i_modelIdx.isValid()) {
+    if (i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < rowCount())) {
@@ -432,7 +453,7 @@ bool CModelTrcAdminObjEditFilterExpressions::setData(
 {
     bool bDataSet = false;
 
-    if (m_pTrcAdminObj != nullptr && i_modelIdx.isValid()) {
+    if (i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < rowCount())) {
@@ -508,25 +529,35 @@ Qt::ItemFlags CModelTrcAdminObjEditFilterExpressions::flags(const QModelIndex& i
     // The base class implementation returns a combination of flags that enables
     // the item (ItemIsEnabled) and allows it to be selected (ItemIsSelectable).
     Qt::ItemFlags uFlags = uFlags = QAbstractItemModel::flags(i_modelIdx);
-    if (m_pTrcAdminObj != nullptr && i_modelIdx.isValid()) {
-        int iRow = i_modelIdx.row();
-        int iClm = i_modelIdx.column();
-        if ((iRow >= 0) && (iRow < rowCount())) {
-            switch (i_modelIdx.column()) {
-                case EColumnSelected: {
-                    uFlags = uFlags | Qt::ItemIsUserCheckable;
-                    break;
-                }
-                case EColumnFilterExpressionType: {
-                    uFlags = uFlags | Qt::ItemIsEditable;
-                    break;
-                }
-                case EColumnFilterExpression: {
-                    uFlags = uFlags | Qt::ItemIsEditable;
-                    break;
-                }
-                default: {
-                    break;
+    if (i_modelIdx.isValid()) {
+        //CTrcAdminObj* pTrcAdminObj = nullptr;
+        CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+        if (pTreeEntry != nullptr) {
+            //if (pTreeEntry->isLeave()) {
+            //    pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+            //}
+        }
+        //if (pTrcAdminObj != nullptr) {
+        if (pTreeEntry != nullptr) {
+            int iRow = i_modelIdx.row();
+            int iClm = i_modelIdx.column();
+            if ((iRow >= 0) && (iRow < rowCount())) {
+                switch (i_modelIdx.column()) {
+                    case EColumnSelected: {
+                        uFlags = uFlags | Qt::ItemIsUserCheckable;
+                        break;
+                    }
+                    case EColumnFilterExpressionType: {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                        break;
+                    }
+                    case EColumnFilterExpression: {
+                        uFlags = uFlags | Qt::ItemIsEditable;
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
                 }
             }
         }
@@ -590,38 +621,24 @@ void CModelTrcAdminObjEditFilterExpressions::fillModel()
     if (m_arFilterExpressions.size() > 0) {
         clearModel();
     }
-    m_arFilterExpressions = getFilterExpressions(m_pTrcAdminObj);
-    if (m_arFilterExpressions.size() > 0) {
-        beginInsertRows(QModelIndex(), 0, m_arFilterExpressions.size()-1);
-        endInsertRows();
-        if (m_iContentChangedSignalBlockedCounter > 0) {
-            m_bContentChanged = true;
-        }
-        else {
-            emit contentChanged();
+    CTrcAdminObj* pTrcAdminObj = nullptr;
+    CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+    if (pTreeEntry != nullptr) {
+        if (pTreeEntry->isLeave()) {
+            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
         }
     }
-}
-
-//------------------------------------------------------------------------------
-void CModelTrcAdminObjEditFilterExpressions::disconnectFromTraceAdminObjFilterChangedSignal()
-//------------------------------------------------------------------------------
-{
-    if (m_pTrcAdminObj != nullptr) {
-        if (m_eFilter == EMethodTraceFilterProperty::ObjectName) {
-            QObject::disconnect(
-                m_pTrcAdminObj, &CTrcAdminObj::objectNameFilterChanged,
-                this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
-        }
-        else if (m_eFilter == EMethodTraceFilterProperty::MethodName) {
-            QObject::disconnect(
-                m_pTrcAdminObj, &CTrcAdminObj::methodNameFilterChanged,
-                this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
-        }
-        else if (m_eFilter == EMethodTraceFilterProperty::TraceData) {
-            QObject::disconnect(
-                m_pTrcAdminObj, &CTrcAdminObj::traceDataFilterChanged,
-                this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
+    if (pTrcAdminObj != nullptr) {
+        m_arFilterExpressions = getFilterExpressions(pTrcAdminObj);
+        if (m_arFilterExpressions.size() > 0) {
+            beginInsertRows(QModelIndex(), 0, m_arFilterExpressions.size()-1);
+            endInsertRows();
+            if (m_iContentChangedSignalBlockedCounter > 0) {
+                m_bContentChanged = true;
+            }
+            else {
+                emit contentChanged();
+            }
         }
     }
 }
@@ -630,20 +647,57 @@ void CModelTrcAdminObjEditFilterExpressions::disconnectFromTraceAdminObjFilterCh
 void CModelTrcAdminObjEditFilterExpressions::connectWithTraceAdminObjFilterChangedSignal()
 //------------------------------------------------------------------------------
 {
-    if (m_pTrcAdminObj != nullptr) {
+    CTrcAdminObj* pTrcAdminObj = nullptr;
+    CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+    if (pTreeEntry != nullptr) {
+        if (pTreeEntry->isLeave()) {
+            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+        }
+    }
+    if (pTrcAdminObj != nullptr) {
         if (m_eFilter == EMethodTraceFilterProperty::ObjectName) {
             QObject::connect(
-                m_pTrcAdminObj, &CTrcAdminObj::objectNameFilterChanged,
+                pTrcAdminObj, &CTrcAdminObj::objectNameFilterChanged,
                 this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
         }
         else if (m_eFilter == EMethodTraceFilterProperty::MethodName) {
             QObject::connect(
-                m_pTrcAdminObj, &CTrcAdminObj::methodNameFilterChanged,
+                pTrcAdminObj, &CTrcAdminObj::methodNameFilterChanged,
                 this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
         }
         else if (m_eFilter == EMethodTraceFilterProperty::TraceData) {
             QObject::connect(
-                m_pTrcAdminObj, &CTrcAdminObj::traceDataFilterChanged,
+                pTrcAdminObj, &CTrcAdminObj::traceDataFilterChanged,
+                this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+void CModelTrcAdminObjEditFilterExpressions::disconnectFromTraceAdminObjFilterChangedSignal()
+//------------------------------------------------------------------------------
+{
+    CTrcAdminObj* pTrcAdminObj = nullptr;
+    CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+    if (pTreeEntry != nullptr) {
+        if (pTreeEntry->isLeave()) {
+            pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+        }
+    }
+    if (pTrcAdminObj != nullptr) {
+        if (m_eFilter == EMethodTraceFilterProperty::ObjectName) {
+            QObject::disconnect(
+                pTrcAdminObj, &CTrcAdminObj::objectNameFilterChanged,
+                this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
+        }
+        else if (m_eFilter == EMethodTraceFilterProperty::MethodName) {
+            QObject::disconnect(
+                pTrcAdminObj, &CTrcAdminObj::methodNameFilterChanged,
+                this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
+        }
+        else if (m_eFilter == EMethodTraceFilterProperty::TraceData) {
+            QObject::disconnect(
+                pTrcAdminObj, &CTrcAdminObj::traceDataFilterChanged,
                 this, &CModelTrcAdminObjEditFilterExpressions::onTraceAdminObjFilterChanged);
         }
     }

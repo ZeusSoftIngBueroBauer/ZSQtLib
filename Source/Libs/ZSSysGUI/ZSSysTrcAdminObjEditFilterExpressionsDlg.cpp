@@ -57,6 +57,7 @@ public: // class methods
 CDlgTrcAdminObjEditFilterExpressions* CDlgTrcAdminObjEditFilterExpressions::CreateInstance(
     const QString& i_strDlgTitle,
     const QString& i_strObjName,
+    CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags )
 //------------------------------------------------------------------------------
@@ -68,6 +69,7 @@ CDlgTrcAdminObjEditFilterExpressions* CDlgTrcAdminObjEditFilterExpressions::Crea
     return new CDlgTrcAdminObjEditFilterExpressions(
         /* strDlgTitle */ i_strDlgTitle,
         /* strObjName  */ i_strObjName,
+        /* pIdxTree    */ i_pIdxTree,
         /* pWdgtParent */ i_pWdgtParent,
         /* wFlags      */ i_wFlags );
 }
@@ -87,6 +89,7 @@ protected: // ctor
 CDlgTrcAdminObjEditFilterExpressions::CDlgTrcAdminObjEditFilterExpressions(
     const QString& i_strDlgTitle,
     const QString& i_strObjName,
+    CIdxTreeTrcAdminObjs* i_pIdxTree,
     QWidget* i_pWdgtParent,
     Qt::WindowFlags i_wFlags ) :
 //------------------------------------------------------------------------------
@@ -97,8 +100,9 @@ CDlgTrcAdminObjEditFilterExpressions::CDlgTrcAdminObjEditFilterExpressions(
         /* strObjName   */ i_strObjName,
         /* pWdgtParent  */ i_pWdgtParent,
         /* wFlags       */ i_wFlags ),
-    m_pTrcAdminObj(nullptr),
-    m_filter(EMethodTraceFilterProperty::Undefined),
+    m_pIdxTree(i_pIdxTree),
+    m_strKeyInTree(),
+    m_eFilter(EMethodTraceFilterProperty::Undefined),
     m_pLyt(nullptr),
     m_pWdgtEditFilterExpressions(nullptr),
     m_pLytLineBtns(nullptr),
@@ -109,7 +113,7 @@ CDlgTrcAdminObjEditFilterExpressions::CDlgTrcAdminObjEditFilterExpressions(
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
 
-    m_pWdgtEditFilterExpressions = new CWdgtTrcAdminObjEditFilterExpressions();
+    m_pWdgtEditFilterExpressions = new CWdgtTrcAdminObjEditFilterExpressions(i_pIdxTree);
     m_pLyt->addWidget(m_pWdgtEditFilterExpressions);
     QObject::connect(
         m_pWdgtEditFilterExpressions, &CWdgtTrcAdminObjEditFilterExpressions::contentChanged,
@@ -156,39 +160,30 @@ public: // dtor
 CDlgTrcAdminObjEditFilterExpressions::~CDlgTrcAdminObjEditFilterExpressions()
 //------------------------------------------------------------------------------
 {
-    m_pTrcAdminObj = nullptr;
-    m_filter = static_cast<EMethodTraceFilterProperty>(0);
+    m_pIdxTree = nullptr;
+    //m_strKeyInTree;
+    m_eFilter = static_cast<EMethodTraceFilterProperty>(0);
     m_pLyt = nullptr;
     m_pWdgtEditFilterExpressions = nullptr;
     m_pLytLineBtns = nullptr;
     m_pBtnApply = nullptr;
     m_pBtnOk = nullptr;
     m_pBtnCancel = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDlgTrcAdminObjEditFilterExpressions::setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj)
+void CDlgTrcAdminObjEditFilterExpressions::setKeyEntryToEdit(
+    const QString& i_strKeyInTree, EMethodTraceFilterProperty i_filter)
 //------------------------------------------------------------------------------
 {
-    if (m_pTrcAdminObj != i_pTrcAdminObj) {
-        m_pTrcAdminObj = i_pTrcAdminObj;
-        m_pWdgtEditFilterExpressions->setTraceAdminObj(m_pTrcAdminObj);
-        onWdgtEditFilterExpressionsContentChanged();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CDlgTrcAdminObjEditFilterExpressions::setFilterToEdit(EMethodTraceFilterProperty i_filter)
-//------------------------------------------------------------------------------
-{
-    if (m_filter != i_filter) {
-        m_filter = i_filter;
-        m_pWdgtEditFilterExpressions->setFilterToEdit(m_filter);
+    if (m_strKeyInTree != i_strKeyInTree || m_eFilter != i_filter) {
+        m_strKeyInTree = i_strKeyInTree;
+        m_eFilter = i_filter;
+        m_pWdgtEditFilterExpressions->setKeyEntryToEdit(i_strKeyInTree, i_filter);
         onWdgtEditFilterExpressionsContentChanged();
     }
 }

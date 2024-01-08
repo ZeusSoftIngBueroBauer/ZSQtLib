@@ -45,6 +45,7 @@ namespace ZS
 {
 namespace System
 {
+class CIdxTreeTrcAdminObjs;
 class CTrcAdminObj;
 
 namespace GUI
@@ -64,14 +65,13 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CWdgtTrcAdminObjEditFilterExpressions"; }
 public: // ctors and dtor
-    CWdgtTrcAdminObjEditFilterExpressions(QWidget* i_pWdgtParent = nullptr);
+    CWdgtTrcAdminObjEditFilterExpressions(CIdxTreeTrcAdminObjs* i_pIdxTree, QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtTrcAdminObjEditFilterExpressions();
 signals:
     /*! This signal is emitted if the indicated content has been changed. */
     void contentChanged();
 public: // instance methods
-    void setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj);
-    void setFilterToEdit(EMethodTraceFilterProperty i_filter);
+    void setKeyEntryToEdit(const QString& i_strKeyInTree, EMethodTraceFilterProperty i_filter);
 public: // instance methods
     bool hasErrors() const;
     bool hasChanges() const;
@@ -86,7 +86,8 @@ protected slots:
 private: // auxiliary instance methods
     void setHeadlineText();
 private: // instance members
-    CTrcAdminObj* m_pTrcAdminObj;
+    CIdxTreeTrcAdminObjs* m_pIdxTree;
+    QString m_strKeyInTree;
     CEnumMethodTraceFilterProperty m_eFilter;
     QVBoxLayout* m_pLyt;
     QHBoxLayout* m_pLytLineTrcAdminObjPath;

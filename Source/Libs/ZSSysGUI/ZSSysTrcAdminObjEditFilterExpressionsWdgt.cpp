@@ -31,21 +31,16 @@ may result in using the software modules.
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSysGUI/ZSSysTableView.h"
 #include "ZSSys/ZSSysRefCountGuard.h"
+#include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 
 #if QT_VERSION < 0x050000
-//#include <QtGui/qcheckbox.h>
-//#include <QtGui/qcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
-//#include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
 #else
-//#include <QtWidgets/qcheckbox.h>
-//#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
-//#include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qpushbutton.h>
 #endif
 
@@ -65,10 +60,12 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtTrcAdminObjEditFilterExpressions::CWdgtTrcAdminObjEditFilterExpressions( QWidget* i_pWdgtParent) :
+CWdgtTrcAdminObjEditFilterExpressions::CWdgtTrcAdminObjEditFilterExpressions(
+    CIdxTreeTrcAdminObjs* i_pIdxTree, QWidget* i_pWdgtParent) :
 //------------------------------------------------------------------------------
     QWidget(i_pWdgtParent),
-    m_pTrcAdminObj(nullptr),
+    m_pIdxTree(i_pIdxTree),
+    m_strKeyInTree(),
     m_eFilter(EMethodTraceFilterProperty::Undefined),
     m_pLyt(nullptr),
     m_pLytLineTrcAdminObjPath(nullptr),
@@ -164,7 +161,7 @@ CWdgtTrcAdminObjEditFilterExpressions::CWdgtTrcAdminObjEditFilterExpressions( QW
     m_pLytTableView = new QVBoxLayout();
     m_pLytWdgtFilterExpressions->addLayout(m_pLytTableView, 1);
 
-    m_pModel = new CModelTrcAdminObjEditFilterExpressions(this);
+    m_pModel = new CModelTrcAdminObjEditFilterExpressions(m_pIdxTree, this);
     m_pTableView = new CTableView("TrcAdminObjEditFilterExpression");
     m_pTableView->setModel(m_pModel);
 
@@ -199,7 +196,8 @@ CWdgtTrcAdminObjEditFilterExpressions::CWdgtTrcAdminObjEditFilterExpressions( QW
 CWdgtTrcAdminObjEditFilterExpressions::~CWdgtTrcAdminObjEditFilterExpressions()
 //------------------------------------------------------------------------------
 {
-    m_pTrcAdminObj = nullptr;
+    m_pIdxTree = nullptr;
+    //m_strKeyInTree;
     m_eFilter = static_cast<EMethodTraceFilterProperty>(0);
     m_pLyt = nullptr;
     m_pLytLineTrcAdminObjPath = nullptr;
@@ -222,26 +220,15 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtTrcAdminObjEditFilterExpressions::setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj)
+void CWdgtTrcAdminObjEditFilterExpressions::setKeyEntryToEdit(
+    const QString& i_strKeyInTree, EMethodTraceFilterProperty i_filter)
 //------------------------------------------------------------------------------
 {
-    if (m_pTrcAdminObj != i_pTrcAdminObj) {
-        m_pTrcAdminObj = i_pTrcAdminObj;
-        setHeadlineText();
-        m_pModel->setTraceAdminObj(m_pTrcAdminObj);
-        m_pTableView->resizeColumnsToContents();
-        m_pTableView->resizeRowsToContents();
-    }
-}
-
-//------------------------------------------------------------------------------
-void CWdgtTrcAdminObjEditFilterExpressions::setFilterToEdit(EMethodTraceFilterProperty i_filter)
-//------------------------------------------------------------------------------
-{
-    if (m_eFilter != i_filter) {
+    if (m_strKeyInTree != i_strKeyInTree || m_eFilter != i_filter) {
+        m_strKeyInTree = i_strKeyInTree;
         m_eFilter = i_filter;
         setHeadlineText();
-        m_pModel->setFilterToEdit(i_filter);
+        m_pModel->setKeyEntryToEdit(i_strKeyInTree, i_filter);
         m_pTableView->resizeColumnsToContents();
         m_pTableView->resizeRowsToContents();
     }
@@ -330,11 +317,12 @@ protected slots:
 void CWdgtTrcAdminObjEditFilterExpressions::setHeadlineText()
 //------------------------------------------------------------------------------
 {
-    if (m_pTrcAdminObj == nullptr) {
-        m_pLblTrcAdminObjPath->setText("Trace Admin Object Path");
+    CIdxTreeEntry* pTreeEntry = m_pIdxTree->findEntry(m_strKeyInTree);
+    if (pTreeEntry == nullptr) {
+        m_pLblTrcAdminObjPath->setText("Entry Path");
     }
     else {
-        m_pLblTrcAdminObjPath->setText(m_pTrcAdminObj->path());
+        m_pLblTrcAdminObjPath->setText(pTreeEntry->path());
     }
     if (m_eFilter == EMethodTraceFilterProperty::Undefined) {
         m_pLblFilterProperty->setText("Filter Property");

@@ -36,6 +36,7 @@ namespace ZS
 {
 namespace System
 {
+class CIdxTreeTrcAdminObjs;
 class CTrcAdminObj;
 
 namespace GUI
@@ -60,14 +61,13 @@ public: // type definitions and constants
     };
     static QString column2Str(int i_clm);
 public: // ctors and dtor
-    CModelTrcAdminObjEditFilterExpressions(QObject* i_pObjParent = nullptr);
+    CModelTrcAdminObjEditFilterExpressions(CIdxTreeTrcAdminObjs* i_pIdxTree, QObject* i_pObjParent = nullptr);
     virtual ~CModelTrcAdminObjEditFilterExpressions();
 signals:
     /*! This signal is emitted if the indicated content has been changed. */
     void contentChanged();
 public: // instance methods
-    void setTraceAdminObj(CTrcAdminObj* i_pTrcAdminObj);
-    void setFilterToEdit(EMethodTraceFilterProperty i_filter);
+    void setKeyEntryToEdit(const QString& i_strKeyInTree, EMethodTraceFilterProperty i_filter);
 public: // instance methods
     bool hasErrors() const;
     bool hasChanges() const;
@@ -89,8 +89,8 @@ protected slots:
 protected: // instance methods
     void clearModel();
     void fillModel();
-    void disconnectFromTraceAdminObjFilterChangedSignal();
     void connectWithTraceAdminObjFilterChangedSignal();
+    void disconnectFromTraceAdminObjFilterChangedSignal();
 protected: // type definitions and constants
     struct SFilterExpression {
     public: // ctors
@@ -109,7 +109,8 @@ protected: // auxiliary instance methods
     QList<SFilterExpression> getFilterExpressions(CTrcAdminObj* i_pTrcAdminObj) const;
     QString toFilterExpression(const QList<SFilterExpression>& i_arFilterExpressions) const;
 protected: // instance members
-    CTrcAdminObj* m_pTrcAdminObj;
+    CIdxTreeTrcAdminObjs* m_pIdxTree;
+    QString m_strKeyInTree;
     CEnumMethodTraceFilterProperty m_eFilter;
     QList<SFilterExpression> m_arFilterExpressions;
     /*!< Flag to indicate that the content of a data row has been changed while the "contentChanged"
