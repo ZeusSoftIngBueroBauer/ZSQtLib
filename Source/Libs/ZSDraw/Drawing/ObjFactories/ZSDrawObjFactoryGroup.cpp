@@ -141,7 +141,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     //-------------
 
     QPointF ptPos = pGraphObjGroup->pos();
-    double  fRotAngle_deg = pGraphObjGroup->getRotationAngleInDegree();
+    double  fRotAngle_deg = 0.0; //pGraphObjGroup->getRotationAngleInDegree();
 
     i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement("Pos", point2Str(ptPos));

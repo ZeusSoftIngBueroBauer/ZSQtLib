@@ -33,6 +33,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjTransformations.h"
 
 #include <QtGui/qcursor.h>
 
@@ -716,12 +717,13 @@ public: // must overridables
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // must overridables
-    virtual QRectF getCurrentBoundingRect() const;
+    virtual QRectF getBoundingRect() const;
 public: // overridables
-    virtual QRectF getOriginalBoundingRectInParent() const;
-    virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding);
-    virtual void setRotationAngleInDegree(double i_fRotAngle_deg);
-    virtual double getRotationAngleInDegree();
+    //virtual QRectF getOriginalBoundingRectInParent() const;
+    //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding);
+    virtual void setGroupScale(double i_fXScale, double i_fYScale);
+    //virtual void setRotationAngleInDegree(double i_fRotAngle_deg);
+    //virtual double getRotationAngleInDegree();
     //virtual double getRotationAngleInDegree(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed);
 public: // overridables
     virtual void setEditMode(const CEnumEditMode& i_eMode);
@@ -810,7 +812,7 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
 protected slots: // overridables
-    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
+    //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     virtual void onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
@@ -838,11 +840,19 @@ protected: // auxiliary instance methods (method tracing)
     void emit_labelChanged(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
-    virtual void updateInternalScenePos();
-    virtual void setInternalScenePos(const QPointF& i_pos);
+    //virtual void updateInternalScenePos();
+    //virtual void setInternalScenePos(const QPointF& i_pos);
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
 public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+    virtual void traceThisPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+    virtual void traceParentGroupPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
@@ -867,7 +877,7 @@ protected: // instance members
          metric units have not been changed. On changing the drawing size
          the drawing scene will emit "drawingSizeChanged" and the slot method
          "onDrawingSizeChanged" of the graphical object must set this flag to true. */
-    bool m_bForceConversionToSceneCoors;
+    //bool m_bForceConversionToSceneCoors;
     /*!< Pointer to drawing scene the graphical object belongs to.
          Is set if the graphical object is added to the scene. */
     CDrawingScene* m_pDrawingScene;
@@ -928,13 +938,17 @@ protected: // instance members
          which is currently set at the graphics item. The current and original versions are mainly
          used to temporarily modify the ZValue to bring the object in front and back again. */
     QVector<double> m_arfZValues;
-    /*!< Current scene position of the object. To keep the relative position of selection points
-         and labels to their "parent" objects up to date on the scene, the objects need to track
-         their current scene position. If the objects are childs of groups and the groups are
-         moved, the geometry of the object within their parent groups is not changed. But their
-         scene position is changed and this change must be forwarded to their selection points
-         and labels by emitting the scenePosChanged signal. */
-    QPointF m_ptScenePos;
+    /*!< Transformations as applied by modifying (scaling, rotating, shearing) the object directly. */
+    QTransform m_transform;
+    /*!< Transformations as applied by the parent group. */
+    QTransform m_transformByGroup;
+    ///*!< Current scene position of the object. To keep the relative position of selection points
+    //     and labels to their "parent" objects up to date on the scene, the objects need to track
+    //     their current scene position. If the objects are childs of groups and the groups are
+    //     moved, the geometry of the object within their parent groups is not changed. But their
+    //     scene position is changed and this change must be forwarded to their selection points
+    //     and labels by emitting the scenePosChanged signal. */
+    //QPointF m_ptScenePos;
     /*!< Currently selected selection point of the items polygon. */
     //int m_idxSelPtSelectedPolygon;
     /*!< List of selections points. Selection points are used to resize the graphical object

@@ -155,9 +155,10 @@ public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos() const override;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class CGraphObj
-    virtual QRectF getCurrentBoundingRect() const override;
-    virtual QRectF getOriginalBoundingRectInParent() const override;
-    virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding) override;
+    virtual QRectF getBoundingRect() const override;
+    //virtual QRectF getOriginalBoundingRectInParent() const override;
+    //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding) override;
+    virtual void setGroupScale(double i_fXScale, double i_fYScale) override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
 public: // overridables of base class CGraphObj
@@ -192,7 +193,7 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj
-    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
+    //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
 protected: // instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
@@ -200,11 +201,11 @@ protected: // instance methods
 protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
-    void setPhysValLine(const CPhysValLine& i_physValLine, const CEnumCoordinatesVersion& i_eVersion);
-    void QGraphicsLineItem_setLine(const QLineF& i_line);
-    void QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
+    QLineF setLineOrig(const QLineF& i_line);
+    QLineF QGraphicsLineItem_setLine(const QLineF& i_line);
+    QLineF QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
-    void tracePositionInfo(
+    virtual void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
@@ -216,6 +217,9 @@ public: // class members
     static qint64 s_iInstCount;
 protected: // instance members
     /*!< The original, untransformed line coordinates with unit.
+         TODO: Coordinates are in scene coordinates (relative to top left corner of scene)
+               or in parent coordinates (relative to center point of parent group).
+               The transformation matrix is used ....
          The coordinates are relative to the top left corner of the parent item's
          bounding rectange (real shape points only). If the item does not have another
          graphical object as a  parent, the coordinates are in scene coordinates.
@@ -231,12 +235,12 @@ protected: // instance members
          are taken over as the original coordinates.
          When resizing the group many times using the original coordinates also avoids
          rounding errors. */
-    CPhysValLine m_physValLineOrig;
+    QLineF m_lineOrig;
     /*!< The current, untransformed line coordinates with unit.
          The coordinates are relative to the top left corner of the parent item's
          bounding rectange (real shape points only). If the item does not belong as
          a child to a group, the coordinates are in scene coordinates. */
-    CPhysValLine m_physValLineCurr;
+    //CPhysValLine m_physValLineTransformed;
     /*!< Polygon points for arrow head at P1 (line start) */
     QPolygonF m_plgP1ArrowHead;
     /*!< Polygon points for arrow head at P2 (line end) */

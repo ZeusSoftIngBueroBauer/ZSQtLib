@@ -160,7 +160,7 @@ SErrResultInfo CObjFactoryPolygon::saveGraphObj(
 
     QPolygonF plg = pGraphObj->polygon(); // coordinates are in the objects coordinate system (LT = 0.0/0.0)
     QPointF   ptPos = pGraphObj->pos();
-    double    fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
+    double    fRotAngle_deg = 0.0; //pGraphObj->getRotationAngleInDegree();
     QPointF   pt;
     int       idxPt;
 
@@ -335,7 +335,7 @@ CGraphObj* CObjFactoryPolygon::loadGraphObj(
         i_pDrawingScene->addGraphObj(pGraphObj);
 
         pGraphObj->setPos(ptPos);
-        pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
+        //pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
         pGraphObj->setStackingOrderValue(fZValue);
 
         // Before calling "onGraphObjCreationFinished" the object must have been added

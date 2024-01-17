@@ -87,8 +87,7 @@ CGraphObjGroup::CGraphObjGroup(
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
         /* strObjName          */ i_strObjName.isEmpty() ? "Group" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsItemGroup(),
-    m_physValRectOrig(*i_pDrawingScene),
-    m_physValRectCurr(*i_pDrawingScene)
+    m_rectOrig()
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -133,8 +132,7 @@ CGraphObjGroup::CGraphObjGroup(
         /* strType             */ i_strType,
         /* strObjName          */ i_strObjName),
     QGraphicsItemGroup(),
-    m_physValRectOrig(*i_pDrawingScene),
-    m_physValRectCurr(*i_pDrawingScene)
+    m_rectOrig()
 {
 } // ctor
 
@@ -157,8 +155,7 @@ CGraphObjGroup::~CGraphObjGroup()
 
     emit_aboutToBeDestroyed();
 
-    //m_physValRectOrig;
-    //m_physValRectCurr;
+    //m_rectOrig;
 
 } // dtor
 
@@ -220,81 +217,56 @@ CGraphObj* CGraphObjGroup::clone()
 public: // instance methods
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-//void CGraphObjGroup::addGraphObj( CGraphObj* i_pGraphObj )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    QString strMthInArgs;
-//
-//    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
-//    {
-//        strMthInArgs  = "GraphObj:" + i_pGraphObj->name();
-//    }
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "addGraphObj",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-//    {
-//        strMthInArgs  = "Selected:" + bool2Str(isSelected());
-//        strMthInArgs += ", EditMode:" + m_editMode.toString();
-//        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
-//        strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-//        mthTracer.trace(strMthInArgs);
-//    }
-//
-//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-//
-//    QGraphicsItemGroup::addToGroup(pGraphicsItem);
-//
-//    i_pGraphObj->acceptCurrentAsOriginalCoors();
-//
-//    add(i_pGraphObj);
-//
-//} // addGraphObj
+//------------------------------------------------------------------------------
+/*! @brief Adds the given item and item's child items to this item group.
 
-////------------------------------------------------------------------------------
-//void CGraphObjGroup::removeGraphObj( CGraphObj* i_pGraphObj )
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    QString strMthInArgs;
-//
-//    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal))
-//    {
-//        strMthInArgs = i_pGraphObj->keyInTree();
-//    }
-//
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "removeGraphObj",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-//    {
-//        strMthInArgs  = "Selected:" + bool2Str(isSelected());
-//        strMthInArgs += ", EditMode:" + m_editMode.toString();
-//        strMthInArgs += ", ResizeMode:" + m_editResizeMode.toString();
-//        strMthInArgs += ", SelectedPoint:" + m_selPtSelectedBoundingRect.toString();
-//        mthTracer.trace(strMthInArgs);
-//    }
-//
-//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-//
-//    QGraphicsItemGroup::removeFromGroup(pGraphicsItem);
-//
-//    i_pGraphObj->acceptCurrentAsOriginalCoors();
-//
-//    remove(i_pGraphObj);
-//
-//} // removeGraphObj
+    The item and child items will be reparented to this group, but its position
+    and transformation relative to the scene will stay intact.
+
+    @Note This method replaces QGraphicsItemGroup::addtoGroup to trace the method call.
+*/
+void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "addToGroup",
+        /* strAddInfo   */ strMthInArgs );
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
+    QGraphicsItemGroup::addToGroup(pGraphicsItem);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Removes the specified item from this group.
+
+    The item will be reparented to this group's parent item, or to 0 if this group
+    has no parent. Its position and transformation relative to the scene will stay intact.
+
+    @Note This method replaces QGraphicsItemGroup::removeFromGroup to trace the method call.
+*/
+void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObj == nullptr ? "null" : i_pGraphObj->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "removeFromGroup",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
+    QGraphicsItemGroup::removeFromGroup(pGraphicsItem);
+}
 
 //------------------------------------------------------------------------------
 CGraphObj* CGraphObjGroup::findGraphObj( const QString& i_strObjName )
@@ -312,7 +284,7 @@ QString CGraphObjGroup::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
     QString strScenePolygonShapePoints;
-    QPolygonF plgScene = mapToScene(getCurrentBoundingRect());
+    QPolygonF plgScene = mapToScene(getBoundingRect());
     strScenePolygonShapePoints = polygon2Str(plgScene);
     return strScenePolygonShapePoints;
 }
@@ -324,11 +296,12 @@ public: // instance methods
 //------------------------------------------------------------------------------
 /*! @brief Sets the item's rectangle to the given rectangle.
 
+    Depending on the Y scale orientation of the drawing scene the line coordinates
+    must be passed either relative to the top left or relative to the bottom right
+    corner of the parent item's bounding rectangle.
+
     @param [in] i_physValRect
         Rectangle to be set.
-        Coordinates must be passed relative to the top left corner of the
-        parent item's bounding rectangle (real shape points only),
-        or in scene coordinates if the item does not have parent.
 */
 void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
 //------------------------------------------------------------------------------
@@ -344,79 +317,66 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
         /* strMethod    */ "setRect",
         /* strAddInfo   */ strMthInArgs );
 
+    // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
+    // have been passed either relative to the top left or bottom right corner of the
+    // parent item's bounding rectangle.
+    // The coordinates need to be transformed into the local coordinate system of the graphical
+    // object whose origin point is the center of the objects bounding rectangle.
+    QRectF rectF = m_pDrawingScene->convert(i_physValRect, Units.Length.px).toQRectF();
+
+    // Position of the rectangle in parent (scene or group) coordinates.
+    QPointF ptPos = rectF.center();
+
+    // Transform the parent coordinates into local coordinate system.
+    // The origin is the center point of the rectangle.
+    QPointF ptTL = rectF.topLeft() - ptPos;
+    QPointF ptBR = rectF.bottomRight() - ptPos;
+    rectF = QRectF(ptTL, ptBR);
+
+    //// If the line is a child of another item ...
+    //QGraphicsItem* pGraphicsItemParent = parentItem();
+    //if (pGraphicsItemParent != nullptr) {
+    //    // .. the coordinates were passed relative to the top left
+    //    // corner of the parent item's bounding rectangle.
+    //    ptTL = mapFromParent(ptTL);
+    //    ptBR = mapFromParent(ptBR);
+    //    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
+    //    if (pGraphObjParent != nullptr) {
+    //        QRectF rectBoundingParent = pGraphObjParent->getBoundingRect();
+    //        QPointF ptOriginParent = rectBoundingParent.topLeft();
+    //        ptTL += ptOriginParent;
+    //        ptBR += ptOriginParent;
+    //    }
+    //}
+    //// If the line is not a child of another item but has already been added to the scene ...
+    //else if (scene() != nullptr) {
+    //    // .. the coordinates were passed relative to the top left corner of the scene.
+    //    // The origin of the local coordinates is the center point of the line. We need
+    //    // to move P1 and P2 so that the center line will get the local coordinates (0/0).
+    //    QPointF ptCenter = mapFromScene(ptPos);
+    //    ptTL = mapFromScene(ptTL) - ptCenter;
+    //    ptBR = mapFromScene(ptBR) - ptCenter;
+    //}
+    //// If the line has not added to the scene yet ...
+    //else {
+    //    // .. we must do the transformation to the local coordinate system
+    //    // on our own. The origin is the center of the line.
+    //    ptTL -= rectF.center();
+    //    ptBR -= rectF.center();
+    //}
+
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if they have been changed ...
-    if (m_bForceConversionToSceneCoors || m_physValRectCurr != i_physValRect)
+    if (m_rectOrig.isNull() || m_rectOrig != rectF/* || m_bForceConversionToSceneCoors*/)
     {
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItemGroup::prepareGeometryChange();
 
-        // The rectangle coordinates are passed relative to the parent item
-        // (usually the scene coordinates or another group item).
-        QRectF rectF = i_physValRect.toQRectF();
-        if (i_physValRect.unit() != Units.Length.px) {
-            rectF = m_pDrawingScene->convert(i_physValRect, Units.Length.px).toQRectF();
-        }
-
-        // Rectangle points in parent coordinates.
-        QPointF ptTL = rectF.topLeft();
-        QPointF ptBR = rectF.bottomRight();
-        QPointF ptPos = rectF.center();
-
-        // But the graphics item expects the coordinates based on the
-        // local coordinate system of the graphics item.
-        // Items live in their own local coordinate system.
-        // Their coordinates are usually centered around its center point (0, 0).
-
-        // Move the points into the item's local coordinate system.
-        // If the line is a child of another item ...
-        QGraphicsItem* pGraphicsItemParent = parentItem();
-        if (pGraphicsItemParent != nullptr) {
-            // .. the coordinates were passed relative to the top left
-            // corner of the parent item's bounding rectangle.
-            ptTL = mapFromParent(ptTL);
-            ptBR = mapFromParent(ptBR);
-            CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-            if (pGraphObjParent != nullptr) {
-                QRectF rectBoundingParent = pGraphObjParent->getCurrentBoundingRect();
-                QPointF ptOriginParent = rectBoundingParent.topLeft();
-                ptTL += ptOriginParent;
-                ptBR += ptOriginParent;
-            }
-        }
-        // If the line is not a child of another item but has already been added to the scene ...
-        else if (scene() != nullptr) {
-            // .. the coordinates were passed relative to the top left corner of the scene.
-            // The origin of the local coordinates is the center point of the line. We need
-            // to move P1 and P2 so that the center line will get the local coordinates (0/0).
-            QPointF ptCenter = mapFromScene(ptPos);
-            ptTL = mapFromScene(ptTL) - ptCenter;
-            ptBR = mapFromScene(ptBR) - ptCenter;
-        }
-        // If the line has not added to the scene yet ...
-        else {
-            // .. we must do the transformation to the local coordinate system
-            // on our own. The origin is the center of the line.
-            ptTL -= rectF.center();
-            ptBR -= rectF.center();
-        }
-
-        // Local coordinates. The origin is the center point of the rectangle.
-        rectF = QRectF(ptTL, ptBR);
-
         {   CRefCountGuard refCountGuard(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
 
-            // Update original rectangle coordinates in unit of drawing scene.
-            // Please note that the untransformed rectangle coordinates m_physValRectCurr,
-            // kept in the unit of the drawing scene, is also updated in the "itemChange" method.
-            // The line may be moved or transformed by other methods. "itemChange" is a
-            // central point to update the coordinates upon those changes.
-            // When explicitly setting the line coordinates the itemChange method must not
-            // overwrite the current line value.
-            // For groups the original coordinates are only updated when adding or removing the
-            // item from another group. So here only the current (transformed) coordinates are set.
-            setPhysValRect(i_physValRect, ECoordinatesVersion::Transformed);
+            // Store original rectangle coordinates.
+            setRectOrig(rectF);
 
             // Move the object to the parent position.
             // This has to be done after resizing the line which updates the local coordinates
@@ -424,8 +384,10 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             // "setPos" will trigger an itemChange call which will update the position of the
             // selection points and labels. To position the selection points and labels correctly
             // the local coordinate system must be up-to-date.
-            // Also note that itemChange must not overwrite the current line value (revCountGuard).
+            // Also note that itemChange must not overwrite the current line value (refCountGuard).
             QGraphicsItem_setPos(ptPos);
+
+            //updateInternalScenePos();
         }
 
         applyGeometryChangeToChildrens();
@@ -433,18 +395,22 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the item's line in the current unit of the drawing in parent
-           coordinates. The origin of the returned line coordinates is the top
-           left corner of the parent's bounding rectangle (real shape points only).
+/*! @brief Depending on the Y scale orientation of the drawing scene returns the
+           item's rectangle coordinates either relative to the top left corner or
+           relative to the bottom right corner of the parent's bounding rectangle
+           in the current unit of the drawing scene.
 */
 CPhysValRect CGraphObjGroup::getRect() const
 //------------------------------------------------------------------------------
 {
-    return m_physValRectCurr;
+    return getRect(m_pDrawingScene->drawingSize().unit());
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the item's line in the given unit.
+/*! @brief Depending on the Y scale orientation of the drawing scene returns the
+           item's rectangle coordinates either relative to the top left corner or
+           relative to the bottom right corner of the parent's bounding rectangle
+           in the given unit.
 
     @param [in] i_unit
         Unit in which the line coordinates should be returned.
@@ -452,10 +418,19 @@ CPhysValRect CGraphObjGroup::getRect() const
 CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    CPhysValRect physValRect = m_physValRectCurr;
-    if (i_unit != physValRect.unit()) {
-        physValRect = m_pDrawingScene->convert(physValRect, i_unit);
-    }
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    // Position in parent (or scene) coordinates.
+    QPointF ptPos = pos();
+    // Object shape points in local coordinates.
+    QRectF rectF = getBoundingRect();
+
+    // Transform the local coordinates into parent coordinates.
+    QPointF ptTL = rectF.topLeft() + ptPos;
+    QPointF ptBR = rectF.bottomRight() + ptPos;
+    rectF = QRectF(ptTL, ptBR);
+
+    CPhysValRect physValRect(rectF, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    physValRect = m_pDrawingScene->convert(physValRect, i_unit);
     return physValRect;
 }
 
@@ -473,7 +448,10 @@ void CGraphObjGroup::setWidth(double i_fWidth)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strMthInArgs );
-    setWidth(CPhysVal(i_fWidth, m_physValRectCurr.unit(), m_physValRectCurr.resolution()));
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setWidth(i_fWidth);
+    setRect(physValRect);
 }
 
 //------------------------------------------------------------------------------
@@ -490,15 +468,9 @@ void CGraphObjGroup::setWidth(const CPhysVal& i_physValWidth)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValRect physValRect = m_physValRectCurr;
-    if (i_physValWidth.unit() != m_physValRectCurr.unit()) {
-        CPhysVal physValWidth(i_physValWidth);
-        physValWidth.convertValue(m_physValRectCurr.unit());
-        physValRect.setWidth(physValWidth);
-    }
-    else {
-        physValRect.setWidth(i_physValWidth);
-    }
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setWidth(i_physValWidth);
     setRect(physValRect);
 }
 
@@ -530,7 +502,10 @@ void CGraphObjGroup::setHeight(double i_fHeight)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strMthInArgs );
-    setHeight(CPhysVal(i_fHeight, m_physValRectCurr.unit(), m_physValRectCurr.resolution()));
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setHeight(i_fHeight);
+    setRect(physValRect);
 }
 
 //------------------------------------------------------------------------------
@@ -547,15 +522,9 @@ void CGraphObjGroup::setHeight(const CPhysVal& i_physValHeight)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValRect physValRect = m_physValRectCurr;
-    if (i_physValHeight.unit() != m_physValRectCurr.unit()) {
-        CPhysVal physValHeight(i_physValHeight);
-        physValHeight.convertValue(m_physValRectCurr.unit());
-        physValRect.setHeight(physValHeight);
-    }
-    else {
-        physValRect.setHeight(i_physValHeight);
-    }
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setHeight(i_physValHeight);
     setRect(physValRect);
 }
 
@@ -587,8 +556,9 @@ void CGraphObjGroup::setSize(const QSizeF& i_size)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    physValRect.setSize(CPhysValSize(i_size, physValRect.resolution(), physValRect.unit()));
+    physValRect.setSize(i_size);
     setRect(physValRect);
 }
 
@@ -606,14 +576,9 @@ void CGraphObjGroup::setSize(const CPhysValSize& i_physValSize)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValRect physValRect = m_physValRectCurr;
-    if (i_physValSize.unit() != m_physValRectCurr.unit()) {
-        CPhysValSize physValSize = m_pDrawingScene->convert(i_physValSize, m_physValRectCurr.unit());
-        physValRect.setSize(physValSize);
-    }
-    else {
-        physValRect.setSize(i_physValSize);
-    }
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setSize(i_physValSize);
     setRect(physValRect);
 }
 
@@ -645,8 +610,9 @@ void CGraphObjGroup::moveCenter(const QPointF& i_pt)
         /* strObjName   */ m_strName,
         /* strMethod    */ "moveCenter",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    physValRect.moveCenter(CPhysValPoint(i_pt, physValRect.resolution(), physValRect.unit()));
+    physValRect.moveCenter(i_pt);
     setRect(physValRect);
 }
 
@@ -664,14 +630,9 @@ void CGraphObjGroup::moveCenter(const CPhysValPoint& i_physValPoint)
         /* strObjName   */ m_strName,
         /* strMethod    */ "moveCenter",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    if (i_physValPoint.unit() != m_physValRectCurr.unit()) {
-        CPhysValPoint physValPoint = m_pDrawingScene->convert(i_physValPoint, m_physValRectCurr.unit());
-        physValRect.moveCenter(physValPoint);
-    }
-    else {
-        physValRect.moveCenter(i_physValPoint);
-    }
+    physValRect.moveCenter(i_physValPoint);
     setRect(physValRect);
 }
 
@@ -703,7 +664,10 @@ void CGraphObjGroup::setTop(double i_fTop)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setTop",
         /* strAddInfo   */ strMthInArgs );
-    setTop(CPhysVal(i_fTop, m_physValRectCurr.unit(), m_physValRectCurr.resolution()));
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setTop(i_fTop);
+    setRect(physValRect);
 }
 
 //------------------------------------------------------------------------------
@@ -720,15 +684,9 @@ void CGraphObjGroup::setTop(const CPhysVal& i_physValTop)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setTop",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValRect physValRect = m_physValRectCurr;
-    if (i_physValTop.unit() != m_physValRectCurr.unit()) {
-        CPhysVal physValTop(i_physValTop);
-        physValTop.convertValue(m_physValRectCurr.unit());
-        physValRect.setTop(physValTop);
-    }
-    else {
-        physValRect.setTop(i_physValTop);
-    }
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setTop(i_physValTop);
     setRect(physValRect);
 }
 
@@ -760,7 +718,10 @@ void CGraphObjGroup::setBottom(double i_fBottom)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setBottom",
         /* strAddInfo   */ strMthInArgs );
-    setBottom(CPhysVal(i_fBottom, m_physValRectCurr.unit(), m_physValRectCurr.resolution()));
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setBottom(i_fBottom);
+    setRect(physValRect);
 }
 
 //------------------------------------------------------------------------------
@@ -777,15 +738,9 @@ void CGraphObjGroup::setBottom(const CPhysVal& i_physValBottom)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setBottom",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValRect physValRect = m_physValRectCurr;
-    if (i_physValBottom.unit() != m_physValRectCurr.unit()) {
-        CPhysVal physValBottom(i_physValBottom);
-        physValBottom.convertValue(m_physValRectCurr.unit());
-        physValRect.setBottom(physValBottom);
-    }
-    else {
-        physValRect.setBottom(i_physValBottom);
-    }
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setBottom(i_physValBottom);
     setRect(physValRect);
 }
 
@@ -817,7 +772,10 @@ void CGraphObjGroup::setLeft(double i_fLeft)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setLeft",
         /* strAddInfo   */ strMthInArgs );
-    setLeft(CPhysVal(i_fLeft, m_physValRectCurr.unit(), m_physValRectCurr.resolution()));
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setLeft(i_fLeft);
+    setRect(physValRect);
 }
 
 //------------------------------------------------------------------------------
@@ -834,15 +792,9 @@ void CGraphObjGroup::setLeft(const CPhysVal& i_physValLeft)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setLeft",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValRect physValRect = m_physValRectCurr;
-    if (i_physValLeft.unit() != m_physValRectCurr.unit()) {
-        CPhysVal physValLeft(i_physValLeft);
-        physValLeft.convertValue(m_physValRectCurr.unit());
-        physValRect.setLeft(physValLeft);
-    }
-    else {
-        physValRect.setLeft(i_physValLeft);
-    }
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setLeft(i_physValLeft);
     setRect(physValRect);
 }
 
@@ -874,7 +826,10 @@ void CGraphObjGroup::setRight(double i_fRight)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setRight",
         /* strAddInfo   */ strMthInArgs );
-    setRight(CPhysVal(i_fRight, m_physValRectCurr.unit(), m_physValRectCurr.resolution()));
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setRight(i_fRight);
+    setRect(physValRect);
 }
 
 //------------------------------------------------------------------------------
@@ -891,15 +846,9 @@ void CGraphObjGroup::setRight(const CPhysVal& i_physValRight)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setRight",
         /* strAddInfo   */ strMthInArgs );
-    CPhysValRect physValRect = m_physValRectCurr;
-    if (i_physValRight.unit() != m_physValRectCurr.unit()) {
-        CPhysVal physValRight(i_physValRight);
-        physValRight.convertValue(m_physValRectCurr.unit());
-        physValRect.setRight(physValRight);
-    }
-    else {
-        physValRect.setRight(i_physValRight);
-    }
+
+    CPhysValRect physValRect = getRect();
+    physValRect.setRight(i_physValRight);
     setRect(physValRect);
 }
 
@@ -931,8 +880,9 @@ void CGraphObjGroup::setTopLeft(const QPointF& i_pt)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setTopLeft",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    physValRect.setTopLeft(CPhysValPoint(i_pt, physValRect.resolution(), physValRect.unit()));
+    physValRect.setTopLeft(i_pt);
     setRect(physValRect);
 }
 
@@ -950,14 +900,9 @@ void CGraphObjGroup::setTopLeft(const CPhysValPoint& i_physValPoint)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setTopLeft",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    if (i_physValPoint.unit() != m_physValRectCurr.unit()) {
-        CPhysValPoint physValPoint = m_pDrawingScene->convert(i_physValPoint, m_physValRectCurr.unit());
-        physValRect.setTopLeft(physValPoint);
-    }
-    else {
-        physValRect.setTopLeft(i_physValPoint);
-    }
+    physValRect.setTopLeft(i_physValPoint);
     setRect(physValRect);
 }
 
@@ -989,8 +934,9 @@ void CGraphObjGroup::setTopRight(const QPointF& i_pt)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setTopRight",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    physValRect.setTopRight(CPhysValPoint(i_pt, physValRect.resolution(), physValRect.unit()));
+    physValRect.setTopRight(i_pt);
     setRect(physValRect);
 }
 
@@ -1008,14 +954,9 @@ void CGraphObjGroup::setTopRight(const CPhysValPoint& i_physValPoint)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setTopRight",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    if (i_physValPoint.unit() != m_physValRectCurr.unit()) {
-        CPhysValPoint physValPoint = m_pDrawingScene->convert(i_physValPoint, m_physValRectCurr.unit());
-        physValRect.setTopRight(physValPoint);
-    }
-    else {
-        physValRect.setTopRight(i_physValPoint);
-    }
+    physValRect.setTopRight(i_physValPoint);
     setRect(physValRect);
 }
 
@@ -1047,8 +988,9 @@ void CGraphObjGroup::setBottomRight(const QPointF& i_pt)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setBottomRight",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    physValRect.setBottomRight(CPhysValPoint(i_pt, physValRect.resolution(), physValRect.unit()));
+    physValRect.setBottomRight(i_pt);
     setRect(physValRect);
 }
 
@@ -1066,14 +1008,9 @@ void CGraphObjGroup::setBottomRight(const CPhysValPoint& i_physValPoint)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setBottomRight",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    if (i_physValPoint.unit() != m_physValRectCurr.unit()) {
-        CPhysValPoint physValPoint = m_pDrawingScene->convert(i_physValPoint, m_physValRectCurr.unit());
-        physValRect.setBottomRight(physValPoint);
-    }
-    else {
-        physValRect.setBottomRight(i_physValPoint);
-    }
+    physValRect.setBottomRight(i_physValPoint);
     setRect(physValRect);
 }
 
@@ -1105,8 +1042,9 @@ void CGraphObjGroup::setBottomLeft(const QPointF& i_pt)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setBottomLeft",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    physValRect.setBottomLeft(CPhysValPoint(i_pt, physValRect.resolution(), physValRect.unit()));
+    physValRect.setBottomLeft(i_pt);
     setRect(physValRect);
 }
 
@@ -1124,14 +1062,9 @@ void CGraphObjGroup::setBottomLeft(const CPhysValPoint& i_physValPoint)
         /* strObjName   */ m_strName,
         /* strMethod    */ "setBottomLeft",
         /* strAddInfo   */ strMthInArgs );
+
     CPhysValRect physValRect = getRect();
-    if (i_physValPoint.unit() != m_physValRectCurr.unit()) {
-        CPhysValPoint physValPoint = m_pDrawingScene->convert(i_physValPoint, m_physValRectCurr.unit());
-        physValRect.setBottomLeft(physValPoint);
-    }
-    else {
-        physValRect.setBottomLeft(i_physValPoint);
-    }
+    physValRect.setBottomLeft(i_physValPoint);
     setRect(physValRect);
 }
 
@@ -1170,10 +1103,7 @@ CPhysValPoint CGraphObjGroup::getPos() const
 CPhysValPoint CGraphObjGroup::getPos(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    QPointF ptCenter = getCurrentBoundingRect().center();
-    CPhysValPoint physValPoint(ptCenter, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    return m_pDrawingScene->convert(physValPoint, drawingSize.unit());
+    return getRect(i_unit).center();
 }
 
 /*==============================================================================
@@ -1185,79 +1115,82 @@ public: // must overridables of base class CGraphObj
 
     @return Bounding rectangle in local coordinates.
 */
-QRectF CGraphObjGroup::getCurrentBoundingRect() const
+QRectF CGraphObjGroup::getBoundingRect() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "getCurrentBoundingRect",
+        /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
 
-    QRectF rctBounding = rect();
+    QPointF ptTL = m_transform.map(m_rectOrig.topLeft());
+    QPointF ptBR = m_transform.map(m_rectOrig.bottomRight());
+
+    QRectF rctBounding(ptTL, ptBR);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Returns the bounding rectangle of the object in local coordinates.
-
-    This method is used by a group to resize its children.
-
-    @param [in] i_version
-        Transform (default) will return the current bounding rectangle.
-        For Origin the original line values before adding the object as a child
-        to a group is returned.
-
-    @return Bounding rectangle in local coordinates.
-*/
-QRectF CGraphObjGroup::getOriginalBoundingRectInParent() const
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "getOriginalBoundingRectInParent",
-        /* strAddInfo   */ "" );
-
-    QRectF rctBounding = m_physValRectOrig.toQRectF();
-    QPointF ptTL = rctBounding.topLeft();
-    QPointF ptBR = rctBounding.bottomRight();
-    QGraphicsItem* pGraphicsItemParent = parentItem();
-    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-    // If the line belongs to a group ...
-    if (pGraphObjParent != nullptr) {
-        // The original coordinates in m_physValRectOrig are relative to the
-        // top left corner of the parent's bounding rectangle.
-        // The coordinates must be mapped to local coordinates.
-        QRectF rctBoundingParent = pGraphObjParent->getOriginalBoundingRectInParent();
-        QPointF ptOriginParent = rctBoundingParent.topLeft();
-        ptTL -= ptOriginParent;
-        ptBR -= ptOriginParent;
-        rctBounding = QRectF(ptTL, ptBR);
-    }
-    // If the item does not belong to a group ...
-    else {
-        // .. the current (transformed) and original coordinates must be the same
-        // and relative to the top left corner of the scene.
-        // The coordinates must be mapped to local coordinates.
-        // The center point of the original rectangle is the original position
-        // of the group on the scene. mapFromScene cannot be used as the current
-        // and original position may be different.
-        QPointF ptOriginParent = rctBounding.center();
-        ptTL -= ptOriginParent;
-        ptBR -= ptOriginParent;
-        rctBounding = QRectF(ptTL, ptBR);
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
-    }
-    return rctBounding;
-}
+////------------------------------------------------------------------------------
+///*! @brief Returns the bounding rectangle of the object in local coordinates.
+//
+//    This method is used by a group to resize its children.
+//
+//    @param [in] i_version
+//        Transform (default) will return the current bounding rectangle.
+//        For Origin the original line values before adding the object as a child
+//        to a group is returned.
+//
+//    @return Bounding rectangle in local coordinates.
+//*/
+//QRectF CGraphObjGroup::getOriginalBoundingRectInParent() const
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "getOriginalBoundingRectInParent",
+//        /* strAddInfo   */ "" );
+//
+//    QRectF rctBounding = m_physValRectOrig.toQRectF();
+//    QPointF ptTL = rctBounding.topLeft();
+//    QPointF ptBR = rctBounding.bottomRight();
+//    QGraphicsItem* pGraphicsItemParent = parentItem();
+//    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
+//    // If the line belongs to a group ...
+//    if (pGraphObjParent != nullptr) {
+//        // The original coordinates in m_physValRectOrig are relative to the
+//        // top left corner of the parent's bounding rectangle.
+//        // The coordinates must be mapped to local coordinates.
+//        QRectF rctBoundingParent = pGraphObjParent->getOriginalBoundingRectInParent();
+//        QPointF ptOriginParent = rctBoundingParent.topLeft();
+//        ptTL -= ptOriginParent;
+//        ptBR -= ptOriginParent;
+//        rctBounding = QRectF(ptTL, ptBR);
+//    }
+//    // If the item does not belong to a group ...
+//    else {
+//        // .. the current (transformed) and original coordinates must be the same
+//        // and relative to the top left corner of the scene.
+//        // The coordinates must be mapped to local coordinates.
+//        // The center point of the original rectangle is the original position
+//        // of the group on the scene. mapFromScene cannot be used as the current
+//        // and original position may be different.
+//        QPointF ptOriginParent = rctBounding.center();
+//        ptTL -= ptOriginParent;
+//        ptBR -= ptOriginParent;
+//        rctBounding = QRectF(ptTL, ptBR);
+//    }
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+//    }
+//    return rctBounding;
+//}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -1355,7 +1288,7 @@ void CGraphObjGroup::showSelectionPoints( unsigned char i_selPts )
 
     if (parentItem() == nullptr) {
         if (i_selPts & ESelectionPointsBoundingRectAll) {
-            showSelectionPointsOfBoundingRect(getCurrentBoundingRect());
+            showSelectionPointsOfBoundingRect(getBoundingRect());
         }
     }
 }
@@ -1415,7 +1348,7 @@ QRectF CGraphObjGroup::boundingRect() const
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
-    QRectF rctBounding = rect();
+    QRectF rctBounding = getBoundingRect();
     for (CGraphObjSelectionPoint* pGraphObjSelPt : m_arpSelPtsBoundingRect){
         if (pGraphObjSelPt != nullptr) {
             QRectF rctSelPt = pGraphObjSelPt->boundingRect();
@@ -1436,9 +1369,9 @@ QRectF CGraphObjGroup::boundingRect() const
 
 //------------------------------------------------------------------------------
 void CGraphObjGroup::paint(
-    QPainter*                       i_pPainter,
+    QPainter* i_pPainter,
     const QStyleOptionGraphicsItem* /*i_pStyleOption*/,
-    QWidget*                        /*i_pWdgt*/ )
+    QWidget* /*i_pWdgt*/ )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1458,7 +1391,7 @@ void CGraphObjGroup::paint(
     QPen pn(Qt::DotLine);
     pn.setColor(Qt::black);
 
-    QRectF rctBounding = getCurrentBoundingRect();
+    QRectF rctBounding = getBoundingRect();
 
     if ((m_pDrawingScene->getMode() == EMode::Edit) && (m_bIsHit || m_bIsHighlighted || isSelected())) {
         QPainterPath outline;
@@ -1588,7 +1521,7 @@ void CGraphObjGroup::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    showSelectionPointsOfBoundingRect(getCurrentBoundingRect());
+    showSelectionPointsOfBoundingRect(getBoundingRect());
     setIsHit(true);
     setCursor(getProposedCursor(i_pEv->pos()));
 }
@@ -1608,7 +1541,7 @@ void CGraphObjGroup::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
-    showSelectionPointsOfBoundingRect(getCurrentBoundingRect());
+    showSelectionPointsOfBoundingRect(getBoundingRect());
     setIsHit(true);
     setCursor(getProposedCursor(i_pEv->pos()));
 }
@@ -2029,34 +1962,38 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
+            //updateInternalScenePos();
             bGeometryChanged = true;
             bTreeEntryChanged = true;
         }
     }
     else if (i_change == ItemParentHasChanged || i_change == ItemPositionHasChanged) {
-        traceGraphicsItemStates(mthTracer);
-        traceGraphObjStates(mthTracer);
-        tracePositionInfo(mthTracer);
+        //traceGraphicsItemStates(mthTracer);
+        //traceGraphObjStates(mthTracer);
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
 
-        // Update the original, untransformed line coordinates kept in the unit of
-        // the drawing scene. The line may be moved or transformed by several methods.
+        // Update the transformed line coordinates kept in the unit of the drawing scene.
+        // The group may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
-        QRectF rectF = rect();
         if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
-            QPointF pTL = mapToParent(rectF.topLeft());
-            QPointF pBR = mapToParent(rectF.bottomRight());
-            CPhysValPoint physValPTL = m_pDrawingScene->toPhysValPoint(pTL);
-            CPhysValPoint physValPBR = m_pDrawingScene->toPhysValPoint(pBR);
+            QRectF rectF = getBoundingRect();
+            //QPointF pTL = mapToParent(rectF.topLeft());
+            //QPointF pBR = mapToParent(rectF.bottomRight());
+            //CPhysValPoint physValPTL = m_pDrawingScene->toPhysValPoint(pTL);
+            //CPhysValPoint physValPBR = m_pDrawingScene->toPhysValPoint(pBR);
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
-            if( i_change == ItemParentHasChanged) {
-                setPhysValRect(CPhysValRect(physValPTL, physValPBR), CEnumCoordinatesVersion());
+            if (i_change == ItemParentHasChanged) {
+                if (parentItem() == nullptr) {
+                    setRectOrig(rectF);
+                }
             }
-            else {
-                setPhysValRect(CPhysValRect(physValPTL, physValPBR), ECoordinatesVersion::Transformed);
+            else if (i_change == ItemParentHasChanged) {
+                    setRectOrig(rectF);
             }
             applyGeometryChangeToChildrens();
         }
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
@@ -2128,7 +2065,6 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
 
     if (bGeometryChanged) {
-        updateInternalScenePos();
         emit_geometryChanged();
     }
     if (bSelectedChanged) {
@@ -2154,28 +2090,28 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 protected: // overridable slots of base class CGraphObj
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-void CGraphObjGroup::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_drawingSize.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "onDrawingSizeChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_physValRectCurr.unit() != i_drawingSize.unit()) {
-        m_bForceConversionToSceneCoors = true;
-        setRect(m_pDrawingScene->convert(m_physValRectCurr, i_drawingSize.unit()));
-        m_bForceConversionToSceneCoors = false;
-        emit_geometryValuesUnitChanged();
-    }
-}
+////------------------------------------------------------------------------------
+//void CGraphObjGroup::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_drawingSize.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "onDrawingSizeChanged",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_physValRectCurr.unit() != i_drawingSize.unit()) {
+//        m_bForceConversionToSceneCoors = true;
+//        setRect(m_pDrawingScene->convert(m_physValRectCurr, i_drawingSize.unit()));
+//        m_bForceConversionToSceneCoors = false;
+//        emit_geometryValuesUnitChanged();
+//    }
+//}
 
 //------------------------------------------------------------------------------
 void CGraphObjGroup::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint)
@@ -2252,87 +2188,37 @@ void CGraphObjGroup::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoin
 }
 
 /*==============================================================================
-protected: // auxiliary instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the rectangle of the group in local pixel coordinates.
-
-    This is the same as the bounding rectangle of the group in local coordinates.
-    The physical rectangle coordinates of the group in the drawing scenes unit
-    are relative to the parent item (or drawing scene if the group does not have
-    another group as parent). The coordinates must be transformed to the local
-    coordinate system of the group whose origin is at the center point of the group.
-*/
-QRectF CGraphObjGroup::rect() const
-//------------------------------------------------------------------------------
-{
-    QRectF rectF = m_pDrawingScene->convert(m_physValRectCurr, Units.Length.px).toQRectF();
-    rectF.moveCenter(QPointF(0, 0));
-    return rectF;
-}
-
-/*==============================================================================
 protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the original physical rectangle coordinates.
+/*! @brief Sets the original rectangle coordinates.
 
-    If the given rectangle unit is different from the drawing scenes current unit
-    the rectangle coordinates will be converted into the drawing scenes unit.
-
-    @param [in] i_physValRect
+    @param [in] i_rect
         Rectangle coordinates to be set.
-    @param [in] i_eVersion
-        Transformed (default) will set the current line coordinates.
-        If set to Origin the original coordinate values are set.
-        If an invalid enum value is passed both the current (transformed)
-        and the original coordinates are set.
-        Please refer to documentation about the difference between Transformed and
-        Original coordinates at base class CGraphObj.
+
+    @return Previous original rectangle coordinates.
 */
-void CGraphObjGroup::setPhysValRect(
-    const CPhysValRect& i_physValRect, const CEnumCoordinatesVersion& i_eVersion)
+QRectF CGraphObjGroup::setRectOrig(const QRectF& i_rect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_physValRect.toString() + ", " + QString(i_eVersion.isValid() ? i_eVersion.toString() : "All");
+        strMthInArgs = qRect2Str(i_rect);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "setPhysValRect",
+        /* strMethod    */ "setRectOrig",
         /* strAddInfo   */ strMthInArgs );
 
-    if (!i_eVersion.isValid() || i_eVersion == ECoordinatesVersion::Transformed) {
-        if (m_pDrawingScene->drawingSize().unit() == i_physValRect.unit()) {
-            m_physValRectCurr = i_physValRect;
-        }
-        else {
-            CPhysValRect physValRect = m_pDrawingScene->convert(i_physValRect);
-            m_physValRectCurr = i_physValRect;
-        }
+    QRectF rectPrev = m_rectOrig;
+    m_rectOrig = i_rect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(qRect2Str(rectPrev));
     }
-    if (!i_eVersion.isValid() || i_eVersion == ECoordinatesVersion::Original) {
-        if (m_pDrawingScene->drawingSize().unit() == i_physValRect.unit()) {
-            m_physValRectOrig = i_physValRect;
-        }
-        else {
-            CPhysValRect physValRect = m_pDrawingScene->convert(i_physValRect);
-            m_physValRectOrig = i_physValRect;
-        }
-    }
-
-    // For the first "setRect" call whose passed rectangle width and height is not zero
-    // the current values are taken over as the original coordinates. As long as there
-    // is no valid original rectangle childrens cannot be resized by the group.
-    // See also comment at applyGeometryChangeToChildrens.
-    if (!m_physValRectOrig.isValid()) {
-        m_physValRectOrig = m_physValRectCurr;
-    }
+    return rectPrev;
 }
 
 /*==============================================================================
@@ -2363,49 +2249,102 @@ protected: // overridables
 void CGraphObjGroup::applyGeometryChangeToChildrens()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "RectOrig {" + m_physValRectOrig.toString() + "}" +
-            ", RectCurr { " + m_physValRectCurr.toString() + "}";
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
         /* strMethod    */ "applyGeometryChangeToChildrens",
-        /* strAddInfo   */ strMthInArgs );
-
+        /* strAddInfo   */ "" );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
         tracePositionInfo(mthTracer);
     }
 
     // As long as there is no valid original rectangle childrens cannot be
     // resized and the method does nothing.
-    if (!m_physValRectOrig.isValid()) {
+    if (!m_rectOrig.isValid()) {
         return;
     }
+
+    QRectF rectCurr = getBoundingRect();
+    double fScaleX = rectCurr.width() / m_rectOrig.width();
+    double fScaleY = rectCurr.height() / m_rectOrig.height();
 
     QList<QGraphicsItem*> arpGraphicsItemsChilds = childItems();
     for (QGraphicsItem* pGraphicsItemChild : arpGraphicsItemsChilds) {
         CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
         if (pGraphObjChild != nullptr) {
-            QRectF rectChildCurr;
-            if (pGraphObjChild->getAlignmentCount() == 0) {
-                rectChildCurr = getScaledChildRect(pGraphObjChild);
-            }
-            if (rectChildCurr.width() < 0.0) {
-                double fXL = rectChildCurr.right();
-                double fXR = rectChildCurr.left();
-                rectChildCurr.setLeft(fXL);
-                rectChildCurr.setRight(fXR);
-            }
-            if (rectChildCurr.height() < 0.0) {
-                double fYT = rectChildCurr.bottom();
-                double fYB = rectChildCurr.top();
-                rectChildCurr.setTop(fYT);
-                rectChildCurr.setBottom(fYB);
-            }
-            pGraphObjChild->setCurrentBoundingRectInParent(rectChildCurr);
+            pGraphObjChild->setGroupScale(fScaleX, fScaleY);
+
+            //QRectF rectChildCurr;
+            //if (pGraphObjChild->getAlignmentCount() == 0) {
+            //    //rectChildCurr = getScaledChildRect(pGraphObjChild);
+
+            //    QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(i_pGraphObjChild);
+
+            //    QRectF rectChildCurr;
+            //    //QRectF rectChildPrev = i_pGraphObjChild->getOriginalBoundingRectInParent();
+
+            //    //const CUnit& unitThis = m_physValRectCurr.unit();
+
+            //    //// Get coordinates of this group relative to the parent group if this group.
+            //    //QRectF rectThisOrig = m_physValRectOrig.toQRectF();
+            //    //QRectF rectThisCurr = m_physValRectCurr.toQRectF();
+            //    //double fScaleWidth = rectThisCurr.width() / rectThisOrig.width();
+            //    //double fScaleHeight = rectThisCurr.height() / rectThisOrig.height();
+
+            //    //// Map the coordinates of this group to the local coordinates of this group.
+            //    ////rectThisOrig = mapFromParent(rectThisOrig).boundingRect();
+            //    ////rectThisCurr = mapFromParent(rectThisCurr).boundingRect();
+
+            //    //// Get position of child relative to this parent group.
+            //    ////QPointF ptPosChildPrev = pGraphicsItemChild->pos();
+
+            //    //// Default without any alignments assigned is:
+            //    //// - position relative to center point of the group's bounding rectangle
+            //    //// - size relative to size of the group's bounding rectangle
+            //    //rectChildCurr.setLeft(fScaleWidth * rectChildPrev.left());
+            //    //rectChildCurr.setTop(fScaleHeight * rectChildPrev.top());
+            //    //rectChildCurr.setWidth(fScaleWidth * rectChildPrev.width());
+            //    //rectChildCurr.setHeight(fScaleHeight * rectChildPrev.height());
+
+            //    //// If the object has a fixed width or height they also have a
+            //    //// minimum and maximum width or height.
+            //    //// In addition the minimum and maximum width and height is equal.
+            //    //// So it is sufficient to check the minimum and maximum sizes.
+            //    //if (i_pGraphObjChild->hasMinimumWidth()) {
+            //    //    if (rectChildCurr.width() < i_pGraphObjChild->getMinimumWidth(unitThis).getVal()) {
+            //    //        rectChildCurr.setWidth(i_pGraphObjChild->getMinimumWidth(unitThis).getVal());
+            //    //    }
+            //    //}
+            //    //if (i_pGraphObjChild->hasMaximumWidth()) {
+            //    //    if (rectChildCurr.width() > i_pGraphObjChild->getMaximumWidth(unitThis).getVal()) {
+            //    //        rectChildCurr.setWidth(i_pGraphObjChild->getMaximumWidth(unitThis).getVal());
+            //    //    }
+            //    //}
+            //    //if (i_pGraphObjChild->hasMinimumHeight()) {
+            //    //    if (rectChildCurr.height() < i_pGraphObjChild->getMinimumHeight(unitThis).getVal()) {
+            //    //        rectChildCurr.setHeight(i_pGraphObjChild->getMinimumHeight(unitThis).getVal());
+            //    //    }
+            //    //}
+            //    //if (i_pGraphObjChild->hasMaximumHeight()) {
+            //    //    if (rectChildCurr.height() > i_pGraphObjChild->getMaximumHeight(unitThis).getVal()) {
+            //    //        rectChildCurr.setHeight(i_pGraphObjChild->getMaximumHeight(unitThis).getVal());
+            //    //    }
+            //    //}
+            //}
+            //if (rectChildCurr.width() < 0.0) {
+            //    double fXL = rectChildCurr.right();
+            //    double fXR = rectChildCurr.left();
+            //    rectChildCurr.setLeft(fXL);
+            //    rectChildCurr.setRight(fXR);
+            //}
+            //if (rectChildCurr.height() < 0.0) {
+            //    double fYT = rectChildCurr.bottom();
+            //    double fYB = rectChildCurr.top();
+            //    rectChildCurr.setTop(fYT);
+            //    rectChildCurr.setBottom(fYB);
+            //}
+            //pGraphObjChild->setCurrentBoundingRectInParent(rectChildCurr);
         }
     }
 
@@ -2413,2033 +2352,1988 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
 
 } // applyGeometryChangeToChildrens
 
+////------------------------------------------------------------------------------
+//QRectF CGraphObjGroup::getAlignedChildRect(CGraphObj* i_pGraphObjChild) const
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_pGraphObjChild->keyInTree();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "getAlignedChildRect",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    QRect rectChildCurr;
+//
+//    //const CUnit& unitThis = m_physValRectCurr.unit();
+//    //QRectF rectThisOrig = m_physValRectOrig.toQRectF();
+//    //QRectF rectThisCurr = m_physValRectCurr.toQRectF();
+//    //double fScaleWidth = rectThisCurr.width() / rectThisOrig.width();
+//    //double fScaleHeight = rectThisCurr.height() / rectThisOrig.height();
+//
+//    //QGraphicsItem*        pGraphicsItemChild;
+//    //CGraphObj*            pGraphObjChild;
+//    //int                   idxGraphObjChild;
+//    //SGraphObjAlignment    alignment;
+//    //int                   idxAlignment;
+//    //QPointF               ptPosChildOrig;
+//    //double                fxPosChildOrig;
+//    //double                fyPosChildOrig;
+//    //double                fWidthChildOrig;
+//    //double                fHeightChildOrig;
+//    //QRectF                rectChildCurr;
+//
+//    //else { // if( pGraphObjChild->getAlignmentCount() > 0 )
+//    //    rectChildCurr.setLeft(fxPosChildOrig);
+//    //    rectChildCurr.setTop(fyPosChildOrig);
+//
+//    //    rectChildCurr.setWidth(fWidthChildOrig);
+//    //    rectChildCurr.setHeight(fHeightChildOrig);
+//
+//    //    bool bAlignLeft    = false;
+//    //    bool bAlignHCenter = false;
+//    //    bool bAlignRight   = false;
+//    //    bool bAlignWidth   = false;
+//    //    bool bAlignTop     = false;
+//    //    bool bAlignVCenter = false;
+//    //    bool bAlignBottom  = false;
+//    //    bool bAlignHeight  = false;
+//
+//    //    // If the width of the child has to be aligned the left or right border will be moved
+//    //    // keeping the width (if aligning the width it just makes sense to either align the
+//    //    // left or the right border but not both border lines).
+//    //    // If both the left and the right border has to be aligned (but not the width) the left
+//    //    // and right border will be set implicitly adjusting (changing) the width.
+//    //    // Same applies for height, top and bottom.
+//    //    for( idxAlignment = 0; idxAlignment < pGraphObjChild->getAlignmentCount(); idxAlignment++ )
+//    //    {
+//    //        alignment = pGraphObjChild->getAlignment(idxAlignment);
+//
+//    //        if( alignment.m_alignmentRefChild == EAlignmentRef::Left )
+//    //        {
+//    //            bAlignLeft = true;
+//    //        }
+//    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::HCenter )
+//    //        {
+//    //            bAlignHCenter = true;
+//    //        }
+//    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Right )
+//    //        {
+//    //            bAlignRight = true;
+//    //        }
+//    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Width )
+//    //        {
+//    //            bAlignWidth = true;
+//    //        }
+//    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Top )
+//    //        {
+//    //            bAlignTop = true;
+//    //        }
+//    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::VCenter )
+//    //        {
+//    //            bAlignVCenter = true;
+//    //        }
+//    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Bottom )
+//    //        {
+//    //            bAlignBottom = true;
+//    //        }
+//    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Height )
+//    //        {
+//    //            bAlignHeight = true;
+//    //        }
+//    //    }
+//
+//    //    bool bMoveHor = true;
+//    //    bool bMoveVer = true;
+//
+//    //    if( !bAlignWidth && !bAlignHCenter && bAlignLeft && bAlignRight )
+//    //    {
+//    //        bMoveHor = false;
+//    //    }
+//    //    if( !bAlignHeight && !bAlignVCenter && bAlignTop && bAlignBottom )
+//    //    {
+//    //        bMoveVer = false;
+//    //    }
+//
+//    //    for( idxAlignment = 0; idxAlignment < pGraphObjChild->getAlignmentCount(); idxAlignment++ )
+//    //    {
+//    //        alignment = pGraphObjChild->getAlignment(idxAlignment);
+//
+//    //        switch( alignment.m_alignmentRefChild.enumerator() )
+//    //        {
+//    //            case EAlignmentRef::Left:
+//    //            {
+//    //                switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                {
+//    //                    case EAlignmentRef::Left:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::HCenter:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Right:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Width:   // aligning left border of child to width of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Height:   // aligning left border of child to height of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Top:      // aligning left border of child to top border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::VCenter:  // aligning left border of child to vertical center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Bottom:   // aligning left border of child to bottom border of parent will very likely never been used ..
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                break;
+//    //            } // case m_alignmentRefChild == EAlignmentRef::Left
+//
+//    //            case EAlignmentRef::HCenter:
+//    //            {
+//    //                switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                {
+//    //                    case EAlignmentRef::Left:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::HCenter:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Right:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Width: // aligning horizontal center of child to width of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Height: // aligning horizontal center of child to height of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.width()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Top:      // aligning horizontal center of child to top border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::VCenter:  // aligning horizontal center of child to vertical center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Bottom:   // aligning horizontal center of child to bottom border of parent will very likely never been used ..
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                break;
+//    //            } // case m_alignmentRefChild == EAlignmentRef::HCenter
+//
+//    //            case EAlignmentRef::Right:
+//    //            {
+//    //                switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                {
+//    //                    case EAlignmentRef::Left:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::HCenter:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Right:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Width:   // aligning right border of child to width of parent will very likely never been used ..
+//    //                    {
+//    //                        if( !alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Height:   // aligning right border of child to height of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveHor )
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fWidthChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Top:      // aligning right border of child to top border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::VCenter:  // aligning right border of child to vertical center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Bottom:   // aligning right border of child to bottom border of parent will very likely never been used ..
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                break;
+//    //            } // case m_alignmentRefChild == EAlignmentRef::Right
+//
+//    //            case EAlignmentRef::Top:
+//    //            {
+//    //                switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                {
+//    //                    case EAlignmentRef::Top:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::VCenter:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Bottom:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Width: // aligning top border of child to width of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Height: // aligning top border of child to height of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Left:     // aligning top border of child to left border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::HCenter:  // aligning top border of child to horizontal center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Right:    // aligning top border of child to right border of parent will very likely never been used ..
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                break;
+//    //            } // case m_alignmentRefChild == EAlignmentRef::Top
+//
+//    //            case EAlignmentRef::VCenter:
+//    //            {
+//    //                switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                {
+//    //                    case EAlignmentRef::Top:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::VCenter:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Bottom:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Width: // aligning vertical center of child to width of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Height: // aligning vertical center of child to height of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Left:     // aligning vertical center of child to left border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::HCenter:  // aligning vertical center of child to horizontal center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Right:    // aligning vertical center of child to right border of parent will very likely never been used ..
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                break;
+//    //            } // case m_alignmentRefChild == EAlignmentRef::VCenter
+//
+//    //            case EAlignmentRef::Bottom:
+//    //            {
+//    //                switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                {
+//    //                    case EAlignmentRef::Top:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::VCenter:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Bottom:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Width: // aligning bottom border of child to width of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top()+ alignment.m_fVal  + m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top()+ alignment.m_fVal  + m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top()+ alignment.m_fVal  + m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top()+ alignment.m_fVal  + m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Height: // aligning bottom border of child to height of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            if( bMoveVer )
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                            else
+//    //                            {
+//    //                                if( fHeightChildOrig >= 0.0 )
+//    //                                {
+//    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                                else
+//    //                                {
+//    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
+//    //                                }
+//    //                            }
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Left:     // aligning bottom border of child to left border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::HCenter:  // aligning bottom border of child to horizontal center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Right:    // aligning bottom border of child to right border of parent will very likely never been used ..
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                break;
+//    //            } // case m_alignmentRefChild == EAlignmentRef::Bottom
+//
+//    //            case EAlignmentRef::Width:
+//    //            {
+//    //                switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                {
+//    //                    case EAlignmentRef::Width:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            rectChildCurr.setWidth( m_rctCurr.width() + alignment.m_fVal );
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            rectChildCurr.setWidth( alignment.m_fVal * m_rctCurr.width() );
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Height: // aligning width of child to height of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            rectChildCurr.setWidth( m_rctCurr.height() + alignment.m_fVal );
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            rectChildCurr.setWidth( alignment.m_fVal * m_rctCurr.height() );
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Left:     // aligning width of child to left border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::HCenter:  // aligning width of child to horizontal center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Right:    // aligning width of child to right border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Top:      // aligning width of child to top border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::VCenter:  // aligning width of child to vertical center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Bottom:   // aligning width of child to bottom border of parent will very likely never been used ..
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                break;
+//    //            } // case m_alignmentRefChild == EAlignmentRef::Width
+//
+//    //            case EAlignmentRef::Height:
+//    //            {
+//    //                switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                {
+//    //                    case EAlignmentRef::Width: // aligning height of child to width of parent will very likely never been used ..
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            rectChildCurr.setHeight( m_rctCurr.width() + alignment.m_fVal );
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            rectChildCurr.setHeight( alignment.m_fVal * m_rctCurr.width() );
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Height:
+//    //                    {
+//    //                        if( alignment.m_bAlignAbsolute )
+//    //                        {
+//    //                            rectChildCurr.setHeight( m_rctCurr.height() + alignment.m_fVal );
+//    //                        }
+//    //                        else
+//    //                        {
+//    //                            rectChildCurr.setHeight( alignment.m_fVal * m_rctCurr.height() );
+//    //                        }
+//    //                        break;
+//    //                    }
+//    //                    case EAlignmentRef::Left:     // aligning height of child to left border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::HCenter:  // aligning height of child to horizontal center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Right:    // aligning height of child to right border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Top:      // aligning height of child to top border of parent will very likely never been used ..
+//    //                    case EAlignmentRef::VCenter:  // aligning height of child to vertical center of parent will very likely never been used ..
+//    //                    case EAlignmentRef::Bottom:   // aligning height of child to bottom border of parent will very likely never been used ..
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
+//    //                break;
+//    //            } // case m_alignmentRefChild == EAlignmentRef::Height
+//
+//    //            default:
+//    //            {
+//    //                break;
+//    //            }
+//
+//    //        } // switch( alignment.m_alignmentRefChild.enumerator() )
+//
+//    //        // If the object has a fixed width or height they also have a
+//    //        // the minimum and maximum width or height. In addition the
+//    //        // minimum and maximum width and height is equal. So it is sufficient
+//    //        // to check the minimum and maximum sizes.
+//    //        if( pGraphObjChild->hasMinimumWidth() )
+//    //        {
+//    //            if( rectChildCurr.width() < pGraphObjChild->getMinimumWidth() )
+//    //            {
+//    //                rectChildCurr.setWidth( pGraphObjChild->getMinimumWidth() );
+//    //            }
+//    //        }
+//    //        if( pGraphObjChild->hasMaximumWidth() )
+//    //        {
+//    //            if( rectChildCurr.width() > pGraphObjChild->getMaximumWidth() )
+//    //            {
+//    //                rectChildCurr.setWidth( pGraphObjChild->getMaximumWidth() );
+//    //            }
+//    //        }
+//    //        if( pGraphObjChild->hasMinimumHeight() )
+//    //        {
+//    //            if( rectChildCurr.height() < pGraphObjChild->getMinimumHeight() )
+//    //            {
+//    //                rectChildCurr.setHeight( pGraphObjChild->getMinimumHeight() );
+//    //            }
+//    //        }
+//    //        if( pGraphObjChild->hasMaximumHeight() )
+//    //        {
+//    //            if( rectChildCurr.height() > pGraphObjChild->getMaximumHeight() )
+//    //            {
+//    //                rectChildCurr.setHeight( pGraphObjChild->getMaximumHeight() );
+//    //            }
+//    //        }
+//
+//    //    } // for( idxAlignment = 0; idxAlignment < pGraphObjChild->getAlignmentCount(); idxAlignment++ )
+//
+//    //} // if( pGraphObjChild->getAlignmentCount() > 0 )
+//
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        mthTracer.setMethodReturn(qRect2Str(rectChildCurr));
+//    }
+//    return rectChildCurr;
+//
+//} // getAlignedChildRect
+
+/*==============================================================================
+protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+==============================================================================*/
+
 //------------------------------------------------------------------------------
-QRectF CGraphObjGroup::getScaledChildRect(CGraphObj* i_pGraphObjChild) const
+void CGraphObjGroup::traceThisPositionInfo(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjChild->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "getScaledChildRect",
-        /* strAddInfo   */ strMthInArgs );
-
-    QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(i_pGraphObjChild);
-
-    QRectF rectChildPrev = i_pGraphObjChild->getOriginalBoundingRectInParent();
-    QRectF rectChildCurr;
-
-    const CUnit& unitThis = m_physValRectCurr.unit();
-
-    // Get coordinates of this group relative to the parent group if this group.
-    QRectF rectThisOrig = m_physValRectOrig.toQRectF();
-    QRectF rectThisCurr = m_physValRectCurr.toQRectF();
-    double fScaleWidth = rectThisCurr.width() / rectThisOrig.width();
-    double fScaleHeight = rectThisCurr.height() / rectThisOrig.height();
-
-    // Map the coordinates of this group to the local coordinates of this group.
-    //rectThisOrig = mapFromParent(rectThisOrig).boundingRect();
-    //rectThisCurr = mapFromParent(rectThisCurr).boundingRect();
-
-    // Get position of child relative to this parent group.
-    //QPointF ptPosChildPrev = pGraphicsItemChild->pos();
-
-    // Default without any alignments assigned is:
-    // - position relative to center point of the group's bounding rectangle
-    // - size relative to size of the group's bounding rectangle
-    rectChildCurr.setLeft(fScaleWidth * rectChildPrev.left());
-    rectChildCurr.setTop(fScaleHeight * rectChildPrev.top());
-    rectChildCurr.setWidth(fScaleWidth * rectChildPrev.width());
-    rectChildCurr.setHeight(fScaleHeight * rectChildPrev.height());
-
-    // If the object has a fixed width or height they also have a
-    // minimum and maximum width or height.
-    // In addition the minimum and maximum width and height is equal.
-    // So it is sufficient to check the minimum and maximum sizes.
-    if (i_pGraphObjChild->hasMinimumWidth()) {
-        if (rectChildCurr.width() < i_pGraphObjChild->getMinimumWidth(unitThis).getVal()) {
-            rectChildCurr.setWidth(i_pGraphObjChild->getMinimumWidth(unitThis).getVal());
+    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
+        if (pGraphicsItem != nullptr) {
+            QString strRuntimeInfo;
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
+            strRuntimeInfo += "PhysValRect {" + getRect().toString() + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
+            strRuntimeInfo += "RectCurr {" + qRect2Str(getBoundingRect()) + "}, Orig {" + qRect2Str(m_rectOrig) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+            CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
         }
     }
-    if (i_pGraphObjChild->hasMaximumWidth()) {
-        if (rectChildCurr.width() > i_pGraphObjChild->getMaximumWidth(unitThis).getVal()) {
-            rectChildCurr.setWidth(i_pGraphObjChild->getMaximumWidth(unitThis).getVal());
-        }
-    }
-    if (i_pGraphObjChild->hasMinimumHeight()) {
-        if (rectChildCurr.height() < i_pGraphObjChild->getMinimumHeight(unitThis).getVal()) {
-            rectChildCurr.setHeight(i_pGraphObjChild->getMinimumHeight(unitThis).getVal());
-        }
-    }
-    if (i_pGraphObjChild->hasMaximumHeight()) {
-        if (rectChildCurr.height() > i_pGraphObjChild->getMaximumHeight(unitThis).getVal()) {
-            rectChildCurr.setHeight(i_pGraphObjChild->getMaximumHeight(unitThis).getVal());
-        }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(qRect2Str(rectChildCurr));
-    }
-    return rectChildCurr;
 }
-
-//------------------------------------------------------------------------------
-QRectF CGraphObjGroup::getAlignedChildRect(CGraphObj* i_pGraphObjChild) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjChild->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "getAlignedChildRect",
-        /* strAddInfo   */ strMthInArgs );
-
-    QRect rectChildCurr;
-
-    //const CUnit& unitThis = m_physValRectCurr.unit();
-    //QRectF rectThisOrig = m_physValRectOrig.toQRectF();
-    //QRectF rectThisCurr = m_physValRectCurr.toQRectF();
-    //double fScaleWidth = rectThisCurr.width() / rectThisOrig.width();
-    //double fScaleHeight = rectThisCurr.height() / rectThisOrig.height();
-
-    //QGraphicsItem*        pGraphicsItemChild;
-    //CGraphObj*            pGraphObjChild;
-    //int                   idxGraphObjChild;
-    //SGraphObjAlignment    alignment;
-    //int                   idxAlignment;
-    //QPointF               ptPosChildOrig;
-    //double                fxPosChildOrig;
-    //double                fyPosChildOrig;
-    //double                fWidthChildOrig;
-    //double                fHeightChildOrig;
-    //QRectF                rectChildCurr;
-
-    //else { // if( pGraphObjChild->getAlignmentCount() > 0 )
-    //    rectChildCurr.setLeft(fxPosChildOrig);
-    //    rectChildCurr.setTop(fyPosChildOrig);
-
-    //    rectChildCurr.setWidth(fWidthChildOrig);
-    //    rectChildCurr.setHeight(fHeightChildOrig);
-
-    //    bool bAlignLeft    = false;
-    //    bool bAlignHCenter = false;
-    //    bool bAlignRight   = false;
-    //    bool bAlignWidth   = false;
-    //    bool bAlignTop     = false;
-    //    bool bAlignVCenter = false;
-    //    bool bAlignBottom  = false;
-    //    bool bAlignHeight  = false;
-
-    //    // If the width of the child has to be aligned the left or right border will be moved
-    //    // keeping the width (if aligning the width it just makes sense to either align the
-    //    // left or the right border but not both border lines).
-    //    // If both the left and the right border has to be aligned (but not the width) the left
-    //    // and right border will be set implicitly adjusting (changing) the width.
-    //    // Same applies for height, top and bottom.
-    //    for( idxAlignment = 0; idxAlignment < pGraphObjChild->getAlignmentCount(); idxAlignment++ )
-    //    {
-    //        alignment = pGraphObjChild->getAlignment(idxAlignment);
-
-    //        if( alignment.m_alignmentRefChild == EAlignmentRef::Left )
-    //        {
-    //            bAlignLeft = true;
-    //        }
-    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::HCenter )
-    //        {
-    //            bAlignHCenter = true;
-    //        }
-    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Right )
-    //        {
-    //            bAlignRight = true;
-    //        }
-    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Width )
-    //        {
-    //            bAlignWidth = true;
-    //        }
-    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Top )
-    //        {
-    //            bAlignTop = true;
-    //        }
-    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::VCenter )
-    //        {
-    //            bAlignVCenter = true;
-    //        }
-    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Bottom )
-    //        {
-    //            bAlignBottom = true;
-    //        }
-    //        else if( alignment.m_alignmentRefChild == EAlignmentRef::Height )
-    //        {
-    //            bAlignHeight = true;
-    //        }
-    //    }
-
-    //    bool bMoveHor = true;
-    //    bool bMoveVer = true;
-
-    //    if( !bAlignWidth && !bAlignHCenter && bAlignLeft && bAlignRight )
-    //    {
-    //        bMoveHor = false;
-    //    }
-    //    if( !bAlignHeight && !bAlignVCenter && bAlignTop && bAlignBottom )
-    //    {
-    //        bMoveVer = false;
-    //    }
-
-    //    for( idxAlignment = 0; idxAlignment < pGraphObjChild->getAlignmentCount(); idxAlignment++ )
-    //    {
-    //        alignment = pGraphObjChild->getAlignment(idxAlignment);
-
-    //        switch( alignment.m_alignmentRefChild.enumerator() )
-    //        {
-    //            case EAlignmentRef::Left:
-    //            {
-    //                switch( alignment.m_alignmentRefParent.enumerator() )
-    //                {
-    //                    case EAlignmentRef::Left:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::HCenter:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Right:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Width:   // aligning left border of child to width of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Height:   // aligning left border of child to height of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Top:      // aligning left border of child to top border of parent will very likely never been used ..
-    //                    case EAlignmentRef::VCenter:  // aligning left border of child to vertical center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Bottom:   // aligning left border of child to bottom border of parent will very likely never been used ..
-    //                    default:
-    //                    {
-    //                        break;
-    //                    }
-    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
-    //                break;
-    //            } // case m_alignmentRefChild == EAlignmentRef::Left
-
-    //            case EAlignmentRef::HCenter:
-    //            {
-    //                switch( alignment.m_alignmentRefParent.enumerator() )
-    //                {
-    //                    case EAlignmentRef::Left:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::HCenter:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Right:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Width: // aligning horizontal center of child to width of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Height: // aligning horizontal center of child to height of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.width()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Top:      // aligning horizontal center of child to top border of parent will very likely never been used ..
-    //                    case EAlignmentRef::VCenter:  // aligning horizontal center of child to vertical center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Bottom:   // aligning horizontal center of child to bottom border of parent will very likely never been used ..
-    //                    default:
-    //                    {
-    //                        break;
-    //                    }
-    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
-    //                break;
-    //            } // case m_alignmentRefChild == EAlignmentRef::HCenter
-
-    //            case EAlignmentRef::Right:
-    //            {
-    //                switch( alignment.m_alignmentRefParent.enumerator() )
-    //                {
-    //                    case EAlignmentRef::Left:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::HCenter:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.center().x() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Right:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.right() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Width:   // aligning right border of child to width of parent will very likely never been used ..
-    //                    {
-    //                        if( !alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Height:   // aligning right border of child to height of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveHor )
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fWidthChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setRight( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setLeft( m_rctCurr.left() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Top:      // aligning right border of child to top border of parent will very likely never been used ..
-    //                    case EAlignmentRef::VCenter:  // aligning right border of child to vertical center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Bottom:   // aligning right border of child to bottom border of parent will very likely never been used ..
-    //                    default:
-    //                    {
-    //                        break;
-    //                    }
-    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
-    //                break;
-    //            } // case m_alignmentRefChild == EAlignmentRef::Right
-
-    //            case EAlignmentRef::Top:
-    //            {
-    //                switch( alignment.m_alignmentRefParent.enumerator() )
-    //                {
-    //                    case EAlignmentRef::Top:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::VCenter:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Bottom:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Width: // aligning top border of child to width of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Height: // aligning top border of child to height of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Left:     // aligning top border of child to left border of parent will very likely never been used ..
-    //                    case EAlignmentRef::HCenter:  // aligning top border of child to horizontal center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Right:    // aligning top border of child to right border of parent will very likely never been used ..
-    //                    default:
-    //                    {
-    //                        break;
-    //                    }
-    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
-    //                break;
-    //            } // case m_alignmentRefChild == EAlignmentRef::Top
-
-    //            case EAlignmentRef::VCenter:
-    //            {
-    //                switch( alignment.m_alignmentRefParent.enumerator() )
-    //                {
-    //                    case EAlignmentRef::Top:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::VCenter:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Bottom:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Width: // aligning vertical center of child to width of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.width() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Height: // aligning vertical center of child to height of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() - rectChildCurr.height()/2.0 );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Left:     // aligning vertical center of child to left border of parent will very likely never been used ..
-    //                    case EAlignmentRef::HCenter:  // aligning vertical center of child to horizontal center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Right:    // aligning vertical center of child to right border of parent will very likely never been used ..
-    //                    default:
-    //                    {
-    //                        break;
-    //                    }
-    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
-    //                break;
-    //            } // case m_alignmentRefChild == EAlignmentRef::VCenter
-
-    //            case EAlignmentRef::Bottom:
-    //            {
-    //                switch( alignment.m_alignmentRefParent.enumerator() )
-    //                {
-    //                    case EAlignmentRef::Top:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::VCenter:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.center().y() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Bottom:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.bottom() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Width: // aligning bottom border of child to width of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top()+ alignment.m_fVal  + m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top()+ alignment.m_fVal  + m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top()+ alignment.m_fVal  + m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top()+ alignment.m_fVal  + m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.width() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Height: // aligning bottom border of child to height of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal + m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        else
-    //                        {
-    //                            if( bMoveVer )
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.moveBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.moveTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                            else
-    //                            {
-    //                                if( fHeightChildOrig >= 0.0 )
-    //                                {
-    //                                    rectChildCurr.setBottom( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                                else
-    //                                {
-    //                                    rectChildCurr.setTop( m_rctCurr.top() + alignment.m_fVal * m_rctCurr.height() );
-    //                                }
-    //                            }
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Left:     // aligning bottom border of child to left border of parent will very likely never been used ..
-    //                    case EAlignmentRef::HCenter:  // aligning bottom border of child to horizontal center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Right:    // aligning bottom border of child to right border of parent will very likely never been used ..
-    //                    default:
-    //                    {
-    //                        break;
-    //                    }
-    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
-    //                break;
-    //            } // case m_alignmentRefChild == EAlignmentRef::Bottom
-
-    //            case EAlignmentRef::Width:
-    //            {
-    //                switch( alignment.m_alignmentRefParent.enumerator() )
-    //                {
-    //                    case EAlignmentRef::Width:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            rectChildCurr.setWidth( m_rctCurr.width() + alignment.m_fVal );
-    //                        }
-    //                        else
-    //                        {
-    //                            rectChildCurr.setWidth( alignment.m_fVal * m_rctCurr.width() );
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Height: // aligning width of child to height of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            rectChildCurr.setWidth( m_rctCurr.height() + alignment.m_fVal );
-    //                        }
-    //                        else
-    //                        {
-    //                            rectChildCurr.setWidth( alignment.m_fVal * m_rctCurr.height() );
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Left:     // aligning width of child to left border of parent will very likely never been used ..
-    //                    case EAlignmentRef::HCenter:  // aligning width of child to horizontal center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Right:    // aligning width of child to right border of parent will very likely never been used ..
-    //                    case EAlignmentRef::Top:      // aligning width of child to top border of parent will very likely never been used ..
-    //                    case EAlignmentRef::VCenter:  // aligning width of child to vertical center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Bottom:   // aligning width of child to bottom border of parent will very likely never been used ..
-    //                    default:
-    //                    {
-    //                        break;
-    //                    }
-    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
-    //                break;
-    //            } // case m_alignmentRefChild == EAlignmentRef::Width
-
-    //            case EAlignmentRef::Height:
-    //            {
-    //                switch( alignment.m_alignmentRefParent.enumerator() )
-    //                {
-    //                    case EAlignmentRef::Width: // aligning height of child to width of parent will very likely never been used ..
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            rectChildCurr.setHeight( m_rctCurr.width() + alignment.m_fVal );
-    //                        }
-    //                        else
-    //                        {
-    //                            rectChildCurr.setHeight( alignment.m_fVal * m_rctCurr.width() );
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Height:
-    //                    {
-    //                        if( alignment.m_bAlignAbsolute )
-    //                        {
-    //                            rectChildCurr.setHeight( m_rctCurr.height() + alignment.m_fVal );
-    //                        }
-    //                        else
-    //                        {
-    //                            rectChildCurr.setHeight( alignment.m_fVal * m_rctCurr.height() );
-    //                        }
-    //                        break;
-    //                    }
-    //                    case EAlignmentRef::Left:     // aligning height of child to left border of parent will very likely never been used ..
-    //                    case EAlignmentRef::HCenter:  // aligning height of child to horizontal center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Right:    // aligning height of child to right border of parent will very likely never been used ..
-    //                    case EAlignmentRef::Top:      // aligning height of child to top border of parent will very likely never been used ..
-    //                    case EAlignmentRef::VCenter:  // aligning height of child to vertical center of parent will very likely never been used ..
-    //                    case EAlignmentRef::Bottom:   // aligning height of child to bottom border of parent will very likely never been used ..
-    //                    default:
-    //                    {
-    //                        break;
-    //                    }
-    //                } // switch( alignment.m_alignmentRefParent.enumerator() )
-    //                break;
-    //            } // case m_alignmentRefChild == EAlignmentRef::Height
-
-    //            default:
-    //            {
-    //                break;
-    //            }
-
-    //        } // switch( alignment.m_alignmentRefChild.enumerator() )
-
-    //        // If the object has a fixed width or height they also have a
-    //        // the minimum and maximum width or height. In addition the
-    //        // minimum and maximum width and height is equal. So it is sufficient
-    //        // to check the minimum and maximum sizes.
-    //        if( pGraphObjChild->hasMinimumWidth() )
-    //        {
-    //            if( rectChildCurr.width() < pGraphObjChild->getMinimumWidth() )
-    //            {
-    //                rectChildCurr.setWidth( pGraphObjChild->getMinimumWidth() );
-    //            }
-    //        }
-    //        if( pGraphObjChild->hasMaximumWidth() )
-    //        {
-    //            if( rectChildCurr.width() > pGraphObjChild->getMaximumWidth() )
-    //            {
-    //                rectChildCurr.setWidth( pGraphObjChild->getMaximumWidth() );
-    //            }
-    //        }
-    //        if( pGraphObjChild->hasMinimumHeight() )
-    //        {
-    //            if( rectChildCurr.height() < pGraphObjChild->getMinimumHeight() )
-    //            {
-    //                rectChildCurr.setHeight( pGraphObjChild->getMinimumHeight() );
-    //            }
-    //        }
-    //        if( pGraphObjChild->hasMaximumHeight() )
-    //        {
-    //            if( rectChildCurr.height() > pGraphObjChild->getMaximumHeight() )
-    //            {
-    //                rectChildCurr.setHeight( pGraphObjChild->getMaximumHeight() );
-    //            }
-    //        }
-
-    //    } // for( idxAlignment = 0; idxAlignment < pGraphObjChild->getAlignmentCount(); idxAlignment++ )
-
-    //} // if( pGraphObjChild->getAlignmentCount() > 0 )
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(qRect2Str(rectChildCurr));
-    }
-    return rectChildCurr;
-
-} // getAlignedChildRect

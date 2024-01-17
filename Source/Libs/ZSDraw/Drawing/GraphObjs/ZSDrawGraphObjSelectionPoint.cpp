@@ -499,7 +499,7 @@ public: // must overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Returns the current bounding rectangle of the object.
 */
-QRectF CGraphObjSelectionPoint::getCurrentBoundingRect() const
+QRectF CGraphObjSelectionPoint::getBoundingRect() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -546,7 +546,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_ptScenePos) 
     if (m_selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {
         double fRotationAngle_degree = 0.0;
         if (m_selPt.m_pGraphObj != nullptr) {
-            fRotationAngle_degree = m_selPt.m_pGraphObj->getRotationAngleInDegree();
+            fRotationAngle_degree = 0.0; //m_selPt.m_pGraphObj->getRotationAngleInDegree();
         }
         cursor = selectionPoint2Cursor(m_selPt.m_selPt, fRotationAngle_degree);
     }

@@ -101,12 +101,9 @@ public: // overridables of base class QGraphicsItem
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // instance methods
-    //void addGraphObj( CGraphObj* i_pGraphObj );     // to be used instead of QGraphisItemGroup::addToGroup()
-    //void removeGraphObj( CGraphObj* i_pGraphObj );  // to be used instead of QGraphisItemGroup::removeFromGroup()
+    void addToGroup( CGraphObj* i_pGraphObj );
+    void removeFromGroup( CGraphObj* i_pGraphObj );
     CGraphObj* findGraphObj( const QString& i_strObjName );
-private: // hiding method of base class QGraphisItemGroup
-    void addToGroup( QGraphicsItem* i_pGraphicsItem );
-    void removeFromGroup( QGraphicsItem* i_pGraphicsItem );
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const; // for subsystem test
 public: // instance methods
@@ -165,8 +162,8 @@ public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos() const override;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class CGraphObj
-    virtual QRectF getCurrentBoundingRect() const override;
-    virtual QRectF getOriginalBoundingRectInParent() const override;
+    virtual QRectF getBoundingRect() const override;
+    //virtual QRectF getOriginalBoundingRectInParent() const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
 public: // must overridables of base class QGraphicsItem
@@ -189,15 +186,16 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // overridable slots of base class CGraphObj
-    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
+    //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
-protected: // auxiliary instance methods
-    QRectF rect() const;
 protected: // auxiliary instance methods (method tracing)
-    void setPhysValRect(const CPhysValRect& i_physValRect, const CEnumCoordinatesVersion& i_eVersion);
+    QRectF setRectOrig(const QRectF& i_rect);
     void applyGeometryChangeToChildrens();
-    QRectF getScaledChildRect(CGraphObj* i_pGraphObjChild) const;
-    QRectF getAlignedChildRect(CGraphObj* i_pGraphObjChild) const;
+public: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    virtual void traceThisPositionInfo(
+        ZS::System::CMethodTracer& i_mthTracer,
+        ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
+        ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const override;
 public: // class members
     /*!< Needed to set an initial unique name when creating a new instance.
          Incremented by the ctor but not decremented by the dtor.
@@ -206,6 +204,9 @@ public: // class members
     static qint64 s_iInstCount;
 protected: // instance members
     /*!< The original, untransformed group coordinates with unit.
+         TODO: Coordinates are in scene coordinates (relative to top left corner of scene)
+               or in parent coordinates (relative to center point of parent group).
+               The transformation matrix is used ....
          The coordinates are relative to the top left corner of the parent item's
          bounding rectange (real shape points only). If the item does not have another
          graphical object as a  parent, the coordinates are in scene coordinates.
@@ -220,12 +221,12 @@ protected: // instance members
          When the group is added to or removed from a another group the current
          coordinates are also taken over as the original coordinates.
          As long as there is no valid original rectangle childrens cannot be resized. */
-    CPhysValRect m_physValRectOrig;
+    QRectF m_rectOrig;
     /*!< The current, untransformed group coordinates with unit.
          The coordinates are relative to the top left corner of the parent item's
          bounding rectange (real shape points only). If the item does not have another
          graphical object as a  parent, the coordinates are in scene coordinates. */
-    CPhysValRect m_physValRectCurr;
+    //CPhysValRect m_physValRectTransformed;
 
 }; // class CGraphObjGroup
 

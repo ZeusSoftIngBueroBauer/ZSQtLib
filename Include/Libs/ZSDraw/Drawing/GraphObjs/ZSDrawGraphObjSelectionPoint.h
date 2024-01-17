@@ -86,7 +86,7 @@ public: // overridables of base class CGraphObj
 //    virtual void setSize( const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight ) override;
 //    virtual void setSize( const CPhysValSize& i_physValSize ) override;
 public: // must overridables of base class CGraphObj
-    virtual QRectF getCurrentBoundingRect() const override;
+    virtual QRectF getBoundingRect() const override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
     //virtual void setIsHit( bool /*i_bHit*/ ) override {}

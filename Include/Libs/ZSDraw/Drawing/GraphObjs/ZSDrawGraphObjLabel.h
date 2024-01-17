@@ -132,10 +132,8 @@ public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
 public: // overridables of base class CGraphObj
     virtual void onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld) override;
-public: // overridables of base class CGraphObj
-    virtual void setRotationAngleInDegree( double /*i_fRotAngle_deg*/ ) override {} // not supported for labels
 public: // must overridables of base class CGraphObj
-    virtual QRectF getCurrentBoundingRect() const override;
+    virtual QRectF getBoundingRect() const override;
 public: // must overridables of base class CGraphObj
     //virtual void setIsHit( bool i_bHit ) override;
 public: // overridables of base class CGraphObj

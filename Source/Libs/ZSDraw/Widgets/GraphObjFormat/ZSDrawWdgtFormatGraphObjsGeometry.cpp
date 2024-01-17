@@ -526,7 +526,7 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         // <Widget> Rotation
         //==================
 
-        m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
+        m_fRotAngle_deg = 0.0; //m_pGraphObj->getRotationAngleInDegree();
 
         m_pWdgtRotation = new QWidget();
         m_pLytWdgtRotation = new QVBoxLayout();
@@ -807,7 +807,7 @@ void CWdgtFormatGraphObjsGeometry::applyChanges()
 
     if( m_pWdgtRotation != nullptr )
     {
-        m_pGraphObj->setRotationAngleInDegree(m_fRotAngle_deg);
+        //m_pGraphObj->setRotationAngleInDegree(m_fRotAngle_deg);
     }
 
     // Stacking Order
@@ -924,7 +924,7 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
 
         if( !bHasChanges && m_pWdgtRotation != nullptr )
         {
-            double fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
+            double fRotAngle_deg = 0.0; //m_pGraphObj->getRotationAngleInDegree();
 
             if( m_fRotAngle_deg != fRotAngle_deg )
             {
@@ -977,7 +977,7 @@ void CWdgtFormatGraphObjsGeometry::onGraphObjChanged()
 
     m_ptPos = m_pGraphicsItem->pos();
     //m_size = m_pGraphObj->getSize(Units.Length.px).toQSizeF();
-    m_fRotAngle_deg = m_pGraphObj->getRotationAngleInDegree();
+    m_fRotAngle_deg = 0.0; //m_pGraphObj->getRotationAngleInDegree();
     m_fZValue = m_pGraphObj->getStackingOrderValue();
 
     if( m_pEdtPosX != nullptr )

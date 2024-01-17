@@ -2359,6 +2359,9 @@ void CWdgtDrawingViewProperties::updateImageSizeMetrics()
     m_pCmbImageMetricScaleFactorDivisor->setCurrentText(
         QString::number(m_drawingSize.scaleFactorDivisor()));
 
+    m_pCmbImageMetricYScaleAxisOrientation->setCurrentText(
+        m_drawingSize.yScaleAxisOrientation().toString(EEnumEntryAliasStrText));
+
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);
     }

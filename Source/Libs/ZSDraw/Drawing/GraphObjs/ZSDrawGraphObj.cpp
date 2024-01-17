@@ -805,7 +805,7 @@ CGraphObj::CGraphObj(
     CIdxTreeEntry(i_idxTreeEntryType, i_strObjName),
     m_bDtorInProgress(false),
     m_bAboutToBeDestroyedEmitted(false),
-    m_bForceConversionToSceneCoors(false),
+    //m_bForceConversionToSceneCoors(false),
     m_pDrawingScene(i_pDrawingScene),
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
@@ -821,7 +821,9 @@ CGraphObj::CGraphObj(
     m_editMode(EEditMode::None),
     //m_editResizeMode(EEditResizeMode::None),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
-    m_ptScenePos(),
+    m_transform(),
+    m_transformByGroup(),
+    //m_ptScenePos(),
     //m_idxSelPtSelectedPolygon(-1),
     m_arpSelPtsPolygon(),
     //m_selPtSelectedBoundingRect(ESelectionPoint::None),
@@ -872,9 +874,9 @@ CGraphObj::CGraphObj(
     m_pTrcAdminObjMouseMoveEvents(nullptr),
     m_pTrcAdminObjKeyEvents(nullptr)
 {
-    QObject::connect(
-        m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
-        this, &CGraphObj::onDrawingSizeChanged);
+    //QObject::connect(
+    //    m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
+    //    this, &CGraphObj::onDrawingSizeChanged);
 
 } // ctor
 
@@ -1032,7 +1034,7 @@ CGraphObj::~CGraphObj()
 
     m_bDtorInProgress = false;
     m_bAboutToBeDestroyedEmitted = false;
-    m_bForceConversionToSceneCoors = false;
+    //m_bForceConversionToSceneCoors = false;
     m_pDrawingScene = nullptr;
     //m_strFactoryGroupName;
     m_type = static_cast<EGraphObjType>(0);
@@ -1047,8 +1049,10 @@ CGraphObj::~CGraphObj()
     m_bIsHighlighted = false;
     m_editMode = static_cast<EEditMode>(0);
     //m_editResizeMode = static_cast<EEditResizeMode>(0);
-    //m_ptScenePos;
     //m_arfZValues.clear();
+    //m_transform;
+    //m_transformByGroup;
+    //m_ptScenePos;
     //m_idxSelPtSelectedPolygon = 0;
     //m_arpSelPtsPolygon;
     //m_selPtSelectedBoundingRect = static_cast<ESelectionPoint>(0);
@@ -3601,14 +3605,14 @@ public: // must overridables
 
     @return Bounding rectangle in local coordinates.
 */
-QRectF CGraphObj::getCurrentBoundingRect() const
+QRectF CGraphObj::getBoundingRect() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "getCurrentBoundingRect",
+        /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
 
 #pragma message(__TODO__"Pure virtual")
@@ -3625,99 +3629,118 @@ QRectF CGraphObj::getCurrentBoundingRect() const
 public: // overridables
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-/*! @brief Pure virtual method which must be overridden by derived classes to
-           return the original bounding rectangle of the object in local coordinates.
+////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived classes to
+//           return the original bounding rectangle of the object in local coordinates.
+//
+//    This method is used by a group to resize its children.
+//
+//    Please refer to documentation about the difference between current (transformed)
+//    and original coordinates at base class CGraphObj.
+//
+//    @return Original bounding rectangle in local coordinates.
+//*/
+//QRectF CGraphObj::getOriginalBoundingRectInParent() const
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "getOriginalBoundingRectInParent",
+//        /* strAddInfo   */ "" );
+//
+//    QRectF rctBounding = getCurrentBoundingRect();
+//    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+//        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+//    }
+//    return rctBounding;
+//}
 
-    This method is used by a group to resize its children.
-
-    Please refer to documentation about the difference between current (transformed)
-    and original coordinates at base class CGraphObj.
-
-    @return Original bounding rectangle in local coordinates.
-*/
-QRectF CGraphObj::getOriginalBoundingRectInParent() const
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "getOriginalBoundingRectInParent",
-        /* strAddInfo   */ "" );
-
-    QRectF rctBounding = getCurrentBoundingRect();
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
-    }
-    return rctBounding;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Pure virtual method which must be overridden by derived classes to
-           set the bounding rectangle of the object in local coordinates.
-
-    This method is used by a group to resize its children.
-
-    @param [in] i_rectBounding
-        New bounding rectangle of the object in local coordinates.
-*/
-void CGraphObj::setCurrentBoundingRectInParent(const QRectF& i_rectBounding)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qRect2Str(i_rectBounding);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setCurrentBoundingRectInParent",
-        /* strAddInfo   */ strMthInArgs );
-}
+////------------------------------------------------------------------------------
+///*! @brief Pure virtual method which must be overridden by derived classes to
+//           set the bounding rectangle of the object in local coordinates.
+//
+//    This method is used by a group to resize its children.
+//
+//    @param [in] i_rectBounding
+//        New bounding rectangle of the object in local coordinates.
+//*/
+//void CGraphObj::setCurrentBoundingRectInParent(const QRectF& i_rectBounding)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = qRect2Str(i_rectBounding);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setCurrentBoundingRectInParent",
+//        /* strAddInfo   */ strMthInArgs );
+//}
 
 /*==============================================================================
-public: // overridables
+public: // must overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObj::setRotationAngleInDegree( double i_fRotAngle_deg )
+void CGraphObj::setGroupScale(double i_fXScale, double i_fYScale)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fRotAngle_deg, 'f', 1);
+        strMthInArgs = QString::number(i_fXScale) + ", " + QString::number(i_fYScale);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setRotationAngleInDegree",
+        /* strMethod    */ "CGraphObj::setGroupScale",
         /* strAddInfo   */ strMthInArgs );
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    m_fRotAngleCurr_deg = i_fRotAngle_deg;
-#endif
-
-    //updateTransform();
+    #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    m_transformByGroup.scale(i_fXScale, i_fYScale);
 }
 
-//------------------------------------------------------------------------------
-double CGraphObj::getRotationAngleInDegree()
-//------------------------------------------------------------------------------
-{
-    double fRotAngle_deg = 0.0;
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    if (i_version == ECoordinatesVersion::Original) {
-        fRotAngle_deg = m_fRotAngleOrig_deg;
-    }
-    else {
-        fRotAngle_deg = m_fRotAngleCurr_deg;
-    }
-#endif
-    return fRotAngle_deg;
-}
+////------------------------------------------------------------------------------
+//void CGraphObj::setRotationAngleInDegree( double i_fRotAngle_deg )
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = QString::number(i_fRotAngle_deg, 'f', 1);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::setRotationAngleInDegree",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//    m_fRotAngleCurr_deg = i_fRotAngle_deg;
+//#endif
+//
+//    //updateTransform();
+//}
+
+////------------------------------------------------------------------------------
+//double CGraphObj::getRotationAngleInDegree()
+////------------------------------------------------------------------------------
+//{
+//    double fRotAngle_deg = 0.0;
+//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
+//    if (i_version == ECoordinatesVersion::Original) {
+//        fRotAngle_deg = m_fRotAngleOrig_deg;
+//    }
+//    else {
+//        fRotAngle_deg = m_fRotAngleCurr_deg;
+//    }
+//#endif
+//    return fRotAngle_deg;
+//}
 
 /*==============================================================================
 public: // overridables
@@ -3991,6 +4014,9 @@ void CGraphObj::setIsHighlighted(bool i_bIsHighlighted)
         if (pGraphicsItemThis != nullptr) {
             pGraphicsItemThis->update();
         }
+        if (m_bIsHighlighted) {
+            tracePositionInfo(mthTracer);
+        }
     }
 }
 
@@ -4228,7 +4254,7 @@ QPointF CGraphObj::getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt )
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
-    QRectF rectBounding = getCurrentBoundingRect();
+    QRectF rectBounding = getBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, i_selPt);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
@@ -4248,7 +4274,7 @@ QPointF CGraphObj::getSelectionPointCoorsInSceneCoors( int i_idxPt ) const
 //------------------------------------------------------------------------------
 {
     QPointF ptScenePos;
-    QRectF rectBounding = getCurrentBoundingRect();
+    QRectF rectBounding = getBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rectBounding, ESelectionPoint::Center);
     const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
     if (pGraphicsItem != nullptr) {
@@ -4566,12 +4592,6 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                 if (pGraphObjSelPt == nullptr) {
                     pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, SGraphObjSelectionPoint(this, selPt));
                     m_arpSelPtsBoundingRect[idxSelPt] = pGraphObjSelPt;
-                    QObject::connect(
-                        pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
-                        this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
-                    QObject::connect(
-                        pGraphObjSelPt, &CGraphObj::geometryChanged,
-                        this, &CGraphObj::onSelectionPointGeometryChanged);
 
                     // Please note that selection points should not belong as child to the graphics items
                     // for which the selection points are created. Otherwise the "boundingRect" call
@@ -4580,6 +4600,13 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                     // In addition selection points must be directly added to the graphics scene as they
                     // should not be indicated in the index tree.
                     m_pDrawingScene->addItem(pGraphObjSelPt);
+
+                    QObject::connect(
+                        pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                        this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
+                    QObject::connect(
+                        pGraphObjSelPt, &CGraphObj::geometryChanged,
+                        this, &CGraphObj::onSelectionPointGeometryChanged);
 
                     // Event filters can only be installed on items in a scene.
                     pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
@@ -6309,39 +6336,39 @@ bool CGraphObj::addGeometryLabel(
 protected slots: // overridables
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-/*! @brief Called by the drawing scene if the drawing size is changed.
-
-    When changing the drawing size in metric unit dimension
-    (e.g. on changing the Y Scale Orientation) the scene coordinates must be
-    newly calculated even if the original values stored in metric units have not
-    been changed. On changing the drawing size the the drawing scene will emit
-    the signal "drawingSizeChanged" and the method MUST set the flag
-    "m_bForceConversionToSceneCoors" to true before converting the coordinates
-    and setting the converted values.
-*/
-void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_drawingSize.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::onDrawingSizeChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    m_bForceConversionToSceneCoors = true;
-
-    // Here add code in your derived class to convert and recalculate the coordinates.
-    // In the derived class the signal "geometryValuesUnitChanged" has to be emitted
-    // if the unit of the drawing scene's size has been changed.
-
-    m_bForceConversionToSceneCoors = false;
-}
+////------------------------------------------------------------------------------
+///*! @brief Called by the drawing scene if the drawing size is changed.
+//
+//    When changing the drawing size in metric unit dimension
+//    (e.g. on changing the Y Scale Orientation) the scene coordinates must be
+//    newly calculated even if the original values stored in metric units have not
+//    been changed. On changing the drawing size the the drawing scene will emit
+//    the signal "drawingSizeChanged" and the method MUST set the flag
+//    "m_bForceConversionToSceneCoors" to true before converting the coordinates
+//    and setting the converted values.
+//*/
+//void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_drawingSize.toString();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::onDrawingSizeChanged",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    m_bForceConversionToSceneCoors = true;
+//
+//    // Here add code in your derived class to convert and recalculate the coordinates.
+//    // In the derived class the signal "geometryValuesUnitChanged" has to be emitted
+//    // if the unit of the drawing scene's size has been changed.
+//
+//    m_bForceConversionToSceneCoors = false;
+//}
 
 //------------------------------------------------------------------------------
 void CGraphObj::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
@@ -6835,54 +6862,54 @@ void CGraphObj::emit_geometryLabelChanged(const QString& i_strName)
 protected: // overridable auxiliary instance methods (method tracing)
 ==============================================================================*/
 
-//------------------------------------------------------------------------------
-/*! @brief Internal method to calculate and set the current scene position of the object.
-*/
-void CGraphObj::updateInternalScenePos()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::updateInternalScenePos",
-        /* strAddInfo   */ "" );
+////------------------------------------------------------------------------------
+///*! @brief Internal method to calculate and set the current scene position of the object.
+//*/
+//void CGraphObj::updateInternalScenePos()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::updateInternalScenePos",
+//        /* strAddInfo   */ "" );
+//
+//    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
+//    if (pGraphicsItem != nullptr) {
+//        QPointF ptScenePos = pGraphicsItem->scenePos();
+//        setInternalScenePos(ptScenePos);
+//    }
+//}
 
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(this);
-    if (pGraphicsItem != nullptr) {
-        QPointF ptScenePos = pGraphicsItem->scenePos();
-        setInternalScenePos(ptScenePos);
-    }
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Internal method to set the current scene position of the object.
-
-    If the current scene position has been changed the scenePosChanged signal
-    is emitted.
-
-    @param [in] i_pos
-        New scene position of the object.
-*/
-void CGraphObj::setInternalScenePos(const QPointF& i_pos)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = point2Str(i_pos);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setInternalScenePos",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_ptScenePos != i_pos) {
-        m_ptScenePos = i_pos;
-        emit_scenePosChanged();
-    }
-}
+////------------------------------------------------------------------------------
+///*! @brief Internal method to set the current scene position of the object.
+//
+//    If the current scene position has been changed the scenePosChanged signal
+//    is emitted.
+//
+//    @param [in] i_pos
+//        New scene position of the object.
+//*/
+//void CGraphObj::setInternalScenePos(const QPointF& i_pos)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = point2Str(i_pos);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "CGraphObj::setInternalScenePos",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    if (m_ptScenePos != i_pos) {
+//        m_ptScenePos = i_pos;
+//        emit_scenePosChanged();
+//    }
+//}
 
 //------------------------------------------------------------------------------
 /*! @brief Internal method reimplementing the setPos call of graphics item.
@@ -6923,41 +6950,72 @@ void CGraphObj::tracePositionInfo(
     CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
+    traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
+    traceParentGroupPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::traceThisPositionInfo(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+//------------------------------------------------------------------------------
+{
     if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         if (pGraphicsItemThis != nullptr) {
-            QString strRuntimeInfo;
-
             QPointF ptPos = pGraphicsItemThis->pos();
             QPointF ptScenePos = pGraphicsItemThis->scenePos();
-            QRectF rectBounding = getCurrentBoundingRect();
+            QRectF rectBounding = getBoundingRect();
             QPointF ptCenterPos = rectBounding.center();
+            QString strRuntimeInfo;
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
-            if (ptScenePos != m_ptScenePos) {
-                strRuntimeInfo += " != ThisScenePos {" + qPoint2Str(m_ptScenePos) + "}";
-            }
-            strRuntimeInfo += ", BoundingRect {" + qRect2Str(rectBounding) + "}" +
-                ", Center {" + qPoint2Str(ptCenterPos) + "}}";
+            strRuntimeInfo += "BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
             i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
+            strRuntimeInfo += "ParentPos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+        }
+    }
+}
 
+//------------------------------------------------------------------------------
+void CGraphObj::traceParentGroupPositionInfo(
+    CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
+//------------------------------------------------------------------------------
+{
+    if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
+        const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+        if (pGraphicsItemThis != nullptr) {
             QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
-            CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-            if (pGraphicsItemParent != nullptr && pGraphObjParent != nullptr) {
-                QPointF ptPosParent = pGraphicsItemParent->pos();
-                QPointF ptScenePosParent = pGraphicsItemParent->scenePos();
-                QRectF rectBoundingParent = pGraphObjParent->getCurrentBoundingRect();
-                QPointF ptCenterPosParent = rectBoundingParent.center();
+            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
+            if (pGraphicsItemParent != nullptr && pGraphObjGroup != nullptr) {
+                QPointF ptPos = pGraphicsItemParent->pos();
+                QPointF ptScenePos = pGraphicsItemParent->scenePos();
+                QRectF rectBounding = pGraphObjGroup->getBoundingRect();
+                QPointF ptCenterPos = rectBounding.center();
+                QString strRuntimeInfo;
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
                 else strRuntimeInfo = "   ";
-                strRuntimeInfo += "Parent {" + QString(pGraphObjParent == nullptr ? "null" : pGraphObjParent->path()) +
-                    ", ScenePos {" + qPoint2Str(ptScenePosParent) + "}" +
-                    ", Pos {" + qPoint2Str(ptPosParent) + "}" +
-                    ", BoundingRect {" + qRect2Str(rectBoundingParent) + "}" +
-                    ", Center {" + qPoint2Str(ptCenterPosParent) + "}}";
+                strRuntimeInfo += "ParentGroup: " + QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path());
+                i_mthTracer.trace(strRuntimeInfo);
+                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+                else strRuntimeInfo = "   ";
+                strRuntimeInfo += "  PhysValRect {" + pGraphObjGroup->getRect().toString() + "}";
+                i_mthTracer.trace(strRuntimeInfo);
+                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+                else strRuntimeInfo = "   ";
+                strRuntimeInfo += "  BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
+                i_mthTracer.trace(strRuntimeInfo);
+                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+                else strRuntimeInfo = "   ";
+                strRuntimeInfo += "  ParentPos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
                 i_mthTracer.trace(strRuntimeInfo);
             }
         }

@@ -263,14 +263,14 @@ CPhysVal CPhysValLine::y2() const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CPhysValLine::width() const
+CPhysVal CPhysValLine::dx() const
 //------------------------------------------------------------------------------
 {
     return CPhysVal(m_line.dx(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CPhysValLine::height() const
+CPhysVal CPhysValLine::dy() const
 //------------------------------------------------------------------------------
 {
     return CPhysVal(m_line.dy(), m_unit, m_fRes);
@@ -357,10 +357,24 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CPhysValLine::setP1( const QPointF& i_p1 )
+//------------------------------------------------------------------------------
+{
+    m_line.setP1(i_p1);
+}
+
+//------------------------------------------------------------------------------
 void CPhysValLine::setP1( const CPhysValPoint& i_physValP1 )
 //------------------------------------------------------------------------------
 {
     m_line.setP1(QPointF(i_physValP1.x().getVal(m_unit), i_physValP1.y().getVal(m_unit)));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValLine::setP2( const QPointF& i_p2 )
+//------------------------------------------------------------------------------
+{
+    m_line.setP2(i_p2);
 }
 
 //------------------------------------------------------------------------------
@@ -416,20 +430,51 @@ void CPhysValLine::setPoints(
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setWidth( const CPhysVal& i_physValWidth )
+/*! @brief Sets the horizontal component of the lines vector by moving p2.
+
+    |<- DX ->|
+    x--------x
+    p1      p2
+*/
+void CPhysValLine::setDX( const CPhysVal& i_physValDX )
 //------------------------------------------------------------------------------
 {
-    m_line.setP2(QPointF(m_line.x1() + i_physValWidth.getVal(m_unit), m_line.y2()));
+    m_line.setP2(QPointF(m_line.x1() + i_physValDX.getVal(m_unit), m_line.y2()));
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setHeight( const CPhysVal& i_physValHeight )
+/*! @brief Sets the vertical component of the lines vector by moving p2.
+
+    x p1 --
+    |     ^
+    |     DY
+    |     
+    x p2 --
+*/
+void CPhysValLine::setDY( const CPhysVal& i_physValDY )
 //------------------------------------------------------------------------------
 {
-    m_line.setP2(QPointF(m_line.x2(), m_line.y1() + i_physValHeight.getVal(m_unit)));
+    m_line.setP2(QPointF(m_line.x2(), m_line.y1() + i_physValDY.getVal(m_unit)));
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the length of the line to the given length.
+
+    The end point (p2) of the line is moved to give the line its new length,
+    unless length() was previously zero, in which case no scaling is attempted.
+*/
+void CPhysValLine::setLength( double i_fLength )
+//------------------------------------------------------------------------------
+{
+    m_line.setLength(i_fLength);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the length of the line to the given length.
+
+    The end point (p2) of the line is moved to give the line its new length,
+    unless length() was previously zero, in which case no scaling is attempted.
+*/
 void CPhysValLine::setLength( const CPhysVal& i_physValLength )
 //------------------------------------------------------------------------------
 {
@@ -444,6 +489,25 @@ void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Moves the center point of the line by keeping the length of the line.
+
+    The start and end points of the line are moved to keep the length of the line.
+*/
+void CPhysValLine::setCenter(const QPointF& i_pCenter)
+//------------------------------------------------------------------------------
+{
+    double fCenterX = i_pCenter.x();
+    double fdx = fCenterX - m_line.center().x();
+    double fCenterY = i_pCenter.y();
+    double fdy = fCenterY - m_line.center().y();
+    m_line.translate(fdx, fdy);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Moves the center point of the line by keeping the length of the line.
+
+    The start and end points of the line are moved to keep the length of the line.
+*/
 void CPhysValLine::setCenter(const CPhysValPoint& i_physValPointCenter)
 //------------------------------------------------------------------------------
 {

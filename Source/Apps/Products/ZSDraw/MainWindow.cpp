@@ -3671,8 +3671,8 @@ void CMainWindow::onActionEditRotateLeftTriggered(bool i_bChecked)
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
             if( pGraphObj != nullptr ) {
                 if( !pGraphObj->isLabel() && !pGraphObj->isSelectionPoint() ) {
-                    double fAngleTmp_deg = pGraphObj->getRotationAngleInDegree();
-                    pGraphObj->setRotationAngleInDegree(fAngleTmp_deg+fAngle_deg);
+                    double fAngleTmp_deg = 0.0; //pGraphObj->getRotationAngleInDegree();
+                    //pGraphObj->setRotationAngleInDegree(fAngleTmp_deg+fAngle_deg);
                 }
             }
         }
@@ -3709,8 +3709,8 @@ void CMainWindow::onActionEditRotateRightTriggered(bool i_bChecked)
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
             if( pGraphObj != nullptr ) {
                 if( !pGraphObj->isLabel() && !pGraphObj->isSelectionPoint() ) {
-                    double fAngleTmp_deg = pGraphObj->getRotationAngleInDegree();
-                    pGraphObj->setRotationAngleInDegree(fAngleTmp_deg+fAngle_deg);
+                    double fAngleTmp_deg = 0.0; //pGraphObj->getRotationAngleInDegree();
+                    //pGraphObj->setRotationAngleInDegree(fAngleTmp_deg+fAngle_deg);
                 }
             }
         }

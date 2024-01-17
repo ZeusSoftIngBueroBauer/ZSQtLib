@@ -2369,14 +2369,15 @@ int CDrawingScene::groupGraphObjsSelected()
         CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
         if (pObjFactoryGroup != nullptr) {
             // First unselect all child items which will be added to the group.
+            unselectGraphicsItems(arpGraphicsItemsSelected);
+
+            // Selection points, labels and connection lines will not become part of the newly
+            // created group and will be removed from the list of selected items.
             // In addition items which already belong as childs to a group got to be removed
             // from the list of selected items as those childs will be added to the new group
-            // as childs of the item. Also selection points, labels and connection lines will
-            // not become part of the newly created group and will be removed from the list
-            // of selected items.
+            // as childs of the item.
             QList<QGraphicsItem*> arpGraphicsItemsToBeRemoved;
             for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
-                pGraphicsItemSelected->setSelected(false);
                 CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
                 if (pGraphObjSelected->isConnectionLine() || pGraphObjSelected->isSelectionPoint() || pGraphObjSelected->isLabel()) {
                     arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
@@ -2449,7 +2450,7 @@ int CDrawingScene::groupGraphObjsSelected()
             for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
                 CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
                 if (pGraphObjSelected != nullptr) {
-                    pGraphicsItemGroup->addToGroup(pGraphicsItemSelected);
+                    pGraphObjGroup->addToGroup(pGraphObjSelected);
                     m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
                     //alignmentLeft.m_fVal = 0.0;
@@ -2536,7 +2537,7 @@ int CDrawingScene::ungroupGraphObjsSelected()
                     throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjChild == nullptr");
                 }
                 // for debugging purposes also called here before removing the item from the group
-                pGraphicsItemGroupSelected->removeFromGroup(pGraphicsItemChild);
+                pGraphObjGroupSelected->removeFromGroup(pGraphObjChild);
                 m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
             }
             delete pGraphObjGroupSelected;
@@ -4050,9 +4051,9 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
                         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                         // Children will be moved together with their parents ...
                         if (pGraphObj != nullptr && pGraphicsItem->parentItem() == nullptr) {
-                            fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
+                            fRotAngle_deg = 0.0; //pGraphObj->getRotationAngleInDegree();
                             fRotAngle_deg += fRotAngleOffs_deg;
-                            pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
+                            //pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
                         }
                     }
                 }
@@ -5011,7 +5012,7 @@ QRectF CDrawingScene::getBoundingRect(const QList<QGraphicsItem*>& i_arpGraphics
         }
         if (!pGraphObj->isConnectionLine() && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
             QPointF ptScenePosItem = pGraphicsItem->scenePos();
-            QRectF rectBounding = pGraphObj->getCurrentBoundingRect();
+            QRectF rectBounding = pGraphObj->getBoundingRect();
             QRectF rectSceneItem = pGraphicsItem->mapToScene(rectBounding).boundingRect();
             //QSizeF sizItem = rectBoundingGraphObj.size();
             //QRectF rectSceneItem = QRectF(ptScenePosItem, sizItem);
@@ -5058,6 +5059,36 @@ QRectF CDrawingScene::getBoundingRect(const QList<QGraphicsItem*>& i_arpGraphics
         mthTracer.setMethodReturn(qRect2Str(rectBoundingSceneCoors));
     }
     return rectBoundingSceneCoors;
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::unselectGraphicsItems(const QList<QGraphicsItem*>& i_arpGraphicsItems) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "GraphicsItems [" + QString::number(i_arpGraphicsItems.size()) + "]";
+        if (i_arpGraphicsItems.size() > 0) {
+            strMthInArgs += "(";
+            for (QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                if (pGraphObj != nullptr) {
+                    if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                    strMthInArgs += "{"+ pGraphObj->typeAsString() + ": "+ pGraphObj->path() + "}";
+                }
+            }
+            strMthInArgs += ")";
+        }
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "unselectGraphicsItems",
+        /* strAddInfo   */ strMthInArgs );
+
+    for (QGraphicsItem* pGraphicsItemSelected : i_arpGraphicsItems) {
+        pGraphicsItemSelected->setSelected(false);
+    }
 }
 
 /*==============================================================================

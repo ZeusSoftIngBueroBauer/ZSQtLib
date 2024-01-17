@@ -650,10 +650,10 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                             varData = m_physValLine.center().x().toString();
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
-                            varData = m_physValLine.width().toString();
+                            varData = m_physValLine.dx().toString();
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
-                            varData = m_physValLine.height().toString();
+                            varData = m_physValLine.dy().toString();
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameLength) {
                             varData = m_physValLine.length().toString();
@@ -673,10 +673,10 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
                             varData = QVariant::fromValue(m_physValLine.center().x());
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
-                            varData = QVariant::fromValue(m_physValLine.width());
+                            varData = QVariant::fromValue(m_physValLine.dx());
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
-                            varData = QVariant::fromValue(m_physValLine.height());
+                            varData = QVariant::fromValue(m_physValLine.dy());
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameLength) {
                             varData = QVariant::fromValue(m_physValLine.length());
@@ -930,13 +930,13 @@ bool CModelGraphObjGeometry::setData(
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDX) {
                             CPhysVal physVal = i_varData.value<CPhysVal>();
-                            physValLine.setWidth(physVal);
+                            physValLine.setDX(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameDY) {
                             CPhysVal physVal = i_varData.value<CPhysVal>();
-                            physValLine.setHeight(physVal);
+                            physValLine.setDY(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }

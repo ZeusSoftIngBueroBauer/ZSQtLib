@@ -368,7 +368,7 @@ void CGraphObjLabelGeometryDX::updatePosition()
 
     // The position of a QGraphicsTextItem is defined by its top left corner.
     // Move text item so that its center point is at the line end point of the anchor line.
-    QRectF rctBoundingThis = getCurrentBoundingRect();
+    QRectF rctBoundingThis = getBoundingRect();
     QPointF anchorLineP2ScenePos = anchorLine.p2() - rctBoundingThis.center();
     setPos(anchorLineP2ScenePos);
 
@@ -436,7 +436,7 @@ void CGraphObjLabelGeometryDX::updatePolarCoorsToLinkedSelPt()
     QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);
     QPointF ptSelPtSceneCoors = lineSelPtSceneCoors.center();
 
-    QRectF rctBoundingThis = getCurrentBoundingRect();
+    QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
 
     // The start point of the anchor line should be the center point of the line
@@ -504,7 +504,7 @@ void CGraphObjLabelGeometryDX::updateAnchorLines()
     QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);
 
     // The distances to the parent's selection points must be calculated in scene coordinates.
-    QRectF rctBoundingThis = getCurrentBoundingRect();
+    QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
 
     // Vertical lines.

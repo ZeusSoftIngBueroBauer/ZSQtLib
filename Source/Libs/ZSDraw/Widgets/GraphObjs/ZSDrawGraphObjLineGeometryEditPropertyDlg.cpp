@@ -296,10 +296,10 @@ void CDlgGraphObjLineGeometryEditProperty::onEdtCoorValueChanged(const CPhysVal&
                 physValLine.setP2(physValP2);
             }
             else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorWidth) {
-                physValLine.setWidth(m_pEdtCoor->value());
+                physValLine.setDX(m_pEdtCoor->value());
             }
             else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
-                physValLine.setHeight(m_pEdtCoor->value());
+                physValLine.setDY(m_pEdtCoor->value());
             }
             else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorLength) {
                 physValLine.setLength(m_pEdtCoor->value());
@@ -342,11 +342,11 @@ void CDlgGraphObjLineGeometryEditProperty::onEdtCoorValueChanged(const CPhysVal&
             }
             else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorWidth) {
                 CPhysVal physValWidth = m_pEdtCoor->value();
-                physValLine.setWidth(physValWidth);
+                physValLine.setDX(physValWidth);
             }
             else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
                 CPhysVal physValHeight = m_pEdtCoor->value();
-                physValLine.setHeight(physValHeight);
+                physValLine.setDY(physValHeight);
             }
             m_pGraphObj->setLine(physValLine);
         }
@@ -452,14 +452,14 @@ void CDlgGraphObjLineGeometryEditProperty::update()
             fResolution = drawingSize.metricImageWidth().getRes().getVal(unit);
             fMaximum = drawingSize.metricImageWidth().getVal(unit);
             fMinimum = -fMaximum;
-            fValue = physValLine.width().getVal(unit);
+            fValue = physValLine.dx().getVal(unit);
         }
         else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
             bIsValidCoordinate = true;
             fResolution = drawingSize.metricImageHeight().getRes().getVal(unit);
             fMaximum = drawingSize.metricImageHeight().getVal(unit);
             fMinimum = -fMaximum;
-            fValue = physValLine.height().getVal(unit);
+            fValue = physValLine.dy().getVal(unit);
         }
         else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorLength) {
             bIsValidCoordinate = true;
@@ -522,13 +522,13 @@ void CDlgGraphObjLineGeometryEditProperty::update()
             bIsValidCoordinate = true;
             fMaximum = drawingSize.imageWidthInPixels();
             fMinimum = -fMaximum;
-            fValue = physValLine.width().getVal(unit);
+            fValue = physValLine.dx().getVal(unit);
         }
         else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorHeight) {
             bIsValidCoordinate = true;
             fMaximum = drawingSize.imageHeightInPixels();
             fMinimum = -fMaximum;
-            fValue = physValLine.height().getVal(unit);
+            fValue = physValLine.dy().getVal(unit);
         }
     }
 

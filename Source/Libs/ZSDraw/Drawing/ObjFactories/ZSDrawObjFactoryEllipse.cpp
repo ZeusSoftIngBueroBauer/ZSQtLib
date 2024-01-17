@@ -160,7 +160,7 @@ SErrResultInfo CObjFactoryEllipse::saveGraphObj(
 
     QPointF ptPos         = pGraphObj->pos();
     QRectF  rct           = pGraphObj->rect(); // coordinates are in the objects coordinate system (LT = 0.0/0.0)
-    double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
+    double  fRotAngle_deg = 0.0; //pGraphObj->getRotationAngleInDegree();
 
     i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
@@ -317,7 +317,7 @@ CGraphObj* CObjFactoryEllipse::loadGraphObj(
         i_pDrawingScene->addGraphObj(pGraphObj);
 
         pGraphObj->setPos(ptPos);
-        pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
+        //pGraphObj->setRotationAngleInDegree(fRotAngle_deg);
         pGraphObj->setStackingOrderValue(fZValue);
 
         // Before calling "onGraphObjCreationFinished" the object must have been added

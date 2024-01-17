@@ -167,7 +167,7 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
     // If the item has no parent, its position is given in scene coordinates.
     QPointF ptPos         = pGraphObj->pos();
     QSizeF  siz; //          = pGraphObj->getSize(drawingSize.unit()).toQSizeF();
-    double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
+    double  fRotAngle_deg = 0.0; //pGraphObj->getRotationAngleInDegree();
 
     i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );

@@ -497,6 +497,42 @@ bool CMethodTracer::isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) 
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns whether tracing for the given object name should be suppressed.
+
+    @param i_strTraceData [in]
+        Trace data to be checked against the filter string.
+
+    @return true if the passed trace data should be suppressed, false otherwise.
+*/
+bool CMethodTracer::isObjectNameSuppressedByFilter( const QString& i_strObjName ) const
+//------------------------------------------------------------------------------
+{
+    bool bSuppressed = false;
+    if (m_pTrcAdminObj != nullptr) {
+        bSuppressed = m_pTrcAdminObj->isObjectNameSuppressedByFilter(i_strObjName);
+    }
+    return bSuppressed;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether tracing for the given object name should be suppressed.
+
+    @param i_strTraceData [in]
+        Trace data to be checked against the filter string.
+
+    @return true if the passed trace data should be suppressed, false otherwise.
+*/
+bool CMethodTracer::isMethodNameSuppressedByFilter( const QString& i_strMethodName ) const
+//------------------------------------------------------------------------------
+{
+    bool bSuppressed = false;
+    if (m_pTrcAdminObj != nullptr) {
+        bSuppressed = m_pTrcAdminObj->isMethodNameSuppressedByFilter(i_strMethodName);
+    }
+    return bSuppressed;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns whether given trace data should be suppressed by the data filter.
 
     Example
@@ -515,9 +551,7 @@ bool CMethodTracer::isTraceDataSuppressedByFilter( const QString& i_strTraceData
 //------------------------------------------------------------------------------
 {
     bool bSuppressed = false;
-
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         bSuppressed = m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strTraceData);
     }
     return bSuppressed;
@@ -735,24 +769,26 @@ void CMethodTracer::trace(
     ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
-    if( m_pTrcAdminObj != nullptr )
-    {
-        if( m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel)
-         && !m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strAddInfo) )
-        {
-            CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-
-            if( pTrcServer != nullptr )
-            {
-                pTrcServer->traceMethod(
-                    /* pAdminObj  */ m_pTrcAdminObj,
-                    /* strObjName */ m_strObjName.isEmpty() ? m_pTrcAdminObj->getObjectName() : m_strObjName,
-                    /* strMethod  */ m_strMethod,
-                    /* strAddInfo */ i_strAddInfo );
+    if (m_pTrcAdminObj != nullptr) {
+        if (m_pTrcAdminObj->isRuntimeInfoActive(i_eFilterDetailLevel)) {
+            QString strObjName = m_strObjName.isEmpty() ? m_pTrcAdminObj->getObjectName() : m_strObjName;
+            if (strObjName.isEmpty() || !isObjectNameSuppressedByFilter(strObjName)) {
+                if (m_strMethod.isEmpty() || !isMethodNameSuppressedByFilter(m_strMethod)) {
+                    if (!m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_strAddInfo)) {
+                        CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
+                        if (pTrcServer != nullptr) {
+                            pTrcServer->traceMethod(
+                                /* pAdminObj  */ m_pTrcAdminObj,
+                                /* strObjName */ strObjName,
+                                /* strMethod  */ m_strMethod,
+                                /* strAddInfo */ i_strAddInfo );
+                        }
+                    }
+                }
             }
         }
-    } // if( m_pTrcAdminObj != nullptr )
-} // trace
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! Adds a trace output string.
@@ -775,30 +811,28 @@ void CMethodTracer::trace(
     ELogDetailLevel i_eFilterDetailLevel ) const
 //------------------------------------------------------------------------------
 {
-    if( m_pTrcAdminObj != nullptr )
-    {
+    if (m_pTrcAdminObj != nullptr) {
         ELogDetailLevel eTrcDetailLevel = i_eTrcDetailLevel;
-
-        if( i_eTrcDetailLevel == ELogDetailLevel::Undefined )
-        {
+        if (i_eTrcDetailLevel == ELogDetailLevel::Undefined) {
             eTrcDetailLevel = m_pTrcAdminObj->getRuntimeInfoTraceDetailLevel();
         }
-
-        if( m_pTrcAdminObj->isEnabled() && eTrcDetailLevel >= i_eFilterDetailLevel )
-        {
-            CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
-
-            if( pTrcServer != nullptr )
-            {
-                pTrcServer->traceMethod(
-                    /* pAdminObj  */ m_pTrcAdminObj,
-                    /* strObjName */ m_strObjName.isEmpty() ? m_pTrcAdminObj->getObjectName() : m_strObjName,
-                    /* strMethod  */ m_strMethod,
-                    /* strAddInfo */ i_strAddInfo );
+        if (m_pTrcAdminObj->isEnabled() && eTrcDetailLevel >= i_eFilterDetailLevel) {
+            QString strObjName = m_strObjName.isEmpty() ? m_pTrcAdminObj->getObjectName() : m_strObjName;
+            if (strObjName.isEmpty() || !isObjectNameSuppressedByFilter(strObjName)) {
+                if (m_strMethod.isEmpty() || !isMethodNameSuppressedByFilter(m_strMethod)) {
+                    CTrcServer* pTrcServer = m_pTrcAdminObj->getTraceServer();
+                    if (pTrcServer != nullptr) {
+                        pTrcServer->traceMethod(
+                            /* pAdminObj  */ m_pTrcAdminObj,
+                            /* strObjName */ strObjName,
+                            /* strMethod  */ m_strMethod,
+                            /* strAddInfo */ i_strAddInfo );
+                    }
+                }
             }
         }
-    } // if( m_pTrcAdminObj != nullptr )
-} // trace
+    }
+}
 
 /*==============================================================================
 protected slots:
