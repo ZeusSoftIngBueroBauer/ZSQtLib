@@ -75,10 +75,11 @@ Usage Examples
 --------------
 
 python RemoveIfDefBlocks.py --path='/home/devel/display_application' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-5808-ReactionToProfileChangeVECUService'
+python RemoveIfDefBlocks.py --path='/home/devel/display_application' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-5936-ReactionToProfileChangeModel_SectionControl'
 python RemoveIfDefBlocks.py --path='/home/devel/display_application' --gitChanges --sinceCommit='fac5073c' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-5808-ReactionToProfileChangeVECUService
 '''
 
-import argparse, datetime, fnmatch, getopt, os, sys, subprocess, zipfile
+import argparse, datetime, fnmatch, os, re, subprocess, zipfile
 import RemoveIfDefBlocksFromFile
 
 def getGitRevisionHash(repoRootDir) -> str:
@@ -159,6 +160,21 @@ def getFilePathsWithDirective(repoRootDir, directive) -> []:
     print('')
     return filePathsWithDirective
 
+def getFilePaths(repoRootDir, fileNameWithWildcards) -> []:
+    print('')
+    print('-> getFilePaths(' + repoRootDir + ', ' + fileNameWithWildcards + ')')
+    fileNamesWithWildcards = []
+    for dirPath, dirNames, fileNames in os.walk(repoRootDir):
+        for fileName in fileNames:
+            sourceFilePath = ''
+            if re.match(fileNameWithWildcards, fileName):
+                filePath = os.path.join(dirPath, fileName)
+                print('Found File: ', sourceFilePath)
+                fileNamesWithWildcards.append(filePath)
+    print('<- getFilePaths')
+    print('')
+    return fileNamesWithWildcards
+
 def getFilePathsOfRemovedFiles(filePaths) -> []:
     print('')
     print('-> getFilePathsOfRemovedFiles')
@@ -171,6 +187,15 @@ def getFilePathsOfRemovedFiles(filePaths) -> []:
     print('<- getFilePathsOfRemovedFiles')
     print('')
     return filePathsOfRemovedFiles
+
+def removeFiles(repoRootDir, filePaths):
+    print('')
+    print('-> removeFiles(' + repoRootDir + ')')
+    for filePath in filePaths:
+        print('  Deleting file: ', filePath)
+        os.remove(filePath)
+    print('<- removeFiles')
+    print('')
 
 def addToArchive(zipOutDir, zipFileName, filePaths):
     print('')
@@ -238,6 +263,13 @@ def main():
     print('')
 
     dateTimeString = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+
+    # Archive all ZSTrcAux*.* files and remove them from path.
+    zipFileName = 'ZSTrcAux-' + dateTimeString
+    filePaths = getFilePaths(path, 'ZSTrcAux*.*')
+    addToArchive(zipOutDir, zipFileName, filePaths)
+    removeFiles(path, filePaths)
+
     if gitChanges:
         filePaths = getFilePathsOfChangedFilesSinceCommit(path, gitHashBase)
         zipFileName = 'ChangedFiles-' + gitHashCurrent + '-' + gitHashBase
