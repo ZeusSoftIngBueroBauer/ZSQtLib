@@ -62,9 +62,11 @@ $QTDIR=$QTDIR.replace("\bin", "")
 
 if($ConfigType -eq "Release") {
     $QtDlls = @("Qt5Core", "Qt5Network", "Qt5Xml", "Qt5Qml", "Qt5Gui", "Qt5Widgets")
+    $ZSQtLibDlls = @("ZSSysQt5", "ZSSysGUIQt5", "ZSIpcQt5", "ZSIpcGUIQt5", "ZSIpcTraceQt5", "ZSIpcTraceGUIQt5")
 }
 else {
     $QtDlls = @("Qt5Cored", "Qt5Networkd", "Qt5Xmld", "Qt5Qmld", "Qt5Guid", "Qt5Widgetsd")
+    $ZSQtLibDlls = @("ZSSysQt5d", "ZSSysGUIQt5d", "ZSIpcQt5d", "ZSIpcGUIQt5d", "ZSIpcTraceQt5d", "ZSIpcTraceGUIQt5d")
 }
 
 # Function buildAndInstall
@@ -259,22 +261,22 @@ function createInstaller {
         Write-Host "cp $BinDir\ZSApp$AppName.exe $DeployDir"
         cp $BinDir\ZSApp$AppName.exe $DeployDir
     }
-
+    for( $idxZQQtLibDll=0; $idxZQQtLibDll -lt $ZSQtLibDlls.length; $idxZQQtLibDll++ ) {
+        $ZSQtLibDll = $ZSQtLibDlls[$idxZQQtLibDll]
+        Write-Host "cp $BinDir\$ZSQtLibDll.dll $DeployDir"
+        cp $BinDir\$ZSQtLibDll.dll $DeployDir
+    }
     for( $idxQtDll=0; $idxQtDll -lt $QtDlls.length; $idxQtDll++ ) {
         $QtDll = $QtDlls[$idxQtDll]
         Write-Host "cp $QTDIR\bin\$QtDll.dll $DeployDir"
         cp $QTDIR\bin\$QtDll.dll $DeployDir
     }
 
-    Write-Host "cp $BinDir\ZS*.dll $DeployDir"
-    cp $BinDir\ZS*.dll $DeployDir
-    Write-Host "cp ..\Resources\Apps\Products\ZS$AppName\Images\ZSApp$AppName.ico $DeployDir"
-    cp ..\Resources\Apps\Products\ZS$AppName\Images\ZSApp$AppName.ico $DeployDir
-
     Write-Host ""
     Write-Host "$QTDIR\bin\windeployqt --compiler-runtime --debug $DeployDir"
     if($ConfigType -eq "Debug") {
         & "$QTDIR\bin\windeployqt" --compiler-runtime --debug $DeployDir
+    }
     else {
         & "$QTDIR\bin\windeployqt" --compiler-runtime $DeployDir
     }
@@ -285,12 +287,12 @@ function createInstaller {
     }
 
     Write-Host ""
-    if (Test-Path -path $Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data) {
+    if (Test-Path -path Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data) {
         Write-Host "rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*"
         rm -r -Force Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data\*
     }
-    if (!(Test-Path $Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data)) {
-        New-Item -Path $Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data -ItemType Directory
+    if (!(Test-Path Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data)) {
+        New-Item -Path Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data -ItemType Directory
     }
     Write-Host "cp -r $DeployDir\* Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data"
     cp -r $DeployDir\* Apps\Products\ZS$AppName\Installer\packages\de.zeussoft.$AppName\data
