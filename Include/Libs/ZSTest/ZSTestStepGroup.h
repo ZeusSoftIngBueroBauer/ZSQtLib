@@ -52,9 +52,6 @@ protected: // ctor for class CTestGroupRoot
         CTest* i_pTest,
         ZS::System::CIdxTreeEntry::EEntryType i_entryType,
         const QString& i_strName );
-public: // overridables
-    virtual QString nameSpace() const { return CTestStepGroup::NameSpace(); }
-    virtual QString className() const { return CTestStepGroup::ClassName(); }
 public: // instance methods
     void onTestStepResultChanged( CAbstractTestStepIdxTreeEntry* i_pTreeEntry, const CEnumTestResult& i_testResult );
 public: // must overridables of base class CAbstractTestStepIdxTreeEntry

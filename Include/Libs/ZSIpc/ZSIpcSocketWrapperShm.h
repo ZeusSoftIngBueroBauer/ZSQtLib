@@ -207,9 +207,6 @@ public: // ctors and dtor
         ZS::System::CTrcMthFile* i_pTrcMthFile = nullptr,         // If != nullptr trace method file with detail level is used instead of trace admin object with Trace server.
         ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = System::EMethodTraceDetailLevel::None );
     virtual ~CShmSocketWrapper();
-public: // overridables of base class CIpcSocketWrapper
-    virtual QString nameSpace() const override { return NameSpace(); }
-    virtual QString className() const override { return ClassName(); }
 public: // must overridables of base class CIpcSocketWrapper
     virtual void connectToHost( const QString& i_strRemoteHostName, unsigned int i_uRemotePort, unsigned int i_uBufferSize = 0 ) override;
     virtual bool waitForConnected( int i_iTimeout_ms = 30000 ) override;

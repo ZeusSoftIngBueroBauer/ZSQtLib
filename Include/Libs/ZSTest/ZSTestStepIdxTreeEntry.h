@@ -57,9 +57,6 @@ protected: // ctor
         CTestStepGroup* i_pTSGrpParent );
 public: // dtor
     virtual ~CAbstractTestStepIdxTreeEntry();
-public: // overridables
-    virtual QString nameSpace() const { return CAbstractTestStepIdxTreeEntry::NameSpace(); }
-    virtual QString className() const { return CAbstractTestStepIdxTreeEntry::ClassName(); }
 signals:
     void changed( ZS::System::CIdxTreeEntry* i_pTreeEntry );
 public: // overridables

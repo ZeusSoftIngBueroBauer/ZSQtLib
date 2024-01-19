@@ -67,9 +67,6 @@ public: // ctors and dtor
 signals:
     void running();
     void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods (reimplementing methods of base class QObject)
     void setObjectName(const QString& i_strObjName);
 public: // instance methods
@@ -90,9 +87,9 @@ protected: // replacing methods of base class QThread
 protected slots:
     void onClass3AboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
 private: // instance members
-    CMyClass2*                m_pMyClass2;
-    QString                   m_strMyClass3ObjName;
-    CMyClass3*                m_pMyClass3;
+    CMyClass2* m_pMyClass2;
+    QString m_strMyClass3ObjName;
+    CMyClass3* m_pMyClass3;
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CMyClass3Thread
@@ -114,9 +111,6 @@ public: // ctors and dtor
     virtual ~CMyClass3();
 signals:
     void aboutToBeDestroyed(QObject* i_pObj, const QString& i_strObjName);
-public: // overridables
-    virtual QString nameSpace() { return NameSpace(); }
-    virtual QString className() { return ClassName(); }
 public: // instance methods (reimplementing methods of base class QObject)
     void setObjectName(const QString& i_strObjName);
 public: // instance methods
@@ -132,12 +126,12 @@ private: // class members
     static ZS::System::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorNoisyMethods;
     static ZS::System::CTrcAdminObjRefAnchor s_trcAdminObjRefAnchorVeryNoisyMethods;
 private: // instance members
-    CMyClass3Thread*             m_pMyClass3Thread;
+    CMyClass3Thread* m_pMyClass3Thread;
     ZS::System::CRecursiveMutex* m_pMtxCounters;
-    int                          m_iRecursionCount;
-    ZS::System::CTrcAdminObj*    m_pTrcAdminObj;
-    ZS::System::CTrcAdminObj*    m_pTrcAdminObjNoisyMethods;
-    ZS::System::CTrcAdminObj*    m_pTrcAdminObjVeryNoisyMethods;
+    int m_iRecursionCount;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjVeryNoisyMethods;
 
 }; // class CMyClass3
 

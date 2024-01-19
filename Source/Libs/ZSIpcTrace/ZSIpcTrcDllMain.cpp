@@ -1080,6 +1080,250 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isRuntimeInfoActive(
 } // TrcAdminObj_isRuntimeInfoActive
 
 //------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setObjectNameFilter(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    const char*          i_szFilter )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        EMethodTraceDetailLevel eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        if( eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+        {
+            strMthInArgs = i_szFilter;
+        }
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_setObjectNameFilter",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                pTrcAdminObj->setObjectNameFilter(i_szFilter);
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+} // TrcAdminObj_setTraceDataFilter
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getObjectNameFilter( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szFilter = nullptr;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                std::string stdstrFilter = pTrcAdminObj->getObjectNameFilter().toStdString();
+                szFilter = new char[stdstrFilter.size() + 1];
+                memcpy(szFilter, stdstrFilter.c_str(), stdstrFilter.size());
+                szFilter[stdstrFilter.size()] = 0x00;
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return szFilter;
+
+} // TrcAdminObj_getObjectNameFilter
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isObjectNameSuppressedByFilter(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    const char*          i_szObjName )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    bool bIsSuppressed = false;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                bIsSuppressed = pTrcAdminObj->isObjectNameSuppressedByFilter(i_szObjName);
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return bIsSuppressed;
+
+} // TrcAdminObj_isObjectNameSuppressedByFilter
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setMethodNameFilter(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    const char*          i_szFilter )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcMthFile* pTrcMthFile = DllIf_IpcTrcServer_s_pTrcMthFile;
+        EMethodTraceDetailLevel eTrcDetailLevel = DllIf_IpcTrcServer_s_eTrcMthDetailLevel;
+
+        QString strMthInArgs;
+
+        if( eTrcDetailLevel >= EMethodTraceDetailLevel::ArgsNormal )
+        {
+            strMthInArgs = i_szFilter;
+        }
+
+        CMethodTracer mthTracer(
+            /* pTrcMthFile        */ pTrcMthFile,
+            /* eTrcDetailLevel    */ eTrcDetailLevel,
+            /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+            /* strNameSpace       */ c_strNameSpace,
+            /* strClassName       */ c_strClassName,
+            /* strObjName         */ strKeyInTree,
+            /* strMethod          */ "TrcAdminObj_setMethodNameFilter",
+            /* strMthInArgs       */ strMthInArgs );
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                pTrcAdminObj->setMethodNameFilter(i_szFilter);
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+} // TrcAdminObj_setMethodNameFilter
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API char* TrcAdminObj_getMethodNameFilter( const DllIf::CTrcAdminObj* i_pTrcAdminObj )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    char* szFilter = nullptr;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                std::string stdstrFilter = pTrcAdminObj->getMethodNameFilter().toStdString();
+                szFilter = new char[stdstrFilter.size() + 1];
+                memcpy(szFilter, stdstrFilter.c_str(), stdstrFilter.size());
+                szFilter[stdstrFilter.size()] = 0x00;
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return szFilter;
+
+} // TrcAdminObj_getMethodNameFilter
+
+//------------------------------------------------------------------------------
+ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isMethodNameSuppressedByFilter(
+    DllIf::CTrcAdminObj* i_pTrcAdminObj,
+    const char*          i_szMethodName )
+//------------------------------------------------------------------------------
+{
+    QMutexLocker mtxLocker(&DllIf_s_mtx);
+
+    bool bIsSuppressed = false;
+
+    if( i_pTrcAdminObj != nullptr )
+    {
+        QString strKeyInTree = i_pTrcAdminObj->keyInTree();
+
+        CTrcServer* pTrcServer = CTrcServer::GetInstance();
+
+        if( pTrcServer != nullptr )
+        {
+            CIdxTreeTrcAdminObjs* pIdxTree = pTrcServer->getTraceAdminObjIdxTree();
+
+            CIdxTreeEntry* pTreeEntry = pIdxTree->findEntry(strKeyInTree);
+
+            CTrcAdminObj* pTrcAdminObj = dynamic_cast<CTrcAdminObj*>(pTreeEntry);
+
+            if( pTrcAdminObj != nullptr )
+            {
+                bIsSuppressed = pTrcAdminObj->isMethodNameSuppressedByFilter(i_szMethodName);
+            }
+        } // if( pTrcServer != nullptr )
+    } // if( i_pTrcAdminObj != nullptr )
+
+    return bIsSuppressed;
+
+} // TrcAdminObj_isMethodNameSuppressedByFilter
+
+//------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_setTraceDataFilter(
     DllIf::CTrcAdminObj* i_pTrcAdminObj,
     const char*          i_szFilter )
@@ -1199,7 +1443,7 @@ ZSIPCTRACEDLL_EXTERN_API bool TrcAdminObj_isTraceDataSuppressedByFilter(
 
     return bIsSuppressed;
 
-} // TrcAdminObj
+} // TrcAdminObj_isTraceDataSuppressedByFilter
 
 //------------------------------------------------------------------------------
 ZSIPCTRACEDLL_EXTERN_API void TrcAdminObj_traceMethodEnter(

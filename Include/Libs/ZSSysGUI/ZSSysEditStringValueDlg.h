@@ -74,9 +74,6 @@ signals:
     //void rejected(); inherited from QDialog
 public: // dtor
     virtual ~CDlgEditStringValue();
-public: // overridables of base class ZS::System::GUI::CDialog
-    virtual QString nameSpace() override { return NameSpace(); }
-    virtual QString className() override { return ClassName(); }
 public: // overridables of base class QDialog
    virtual int exec() override;
 public: // instance methods

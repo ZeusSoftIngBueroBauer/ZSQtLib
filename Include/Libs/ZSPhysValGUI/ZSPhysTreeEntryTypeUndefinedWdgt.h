@@ -49,9 +49,6 @@ public: // class methods
 public: // ctors and dtor
     CWdgtEntryTypeUndefined(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtEntryTypeUndefined();
-public: // overridables
-    virtual QString nameSpace() const { return CWdgtEntryTypeUndefined::NameSpace(); }
-    virtual QString className() const { return CWdgtEntryTypeUndefined::ClassName(); }
 protected: // instance members
     QVBoxLayout* m_pLyt;
     QLabel*      m_pLblPxmZeusSoft;

@@ -100,6 +100,12 @@ typedef bool (*TFctTrcAdminObj_areMethodCallsActive)( const DllIf::CTrcAdminObj*
 typedef void (*TFctTrcAdminObj_setRuntimeInfoTraceDetailLevel)( DllIf::CTrcAdminObj* i_pTrcAdminObj, DllIf::ELogDetailLevel i_eDetailLevel );
 typedef DllIf::ELogDetailLevel (*TFctTrcAdminObj_getRuntimeInfoTraceDetailLevel)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef bool (*TFctTrcAdminObj_isRuntimeInfoActive)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, DllIf::ELogDetailLevel i_eDetailLevel );
+typedef void (*TFctTrcAdminObj_setObjectNameFilter)( DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szFilter );
+typedef char* (*TFctTrcAdminObj_getObjectNameFilter)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
+typedef bool (*TFctTrcAdminObj_isObjectNameSuppressedByFilter)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szObjName );
+typedef void (*TFctTrcAdminObj_setMethodNameFilter)( DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szFilter );
+typedef char* (*TFctTrcAdminObj_getMethodNameFilter)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
+typedef bool (*TFctTrcAdminObj_isMethodNameSuppressedByFilter)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szMethodName );
 typedef void (*TFctTrcAdminObj_setTraceDataFilter)( DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szFilter );
 typedef char* (*TFctTrcAdminObj_getTraceDataFilter)( const DllIf::CTrcAdminObj* i_pTrcAdminObj );
 typedef bool (*TFctTrcAdminObj_isTraceDataSuppressedByFilter)( const DllIf::CTrcAdminObj* i_pTrcAdminObj, const char* i_szTraceData );
@@ -207,6 +213,12 @@ TFctTrcAdminObj_areMethodCallsActive                          s_pFctTrcAdminObj_
 TFctTrcAdminObj_setRuntimeInfoTraceDetailLevel                s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel                = NULL;
 TFctTrcAdminObj_getRuntimeInfoTraceDetailLevel                s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel                = NULL;
 TFctTrcAdminObj_isRuntimeInfoActive                           s_pFctTrcAdminObj_isRuntimeInfoActive                           = NULL;
+TFctTrcAdminObj_setObjectNameFilter                           s_pFctTrcAdminObj_setObjectNameFilter                           = NULL;
+TFctTrcAdminObj_getObjectNameFilter                           s_pFctTrcAdminObj_getObjectNameFilter                           = NULL;
+TFctTrcAdminObj_isObjectNameSuppressedByFilter                s_pFctTrcAdminObj_isObjectNameSuppressedByFilter                = NULL;
+TFctTrcAdminObj_setMethodNameFilter                           s_pFctTrcAdminObj_setMethodNameFilter                           = NULL;
+TFctTrcAdminObj_getMethodNameFilter                           s_pFctTrcAdminObj_getMethodNameFilter                           = NULL;
+TFctTrcAdminObj_isMethodNameSuppressedByFilter                s_pFctTrcAdminObj_isMethodNameSuppressedByFilter                = NULL;
 TFctTrcAdminObj_setTraceDataFilter                            s_pFctTrcAdminObj_setTraceDataFilter                            = NULL;
 TFctTrcAdminObj_getTraceDataFilter                            s_pFctTrcAdminObj_getTraceDataFilter                            = NULL;
 TFctTrcAdminObj_isTraceDataSuppressedByFilter                 s_pFctTrcAdminObj_isTraceDataSuppressedByFilter                 = NULL;
@@ -491,6 +503,24 @@ bool ZS::Trace::DllIf::loadDll( EBuildConfiguration i_configuration, int i_iQtVe
         s_pFctTrcAdminObj_isRuntimeInfoActive = (TFctTrcAdminObj_isRuntimeInfoActive)GetProcAddress(s_hndDllIf, "TrcAdminObj_isRuntimeInfoActive");
         if( s_pFctTrcAdminObj_isRuntimeInfoActive == NULL ) bOk = false;
 
+        s_pFctTrcAdminObj_setObjectNameFilter = (TFctTrcAdminObj_setObjectNameFilter)GetProcAddress(s_hndDllIf, "TrcAdminObj_setObjectNameFilter");
+        if( s_pFctTrcAdminObj_setObjectNameFilter == NULL ) bOk = false;
+
+        s_pFctTrcAdminObj_getObjectNameFilter = (TFctTrcAdminObj_getObjectNameFilter)GetProcAddress(s_hndDllIf, "TrcAdminObj_getObjectNameFilter");
+        if( s_pFctTrcAdminObj_getObjectNameFilter == NULL ) bOk = false;
+
+        s_pFctTrcAdminObj_isObjectNameSuppressedByFilter = (TFctTrcAdminObj_isObjectNameSuppressedByFilter)GetProcAddress(s_hndDllIf, "TrcAdminObj_isObjectNameSuppressedByFilter");
+        if( s_pFctTrcAdminObj_isObjectNameSuppressedByFilter == NULL ) bOk = false;
+
+        s_pFctTrcAdminObj_setMethodNameFilter = (TFctTrcAdminObj_setMethodNameFilter)GetProcAddress(s_hndDllIf, "TrcAdminObj_setMethodNameFilter");
+        if( s_pFctTrcAdminObj_setMethodNameFilter == NULL ) bOk = false;
+
+        s_pFctTrcAdminObj_getMethodNameFilter = (TFctTrcAdminObj_getMethodNameFilter)GetProcAddress(s_hndDllIf, "TrcAdminObj_getMethodNameFilter");
+        if( s_pFctTrcAdminObj_getMethodNameFilter == NULL ) bOk = false;
+
+        s_pFctTrcAdminObj_isMethodNameSuppressedByFilter = (TFctTrcAdminObj_isMethodNameSuppressedByFilter)GetProcAddress(s_hndDllIf, "TrcAdminObj_isMethodNameSuppressedByFilter");
+        if( s_pFctTrcAdminObj_isMethodNameSuppressedByFilter == NULL ) bOk = false;
+
         s_pFctTrcAdminObj_setTraceDataFilter = (TFctTrcAdminObj_setTraceDataFilter)GetProcAddress(s_hndDllIf, "TrcAdminObj_setTraceDataFilter");
         if( s_pFctTrcAdminObj_setTraceDataFilter == NULL ) bOk = false;
 
@@ -755,6 +785,12 @@ bool ZS::Trace::DllIf::releaseDll()
         s_pFctTrcAdminObj_setRuntimeInfoTraceDetailLevel = NULL;
         s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel = NULL;
         s_pFctTrcAdminObj_isRuntimeInfoActive            = NULL;
+        s_pFctTrcAdminObj_setObjectNameFilter            = NULL;
+        s_pFctTrcAdminObj_getObjectNameFilter            = NULL;
+        s_pFctTrcAdminObj_isObjectNameSuppressedByFilter = NULL;
+        s_pFctTrcAdminObj_setMethodNameFilter            = NULL;
+        s_pFctTrcAdminObj_getMethodNameFilter            = NULL;
+        s_pFctTrcAdminObj_isMethodNameSuppressedByFilter = NULL;
         s_pFctTrcAdminObj_setTraceDataFilter             = NULL;
         s_pFctTrcAdminObj_getTraceDataFilter             = NULL;
         s_pFctTrcAdminObj_isTraceDataSuppressedByFilter  = NULL;
@@ -1195,6 +1231,119 @@ bool DllIf::CTrcAdminObj::isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLe
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the filter for object names as a regular expression.
+
+    The filter is a regular expression which allows to define a positive
+    pattern where only the object names will be traced which mets the expression
+    or a negative pattern which supporessed the trace output if the
+    filter does not match.
+
+    Examples
+
+    @param i_szFilter [in] Filter as regular expression.
+*/
+void DllIf::CTrcAdminObj::setObjectNameFilter( const char* i_szFilter )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_setObjectNameFilter != NULL )
+    {
+        s_pFctTrcAdminObj_setObjectNameFilter(this, i_szFilter);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the filter expression for object names.
+
+    @return Filter expression for object names (string containing a regular expression).
+            The ownership is passed to the caller of the method.
+            The caller must delete the returned string.
+*/
+char* DllIf::CTrcAdminObj::getObjectNameFilter() const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_getObjectNameFilter != NULL )
+    {
+        return s_pFctTrcAdminObj_getObjectNameFilter(this);
+    }
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether the given object name should be suppressed by the
+           object name filter.
+
+    @param i_szObjName [in]
+        Object name to be checked against the filter string.
+
+    @return true if the passed object name should be suppressed, false otherwise.
+*/
+bool DllIf::CTrcAdminObj::isObjectNameSuppressedByFilter( const char* i_szObjName ) const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_isObjectNameSuppressedByFilter != NULL )
+    {
+        return s_pFctTrcAdminObj_isObjectNameSuppressedByFilter(this, i_szObjName);
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the filter expression for method names as a regular expression.
+
+    The filter is a regular expression which allows to define a positive
+    pattern where only the methods will be traced which mets the expression
+    or a negative pattern which supporessed the trace output if the
+    filter does not match.
+
+    Examples
+
+    @param i_szFilter [in] Filter as regular expression.
+*/
+void DllIf::CTrcAdminObj::setMethodNameFilter( const char* i_szFilter )
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_setMethodNameFilter != NULL )
+    {
+        s_pFctTrcAdminObj_setMethodNameFilter(this, i_szFilter);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the filter expression for method names.
+
+    @return Method name filter (string containing a regular expression).
+            The ownership is passed to the caller of the method.
+            The caller must delete the returned string.
+*/
+char* DllIf::CTrcAdminObj::getMethodNameFilter() const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_getMethodNameFilter != NULL )
+    {
+        return s_pFctTrcAdminObj_getMethodNameFilter(this);
+    }
+    return NULL;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether given method name should be suppressed by the filter.
+
+    @param i_szMethodName [in]
+        Method name to be checked against the filter string.
+
+    @return true if the passed trace data should be suppressed, false otherwise.
+*/
+bool DllIf::CTrcAdminObj::isMethodNameSuppressedByFilter( const char* i_szMethodName ) const
+//------------------------------------------------------------------------------
+{
+    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_isMethodNameSuppressedByFilter != NULL )
+    {
+        return s_pFctTrcAdminObj_isMethodNameSuppressedByFilter(this, i_szMethodName);
+    }
+    return false;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the trace data filter as a regular expression.
 
     The filter is a regular expression which allows to define a positive
@@ -1291,19 +1440,14 @@ DllIf::CMethodTracer::CMethodTracer(
     memset(m_szMethod, 0x00, iStrLen+1);
     memcpy(m_szMethod, i_szMethod, iStrLen);
 
-    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
-    {
-        if( m_pTrcAdminObj != NULL )
-        {
-            if( s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, m_eEnterLeaveFilterDetailLevel) )
-            {
+    if (s_hndDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL) {
+        if (m_pTrcAdminObj != NULL) {
+            if (s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, m_eEnterLeaveFilterDetailLevel)) {
                 s_pFctTrcAdminObj_traceMethodEnter(m_pTrcAdminObj, m_szObjName, m_szMethod, i_szMethodInArgs);
                 m_bEnterTraced = true;
             }
             m_pTrcAdminObj->lock();
-
-            if( s_pFctTrcAdminObj_lock != NULL )
-            {
+            if (s_pFctTrcAdminObj_lock != NULL) {
                 s_pFctTrcAdminObj_lock(m_pTrcAdminObj);
             }
         }
@@ -1350,19 +1494,14 @@ DllIf::CMethodTracer::CMethodTracer(
     memset(m_szMethod, 0x00, iStrLen+1);
     memcpy(m_szMethod, i_szMethod, iStrLen);
 
-    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL )
-    {
-        if( m_pTrcAdminObj != NULL )
-        {
-            if( s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, m_eEnterLeaveFilterDetailLevel) )
-            {
+    if (s_hndDllIf != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL && s_pFctTrcAdminObj_traceMethodEnter != NULL) {
+        if (m_pTrcAdminObj != NULL) {
+            if (s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, m_eEnterLeaveFilterDetailLevel)) {
                 s_pFctTrcAdminObj_traceMethodEnter(m_pTrcAdminObj, m_szObjName, m_szMethod, i_szMethodInArgs);
                 m_bEnterTraced = true;
             }
             m_pTrcAdminObj->lock();
-
-            if( s_pFctTrcAdminObj_lock != NULL )
-            {
+            if (s_pFctTrcAdminObj_lock != NULL) {
                 s_pFctTrcAdminObj_lock(m_pTrcAdminObj);
             }
         }
@@ -1385,10 +1524,8 @@ DllIf::CMethodTracer::CMethodTracer(
 DllIf::CMethodTracer::~CMethodTracer()
 //------------------------------------------------------------------------------
 {
-    if( s_hndDllIf != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL )
-    {
-        if( m_pTrcAdminObj != NULL )
-        {
+    if (s_hndDllIf != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL) {
+        if (m_pTrcAdminObj != NULL) {
             onAdminObjAboutToBeReleased();
         }
     }
@@ -1421,20 +1558,15 @@ public: // instance methods
 void DllIf::CMethodTracer::onAdminObjAboutToBeReleased()
 //------------------------------------------------------------------------------
 {
-    if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL )
-    {
-        if( m_bEnterTraced )
-        {
+    if (m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_traceMethodLeave != NULL) {
+        if (m_bEnterTraced) {
             s_pFctTrcAdminObj_traceMethodLeave(m_pTrcAdminObj, m_szObjName, m_szMethod, m_szMethodReturn, m_szMethodOutArgs);
         }
         m_pTrcAdminObj->unlock();
-
-        if( s_pFctTrcAdminObj_unlock != NULL )
-        {
+        if (s_pFctTrcAdminObj_unlock != NULL) {
             s_pFctTrcAdminObj_unlock(m_pTrcAdminObj);
         }
-        if( m_pTrcAdminObj->deleteOnUnlock() )
-        {
+        if (m_pTrcAdminObj->deleteOnUnlock()) {
             CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
         }
     }
@@ -1455,7 +1587,6 @@ DllIf::EMethodTraceDetailLevel DllIf::CMethodTracer::getMethodCallsTraceDetailLe
 //------------------------------------------------------------------------------
 {
     EMethodTraceDetailLevel eDetailLevel = EMethodTraceDetailLevelNone;
-
     if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel != NULL )
     {
         eDetailLevel = s_pFctTrcAdminObj_getMethodCallsTraceDetailLevel(m_pTrcAdminObj);
@@ -1481,7 +1612,6 @@ bool DllIf::CMethodTracer::areMethodCallsActive( EMethodTraceDetailLevel i_eFilt
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
-
     if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_areMethodCallsActive != NULL )
     {
         bIsActive = s_pFctTrcAdminObj_areMethodCallsActive(m_pTrcAdminObj, i_eFilterDetailLevel);
@@ -1499,7 +1629,6 @@ DllIf::ELogDetailLevel DllIf::CMethodTracer::getRuntimeInfoTraceDetailLevel() co
 //------------------------------------------------------------------------------
 {
     ELogDetailLevel eDetailLevel = ELogDetailLevelNone;
-
     if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel != NULL )
     {
         eDetailLevel = s_pFctTrcAdminObj_getRuntimeInfoTraceDetailLevel(m_pTrcAdminObj);
@@ -1525,12 +1654,60 @@ bool DllIf::CMethodTracer::isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailL
 //------------------------------------------------------------------------------
 {
     bool bIsActive = false;
-
     if( m_pTrcAdminObj != NULL && s_pFctTrcAdminObj_isRuntimeInfoActive != NULL )
     {
         bIsActive = s_pFctTrcAdminObj_isRuntimeInfoActive(m_pTrcAdminObj, i_eFilterDetailLevel);
     }
     return bIsActive;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether the given object name should be suppressed by the data filter.
+
+    Example
+
+        if (!m_pTrcAdminObj->isObjectNameSuppressedByFilter("InstO")) {
+            strTrcOutData = "bla bla bla";
+        }
+
+    @param i_strObjName [in]
+        Object name to be checked against the filter string.
+
+    @return true if the passed object name should be suppressed, false otherwise.
+*/
+bool DllIf::CMethodTracer::isObjectNameSuppressedByFilter( const char* i_szObjName ) const
+//------------------------------------------------------------------------------
+{
+    bool bSuppressed = false;
+    if( m_pTrcAdminObj != nullptr && s_pFctTrcAdminObj_isObjectNameSuppressedByFilter )
+    {
+        bSuppressed = m_pTrcAdminObj->isObjectNameSuppressedByFilter(i_szObjName);
+    }
+    return bSuppressed;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns whether given method should be suppressed by the data filter.
+
+    Example
+        if (!m_pTrcAdminObj->isTraceDataSuppressedByFilter("doSomething")) {
+            strTrcOutData = "bla bla bla";
+        }
+
+    @param i_strMethodName [in]
+        Method name to be checked against the filter string.
+
+    @return true if the passed method name should be suppressed, false otherwise.
+*/
+bool DllIf::CMethodTracer::isMethodNameSuppressedByFilter( const char* i_szMethodName ) const
+//------------------------------------------------------------------------------
+{
+    bool bSuppressed = false;
+    if( m_pTrcAdminObj != nullptr && s_pFctTrcAdminObj_isMethodNameSuppressedByFilter )
+    {
+        bSuppressed = m_pTrcAdminObj->isMethodNameSuppressedByFilter(i_szMethodName);
+    }
+    return bSuppressed;
 }
 
 //------------------------------------------------------------------------------
@@ -1552,7 +1729,6 @@ bool DllIf::CMethodTracer::isTraceDataSuppressedByFilter( const char* i_szTraceD
 //------------------------------------------------------------------------------
 {
     bool bSuppressed = false;
-
     if( m_pTrcAdminObj != nullptr && s_pFctTrcAdminObj_isTraceDataSuppressedByFilter )
     {
         bSuppressed = m_pTrcAdminObj->isTraceDataSuppressedByFilter(i_szTraceData);

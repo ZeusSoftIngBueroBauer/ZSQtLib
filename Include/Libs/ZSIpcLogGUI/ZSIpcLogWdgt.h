@@ -82,9 +82,6 @@ public: // ctors and dtor
         int            i_iItemsCountMax = 100000,
         QWidget*       i_pWdgtParent = nullptr );
     virtual ~CWdgtLog();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 signals:
     void progressBarConnectDblClicked();
     void textItemAdded( const QString& i_strText );
@@ -103,7 +100,7 @@ public: // instance methods
     void findText();
     bool find( const QString& i_strExp, QTextDocument::FindFlags i_findFlags = QTextDocument::FindFlags() );
 protected: // overridables of base class QWidget
-    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
+    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
 protected slots: // connected to the signals of my user controls
     void onBtnClearClicked( bool i_bChecked );
     void onChkServerLoggingEnabledToggled( bool i_bChecked );

@@ -70,8 +70,8 @@ CInProcMsgServerWrapper::CInProcMsgServerWrapper(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strAddInfo         */ "" );
@@ -91,8 +91,8 @@ CInProcMsgServerWrapper::~CInProcMsgServerWrapper()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strAddInfo         */ "" );
@@ -133,7 +133,7 @@ void CInProcMsgServerWrapper::setMsgReadBuffCopyDepth( ECopyDepth i_copyDepth )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = CEnumCopyDepth::toString(i_copyDepth);
     }
@@ -143,8 +143,8 @@ void CInProcMsgServerWrapper::setMsgReadBuffCopyDepth( ECopyDepth i_copyDepth )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setMsgReadBuffCopyDepth",
         /* strAddInfo         */ strAddTrcInfo );
@@ -163,7 +163,7 @@ void CInProcMsgServerWrapper::setMaxPendingConnections( int i_iMaxConnections )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = QString::number(i_iMaxConnections);
     }
@@ -173,8 +173,8 @@ void CInProcMsgServerWrapper::setMaxPendingConnections( int i_iMaxConnections )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "setMaxPendingConnections",
         /* strAddInfo         */ strAddTrcInfo );
@@ -199,8 +199,8 @@ bool CInProcMsgServerWrapper::listen()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "listen",
         /* strAddInfo         */ "" );
@@ -229,8 +229,8 @@ void CInProcMsgServerWrapper::close()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "close",
         /* strAddInfo         */ "" );
@@ -259,8 +259,8 @@ CIpcSocketWrapper* CInProcMsgServerWrapper::nextPendingConnection()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "nextPendingConnection",
         /* strAddInfo         */ "" );
@@ -316,8 +316,8 @@ void CInProcMsgServerWrapper::onNewConnection()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onNewConnection",
         /* strAddInfo         */ "" );

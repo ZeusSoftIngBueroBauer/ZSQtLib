@@ -87,7 +87,7 @@ CWdgtIdxTreeView::CWdgtIdxTreeView(
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "IdxTree: " + QString(i_pIdxTree == nullptr ? "nullptr" : i_pIdxTree->objectName());
     }
@@ -252,7 +252,7 @@ void CWdgtIdxTreeView::setIdxTree( CIdxTree* i_pIdxTree )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = QString(i_pIdxTree == nullptr ? "null" : i_pIdxTree->objectName());
     }
@@ -295,7 +295,7 @@ void CWdgtIdxTreeView::setExcludeLeaves( bool i_bExcludeLeaves )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = bool2Str(i_bExcludeLeaves);
     }
@@ -326,7 +326,7 @@ void CWdgtIdxTreeView::onBtnTreeViewResizeRowsAndColumnsToContentsClicked( bool 
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -352,7 +352,7 @@ void CWdgtIdxTreeView::onBtnTreeViewExpandAllClicked( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -380,7 +380,7 @@ void CWdgtIdxTreeView::onBtnTreeViewCollapseAllClicked( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -403,7 +403,7 @@ void CWdgtIdxTreeView::onBtnSortOrderClicked( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -446,7 +446,7 @@ void CWdgtIdxTreeView::onTreeViewSortOrderChanged( EIdxTreeSortOrder i_sortOrder
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = idxTreeSortOrder2Str(i_sortOrder);
     }
@@ -471,7 +471,7 @@ void CWdgtIdxTreeView::onTreeViewCurrentRowChanged(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Curr {" + CModelIdxTree::modelIdx2Str(i_modelIdxCurr) + "}";
         strMthInArgs += ", Prev {" + CModelIdxTree::modelIdx2Str(i_modelIdxPrev) + "}";
@@ -517,7 +517,7 @@ void CWdgtIdxTreeView::emit_currentRowChanged(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Curr {" + CModelIdxTree::modelIdx2Str(i_modelIdxCurr) + "}";
         strMthInArgs += ", Prev {" + CModelIdxTree::modelIdx2Str(i_modelIdxPrev) + "}";

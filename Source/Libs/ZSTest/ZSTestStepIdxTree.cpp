@@ -234,7 +234,7 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
@@ -247,7 +247,7 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
 
     QString strMth = "save";
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
 
@@ -299,7 +299,7 @@ SErrResultInfo CTestStepIdxTree::save( const QString& i_strAbsFilePath ) const
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -327,7 +327,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
@@ -342,7 +342,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
 
     QString strAddErrInfo;
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), strMth);
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), strMth);
 
     QFile file;
 
@@ -588,7 +588,7 @@ SErrResultInfo CTestStepIdxTree::recall( const QString& i_strAbsFilePath )
         }
     } // if( !errResultInfo.isErrorResult() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }

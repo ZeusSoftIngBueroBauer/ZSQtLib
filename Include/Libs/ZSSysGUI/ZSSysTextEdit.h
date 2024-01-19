@@ -44,10 +44,19 @@ namespace System
 namespace GUI
 {
 //******************************************************************************
+/*! @brief Reimplements QTextEdit to workaround the problem, that sometimes,
+           after resizing the parent, the text edit has a strange size.
+
+    This is accomplished by explicitly setting a preferred width and height
+    at the text edit during runtime.
+*/
 class ZSSYSGUIDLL_API CTextEdit : public QTextEdit
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::PhysVal::GUI"; }
+    static QString ClassName() { return "CTextEdit"; }
 public: // ctors and dtor
     CTextEdit( QWidget* i_pWdgtParent = nullptr );
     CTextEdit( const QString& i_strText, QWidget* i_pWdgtParent = nullptr );

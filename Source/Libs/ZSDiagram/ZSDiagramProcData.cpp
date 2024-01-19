@@ -62,7 +62,7 @@ CDataDiagram::CDataDiagram(
     m_measState(EMeasStateUndefined),
     m_measMode(EMeasModeUndefined),
     m_iMeasType(-1),
-    m_arSpacing(CEnumScaleDir::count(), ESpacing::Linear),
+    m_arSpacing(CEnumScaleAxis::count(), ESpacing::Linear),
     m_arpDiagScales(),
     m_arpDiagTraces(),
     m_arpDiagObjs(0),
@@ -86,7 +86,7 @@ CDataDiagram::CDataDiagram(
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", UpdateType: " + diagramUpdateType2Str(i_updateType);
@@ -192,7 +192,7 @@ CDataDiagram* CDataDiagram::clone( EDiagramUpdateType /*i_diagramUpdateType*/ ) 
     pDiagramCloned->m_measMode = m_measMode;
     pDiagramCloned->m_iMeasType = m_iMeasType;
 
-    for (int idx = 0; idx < CEnumScaleDir::count(); idx++)
+    for (int idx = 0; idx < CEnumScaleAxis::count(); idx++)
     {
         pDiagramCloned->m_arSpacing[idx] = m_arSpacing[idx];
     }
@@ -464,14 +464,14 @@ public: // overridables to rescale the diagram or output new X/Y values
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CDataDiagram::setSpacing( const CEnumScaleDir& i_scaleDir, const CEnumSpacing& i_spacing )
+void CDataDiagram::setSpacing( const CEnumScaleAxis& i_scaleAxis, const CEnumSpacing& i_spacing )
 //------------------------------------------------------------------------------
 {
     QString strTrcMsg;
 
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strTrcMsg = CEnumScaleDir(i_scaleDir).toString() + ", " + i_spacing.toString();
+        strTrcMsg = CEnumScaleAxis(i_scaleAxis).toString() + ", " + i_spacing.toString();
     }
 
     CMethodTracer mthTracer(
@@ -489,15 +489,15 @@ void CDataDiagram::setSpacing( const CEnumScaleDir& i_scaleDir, const CEnumSpaci
 
     // The spacing is valid for both the scale objects not linked to a specific trace and
     // also for the scale objects linked to a specific trace.
-    m_arSpacing[i_scaleDir.enumeratorAsInt()] = i_spacing.enumerator();
+    m_arSpacing[i_scaleAxis.enumeratorAsInt()] = i_spacing.enumerator();
 
     for (CDiagScale* pDiagScale : m_arpDiagScales)
     {
         // If the scale will be changed the method "scaleChanged" of the diagram will be
         // called invalidating the data of all objects linked to the changed scale.
-        if( pDiagScale->getScaleDir() == i_scaleDir.enumerator() )
+        if( pDiagScale->getScaleAxis() == i_scaleAxis.enumerator() )
         {
-            pDiagScale->setSpacing(m_arSpacing[i_scaleDir.enumeratorAsInt()]);
+            pDiagScale->setSpacing(m_arSpacing[i_scaleAxis.enumeratorAsInt()]);
         }
     }
 } // setSpacing
@@ -560,17 +560,17 @@ void CDataDiagram::removeDiagScale( CDiagScale* i_pDiagScale )
     // Remove scale object from trace objects.
     for (CDiagTrace* pDiagTrace : m_arpDiagTraces)
     {
-        if( pDiagTrace->m_arpDiagScale[static_cast<int>(i_pDiagScale->getScaleDir())] == i_pDiagScale )
+        if( pDiagTrace->m_arpDiagScale[static_cast<int>(i_pDiagScale->getScaleAxis())] == i_pDiagScale )
         {
-            pDiagTrace->m_arpDiagScale[static_cast<int>(i_pDiagScale->getScaleDir())] = nullptr;
+            pDiagTrace->m_arpDiagScale[static_cast<int>(i_pDiagScale->getScaleAxis())] = nullptr;
         }
     }
     // Remove scale object from diagram objects.
     for (CDiagObj* pDiagObj : m_arpDiagObjs)
     {
-        if( pDiagObj->m_arpDiagScale[static_cast<int>(i_pDiagScale->getScaleDir())] == i_pDiagScale )
+        if( pDiagObj->m_arpDiagScale[static_cast<int>(i_pDiagScale->getScaleAxis())] == i_pDiagScale )
         {
-            pDiagObj->m_arpDiagScale[static_cast<int>(i_pDiagScale->getScaleDir())] = nullptr;
+            pDiagObj->m_arpDiagScale[static_cast<int>(i_pDiagScale->getScaleAxis())] = nullptr;
         }
     }
     emit_diagScaleRemoved(i_pDiagScale->getObjName());
@@ -1136,12 +1136,12 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
     // All objects linked to the changed scale will be invalidated.
     for (CDiagObj* pDiagObj : m_arpDiagObjs )
     {
-        for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
+        for( int idxScaleAxis = 0; idxScaleAxis < CEnumScaleAxis::count(); idxScaleAxis++ )
         {
-            CDiagScale* pDiagScale = pDiagObj->m_arpDiagScale[idxScaleDir];
+            CDiagScale* pDiagScale = pDiagObj->m_arpDiagScale[idxScaleAxis];
             if( pDiagScale == nullptr && pDiagObj->m_pDiagTrace != nullptr )
             {
-                pDiagScale = pDiagObj->m_pDiagTrace->getDiagScale(static_cast<EScaleDir>(idxScaleDir));
+                pDiagScale = pDiagObj->m_pDiagTrace->getDiagScale(static_cast<EScaleAxis>(idxScaleAxis));
             }
 
             // If the object is linked to the changed scale ..
@@ -1159,10 +1159,10 @@ void CDataDiagram::scaleChanged( ZS::Diagram::CDiagScale* i_pDiagScale )
     // All traces linked to the changed scale will be invalidated.
     for (CDiagTrace* pDiagTrace : m_arpDiagTraces)
     {
-        for( int idxScaleDir = 0; idxScaleDir < CEnumScaleDir::count(); idxScaleDir++ )
+        for( int idxScaleAxis = 0; idxScaleAxis < CEnumScaleAxis::count(); idxScaleAxis++ )
         {
             // If the trace is linked to the changed scale ..
-            if( pDiagTrace->m_arpDiagScale[idxScaleDir] == i_pDiagScale )
+            if( pDiagTrace->m_arpDiagScale[idxScaleAxis] == i_pDiagScale )
             {
                 // Please note than on updating the diagram the diagram will call
                 // the update method of the trace object whereupon the "traceChanged"

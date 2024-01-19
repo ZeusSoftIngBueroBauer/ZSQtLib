@@ -45,6 +45,7 @@ may result in using the software modules.
 #include <QtCore/qcoreevent.h>
 #include <QtCore/qdatastream.h>
 #include <QtCore/qdir.h>
+#include <QtCore/qline.h>
 #include <QtCore/qmimedata.h>
 #include <QtCore/qpoint.h>
 #include <QtCore/qsettings.h>
@@ -1478,7 +1479,7 @@ static const ZS::System::SEnumEntry s_arEnumStrCursorShape[] =
 QString ZS::System::qCursorShape2Str( int i_shape )
 //------------------------------------------------------------------------------
 {
-    return SEnumEntry::enumerator2Str( s_arEnumStrCursorShape, _ZSArrLen(s_arEnumStrCursorShape), i_shape );
+    return SEnumEntry::enumerator2Str(s_arEnumStrCursorShape, _ZSArrLen(s_arEnumStrCursorShape), i_shape);
 }
 
 
@@ -1487,61 +1488,69 @@ Enum Qt::DropAction
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+QString ZS::System::qDropAction2Str( Qt::DropAction i_action )
+//------------------------------------------------------------------------------
+{
+    QString strAction;
+    if (i_action == Qt::IgnoreAction) {
+        strAction = "Ignore";
+    }
+    else if (i_action == Qt::ActionMask) {
+        strAction += "Mask";
+    }
+    else if (i_action == Qt::CopyAction) {
+       strAction = "Copy";
+    }
+    else if (i_action == Qt::MoveAction) {
+        strAction = "Move";
+    }
+    else if (i_action == Qt::LinkAction) {
+        strAction += "Link";
+    }
+    else if (i_action == Qt::TargetMoveAction) {
+        strAction += "TargetMove";
+    }
+    if (strAction.isEmpty()) {
+        strAction = "? (" + QString::number(i_action, 16) + ")";
+    }
+    return strAction;
+}
+
+
+//------------------------------------------------------------------------------
 QString ZS::System::qDropActions2Str( int i_actions )
 //------------------------------------------------------------------------------
 {
     QString strAction;
-
-    if( i_actions == 0x00 )
-    {
+    if (i_actions == 0x00) {
         strAction = "Ignore";
     }
-    if( i_actions & Qt::CopyAction )
-    {
-        if( !strAction.isEmpty() )
-        {
-            strAction += "|";
+    else {
+        if (i_actions & Qt::CopyAction) {
+            if (!strAction.isEmpty()) strAction += "|";
+            strAction += "Copy";
         }
-        strAction += "Copy";
-    }
-    if( i_actions & Qt::MoveAction )
-    {
-        if( !strAction.isEmpty() )
-        {
-            strAction += "|";
+        if (i_actions & Qt::MoveAction) {
+            if (!strAction.isEmpty()) strAction += "|";
+            strAction += "Move";
         }
-        strAction += "Move";
-    }
-    if( i_actions & Qt::LinkAction )
-    {
-        if( !strAction.isEmpty() )
-        {
-            strAction += "|";
+        if (i_actions & Qt::LinkAction) {
+            if (!strAction.isEmpty()) strAction += "|";
+            strAction += "Link";
         }
-        strAction += "Link";
     }
-
-    if( strAction.isEmpty() )
-    {
-        strAction = "? (" + QString::number(i_actions,16) + ")";
+    if (strAction.isEmpty()) {
+        strAction = "? (" + QString::number(i_actions, 16) + ")";
     }
     return strAction;
-
-} // qDropActions2Str
+}
 
 //------------------------------------------------------------------------------
-QString ZS::System::qEvent2Str( QEvent* i_pEv, int i_iDetailLevel )
+QString ZS::System::qEvent2Str( QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    QEvent::Type evType = i_pEv->type();
-
-    str = qEventType2Str( evType, i_iDetailLevel == 0 ? true : false );
-
-    return str;
-
-} // qEvent2Str
+    return qEventType2Str(i_pEv->type());
+}
 
 /*==============================================================================
 Enum QEvent:Type
@@ -1958,9 +1967,13 @@ QString ZS::System::qItemDataRole2Str( int i_role )
 {
     QString str;
     if (i_role >= 0 && i_role < _ZSArrLen(s_arEnumStrQItemDataRole)) {
-        str = SEnumEntry::enumerator2Str(s_arEnumStrQItemDataRole, _ZSArrLen(s_arEnumStrQItemDataRole), i_role);
-    } else {
-        str = "? (" + QString::number(i_role);
+        str = SEnumEntry::enumerator2Str( s_arEnumStrQItemDataRole, _ZSArrLen(s_arEnumStrQItemDataRole), i_role );
+    }
+    else if (i_role < Qt::UserRole) {
+        str = "? (" + QString::number(i_role) + ")";
+    }
+    else if (i_role >= Qt::UserRole) {
+        str = "UserRole (" + QString::number(i_role) + ")";
     }
     return str;
 }
@@ -2650,46 +2663,32 @@ QString ZS::System::qKeyboardModifiers2Str( quint32 i_modifiers )
 
     if( i_modifiers & Qt::ShiftModifier )
     {
+        if (!str.isEmpty()) str += "|";
         str = "Shift";
     }
     if( i_modifiers & Qt::ControlModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "Control";
     }
     if( i_modifiers & Qt::AltModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "Alt";
     }
     if( i_modifiers & Qt::MetaModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "Meta";
     }
     if( i_modifiers & Qt::KeypadModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "Keypad";
     }
     if( i_modifiers & Qt::GroupSwitchModifier )
     {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+        if (!str.isEmpty()) str += "|";
         str += "GroupSwitch";
     }
     return str;
@@ -2701,39 +2700,21 @@ Qt::KeyboardModifiers ZS::System::char2QKeyboardModifiers( const QChar& i_ch )
 //------------------------------------------------------------------------------
 {
     Qt::KeyboardModifiers keyboardModifiers = Qt::NoModifier;
-
     QChar ch = i_ch;
-
-    if( ch.toLower() != i_ch )
-    {
+    if (ch.toLower() != i_ch) {
         keyboardModifiers |= Qt::ShiftModifier;
     }
-
     return keyboardModifiers;
-
-} // char2QKeyboardModifiers
+}
 
 //------------------------------------------------------------------------------
-QString ZS::System::qMargins2Str( const QMargins& i_margins, bool i_bShort )
+QString ZS::System::qMargins2Str( const QMargins& i_margins )
 //------------------------------------------------------------------------------
 {
-    QString str;
-
-    if( i_bShort )
-    {
-        str  = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top());
-        str += ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
-    }
-    else
-    {
-        str  = "Left: " + QString::number(i_margins.left());
-        str += ", Top: " + QString::number(i_margins.top());
-        str += ", Right: " + QString::number(i_margins.right());
-        str += ", Bottom: " + QString::number(i_margins.bottom());
-    }
+    QString str = QString::number(i_margins.left()) + ", " + QString::number(i_margins.top())
+        + ", " + QString::number(i_margins.right()) + ", " + QString::number(i_margins.bottom());
     return str;
-
-} // qMargins2Str
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel )
@@ -2741,42 +2722,28 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
 {
     QString str;
 
-    if( i_pMimeData == nullptr )
-    {
+    if( i_pMimeData == nullptr ) {
         str = "nullptr";
     }
-    else // if( i_pMimeData != nullptr )
-    {
-        int idx;
-
+    else {
         QStringList strlstFormats = i_pMimeData->formats();
-
         str = "Formats [" + QString::number(strlstFormats.size()) + "]";
-
-        if( strlstFormats.size() > 0 )
-        {
+        if( strlstFormats.size() > 0 ) {
             str += "(";
-
-            for( idx = 0; idx < strlstFormats.size(); idx++ )
-            {
-                if( idx > 0 )
-                {
+            for( int idx = 0; idx < strlstFormats.size(); idx++ ) {
+                if( idx > 0 ) {
                     str += ", " + strlstFormats[idx];
                 }
-                else
-                {
+                else {
                     str += strlstFormats[idx];
                 }
-                if( i_iDetailLevel > 0 )
-                {
+                if( i_iDetailLevel > 0 ) {
                     str += " {";
-
                     QByteArray  byteArr = i_pMimeData->data(strlstFormats[idx]);
                     QDataStream stream(&byteArr, QIODevice::ReadOnly);
                     QStringList strlstItems;
 
-                    while( !stream.atEnd() )
-                    {
+                    while( !stream.atEnd() ) {
                         QString strItem;
                         stream >> strItem;
                         strlstItems << strItem;
@@ -2784,23 +2751,15 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
                     str += strlstItems.join(", ");
                     str += "}";
                 }
-            } // for( idx = 0; idx < strlstFormats.size(); idx++ )
-
+            }
             str += ")";
-
-        } // if( strlstFormats.size() > 0 )
-
-        if( i_pMimeData->hasUrls() )
-        {
+        }
+        if( i_pMimeData->hasUrls() ) {
             str += ", Urls [" + QString::number(i_pMimeData->urls().size()) + "]";
- 
-            if( i_pMimeData->urls().size() > 0 )
-            {
+            if( i_pMimeData->urls().size() > 0 ) {
                 str += "(";
-                for( idx = 0; idx < i_pMimeData->urls().size(); idx++ )
-                {
-                    if( idx > 0 )
-                    {
+                for( int idx = 0; idx < i_pMimeData->urls().size(); idx++ ) {
+                    if( idx > 0 ) {
                         str += ", ";
                     }
                     str += i_pMimeData->urls()[idx].toString();
@@ -2808,24 +2767,16 @@ QString ZS::System::qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLe
                 str += ")";
             }
         }
-
-        if( i_pMimeData->hasText() )
-        {
+        if( i_pMimeData->hasText() ) {
             str += ", Text: " + i_pMimeData->text();
         }
-
-        if( i_pMimeData->hasHtml() )
-        {
+        if( i_pMimeData->hasHtml() ) {
             str += ", Html: " + i_pMimeData->html();
         }
-
-        if( i_pMimeData->hasImage() )
-        {
+        if( i_pMimeData->hasImage() ) {
             //QVariant i_pMimeData->imageData();
         }
-
-        if( i_pMimeData->hasColor() )
-        {
+        if( i_pMimeData->hasColor() ) {
             //QVariant i_pMimeData->colorData();
         }
     } // if( i_pMimeData != nullptr )
@@ -2859,7 +2810,7 @@ QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
 } // qModelIndex2Str
 
 //------------------------------------------------------------------------------
-QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
+QString ZS::System::qMouseButton2Str( int i_iBtn )
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -3012,286 +2963,150 @@ QString ZS::System::qMouseButton2Str( int i_iBtn, bool /*i_bShort*/ )
 } // qMouseButton2Str
 
 //------------------------------------------------------------------------------
-QString ZS::System::qMouseButtons2Str( int i_iBtns, bool /*i_bShort*/ )
+QString ZS::System::qMouseButtons2Str( int i_iBtns )
 //------------------------------------------------------------------------------
 {
     QString str;
 
-    if( i_iBtns & Qt::MouseButton::NoButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if (i_iBtns & Qt::MouseButton::NoButton) {
+        if (!str.isEmpty()) str += "|";
         str += "NoButton";
     }
-    if( i_iBtns & Qt::MouseButton::LeftButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::LeftButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "LeftButton";
     }
-    if( i_iBtns & Qt::MouseButton::RightButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::RightButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "RightButton";
     }
-    if( i_iBtns & Qt::MouseButton::MiddleButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::MiddleButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "MiddleButton";
     }
     #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::BackButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::BackButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "BackButton";
     }
     #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::XButton1 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::XButton1 ) {
+        if (!str.isEmpty()) str += "|";
         str += "XButton1";
     }
     #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::ExtraButton1 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton1 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton1";
     }
-    if( i_iBtns & Qt::MouseButton::ForwardButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ForwardButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "ForwardButton";
     }
     #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::XButton2 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::XButton2 ) {
+        if (!str.isEmpty()) str += "|";
         str += "XButton2";
     }
     #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    if( i_iBtns & Qt::MouseButton::ExtraButton2 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton2 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton2";
     }
-    if( i_iBtns & Qt::MouseButton::TaskButton )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::TaskButton ) {
+        if (!str.isEmpty()) str += "|";
         str += "TaskButton";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton3 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton3 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton3";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton4 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton4 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton4";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton5 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton5 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton5";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton6 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton6 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton6";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton7 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton7 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton7";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton8 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton8 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton8";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton9 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton9 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton9";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton10 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton10 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton10";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton11 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton11 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton11";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton12 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton12 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton12";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton13 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton13 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton13";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton14 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton14 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton14";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton15 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton15 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton15";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton16 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton16 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton16";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton17 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton17 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton17";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton18 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton18 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton18";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton19 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton19 ) {
+        if (!str.isEmpty()) str += "|";
         str += "extrabutton19";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton20 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton20 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton20";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton21 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton21 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton21";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton22 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton22 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton22";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton23 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton23 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton23";
     }
-    if( i_iBtns & Qt::MouseButton::ExtraButton24 )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::ExtraButton24 ) {
+        if (!str.isEmpty()) str += "|";
         str += "ExtraButton24";
     }
-    if( i_iBtns & Qt::MouseButton::AllButtons )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
+    if( i_iBtns & Qt::MouseButton::AllButtons ) {
+        if (!str.isEmpty()) str += "|";
         str += "AllButtons";
     }
     #endif // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
@@ -3326,101 +3141,65 @@ QString ZS::System::qPenStyle2Str( const Qt::PenStyle& i_penStyle )
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qPoint2Str( const QPoint& i_pt, bool i_bShort )
+QString ZS::System::qPoint2Str( const QPoint& i_pt )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_pt.x())
-            + ", " + QString::number(i_pt.y());
-    } else {
-        str = "x: " + QString::number(i_pt.x())
-            + ", y: " + QString::number(i_pt.y());
-    }
-    return str;
+    return QString::number(i_pt.x()) + ", " + QString::number(i_pt.y());
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qPoint2Str( const QPointF& i_pt, bool i_bShort )
+QString ZS::System::qPoint2Str( const QPointF& i_pt )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_pt.x(),'f',1)
-            + ", " + QString::number(i_pt.y(),'f',1);
-    } else {
-        str = "x: " + QString::number(i_pt.x(),'f',1)
-            + ", y: " + QString::number(i_pt.y(),'f',1);
-    }
-    return str;
+    return QString::number(i_pt.x(),'f',1) + ", " + QString::number(i_pt.y(),'f',1);
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qRect2Str( const QRect& i_rct, bool i_bShort )
+QString ZS::System::qSize2Str( const QSize& i_size )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str  = QString::number(i_rct.x())
-             + ", " + QString::number(i_rct.y())
-             + ", " + QString::number(i_rct.width())
-             + ", " + QString::number(i_rct.height());
-    } else {
-        str  = "x: " + QString::number(i_rct.x())
-             + ", y: " + QString::number(i_rct.y())
-             + ", w: " + QString::number(i_rct.width())
-             + ", h: " + QString::number(i_rct.height());
-    }
-    return str;
+    return QString::number(i_size.width()) + ", " + QString::number(i_size.height());
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qRect2Str( const QRectF& i_rct, bool i_bShort )
+QString ZS::System::qSize2Str( const QSizeF& i_size )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_rct.x(),'f',1)
-            + ", " + QString::number(i_rct.y(),'f',1)
-            + ", " + QString::number(i_rct.width(),'f',1)
-            + ", " + QString::number(i_rct.height(),'f',1);
-    } else {
-        str = "x: " + QString::number(i_rct.x(),'f',1)
-            + ", y: " + QString::number(i_rct.y(),'f',1)
-            + ", w: " + QString::number(i_rct.width(),'f',1)
-            + ", h: " + QString::number(i_rct.height(),'f',1);
-    }
-    return str;
+    return QString::number(i_size.width(),'f',1) + ", " + QString::number(i_size.height(),'f',1);
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qSize2Str( const QSize& i_size, bool i_bShort )
+QString ZS::System::qLine2Str( const QLine& i_line )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_size.width())
-            + ", " + QString::number(i_size.height());
-    } else {
-        str = "w: " + QString::number(i_size.width())
-            + ", h: " + QString::number(i_size.height());
-    }
-    return str;
+    return "P1 {" + qPoint2Str(i_line.p1()) + "}, P2 {" + qPoint2Str(i_line.p2()) + "}";
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qSize2Str( const QSizeF& i_size, bool i_bShort )
+QString ZS::System::qLine2Str( const QLineF& i_line )
 //------------------------------------------------------------------------------
 {
-    QString str;
-    if( i_bShort ) {
-        str = QString::number(i_size.width(),'f',1)
-            + ", " + QString::number(i_size.height(),'f',1);
-    } else {
-        str = "w: " + QString::number(i_size.width(),'f',1)
-            + ", h: " + QString::number(i_size.height(),'f',1);
-    }
-    return str;
+    return "P1 {" + qPoint2Str(i_line.p1()) + "}, P2 {" + qPoint2Str(i_line.p2()) + "}";
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qRect2Str( const QRect& i_rct )
+//------------------------------------------------------------------------------
+{
+    return QString::number(i_rct.x())
+        + ", " + QString::number(i_rct.y())
+        + ", " + QString::number(i_rct.width())
+        + ", " + QString::number(i_rct.height());
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qRect2Str( const QRectF& i_rct )
+//------------------------------------------------------------------------------
+{
+    return QString::number(i_rct.x(),'f',1)
+        + ", " + QString::number(i_rct.y(),'f',1)
+        + ", " + QString::number(i_rct.width(),'f',1)
+        + ", " + QString::number(i_rct.height(),'f',1);
 }
 
 /*==============================================================================
@@ -4099,4 +3878,72 @@ void ZS::System::formatString(
     {
         *o_piDigitsExponent = iDigitsExponent;
     }
+}
+
+//------------------------------------------------------------------------------
+SErrResultInfo ZS::System::splitMethodTraceFilterExpressionString(
+    const QString& i_strFilter, QStringList& i_strlstInclude, QStringList& i_strlstExclude)
+//------------------------------------------------------------------------------
+{
+    SErrResultInfo errResultInfo;
+    i_strlstInclude.clear();
+    i_strlstExclude.clear();
+    if (!i_strFilter.isEmpty()) {
+        QString strFilter = i_strFilter;
+        while (!strFilter.isEmpty()) {
+            int idxStart = strFilter.indexOf("$I{");
+            if (idxStart < 0) {
+                break;
+            }
+            int idxEnd = strFilter.indexOf("}I$", idxStart);
+            if (idxEnd < 0) {
+                break;
+            }
+            idxStart += 3;
+            int iLength = idxEnd - idxStart;
+            i_strlstInclude.append(strFilter.mid(idxStart, iLength));
+            idxStart -= 3;
+            iLength += 6;
+            strFilter.remove(idxStart, iLength);
+        }
+        while (!strFilter.isEmpty()) {
+            int idxStart = strFilter.indexOf("$!I{");
+            if (idxStart < 0) {
+                break;
+            }
+            int idxEnd = strFilter.indexOf("}I!$", idxStart);
+            if (idxEnd < 0) {
+                break;
+            }
+            idxStart += 4;
+            int iLength = idxEnd - idxStart;
+            i_strlstExclude.append(strFilter.mid(idxStart, iLength));
+            idxStart -= 4;
+            iLength += 8;
+            strFilter.remove(idxStart, iLength);
+        }
+        if (i_strlstInclude.isEmpty() && i_strlstExclude.isEmpty()) {
+            errResultInfo = SErrResultInfo(
+                /* errSource         */ "ZS::System", "Aux", "FilterExpression", "splitMethodTraceFilterExpressionString",
+                /* result            */ EResultArgOutOfRange,
+                /* severity          */ EResultSeverityError,
+                /* strAddErrInfoDscr */ "Invalid filter expression");
+        }
+    }
+    return errResultInfo;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::joinMethodTraceFilterExpressionStrings(
+    QStringList& i_strlstInclude, QStringList& i_strlstExclude)
+//------------------------------------------------------------------------------
+{
+    QString strFilter;
+    for (const QString& strExpr : i_strlstInclude) {
+        strFilter += "$I{" + strExpr + "}I$";
+    }
+    for (const QString& strExpr : i_strlstExclude) {
+        strFilter += "$!I{" + strExpr + "}I!$";
+    }
+    return strFilter;
 }

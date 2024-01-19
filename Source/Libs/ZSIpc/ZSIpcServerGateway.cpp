@@ -83,7 +83,7 @@ CServerGatewayThread::CServerGatewayThread(
     }
     else
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
 
     CMethodTracer mthTracer(
@@ -91,8 +91,8 @@ CServerGatewayThread::CServerGatewayThread(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strAddInfo         */ "" );
@@ -108,8 +108,8 @@ CServerGatewayThread::~CServerGatewayThread()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strAddInfo         */ "" );
@@ -147,8 +147,8 @@ void CServerGatewayThread::run()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "run",
         /* strAddInfo         */ strAddTrcInfo );
@@ -334,7 +334,7 @@ CServerGateway::CServerGateway(
     // the server waits for the gateway -> Deadlock.
     else if( !i_pServer->objectName().endsWith("TrcServer") )
     {
-        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(nameSpace(), className(), objectName());
+        m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
     }
 
     CMethodTracer mthTracer(
@@ -342,8 +342,8 @@ CServerGateway::CServerGateway(
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "ctor",
         /* strAddInfo         */ "" );
@@ -359,8 +359,8 @@ CServerGateway::~CServerGateway()
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "dtor",
         /* strAddInfo         */ "" );
@@ -435,8 +435,8 @@ void CServerGateway::onNewConnectionPending( QObject* /*i_pServerWrapper*/ )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onNewConnectionPending",
         /* strAddInfo         */ strAddTrcInfo );
@@ -529,8 +529,8 @@ void CServerGateway::onDisconnected( QObject* i_pSocketWrapper )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onDisconnected",
         /* strAddInfo         */ strAddTrcInfo );
@@ -631,8 +631,8 @@ void CServerGateway::onReadyRead( QObject* i_pSocketWrapper )
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onReadyRead",
         /* strAddInfo         */ strAddTrcInfo );
@@ -673,8 +673,8 @@ void CServerGateway::onError( QObject* i_pSocketWrapper, const ZS::System::SErrR
         /* pTrcMthFile        */ m_pTrcMthFile,
         /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strNameSpace       */ nameSpace(),
-        /* strClassName       */ className(),
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
         /* strObjName         */ objectName(),
         /* strMethod          */ "onError",
         /* strAddInfo         */ strAddTrcInfo );
@@ -693,7 +693,7 @@ void CServerGateway::onError( QObject* i_pSocketWrapper, const ZS::System::SErrR
 
     if( errResultInfo.getErrSource().isObjectPathEmpty() )
     {
-        errResultInfo.setErrSource(nameSpace(), className(), objectName(), "onError");
+        errResultInfo.setErrSource(NameSpace(), ClassName(), objectName(), "onError");
     }
 
     if( pIpcSocketWrapper->getRemoteHostName().isEmpty() )
@@ -816,8 +816,8 @@ bool CServerGateway::event( QEvent* i_pMsg )
             /* pTrcMthFile        */ m_pTrcMthFile,
             /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
             /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-            /* strNameSpace       */ nameSpace(),
-            /* strClassName       */ className(),
+            /* strNameSpace       */ NameSpace(),
+            /* strClassName       */ ClassName(),
             /* strObjName         */ objectName(),
             /* strMethod          */ "event",
             /* strAddInfo         */ strAddTrcInfo );
@@ -1358,7 +1358,7 @@ bool CServerGateway::event( QEvent* i_pMsg )
 
                                 if( errResultInfo.getErrSource().isObjectPathEmpty() )
                                 {
-                                    errResultInfo.setErrSource(nameSpace(), className(), objectName(), pMsg->msgTypeToStr());
+                                    errResultInfo.setErrSource(NameSpace(), ClassName(), objectName(), pMsg->msgTypeToStr());
                                 }
                                 errResultInfo.setAddErrInfoDscr( m_hostSettings.m_strLocalHostName + ":" + QString::number(m_hostSettings.m_uLocalPort) );
                             }

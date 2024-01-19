@@ -538,15 +538,44 @@ template<> const QVector<SEnumEntry> CEnum<EOrientation>::s_arEnumEntries =
 
 
 /*==============================================================================
-Enum EScaleDir
+Enum ELayoutPos
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-template<> const QVector<SEnumEntry> CEnum<EScaleDir>::s_arEnumEntries =
+template<> const QVector<SEnumEntry> CEnum<ELayoutPos>::s_arEnumEntries =
 //------------------------------------------------------------------------------
 {
-    /* 0 */ SEnumEntry( static_cast<int>(EScaleDir::X), "X" ),
-    /* 1 */ SEnumEntry( static_cast<int>(EScaleDir::Y), "Y" )
+    /* 0 */ SEnumEntry( static_cast<int>(ELayoutPos::Top), "Top" ),
+    /* 1 */ SEnumEntry( static_cast<int>(ELayoutPos::Bottom), "Bottom" ),
+    /* 2 */ SEnumEntry( static_cast<int>(ELayoutPos::Left), "Left" ),
+    /* 3 */ SEnumEntry( static_cast<int>(ELayoutPos::Right), "Right" ),
+    /* 4 */ SEnumEntry( static_cast<int>(ELayoutPos::Center), "Center" )
+};
+
+
+/*==============================================================================
+Enum EScaleAxis
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EScaleAxis>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EScaleAxis::X), "X" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EScaleAxis::Y), "Y" )
+};
+
+
+/*==============================================================================
+Enum EYScaleAxisOrientation
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EYScaleAxisOrientation>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry( static_cast<int>(EYScaleAxisOrientation::TopDown), "TopDown", "TD", "Top Down" ),
+    /* 1 */ SEnumEntry( static_cast<int>(EYScaleAxisOrientation::BottomUp), "BottomUp", "BU", "Bottom Up" )
 };
 
 
@@ -1249,6 +1278,74 @@ template<> const QVector<SEnumEntry> CEnum<ELogDetailLevel>::s_arEnumEntries =
     /* 7 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugDetailed),  "DebugDetailed",  "DD",  "Debug Detailed",  "DDET", "DDETailed" ),
     /* 8 */ SEnumEntry( static_cast<int>(ELogDetailLevel::DebugVerbose),   "DebugVerbose",   "DV",  "Debug Verbose",   "DVER", "DVERbose"  ),
     /* 9 */ SEnumEntry( static_cast<int>(ELogDetailLevel::Undefined),      "Undefined",      "?",   "Undefined",       "UND",  "UNDefined" )
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
+
+/*==============================================================================
+Enum EMethodTraceFilterProperty
+==============================================================================*/
+
+/*! @cond */
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> CEnum<EMethodTraceFilterProperty>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumMethodTraceFilterProperty
+{
+public: // ctor
+    CInitEnumMethodTraceFilterProperty() {
+    //------------------------------------------------------------------------------() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<EMethodTraceFilterProperty>::s_arEnumEntries);
+        pVEnumEntries->append(/* 0 */ SEnumEntry( static_cast<int>(EMethodTraceFilterProperty::Undefined),  "Undefined",  "-"),
+        pVEnumEntries->append(/* 1 */ SEnumEntry( static_cast<int>(EMethodTraceFilterProperty::ObjectName), "ObjectName", "O"),
+        pVEnumEntries->append(/* 2 */ SEnumEntry( static_cast<int>(EMethodTraceFilterProperty::MethodName), "MethodName", "M")
+        pVEnumEntries->append(/* 3 */ SEnumEntry( static_cast<int>(EMethodTraceFilterProperty::TraceData),  "TraceData",  "D"),
+    }
+};
+static CInitEnumMethodTraceFilterProperty s_initEnumMethodTraceFilterProperty;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EMethodTraceFilterProperty>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry(static_cast<int>(EMethodTraceFilterProperty::Undefined),  "Undefined",  "-"),
+    /* 1 */ SEnumEntry(static_cast<int>(EMethodTraceFilterProperty::ObjectName), "ObjectName", "O"),
+    /* 2 */ SEnumEntry(static_cast<int>(EMethodTraceFilterProperty::MethodName), "MethodName", "M"),
+    /* 3 */ SEnumEntry(static_cast<int>(EMethodTraceFilterProperty::TraceData),  "TraceData",  "D")
+};
+#endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+/*! @endcond */
+
+/*==============================================================================
+Enum EMethodTraceFilterExpression
+==============================================================================*/
+
+/*! @cond */
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+const QVector<SEnumEntry> CEnum<EMethodTraceFilterExpressionType>::s_arEnumEntries;
+//------------------------------------------------------------------------------
+class CInitEnumMethodTraceFilterExpressionType
+{
+public: // ctor
+    CInitEnumMethodTraceFilterExpressionType() {
+    //------------------------------------------------------------------------------() {
+        QVector<SEnumEntry>* pVEnumEntries = const_cast<QVector<SEnumEntry>*>(&ZS::System::<EMethodTraceFilterExpressionType>::s_arEnumEntries);
+        pVEnumEntries->append(/* 0 */ SEnumEntry( static_cast<int>(EMethodTraceFilterExpressionType::Undefined), "Undefined", "-"),
+        pVEnumEntries->append(/* 1 */ SEnumEntry( static_cast<int>(EMethodTraceFilterExpressionType::Include),   "Include",   "I"),
+        pVEnumEntries->append(/* 2 */ SEnumEntry( static_cast<int>(EMethodTraceFilterExpressionType::Exclude),   "Exclude",   "E")
+    }
+};
+static CInitEnumMethodTraceFilterExpressionType s_initEnumMethodTraceFilterExpressionType;
+#else // #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+//------------------------------------------------------------------------------
+template<> const QVector<SEnumEntry> CEnum<EMethodTraceFilterExpressionType>::s_arEnumEntries =
+//------------------------------------------------------------------------------
+{
+    /* 0 */ SEnumEntry(static_cast<int>(EMethodTraceFilterExpressionType::Undefined), "Undefined", "-"),
+    /* 1 */ SEnumEntry(static_cast<int>(EMethodTraceFilterExpressionType::Include),   "Include",   "I"),
+    /* 2 */ SEnumEntry(static_cast<int>(EMethodTraceFilterExpressionType::Exclude),   "Exclude",   "E")
 };
 #endif // #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 /*! @endcond */

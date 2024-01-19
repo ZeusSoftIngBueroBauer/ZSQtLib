@@ -44,7 +44,7 @@ may result in using the software modules.
 
 
 using namespace ZS::System;
-using namespace ZS::Apps::Test::Template;
+using namespace ZS::Apps::Test::Math;
 
 
 /*******************************************************************************
@@ -58,7 +58,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSSysMath")
+    ZS::Test::CTest(NameSpace(), "theInst")
 {
     ZS::Test::CTestStep* pTestStep;
 
@@ -78,54 +78,54 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepConvertAngles(ZS::Test::CTestStep*)) );
     /*  1 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", true}, {"Angle_deg", 0.0}});
     /*  2 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", false}, {"Angle_deg", 0.0}});
-    /*  3 */ pTestStep->addDataRow({{"Val", Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
-    /*  4 */ pTestStep->addDataRow({{"Val", Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 45.0}});
-    /*  5 */ pTestStep->addDataRow({{"Val", -Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
-    /*  6 */ pTestStep->addDataRow({{"Val", -Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -45.0}});
-    /*  7 */ pTestStep->addDataRow({{"Val", Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
-    /*  8 */ pTestStep->addDataRow({{"Val", Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", 90.0}});
-    /*  9 */ pTestStep->addDataRow({{"Val", -Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
-    /* 10 */ pTestStep->addDataRow({{"Val", -Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", -90.0}});
-    /* 11 */ pTestStep->addDataRow({{"Val", Math::c_f135Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
-    /* 12 */ pTestStep->addDataRow({{"Val", Math::c_f135Degrees_rad}, {"Normalize", false}, {"Angle_deg", 135.0}});
-    /* 13 */ pTestStep->addDataRow({{"Val", -Math::c_f135Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
-    /* 14 */ pTestStep->addDataRow({{"Val", -Math::c_f135Degrees_rad}, {"Normalize", false}, {"Angle_deg", -135.0}});
-    /* 15 */ pTestStep->addDataRow({{"Val", Math::c_fPI}, {"Normalize", true}, {"Angle_deg", 180.0}});
-    /* 16 */ pTestStep->addDataRow({{"Val", Math::c_fPI}, {"Normalize", false}, {"Angle_deg", 180.0}});
-    /* 17 */ pTestStep->addDataRow({{"Val", -Math::c_fPI}, {"Normalize", true}, {"Angle_deg", 180.0}});
-    /* 18 */ pTestStep->addDataRow({{"Val", -Math::c_fPI}, {"Normalize", false}, {"Angle_deg", -180.0}});
-    /* 19 */ pTestStep->addDataRow({{"Val", Math::c_f225Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
-    /* 20 */ pTestStep->addDataRow({{"Val", Math::c_f225Degrees_rad}, {"Normalize", false}, {"Angle_deg", 225.0}});
-    /* 21 */ pTestStep->addDataRow({{"Val", -Math::c_f225Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
-    /* 22 */ pTestStep->addDataRow({{"Val", -Math::c_f225Degrees_rad}, {"Normalize", false}, {"Angle_deg", -225.0}});
-    /* 23 */ pTestStep->addDataRow({{"Val", Math::c_f270Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
-    /* 24 */ pTestStep->addDataRow({{"Val", Math::c_f270Degrees_rad}, {"Normalize", false}, {"Angle_deg", 270.0}});
-    /* 25 */ pTestStep->addDataRow({{"Val", -Math::c_f270Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
-    /* 26 */ pTestStep->addDataRow({{"Val", -Math::c_f270Degrees_rad}, {"Normalize", false}, {"Angle_deg", -270.0}});
-    /* 27 */ pTestStep->addDataRow({{"Val", Math::c_f315Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
-    /* 28 */ pTestStep->addDataRow({{"Val", Math::c_f315Degrees_rad}, {"Normalize", false}, {"Angle_deg", 315.0}});
-    /* 29 */ pTestStep->addDataRow({{"Val", -Math::c_f315Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
-    /* 30 */ pTestStep->addDataRow({{"Val", -Math::c_f315Degrees_rad}, {"Normalize", false}, {"Angle_deg", -315.0}});
-    /* 31 */ pTestStep->addDataRow({{"Val", Math::c_f2PI}, {"Normalize", true}, {"Angle_deg", 0.0}});
-    /* 32 */ pTestStep->addDataRow({{"Val", Math::c_f2PI}, {"Normalize", false}, {"Angle_deg", 360.0}});
-    /* 33 */ pTestStep->addDataRow({{"Val", -Math::c_f2PI}, {"Normalize", true}, {"Angle_deg", 0.0}});
-    /* 34 */ pTestStep->addDataRow({{"Val", -Math::c_f2PI}, {"Normalize", false}, {"Angle_deg", -360.0}});
-    /* 35 */ pTestStep->addDataRow({{"Val", 9*Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
-    /* 36 */ pTestStep->addDataRow({{"Val", 9*Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 405.0}});
-    /* 37 */ pTestStep->addDataRow({{"Val", -9*Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
-    /* 38 */ pTestStep->addDataRow({{"Val", -9*Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -405.0}});
-    /* 39 */ pTestStep->addDataRow({{"Val", 5*Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
-    /* 40 */ pTestStep->addDataRow({{"Val", 5*Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", 450.0}});
-    /* 41 */ pTestStep->addDataRow({{"Val", -5*Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
-    /* 42 */ pTestStep->addDataRow({{"Val", -5*Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", -450.0}});
-    /* 43 */ pTestStep->addDataRow({{"Val", 11*Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
-    /* 44 */ pTestStep->addDataRow({{"Val", 11*Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 495.0}});
-    /* 45 */ pTestStep->addDataRow({{"Val", -11*Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
-    /* 46 */ pTestStep->addDataRow({{"Val", -11*Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -495.0}});
-    /* 47 */ pTestStep->addDataRow({{"Val", Math::c_f3PI}, {"Normalize", true}, {"Angle_deg", 180.0}});
-    /* 48 */ pTestStep->addDataRow({{"Val", Math::c_f3PI}, {"Normalize", false}, {"Angle_deg", 540.0}});
-    /* 49 */ pTestStep->addDataRow({{"Val", -Math::c_f3PI}, {"Normalize", true}, {"Angle_deg", 180.0}});
-    /* 50 */ pTestStep->addDataRow({{"Val", -Math::c_f3PI}, {"Normalize", false}, {"Angle_deg", -540.0}});
+    /*  3 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
+    /*  4 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 45.0}});
+    /*  5 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
+    /*  6 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -45.0}});
+    /*  7 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
+    /*  8 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", 90.0}});
+    /*  9 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
+    /* 10 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", -90.0}});
+    /* 11 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f135Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
+    /* 12 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f135Degrees_rad}, {"Normalize", false}, {"Angle_deg", 135.0}});
+    /* 13 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f135Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
+    /* 14 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f135Degrees_rad}, {"Normalize", false}, {"Angle_deg", -135.0}});
+    /* 15 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_fPI}, {"Normalize", true}, {"Angle_deg", 180.0}});
+    /* 16 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_fPI}, {"Normalize", false}, {"Angle_deg", 180.0}});
+    /* 17 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_fPI}, {"Normalize", true}, {"Angle_deg", 180.0}});
+    /* 18 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_fPI}, {"Normalize", false}, {"Angle_deg", -180.0}});
+    /* 19 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f225Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
+    /* 20 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f225Degrees_rad}, {"Normalize", false}, {"Angle_deg", 225.0}});
+    /* 21 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f225Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
+    /* 22 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f225Degrees_rad}, {"Normalize", false}, {"Angle_deg", -225.0}});
+    /* 23 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f270Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
+    /* 24 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f270Degrees_rad}, {"Normalize", false}, {"Angle_deg", 270.0}});
+    /* 25 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f270Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
+    /* 26 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f270Degrees_rad}, {"Normalize", false}, {"Angle_deg", -270.0}});
+    /* 27 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f315Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
+    /* 28 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f315Degrees_rad}, {"Normalize", false}, {"Angle_deg", 315.0}});
+    /* 29 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f315Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
+    /* 30 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f315Degrees_rad}, {"Normalize", false}, {"Angle_deg", -315.0}});
+    /* 31 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f2PI}, {"Normalize", true}, {"Angle_deg", 0.0}});
+    /* 32 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f2PI}, {"Normalize", false}, {"Angle_deg", 360.0}});
+    /* 33 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f2PI}, {"Normalize", true}, {"Angle_deg", 0.0}});
+    /* 34 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f2PI}, {"Normalize", false}, {"Angle_deg", -360.0}});
+    /* 35 */ pTestStep->addDataRow({{"Val", 9*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 45.0}});
+    /* 36 */ pTestStep->addDataRow({{"Val", 9*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 405.0}});
+    /* 37 */ pTestStep->addDataRow({{"Val", -9*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 315.0}});
+    /* 38 */ pTestStep->addDataRow({{"Val", -9*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -405.0}});
+    /* 39 */ pTestStep->addDataRow({{"Val", 5*ZS::System::Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 90.0}});
+    /* 40 */ pTestStep->addDataRow({{"Val", 5*ZS::System::Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", 450.0}});
+    /* 41 */ pTestStep->addDataRow({{"Val", -5*ZS::System::Math::c_f90Degrees_rad}, {"Normalize", true}, {"Angle_deg", 270.0}});
+    /* 42 */ pTestStep->addDataRow({{"Val", -5*ZS::System::Math::c_f90Degrees_rad}, {"Normalize", false}, {"Angle_deg", -450.0}});
+    /* 43 */ pTestStep->addDataRow({{"Val", 11*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 135.0}});
+    /* 44 */ pTestStep->addDataRow({{"Val", 11*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", 495.0}});
+    /* 45 */ pTestStep->addDataRow({{"Val", -11*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", true}, {"Angle_deg", 225.0}});
+    /* 46 */ pTestStep->addDataRow({{"Val", -11*ZS::System::Math::c_f45Degrees_rad}, {"Normalize", false}, {"Angle_deg", -495.0}});
+    /* 47 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f3PI}, {"Normalize", true}, {"Angle_deg", 180.0}});
+    /* 48 */ pTestStep->addDataRow({{"Val", ZS::System::Math::c_f3PI}, {"Normalize", false}, {"Angle_deg", 540.0}});
+    /* 49 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f3PI}, {"Normalize", true}, {"Angle_deg", 180.0}});
+    /* 50 */ pTestStep->addDataRow({{"Val", -ZS::System::Math::c_f3PI}, {"Normalize", false}, {"Angle_deg", -540.0}});
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -135,54 +135,54 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepConvertAngles(ZS::Test::CTestStep*)) );
     /*  1 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", true}, {"Angle_rad", 0.0}});
     /*  2 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", false}, {"Angle_rad", 0.0}});
-    /*  3 */ pTestStep->addDataRow({{"Val", 45.0}, {"Normalize", true}, {"Angle_rad", Math::c_f45Degrees_rad}});
-    /*  4 */ pTestStep->addDataRow({{"Val", 45.0}, {"Normalize", false}, {"Angle_rad", Math::c_f45Degrees_rad}});
-    /*  5 */ pTestStep->addDataRow({{"Val", -45.0}, {"Normalize", true}, {"Angle_rad", Math::c_f315Degrees_rad}});
-    /*  6 */ pTestStep->addDataRow({{"Val", -45.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f45Degrees_rad}});
-    /*  7 */ pTestStep->addDataRow({{"Val", 90.0}, {"Normalize", true}, {"Angle_rad", Math::c_f90Degrees_rad}});
-    /*  8 */ pTestStep->addDataRow({{"Val", 90.0}, {"Normalize", false}, {"Angle_rad", Math::c_f90Degrees_rad}});
-    /*  9 */ pTestStep->addDataRow({{"Val", -90.0}, {"Normalize", true}, {"Angle_rad", Math::c_f270Degrees_rad}});
-    /* 10 */ pTestStep->addDataRow({{"Val", -90.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f90Degrees_rad}});
-    /* 11 */ pTestStep->addDataRow({{"Val", 135.0}, {"Normalize", true}, {"Angle_rad", Math::c_f135Degrees_rad}});
-    /* 12 */ pTestStep->addDataRow({{"Val", 135.0}, {"Normalize", false}, {"Angle_rad", Math::c_f135Degrees_rad}});
-    /* 13 */ pTestStep->addDataRow({{"Val", -135.0}, {"Normalize", true}, {"Angle_rad", Math::c_f225Degrees_rad}});
-    /* 14 */ pTestStep->addDataRow({{"Val", -135.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f135Degrees_rad}});
-    /* 15 */ pTestStep->addDataRow({{"Val", 180.0}, {"Normalize", true}, {"Angle_rad", Math::c_fPI}});
-    /* 16 */ pTestStep->addDataRow({{"Val", 180.0}, {"Normalize", false}, {"Angle_rad", Math::c_fPI}});
-    /* 17 */ pTestStep->addDataRow({{"Val", -180.0}, {"Normalize", true}, {"Angle_rad", Math::c_fPI}});
-    /* 18 */ pTestStep->addDataRow({{"Val", -180.0}, {"Normalize", false}, {"Angle_rad", -Math::c_fPI}});
-    /* 19 */ pTestStep->addDataRow({{"Val", 225.0}, {"Normalize", true}, {"Angle_rad", Math::c_f225Degrees_rad}});
-    /* 20 */ pTestStep->addDataRow({{"Val", 225.0}, {"Normalize", false}, {"Angle_rad", Math::c_f225Degrees_rad}});
-    /* 21 */ pTestStep->addDataRow({{"Val", -225.0}, {"Normalize", true}, {"Angle_rad", Math::c_f135Degrees_rad}});
-    /* 22 */ pTestStep->addDataRow({{"Val", -225.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f225Degrees_rad}});
-    /* 23 */ pTestStep->addDataRow({{"Val", 270.0}, {"Normalize", true}, {"Angle_rad", Math::c_f270Degrees_rad}});
-    /* 24 */ pTestStep->addDataRow({{"Val", 270.0}, {"Normalize", false}, {"Angle_rad", Math::c_f270Degrees_rad}});
-    /* 25 */ pTestStep->addDataRow({{"Val", -270.0}, {"Normalize", true}, {"Angle_rad", Math::c_f90Degrees_rad}});
-    /* 26 */ pTestStep->addDataRow({{"Val", -270.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f270Degrees_rad}});
-    /* 27 */ pTestStep->addDataRow({{"Val", 315.0}, {"Normalize", true}, {"Angle_rad", Math::c_f315Degrees_rad}});
-    /* 28 */ pTestStep->addDataRow({{"Val", 315.0}, {"Normalize", false}, {"Angle_rad", Math::c_f315Degrees_rad}});
-    /* 29 */ pTestStep->addDataRow({{"Val", -315.0}, {"Normalize", true}, {"Angle_rad", Math::c_f45Degrees_rad}});
-    /* 30 */ pTestStep->addDataRow({{"Val", -315.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f315Degrees_rad}});
+    /*  3 */ pTestStep->addDataRow({{"Val", 45.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f45Degrees_rad}});
+    /*  4 */ pTestStep->addDataRow({{"Val", 45.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f45Degrees_rad}});
+    /*  5 */ pTestStep->addDataRow({{"Val", -45.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f315Degrees_rad}});
+    /*  6 */ pTestStep->addDataRow({{"Val", -45.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f45Degrees_rad}});
+    /*  7 */ pTestStep->addDataRow({{"Val", 90.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f90Degrees_rad}});
+    /*  8 */ pTestStep->addDataRow({{"Val", 90.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f90Degrees_rad}});
+    /*  9 */ pTestStep->addDataRow({{"Val", -90.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f270Degrees_rad}});
+    /* 10 */ pTestStep->addDataRow({{"Val", -90.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f90Degrees_rad}});
+    /* 11 */ pTestStep->addDataRow({{"Val", 135.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f135Degrees_rad}});
+    /* 12 */ pTestStep->addDataRow({{"Val", 135.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f135Degrees_rad}});
+    /* 13 */ pTestStep->addDataRow({{"Val", -135.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f225Degrees_rad}});
+    /* 14 */ pTestStep->addDataRow({{"Val", -135.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f135Degrees_rad}});
+    /* 15 */ pTestStep->addDataRow({{"Val", 180.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 16 */ pTestStep->addDataRow({{"Val", 180.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 17 */ pTestStep->addDataRow({{"Val", -180.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 18 */ pTestStep->addDataRow({{"Val", -180.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_fPI}});
+    /* 19 */ pTestStep->addDataRow({{"Val", 225.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f225Degrees_rad}});
+    /* 20 */ pTestStep->addDataRow({{"Val", 225.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f225Degrees_rad}});
+    /* 21 */ pTestStep->addDataRow({{"Val", -225.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f135Degrees_rad}});
+    /* 22 */ pTestStep->addDataRow({{"Val", -225.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f225Degrees_rad}});
+    /* 23 */ pTestStep->addDataRow({{"Val", 270.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f270Degrees_rad}});
+    /* 24 */ pTestStep->addDataRow({{"Val", 270.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f270Degrees_rad}});
+    /* 25 */ pTestStep->addDataRow({{"Val", -270.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f90Degrees_rad}});
+    /* 26 */ pTestStep->addDataRow({{"Val", -270.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f270Degrees_rad}});
+    /* 27 */ pTestStep->addDataRow({{"Val", 315.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f315Degrees_rad}});
+    /* 28 */ pTestStep->addDataRow({{"Val", 315.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f315Degrees_rad}});
+    /* 29 */ pTestStep->addDataRow({{"Val", -315.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f45Degrees_rad}});
+    /* 30 */ pTestStep->addDataRow({{"Val", -315.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f315Degrees_rad}});
     /* 31 */ pTestStep->addDataRow({{"Val", 360.0}, {"Normalize", true}, {"Angle_rad", 0.0}});
-    /* 32 */ pTestStep->addDataRow({{"Val", 360.0}, {"Normalize", false}, {"Angle_rad", Math::c_f2PI}});
+    /* 32 */ pTestStep->addDataRow({{"Val", 360.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f2PI}});
     /* 33 */ pTestStep->addDataRow({{"Val", -360.0}, {"Normalize", true}, {"Angle_rad", 0.0}});
-    /* 34 */ pTestStep->addDataRow({{"Val", -360.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f2PI}});
-    /* 35 */ pTestStep->addDataRow({{"Val", 405.0}, {"Normalize", true}, {"Angle_rad", Math::c_f45Degrees_rad}});
-    /* 36 */ pTestStep->addDataRow({{"Val", 405.0}, {"Normalize", false}, {"Angle_rad", 9.0*Math::c_fPI/4.0}});
-    /* 37 */ pTestStep->addDataRow({{"Val", -405.0}, {"Normalize", true}, {"Angle_rad", Math::c_f315Degrees_rad}});
-    /* 38 */ pTestStep->addDataRow({{"Val", -405.0}, {"Normalize", false}, {"Angle_rad", -9.0*Math::c_fPI/4.0}});
-    /* 39 */ pTestStep->addDataRow({{"Val", 450.0}, {"Normalize", true}, {"Angle_rad", Math::c_f90Degrees_rad}});
-    /* 40 */ pTestStep->addDataRow({{"Val", 450.0}, {"Normalize", false}, {"Angle_rad", 5.0*Math::c_fPI/2.0}});
-    /* 41 */ pTestStep->addDataRow({{"Val", -450.0}, {"Normalize", true}, {"Angle_rad", Math::c_f270Degrees_rad}});
-    /* 42 */ pTestStep->addDataRow({{"Val", -450.0}, {"Normalize", false}, {"Angle_rad", -5.0*Math::c_fPI/2.0}});
-    /* 43 */ pTestStep->addDataRow({{"Val", 495.0}, {"Normalize", true}, {"Angle_rad", Math::c_f135Degrees_rad}});
-    /* 44 */ pTestStep->addDataRow({{"Val", 495.0}, {"Normalize", false}, {"Angle_rad", 11.0*Math::c_fPI/4.0}});
-    /* 45 */ pTestStep->addDataRow({{"Val", -495.0}, {"Normalize", true}, {"Angle_rad", Math::c_f225Degrees_rad}});
-    /* 46 */ pTestStep->addDataRow({{"Val", -495.0}, {"Normalize", false}, {"Angle_rad", -11.0*Math::c_fPI/4.0}});
-    /* 47 */ pTestStep->addDataRow({{"Val", 540.0}, {"Normalize", true}, {"Angle_rad", Math::c_fPI}});
-    /* 48 */ pTestStep->addDataRow({{"Val", 540.0}, {"Normalize", false}, {"Angle_rad", Math::c_f3PI}});
-    /* 49 */ pTestStep->addDataRow({{"Val", -540.0}, {"Normalize", true}, {"Angle_rad", Math::c_fPI}});
-    /* 50 */ pTestStep->addDataRow({{"Val", -540.0}, {"Normalize", false}, {"Angle_rad", -Math::c_f3PI}});
+    /* 34 */ pTestStep->addDataRow({{"Val", -360.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f2PI}});
+    /* 35 */ pTestStep->addDataRow({{"Val", 405.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f45Degrees_rad}});
+    /* 36 */ pTestStep->addDataRow({{"Val", 405.0}, {"Normalize", false}, {"Angle_rad", 9.0*ZS::System::Math::c_fPI/4.0}});
+    /* 37 */ pTestStep->addDataRow({{"Val", -405.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f315Degrees_rad}});
+    /* 38 */ pTestStep->addDataRow({{"Val", -405.0}, {"Normalize", false}, {"Angle_rad", -9.0*ZS::System::Math::c_fPI/4.0}});
+    /* 39 */ pTestStep->addDataRow({{"Val", 450.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f90Degrees_rad}});
+    /* 40 */ pTestStep->addDataRow({{"Val", 450.0}, {"Normalize", false}, {"Angle_rad", 5.0*ZS::System::Math::c_fPI/2.0}});
+    /* 41 */ pTestStep->addDataRow({{"Val", -450.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f270Degrees_rad}});
+    /* 42 */ pTestStep->addDataRow({{"Val", -450.0}, {"Normalize", false}, {"Angle_rad", -5.0*ZS::System::Math::c_fPI/2.0}});
+    /* 43 */ pTestStep->addDataRow({{"Val", 495.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f135Degrees_rad}});
+    /* 44 */ pTestStep->addDataRow({{"Val", 495.0}, {"Normalize", false}, {"Angle_rad", 11.0*ZS::System::Math::c_fPI/4.0}});
+    /* 45 */ pTestStep->addDataRow({{"Val", -495.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_f225Degrees_rad}});
+    /* 46 */ pTestStep->addDataRow({{"Val", -495.0}, {"Normalize", false}, {"Angle_rad", -11.0*ZS::System::Math::c_fPI/4.0}});
+    /* 47 */ pTestStep->addDataRow({{"Val", 540.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 48 */ pTestStep->addDataRow({{"Val", 540.0}, {"Normalize", false}, {"Angle_rad", ZS::System::Math::c_f3PI}});
+    /* 49 */ pTestStep->addDataRow({{"Val", -540.0}, {"Normalize", true}, {"Angle_rad", ZS::System::Math::c_fPI}});
+    /* 50 */ pTestStep->addDataRow({{"Val", -540.0}, {"Normalize", false}, {"Angle_rad", -ZS::System::Math::c_f3PI}});
 
     // Rounding
     //----------
@@ -533,25 +533,442 @@ CTest::CTest() :
 
     ZS::Test::CTestStepGroup* pGrpDivLines = new ZS::Test::CTestStepGroup(
         /* pTest      */ this,
-        /* strName    */ "Division Lines",
+        /* strName    */ "Scale Division Lines",
         /* pGrpParent */ nullptr );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "CalculateDivLines4LinSpacing",
+        /* strName         */ "GetDivLines4LinSpacing-Pixels",
         /* strOperation    */ "getDivLines4LinSpacing",
         /* pGrpParent      */ pGrpDivLines,
-        /* szDoTestStepFct */ SLOT(doTestStepCalculateDivLines4LinSpacing(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestDivLines4LinSpacing(ZS::Test::CTestStep*)) );
     pTestStep->addDataRow({
-        {"ScaleMinVal", 0}, {"ScaleMaxVal", 0}, {"ScaleRangePix", 0},
-        {"DivLineDistMinVal", 0}, {"DivLineDistMinPix", 0}, {"UseDivLineDistValDecimalFactor25", false},
-        {"DivLineFirstVal", 0}, {"DivLineDistFirstPix", 0}, {"DivLineDistVal", 0}, {"DivLineDistPix", 0},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 0.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 0}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 1.0}, {"DivLineDistPix", 1.0},
         {"DivLinesCount", 0}});
     pTestStep->addDataRow({
-        {"ScaleMinVal", 0}, {"ScaleMaxVal", 100.0}, {"ScaleRangePix", 1000},
-        {"DivLineDistMinVal", 10.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
-        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 100},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 10}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 10.0},
+        {"DivLinesCount", 2}});
+    pTestStep->addDataRow({
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 10}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 10.0},
+        {"DivLinesCount", 3}});
+    pTestStep->addDataRow({
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 999.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 50.0}, {"DivLineDistPix", 50.0},
+        {"DivLinesCount", 20}});
+    pTestStep->addDataRow({
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 1000.0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 50.0}, {"DivLineDistPix", 50.0},
+        {"DivLinesCount", 21}});
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "GetDivLines4LinSpacing-WorldCoors",
+        /* strOperation    */ "getDivLines4LinSpacing",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestDivLines4LinSpacing(ZS::Test::CTestStep*)) );
+    pTestStep->addDataRow({
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 0.0}, {"ScaleRangePix", 0},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 0}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 0.0}, {"DivLineDistPix", 0.0},
+        {"DivLinesCount", 0}});
+    pTestStep->addDataRow({
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRangePix", 20},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 10}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 19.0},
+        {"DivLinesCount", 2}});
+    pTestStep->addDataRow({
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRangePix", 21},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 10}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 5.0}, {"DivLineDistPix", 10.0},
+        {"DivLinesCount", 3}});
+    pTestStep->addDataRow({
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 100.0}, {"ScaleRangePix", 1000},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 10.0}, {"DivLineDistPix", 99.9},
         {"DivLinesCount", 11}});
+    pTestStep->addDataRow({
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 100.0}, {"ScaleRangePix", 1001},
+        {"DivLineDistMinVal", 0.0}, {"DivLineDistMinPix", 50}, {"UseDivLineDistValDecimalFactor25", false},
+        {"DivLineFirstVal", 0.0}, {"DivLineDistFirstPix", 0.0}, {"DivLineDistVal", 5.0}, {"DivLineDistPix", 50.0},
+        {"DivLinesCount", 21}});
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "DivisionLineValues-Pixels",
+        /* strOperation    */ "getValues",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestStepDivLinesGetVal(ZS::Test::CTestStep*)) );
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 5.0}, {"ValExpected", 5.0},
+        {"Val", 5.0}, {"ValInPixExpected", 5.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 10.0}, {"ValExpected", 10.0},
+        {"Val", 10.0}, {"ValInPixExpected", 10.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 15.0}, {"ValExpected", 15.0},
+        {"Val", 15.0}, {"ValInPixExpected", 15.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 20.0}, {"ValExpected", 20.0},
+        {"Val", 20.0}, {"ValInPixExpected", 20.0}});
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 5.0}, {"ValExpected", 5.0},
+        {"Val", 5.0}, {"ValInPixExpected", 5.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 2}, {"DivLineVal", 20}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 10.0}, {"ValExpected", 10.0},
+        {"Val", 10.0}, {"ValInPixExpected", 10.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 2}, {"DivLineVal", 20}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 15.0}, {"ValExpected", 15.0},
+        {"Val", 15.0}, {"ValInPixExpected", 15.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", false},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 2}, {"DivLineVal", 20}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 20.0}, {"ValExpected", 20.0},
+        {"Val", 20.0}, {"ValInPixExpected", 20.0}});
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "DivisionLineValues-WorldCoors",
+        /* strOperation    */ "getValues",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestStepDivLinesGetVal(ZS::Test::CTestStep*)) );
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 19},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 5.0}, {"ValExpected", 2.6},
+        {"Val", 5.0}, {"ValInPixExpected", 9.5}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 19},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 10.0}, {"ValExpected", 5.3},
+        {"Val", 10.0}, {"ValInPixExpected", 19.0}});
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 1}, {"DivLineVal", 5.0}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 5.0}, {"ValExpected", 2.5},
+        {"Val", 5.0}, {"ValInPixExpected", 10.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::X).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 2}, {"DivLineVal", 10.0}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 10.0}, {"ValExpected", 5.0},
+        {"Val", 10.0}, {"ValInPixExpected", 20.0}});
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 19},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", -19.0},
+        {"ValInPix", 0.0}, {"ValExpected", 10.0},
+        {"Val", 0.0}, {"ValInPixExpected", 19.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", -19.0},
+        {"ValInPix", 5.0}, {"ValExpected", 7.4},
+        {"Val", 5.0}, {"ValInPixExpected", 9.5}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", -19.0},
+        {"ValInPix", 10.0}, {"ValExpected", 4.7},
+        {"Val", 10.0}, {"ValInPixExpected", 0.0}});
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", -10.0},
+        {"ValInPix", 0.0}, {"ValExpected", 10.0},
+        {"Val", 0.0}, {"ValInPixExpected", 20.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 1}, {"DivLineVal", 5.0}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", -10.0},
+        {"ValInPix", 5.0}, {"ValExpected", 7.5},
+        {"Val", 5.0}, {"ValInPixExpected", 10.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 2}, {"DivLineVal", 10.0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", -10.0},
+        {"ValInPix", 10.0}, {"ValExpected", 5.0},
+        {"Val", 10.0}, {"ValInPixExpected", 0.0}});
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 19},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 5.0}, {"ValExpected", 2.6},
+        {"Val", 5.0}, {"ValInPixExpected", 9.5}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
+        {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 19},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 10.0}, {"DivLineDistInPix", 19.0},
+        {"ValInPix", 10.0}, {"ValExpected", 5.3},
+        {"Val", 10.0}, {"ValInPixExpected", 19.0}});
+
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 0},
+        {"IdxDivLine1", 0}, {"IdxDivLine2", 1}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 0.0}, {"ValExpected", 0.0},
+        {"Val", 0.0}, {"ValInPixExpected", 0.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 1}, {"DivLineVal", 5.0}, {"DivLineInPix", 10},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 5.0}, {"ValExpected", 2.5},
+        {"Val", 5.0}, {"ValInPixExpected", 10.0}});
+    pTestStep->addDataRow({
+        {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
+        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
+        {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
+        {"UseWorldTransformation", true},
+        {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
+        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
+        {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
+        {"IdxDivLine", 2}, {"DivLineVal", 10.0}, {"DivLineInPix", 20},
+        {"IdxDivLine1", 1}, {"IdxDivLine2", 2}, {"DivLineDistVal", 5.0}, {"DivLineDistInPix", 10.0},
+        {"ValInPix", 10.0}, {"ValExpected", 5.0},
+        {"Val", 10.0}, {"ValInPixExpected", 20.0}});
 
     // Merge Arrays
     //---------------
@@ -754,12 +1171,12 @@ void CTest::doTestStepConvertAngles( ZS::Test::CTestStep* i_pTestStep )
 
         if( strOperation.compare("rad2Deg") == 0)
         {
-            fResult = Math::rad2Deg(fVal, bNormalize);
+            fResult = ZS::System::Math::rad2Deg(fVal, bNormalize);
             mapResultValues["Angle_deg"] = QString::number(fResult);
         }
         else if( strOperation.compare("deg2Rad") == 0)
         {
-            fResult = Math::deg2Rad(fVal, bNormalize);
+            fResult = ZS::System::Math::deg2Rad(fVal, bNormalize);
             mapResultValues["Angle_rad"] = QString::number(fResult);
         }
 
@@ -825,42 +1242,42 @@ void CTest::doTestStepRounding( ZS::Test::CTestStep* i_pTestStep )
 
         if (strOperation.compare("round2Nearest") == 0)
         {
-            fResult = Math::round2Nearest(fVal, iTrailingDigits);
+            fResult = ZS::System::Math::round2Nearest(fVal, iTrailingDigits);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2Lower") == 0)
         {
-            fResult = Math::round2Lower(fVal, iTrailingDigits);
+            fResult = ZS::System::Math::round2Lower(fVal, iTrailingDigits);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2Upper") == 0)
         {
-            fResult = Math::round2Upper(fVal, iTrailingDigits);
+            fResult = ZS::System::Math::round2Upper(fVal, iTrailingDigits);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2Resolution") == 0)
         {
-            fResult = Math::round2Resolution(fVal, fResolution);
+            fResult = ZS::System::Math::round2Resolution(fVal, fResolution);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2LowerDecade") == 0)
         {
-            fResult = Math::round2LowerDecade(fVal);
+            fResult = ZS::System::Math::round2LowerDecade(fVal);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2UpperDecade") == 0)
         {
-            fResult = Math::round2UpperDecade(fVal);
+            fResult = ZS::System::Math::round2UpperDecade(fVal);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2LowerIntMultOfTen") == 0)
         {
-            fResult = Math::round2LowerIntMultOfTen(fVal);
+            fResult = ZS::System::Math::round2LowerIntMultOfTen(fVal);
             mapResultValues["Result"] = QString::number(fResult);
         }
         else if (strOperation.compare("round2UpperIntMultOfTen") == 0)
         {
-            fResult = Math::round2UpperIntMultOfTen(fVal);
+            fResult = ZS::System::Math::round2UpperIntMultOfTen(fVal);
             mapResultValues["Result"] = QString::number(fResult);
         }
 
@@ -924,7 +1341,7 @@ void CTest::doTestStepMinMax( ZS::Test::CTestStep* i_pTestStep )
 
         if (strOperation.compare("getAbsMinMax") == 0)
         {
-            std::tuple<double, double> minMax = Math::getAbsMinMax(arfVals);
+            std::tuple<double, double> minMax = ZS::System::Math::getAbsMinMax(arfVals);
             mapResultValues["Min"] = QString::number(std::get<0>(minMax));
             mapResultValues["Max"] = QString::number(std::get<1>(minMax));
         }
@@ -983,7 +1400,7 @@ void CTest::doTestStepFirstSignificantDigit( ZS::Test::CTestStep* i_pTestStep )
 
         if (strOperation.compare("getFirstSignificantDigit") == 0)
         {
-            iDigit = Math::getFirstSignificantDigit(fVal);
+            iDigit = ZS::System::Math::getFirstSignificantDigit(fVal);
             mapResultValues["Result"] = QString::number(iDigit);
         }
 
@@ -1010,7 +1427,7 @@ void CTest::doTestStepFirstSignificantDigit( ZS::Test::CTestStep* i_pTestStep )
 } // doTestStepFirstSignificantDigit
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestDivLines4LinSpacing( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QStringList strlstExpectedValues;
@@ -1018,17 +1435,18 @@ void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTest
 
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
     {
-        double  fScaleMinVal = 0.0;
-        double  fScaleMaxVal = 0.0;
-        int     iScaleRangePix = 0;
-        double  fDivLineDistMinVal = 0.0;
-        int     iDivLineDistMinPix = 0;
-        bool    bUseDivLineDistValDecimalFactor25 = false;
-        double  fDivLineFirstValExpected = 0.0;
-        double  fDivLineDistFirstPixExpected = 0.0;
-        double  fDivLineDistValExpected = 0.0;
-        double  fDivLineDistPixExpected = 0.0;
-        int     iDivLineCountExpected = 0;
+        bool   bUseWorldTransformation = false;
+        double fScaleMinVal = 0.0;
+        double fScaleMaxVal = 0.0;
+        int    iScaleRangePix = 0;
+        double fDivLineDistMinVal = 0.0;
+        int    iDivLineDistMinPix = 0;
+        bool   bUseDivLineDistValDecimalFactor25 = false;
+        double fDivLineFirstValExpected = 0.0;
+        double fDivLineDistFirstPixExpected = 0.0;
+        double fDivLineDistValExpected = 0.0;
+        double fDivLineDistPixExpected = 0.0;
+        int    iDivLineCountExpected = 0;
 
         QMap<QString, QString> mapExpectedValues;
         QMap<QString, QString> mapResultValues;
@@ -1037,7 +1455,10 @@ void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTest
 
         for (const QString& strKey : dataRow.keys())
         {
-            if (strKey == "ScaleMinVal") {
+            if (strKey == "UseWorldTransformation") {
+                bUseWorldTransformation = dataRow["UseWorldTransformation"].toBool();
+            }
+            else if (strKey == "ScaleMinVal") {
                 fScaleMinVal = dataRow["ScaleMinVal"].toDouble();
             }
             else if (strKey == "ScaleMaxVal") {
@@ -1077,22 +1498,37 @@ void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTest
             }
         }
 
+        int iDivLineCountResult = -1;
         double fDivLineFirstValResult = 0.0;
         double fDivLineDistFirstPixResult = 0.0;
         double fDivLineDistValResult = 0.0;
         double fDivLineDistPixResult = 0.0;
 
-        int iDivLineCountResult = Math::CScaleDivLines::getDivLines4LinSpacing(
-            /* fScaleMinVal          */ fScaleMinVal,
-            /* fScaleMaxVal          */ fScaleMaxVal,
-            /* iScaleRangePix        */ iScaleRangePix,
-            /* fDivLineDistMinVal    */ fDivLineDistMinVal,
-            /* iDivLineDistMinPix    */ iDivLineDistMinPix,
-            /* bUseDivLineFactor25   */ bUseDivLineDistValDecimalFactor25,
-            /* pfDivLineFirstVal     */ &fDivLineFirstValResult,
-            /* pfDivLineDistFirstPix */ &fDivLineDistFirstPixResult,
-            /* pfDivLineDistVal      */ &fDivLineDistValResult,
-            /* pfDivLineDistPix      */ &fDivLineDistPixResult );
+        if (bUseWorldTransformation) {
+            iDivLineCountResult = ZS::System::Math::CScaleDivLines::getDivLines4LinSpacing(
+                /* fScaleMinVal          */ fScaleMinVal,
+                /* fScaleMaxVal          */ fScaleMaxVal,
+                /* iScaleRangePix        */ iScaleRangePix,
+                /* fDivLineDistMinVal    */ fDivLineDistMinVal,
+                /* iDivLineDistMinPix    */ iDivLineDistMinPix,
+                /* bUseDivLineFactor25   */ bUseDivLineDistValDecimalFactor25,
+                /* pfDivLineFirstVal     */ &fDivLineFirstValResult,
+                /* pfDivLineDistFirstPix */ &fDivLineDistFirstPixResult,
+                /* pfDivLineDistVal      */ &fDivLineDistValResult,
+                /* pfDivLineDistPix      */ &fDivLineDistPixResult );
+        }
+        else {
+            iDivLineCountResult = ZS::System::Math::CScaleDivLines::getDivLines4LinSpacing(
+                /* fScaleMinVal          */ fScaleMinVal,
+                /* fScaleMaxVal          */ fScaleMaxVal,
+                /* fDivLineDistMinVal    */ fDivLineDistMinVal,
+                /* iDivLineDistMinPix    */ iDivLineDistMinPix,
+                /* bUseDivLineFactor25   */ bUseDivLineDistValDecimalFactor25,
+                /* pfDivLineFirstVal     */ &fDivLineFirstValResult,
+                /* pfDivLineDistFirstPix */ &fDivLineDistFirstPixResult,
+                /* pfDivLineDistVal      */ &fDivLineDistValResult,
+                /* pfDivLineDistPix      */ &fDivLineDistPixResult );
+        }
 
         mapResultValues["DivLineFirstVal"] = QString::number(fDivLineFirstValResult);
         mapResultValues["DivLineDistFirstPix"] = QString::number(fDivLineDistFirstPixResult);
@@ -1120,7 +1556,190 @@ void CTest::doTestStepCalculateDivLines4LinSpacing( ZS::Test::CTestStep* i_pTest
     i_pTestStep->setExpectedValues(strlstExpectedValues);
     i_pTestStep->setResultValues(strlstResultValues);
 
-} // doTestStepCalculateDivLines4LinSpacing
+} // doTestDivLines4LinSpacing
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strOperation = i_pTestStep->getOperation();
+
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
+    {
+        CEnumScaleAxis eScaleAxis = EScaleAxis::X;
+        CEnumYScaleAxisOrientation eYScaleAxisOrientation;
+        CEnumSpacing eSpacing = ESpacing::Linear;
+        bool bUseWorldTransformation = false;
+        double fScaleMinVal = 0.0;
+        double fScaleMaxVal = 0.0;
+        double fScaleRes = 1.0;
+        int iScaleMin_px = 0;
+        int iScaleMax_px = 0;
+        int iDivLineDistMinPix = 0;
+        CEnumDivLineLayer eDivLineLayer = EDivLineLayer::Main;
+        int idxDivLine = 0;
+        int idxDivLine1 = 0;
+        int idxDivLine2 = 0;
+        double fValInPix = 0.0;
+        double fVal = 0.0;
+
+        int iDivLinesCountExpected = 0;
+        double fDivLineValExpected = 0.0;
+        double fDivLineInPixExpected = 0.0;
+        double fDivLinesDistMinExpected = 0.0;
+        double fDivLineDistValExpected = 0.0;
+        double fDivLineDistPixExpected = 0.0;
+        double fValInPixExpected = 0.0;
+        double fValExpected = 0.0;
+
+        QMap<QString, QString> mapExpectedValues;
+        QMap<QString, QString> mapResultValues;
+
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+
+        for (const QString& strKey : dataRow.keys())
+        {
+            if (strKey == "ScaleAxis") {
+                eScaleAxis = dataRow["ScaleAxis"].toString();
+            }
+            else if (strKey == "YScaleAxisOrientation") {
+                eYScaleAxisOrientation = dataRow["YScaleAxisOrientation"].toString();
+            }
+            else if (strKey == "Spacing") {
+                eSpacing = dataRow["Spacing"].toString();
+            }
+            else if (strKey == "UseWorldTransformation") {
+                bUseWorldTransformation = dataRow["UseWorldTransformation"].toBool();
+            }
+            else if (strKey == "ScaleMinVal") {
+                fScaleMinVal = dataRow["ScaleMinVal"].toDouble();
+            }
+            else if (strKey == "ScaleMaxVal") {
+                fScaleMaxVal = dataRow["ScaleMaxVal"].toDouble();
+            }
+            else if (strKey == "ScaleRes") {
+                fScaleRes = dataRow["ScaleRes"].toDouble();
+            }
+            else if (strKey == "ScaleMinInPix") {
+                iScaleMin_px = dataRow["ScaleMinInPix"].toInt();
+            }
+            else if (strKey == "ScaleMaxInPix") {
+                iScaleMax_px = dataRow["ScaleMaxInPix"].toInt();
+            }
+            else if (strKey == "DivLineDistMinPix") {
+                iDivLineDistMinPix = dataRow["DivLineDistMinPix"].toInt();
+            }
+            else if (strKey == "DivLineLayer") {
+                eDivLineLayer = dataRow["DivLineLayer"].toString();
+            }
+            else if (strKey == "IdxDivLine") {
+                idxDivLine = dataRow["IdxDivLine"].toDouble();
+            }
+            else if (strKey == "IdxDivLine1") {
+                idxDivLine1 = dataRow["IdxDivLine1"].toInt();
+            }
+            else if (strKey == "IdxDivLine2") {
+                idxDivLine2 = dataRow["IdxDivLine2"].toInt();
+            }
+            else if (strKey == "DivLinesCount") {
+                iDivLinesCountExpected = dataRow["DivLinesCount"].toInt();
+                mapExpectedValues[strKey] = dataRow["DivLinesCount"].toString();
+            }
+            else if (strKey == "DivLinesDistMin") {
+                fDivLinesDistMinExpected = dataRow["DivLinesDistMin"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLinesDistMin"].toString();
+            }
+            else if (strKey == "DivLineVal") {
+                fDivLineValExpected = dataRow["DivLineVal"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLineVal"].toString();
+            }
+            else if (strKey == "DivLineInPix") {
+                fDivLineInPixExpected = dataRow["DivLineInPix"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLineInPix"].toString();
+            }
+            else if (strKey == "DivLineDistVal") {
+                fDivLineDistValExpected = dataRow["DivLineDistVal"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLineDistVal"].toString();
+            }
+            else if (strKey == "DivLineDistInPix") {
+                fDivLineDistPixExpected = dataRow["DivLineDistInPix"].toDouble();
+                mapExpectedValues[strKey] = dataRow["DivLineDistInPix"].toString();
+            }
+            else if (strKey == "ValInPix") {
+                fValInPix = dataRow["ValInPix"].toDouble();
+            }
+            else if (strKey == "ValExpected") {
+                fValExpected = dataRow["ValExpected"].toDouble();
+                mapExpectedValues["Val"] = dataRow["ValExpected"].toString();
+            }
+            else if (strKey == "Val") {
+                fVal = dataRow["Val"].toDouble();
+            }
+            else if (strKey == "ValInPixExpected") {
+                fValInPixExpected = dataRow["ValInPixExpected"].toDouble();
+                mapExpectedValues["ValInPix"] = dataRow["ValInPixExpected"].toString();
+            }
+        }
+
+        ZS::System::Math::CScaleDivLines divLines(NameSpace(), eScaleAxis.enumerator());
+
+        if (eYScaleAxisOrientation.isValid()) {
+            divLines.setYScaleAxisOrientation(eYScaleAxisOrientation);
+        }
+        divLines.setSpacing(eSpacing);
+        divLines.setUseWorldCoordinateTransformation(bUseWorldTransformation);
+        if (bUseWorldTransformation) {
+            divLines.setScale(fScaleMinVal, fScaleMaxVal, fScaleRes, iScaleMin_px, iScaleMax_px);
+        }
+        else {
+            divLines.setScale(fScaleMinVal, fScaleMaxVal, fScaleRes);
+        }
+        divLines.setDivLinesDistMinInPix(eDivLineLayer, iDivLineDistMinPix);
+
+        divLines.update();
+
+        int iDivLinesCountResult = divLines.getDivLinesCount(eDivLineLayer);
+        double fDivLinesDistMinResult = divLines.getDivLinesDistMin(eDivLineLayer);
+        double fDivLineValResult = divLines.getDivLineVal(eDivLineLayer, idxDivLine);
+        double fDivLineInPixResult = divLines.getDivLineInPix(eDivLineLayer, idxDivLine);
+        double fDivLineDistValResult = divLines.getDivLineDistVal(eDivLineLayer, idxDivLine1, idxDivLine2);
+        double fDivLineDistPixResult = divLines.getDivLineDistInPix(eDivLineLayer, idxDivLine1, idxDivLine2);
+        double fValResult = divLines.getVal(fValInPix);
+        double fValInPixResult = divLines.getValInPix(fVal);
+
+        mapResultValues["DivLinesCount"] = QString::number(iDivLinesCountResult);
+        mapResultValues["DivLinesDistMin"] = QString::number(fDivLinesDistMinResult);
+        mapResultValues["DivLineVal"] = QString::number(fDivLineValResult);
+        mapResultValues["DivLineInPix"] = QString::number(fDivLineInPixResult);
+        mapResultValues["DivLineDistVal"] = QString::number(fDivLineDistValResult);
+        mapResultValues["DivLineDistInPix"] = QString::number(fDivLineDistPixResult);
+        mapResultValues["Val"] = QString::number(fValResult);
+        mapResultValues["ValInPix"] = QString::number(fValInPixResult);
+
+        QString strExpectedValues;
+        for (const QString& strKey : mapExpectedValues.keys())
+        {
+            if (!strExpectedValues.isEmpty()) strExpectedValues += ", ";
+            strExpectedValues += strKey + "=" + mapExpectedValues[strKey];
+        }
+        strlstExpectedValues.append(strExpectedValues);
+
+        QString strResultValues;
+        for (const QString& strKey : mapResultValues.keys())
+        {
+            if (!strResultValues.isEmpty()) strResultValues += ", ";
+            strResultValues += strKey + "=" + mapResultValues[strKey];
+        }
+        strlstResultValues.append(strResultValues);
+    }
+
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
+
+} // doTestStepDivLinesGetVal
 
 //------------------------------------------------------------------------------
 void CTest::doTestStepMergeArrays( ZS::Test::CTestStep* i_pTestStep )
@@ -1162,7 +1781,7 @@ void CTest::doTestStepMergeArrays( ZS::Test::CTestStep* i_pTestStep )
             }
         }
 
-        QVector<double> arfValsMerged = Math::merge(arfVals1, arfVals2);
+        QVector<double> arfValsMerged = ZS::System::Math::merge(arfVals1, arfVals2);
 
         for (int idxVal = 0; idxVal < arfValsMerged.size(); ++idxVal) {
             QString strKey = "ValArrMerged[" + QString::number(idxVal) + "]";
@@ -1233,7 +1852,7 @@ void CTest::doTestStepPrecision2ShowUniqueNumbers( ZS::Test::CTestStep* i_pTestS
             }
         }
 
-        int iPrecision = Math::CScaleDivLines::getPrecision2ShowUniqueNumbers(
+        int iPrecision = ZS::System::Math::CScaleDivLines::getPrecision2ShowUniqueNumbers(
             arfVals, iExponentDigits, iPrecisionMin, iPrecisionMax);
         mapResultValues["Precision"] = QString::number(iPrecision);
 

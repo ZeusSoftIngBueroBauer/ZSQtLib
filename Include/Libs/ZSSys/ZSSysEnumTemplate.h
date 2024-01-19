@@ -45,10 +45,6 @@ may result in using the software modules.
 #endif
 
 
-//namespace ZS
-//{
-//namespace System
-//{
 const int EInvalidEnumerator = -1;
 
 //******************************************************************************
@@ -250,7 +246,8 @@ public: // class members
     /*!< String hash tables to speed up string to enumerator conversions. */
     static QVector<QHash<QString, int>> s_armapsStr2Enumerators;
 private: // instance members
-    E m_enumerator;  /*!< Currently selected enumerator. */
+    /*!< Currently selected enumerator. */
+    E m_enumerator;
 
 }; // template class CEnum
 
@@ -1875,10 +1872,6 @@ void CEnum<E>::throwExceptionIfEnumeratorIsInvalid( ZS::System::EResult i_result
         throw ZS::System::CException(__FILE__, __LINE__, errResultInfo);
     }
 }
-
-//} // namespace System
-
-//} // namespace ZS
 
 #ifdef _WINDOWS
 #pragma warning( pop )

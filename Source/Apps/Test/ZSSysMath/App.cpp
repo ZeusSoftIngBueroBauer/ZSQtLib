@@ -47,7 +47,7 @@ using namespace ZS::System;
 using namespace ZS::System::GUI;
 using namespace ZS::Ipc;
 using namespace ZS::Trace;
-using namespace ZS::Apps::Test::Template;
+using namespace ZS::Apps::Test::Math;
 
 
 /*******************************************************************************

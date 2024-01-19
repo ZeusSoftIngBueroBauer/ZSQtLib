@@ -64,7 +64,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSIpcTraceDllIfQtApp"),
+    ZS::Test::CTest(NameSpace(), "theInst"),
     m_pDlgTestStep(nullptr),
     m_pTmrTestStepTimeout(nullptr),
     m_trcSettings(),

@@ -1,0 +1,2 @@
+<GUIMain                 > -> <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.instMethod1(Hello Method 1)
+<GUIMain                 > <- <ZS::Apps::Test::IpcTrace::CMyClass1> Inst1.instMethod1(): Hello World

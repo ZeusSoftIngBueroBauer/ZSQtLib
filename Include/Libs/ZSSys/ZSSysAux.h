@@ -54,10 +54,12 @@ global type definitions and constants
 class QEvent;
 class QMimeData;
 class QModelIndex;
+class QLine;
+class QLineF;
 class QPoint;
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-class QStringList;
-#endif
+class QPointF;
+class QRect;
+class QRectF;
 class QVariant;
 
 namespace ZS
@@ -162,8 +164,9 @@ ZSSYSDLL_API QString qXmlStreamTokenType2Str( int i_iVal, EEnumEntryAliasStr i_a
 ZSSYSDLL_API QString qBrushStyle2Str( const Qt::BrushStyle& i_brushStyle );
 ZSSYSDLL_API QString qCheckState2Str( int i_iVal );
 ZSSYSDLL_API QString qCursorShape2Str( int i_iVal );
+ZSSYSDLL_API QString qDropAction2Str( Qt::DropAction i_action );
 ZSSYSDLL_API QString qDropActions2Str( int i_actions );
-ZSSYSDLL_API QString qEvent2Str( QEvent* i_pEv, int i_iDetailLevel = 0 );
+ZSSYSDLL_API QString qEvent2Str( QEvent* i_pEv );
 ZSSYSDLL_API QString qEventType2Str( int i_iVal, bool i_bShort = true );
 ZSSYSDLL_API QString qFocusReason2Str( int i_iVal );
 ZSSYSDLL_API QString qItemDataRole2Str( int i_iVal );
@@ -175,18 +178,20 @@ ZSSYSDLL_API int str2QKeyCode( const QString& i_str );  // e.g. "F1", "Enter", "
 ZSSYSDLL_API QString qKeyboardModifiers2Str( quint32 i_modifiers );
 ZSSYSDLL_API Qt::KeyboardModifiers char2QKeyboardModifiers( const QChar& i_ch );
 
-ZSSYSDLL_API QString qMargins2Str( const QMargins& i_margins, bool i_bShort = true );
+ZSSYSDLL_API QString qMargins2Str( const QMargins& i_margins );
 ZSSYSDLL_API QString qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel = 0 );
 ZSSYSDLL_API QString qModelIndex2Str( const QModelIndex& i_modelIdx );
-ZSSYSDLL_API QString qMouseButton2Str( int i_iBtn, bool i_bShort = true );
-ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns, bool i_bShort = true );
+ZSSYSDLL_API QString qMouseButton2Str( int i_iBtn );
+ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns );
 ZSSYSDLL_API QString qPenStyle2Str( const Qt::PenStyle& i_penStyle );
-ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt, bool i_bShort = true );
-ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt, bool i_bShort = true );
-ZSSYSDLL_API QString qRect2Str( const QRect& i_rct, bool i_bShort = true );
-ZSSYSDLL_API QString qRect2Str( const QRectF& i_rct, bool i_bShort = true );
-ZSSYSDLL_API QString qSize2Str( const QSize& i_size, bool i_bShort = true );
-ZSSYSDLL_API QString qSize2Str( const QSizeF& i_size, bool i_bShort = true );
+ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt );
+ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt );
+ZSSYSDLL_API QString qSize2Str( const QSize& i_size );
+ZSSYSDLL_API QString qSize2Str( const QSizeF& i_size );
+ZSSYSDLL_API QString qLine2Str( const QLine& i_line );
+ZSSYSDLL_API QString qLine2Str( const QLineF& i_line );
+ZSSYSDLL_API QString qRect2Str( const QRect& i_rct );
+ZSSYSDLL_API QString qRect2Str( const QRectF& i_rct );
 ZSSYSDLL_API QString qVariantType2Str( int i_iVal );
 
 
@@ -257,6 +262,11 @@ ZSSYSDLL_API void formatString(
     int*           o_piDigitsLeading,
     int*           o_piDigitsTrailing,
     int*           o_piDigitsExponent );
+
+ZSSYSDLL_API SErrResultInfo splitMethodTraceFilterExpressionString(
+    const QString& i_strFilter, QStringList& i_strlstInclude, QStringList& i_strlstExclude);
+ZSSYSDLL_API QString joinMethodTraceFilterExpressionStrings(
+    QStringList& i_strlstInclude, QStringList& i_strlstExclude);
 
 
 } // namespace System

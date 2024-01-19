@@ -273,7 +273,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, QDeadlineTimer i_deadline)
 
     bool bOk = QWaitCondition::wait(i_pMutexLocked, i_deadline);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -310,7 +310,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, QDeadlineTimer i_dea
 
     bool bOk = QWaitCondition::wait(i_pReadWriteLock, i_deadline);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -346,7 +346,7 @@ bool CWaitCondition::wait(CMutex* i_pMutexLocked, unsigned long i_uTime_ms)
 
     bool bOk = QWaitCondition::wait(i_pMutexLocked, i_uTime_ms);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }
@@ -381,7 +381,7 @@ bool CWaitCondition::wait(QReadWriteLock* i_pReadWriteLock, unsigned long i_uTim
 
     bool bOk = QWaitCondition::wait(i_pReadWriteLock, i_uTime_ms);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(bOk);
     }

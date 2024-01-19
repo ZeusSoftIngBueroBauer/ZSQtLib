@@ -84,7 +84,8 @@ public: // ctors and dtor
 
 //------------------------------------------------------------------------------
 CTest::CTest(
-    const QString& i_strName,
+    const QString& i_strNameSpace,
+    const QString& i_strObjName,
     const QString& i_strTestStepsAbsFilePath,
     const QString& i_strNodeSeparator,
     int            i_iTestStepInterval_ms,
@@ -102,21 +103,19 @@ CTest::CTest(
     m_bDoTestStepPending(false),
     m_pTrcAdminObj(nullptr)
 {
-    setObjectName(i_strName);
+    setObjectName(i_strObjName);
 
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(i_strNameSpace, ClassName(), objectName());
 
     QString strMthInArgs;
-
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
-    {
-        strMthInArgs = "Name: " + i_strName;
-        strMthInArgs += ", TestStepsFile: " + i_strTestStepsAbsFilePath;
-        strMthInArgs += ", NodeSep: " + i_strNodeSeparator;
-        strMthInArgs += ", Interval: " + QString::number(i_iTestStepInterval_ms) + " ms";
-        strMthInArgs += ", ResultsFile: " + i_strTestResultsAbsFilePath;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "NameSpace: " + i_strNameSpace +
+            ", ObjName: " + i_strObjName +
+            ", TestStepsFile: " + i_strTestStepsAbsFilePath +
+            ", NodeSep: " + i_strNodeSeparator +
+            ", Interval: " + QString::number(i_iTestStepInterval_ms) + " ms" +
+            ", ResultsFile: " + i_strTestResultsAbsFilePath;
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iFilterLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -138,7 +137,7 @@ CTest::CTest(
     // Should be called by derived class if desired.
     //m_pIdxTree->recall();
 
-} // default ctor
+} // ctor
 
 //------------------------------------------------------------------------------
 CTest::~CTest()
@@ -162,7 +161,6 @@ CTest::~CTest()
     }
 
     mthTracer.onAdminObjAboutToBeReleased();
-
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
 
     m_pIdxTree = nullptr;
@@ -201,7 +199,7 @@ SErrResultInfo CTest::saveTestSteps( const QString& i_strAbsFilePath )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
@@ -221,7 +219,7 @@ SErrResultInfo CTest::saveTestSteps( const QString& i_strAbsFilePath )
 
     SErrResultInfo errResultInfo = m_pIdxTree->save(strAbsFilePath);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -251,7 +249,7 @@ SErrResultInfo CTest::recallTestSteps( const QString& i_strAbsFilePath )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
     }
@@ -271,7 +269,7 @@ SErrResultInfo CTest::recallTestSteps( const QString& i_strAbsFilePath )
 
     SErrResultInfo errResultInfo = m_pIdxTree->recall(strAbsFilePath);
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -290,7 +288,7 @@ void CTest::setTestStepInterval( int i_iTestStepInterval_ms )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Interval: " + QString::number(i_iTestStepInterval_ms);
     }
@@ -517,7 +515,7 @@ SErrResultInfo CTest::readExpectedTestResults(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strAbsFilePath;
     }
@@ -528,7 +526,7 @@ SErrResultInfo CTest::readExpectedTestResults(
         /* strMethod    */ "readExpectedTestResults",
         /* strMthInArgs */ strMthInArgs );
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "saveTestResults");
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "saveTestResults");
 
     QFile file;
 
@@ -562,7 +560,7 @@ SErrResultInfo CTest::readExpectedTestResults(
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -809,7 +807,7 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "AbsFilePath: " + i_strAbsFilePath;
         strMthInArgs += ", ReportAllResults: " + bool2Str(i_bReportAllExpectedResults);
@@ -821,7 +819,7 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
         /* strMethod    */ "saveTestResults",
         /* strMthInArgs */ strMthInArgs );
 
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "saveTestResults");
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "saveTestResults");
 
     QString strAbsFilePath = i_strAbsFilePath;
 
@@ -1030,7 +1028,7 @@ SErrResultInfo CTest::saveTestResults( const QString& i_strAbsFilePath, bool i_b
         }
     }
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         mthTracer.setMethodReturn(errResultInfo);
     }
@@ -1056,7 +1054,7 @@ void CTest::doTestStep()
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
     }
 
@@ -1116,7 +1114,7 @@ void CTest::onCurrentTestStepFinished( CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
@@ -1185,7 +1183,7 @@ void CTest::setState( const CEnumTestState& i_state )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "State: " + i_state.toString();
     }
@@ -1217,7 +1215,7 @@ void CTest::setRunMode( const CEnumRunMode& i_runMode )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "RunMode: " + i_runMode.toString();
     }
@@ -1276,7 +1274,7 @@ void CTest::setCurrentTestStep( CTestStep* i_pTestStep )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Step: " + QString(i_pTestStep == nullptr ? "nullptr" : i_pTestStep->path());
     }
@@ -1319,7 +1317,7 @@ CTestStep* CTest::getNextTestStep( CTestStep* i_pTestStepCurr )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "TestStepCurr: " + QString(i_pTestStepCurr == nullptr ? "nullptr" : i_pTestStepCurr->path());
     }
@@ -1375,7 +1373,7 @@ CTestStep* CTest::getNextTestStep(
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo  = "TreeEntryParent: " + QString(i_pTreeEntryParent == nullptr ? "nullptr" : i_pTreeEntryParent->path());
         strAddTrcInfo += ", TreeEntryFinished: " + QString(i_pTreeEntryFinished == nullptr ? "nullptr" : i_pTreeEntryFinished->name());
@@ -1476,7 +1474,7 @@ void CTest::triggerDoTestStep( int i_iInterval_ms )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Interval: " + QString::number(i_iInterval_ms);
     }
@@ -1530,7 +1528,7 @@ void CTest::triggerNextTestStep( int i_iInterval_ms )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Interval: " + QString::number(i_iInterval_ms);
     }
@@ -1593,7 +1591,7 @@ bool CTest::event( QEvent* i_pMsg )
 
         QString strAddTrcInfo;
 
-        if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+        if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
         {
             int iAddTrcInfoDetails = m_pTrcAdminObj->getMethodCallsTraceDetailLevel() >= EMethodTraceDetailLevel::ArgsDetailed ? 1 : 0;
             strAddTrcInfo = "Msg { " + pMsg->getAddTrcInfoStr(iAddTrcInfoDetails) + " }";

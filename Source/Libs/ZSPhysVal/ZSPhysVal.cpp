@@ -164,7 +164,7 @@ SValueFormatProvider::SValueFormatProvider() :
 //------------------------------------------------------------------------------
     m_pUnitVal(nullptr),
     m_unitFindVal(EUnitFind::None),
-    m_iValSubStrVisibility(PhysValSubStr::UnitSymbol),
+    m_iValSubStrVisibility(PhysValSubStr::Val|PhysValSubStr::UnitSymbol),
     m_iDigitsMantissa(0),
     m_iDigitsExponent(0),
     m_bUseEngineeringFormat(false),
@@ -444,6 +444,16 @@ CPhysVal::CPhysVal( const CUnit& i_unit, EResType i_resType ) :
     m_validity(EValueValidity::Invalid),
     m_fVal(0.0),
     m_physValRes(i_unit, i_resType)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysVal::CPhysVal( const CUnit& i_unitVal, double i_fResVal, EResType i_resType ) :
+//------------------------------------------------------------------------------
+    m_unit(i_unitVal),
+    m_validity(EValueValidity::Invalid),
+    m_fVal(0.0),
+    m_physValRes(i_fResVal, i_unitVal, i_resType)
 {
 }
 
@@ -1862,14 +1872,15 @@ public: // instance methods (to convert the unit)
 void CPhysVal::convertValue( const CUnit& i_unitDst )
 //------------------------------------------------------------------------------
 {
-    if( !areOfSameUnitGroup(m_unit,i_unitDst) )
-    {
+    if (!areOfSameUnitGroup(m_unit,i_unitDst)) {
         QString strAddErrInfo = "Src:" + m_unit.keyInTree() + ", Dst:" + i_unitDst.keyInTree();
         throw CUnitConversionException( __FILE__, __LINE__, EResultDifferentPhysSizes, strAddErrInfo );
     }
-    if( isValid() && m_unit.isValid() && i_unitDst.isValid() && m_unit != i_unitDst )
-    {
+    if (isValid() && m_unit.isValid() && i_unitDst.isValid() && m_unit != i_unitDst) {
         m_fVal = m_unit.convertValue(m_fVal, i_unitDst);
         m_unit = i_unitDst;
+        if (m_physValRes.isValid()) {
+            m_physValRes.convertValue(i_unitDst);
+        }
     }
 }

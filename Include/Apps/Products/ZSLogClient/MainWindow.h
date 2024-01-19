@@ -77,8 +77,8 @@ public: // ctors and dtor
         Qt::WindowFlags         i_wflags = Qt::WindowFlags());
     ~CMainWindow();
 protected: // overridables of base class QWidget
-    virtual void closeEvent( QCloseEvent* i_pEv );
-    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
+    virtual void closeEvent( QCloseEvent* i_pEv ) override;
+    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
 protected slots:
     void onActFileRecallLoggersTriggered();
     void onActFileSaveLoggersTriggered();

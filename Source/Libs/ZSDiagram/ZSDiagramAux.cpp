@@ -231,36 +231,6 @@ QString ZS::Diagram::updateFlags2Str( unsigned int i_uUpdateFlags )
 
 
 /*==============================================================================
-Enum ELayoutPos
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-QString ZS::Diagram::layoutPos2Str( int i_iLayoutPos )
-//------------------------------------------------------------------------------
-{
-    static const char* s_arszLayoutPos[ELayoutPosCount] = {
-        "Top",
-        "Bottom",
-        "Left",
-        "Right",
-        "Center",
-        "Undefined"
-    };
-
-    if( i_iLayoutPos >= 0 && i_iLayoutPos < ELayoutPosCount )
-    {
-        return s_arszLayoutPos[i_iLayoutPos];
-    }
-    if( i_iLayoutPos == ELayoutPosCount )
-    {
-        return "Count";
-    }
-    return "Out Of Range";
-
-} // layoutPos2Str
-
-
-/*==============================================================================
 Enum ETextOrientation
 ==============================================================================*/
 

@@ -33,39 +33,39 @@ set(_ResourcesPath ${CMAKE_CURRENT_SOURCE_DIR}/../../../Resources/Libs)
 
 list(APPEND _Headers
     ${_HeadersPath}/ZSSys/ZSSysVersion.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryGrpBase.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryGrpScienceField.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryPhysUnit.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryUnitBase.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryUnitQuantity.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysTreeEntryUnitRatio.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysUnitsIdxTree.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysUnit.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysUnitsFctConvert.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysVal.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysValArr.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysValDllMain.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysValExceptions.h
-    ${_HeadersPath}/ZSPhysVal/ZSPhysValRes.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysTreeEntryGrpBase.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysTreeEntryGrpPhysUnits.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysTreeEntryGrpScienceField.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysTreeEntryPhysUnit.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysTreeEntryUnitBase.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysTreeEntryUnitQuantity.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysTreeEntryUnitRatio.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysUnitsIdxTree.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysUnit.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysUnitsFctConvert.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysVal.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysValArr.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysValDllMain.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysValExceptions.h
+    ${_HeadersPath}/${PROJECT_NAME}/ZSPhysValRes.h
 )
 
 list(APPEND _Sources
-    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryGrpBase.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryGrpPhysUnits.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryGrpScienceField.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryPhysUnit.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryUnitBase.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryUnitQuantity.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysTreeEntryUnitRatio.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysUnitsIdxTree.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysUnit.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysUnitsFctConvert.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysVal.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysValArr.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysValDllMain.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysValExceptions.cpp
-    ${_SourcesPath}/ZSPhysVal/ZSPhysValRes.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysTreeEntryGrpBase.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysTreeEntryGrpPhysUnits.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysTreeEntryGrpScienceField.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysTreeEntryPhysUnit.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysTreeEntryUnitBase.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysTreeEntryUnitQuantity.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysTreeEntryUnitRatio.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysUnitsIdxTree.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysUnit.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysUnitsFctConvert.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysVal.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysValArr.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysValDllMain.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysValExceptions.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/ZSPhysValRes.cpp
 )
 
 # Got to create the following target name:

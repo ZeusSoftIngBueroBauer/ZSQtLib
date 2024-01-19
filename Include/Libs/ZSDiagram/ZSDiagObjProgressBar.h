@@ -47,7 +47,7 @@ public: // class methods
 public: // ctors and dtor
     CDiagObjProgressBar(
         const QString& i_strObjName,
-        ELayoutPos     i_layoutPos );
+        ZS::System::ELayoutPos i_layoutPos );
     virtual ~CDiagObjProgressBar();
 public: // instance methods
     void setValMin( double i_fVal );

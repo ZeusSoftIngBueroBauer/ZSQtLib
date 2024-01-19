@@ -206,7 +206,7 @@ CPixmapDiagram::CPixmapDiagram(
         NameSpace(), ClassName() + "::Validate", m_strObjName);
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = i_strObjName;
         strMthInArgs += ", UpdateType: " + diagramUpdateType2Str(i_updateType);
@@ -307,7 +307,7 @@ CDataDiagram* CPixmapDiagram::clone( EDiagramUpdateType i_diagramUpdateType ) co
         pPixmapDiagram->m_measMode = m_measMode;
         pPixmapDiagram->m_iMeasType = m_iMeasType;
 
-        for (int idx = 0; idx < CEnumScaleDir::count(); idx++)
+        for (int idx = 0; idx < CEnumScaleAxis::count(); idx++)
         {
             pPixmapDiagram->m_arSpacing[idx] = m_arSpacing[idx];
         }
@@ -1278,9 +1278,9 @@ void CPixmapDiagram::updateLayout()
     {
         // If the scale will be changed the method "scaleChanged" of the diagram will be
         // called invalidating the data of all objects linked to the changed scale.
-        switch( pDiagScale->getScaleDir() )
+        switch( pDiagScale->getScaleAxis() )
         {
-            case EScaleDir::X:
+            case EScaleAxis::X:
             {
                 if( pDiagScale->getMinValPix() != m_rectPartCenter.left()
                  || pDiagScale->getMaxValPix() != m_rectPartCenter.right() )
@@ -1289,7 +1289,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case EScaleDir::Y:
+            case EScaleAxis::Y:
             {
                 if( pDiagScale->getMinValPix() != m_rectPartCenter.bottom()
                  || pDiagScale->getMaxValPix() != m_rectPartCenter.top() )
@@ -1359,7 +1359,7 @@ void CPixmapDiagram::updateLayout()
             {
                 switch( pDiagObj->getLayoutPos() )
                 {
-                    case ELayoutPosTop:
+                    case ELayoutPos::Top:
                     {
                         iDiagObjExtent   = pDiagObj->sizeHint().height();
                         *piDiagObjOffset = cyPartTopHeight;
@@ -1367,7 +1367,7 @@ void CPixmapDiagram::updateLayout()
                         cyPartTopHeight += iDiagObjExtent;
                         break;
                     }
-                    case ELayoutPosBottom:
+                    case ELayoutPos::Bottom:
                     {
                         iDiagObjExtent      = pDiagObj->sizeHint().height();
                         *piDiagObjOffset    = cyPartBottomHeight;
@@ -1375,7 +1375,7 @@ void CPixmapDiagram::updateLayout()
                         cyPartBottomHeight += iDiagObjExtent;
                         break;
                     }
-                    case ELayoutPosLeft:
+                    case ELayoutPos::Left:
                     {
                         iDiagObjExtent   = pDiagObj->sizeHint().width();
                         *piDiagObjOffset = cxPartLeftWidth;
@@ -1383,7 +1383,7 @@ void CPixmapDiagram::updateLayout()
                         cxPartLeftWidth += iDiagObjExtent;
                         break;
                     }
-                    case ELayoutPosRight:
+                    case ELayoutPos::Right:
                     {
                         iDiagObjExtent    = pDiagObj->sizeHint().width();
                         *piDiagObjOffset  = cxPartRightWidth;
@@ -1391,7 +1391,7 @@ void CPixmapDiagram::updateLayout()
                         cxPartRightWidth += iDiagObjExtent;
                         break;
                     }
-                    case ELayoutPosCenter:
+                    case ELayoutPos::Center:
                     {
                         *piDiagObjOffset = 0;
                         *piDiagObjExtent = 0;
@@ -1457,9 +1457,9 @@ void CPixmapDiagram::updateLayout()
         {
             // If the scale will be changed the method "scaleChanged" of the diagram will be
             // called invalidating the data of all objects linked to the changed scale.
-            switch( pDiagScale->getScaleDir() )
+            switch( pDiagScale->getScaleAxis() )
             {
-                case EScaleDir::X:
+                case EScaleAxis::X:
                 {
                     if( pDiagScale->getMinValPix() != m_rectPartCenter.left()
                      || pDiagScale->getMaxValPix() != m_rectPartCenter.right() )
@@ -1468,7 +1468,7 @@ void CPixmapDiagram::updateLayout()
                     }
                     break;
                 }
-                case EScaleDir::Y:
+                case EScaleAxis::Y:
                 {
                     if( pDiagScale->getMinValPix() != m_rectPartCenter.bottom()
                      || pDiagScale->getMaxValPix() != m_rectPartCenter.top() )
@@ -1591,7 +1591,7 @@ void CPixmapDiagram::updateLayout()
     {
         switch( pDiagObj->getLayoutPos() )
         {
-            case ELayoutPosTop:
+            case ELayoutPos::Top:
             {
                 rectDiagObjContent.setWidth( m_rectPartTop.width() );
                 rectDiagObjContent.setHeight( *piDiagObjExtent );
@@ -1604,7 +1604,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case ELayoutPosBottom:
+            case ELayoutPos::Bottom:
             {
                 rectDiagObjContent.setWidth( m_rectPartBottom.width() );
                 rectDiagObjContent.setHeight( *piDiagObjExtent );
@@ -1617,7 +1617,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case ELayoutPosLeft:
+            case ELayoutPos::Left:
             {
                 rectDiagObjContent.setWidth( *piDiagObjExtent );
                 rectDiagObjContent.setHeight( m_rectPartLeft.height() );
@@ -1630,7 +1630,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case ELayoutPosRight:
+            case ELayoutPos::Right:
             {
                 rectDiagObjContent.setWidth( *piDiagObjExtent );
                 rectDiagObjContent.setHeight( m_rectPartRight.height() );
@@ -1643,7 +1643,7 @@ void CPixmapDiagram::updateLayout()
                 }
                 break;
             }
-            case ELayoutPosCenter:
+            case ELayoutPos::Center:
             {
                 if( pDiagObj->geometry() != m_rectPartCenter )
                 {

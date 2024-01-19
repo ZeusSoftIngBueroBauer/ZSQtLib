@@ -42,6 +42,8 @@ class CTest : public ZS::Test::CTest
 //******************************************************************************
 {
     Q_OBJECT
+public: // class methods
+    static QString NameSpace() { return "ZS::Apps::Test::SysErrLog"; }
 public: // ctors and dtor
     CTest();
     ~CTest();

@@ -80,7 +80,7 @@ CDelegateDiagramObjsTreeView::CDelegateDiagramObjsTreeView( QObject* i_pObjParen
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), objectName());
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Parent: " + QString(i_pObjParent == nullptr ? "nullptr" : i_pObjParent->objectName());
     }
@@ -139,7 +139,7 @@ QWidget* CDelegateDiagramObjsTreeView::createEditor(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -188,7 +188,7 @@ void CDelegateDiagramObjsTreeView::setEditorData(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -212,7 +212,7 @@ void CDelegateDiagramObjsTreeView::setModelData(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs  = "Model: " + QString(i_pModel == nullptr ? "nullptr" : i_pModel->objectName());
         strMthInArgs += ", ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
@@ -267,7 +267,7 @@ void CDelegateDiagramObjsTreeView::updateEditorGeometry(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -337,7 +337,7 @@ CTreeViewDiagramItems::CTreeViewDiagramItems(CWdgtDiagram* i_pDiagram, QWidget* 
 
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = QString(i_pDiagram == nullptr ? "nullptr" : i_pDiagram->objectName());
     }
@@ -376,7 +376,7 @@ CTreeViewDiagramItems::CTreeViewDiagramItems(CWdgtDiagram* i_pDiagram, QWidget* 
 
     m_pMenuDiagramObjContext->addSeparator();
 
-    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.bmp");
+    QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
     pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
     //pxmExpandAll = pxmExpandAll.scaled(16,16);
     m_pActionDiagramObjExpand = new QAction(pxmExpandAll, "Expand", this);
@@ -386,7 +386,7 @@ CTreeViewDiagramItems::CTreeViewDiagramItems(CWdgtDiagram* i_pDiagram, QWidget* 
         m_pActionDiagramObjExpand, &QAction::triggered,
         this, &CTreeViewDiagramItems::onActionDiagramObjExpandTriggered );
 
-    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.bmp");
+    QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
     pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
 
     m_pActionDiagramObjCollapse = new QAction(pxmCollapseAll, "Collapse", this);
@@ -470,7 +470,7 @@ void CTreeViewDiagramItems::setSilentlyExecuteDeleteRequests( bool i_bExecuteSil
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ExecuteSilently: " + bool2Str(i_bExecuteSilently);
     }
@@ -541,7 +541,7 @@ void CTreeViewDiagramItems::expandRecursive( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -586,7 +586,7 @@ void CTreeViewDiagramItems::collapseRecursive( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -634,7 +634,7 @@ void CTreeViewDiagramItems::expand( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -665,7 +665,7 @@ void CTreeViewDiagramItems::collapse( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -700,7 +700,7 @@ void CTreeViewDiagramItems::onCollapsed( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -732,7 +732,7 @@ void CTreeViewDiagramItems::onExpanded( const QModelIndex& i_modelIdx )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "ModelIdx {" + CModelDiagramItems::modelIdx2Str(i_modelIdx) + "}";
     }
@@ -799,7 +799,7 @@ void CTreeViewDiagramItems::keyPressEvent( QKeyEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Event {" + qKeyEvent2Str(i_pEv) + "}";
     }
@@ -906,7 +906,7 @@ void CTreeViewDiagramItems::mousePressEvent( QMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
@@ -985,7 +985,7 @@ void CTreeViewDiagramItems::mouseReleaseEvent( QMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
@@ -1023,7 +1023,7 @@ void CTreeViewDiagramItems::mouseDoubleClickEvent( QMouseEvent* i_pEv )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
@@ -1109,7 +1109,7 @@ void CTreeViewDiagramItems::mouseMoveEvent( QMouseEvent* i_pEv )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Event {" + qMouseEvent2Str(i_pEv) + "}";
     }
@@ -1140,7 +1140,7 @@ void CTreeViewDiagramItems::selectionChanged(
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Selected: " + QString::number(i_selected.indexes().size());
         if( i_selected.indexes().size() > 0 )
@@ -1275,7 +1275,7 @@ void CTreeViewDiagramItems::onActionDiagramObjExpandTriggered( bool i_bChecked )
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1303,7 +1303,7 @@ void CTreeViewDiagramItems::onActionDiagramObjCollapseTriggered( bool i_bChecked
 {
     QString strMthInArgs;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }
@@ -1327,7 +1327,7 @@ void CTreeViewDiagramItems::onActionDiagramObjDeleteTriggered( bool i_bChecked )
     QString strMthInArgs;
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strMthInArgs = "Checked: " + bool2Str(i_bChecked);
     }

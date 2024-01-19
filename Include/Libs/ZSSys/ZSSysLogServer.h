@@ -179,11 +179,9 @@ public: // type definitions and constants
     static const int c_iStrLenSysTimeMax = 15; /*!< Maximum number of characters used for the system time.
                                                     The maximum value is 99999999.999999 seconds (ca. 75 years). */
 public: // class methods
-    /*! Returns the namespace of the class.
-        @note The static class functions name must be different from the instance method "nameSpace". */
+    /*! Returns the namespace of the class. */
     static QString NameSpace() { return "ZS::System"; }
-    /*! Returns the class name.
-        @note The static class functions name must be different from the instance method "className". */
+    /*! Returns the class name. */
     static QString ClassName() { return "CLogServer"; }
 public: // class methods
     static CLogServer* GetInstance();
@@ -218,11 +216,6 @@ signals:
     /*! Signal which is emitted if a log setting has been changed.
         @param i_pLogServer [in] Pointer to object emitting the signal. */
     void logSettingsChanged( QObject* i_pLogServer );
-public: // instance methods
-    /*! Returns the namespace of the class. May be overriden to return the namespace of the derived class. */
-    QString nameSpace() const { return NameSpace(); }
-    /*! Returns the class name. May be overriden to return the class name of the derived class. */
-    QString className() const { return ClassName(); }
 public: // instance methods
     virtual void setEnabled( bool i_bEnabled );
     virtual bool isEnabled() const;

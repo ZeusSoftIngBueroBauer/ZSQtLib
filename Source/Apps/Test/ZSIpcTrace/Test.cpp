@@ -76,7 +76,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSIpcTrace"),
+    ZS::Test::CTest(NameSpace(), "theInst"),
     m_pTmrTestStepTimeout(nullptr),
     m_pTmrTestStepTrcMthListWdgtTimeout(nullptr),
     m_hshReqsInProgress(),
@@ -341,12 +341,90 @@ CTest::CTest() :
         /* szDoTestStepFct */ SLOT(doTestStepTraceMethodCall(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass3-dtor-Inst2");
 
+    // Test Step Group - One Thread - Method Tracing - Object Name Filter
+    //-------------------------------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::setObjectNameFilter",
+        /* strOperation    */ "CMyClass1::TrcAdminObj.setObjectNameFilter()",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepObjectNameFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-TrcAdminObj-setObjectNameFilter-NoFilter");
+    pTestStep->setConfigValue("ObjectNameFilter", "");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::setObjectNameFilter(IncludeInst1)",
+        /* strOperation    */ "CMyClass1::TrcAdminObj.setObjectNameFilter($I{Inst1}I$)",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepObjectNameFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-TrcAdminObj-setObjectNameFilter-IncludeInst1");
+    pTestStep->setConfigValue("ObjectNameFilter", "$I{Inst1}I$");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::setObjectNameFilter(ExcludeInst1)",
+        /* strOperation    */ "CMyClass1::TrcAdminObj.setObjectNameFilter($!I{Inst1}I!$)",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepObjectNameFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-TrcAdminObj-setObjectNameFilter-ExcludeInst1");
+    pTestStep->setConfigValue("ObjectNameFilter", "$!I{Inst1}I!$");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::setObjectNameFilter",
+        /* strOperation    */ "CMyClass1::TrcAdminObj.setObjectNameFilter()",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepObjectNameFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-TrcAdminObj-setObjectNameFilter-NoFilter");
+    pTestStep->setConfigValue("ObjectNameFilter", "");
+
+    // Test Step Group - One Thread - Method Tracing - Method Name Filter
+    //-------------------------------------------------------------------
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::setMethodNameFilter",
+        /* strOperation    */ "CMyClass1::TrcAdminObj.setMethodNameFilter()",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepMethodNameFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-TrcAdminObj-setMethodNameFilter-NoFilter");
+    pTestStep->setConfigValue("MethodNameFilter", "");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::setMethodNameFilter(IncludeInstMethod1)",
+        /* strOperation    */ "CMyClass1::TrcAdminObj.setMethodNameFilter($I{instMethod1}I$)",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepMethodNameFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-TrcAdminObj-setMethodNameFilter-IncludeInstMethod1");
+    pTestStep->setConfigValue("MethodNameFilter", "$I{instMethod1}I$");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::setMethodNameFilter(ExcludeInstMethod1)",
+        /* strOperation    */ "CMyClass1::TrcAdminObj.setMethodNameFilter($!I{instMethod1}I!$)",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepMethodNameFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-TrcAdminObj-setMethodNameFilter-ExcludeInstMethod1");
+    pTestStep->setConfigValue("MethodNameFilter", "$!I{instMethod1}I!$");
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass1::setMethodNameFilter",
+        /* strOperation    */ "CMyClass1::TrcAdminObj.setMethodNameFilter()",
+        /* pTSGrpParent    */ pTestGroupOneThread,
+        /* szDoTestStepFct */ SLOT(doTestStepMethodNameFilter(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("ExpectedResultsFileName", "ZSTrcServer-CMyClass1-TrcAdminObj-setMethodNameFilter-NoFilter");
+    pTestStep->setConfigValue("MethodNameFilter", "");
+
     // Test Step Group - One Thread - Method Tracing - Data Filter
     //------------------------------------------------------------
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " DataFilter",
+        /* strName         */ "Step " + QString::number(++idxStep) + " CMyClass2::Inst1.setTraceDataFilter",
         /* strOperation    */ "CMyClass2::Inst1.TrcAdminObj.setTraceDataFilters()",
         /* pTSGrpParent    */ pTestGroupOneThread,
         /* szDoTestStepFct */ SLOT(doTestStepTraceDataFilter(ZS::Test::CTestStep*)) );
@@ -2409,6 +2487,178 @@ void CTest::doTestStepTraceMethodCall( ZS::Test::CTestStep* i_pTestStep )
 } // doTestStepTraceMethodCall
 
 //------------------------------------------------------------------------------
+void CTest::doTestStepObjectNameFilter( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    int iTestStepTimeout_ms = 5000;
+
+    // Expected Values
+    //----------------
+
+    QStringList strlstExpectedValues;
+    QString strExpectedResultsAbsFilePath;
+    QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if (val.isValid() && val.canConvert(QVariant::String)) {
+    #else
+    if (val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString))) {
+    #endif
+        strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
+    }
+    if (strExpectedResultsAbsFilePath.isEmpty()) {
+        strlstExpectedValues.append("Missing ExpectedResultsFileName");
+    }
+    else {
+        readExpectedTestResults(strExpectedResultsAbsFilePath, strlstExpectedValues);
+    }
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    QString strFilter = i_pTestStep->getConfigValue("ObjectNameFilter").toString();
+    CMyClass1::getTrcAdminObj()->setObjectNameFilter(strFilter);
+
+    QString strObj1Name = "Inst1";
+    QString strObj2Name = "Inst2";
+    QString strObj3Name = "Inst3";
+
+    CMyClass1* pObj1 = new CMyClass1(strObj1Name);
+    CMyClass1* pObj2 = new CMyClass1(strObj2Name);
+    CMyClass1* pObj3 = new CMyClass1(strObj3Name);
+
+    m_hshpMyClass1InstancesByName[strObj1Name] = pObj1;
+    m_hshpMyClass1InstancesByName[strObj2Name] = pObj2;
+    m_hshpMyClass1InstancesByName[strObj3Name] = pObj3;
+
+    QObject::connect(
+        pObj1, &CMyClass1::aboutToBeDestroyed,
+        this, &CTest::onClass1AboutToBeDestroyed,
+        Qt::DirectConnection);
+    QObject::connect(
+        pObj2, &CMyClass1::aboutToBeDestroyed,
+        this, &CTest::onClass1AboutToBeDestroyed,
+        Qt::DirectConnection);
+    QObject::connect(
+        pObj3, &CMyClass1::aboutToBeDestroyed,
+        this, &CTest::onClass1AboutToBeDestroyed,
+        Qt::DirectConnection);
+
+    pObj1->instMethod1("Hello Method 1");
+    pObj2->instMethod2("Hello Method 2");
+    pObj3->instMethod3("Hello Method 3");
+
+    delete pObj1;
+    pObj1 = nullptr;
+    delete pObj2;
+    pObj2 = nullptr;
+    delete pObj3;
+    pObj3 = nullptr;
+
+    // Result Values
+    //--------------
+
+    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+    CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+    if (pWdgtTrcMthList != nullptr) {
+        pWdgtTrcMthList->getTextEdit()->clear();
+        QObject::connect(
+            pWdgtTrcMthList, &CWdgtTrcMthList::textItemAdded,
+            this, &CTest::onZSTraceClientTrcMthListWdgtTextItemAdded);
+        m_pTmrTestStepTrcMthListWdgtTimeout->start(iTestStepTimeout_ms);
+    }
+    else {
+        i_pTestStep->setResultValue("No trace method list widget");
+    }
+} // doTestStepObjectNameFilter
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepMethodNameFilter( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    int iTestStepTimeout_ms = 5000;
+
+    // Expected Values
+    //----------------
+
+    QStringList strlstExpectedValues;
+    QString strExpectedResultsAbsFilePath;
+    QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    if (val.isValid() && val.canConvert(QVariant::String)) {
+    #else
+    if (val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString))) {
+    #endif
+        strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
+    }
+    if (strExpectedResultsAbsFilePath.isEmpty()) {
+        strlstExpectedValues.append("Missing ExpectedResultsFileName");
+    }
+    else {
+        readExpectedTestResults(strExpectedResultsAbsFilePath, strlstExpectedValues);
+    }
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Test Step
+    //----------
+
+    QString strFilter = i_pTestStep->getConfigValue("MethodNameFilter").toString();
+    CMyClass1::getTrcAdminObj()->setMethodNameFilter(strFilter);
+
+    QString strObj1Name = "Inst1";
+    QString strObj2Name = "Inst2";
+    QString strObj3Name = "Inst3";
+
+    CMyClass1* pObj1 = new CMyClass1(strObj1Name);
+    CMyClass1* pObj2 = new CMyClass1(strObj2Name);
+    CMyClass1* pObj3 = new CMyClass1(strObj3Name);
+
+    m_hshpMyClass1InstancesByName[strObj1Name] = pObj1;
+    m_hshpMyClass1InstancesByName[strObj2Name] = pObj2;
+    m_hshpMyClass1InstancesByName[strObj3Name] = pObj3;
+
+    QObject::connect(
+        pObj1, &CMyClass1::aboutToBeDestroyed,
+        this, &CTest::onClass1AboutToBeDestroyed,
+        Qt::DirectConnection);
+    QObject::connect(
+        pObj2, &CMyClass1::aboutToBeDestroyed,
+        this, &CTest::onClass1AboutToBeDestroyed,
+        Qt::DirectConnection);
+    QObject::connect(
+        pObj3, &CMyClass1::aboutToBeDestroyed,
+        this, &CTest::onClass1AboutToBeDestroyed,
+        Qt::DirectConnection);
+
+    pObj1->instMethod1("Hello Method 1");
+    pObj2->instMethod2("Hello Method 2");
+    pObj3->instMethod3("Hello Method 3");
+
+    delete pObj1;
+    pObj1 = nullptr;
+    delete pObj2;
+    pObj2 = nullptr;
+    delete pObj3;
+    pObj3 = nullptr;
+
+    // Result Values
+    //--------------
+
+    CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
+    CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
+    if (pWdgtTrcMthList != nullptr) {
+        pWdgtTrcMthList->getTextEdit()->clear();
+        QObject::connect(
+            pWdgtTrcMthList, &CWdgtTrcMthList::textItemAdded,
+            this, &CTest::onZSTraceClientTrcMthListWdgtTextItemAdded);
+        m_pTmrTestStepTrcMthListWdgtTimeout->start(iTestStepTimeout_ms);
+    }
+    else {
+        i_pTestStep->setResultValue("No trace method list widget");
+    }
+} // doTestStepMethodNameFilter
+
+//------------------------------------------------------------------------------
 void CTest::doTestStepTraceDataFilter( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
@@ -2418,36 +2668,28 @@ void CTest::doTestStepTraceDataFilter( ZS::Test::CTestStep* i_pTestStep )
     //----------------
 
     QStringList strlstExpectedValues;
-
     QString strExpectedResultsAbsFilePath;
     QVariant val = i_pTestStep->getConfigValue("ExpectedResultsFileName");
     #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    if( val.isValid() && val.canConvert(QVariant::String) )
+    if (val.isValid() && val.canConvert(QVariant::String)) {
     #else
-    if( val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString)) )
+    if (val.isValid() && val.canConvert(static_cast<QMetaType>(QMetaType::QString))) {
     #endif
-    {
         strExpectedResultsAbsFilePath = c_strExpectedResultsAbsDirPath + QDir::separator() + val.toString() + ".txt";
     }
-
-    if( strExpectedResultsAbsFilePath.isEmpty() )
-    {
+    if (strExpectedResultsAbsFilePath.isEmpty()) {
         strlstExpectedValues.append("Missing ExpectedResultsFileName");
     }
-    else
-    {
+    else {
         readExpectedTestResults(strExpectedResultsAbsFilePath, strlstExpectedValues);
     }
-
     i_pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Test Step
     //----------
 
     QString strObjName = "Inst1";
-
     CMyClass2* pObj = new CMyClass2(strObjName);
-
     m_hshpMyClass2InstancesByName[strObjName] = pObj;
 
     QObject::connect(
@@ -2483,23 +2725,17 @@ void CTest::doTestStepTraceDataFilter( ZS::Test::CTestStep* i_pTestStep )
     //--------------
 
     CWidgetCentral* pWdgtCentral = CWidgetCentral::GetInstance();
-
     CWdgtTrcMthList* pWdgtTrcMthList = pWdgtCentral->getTrcMthListWdgt();
-
-    if( pWdgtTrcMthList != nullptr )
-    {
+    if (pWdgtTrcMthList != nullptr) {
         pWdgtTrcMthList->getTextEdit()->clear();
-
         QObject::connect(
             pWdgtTrcMthList, &CWdgtTrcMthList::textItemAdded,
             this, &CTest::onZSTraceClientTrcMthListWdgtTextItemAdded);
         m_pTmrTestStepTrcMthListWdgtTimeout->start(iTestStepTimeout_ms);
     }
-    else
-    {
+    else {
         i_pTestStep->setResultValue("No trace method list widget");
     }
-
 } // doTestStepTraceDataFilter
 
 /*==============================================================================

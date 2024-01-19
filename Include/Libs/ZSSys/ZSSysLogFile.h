@@ -179,9 +179,6 @@ protected: // ctors and dtor
     CLogFile();
     virtual ~CLogFile();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     void close();
     void clear();
 public: // instance methods

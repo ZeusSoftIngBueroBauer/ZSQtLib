@@ -67,9 +67,6 @@ signals:
 signals:
     void garbageCollectorChanged();
 public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
-public: // instance methods
     void addRequest( CRequest* i_pReq );
     void addRequest( const SRequestDscr& i_reqDscr );
     void updateRequest( const SRequestDscr& i_reqDscr );

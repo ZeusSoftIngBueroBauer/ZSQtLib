@@ -668,7 +668,7 @@ public: // instance methods
 SErrResultInfo CWdgtTrcMthList::readTraceMethodFile( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "readTraceMethodFile");
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "readTraceMethodFile");
 
     QFile fileTrcMthFile;
 
@@ -817,7 +817,7 @@ SErrResultInfo CWdgtTrcMthList::readTraceMethodFile( const QString& i_strAbsFile
 SErrResultInfo CWdgtTrcMthList::writeTraceMethodFile( const QString& i_strAbsFilePath )
 //------------------------------------------------------------------------------
 {
-    SErrResultInfo errResultInfo(nameSpace(), className(), objectName(), "writeTraceMethodFile");
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "writeTraceMethodFile");
 
     QFile fileTrcMthFile;
 

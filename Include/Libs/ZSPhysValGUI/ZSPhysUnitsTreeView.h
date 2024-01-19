@@ -64,9 +64,6 @@ public: // class methods
 public: // ctors and dtor
     CTreeViewUnits(QWidget* i_pWdgtParent = nullptr);
     virtual ~CTreeViewUnits();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods (hiding not overridable methods with same name in QTreeView)
     virtual void expandAll();
     virtual void collapseAll();

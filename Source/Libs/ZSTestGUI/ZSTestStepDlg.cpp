@@ -143,31 +143,31 @@ CDlgTestStep::CDlgTestStep(
     m_pGrpTestResults->setLayout(m_pLytGrpTestResults);
 
     QObject::connect(
-        m_pBtnGrpTestResults, &QButtonGroup::buttonToggled,
+        m_pBtnGrpTestResults, QOverload<QAbstractButton*, bool>::of(&QButtonGroup::buttonToggled),
         this, &CDlgTestStep::onBtnGroupTestResultsButtonToggled);
 
     m_pLytLineButtons = new QHBoxLayout();
     m_pLytMain->addLayout(m_pLytLineButtons);
 
-    QPixmap pxmStart(":/ZS/Button/ButtonCmdStart16x16.bmp");
+    QPixmap pxmStart(":/ZS/Button/ButtonCmdStart16x16.png");
     pxmStart.setMask(pxmStart.createHeuristicMask());
     m_pBtnRun = new QPushButton();
     m_pBtnRun->setIcon(pxmStart);
     m_pLytLineButtons->addWidget(m_pBtnRun);
 
-    QPixmap pxmStep(":/ZS/Button/ButtonCmdStepForward16x16.bmp");
+    QPixmap pxmStep(":/ZS/Button/ButtonCmdStepForward16x16.png");
     pxmStep.setMask(pxmStep.createHeuristicMask());
     m_pBtnStep = new QPushButton();
     m_pBtnStep->setIcon(pxmStep);
     m_pLytLineButtons->addWidget(m_pBtnStep);
 
-    QPixmap pxmPause(":/ZS/Button/ButtonCmdPause16x16.bmp");
+    QPixmap pxmPause(":/ZS/Button/ButtonCmdPause16x16.png");
     pxmPause.setMask(pxmPause.createHeuristicMask());
     m_pBtnPause = new QPushButton();
     m_pBtnPause->setIcon(pxmPause);
     m_pLytLineButtons->addWidget(m_pBtnPause);
 
-    QPixmap pxmStop(":/ZS/Button/ButtonCmdStop16x16.bmp");
+    QPixmap pxmStop(":/ZS/Button/ButtonCmdStop16x16.png");
     pxmStop.setMask(pxmStop.createHeuristicMask());
     m_pBtnStop = new QPushButton();
     m_pBtnStop->setIcon(pxmStop);

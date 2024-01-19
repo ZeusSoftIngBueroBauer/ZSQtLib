@@ -57,9 +57,6 @@ public: // ctors and dtor
     CWdgtAbstractTreeEntry(QWidget* i_pWdgtParent = nullptr);
     virtual ~CWdgtAbstractTreeEntry();
 public: // overridables
-    virtual QString nameSpace() const { return CWdgtAbstractTreeEntry::NameSpace(); }
-    virtual QString className() const { return CWdgtAbstractTreeEntry::ClassName(); }
-public: // overridables
     virtual void setKeyInTreeOfRootEntry( const QString& i_strKeyInTree );
     QString getKeyInTreeOfRootEntry() const;
 public: // overridables

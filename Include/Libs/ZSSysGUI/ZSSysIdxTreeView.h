@@ -60,9 +60,6 @@ public: // class methods
 public: // ctors and dtor
     CDelegateIdxTree(QObject* i_pObjParent = nullptr);
     virtual ~CDelegateIdxTree();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     QLineEdit* nameColumnEditor();
 public: // overridables of base class QStyledItemDelegate
@@ -119,9 +116,6 @@ public: // ctors and dtor
 signals:
     void sortOrderChanged(const QString& i_strSortOrder);
     void sortOrderChanged(EIdxTreeSortOrder i_sortOrder);
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     void setIdxTree(CIdxTree* i_pIdxTree);
     CIdxTree* idxTree() { return m_pIdxTree; }

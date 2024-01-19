@@ -54,9 +54,6 @@ public: // ctors and dtor
         EMethodTraceDetailLevel i_eTrcDetailLevel = EMethodTraceDetailLevel::None,
         EMethodTraceDetailLevel i_eTrcDetailLevelMutex = EMethodTraceDetailLevel::None );
     virtual ~CIdxTreeTrcAdminObjs();
-public: // instance methods
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods to get and release admin objects
     CTrcAdminObj* getTraceAdminObj(
         const QString& i_strNameSpace,
@@ -65,7 +62,9 @@ public: // instance methods to get and release admin objects
         EEnabled i_bEnabledAsDefault,
         EMethodTraceDetailLevel i_eDefaultDetailLevelMethodCalls,
         ELogDetailLevel i_eDefaultDetailLevelRuntimeInfo,
-        const QString& i_strDefaultDataFilter, // Use QString() (null) to ignore
+        const QString& i_strDefaultObjNameFilter,
+        const QString& i_strDefaultMethodNameFilter,
+        const QString& i_strDefaultDataFilter,
         bool i_bIncrementRefCount = true );
     CTrcAdminObj* getTraceAdminObj( int i_idxInTree, bool i_bIncrementRefCount = true );
     CTrcAdminObj* renameTraceAdminObj(
@@ -86,12 +85,16 @@ public: // instance methods to recursively modify admin objects via object index
     void setEnabled( int i_idxInTree, EEnabled i_enabled );
     void setMethodCallsTraceDetailLevel( int i_idxInTree, EMethodTraceDetailLevel i_eDetailLevel = EMethodTraceDetailLevel::None );
     void setRuntimeInfoTraceDetailLevel( int i_idxInTree, ELogDetailLevel i_eDetailLevel = ELogDetailLevel::None );
-    void setTraceDataFilter( int i_idxInTree, const QString& i_strDataFilter );
+    void setObjectNameFilter( int i_idxInTree, const QString& i_strFilter );
+    void setMethodNameFilter( int i_idxInTree, const QString& i_strFilter );
+    void setTraceDataFilter( int i_idxInTree, const QString& i_strFilter );
 public: // instance methods to recursively modify admin objects via namespace node entries
     void setEnabled( CIdxTreeEntry* i_pBranch, EEnabled i_enabled );
     void setMethodCallsTraceDetailLevel( CIdxTreeEntry* i_pBranch, EMethodTraceDetailLevel i_eDetailLevel = EMethodTraceDetailLevel::None );
     void setRuntimeInfoTraceDetailLevel( CIdxTreeEntry* i_pBranch, ELogDetailLevel i_eDetailLevel = ELogDetailLevel::None );
-    void setTraceDataFilter( CIdxTreeEntry* i_pBranch, const QString& i_strDataFilter );
+    void setObjectNameFilter( CIdxTreeEntry* i_pBranch, const QString& i_strFilter );
+    void setMethodNameFilter( CIdxTreeEntry* i_pBranch, const QString& i_strFilter );
+    void setTraceDataFilter( CIdxTreeEntry* i_pBranch, const QString& i_strFilter );
 public: // overridables
     virtual SErrResultInfo save( const QString& i_strAbsFilePath ) const;
     virtual SErrResultInfo recall( const QString& i_strAbsFilePath );

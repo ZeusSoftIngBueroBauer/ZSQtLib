@@ -141,7 +141,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     // <Button> Start
     //---------------
 
-    QPixmap pxmStart(":/ZS/Button/ButtonCmdStart16x16.bmp");
+    QPixmap pxmStart(":/ZS/Button/ButtonCmdStart16x16.png");
     pxmStart.setMask(pxmStart.createHeuristicMask());
 
     m_pBtnStart = new QPushButton();
@@ -158,7 +158,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     // <Button> Step
     //---------------
 
-    QPixmap pxmStep(":/ZS/Button/ButtonCmdStepForward16x16.bmp");
+    QPixmap pxmStep(":/ZS/Button/ButtonCmdStepForward16x16.png");
     pxmStep.setMask(pxmStep.createHeuristicMask());
 
     m_pBtnStep = new QPushButton();
@@ -175,7 +175,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     // <Button> Pause
     //---------------
 
-    QPixmap pxmPause(":/ZS/Button/ButtonCmdPause16x16.bmp");
+    QPixmap pxmPause(":/ZS/Button/ButtonCmdPause16x16.png");
     pxmPause.setMask(pxmPause.createHeuristicMask());
 
     m_pBtnPause = new QPushButton();
@@ -193,7 +193,7 @@ CWdgtIdxTreeTestSteps::CWdgtIdxTreeTestSteps(
     // <Button> Stop
     //---------------
 
-    QPixmap pxmStop(":/ZS/Button/ButtonCmdStop16x16.bmp");
+    QPixmap pxmStop(":/ZS/Button/ButtonCmdStop16x16.png");
     pxmStop.setMask(pxmStop.createHeuristicMask());
 
     m_pBtnStop = new QPushButton();

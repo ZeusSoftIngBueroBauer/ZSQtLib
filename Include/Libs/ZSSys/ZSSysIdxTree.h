@@ -94,9 +94,9 @@ class ZSSYSDLL_API CIdxTree : public QObject
     Q_OBJECT
 public: // class methods
     /*! Returns the namespace the class belongs to. */
-    static QString NameSpace() { return "ZS::System"; }   // Please note that the static class functions name must be different from the non static virtual member function "nameSpace"
+    static QString NameSpace() { return "ZS::System"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CIdxTree"; }     // Please note that the static class functions name must be different from the non static virtual member function "className"
+    static QString ClassName() { return "CIdxTree"; }
 public: // type definitions and constants
     /*! @brief Iterator for iterating through the tree entries.
         The iterator may be used either to iterate through the trees vector of entries by index or
@@ -215,15 +215,6 @@ signals:
         @param i_strOrigKeyInTree [in] The original unique key of the entry valid before the entry was moved to the target branch.
         @note The index of the entry in the index tree remains the same. */
     void treeEntryKeyInTreeChanged( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree );
-public: // overridables
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     /*! Returns a pointer to the mutex used to protect the index tree if access by different threads. */
     CRecursiveMutex* mutex() { return m_pMtx; }

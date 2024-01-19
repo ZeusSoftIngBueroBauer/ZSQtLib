@@ -59,7 +59,7 @@ CDiagObjRect::CDiagObjRect(
         /* strClassName */ CDiagObjRect::ClassName(),
         /* strObjName   */ i_strObjName,
         /* pDiagTrace   */ i_pDiagTrace,
-        /* layoutPos    */ ELayoutPosCenter ),
+        /* layoutPos    */ ELayoutPos::Center ),
     m_pen(Qt::white),
     m_brush(),
     m_rct(),
@@ -206,8 +206,8 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
     {
         if( m_pDiagTrace != nullptr )
         {
-            QVector<double> arfXValues = m_pDiagTrace->getValues(EScaleDir::X);
-            QVector<double> arfYValues = m_pDiagTrace->getValues(EScaleDir::Y);
+            QVector<double> arfXValues = m_pDiagTrace->getValues(EScaleAxis::X);
+            QVector<double> arfYValues = m_pDiagTrace->getValues(EScaleAxis::Y);
 
             mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
 
@@ -227,10 +227,10 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
                 return;
             }
 
-            double fXMin = m_pDiagTrace->getScale(EScaleDir::X).minVal().getVal();
-            double fXMax = m_pDiagTrace->getScale(EScaleDir::X).maxVal().getVal();
-            double fYMin = m_pDiagTrace->getScale(EScaleDir::Y).minVal().getVal();
-            double fYMax = m_pDiagTrace->getScale(EScaleDir::Y).maxVal().getVal();
+            double fXMin = m_pDiagTrace->getScale(EScaleAxis::X).minVal().getVal();
+            double fXMax = m_pDiagTrace->getScale(EScaleAxis::X).maxVal().getVal();
+            double fYMin = m_pDiagTrace->getScale(EScaleAxis::Y).minVal().getVal();
+            double fYMax = m_pDiagTrace->getScale(EScaleAxis::Y).maxVal().getVal();
             int    x1, x2;
             int    y1, y2;
 
@@ -246,10 +246,10 @@ void CDiagObjRect::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
             if( fY1 > fYMax ) fY1 = fYMax;
 
             // Calculate the points between XScaleMin and XScaleMax ...
-            x1 = m_pDiagTrace->getValPix(EScaleDir::X, fX1);
-            x2 = m_pDiagTrace->getValPix(EScaleDir::X, fX2);
-            y1 = m_pDiagTrace->getValPix(EScaleDir::Y, fY1);
-            y2 = m_pDiagTrace->getValPix(EScaleDir::Y, fY2);
+            x1 = m_pDiagTrace->getValPix(EScaleAxis::X, fX1);
+            x2 = m_pDiagTrace->getValPix(EScaleAxis::X, fX2);
+            y1 = m_pDiagTrace->getValPix(EScaleAxis::Y, fY1);
+            y2 = m_pDiagTrace->getValPix(EScaleAxis::Y, fY2);
 
             if( x1 < x2 )
             {

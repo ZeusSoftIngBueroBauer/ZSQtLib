@@ -1820,19 +1820,19 @@ QSize CDiagObjTable::sizeHint()
     {
         switch( m_layoutPos )
         {
-            case ELayoutPosLeft:
-            case ELayoutPosRight:
+            case ELayoutPos::Left:
+            case ELayoutPos::Right:
             {
                 cxWidth = m_rectTable.width();
                 break;
             }
-            case ELayoutPosTop:
-            case ELayoutPosBottom:
+            case ELayoutPos::Top:
+            case ELayoutPos::Bottom:
             {
                 cyHeight = m_rectTable.height();
                 break;
             }
-            case ELayoutPosCenter:
+            case ELayoutPos::Center:
             default:
             {
                 break;
@@ -1841,7 +1841,7 @@ QSize CDiagObjTable::sizeHint()
 
     } // if( isVisible() )
 
-    if( mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal) )
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
     {
         strTrcMsg  = "Size[w,h]=";
         strTrcMsg += QString::number(cxWidth) + ",";
@@ -2383,15 +2383,15 @@ void CDiagObjTable::updatePixmap( QPaintDevice* i_pPaintDevice )
         {
             switch( m_layoutPos )
             {
-                case ELayoutPosTop:
-                case ELayoutPosBottom:
+                case ELayoutPos::Top:
+                case ELayoutPos::Bottom:
                 {
                     m_rectTable.setLeft(pPixmapDiagram->getRectPartCenter().left());
                     m_rectTable.setWidth(pPixmapDiagram->getRectPartCenter().width());
                     break;
                 }
-                case ELayoutPosLeft:
-                case ELayoutPosRight:
+                case ELayoutPos::Left:
+                case ELayoutPos::Right:
                 {
                     m_rectTable.setTop(pPixmapDiagram->getRectPartCenter().top());
                     m_rectTable.setHeight(pPixmapDiagram->getRectPartCenter().height());
@@ -2752,7 +2752,7 @@ void CDiagObjTable::clmValueChanged( CDiagObj* i_pDiagObjValSrc )
     //int            idxClm;
     //int            physUnitClm;
     //CDiagObj*      pDiagObjClm;
-    //EScaleDir      scaleDirClm;
+    //EScaleAxis      scaleAxisClm;
     //EValueValidity validity;
     //double         fVal;
 

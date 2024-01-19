@@ -99,7 +99,7 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 CTest::CTest() :
 //------------------------------------------------------------------------------
-    ZS::Test::CTest("ZSDiagram"),
+    ZS::Test::CTest(NameSpace(), "theInst"),
     m_pTmrTestStepTimeout(nullptr),
     m_pTimerSigGen(nullptr),
     m_pWdgtDiagram(nullptr),
@@ -471,17 +471,11 @@ void CTest::doTestStepSigGenAddScales( ZS::Test::CTestStep* i_pTestStep )
 
     if( m_pWdgtDiagram != nullptr )
     {
-        m_pDiagScaleX = new CDiagScale(
-            /* strObjName */ "X",
-            /* scaleDir   */ EScaleDir::X,
-            /* scale      */ m_scaleX );
+        m_pDiagScaleX = new CDiagScale("X", EScaleAxis::X, m_scaleX);
         m_pDiagScaleX->setDivLineDistMinPix(EDivLineLayer::Main, 20);
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleX);
 
-        m_pDiagScaleY = new CDiagScale(
-            /* strObjName */ "Y",
-            /* scaleDir   */ EScaleDir::Y,
-            /* scale      */ m_scaleY );
+        m_pDiagScaleY = new CDiagScale("Y", EScaleAxis::Y, m_scaleY);
         m_pDiagScaleY->setDivLineDistMinPix(EDivLineLayer::Main, 20);
         m_pWdgtDiagram->addDiagScale(m_pDiagScaleY);
     }
@@ -807,7 +801,7 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagObjAxisLabelX = new CDiagObjAxisLabel(
             /* strObjName  */ "X-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleX,
-            /* layoutPos   */ ELayoutPosBottom );
+            /* layoutPos   */ ELayoutPos::Bottom );
         m_pDiagObjAxisLabelX->setSpacingDiagPartCenter2DivLineLabels(10);
         m_pDiagObjAxisLabelX->setSpacingDivLineLabels2AxisLabel(10);
         m_pDiagObjAxisLabelX->setDivLinesColor(Qt::red);
@@ -823,7 +817,7 @@ void CTest::doTestStepSigGenAddAxisLabels( ZS::Test::CTestStep* i_pTestStep )
         m_pDiagObjAxisLabelY = new CDiagObjAxisLabel(
             /* strObjName  */ "Y-AxisLabel",
             /* pDiagScaleX */ m_pDiagScaleY,
-            /* layoutPos   */ ELayoutPosLeft );
+            /* layoutPos   */ ELayoutPos::Left );
         m_pDiagObjAxisLabelY->setSpacingDiagPartCenter2DivLineLabels(10);
         m_pDiagObjAxisLabelY->setSpacingDivLineLabels2AxisLabel(10);
         m_pDiagObjAxisLabelY->setDivLinesColor(Qt::red);
@@ -1248,11 +1242,11 @@ void CTest::doTestStepSigGenMoveMarkers( ZS::Test::CTestStep* i_pTestStep )
 
     if (m_pDiagObjMarkerSigGen1 != nullptr)
     {
-        m_pDiagObjMarkerSigGen1->setVal(EScaleDir::X, physValXMarkerSigGen1);
+        m_pDiagObjMarkerSigGen1->setVal(EScaleAxis::X, physValXMarkerSigGen1);
     }
     if (m_pDiagObjMarkerSigGen2 != nullptr)
     {
-        m_pDiagObjMarkerSigGen2->setVal(EScaleDir::X, physValXMarkerSigGen2);
+        m_pDiagObjMarkerSigGen2->setVal(EScaleAxis::X, physValXMarkerSigGen2);
     }
     if (m_pWdgtDiagram != nullptr)
     {
@@ -1270,11 +1264,11 @@ void CTest::doTestStepSigGenMoveMarkers( ZS::Test::CTestStep* i_pTestStep )
 
         if (m_pDiagObjMarkerSigGen1 != nullptr)
         {
-            physValXMarkerSigGen1 = m_pDiagObjMarkerSigGen1->getVal(EScaleDir::X);
+            physValXMarkerSigGen1 = m_pDiagObjMarkerSigGen1->getVal(EScaleAxis::X);
         }
         if (m_pDiagObjMarkerSigGen2 != nullptr)
         {
-            physValXMarkerSigGen2 = m_pDiagObjMarkerSigGen2->getVal(EScaleDir::X);
+            physValXMarkerSigGen2 = m_pDiagObjMarkerSigGen2->getVal(EScaleAxis::X);
         }
         strlstResultValues.append(physValXMarkerSigGen1.toString());
         strlstResultValues.append(physValXMarkerSigGen2.toString());
@@ -1509,14 +1503,14 @@ void CTest::onTimerSigGenTimeout()
 
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitX);
-            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &unitY);
+            m_pDiagTraceSigGen1->setValues(EScaleAxis::X, s_arfXValuesTraces01, &unitX);
+            m_pDiagTraceSigGen1->setValues(EScaleAxis::Y, s_arfYValuesTrace0, &unitY);
         }
 
         if( m_pDiagTraceSigGen2 != nullptr )
         {
-            m_pDiagTraceSigGen2->setValues(EScaleDir::X, s_arfXValuesTraces01, &unitX);
-            m_pDiagTraceSigGen2->setValues(EScaleDir::Y, s_arfYValuesTrace1, &unitY);
+            m_pDiagTraceSigGen2->setValues(EScaleAxis::X, s_arfXValuesTraces01, &unitX);
+            m_pDiagTraceSigGen2->setValues(EScaleAxis::Y, s_arfYValuesTrace1, &unitY);
         }
     } // if( m_pDiagScaleX != nullptr && m_pDiagScaleY != nullptr )
 
@@ -1546,8 +1540,8 @@ void CTest::onTimerSigGenTimeout()
 
         if( m_pDiagTraceSigGen1 != nullptr )
         {
-            m_pDiagTraceSigGen1->setValues(EScaleDir::X, s_arfXValuesTraces01, &m_scaleX.unit());
-            m_pDiagTraceSigGen1->setValues(EScaleDir::Y, s_arfYValuesTrace0, &m_scaleY.unit());
+            m_pDiagTraceSigGen1->setValues(EScaleAxis::X, s_arfXValuesTraces01, &m_scaleX.unit());
+            m_pDiagTraceSigGen1->setValues(EScaleAxis::Y, s_arfYValuesTrace0, &m_scaleY.unit());
         }
     }
     #endif

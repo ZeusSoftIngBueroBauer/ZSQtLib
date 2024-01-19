@@ -137,9 +137,15 @@ public: // instance methods
 public: // instance methods
     EMethodTraceDetailLevel getMethodCallsTraceDetailLevel() const;
     bool areMethodCallsActive( EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    bool areMethodCallsActive( const QString& i_strObjName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
+    bool areMethodCallsActive( const QString& i_strObjName, const QString& i_strMethodName, EMethodTraceDetailLevel i_eFilterDetailLevel ) const;
     EMethodTraceDetailLevel getEnterLeaveFilterDetailLevel() const;
     ELogDetailLevel getRuntimeInfoTraceDetailLevel() const;
     bool isRuntimeInfoActive( ELogDetailLevel i_eFilterDetailLevel ) const;
+    bool isRuntimeInfoActive( const QString& i_strObjName, ELogDetailLevel i_eFilterDetailLevel ) const;
+    bool isRuntimeInfoActive( const QString& i_strObjName, const QString& i_strMethodName, ELogDetailLevel i_eFilterDetailLevel ) const;
+    bool isObjectNameSuppressedByFilter( const QString& i_strObjName ) const;
+    bool isMethodNameSuppressedByFilter( const QString& i_strMethodName ) const;
     bool isTraceDataSuppressedByFilter( const QString& i_strTraceData ) const;
 public: // instance methods
     QString getNameSpace() const;

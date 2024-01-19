@@ -101,8 +101,8 @@ public: // class methods
 public: // ctors and dtor
     CDiagObjAxisLabel(
         const QString& i_strObjName,
-        CDiagScale*    i_pDiagScale,
-        ELayoutPos     i_layoutPos,
+        CDiagScale* i_pDiagScale,
+        ZS::System::ELayoutPos i_layoutPos,
         const QString& i_strAxisLabel = QString() );
     virtual ~CDiagObjAxisLabel();
 public: // instance methods (spacing between areas)

@@ -320,3 +320,10 @@ CPhysVal CUnitsTreeEntryGrpBase::getReferenceValue( const QString& i_strName ) c
     int idx = m_hshRefValIdxsByName[i_strName];
     return m_arRefVals[idx];
 }
+
+//------------------------------------------------------------------------------
+bool CUnitsTreeEntryGrpBase::hasReferenceValue( const QString& i_strName ) const
+//------------------------------------------------------------------------------
+{
+    return m_hshRefValIdxsByName.contains(i_strName);
+}

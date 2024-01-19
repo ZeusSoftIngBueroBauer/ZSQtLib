@@ -87,4 +87,6 @@ protected: // instance members
 
 } // namespace ZS
 
+Q_DECLARE_METATYPE(ZS::PhysVal::CPhysValRes);
+
 #endif // #ifndef ZSPhysVal_PhysValRes_h

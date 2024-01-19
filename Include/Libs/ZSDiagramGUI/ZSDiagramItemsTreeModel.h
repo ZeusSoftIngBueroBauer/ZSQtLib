@@ -94,15 +94,6 @@ public: // class methods
 public: // ctors and dtor
     CModelDiagramItems( CWdgtDiagram* i_pDiagram, QObject* i_pObjParent = nullptr );
     virtual ~CModelDiagramItems();
-public: // overridables
-    /*! This virtual method returns the name space of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name space of the derived class. */
-    virtual QString nameSpace() const { return NameSpace(); }
-    /*! This virtual method returns the class name of the object's class.
-        This method can be reimplemented in derived classes so when invoked for the
-        polymorphic base type the method returns the name of the derived class. */
-    virtual QString className() const { return ClassName(); }
 public:
     CWdgtDiagram* diagram() { return m_pDiagram; }
 public: // must overridables of base class QAbstractItemModel

@@ -66,9 +66,6 @@ public: // class methods
 public: // ctors and dtor
     CModelIdxTreeLoggers(CIdxTreeLoggers* i_pIdxTree = nullptr, QObject* i_pObjParent = nullptr);
     virtual ~CModelIdxTreeLoggers();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     CIdxTreeLoggers* idxTree();
 public: // instance methods

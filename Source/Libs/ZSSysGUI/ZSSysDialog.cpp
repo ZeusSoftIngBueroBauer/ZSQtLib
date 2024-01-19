@@ -226,12 +226,13 @@ CDialog::CDialog(
     setObjectName(i_strObjName);
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        m_strNameSpace, m_strClassName, m_strObjName);
+        m_strNameSpace, m_strClassName, objectName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "ctor",
+        /* strObjName   */ objectName(),
+        /* strMethod    */ "CDialog::ctor",
         /* strAddInfo   */ "" );
 
     if( i_strDlgTitle.isEmpty() ) {
@@ -264,12 +265,13 @@ CDialog::~CDialog()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "dtor",
+        /* strObjName   */ objectName(),
+        /* strMethod    */ "CDialog::dtor",
         /* strAddInfo   */ "" );
 
     QRect rct = geometry();
 
-    QString strKey = buildPathStr("::", m_strNameSpace, m_strClassName, m_strObjName);
+    QString strKey = buildPathStr("::", m_strNameSpace, m_strClassName, objectName());
 
     QSettings settings;
     settings.setValue( strKey + "/Geometry", saveGeometry() );
@@ -302,7 +304,8 @@ void CDialog::show()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "show",
+        /* strObjName   */ objectName(),
+        /* strMethod    */ "CDialog::show",
         /* strAddInfo   */ "" );
 
     QString strKey = buildPathStr("::", m_strNameSpace, m_strClassName, objectName());
@@ -320,7 +323,8 @@ void CDialog::hide()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "hide",
+        /* strObjName   */ objectName(),
+        /* strMethod    */ "CDialog::hide",
         /* strAddInfo   */ "" );
 
     QRect rct = geometry();
@@ -346,7 +350,8 @@ void CDialog::closeEvent( QCloseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* eDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "closeEvent",
+        /* strObjName   */ objectName(),
+        /* strMethod    */ "CDialog::closeEvent",
         /* strAddInfo   */ "" );
 
     QRect rct = geometry();

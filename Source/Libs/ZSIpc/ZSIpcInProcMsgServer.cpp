@@ -215,7 +215,7 @@ void CInProcMsgServersAdminObj::onServerListen( CInProcMsgServer* i_pServer )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         if( i_pServer == nullptr )
         {
@@ -254,7 +254,7 @@ void CInProcMsgServersAdminObj::onServerClose( CInProcMsgServer* i_pServer )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         if( i_pServer == nullptr )
         {
@@ -450,7 +450,7 @@ void CInProcMsgServer::setMsgReadBuffCopyDepth( ECopyDepth i_copyDepth )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = CEnumCopyDepth::toString(i_copyDepth);
     }
@@ -488,7 +488,7 @@ void CInProcMsgServer::setMaxPendingConnections( int i_iMaxConnections )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = QString::number(i_iMaxConnections);
     }
@@ -518,7 +518,7 @@ bool CInProcMsgServer::listen( unsigned int i_uPort )
 {
     QString strAddTrcInfo;
 
-    if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
     {
         strAddTrcInfo = "Port: " + QString::number(i_uPort);
     }
@@ -673,7 +673,7 @@ bool CInProcMsgServer::event( QEvent* i_pMsg )
 
         QString strAddTrcInfo;
 
-        if( areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal) )
+        if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
         {
             if( pMsg == nullptr )
             {

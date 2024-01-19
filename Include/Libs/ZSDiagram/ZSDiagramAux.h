@@ -91,21 +91,6 @@ enum EUpdate {
 };
 ZSDIAGRAMDLL_API QString updateFlags2Str( unsigned int i_uUpdateFlags );
 
-
-typedef enum {
-    ELayoutPosMin       = 0,
-    ELayoutPosTop       = 0, // Top, Left, and Right overlap each other at the top corners of the diagram
-    ELayoutPosBottom    = 1, // Bottom, Left, and Right overlap each other at the bottom corners of the diagram
-    ELayoutPosLeft      = 2,
-    ELayoutPosRight     = 3,
-    ELayoutPosCenter    = 4, // The Center area does not overlap with any other part and is expandable
-    ELayoutPosUndefined = 5, // For invisible objects (e.g. value providers)
-    ELayoutPosMax       = 5,
-    ELayoutPosCount
-}   ELayoutPos;
-ZSDIAGRAMDLL_API QString layoutPos2Str( int i_iLayoutPos );
-
-
 typedef enum {
     ETextOrientationMin        = 0,
     ETextOrientationLeft2Right = 0,

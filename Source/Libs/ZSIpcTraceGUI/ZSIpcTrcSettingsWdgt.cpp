@@ -719,10 +719,10 @@ void CWdgtTrcSettings::connectGuiControlsOnValueChangedSignals()
         m_pChkNewTrcAdminObjsEnabledAsDefault, &QCheckBox::toggled,
         this, &CWdgtTrcSettings::onChkNewTrcAdminObjsEnabledAsDefaultToggled);
     QObject::connect(
-        m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel, &QComboBox::currentIndexChanged,
+        m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtTrcSettings::onCmbNewTrcAdminObjsMethodCallsDefaultDetailLevelCurrentIndexChanged);
     QObject::connect(
-        m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel, &QComboBox::currentIndexChanged,
+        m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtTrcSettings::onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged);
     QObject::connect(
         m_pChkUseIpcServer, &QCheckBox::toggled,
@@ -731,19 +731,19 @@ void CWdgtTrcSettings::connectGuiControlsOnValueChangedSignals()
         m_pChkCacheDataIfNotConnected, &QCheckBox::toggled,
         this, &CWdgtTrcSettings::onChkCacheDataIfNotConnectedToggled);
     QObject::connect(
-        m_pEdtCacheDataMaxArrLen, &QSpinBox::valueChanged,
+        m_pEdtCacheDataMaxArrLen, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtTrcSettings::onEdtCacheDataMaxArrLenValueChanged);
     QObject::connect(
         m_pChkUseLocalTrcFile, &QCheckBox::toggled,
         this, &CWdgtTrcSettings::onChkUseLocalTrcFileToggled);
     QObject::connect(
-        m_pEdtLocalTrcFileAutoSaveInterval, &QSpinBox::valueChanged,
+        m_pEdtLocalTrcFileAutoSaveInterval, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtTrcSettings::onEdtLocalTrcFileAutoSaveIntervalValueChanged);
     QObject::connect(
-        m_pEdtLocalTrcFileSubFileCountMax, &QSpinBox::valueChanged,
+        m_pEdtLocalTrcFileSubFileCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtTrcSettings::onEdtLocalTrcFileSubFileCountMaxValueChanged);
     QObject::connect(
-        m_pEdtLocalTrcFileSubFileLineCountMax, &QSpinBox::valueChanged,
+        m_pEdtLocalTrcFileSubFileLineCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtTrcSettings::onEdtLocalTrcFileSubFileLineCountMaxValueChanged);
     QObject::connect(
         m_pChkLocalTrcFileCloseFileAfterEachWrite, &QCheckBox::toggled,
@@ -761,10 +761,10 @@ void CWdgtTrcSettings::disconnectGuiControlsOnValueChangedSignals()
         m_pChkNewTrcAdminObjsEnabledAsDefault, &QCheckBox::toggled,
         this, &CWdgtTrcSettings::onChkNewTrcAdminObjsEnabledAsDefaultToggled);
     QObject::disconnect(
-        m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel, &QComboBox::currentIndexChanged,
+        m_pCmbNewTrcAdminObjsMethodCallsDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtTrcSettings::onCmbNewTrcAdminObjsMethodCallsDefaultDetailLevelCurrentIndexChanged);
     QObject::disconnect(
-        m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel, &QComboBox::currentIndexChanged,
+        m_pCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtTrcSettings::onCmbNewTrcAdminObjsRuntimeInfoDefaultDetailLevelCurrentIndexChanged);
     QObject::disconnect(
         m_pChkUseIpcServer, &QCheckBox::toggled,
@@ -773,19 +773,19 @@ void CWdgtTrcSettings::disconnectGuiControlsOnValueChangedSignals()
         m_pChkCacheDataIfNotConnected, &QCheckBox::toggled,
         this, &CWdgtTrcSettings::onChkCacheDataIfNotConnectedToggled);
     QObject::disconnect(
-        m_pEdtCacheDataMaxArrLen, &QSpinBox::valueChanged,
+        m_pEdtCacheDataMaxArrLen, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtTrcSettings::onEdtCacheDataMaxArrLenValueChanged);
     QObject::disconnect(
         m_pChkUseLocalTrcFile, &QCheckBox::toggled,
         this, &CWdgtTrcSettings::onChkUseLocalTrcFileToggled);
     QObject::disconnect(
-        m_pEdtLocalTrcFileAutoSaveInterval, &QSpinBox::valueChanged,
+        m_pEdtLocalTrcFileAutoSaveInterval, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtTrcSettings::onEdtLocalTrcFileAutoSaveIntervalValueChanged);
     QObject::disconnect(
-        m_pEdtLocalTrcFileSubFileCountMax, &QSpinBox::valueChanged,
+        m_pEdtLocalTrcFileSubFileCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtTrcSettings::onEdtLocalTrcFileSubFileCountMaxValueChanged);
     QObject::disconnect(
-        m_pEdtLocalTrcFileSubFileLineCountMax, &QSpinBox::valueChanged,
+        m_pEdtLocalTrcFileSubFileLineCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtTrcSettings::onEdtLocalTrcFileSubFileLineCountMaxValueChanged);
     QObject::disconnect(
         m_pChkLocalTrcFileCloseFileAfterEachWrite, &QCheckBox::toggled,

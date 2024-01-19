@@ -694,7 +694,7 @@ void CWdgtLogSettings::connectGuiControlsOnValueChangedSignals()
         m_pChkNewLoggersEnabledAsDefault, &QCheckBox::toggled,
         this, &CWdgtLogSettings::onChkNewLoggersEnabledAsDefaultToggled);
     QObject::connect(
-        m_pCmbNewLoggersDefaultDetailLevel, &QComboBox::currentIndexChanged,
+        m_pCmbNewLoggersDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtLogSettings::onCmbNewLoggersDefaultDetailLevelCurrentIndexChanged);
     QObject::connect(
         m_pChkUseIpcServer, &QCheckBox::toggled,
@@ -703,19 +703,19 @@ void CWdgtLogSettings::connectGuiControlsOnValueChangedSignals()
         m_pChkCacheDataIfNotConnected, &QCheckBox::toggled,
         this, &CWdgtLogSettings::onChkCacheDataIfNotConnectedToggled);
     QObject::connect(
-        m_pEdtCacheDataMaxArrLen, &QSpinBox::valueChanged,
+        m_pEdtCacheDataMaxArrLen, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtLogSettings::onEdtCacheDataMaxArrLenValueChanged);
     QObject::connect(
         m_pChkUseLocalLogFile, &QCheckBox::toggled,
         this, &CWdgtLogSettings::onChkUseLocalLogFileToggled);
     QObject::connect(
-        m_pEdtLocalLogFileAutoSaveInterval, &QSpinBox::valueChanged,
+        m_pEdtLocalLogFileAutoSaveInterval, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtLogSettings::onEdtLocalLogFileAutoSaveIntervalValueChanged);
     QObject::connect(
-        m_pEdtLocalLogFileSubFileCountMax, &QSpinBox::valueChanged,
+        m_pEdtLocalLogFileSubFileCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtLogSettings::onEdtLocalLogFileSubFileCountMaxValueChanged);
     QObject::connect(
-        m_pEdtLocalLogFileSubFileLineCountMax, &QSpinBox::valueChanged,
+        m_pEdtLocalLogFileSubFileLineCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtLogSettings::onEdtLocalLogFileSubFileLineCountMaxValueChanged);
     QObject::connect(
         m_pChkLocalLogFileCloseFileAfterEachWrite, &QCheckBox::toggled,
@@ -733,7 +733,7 @@ void CWdgtLogSettings::disconnectGuiControlsOnValueChangedSignals()
         m_pChkNewLoggersEnabledAsDefault, &QCheckBox::toggled,
         this, &CWdgtLogSettings::onChkNewLoggersEnabledAsDefaultToggled);
     QObject::disconnect(
-        m_pCmbNewLoggersDefaultDetailLevel, &QComboBox::currentIndexChanged,
+        m_pCmbNewLoggersDefaultDetailLevel, QOverload<int>::of(&QComboBox::currentIndexChanged),
         this, &CWdgtLogSettings::onCmbNewLoggersDefaultDetailLevelCurrentIndexChanged);
     QObject::disconnect(
         m_pChkUseIpcServer, &QCheckBox::toggled,
@@ -742,19 +742,19 @@ void CWdgtLogSettings::disconnectGuiControlsOnValueChangedSignals()
         m_pChkCacheDataIfNotConnected, &QCheckBox::toggled,
         this, &CWdgtLogSettings::onChkCacheDataIfNotConnectedToggled);
     QObject::disconnect(
-        m_pEdtCacheDataMaxArrLen, &QSpinBox::valueChanged,
+        m_pEdtCacheDataMaxArrLen, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtLogSettings::onEdtCacheDataMaxArrLenValueChanged);
     QObject::disconnect(
         m_pChkUseLocalLogFile, &QCheckBox::toggled,
         this, &CWdgtLogSettings::onChkUseLocalLogFileToggled);
     QObject::disconnect(
-        m_pEdtLocalLogFileAutoSaveInterval, &QSpinBox::valueChanged,
+        m_pEdtLocalLogFileAutoSaveInterval, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtLogSettings::onEdtLocalLogFileAutoSaveIntervalValueChanged);
     QObject::disconnect(
-        m_pEdtLocalLogFileSubFileCountMax, &QSpinBox::valueChanged,
+        m_pEdtLocalLogFileSubFileCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtLogSettings::onEdtLocalLogFileSubFileCountMaxValueChanged);
     QObject::disconnect(
-        m_pEdtLocalLogFileSubFileLineCountMax, &QSpinBox::valueChanged,
+        m_pEdtLocalLogFileSubFileLineCountMax, QOverload<int>::of(&QSpinBox::valueChanged),
         this, &CWdgtLogSettings::onEdtLocalLogFileSubFileLineCountMaxValueChanged);
     QObject::disconnect(
         m_pChkLocalLogFileCloseFileAfterEachWrite, &QCheckBox::toggled,

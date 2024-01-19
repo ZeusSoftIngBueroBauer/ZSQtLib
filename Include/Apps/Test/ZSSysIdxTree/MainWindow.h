@@ -85,9 +85,9 @@ public: // ctors and dtor
 public: // instance methods
     ZS::System::GUI::CWdgtIdxTree* idxTreeWidget() { return m_pWdgtIdxTree; }
 protected: // overridables of base class QWidget
-    virtual void closeEvent( QCloseEvent* i_pEv );
+    virtual void closeEvent( QCloseEvent* i_pEv ) override;
 protected: // overridables of base class QObject
-    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv );
+    virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
 protected slots:
     void onActFileOpenTriggered();
     void onActFileSaveTriggered();

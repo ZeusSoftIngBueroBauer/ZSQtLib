@@ -53,9 +53,6 @@ public: // class methods
 public: // ctors and dtor
     CDelegateIdxTreeTestSteps( QObject* i_pObjParent = nullptr );
     virtual ~CDelegateIdxTreeTestSteps();
-public: // overridables
-    virtual QString nameSpace() const { return NameSpace(); }
-    virtual QString className() const { return ClassName(); }
 public: // instance methods
     bool isCheckBoxBreakpointHit(
         const QRect&       i_rectVisual,

@@ -54,9 +54,6 @@ public: // ctors and dtor
         ZS::System::CErrLog* i_pErrLog,
         ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CClientGatewayThread();
-public: // overridables of base class CSrvCltBaseGatewayThread
-    virtual QString nameSpace() const override { return NameSpace(); }
-    virtual QString className() const override { return ClassName(); }
 protected: // must overridables of base class QThread
     virtual void run() override;
 protected: // instance members
@@ -81,9 +78,6 @@ public: // ctors and dtor
         ZS::System::CErrLog* i_pErrLog,
         ZS::System::EMethodTraceDetailLevel i_eTrcMthFileDetailLevel = ZS::System::EMethodTraceDetailLevel::None );
     virtual ~CClientGateway();
-public: // overridables of base class CSrvCltBaseGateway
-    virtual QString nameSpace() const override { return NameSpace(); }
-    virtual QString className() const override { return ClassName(); }
 protected slots: // overridables
     virtual void onConnected( QObject* i_pSocketWrapper );
     virtual void onTimeoutConnect();
