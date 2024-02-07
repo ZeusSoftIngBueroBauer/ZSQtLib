@@ -70,12 +70,10 @@ signals:
     void progressBarConnectDblClicked();
 public: // instance methods
     ZS::Trace::GUI::CWdgtTrcMthList* getTraceMethodListWidget() { return m_pWdgtMthList; }
-public: // instance methods
-    void findText();
 protected slots:
     void onProgressBarConnectDblClicked();
 protected: // instance members
-    QVBoxLayout*                     m_pLyt;
+    QVBoxLayout* m_pLyt;
     ZS::Trace::GUI::CWdgtTrcMthList* m_pWdgtMthList;
 
 }; // class CWidgetCentral

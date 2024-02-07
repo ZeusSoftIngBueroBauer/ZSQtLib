@@ -114,8 +114,6 @@ CMainWindow::CMainWindow(
     m_pActFileReadLogFile(nullptr),
     m_pActFileWriteLogFile(nullptr),
     m_pActFileQuit(nullptr),
-    m_pMnuEdit(nullptr),
-    m_pActEditFind(nullptr),
     m_pMnuSettings(nullptr),
     m_pActSettingsLogClient(nullptr),
     m_pActSettingsLoggersIdxTree(nullptr),
@@ -219,22 +217,6 @@ CMainWindow::CMainWindow(
     QObject::connect(
         m_pActFileQuit, &QAction::triggered,
         qApp, &CApplication::quit);
-
-    // <Menu> Edit
-    //============
-
-    m_pMnuEdit = menuBar()->addMenu(tr("&Edit"));
-
-    // <MenuItem> Find
-    //----------------
-
-    m_pActEditFind = new QAction("&Find",this);
-    m_pActEditFind->setShortcuts(QKeySequence::Find);
-    m_pMnuEdit->addAction(m_pActEditFind);
-
-    QObject::connect(
-        m_pActEditFind, &QAction::triggered,
-        this, &CMainWindow::onActEditFindTriggered);
 
     // <Menu> Settings
     //================
@@ -445,8 +427,6 @@ CMainWindow::~CMainWindow()
     m_pActFileReadLogFile = nullptr;
     m_pActFileWriteLogFile = nullptr;
     m_pActFileQuit = nullptr;
-    m_pMnuEdit = nullptr;
-    m_pActEditFind = nullptr;
     m_pMnuSettings = nullptr;
     m_pActSettingsLogClient = nullptr;
     m_pActSettingsLoggersIdxTree = nullptr;
@@ -640,17 +620,6 @@ void CMainWindow::onActFileWriteLogFileTriggered()
         m_pWdgtCentral->getLogWidget()->writeLogFile(strAbsFilePath);
     }
 } // onActFileWriteLogFileTriggered
-
-/*==============================================================================
-protected slots:
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CMainWindow::onActEditFindTriggered()
-//------------------------------------------------------------------------------
-{
-    m_pWdgtCentral->findText();
-}
 
 /*==============================================================================
 protected slots:

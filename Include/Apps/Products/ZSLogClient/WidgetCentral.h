@@ -69,12 +69,10 @@ signals:
     void progressBarConnectDblClicked();
 public: // instance methods
     ZS::Log::GUI::CWdgtLog* getLogWidget() { return m_pWdgtLog; }
-public: // instance methods
-    void findText();
 protected slots:
     void onProgressBarConnectDblClicked();
 protected: // instance members
-    QVBoxLayout*            m_pLyt;
+    QVBoxLayout* m_pLyt;
     ZS::Log::GUI::CWdgtLog* m_pWdgtLog;
 
 }; // class CWidgetCentral

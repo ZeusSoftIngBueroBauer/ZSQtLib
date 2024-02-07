@@ -24,6 +24,20 @@ may result in using the software modules.
 
 *******************************************************************************/
 
+#include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
+#include "ZSIpcTrace/ZSIpcTrcClient.h"
+#include "ZSSysGUI/ZSSysEditIntValueDlg.h"
+#include "ZSSysGUI/ZSSysProgressBar.h"
+#include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
+#include "ZSSys/ZSSysApp.h"
+#include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
+#include "ZSSys/ZSSysErrLog.h"
+#include "ZSSys/ZSSysErrResult.h"
+#include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysTrcMthFile.h"
+
 #include <QtCore/qfile.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qsettings.h>
@@ -47,6 +61,7 @@ may result in using the software modules.
 #include <QtGui/qapplication.h>
 #include <QtGui/qboxlayout.h>
 #include <QtGui/qcheckbox.h>
+#include <QtGui/qcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlineedit.h>
 #include <QtGui/qmessagebox.h>
@@ -56,27 +71,13 @@ may result in using the software modules.
 #include <QtWidgets/qapplication.h>
 #include <QtWidgets/qboxlayout.h>
 #include <QtWidgets/qcheckbox.h>
+#include <QtWidgets/qcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlineedit.h>
 #include <QtWidgets/qmessagebox.h>
 #include <QtWidgets/qpushbutton.h>
 #include <QtWidgets/qtextedit.h>
 #endif
-
-#include "ZSIpcTraceGUI/ZSIpcTrcMthWdgt.h"
-#include "ZSIpcTrace/ZSIpcTrcClient.h"
-#include "ZSSysGUI/ZSSysEditIntValueDlg.h"
-#include "ZSSysGUI/ZSSysFindTextDlg.h"
-#include "ZSSysGUI/ZSSysProgressBar.h"
-#include "ZSSysGUI/ZSSysTrcAdminObjIdxTreeDlg.h"
-#include "ZSSys/ZSSysApp.h"
-#include "ZSSys/ZSSysMath.h"
-#include "ZSSys/ZSSysTrcAdminObj.h"
-#include "ZSSys/ZSSysTrcAdminObjIdxTree.h"
-#include "ZSSys/ZSSysErrLog.h"
-#include "ZSSys/ZSSysErrResult.h"
-#include "ZSSys/ZSSysException.h"
-#include "ZSSys/ZSSysTrcMthFile.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -150,6 +151,10 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_pBtnTrcAdminObjIdxTree(nullptr),
     m_pBtnConnect(nullptr),
     m_pProgressBarCnct(nullptr),
+    m_pLblFindText(nullptr),
+    m_pCmbFindText(nullptr),
+    m_pBtnFindTextNext(nullptr),
+    m_pBtnFindTextPrev(nullptr),
     m_pTmrDataRateRefresh(nullptr),
     m_iTimeSpanTooMuchData_s(10),
     m_pLblTimeSpanTooMuchData(nullptr),
@@ -251,12 +256,10 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_pBtnConnect = new QPushButton();
     pLytBtnListWidget->addWidget(m_pBtnConnect);
 
-    if( m_pTrcClient->isConnected() )
-    {
+    if (m_pTrcClient->isConnected()) {
         m_pBtnConnect->setText(c_strBtnDisconnect);
     }
-    else
-    {
+    else {
         m_pBtnConnect->setText(c_strBtnConnect);
     }
 
@@ -269,11 +272,38 @@ CWdgtTrcMthList::CWdgtTrcMthList(
     m_pProgressBarCnct->setTextVisible(false);
     m_pProgressBarCnct->installEventFilter(this);
     pLytBtnListWidget->addWidget(m_pProgressBarCnct);
+    pLytBtnListWidget->addSpacing(20);
 
-    // <Stretch> after progress bar
-    //-----------------------------
+    // <FindText>
+    //-----------
 
-    pLytBtnListWidget->addStretch();
+    m_pLblFindText = new QLabel("Find:");
+    pLytBtnListWidget->addWidget(m_pLblFindText);
+    m_pCmbFindText = new QComboBox();
+    m_pCmbFindText->setEditable(true);
+    m_pCmbFindText->setInsertPolicy(QComboBox::NoInsert);
+    m_pCmbFindText->setMaxCount(10);
+    pLytBtnListWidget->addWidget(m_pCmbFindText, 1);
+
+    QPixmap pxmBtnDown(":/ZS/Button/ButtonMoveDown24x24.png");
+    m_pBtnFindTextNext = new QPushButton();
+    m_pBtnFindTextNext->setIcon(pxmBtnDown);
+    m_pBtnFindTextNext->setToolTip("Find Next");
+    pLytBtnListWidget->addWidget(m_pBtnFindTextNext);
+    QObject::connect(
+        m_pBtnFindTextNext, &QPushButton::clicked,
+        this, &CWdgtTrcMthList::onBtnFindTextNextClicked);
+
+    QPixmap pxmBtnUp(":/ZS/Button/ButtonMoveUp24x24.png");
+    m_pBtnFindTextPrev = new QPushButton();
+    m_pBtnFindTextPrev->setIcon(pxmBtnUp);
+    m_pBtnFindTextPrev->setToolTip("Find Previous");
+    pLytBtnListWidget->addWidget(m_pBtnFindTextPrev);
+    QObject::connect(
+        m_pBtnFindTextPrev, &QPushButton::clicked,
+        this, &CWdgtTrcMthList::onBtnFindTextPrevClicked);
+
+    pLytBtnListWidget->addSpacing(20);
 
     // <Label> Data Rate
     //------------------
@@ -377,6 +407,10 @@ CWdgtTrcMthList::~CWdgtTrcMthList()
     m_pBtnTrcAdminObjIdxTree = nullptr;
     m_pBtnConnect = nullptr;
     m_pProgressBarCnct = nullptr;
+    m_pLblFindText = nullptr;
+    m_pCmbFindText = nullptr;
+    m_pBtnFindTextNext = nullptr;
+    m_pBtnFindTextPrev = nullptr;
     m_pTmrDataRateRefresh = nullptr;
     m_iTimeSpanTooMuchData_s = 0;
     m_pLblTimeSpanTooMuchData = nullptr;
@@ -854,34 +888,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtTrcMthList::findText()
-//------------------------------------------------------------------------------
-{
-    QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Find Text";
-
-    CDlgFindText* pDlg = dynamic_cast<CDlgFindText*>(CDlgFindText::GetInstance("FindText"));
-
-    if( pDlg == nullptr )
-    {
-        pDlg = CDlgFindText::CreateInstance(strDlgTitle, "FindText");
-        pDlg->setTextEdit(m_pEdt);
-        pDlg->adjustSize();
-        pDlg->show();
-    }
-    else
-    {
-        if( pDlg->isHidden() )
-        {
-            pDlg->show();
-        }
-        pDlg->raise();
-        pDlg->activateWindow();
-    }
-
-} // findText
-
-//------------------------------------------------------------------------------
-bool CWdgtTrcMthList::find( const QString& i_strExp, QTextDocument::FindFlags i_findFlags )
+bool CWdgtTrcMthList::findText( const QString& i_strExp, QTextDocument::FindFlags i_findFlags )
 //------------------------------------------------------------------------------
 {
     return m_pEdt->find(i_strExp, i_findFlags);
@@ -914,49 +921,36 @@ bool CWdgtTrcMthList::eventFilter( QObject* i_pObjWatched, QEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
     bool bHandled = false;
-
-    if( i_pObjWatched == m_pProgressBarCnct )
-    {
-        if( i_pEv->type() == QEvent::MouseButtonDblClick )
-        {
+    if (i_pObjWatched == m_pProgressBarCnct) {
+        if (i_pEv->type() == QEvent::MouseButtonDblClick) {
             emit progressBarConnectDblClicked();
             bHandled = true;
         }
     }
-    else if( i_pObjWatched == m_pEdt )
-    {
-        if( i_pEv->type() == QEvent::KeyPress )
-        {
+    else if (i_pObjWatched == m_pEdt) {
+        if (i_pEv->type() == QEvent::KeyPress) {
             QKeyEvent* pKeyEv = dynamic_cast<QKeyEvent*>(i_pEv);
-
-            if( pKeyEv != nullptr )
-            {
-                if( pKeyEv->modifiers() & Qt::ControlModifier )
-                {
-                    if( pKeyEv->key() == Qt::Key_F )
-                    {
-                        findText();
-                    }
+            if (pKeyEv != nullptr) {
+                if (pKeyEv->modifiers() & Qt::ControlModifier && pKeyEv->key() == Qt::Key_F) {
+                    QString strText = m_pEdt->textCursor().selectedText();
+                    m_pCmbFindText->setFocus();
+                    m_pCmbFindText->setCurrentText(strText);
                 }
             }
         }
     }
-    else if( i_pObjWatched == m_pEdtTimeSpanTooMuchData )
-    {
-        if( i_pEv->type() == QEvent::MouseButtonDblClick )
-        {
+    else if (i_pObjWatched == m_pEdtTimeSpanTooMuchData) {
+        if (i_pEv->type() == QEvent::MouseButtonDblClick) {
             bHandled = true;
             showEditMaxDataRateDialog();
         }
     }
-    else
-    {
+    else {
         // pass the event on to the parent class
         bHandled = CWdgtTrcMthList::eventFilter(i_pObjWatched,i_pEv);
     }
     return bHandled;
-
-} // eventFilter
+}
 
 /*==============================================================================
 protected slots: // connected to the signals of my user controls
@@ -976,8 +970,7 @@ void CWdgtTrcMthList::onChkServerTracingEnabledToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     STrcServerSettings trcServerSettings = m_pTrcClient->getTraceSettings();
-    if( trcServerSettings.m_bEnabled != i_bChecked )
-    {
+    if (trcServerSettings.m_bEnabled != i_bChecked) {
         trcServerSettings.m_bEnabled = i_bChecked;
         m_pTrcClient->setTraceSettings(trcServerSettings);
     }
@@ -988,8 +981,7 @@ void CWdgtTrcMthList::onChkServerUseIpcServerToggled( bool i_bChecked )
 //------------------------------------------------------------------------------
 {
     STrcServerSettings trcServerSettings = m_pTrcClient->getTraceSettings();
-    if( trcServerSettings.m_bUseIpcServer != i_bChecked )
-    {
+    if (trcServerSettings.m_bUseIpcServer != i_bChecked) {
         trcServerSettings.m_bUseIpcServer = i_bChecked;
         m_pTrcClient->setTraceSettings(trcServerSettings);
     }
@@ -1000,45 +992,34 @@ void CWdgtTrcMthList::onBtnTrcAdminObjIdxTreeClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
     QString strDlgTitle = ZS::System::GUI::getMainWindowTitle() + ": Trace Admin Objects";
-
     CDlgIdxTreeTrcAdminObjs* pDlg = CDlgIdxTreeTrcAdminObjs::GetInstance(m_pTrcClient->getTraceAdminObjIdxTree()->objectName());
-
-    if( pDlg == nullptr )
-    {
+    if (pDlg == nullptr) {
         pDlg = CDlgIdxTreeTrcAdminObjs::CreateInstance(strDlgTitle, m_pTrcClient->getTraceAdminObjIdxTree());
         pDlg->setAttribute(Qt::WA_DeleteOnClose, true);
         pDlg->adjustSize();
         pDlg->show();
     }
-    else
-    {
-        if( pDlg->isHidden() )
-        {
+    else {
+        if (pDlg->isHidden()) {
             pDlg->show();
         }
         pDlg->raise();
         pDlg->activateWindow();
     }
-} // onBtnTrcAdminObjIdxTreeClicked
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
 //------------------------------------------------------------------------------
 {
-    if( m_pBtnConnect->text() == c_strBtnConnect )
-    {
-        if( m_pReqInProgress == nullptr )
-        {
+    if (m_pBtnConnect->text() == c_strBtnConnect) {
+        if (m_pReqInProgress == nullptr) {
             m_pReqInProgress = m_pTrcClient->connect_();
-
-            if( !isAsynchronousRequest(m_pReqInProgress) )
-            {
+            if (!isAsynchronousRequest(m_pReqInProgress)) {
                 m_pReqInProgress = nullptr; // deleted later by request queue of client
             }
-            else
-            {
+            else {
                 m_pBtnConnect->setText(c_strBtnAbort);
-
                 SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
                 QString strText = cnctSettings.getConnectionString() + " Connecting ...";
                 m_pProgressBarCnct->setLabelText(strText);
@@ -1046,28 +1027,20 @@ void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
                 m_pProgressBarCnct->setDurationInMs(cnctSettings.m_iConnectTimeout_ms);
                 m_pProgressBarCnct->setIncrementInMs(200);
                 m_pProgressBarCnct->start();
-
                 QObject::connect(
                     m_pReqInProgress, &CRequest::changed,
                     this, &CWdgtTrcMthList::onIpcClientPendingRequestChanged);
             }
-        } // if( m_requestQueue.isIdle() )
-    } // if( m_pBtnConnect->text() == c_strBtnConnect )
-
-    else if( m_pBtnConnect->text() == c_strBtnDisconnect )
-    {
-        if( m_pReqInProgress == nullptr )
-        {
+        }
+    }
+    else if (m_pBtnConnect->text() == c_strBtnDisconnect) {
+        if (m_pReqInProgress == nullptr) {
             m_pReqInProgress = m_pTrcClient->disconnect_();
-
-            if( !isAsynchronousRequest(m_pReqInProgress) )
-            {
+            if (!isAsynchronousRequest(m_pReqInProgress)) {
                 m_pReqInProgress = nullptr; // deleted later by request queue of client
             }
-            else
-            {
+            else {
                 m_pBtnConnect->setText(c_strBtnAbort);
-
                 SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
                 QString strText = cnctSettings.getConnectionString() + " Disconnecting ...";
                 m_pProgressBarCnct->setLabelText(strText);
@@ -1075,40 +1048,66 @@ void CWdgtTrcMthList::onBtnConnectClicked( bool /*i_bChecked*/ )
                 m_pProgressBarCnct->setDurationInMs(cnctSettings.m_iConnectTimeout_ms);
                 m_pProgressBarCnct->setIncrementInMs(200);
                 m_pProgressBarCnct->start();
-
                 QObject::connect(
                     m_pReqInProgress, &CRequest::changed,
                     this, &CWdgtTrcMthList::onIpcClientPendingRequestChanged);
             }
-        } // if( m_requestQueue.isIdle() )
-    } // if( m_pBtnConnect->text() == c_strBtnDisconnect )
-
-    else if( m_pBtnConnect->text() == c_strBtnAbort )
-    {
-        if( m_pReqInProgress != nullptr )
-        {
+        }
+    }
+    else if (m_pBtnConnect->text() == c_strBtnAbort) {
+        if (m_pReqInProgress != nullptr) {
             m_pTrcClient->abortRequest(m_pReqInProgress->getId());
             m_pReqInProgress = nullptr;
         }
-
-        if( m_pTrcClient->isConnected() )
-        {
+        if (m_pTrcClient->isConnected()) {
             m_pBtnConnect->setText(c_strBtnDisconnect);
         }
-        else
-        {
+        else {
             m_pBtnConnect->setText(c_strBtnConnect);
         }
-
         SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
         QString strText = cnctSettings.getConnectionString();
         m_pProgressBarCnct->setLabelText(strText);
         m_pProgressBarCnct->reset();
         m_pProgressBarCnct->stop();
-
-    } // if( m_pBtnConnect->text() == c_strBtnAbort )
-
+    }
 } // onBtnConnectClicked
+
+//------------------------------------------------------------------------------
+void CWdgtTrcMthList::onBtnFindTextNextClicked( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    QString strExp = m_pCmbFindText->currentText();
+    if (m_pCmbFindText->findText(strExp, Qt::MatchFixedString) < 0) {
+        m_pCmbFindText->insertItem(0, strExp);
+    }
+    QTextDocument::FindFlags findFlags;
+    bool bExpFound = m_pEdt->find(strExp, findFlags);
+    if (!bExpFound) {
+        m_pCmbFindText->setToolTip("Text not found");
+    }
+    else {
+        m_pCmbFindText->setToolTip("");
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtTrcMthList::onBtnFindTextPrevClicked( bool /*i_bChecked*/ )
+//------------------------------------------------------------------------------
+{
+    QString strExp = m_pCmbFindText->currentText();
+    if (m_pCmbFindText->findText(strExp, Qt::MatchFixedString) < 0) {
+        m_pCmbFindText->insertItem(0, strExp);
+    }
+    QTextDocument::FindFlags findFlags = QTextDocument::FindBackward;
+    bool bExpFound = m_pEdt->find(strExp, findFlags);
+    if (!bExpFound) {
+        m_pCmbFindText->setToolTip("Text not found");
+    }
+    else {
+        m_pCmbFindText->setToolTip("");
+    }
+}
 
 /*==============================================================================
 protected slots:
@@ -1166,8 +1165,7 @@ void CWdgtTrcMthList::onIpcClientConnected( QObject* /*i_pClient*/ )
     m_pProgressBarCnct->setLabelText(strText);
     m_pProgressBarCnct->reset();
     m_pProgressBarCnct->stop();
-
-} // onIpcClientConnected
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onIpcClientDisconnected( QObject* /*i_pClient*/ )
@@ -1193,8 +1191,7 @@ void CWdgtTrcMthList::onIpcClientDisconnected( QObject* /*i_pClient*/ )
     m_pProgressBarCnct->setLabelText(strText);
     m_pProgressBarCnct->reset();
     m_pProgressBarCnct->stop();
-
-} // onIpcClientDisconnected
+}
 
 //------------------------------------------------------------------------------
 void CWdgtTrcMthList::onIpcClientSettingsChanged( QObject* /*i_pClient*/ )
@@ -1209,59 +1206,42 @@ void CWdgtTrcMthList::onIpcClientSettingsChanged( QObject* /*i_pClient*/ )
 void CWdgtTrcMthList::onIpcClientPendingRequestChanged( ZS::System::SRequestDscr i_reqDscr )
 //------------------------------------------------------------------------------
 {
-    if( m_pReqInProgress != nullptr )
-    {
-        if( m_pReqInProgress->getId() == i_reqDscr.m_iId )
-        {
-            switch( m_pReqInProgress->getRequest() )
-            {
-                case CIpcTrcClient::ERequestChangeSettings:
-                {
-                    if( i_reqDscr.m_iProgress_perCent >= 100 )
-                    {
-                        if( i_reqDscr.m_request == CIpcTrcClient::ERequestChangeSettings )
-                        {
+    if (m_pReqInProgress != nullptr) {
+        if (m_pReqInProgress->getId() == i_reqDscr.m_iId) {
+            switch (m_pReqInProgress->getRequest()) {
+                case CIpcTrcClient::ERequestChangeSettings: {
+                    if (i_reqDscr.m_iProgress_perCent >= 100) {
+                        if (i_reqDscr.m_request == CIpcTrcClient::ERequestChangeSettings) {
                             m_pReqInProgress = nullptr;
                         }
                     }
                     break;
                 }
-                case CIpcTrcClient::ERequestConnect:
-                {
-                    if( i_reqDscr.m_iProgress_perCent >= 100 )
-                    {
-                        if( i_reqDscr.m_request == CIpcTrcClient::ERequestConnect )
-                        {
+                case CIpcTrcClient::ERequestConnect: {
+                    if (i_reqDscr.m_iProgress_perCent >= 100) {
+                        if (i_reqDscr.m_request == CIpcTrcClient::ERequestConnect) {
                             m_pReqInProgress = nullptr;
                         }
                     }
                     break;
                 }
-                case CIpcTrcClient::ERequestDisconnect:
-                {
-                    if( i_reqDscr.m_iProgress_perCent >= 100 )
-                    {
-                        if( i_reqDscr.m_request == CIpcTrcClient::ERequestDisconnect )
-                        {
+                case CIpcTrcClient::ERequestDisconnect: {
+                    if (i_reqDscr.m_iProgress_perCent >= 100) {
+                        if (i_reqDscr.m_request == CIpcTrcClient::ERequestDisconnect) {
                             m_pReqInProgress = nullptr;
                         }
                     }
                     break;
                 }
-                default:
-                {
+                default: {
                     break;
                 }
-            } // switch( pReqInProgress->getRequest() )
-
-            if( m_pReqInProgress == nullptr )
-            {
-                if( m_pTrcClient->isConnected() )
-                {
+            }
+            if (m_pReqInProgress == nullptr) {
+                if (m_pTrcClient->isConnected()) {
                     m_pBtnConnect->setText(c_strBtnDisconnect);
                 }
-                else
-                {
+                else {
                     m_pBtnConnect->setText(c_strBtnConnect);
                 }
                 SClientHostSettings cnctSettings = m_pTrcClient->getHostSettings();
@@ -1269,11 +1249,9 @@ void CWdgtTrcMthList::onIpcClientPendingRequestChanged( ZS::System::SRequestDscr
                 m_pProgressBarCnct->setLabelText(strText);
                 m_pProgressBarCnct->stop();
                 m_pProgressBarCnct->reset();
-
-            } // if( m_pReqInProgress == nullptr )
-        } // if( m_requestQueue.isPendingRequest(pReqInProgress,i_reqDscr.m_iId) )
-    } // if( pReqInProgress != nullptr )
-
+            }
+        }
+    }
 } // onIpcClientPendingRequestChanged
 
 /*==============================================================================
@@ -1294,16 +1272,12 @@ void CWdgtTrcMthList::onTraceSettingsChanged( QObject* /*i_pTrcClient*/ )
     // and remote server within this application separately.
 
     QString strThreadClrFileAbsFilePath = getDefaultThreadColorsFilePath();
-
-    if( strThreadClrFileAbsFilePath != m_strThreadClrFileAbsFilePath )
-    {
+    if (strThreadClrFileAbsFilePath != m_strThreadClrFileAbsFilePath) {
         m_strThreadClrFileAbsFilePath = strThreadClrFileAbsFilePath;
-
         #if QT_VERSION >= QT_VERSION_CHECK(4, 5, 1)
         loadThreadColors();
         #endif
     }
-
     m_pChkServerTracingEnabled->setChecked( m_pTrcClient->getTraceSettings().m_bEnabled );
     m_pChkServerUseIpcServer->setChecked( m_pTrcClient->getTraceSettings().m_bUseIpcServer );
 }
@@ -1665,12 +1639,10 @@ protected: // instance methods
 void CWdgtTrcMthList::addEdtItem( const QString& i_strText, const QString& i_strHtmlClrCode )
 //------------------------------------------------------------------------------
 {
-    if( m_iEdtItemsCountMax > 0 && m_iEdtItems >= m_iEdtItemsCountMax )
-    {
+    if (m_iEdtItemsCountMax > 0 && m_iEdtItems >= m_iEdtItemsCountMax) {
         // !!!! To slow !!!!
         // GUI becomes unresponsive when removing lines.
         //QTextCursor cursor = m_pEdt->textCursor();
-
         //for( int i = 0; i < 10; ++i )
         //{
         //    cursor.movePosition(QTextCursor::Start);
@@ -1681,21 +1653,19 @@ void CWdgtTrcMthList::addEdtItem( const QString& i_strText, const QString& i_str
         //}
         //m_pEdt->setTextCursor(cursor);
 
-        if( !m_bEdtFull )
-        {
+        if (!m_bEdtFull) {
             QString strText = "---------- MAXIMUM NUMBER OF ENTRIES REACHED -----------";
             m_bEdtFull = true;
             m_pEdt->append(strText);
             emit textItemAdded(strText);
         }
     }
-    else
-    {
+    else {
         m_pEdt->append("<FONT color=" + i_strHtmlClrCode + ">" + i_strText + "</FONT>");
         m_iEdtItems++;
         emit textItemAdded(i_strText);
     }
-} // addEdtItem
+}
 
 /*==============================================================================
 protected: // instance methods

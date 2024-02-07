@@ -105,8 +105,6 @@ protected slots:
     void onActFileReadTrcMthFileTriggered();
     void onActFileWriteTrcMthFileTriggered();
 protected slots:
-    void onActEditFindTriggered();
-protected slots:
     void onActSettingsWdgtTrcMthListTriggered();
     void onActSettingsTrcClientTriggered();
     void onActSettingsTrcAdminObjIdxTreeTriggered();
@@ -139,8 +137,6 @@ protected: // instance members
     QAction*                  m_pActFileReadTrcMthFile;
     QAction*                  m_pActFileWriteTrcMthFile;
     QAction*                  m_pActFileQuit;
-    QMenu*                    m_pMnuEdit;
-    QAction*                  m_pActEditFind;
     QMenu*                    m_pMnuSettings;
     QAction*                  m_pActSettingsWdgtTrcMthList;
     QAction*                  m_pActSettingsTrcClient;

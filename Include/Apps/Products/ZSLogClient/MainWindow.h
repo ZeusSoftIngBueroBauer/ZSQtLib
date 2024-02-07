@@ -85,8 +85,6 @@ protected slots:
     void onActFileReadLogFileTriggered();
     void onActFileWriteLogFileTriggered();
 protected slots:
-    void onActEditFindTriggered();
-protected slots:
     void onActSettingsLogClientTriggered();
     void onActSettingsLoggersIdxTreeTriggered();
 protected slots:
@@ -118,8 +116,6 @@ protected: // instance members
     QAction*                m_pActFileReadLogFile;
     QAction*                m_pActFileWriteLogFile;
     QAction*                m_pActFileQuit;
-    QMenu*                  m_pMnuEdit;
-    QAction*                m_pActEditFind;
     QMenu*                  m_pMnuSettings;
     QAction*                m_pActSettingsLogClient;
     QAction*                m_pActSettingsLoggersIdxTree;

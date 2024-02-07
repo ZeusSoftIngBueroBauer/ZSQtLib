@@ -75,14 +75,8 @@ CWidgetCentral::CWidgetCentral(
 {
     setObjectName("CentralWidget");
 
-    // Create user controls
-    //----------------------
-
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
-
-    // Trace Method List Widget
-    //-------------------------
 
     m_pWdgtLog = new CWdgtLog(i_pLogClient);
     m_pLyt->addWidget(m_pWdgtLog);
@@ -90,8 +84,7 @@ CWidgetCentral::CWidgetCentral(
     QObject::connect(
         m_pWdgtLog, &CWdgtLog::progressBarConnectDblClicked,
         this, &CWidgetCentral::onProgressBarConnectDblClicked);
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CWidgetCentral::~CWidgetCentral()
@@ -99,21 +92,6 @@ CWidgetCentral::~CWidgetCentral()
 {
     m_pLyt = nullptr;
     m_pWdgtLog = nullptr;
-
-} // dtor
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWidgetCentral::findText()
-//------------------------------------------------------------------------------
-{
-    if( m_pWdgtLog != nullptr )
-    {
-        m_pWdgtLog->findText();
-    }
 }
 
 /*==============================================================================

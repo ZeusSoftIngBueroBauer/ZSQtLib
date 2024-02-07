@@ -19,7 +19,7 @@ Param (
 # @Examples
 #
 #     .\createInstallers.ps1
-#     .\createInstallers.ps1 -AppName TrcMthClient -Compiler msvc2019 -ConfigType Debug
+#     .\createInstallers.ps1 -AppName TrcMthClient -QTDIR "C:\Qt\5.15.2\msvc2019_64" -Compiler msvc2019 -ConfigType Debug
 #
 # @Param AppName
 #     Range [TrcMthClient, LogClient]
@@ -38,8 +38,8 @@ Param (
 #
 # @Param QTDIR
 #     Range [valid path]
-#     If the QTDIR is not set as environment variable or if a different path should be
-#     used as defined in the environment the path may be explicitly passed here.
+#     If QTDIR is not set as an environment variable,m or if a different path should be
+#     used as defined in the environment, the path may be explicitly passed here.
 #
 $AppNames = @($AppName)
 if( $AppName -ieq "all" ) {
@@ -60,14 +60,8 @@ if($QTDIR -eq $null) {
 }
 $QTDIR=$QTDIR.replace("\bin", "")
 
-if($ConfigType -eq "Release") {
-    $QtDlls = @("Qt5Core", "Qt5Network", "Qt5Xml", "Qt5Qml", "Qt5Gui", "Qt5Widgets")
-    $ZSQtLibDlls = @("ZSSysQt5", "ZSSysGUIQt5", "ZSIpcQt5", "ZSIpcGUIQt5", "ZSIpcTraceQt5", "ZSIpcTraceGUIQt5")
-}
-else {
-    $QtDlls = @("Qt5Cored", "Qt5Networkd", "Qt5Xmld", "Qt5Qmld", "Qt5Guid", "Qt5Widgetsd")
-    $ZSQtLibDlls = @("ZSSysQt5d", "ZSSysGUIQt5d", "ZSIpcQt5d", "ZSIpcGUIQt5d", "ZSIpcTraceQt5d", "ZSIpcTraceGUIQt5d")
-}
+$QtDlls = @("Qt5Core", "Qt5Network", "Qt5Xml", "Qt5Qml", "Qt5Gui", "Qt5Widgets")
+$ZSQtLibDlls = @("ZSSysQt5", "ZSSysGUIQt5", "ZSIpcQt5", "ZSIpcGUIQt5", "ZSIpcTraceQt5", "ZSIpcTraceGUIQt5")
 
 # Function buildAndInstall
 # ------------------------
@@ -263,13 +257,25 @@ function createInstaller {
     }
     for( $idxZQQtLibDll=0; $idxZQQtLibDll -lt $ZSQtLibDlls.length; $idxZQQtLibDll++ ) {
         $ZSQtLibDll = $ZSQtLibDlls[$idxZQQtLibDll]
-        Write-Host "cp $BinDir\$ZSQtLibDll.dll $DeployDir"
-        cp $BinDir\$ZSQtLibDll.dll $DeployDir
+        if($ConfigType -eq "Debug") {
+            Write-Host "cp $BinDir\$ZSQtLibDll`d.dll $DeployDir"
+            cp $BinDir\$ZSQtLibDll`d.dll $DeployDir
+        }
+        else {
+            Write-Host "cp $BinDir\$ZSQtLibDll.dll $DeployDir"
+            cp $BinDir\$ZSQtLibDll.dll $DeployDir
+        }
     }
     for( $idxQtDll=0; $idxQtDll -lt $QtDlls.length; $idxQtDll++ ) {
         $QtDll = $QtDlls[$idxQtDll]
-        Write-Host "cp $QTDIR\bin\$QtDll.dll $DeployDir"
-        cp $QTDIR\bin\$QtDll.dll $DeployDir
+        if($ConfigType -eq "Debug") {
+            Write-Host "cp $QTDIR\bin\$QtDll`d.dll $DeployDir"
+            cp $QTDIR\bin\$QtDll`d.dll $DeployDir
+        }
+        else {
+            Write-Host "cp $QTDIR\bin\$QtDll.dll $DeployDir"
+            cp $QTDIR\bin\$QtDll.dll $DeployDir
+        }
     }
 
     Write-Host ""

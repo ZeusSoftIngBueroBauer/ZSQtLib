@@ -186,68 +186,49 @@ public: // instance methods
 void CDlgFindText::findNext()
 //------------------------------------------------------------------------------
 {
-    if( m_pLblFindTextResult != nullptr )
-    {
+    if (m_pLblFindTextResult != nullptr) {
         m_pLblFindTextResult->setText("");
     }
-
-    if( m_pEdtFindText != nullptr && m_pEdt != nullptr )
-    {
+    if (m_pEdtFindText != nullptr && m_pEdt != nullptr) {
         QString strExp = m_pEdtFindText->text();
-
         QTextDocument::FindFlags findFlags;
-
         //QTextDocument::FindCaseSensitively;
         //QTextDocument::FindWholeWords;
-
         bool bExpFound = m_pEdt->find(strExp, findFlags);
-
-        if( m_pLblFindTextResult != nullptr )
-        {
-            if( bExpFound )
-            {
+        if (m_pLblFindTextResult != nullptr) {
+            if (bExpFound) {
                 m_pLblFindTextResult->setText("Text found");
             }
-            else
-            {
+            else {
                 m_pLblFindTextResult->setText("Text not found");
             }
         }
     }
-} // findNext
+}
 
 //------------------------------------------------------------------------------
 void CDlgFindText::findPrev()
 //------------------------------------------------------------------------------
 {
-    if( m_pLblFindTextResult != nullptr )
-    {
+    if (m_pLblFindTextResult != nullptr) {
         m_pLblFindTextResult->setText("");
     }
-
-    if( m_pEdtFindText != nullptr && m_pEdt != nullptr )
-    {
+    if (m_pEdtFindText != nullptr && m_pEdt != nullptr) {
         QString strExp = m_pEdtFindText->text();
-
         QTextDocument::FindFlags findFlags = QTextDocument::FindBackward;
         //QTextDocument::FindCaseSensitively;
         //QTextDocument::FindWholeWords;
-
         bool bExpFound = m_pEdt->find(strExp, findFlags);
-
-        if( m_pLblFindTextResult != nullptr )
-        {
-            if( bExpFound )
-            {
+        if (m_pLblFindTextResult != nullptr) {
+            if (bExpFound) {
                 m_pLblFindTextResult->setText("Text found");
             }
-            else
-            {
+            else {
                 m_pLblFindTextResult->setText("Text not found");
             }
         }
     }
-} // findPrev
+}
 
 /*==============================================================================
 protected slots:

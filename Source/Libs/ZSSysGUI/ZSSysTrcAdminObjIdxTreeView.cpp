@@ -42,15 +42,18 @@ may result in using the software modules.
 
 #include <QtWidgets/qapplication.h>
 #include <QtGui/qevent.h>
+#include <QtGui/qpainter.h>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/qcheckbox.h>
 #include <QtGui/qcombobox.h>
+#include <QtGui/qheaderview.h>
 #include <QtGui/qmenu.h>
 #include <QtGui/qinputdialog.h>
 #else
 #include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qcombobox.h>
+#include <QtWidgets/qheaderview.h>
 #include <QtWidgets/qmenu.h>
 #include <QtWidgets/qinputdialog.h>
 #endif
@@ -630,6 +633,27 @@ void CTreeViewIdxTreeTrcAdminObjs::mouseReleaseEvent( QMouseEvent* i_pEv )
     }
     if (!bEventHandled) {
         QTreeView::mouseReleaseEvent(i_pEv);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CTreeViewIdxTreeTrcAdminObjs::paintEvent( QPaintEvent* i_pEv )
+//------------------------------------------------------------------------------
+{
+    QTreeView::paintEvent(i_pEv);
+    QPainter painter(viewport());
+    QColor lineColor(Qt::lightGray);
+    lineColor.setAlpha(127);
+    painter.setPen(lineColor);
+    for (int idxClm = 0; idxClm < header()->count(); ++idxClm) {
+        // draw only visible sections starting from second column
+        if (header()->isSectionHidden(idxClm) || header()->visualIndex(idxClm) <= 0)
+            continue;
+        // position mapped to viewport
+        int xPos = header()->sectionViewportPosition(idxClm) - 1;
+        if (xPos > 0) {
+            painter.drawLine(QPoint(xPos, 0), QPoint(xPos, height()));
+        }
     }
 }
 

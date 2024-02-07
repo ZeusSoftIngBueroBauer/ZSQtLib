@@ -77,9 +77,10 @@ protected slots:
     void onCollapsed( const QModelIndex& i_modelIdx );
     void onExpanded( const QModelIndex& i_modelIdx );
 protected: // overridables of base class QTreeView
-    virtual void keyPressEvent( QKeyEvent* i_pEv );
-    virtual void mousePressEvent( QMouseEvent* i_pEv );
-    virtual void mouseReleaseEvent( QMouseEvent* i_pEv );
+    virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
+    virtual void mousePressEvent( QMouseEvent* i_pEv ) override;
+    virtual void mouseReleaseEvent( QMouseEvent* i_pEv ) override;
+    virtual void paintEvent( QPaintEvent* i_pEv ) override;
 protected slots:
     void onActionNameSpaceExpandTriggered( bool i_bChecked );
     void onActionNameSpaceCollapseTriggered( bool i_bChecked );

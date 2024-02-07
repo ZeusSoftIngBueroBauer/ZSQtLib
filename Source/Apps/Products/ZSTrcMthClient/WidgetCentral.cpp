@@ -75,14 +75,8 @@ CWidgetCentral::CWidgetCentral(
 {
     setObjectName("CentralWidget");
 
-    // Create user controls
-    //----------------------
-
     m_pLyt = new QVBoxLayout();
     setLayout(m_pLyt);
-
-    // Trace Method List Widget
-    //-------------------------
 
     m_pWdgtMthList = new CWdgtTrcMthList(i_pTrcClient);
     m_pLyt->addWidget(m_pWdgtMthList);
@@ -99,23 +93,7 @@ CWidgetCentral::~CWidgetCentral()
 {
     m_pLyt = nullptr;
     m_pWdgtMthList = nullptr;
-
-} // dtor
-
-/*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWidgetCentral::findText()
-//------------------------------------------------------------------------------
-{
-    if( m_pWdgtMthList != nullptr )
-    {
-        m_pWdgtMthList->findText();
-    }
-
-} // findText
+}
 
 /*==============================================================================
 protected slots:

@@ -45,6 +45,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysRequest.h"
 
 class QCheckBox;
+class QComboBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
@@ -68,8 +69,6 @@ class CIpcTrcClient;
 
 namespace GUI
 {
-//class CModelTrcMthThreadTree;
-
 //******************************************************************************
 struct ZSIPCTRACEGUIDLL_API STrcMthThreadEntry
 //******************************************************************************
@@ -112,8 +111,7 @@ public: // instance methods
 public: // instance methods
     QTextEdit* getTextEdit() { return m_pEdt; }
 public: // instance methods
-    void findText();
-    bool find( const QString& i_strExp, QTextDocument::FindFlags i_findFlags = QTextDocument::FindFlags() );
+    bool findText( const QString& i_strExp, QTextDocument::FindFlags i_findFlags = QTextDocument::FindFlags() );
 public: // instance methods
     bool getShowTimeInfo() const;
     void setShowTimeInfo( bool i_bShow );
@@ -125,6 +123,8 @@ protected slots: // connected to the signals of my user controls
     void onChkServerUseIpcServerToggled( bool i_bChecked );
     void onBtnTrcAdminObjIdxTreeClicked( bool i_bChecked );
     void onBtnConnectClicked( bool i_bChecked );
+    void onBtnFindTextNextClicked( bool i_bChecked );
+    void onBtnFindTextPrevClicked( bool i_bChecked );
 protected slots:
     void onDlgEditTimeSpanTooMuchDataApplied();
     void onDlgEditTimeSpanTooMuchDataAccepted();
@@ -157,7 +157,7 @@ private: // instance members
     int                                m_iEdtItems;
     int                                m_bEdtFull;
     QTextEdit*                         m_pEdt;
-    QHash<QString,STrcMthThreadEntry>  m_hashThreads;
+    QHash<QString, STrcMthThreadEntry> m_hashThreads;
     QPushButton*                       m_pBtnClear;
     QLabel*                            m_pLblServerTracingEnabled;
     QCheckBox*                         m_pChkServerTracingEnabled;
@@ -166,6 +166,10 @@ private: // instance members
     QPushButton*                       m_pBtnTrcAdminObjIdxTree;
     QPushButton*                       m_pBtnConnect;
     ZS::System::GUI::CProgressBar*     m_pProgressBarCnct;
+    QLabel*                            m_pLblFindText;
+    QComboBox*                         m_pCmbFindText;
+    QPushButton*                       m_pBtnFindTextNext;
+    QPushButton*                       m_pBtnFindTextPrev;
     QTimer*                            m_pTmrDataRateRefresh;
     int                                m_iTimeSpanTooMuchData_s;
     QLabel*                            m_pLblTimeSpanTooMuchData;

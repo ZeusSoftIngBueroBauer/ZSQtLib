@@ -45,6 +45,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysRequest.h"
 
 class QCheckBox;
+class QComboBox;
 class QLabel;
 class QLineEdit;
 class QPushButton;
@@ -97,8 +98,7 @@ public: // instance methods
 public: // instance methods
     QTextEdit* getTextEdit() { return m_pEdt; }
 public: // instance methods
-    void findText();
-    bool find( const QString& i_strExp, QTextDocument::FindFlags i_findFlags = QTextDocument::FindFlags() );
+    bool findText( const QString& i_strExp, QTextDocument::FindFlags i_findFlags = QTextDocument::FindFlags() );
 protected: // overridables of base class QWidget
     virtual bool eventFilter( QObject* i_pObjWatched, QEvent* i_pEv ) override;
 protected slots: // connected to the signals of my user controls
@@ -107,6 +107,8 @@ protected slots: // connected to the signals of my user controls
     void onChkServerUseIpcServerToggled( bool i_bChecked );
     void onBtnLoggerIdxTreeClicked( bool i_bChecked );
     void onBtnConnectClicked( bool i_bChecked );
+    void onBtnFindTextNextClicked( bool i_bChecked );
+    void onBtnFindTextPrevClicked( bool i_bChecked );
 protected slots: // connected to the signals of the IPC client
     void onIpcClientConnected( QObject* i_pClient );
     void onIpcClientDisconnected( QObject* i_pClient );
@@ -136,6 +138,10 @@ private: // instance members
     QPushButton*                   m_pBtnLoggerIdxTree;
     QPushButton*                   m_pBtnConnect;
     ZS::System::GUI::CProgressBar* m_pProgressBarCnct;
+    QLabel*                        m_pLblFindText;
+    QComboBox*                     m_pCmbFindText;
+    QPushButton*                   m_pBtnFindTextNext;
+    QPushButton*                   m_pBtnFindTextPrev;
 
 }; // class CWdgtLog
 
