@@ -184,9 +184,7 @@ CDlgOpenLastUsedFile::CDlgOpenLastUsedFile(
 
     QIcon iconFileOpen;
     QPixmap pxmFileOpen16x16(":/ZS/Menu/MenuFileOpen16x16.png");
-    pxmFileOpen16x16.setMask(pxmFileOpen16x16.createHeuristicMask());
     iconFileOpen.addPixmap(pxmFileOpen16x16);
-
     m_pBtnFileOpenUserDocDir = new QPushButton(" Open User Doc Dir ...");
     m_pBtnFileOpenUserDocDir->setIcon(iconFileOpen);
     m_pLytButtons->addWidget(m_pBtnFileOpenUserDocDir);
@@ -205,9 +203,7 @@ CDlgOpenLastUsedFile::CDlgOpenLastUsedFile(
 
     QIcon iconFileNew;
     QPixmap pxmFileNew16x16(":/ZS/Menu/MenuFileNew16x16.png");
-    pxmFileNew16x16.setMask(pxmFileNew16x16.createHeuristicMask());
     iconFileNew.addPixmap(pxmFileNew16x16);
-
     m_pBtnFileNew = new QPushButton(" New ...");
     m_pBtnFileNew->setIcon(iconFileNew);
     m_pBtnFileNew->setDefault(true);

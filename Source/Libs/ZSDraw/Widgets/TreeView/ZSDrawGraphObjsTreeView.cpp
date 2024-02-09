@@ -381,7 +381,6 @@ CTreeViewGraphObjs::CTreeViewGraphObjs(
     m_pMenuGraphObjContext->addSeparator();
 
     QPixmap pxmExpandAll(":/ZS/TreeView/TreeViewExpandAll.png");
-    pxmExpandAll.setMask(pxmExpandAll.createHeuristicMask());
     //pxmExpandAll = pxmExpandAll.scaled(16,16);
     m_pActionGraphObjExpand = new QAction(pxmExpandAll, "Expand", this);
     m_pMenuGraphObjContext->addAction(m_pActionGraphObjExpand);
@@ -391,8 +390,6 @@ CTreeViewGraphObjs::CTreeViewGraphObjs(
         this, &CTreeViewGraphObjs::onActionGraphObjExpandTriggered );
 
     QPixmap pxmCollapseAll(":/ZS/TreeView/TreeViewCollapseAll.png");
-    pxmCollapseAll.setMask(pxmCollapseAll.createHeuristicMask());
-
     m_pActionGraphObjCollapse = new QAction(pxmCollapseAll, "Collapse", this);
     m_pMenuGraphObjContext->addAction(m_pActionGraphObjCollapse);
 

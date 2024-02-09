@@ -67,8 +67,6 @@ CGraphicsItemsModel::CGraphicsItemsModel( CDrawingScene* i_pDrawingScene, QObjec
         /* strAddInfo   */ "" );
 
     QPixmap pxm(":/ZS/ObjPoolExplorer/ObjPoolEntryTypeNameSpaceNormalOff.png");
-    pxm.setMask(pxm.createHeuristicMask());
-
     m_iconNameSpaceEntry.addPixmap(pxm);
 
     m_pRootEntry = new CGraphObjModelEntry(

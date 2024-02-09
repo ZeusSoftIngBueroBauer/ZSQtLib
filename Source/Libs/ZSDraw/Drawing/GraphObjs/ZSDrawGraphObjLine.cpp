@@ -604,32 +604,35 @@ CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
     // be either returned relative to the top left corner or relative to the bottom right
     // corner of the parent's bounding rectangle.
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-
-    // If the item belongs to a group ...
-    QGraphicsItem* pGraphicsItemParent = parentItem();
-    CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-    if (pGraphObjParent != nullptr) {
-        QRectF rectBoundingParent = pGraphObjParent->getBoundingRect();
-        if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            QPointF ptOriginParent = rectBoundingParent.topLeft();
-            pt1 -= ptOriginParent;
-            pt2 -= ptOriginParent;
-        }
-        else {
-            QPointF ptOriginParent = rectBoundingParent.bottomLeft();
-            double fx = pt1.x();
-            double fy = pt1.y();
-            pt1.setX(fx -= ptOriginParent.x());
-            pt1.setY(ptOriginParent.y() - fy);
-            fx = pt2.x();
-            fy = pt2.y();
-            pt2.setX(fx -= ptOriginParent.x());
-            pt2.setY(ptOriginParent.y() - fy);
-        }
-    }
-
     CPhysValLine physValLine(pt1, pt2, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    physValLine = m_pDrawingScene->convert(physValLine, i_unit);
+
+    QGraphicsItem* pGraphicsItemParent = parentItem();
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
+    // If the item belongs to a group ...
+    if (pGraphObjGroup != nullptr) {
+        physValLine = pGraphObjGroup->convert(physValLine, i_unit);
+        //QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect();
+        //if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        //    QPointF ptOriginParent = rectBoundingParent.topLeft();
+        //    pt1 -= ptOriginParent;
+        //    pt2 -= ptOriginParent;
+        //}
+        //else {
+        //    QPointF ptOriginParent = rectBoundingParent.bottomLeft();
+        //    double fx = pt1.x();
+        //    double fy = pt1.y();
+        //    pt1.setX(fx - ptOriginParent.x());
+        //    pt1.setY(ptOriginParent.y() - fy);
+        //    fx = pt2.x();
+        //    fy = pt2.y();
+        //    pt2.setX(fx - ptOriginParent.x());
+        //    pt2.setY(ptOriginParent.y() - fy);
+        //}
+    }
+    // If the item is not a child of a group ...
+    else {
+        physValLine = m_pDrawingScene->convert(physValLine, i_unit);
+    }
     return physValLine;
 }
 

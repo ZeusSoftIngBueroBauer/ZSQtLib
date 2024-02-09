@@ -219,8 +219,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         /* strOperation    */ "MainWindow.setGeometry",
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepMainWindowSetGeometry(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Width", 1600);
-    pTestStep->setConfigValue("Height", 800);
+    pTestStep->setConfigValue("Width", 1800);
+    pTestStep->setConfigValue("Height", 840);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,

@@ -441,8 +441,6 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
             //-------------------------
 
             QPixmap pxmBtnAdd(":/ZS/Button/ButtonAdd16x16.png");
-            pxmBtnAdd.setMask(pxmBtnAdd.createHeuristicMask());
-
             m_pBtnShapePointAdd = new CPushButton();
             m_pBtnShapePointAdd->setFixedWidth(24);
             m_pBtnShapePointAdd->setFixedHeight(24);
@@ -462,8 +460,6 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
             //----------------------------
 
             QPixmap pxmBtnDelete(":/ZS/Button/ButtonDelete16x16.png");
-            pxmBtnDelete.setMask(pxmBtnDelete.createHeuristicMask());
-
             m_pBtnShapePointDelete = new CPushButton();
             m_pBtnShapePointDelete->setFixedWidth(24);
             m_pBtnShapePointDelete->setFixedHeight(24);
@@ -483,8 +479,6 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
             //-----------------------------
 
             QPixmap pxmBtnUp(":/ZS/Button/ButtonMoveUp16x16.png");
-            pxmBtnUp.setMask(pxmBtnUp.createHeuristicMask());
-
             m_pBtnShapePointUp = new CPushButton();
             m_pBtnShapePointUp->setFixedWidth(24);
             m_pBtnShapePointUp->setFixedHeight(24);
@@ -504,8 +498,6 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
             //-------------------------------
 
             QPixmap pxmBtnDown(":/ZS/Button/ButtonMoveDown16x16.png");
-            pxmBtnDown.setMask(pxmBtnDown.createHeuristicMask());
-
             m_pBtnShapePointDown = new CPushButton();
             m_pBtnShapePointDown->setFixedWidth(24);
             m_pBtnShapePointDown->setFixedHeight(24);

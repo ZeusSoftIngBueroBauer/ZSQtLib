@@ -91,8 +91,6 @@ CPushButtonCloseWidget::CPushButtonCloseWidget( ESize i_size, QWidget* i_pWdgtPa
 
     QIcon   iconBtnCloseWidget;
     QPixmap pxmBtnCloseWidget(":/ZS/Button/ButtonClose" + strSize);
-
-    pxmBtnCloseWidget.setMask(pxmBtnCloseWidget.createHeuristicMask());
     iconBtnCloseWidget.addPixmap(pxmBtnCloseWidget);
 
     setIcon(iconBtnCloseWidget);

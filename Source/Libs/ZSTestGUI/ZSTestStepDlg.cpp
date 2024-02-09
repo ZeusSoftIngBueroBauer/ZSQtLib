@@ -150,25 +150,21 @@ CDlgTestStep::CDlgTestStep(
     m_pLytMain->addLayout(m_pLytLineButtons);
 
     QPixmap pxmStart(":/ZS/Button/ButtonCmdStart16x16.png");
-    pxmStart.setMask(pxmStart.createHeuristicMask());
     m_pBtnRun = new QPushButton();
     m_pBtnRun->setIcon(pxmStart);
     m_pLytLineButtons->addWidget(m_pBtnRun);
 
     QPixmap pxmStep(":/ZS/Button/ButtonCmdStepForward16x16.png");
-    pxmStep.setMask(pxmStep.createHeuristicMask());
     m_pBtnStep = new QPushButton();
     m_pBtnStep->setIcon(pxmStep);
     m_pLytLineButtons->addWidget(m_pBtnStep);
 
     QPixmap pxmPause(":/ZS/Button/ButtonCmdPause16x16.png");
-    pxmPause.setMask(pxmPause.createHeuristicMask());
     m_pBtnPause = new QPushButton();
     m_pBtnPause->setIcon(pxmPause);
     m_pLytLineButtons->addWidget(m_pBtnPause);
 
     QPixmap pxmStop(":/ZS/Button/ButtonCmdStop16x16.png");
-    pxmStop.setMask(pxmStop.createHeuristicMask());
     m_pBtnStop = new QPushButton();
     m_pBtnStop->setIcon(pxmStop);
     m_pLytLineButtons->addWidget(m_pBtnStop);

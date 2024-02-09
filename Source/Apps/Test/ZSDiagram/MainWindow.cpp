@@ -174,9 +174,6 @@ CMainWindow::CMainWindow(
     QIcon iconErrorLog;
 
     QPixmap pxmErrorLog16x16(":/ZS/App/Zeus16x16.png");
-
-    pxmErrorLog16x16.setMask(pxmErrorLog16x16.createHeuristicMask());
-
     iconErrorLog.addPixmap(pxmErrorLog16x16);
 
     m_pActDebugErrLog = new QAction( iconErrorLog, "Error Log", this );

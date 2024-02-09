@@ -213,9 +213,6 @@ CWdgtIpcServer::CWdgtIpcServer( const QString& i_strServerName, QWidget* i_pWdgt
     m_pLytLineServerObjName->addStretch();
 
     QPixmap pxmProtocolTypeImg(":/ZS/App/Zeus32x32.png");
-
-    pxmProtocolTypeImg.setMask(pxmProtocolTypeImg.createHeuristicMask());
-
     m_pLblServerProtocolTypeImg = new QLabel();
     m_pLblServerProtocolTypeImg->setMaximumWidth(32);
     m_pLblServerProtocolTypeImg->setMaximumHeight(32);
@@ -678,7 +675,6 @@ void CWdgtIpcServer::setProtocolTypeImage( const QPixmap& i_pxm )
     if( m_pLblServerProtocolTypeImg != nullptr )
     {
         QPixmap pxmProtocolTypeImg(i_pxm);
-        pxmProtocolTypeImg.setMask(pxmProtocolTypeImg.createHeuristicMask());
         m_pLblServerProtocolTypeImg->setPixmap(pxmProtocolTypeImg);
     }
 

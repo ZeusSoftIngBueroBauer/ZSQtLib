@@ -658,9 +658,15 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given line value into the desired unit.
+/*! @brief Converts the given rectangle into the desired unit.
 
-    @param [in] i_physValLine
+    When converting from pixels into metric unit or from metric unit to pixels
+    and if the Y Scale is from bottom to top the rectangles top line becomes the
+    bottom line and vice versa as the height and width of a rectangle should
+    always be greater than 0. If the Y-Scale orientation is from Bottom to Top
+    the top line of the rectangle on the screen is below the bottom line.
+
+    @param [in] i_physValRect
     @param [ib] i_unitDst
 
     @return Converted value.
@@ -670,7 +676,20 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect, const CUn
 {
     CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
     CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    return CPhysValRect(physValTL, physValBR);
+    CPhysValRect physValRect(physValTL, physValBR);
+    // When converting from pixels into metric or metric to pixels unit
+    // and if the Y Scale is from bottom to top the rectangles top line
+    // becomes the bottom line and vice versa (the height and width of a
+    // rectangle should always be greater than 0).
+    if (physValRect.height().getVal() < 0)
+    {
+        CPhysVal physValYT = physValBR.y();
+        CPhysVal physValYB = physValTL.y();
+        physValTL.setY(physValYT);
+        physValBR.setY(physValYB);
+        physValRect = CPhysValRect(physValTL, physValBR);
+    }
+    return physValRect;
 }
 
 ////------------------------------------------------------------------------------

@@ -122,9 +122,6 @@ CMainWindow::CMainWindow(
     QIcon iconFileOpen;
 
     QPixmap pxmFileOpen16x16(":/ZS/Menu/MenuFileOpen16x16.png");
-
-    pxmFileOpen16x16.setMask(pxmFileOpen16x16.createHeuristicMask());
-
     iconFileOpen.addPixmap(pxmFileOpen16x16);
 
     m_pActFileOpen = new QAction(iconFileOpen, "&Open ...", this);
@@ -145,9 +142,6 @@ CMainWindow::CMainWindow(
     QIcon iconFileSave;
 
     QPixmap pxmFileSave16x16(":/ZS/Menu/MenuFileSave16x16.png");
-
-    pxmFileSave16x16.setMask(pxmFileSave16x16.createHeuristicMask());
-
     iconFileSave.addPixmap(pxmFileSave16x16);
 
     m_pActFileSave = new QAction(iconFileSave, "&Save ...", this);

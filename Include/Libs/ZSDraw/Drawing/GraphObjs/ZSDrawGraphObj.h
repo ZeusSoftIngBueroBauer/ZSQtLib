@@ -33,7 +33,6 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEventFct.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjTransformations.h"
 
 #include <QtGui/qcursor.h>
 

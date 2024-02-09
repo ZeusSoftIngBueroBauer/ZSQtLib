@@ -102,16 +102,9 @@ QIcon CModelRequestSequencer::GetIcon( ERequestEntryType i_entryType )
         s_pIconTypeActiveNode = new QIcon();
 
         s_pPxmTypeGroupNodeNormalOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsBranchEntryNormalOff.png");
-        s_pPxmTypeGroupNodeNormalOff->setMask(s_pPxmTypeGroupNodeNormalOff->createHeuristicMask());
-
         s_pPxmTypeGroupNodeSelectedOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsBranchEntrySelectedOff.png");
-        s_pPxmTypeGroupNodeSelectedOff->setMask(s_pPxmTypeGroupNodeSelectedOff->createHeuristicMask());
-
         s_pPxmTypeActiveNodeNormalOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsLeaveEntryNormalOff.png");
-        s_pPxmTypeActiveNodeNormalOff->setMask(s_pPxmTypeActiveNodeNormalOff->createHeuristicMask());
-
         s_pPxmTypeActiveNodeSelectedOff = new QPixmap(":/ZS/TreeView/Requests/TreeViewRequestsLeaveEntrySelectedOff.png");
-        s_pPxmTypeActiveNodeSelectedOff->setMask(s_pPxmTypeActiveNodeSelectedOff->createHeuristicMask());
 
         sizePxm = s_pPxmTypeGroupNodeNormalOff->size();
         sizePxm = s_pPxmTypeGroupNodeSelectedOff->size();
