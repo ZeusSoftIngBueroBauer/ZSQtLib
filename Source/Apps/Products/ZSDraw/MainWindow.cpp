@@ -4385,13 +4385,13 @@ void CMainWindow::onDrawingViewContentAreaChanged()
     if (m_pLblStatusBarDrawingSceneRect != nullptr) {
         CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        QRectF rectScene = pDrawingScene->sceneRect();
-        QPolygon plgViewRectScene = pDrawingView->mapFromScene(rectScene);
+        QRect rectScene = pDrawingScene->sceneRect().toRect();
         const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
-        CPhysVal physValWidth = drawingSize.metricImageWidth();
-        CPhysVal physValHeight = drawingSize.metricImageHeight();
-        QString strSceneSizeInfo = "SceneRect {" + qRect2Str(plgViewRectScene.boundingRect()) + "}" +
-            "{" + physValWidth.toString() + ", " + physValHeight.toString() + "}";
+        QString strSceneSizeInfo = "SceneRect {" + qRect2Str(rectScene) + "}";
+        if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+            CPhysValRect physValRect = pDrawingScene->convert(rectScene);
+            strSceneSizeInfo += "{" + physValRect.toString() + "}";
+        }
         m_pLblStatusBarDrawingSceneRect->setText(strSceneSizeInfo);
     }
 }

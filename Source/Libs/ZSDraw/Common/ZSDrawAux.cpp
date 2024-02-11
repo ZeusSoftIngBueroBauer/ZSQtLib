@@ -482,7 +482,10 @@ QString ZS::Draw::qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv 
 {
     return "Pos {" + point2Str(i_pEv->pos()) + "}" +
         ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
-        ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}";
+        ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}" +
+        ", Button: " + qMouseButton2Str(i_pEv->button()) +
+        ", Buttons: " + qMouseButtons2Str(i_pEv->buttons()) +
+        ", Modifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers());
 }
 
 //------------------------------------------------------------------------------

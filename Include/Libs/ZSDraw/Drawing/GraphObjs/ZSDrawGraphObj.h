@@ -715,6 +715,10 @@ public: // must overridables
     //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
+public: // overridables
+    virtual CPhysValPoint mapToPhysValPoint(const QPointF& i_pt) const;
+    virtual CPhysValLine mapToPhysValLine(const QLineF& i_line) const;
+    virtual CPhysValRect mapToPhysValRect(const QRectF& i_rect) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
 public: // overridables
@@ -811,7 +815,7 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, ESelectionPoint i_selPt1, ESelectionPoint i_selPt2 = ESelectionPoint::None);
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
 protected slots: // overridables
-    //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
+    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
     virtual void onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
@@ -876,7 +880,7 @@ protected: // instance members
          metric units have not been changed. On changing the drawing size
          the drawing scene will emit "drawingSizeChanged" and the slot method
          "onDrawingSizeChanged" of the graphical object must set this flag to true. */
-    //bool m_bForceConversionToSceneCoors;
+    bool m_bForceConversionToSceneCoors;
     /*!< Pointer to drawing scene the graphical object belongs to.
          Is set if the graphical object is added to the scene. */
     CDrawingScene* m_pDrawingScene;

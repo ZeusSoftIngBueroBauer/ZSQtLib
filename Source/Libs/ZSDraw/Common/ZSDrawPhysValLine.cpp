@@ -546,8 +546,18 @@ QLineF CPhysValLine::toQLineF() const
 }
 
 //------------------------------------------------------------------------------
-QString CPhysValLine::toString() const
+QString CPhysValLine::toString(bool i_bAddUnit, const QString& i_strSeparator) const
 //------------------------------------------------------------------------------
 {
-    return x1().toString() + ", " + y1().toString() + ", " + x2().toString() + ", " + y2().toString();
+    QString str = x1().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + y1().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + x2().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + y2().toString(EUnitFind::None, PhysValSubStr::Val);
+    if (i_bAddUnit) {
+        str += " " + m_unit.symbol();
+    }
+    return str;
 }

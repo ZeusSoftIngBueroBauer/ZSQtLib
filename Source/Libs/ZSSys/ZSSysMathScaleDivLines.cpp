@@ -1862,7 +1862,7 @@ double CScaleDivLines::getVal(double i_fPix) const
     if (isValid())
     {
         // Pure pixel coordinate system: Just return the value as is.
-        // Conversion needed if scaling usess world transformation.
+        // Conversion needed if scaling uses world transformation.
         if (m_bUseWorldCoordinateTransformation)
         {
             // At the minimum scale value ..

@@ -58,8 +58,10 @@ public: // ctors and dtor
     CPhysValRect();
     CPhysValRect(const CDrawingScene& i_drawingScene);
     CPhysValRect(const ZS::PhysVal::CUnit& i_unit, double i_fRes);
+    CPhysValRect(const QPointF& i_ptTL, const QPointF& i_ptBR, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
     CPhysValRect(const QRectF& i_rect, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
     CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
+    CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize);
     CPhysValRect(const CPhysValRect& i_physValRectOther);
     virtual ~CPhysValRect();
 public: // operators
@@ -114,7 +116,7 @@ public: // instance methods
     void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)
     QRectF toQRectF() const;
-    QString toString() const;
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ",") const;
 protected: // instance members
     /*!< The rectangle coordinates in the unit 'm_unit'. */
     QRectF m_rect;

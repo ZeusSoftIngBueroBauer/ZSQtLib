@@ -152,15 +152,23 @@ public: // instance methods
     void setDrawingSize( const CDrawingSize& i_drawingSize);
     const CDrawingSize& drawingSize() const;
 public: // instance methods
-    CPhysValPoint toPhysValPoint(const QPointF& i_pt_px) const;
+    CPhysValPoint toPhysValPoint(const QPointF& i_pt) const;
+    CPhysValPoint convert(const QPointF& i_pt) const;
+    CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
     CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValSize convert(const QSizeF& i_size) const;
+    CPhysValSize convert(const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValSize convert(const CPhysValSize& i_physValSize) const;
     CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine convert(const QLineF& i_line) const;
+    CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect convert(const CPhysValRect& i_physValLine) const;
-    CPhysValRect convert(const CPhysValRect& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect convert(const QRectF& i_rect) const;
+    CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect convert(const CPhysValRect& i_physValRect) const;
+    CPhysValRect convert(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // instance methods
     void setGridSettings( const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;
@@ -218,7 +226,6 @@ public: // instance methods
     int groupGraphObjsSelected();
     int ungroupGraphObjsSelected();
 public: // instance methods
-    double getRotationAngleResolutionInDegree() const { return m_fRotAngleRes_degree; }
     double getHitToleranceInPx() const { return m_fHitTolerance_px; }
 public: // instance methods
     void setDrawSettings( const CDrawSettings& i_settings );
@@ -274,7 +281,6 @@ public: // overridables of base class QGraphicsScene
     virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv );
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv );
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv );
-    bool isMouseDoubleClickEventInProcess() const { return m_bMouseDoubleClickEventInProcess; }
 public: // overridables of base class QGraphicsScene
     virtual void keyPressEvent( QKeyEvent* i_pEv );
     virtual void keyReleaseEvent( QKeyEvent* i_pEv );
@@ -328,10 +334,20 @@ public: // auxiliary instance methods (method tracing)
 protected: // class members
     static const QString s_strGraphObjNameSeparator;
 protected: // instance members
+    /*!< Settings concerning the drawing scene like used dimension unit (pixels or metrics),
+         width and height of the drawing, X- and Y-Scaling as well as the resolution of
+         a pixel on the screen. */
     CDrawingSize m_drawingSize;
-    CDrawGridSettings m_gridSettings;
+    /*!< Mathematic component to calculate the division lines of the X-Scale.
+         Also used to convert pixel values into metric values and vice versa. */
     ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsX;
+    /*!< Mathematic component to calculate the division lines of the Y-Scale.
+         Also used to convert pixel values into metric values and vice versa. */
     ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
+    /*!< Settings about the grid lines (visibility, colors, font, etc.). */
+    CDrawGridSettings m_gridSettings;
+    /*!< Keeps the current draw settings like pen and brush style and colors etc.
+         used to draw the graphical objects. */
     CDrawSettings m_drawSettings;
     /*!< Several draw setting attributes may be modified one after another.
          To avoid that for each single change the drawSettingsChanged signal is emitted,
@@ -344,11 +360,13 @@ protected: // instance members
          For the first change to be cached the temporary buffer will be allocated.
          After updating the changes the temporary buffer will be deleted. */
     CDrawSettings* m_pDrawSettingsTmp;
+    /*!< The drawing scene knows two modes: Edit and View. In edit mode the drawing may be
+         modified by adding and removing objects and by editing their shapes. In view mode
+         editing the drawing is rejecting. */
     ZS::System::CEnumMode m_mode;
     //CEnumEditTool m_editTool;
     //CEnumEditMode m_editMode;
     //CEnumEditResizeMode m_editResizeMode;
-    QGraphicsRectItem* m_pGraphicsItemSelectionArea;
     /*!< Corresponds to the selected drawing tool. */
     CObjFactory* m_pObjFactory;
     /*!< Same object as GraphObjCreating (just a different name for the same thing to avoid unnecessary dynamic_casts). */
@@ -359,15 +377,21 @@ protected: // instance members
     //QGraphicsItem* m_pGraphicsItemAddingShapePoints;
     /*! Same object as GraphicsItemAddingShapePoints (just a different name for the same thing to avoid unnecessary dynamic_casts). */
     //CGraphObj* m_pGraphObjAddingShapePoints;
+    /*!< The graphical objects are added to the index tree. */
     ZS::System::CIdxTree* m_pGraphObjsIdxTree;
     //ZS::System::CIdxTree* m_pGraphObjsIdxTreeClipboard;
     //QList<QGraphicsItem*> m_arpGraphicsItemsAcceptingHoverEvents;
     //QList<QGraphicsItem*> m_arpGraphicsItemsBroughtToFront;
-    double m_fRotAngleRes_degree;
+    /*!< Hit tolerance to be used by the graphical objects to check whether a certain shape point has been hit.
+         Currently initialised with 3.0 pixels. But might become a changeable property in the future. */
     double m_fHitTolerance_px;
-    bool m_bMouseDoubleClickEventInProcess;
+    /*!< Stores the position on the drawing scene of a mouse press event.
+        Used to setup and resize the rectangle area to select a group of objects. */
     QPointF m_ptMouseEvScenePosOnMousePressEvent;
-    int m_iEvKeyModifiers;
+    /*!< If the user clicks on an empty area and moves the mouse a selection area is created
+         which is a graphics rectangle item. */
+    QGraphicsRectItem* m_pGraphicsItemSelectionArea;
+    /*!< Objects to control method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;

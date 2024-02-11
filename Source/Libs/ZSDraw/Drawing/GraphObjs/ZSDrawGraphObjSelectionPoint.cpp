@@ -76,7 +76,7 @@ double CGraphObjSelectionPoint::GetDefaultRadiusInPx()
 protected: // class members
 ==============================================================================*/
 
-double CGraphObjSelectionPoint::s_fRadius_px = 4.0;
+double CGraphObjSelectionPoint::s_fRadius_px = 2.0;
 
 /*==============================================================================
 public: // ctors and dtor

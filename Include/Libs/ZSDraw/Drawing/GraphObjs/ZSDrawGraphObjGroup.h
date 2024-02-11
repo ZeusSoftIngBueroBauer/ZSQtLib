@@ -28,6 +28,8 @@ may result in using the software modules.
 #define ZSDraw_GraphObjGroup_h
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Common/ZSDrawGridSettings.h"
+#include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
 
 #if QT_VERSION < 0x050000
 #include <QtGui/QGraphicsItemGroup>
@@ -76,10 +78,15 @@ namespace Draw
     If for example a line belongs to a group, as shown in the picture above, the user enters the
     coordinates (80/30) for P1 and (120/110) for P2 to position the line within the group.
     Those coordinates need to be transformed so that the position of the line becomes (10/10).
+
+    To convert pixel positions into metric values and vice versa the group uses its
+    own coordinate system and uses the division line metrics class to do the conversions.
+    This also allows drawing own grid division lines within the groups bounding rectangle.
 */
 class ZSDRAWDLL_API CGraphObjGroup : public CGraphObj, public QGraphicsItemGroup
 //******************************************************************************
 {
+    Q_OBJECT
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
@@ -98,8 +105,15 @@ public: // dtor
     virtual ~CGraphObjGroup();
 public: // overridables of base class QGraphicsItem
     virtual int type() const override;
+signals:
+    /*! Signal emitted if the grid settings has been changed.
+        @param i_settings [in] Contains the new grid settings (visibilities of lines, labels, etc.). */
+    void gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
+public: // instance methods
+    void setGridSettings( const CDrawGridSettings& i_gridSettings);
+    const CDrawGridSettings& gridSettings() const;
 public: // instance methods
     void addToGroup( CGraphObj* i_pGraphObj );
     void removeFromGroup( CGraphObj* i_pGraphObj );
@@ -158,6 +172,15 @@ public: // instance methods
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
+public: // instance methods
+    CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
+    CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValSize convert(const CPhysValSize& i_physValSize) const;
+    CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine convert(const CPhysValLine& i_physValLine) const;
+    CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect convert(const CPhysValRect& i_physValLine) const;
+    CPhysValRect convert(const CPhysValRect& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos() const override;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
@@ -166,6 +189,8 @@ public: // must overridables of base class CGraphObj
     //virtual QRectF getOriginalBoundingRectInParent() const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
+protected: // overridable slots of base class CGraphObj
+    virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;
@@ -191,6 +216,7 @@ protected: // overridable slots of base class CGraphObj
 protected: // auxiliary instance methods (method tracing)
     QRectF setRectOrig(const QRectF& i_rect);
     void applyGeometryChangeToChildrens();
+    void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 public: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     virtual void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,
@@ -203,6 +229,14 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
+    /*!< Mathematic component to calculate the division lines of the X-Scale.
+         Also used to convert pixel values into metric values and vice versa. */
+    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsX;
+    /*!< Mathematic component to calculate the division lines of the Y-Scale.
+         Also used to convert pixel values into metric values and vice versa. */
+    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
+    /*!< Settings about the grid lines (visibility, colors, font, etc.). */
+    CDrawGridSettings m_gridSettings;
     /*!< The original, untransformed group coordinates with unit.
          TODO: Coordinates are in scene coordinates (relative to top left corner of scene)
                or in parent coordinates (relative to center point of parent group).

@@ -805,7 +805,7 @@ CGraphObj::CGraphObj(
     CIdxTreeEntry(i_idxTreeEntryType, i_strObjName),
     m_bDtorInProgress(false),
     m_bAboutToBeDestroyedEmitted(false),
-    //m_bForceConversionToSceneCoors(false),
+    m_bForceConversionToSceneCoors(false),
     m_pDrawingScene(i_pDrawingScene),
     m_strFactoryGroupName(i_strFactoryGroupName),
     m_type(i_type),
@@ -874,9 +874,9 @@ CGraphObj::CGraphObj(
     m_pTrcAdminObjMouseMoveEvents(nullptr),
     m_pTrcAdminObjKeyEvents(nullptr)
 {
-    //QObject::connect(
-    //    m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
-    //    this, &CGraphObj::onDrawingSizeChanged);
+    QObject::connect(
+        m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
+        this, &CGraphObj::onDrawingSizeChanged);
 
 } // ctor
 
@@ -1034,7 +1034,7 @@ CGraphObj::~CGraphObj()
 
     m_bDtorInProgress = false;
     m_bAboutToBeDestroyedEmitted = false;
-    //m_bForceConversionToSceneCoors = false;
+    m_bForceConversionToSceneCoors = false;
     m_pDrawingScene = nullptr;
     //m_strFactoryGroupName;
     m_type = static_cast<EGraphObjType>(0);
@@ -3596,6 +3596,152 @@ CPhysValPoint CGraphObj::getPos(const CUnit& i_unit) const
 //}
 
 /*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given point, which is in this item's coordinate system defined
+           in pixels, to the physical value in the parent's coordinate system,
+           and returns the mapped coordinate in the unit of the drawing scene.
+
+    Internally the graphics items coordinates are in pixel coordinates given
+    relative to the center point of its bounding rectangle.
+
+    For the user the coordinates must be provided relative to the origin point of
+    their parent, which is either the scene or a parent group.
+
+    Depending on the Y-Scale orientation (TopDown or BottomUp) the origin of the
+    parent scene or parent group is either the top left or bottom left corner.
+
+    @param [in] i_pt
+        Point in the item coordinates.
+
+    @return Point in the unit of the drawing scene as it should be provided to the user.
+*/
+CPhysValPoint CGraphObj::mapToPhysValPoint(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    // First map the point, which is in this item's coordinate system, to its parent's
+    // coordinate system. If the item has no parent, point will be mapped to the scene's
+    // coordinate system.
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPointF pt = pGraphicsItemThis->mapToParent(i_pt);
+    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
+    // If the item belongs to a group ...
+    if (pGraphObjGroup != nullptr) {
+        // The point coordinates are relative to the origin of the parent graphics item
+        // which is the center point of the parents bounding rectangle. The pixel coordinates
+        // got to mapped to the top left corner of the parent's bounding rectangle.
+        QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect();
+        pt -= rectBoundingParent.topLeft();
+    }
+    // Now point is in pixel coordinates relative to the top left corner of it's parent.
+    CPhysValPoint physValPoint(pt, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    // If the drawing scene don't use pixels but a metric system ..
+    if (Units.Length.isMetricUnit(drawingSize.unit())) {
+        // .. the coordinates got to be converted into metric unit taken the Y-Scale
+        // orientation into account.
+        // If the item belongs to a group ...
+        if (pGraphObjGroup != nullptr) {
+            // .. let the group convert the pixel values into the unit of the drawing scene.
+            physValPoint = pGraphObjGroup->convert(physValPoint);
+        }
+        // If the item is not a child of a group ...
+        else {
+            // .. let the scene convert the pixel values into it's unit.
+            physValPoint = m_pDrawingScene->convert(physValPoint);
+        }
+    }
+    return physValPoint;
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine CGraphObj::mapToPhysValLine(const QLineF& i_line) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    // First map the line, which is in this item's coordinate system, to its parent's
+    // coordinate system. If the item has no parent, line will be mapped to the scene's
+    // coordinate system.
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPointF pt1 = pGraphicsItemThis->mapToParent(i_line.p1());
+    QPointF pt2 = pGraphicsItemThis->mapToParent(i_line.p2());
+    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
+    // If the item belongs to a group ...
+    if (pGraphObjGroup != nullptr) {
+        // The line coordinates are relative to the origin of the parent graphics item
+        // which is the center point of the parents bounding rectangle. The pixel coordinates
+        // got to mapped to the top left corner of the parent's bounding rectangle.
+        QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect();
+        pt1 -= rectBoundingParent.topLeft();
+        pt2 -= rectBoundingParent.topLeft();
+    }
+    // Now line is in pixel coordinates relative to the top left corner of it's parent.
+    CPhysValLine physValLine(pt1, pt2, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    // If the drawing scene don't use pixels but a metric system ..
+    if (Units.Length.isMetricUnit(drawingSize.unit())) {
+        // .. the coordinates got to be converted into metric unit taken the Y-Scale
+        // orientation into account.
+        // If the item belongs to a group ...
+        if (pGraphObjGroup != nullptr) {
+            // .. let the group convert the pixel values into the unit of the drawing scene.
+            physValLine = pGraphObjGroup->convert(physValLine);
+        }
+        // If the item is not a child of a group ...
+        else {
+            // .. let the scene convert the pixel values into it's unit.
+            physValLine = m_pDrawingScene->convert(physValLine);
+        }
+    }
+    return physValLine;
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect CGraphObj::mapToPhysValRect(const QRectF& i_rect) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    // First map the rectangle, which is in this item's coordinate system, to its parent's
+    // coordinate system. If the item has no parent, rect will be mapped to the scene's
+    // coordinate system.
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPointF ptTL = pGraphicsItemThis->mapToParent(i_rect.topLeft());
+    QPointF ptBR = pGraphicsItemThis->mapToParent(i_rect.bottomRight());
+    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
+    // If the item belongs to a group ...
+    if (pGraphObjGroup != nullptr) {
+        // The line coordinates are relative to the origin of the parent graphics item
+        // which is the center point of the parents bounding rectangle. The pixel coordinates
+        // got to mapped to the top left corner of the parent's bounding rectangle.
+        QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect();
+        ptTL -= rectBoundingParent.topLeft();
+        ptBR -= rectBoundingParent.topLeft();
+    }
+    // Now recte is in pixel coordinates relative to the top left corner of it's parent.
+    CPhysValRect physValRect(ptTL, ptBR, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    // If the drawing scene don't use pixels but a metric system ..
+    if (Units.Length.isMetricUnit(drawingSize.unit())) {
+        // .. the coordinates got to be converted into metric unit taken the Y-Scale
+        // orientation into account.
+        // If the item belongs to a group ...
+        if (pGraphObjGroup != nullptr) {
+            // .. let the group convert the pixel values into the unit of the drawing scene.
+            physValRect = pGraphObjGroup->convert(physValRect);
+        }
+        // If the item is not a child of a group ...
+        else {
+            // .. let the scene convert the pixel values into it's unit.
+            physValRect = m_pDrawingScene->convert(physValRect);
+        }
+    }
+    return physValRect;
+}
+
+/*==============================================================================
 public: // must overridables
 ==============================================================================*/
 
@@ -4601,15 +4747,15 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
                     // should not be indicated in the index tree.
                     m_pDrawingScene->addItem(pGraphObjSelPt);
 
+                    // Event filters can only be installed on items in a scene.
+                    pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
+
                     QObject::connect(
                         pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
                         this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
                     QObject::connect(
                         pGraphObjSelPt, &CGraphObj::geometryChanged,
                         this, &CGraphObj::onSelectionPointGeometryChanged);
-
-                    // Event filters can only be installed on items in a scene.
-                    pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
                 }
             }
         }
@@ -4725,12 +4871,6 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
             if (pGraphObjSelPt == nullptr) {
                 pGraphObjSelPt = new CGraphObjSelectionPoint(m_pDrawingScene, SGraphObjSelectionPoint(this, idxSelPt));
                 m_arpSelPtsPolygon[idxSelPt] = pGraphObjSelPt;
-                QObject::connect(
-                    pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
-                    this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
-                QObject::connect(
-                    pGraphObjSelPt, &CGraphObj::geometryChanged,
-                    this, &CGraphObj::onSelectionPointGeometryChanged);
 
                 // Please note that selection points should not belong as child to the graphics items
                 // for which the selection points are created. Otherwise the "boundingRect" call
@@ -4742,6 +4882,13 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 
                 // Event filters can only be installed on items in a scene.
                 pGraphObjSelPt->installSceneEventFilter(pGraphicsItem);
+
+                QObject::connect(
+                    pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
+                    this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
+                QObject::connect(
+                    pGraphObjSelPt, &CGraphObj::geometryChanged,
+                    this, &CGraphObj::onSelectionPointGeometryChanged);
             }
         }
     }
@@ -6336,39 +6483,39 @@ bool CGraphObj::addGeometryLabel(
 protected slots: // overridables
 ==============================================================================*/
 
-////------------------------------------------------------------------------------
-///*! @brief Called by the drawing scene if the drawing size is changed.
-//
-//    When changing the drawing size in metric unit dimension
-//    (e.g. on changing the Y Scale Orientation) the scene coordinates must be
-//    newly calculated even if the original values stored in metric units have not
-//    been changed. On changing the drawing size the the drawing scene will emit
-//    the signal "drawingSizeChanged" and the method MUST set the flag
-//    "m_bForceConversionToSceneCoors" to true before converting the coordinates
-//    and setting the converted values.
-//*/
-//void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
-////------------------------------------------------------------------------------
-//{
-//    QString strMthInArgs;
-//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = i_drawingSize.toString();
-//    }
-//    CMethodTracer mthTracer(
-//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
-//        /* strMethod    */ "CGraphObj::onDrawingSizeChanged",
-//        /* strAddInfo   */ strMthInArgs );
-//
-//    m_bForceConversionToSceneCoors = true;
-//
-//    // Here add code in your derived class to convert and recalculate the coordinates.
-//    // In the derived class the signal "geometryValuesUnitChanged" has to be emitted
-//    // if the unit of the drawing scene's size has been changed.
-//
-//    m_bForceConversionToSceneCoors = false;
-//}
+//------------------------------------------------------------------------------
+/*! @brief Called by the drawing scene if the drawing size is changed.
+
+    When changing the drawing size in metric unit dimension
+    (e.g. on changing the Y Scale Orientation) the scene coordinates must be
+    newly calculated even if the original values stored in metric units have not
+    been changed. On changing the drawing size the the drawing scene will emit
+    the signal "drawingSizeChanged" and the method MUST set the flag
+    "m_bForceConversionToSceneCoors" to true before converting the coordinates
+    and setting the converted values.
+*/
+void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_drawingSize.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::onDrawingSizeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    m_bForceConversionToSceneCoors = true;
+
+    // Here add code in your derived class to convert and recalculate the coordinates.
+    // In the derived class the signal "geometryValuesUnitChanged" has to be emitted
+    // if the unit of the drawing scene's size has been changed.
+
+    m_bForceConversionToSceneCoors = false;
+}
 
 //------------------------------------------------------------------------------
 void CGraphObj::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)

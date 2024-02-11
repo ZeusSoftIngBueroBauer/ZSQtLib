@@ -76,6 +76,15 @@ CPhysValRect::CPhysValRect(const CUnit& i_unit, double i_fRes) :
 }
 
 //------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(const QPointF& i_ptTL, const QPointF& i_ptBR, double i_fRes, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_rect(i_ptTL, i_ptBR),
+    m_fRes(i_fRes),
+    m_unit(i_unit)
+{
+}
+
+//------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(const QRectF& i_rect, double i_fRes, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     m_rect(i_rect),
@@ -96,6 +105,22 @@ CPhysValRect::CPhysValRect(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     if (i_physValTopLeft.resolution() != i_physValBottomRight.resolution()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize) :
+//------------------------------------------------------------------------------
+    m_rect(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()),
+    m_fRes(i_physValTopLeft.resolution()),
+    m_unit(i_physValTopLeft.unit())
+{
+    if (i_physValTopLeft.unit() != i_physValSize.unit()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (i_physValTopLeft.resolution() != i_physValSize.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
 }
@@ -498,8 +523,18 @@ QRectF CPhysValRect::toQRectF() const
 }
 
 //------------------------------------------------------------------------------
-QString CPhysValRect::toString() const
+QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator) const
 //------------------------------------------------------------------------------
 {
-    return left().toString() + ", " + top().toString() + ", " + width().toString() + ", " + height().toString();
+    QString str = left().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + top().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + width().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + height().toString(EUnitFind::None, PhysValSubStr::Val);
+    if (i_bAddUnit) {
+        str += " " + m_unit.symbol();
+    }
+    return str;
 }

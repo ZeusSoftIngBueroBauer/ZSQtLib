@@ -181,16 +181,15 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
 //------------------------------------------------------------------------------
     QGraphicsScene(i_pObjParent),
     m_drawingSize("DrawingScene"),
-    m_gridSettings("DrawingScene"),
     m_divLinesMetricsX("DrawingScene", EScaleAxis::X),
     m_divLinesMetricsY("DrawingScene", EScaleAxis::Y),
+    m_gridSettings("DrawingScene"),
     m_drawSettings(),
     m_pDrawSettingsTmp(nullptr),
     m_mode(EMode::Undefined),
     //m_editTool(EEditTool::None),
     //m_editMode(EEditMode::None),
     //m_editResizeMode(EEditResizeMode::None),
-    m_pGraphicsItemSelectionArea(nullptr),
     m_pObjFactory(nullptr),
     //m_pGraphicsItemCreating(nullptr),
     //m_pGraphObjCreating(nullptr),
@@ -200,11 +199,9 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     //m_pGraphObjsIdxTreeClipboard(nullptr),
     //m_arpGraphicsItemsAcceptingHoverEvents(),
     //m_arpGraphicsItemsBroughtToFront(),
-    m_fRotAngleRes_degree(1.0),
     m_fHitTolerance_px(3.0),
-    m_bMouseDoubleClickEventInProcess(false),
     m_ptMouseEvScenePosOnMousePressEvent(),
-    m_iEvKeyModifiers(0),
+    m_pGraphicsItemSelectionArea(nullptr),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjMouseMoveEvent(nullptr),
     m_pTrcAdminObjPaintEvent(nullptr)
@@ -294,16 +291,15 @@ CDrawingScene::~CDrawingScene()
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
     //m_drawingSize;
-    //m_gridSettings;
     //m_divLinesMetricsX;
     //m_divLinesMetricsY;
+    //m_gridSettings;
     //m_drawSettings;
     m_pDrawSettingsTmp = nullptr;
     m_mode = static_cast<ZS::System::EMode>(0);
     //m_editTool = static_cast<EEditTool>(0);
     //m_editMode = static_cast<EEditMode>(0);
     //m_editResizeMode = static_cast<EEditResizeMode>(0);
-    m_pGraphicsItemSelectionArea = nullptr;
     m_pObjFactory = nullptr;
     //m_pGraphicsItemCreating = nullptr;
     //m_pGraphObjCreating = nullptr;
@@ -314,11 +310,9 @@ CDrawingScene::~CDrawingScene()
     //m_pGraphObjsIdxTreeClipboard = nullptr;
     //m_arpGraphicsItemsAcceptingHoverEvents;
     //m_arpGraphicsItemsBroughtToFront;
-    m_fRotAngleRes_degree = 0.0;
     m_fHitTolerance_px = 0.0;
-    m_bMouseDoubleClickEventInProcess = false;
     //m_ptMouseEvScenePosOnMousePressEvent;
-    m_iEvKeyModifiers = 0;
+    m_pGraphicsItemSelectionArea = nullptr;
     m_pTrcAdminObj = nullptr;
     m_pTrcAdminObjMouseMoveEvent = nullptr;
     m_pTrcAdminObjPaintEvent = nullptr;
@@ -395,26 +389,16 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1);
             m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
-            m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
                 /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
+            m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
         }
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();
-
-        //for (int idxGraphObj = 0; idxGraphObj < items().size(); idxGraphObj++) {
-        //    QGraphicsItem* pGraphicsItem = items()[idxGraphObj];
-        //    CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-        //    if (pGraphObj != nullptr) {
-        //        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
-        //            pGraphObj->onDrawingSizeChanged(m_drawingSize);
-        //        }
-        //    }
-        //}
 
         update();
         emit_drawingSizeChanged(m_drawingSize);
@@ -472,7 +456,6 @@ public: // instance methods
 
 //------------------------------------------------------------------------------
 /*! @brief Converts the given point coordinate in pixels into a physical point value
-@@ -455,86 +458,112 @@ CPhysVal CDrawingScene::toPhysValYCoor(double i_fYCoor_px) const
 
     @return Converted value.
 */
@@ -511,7 +494,34 @@ CPhysValPoint CDrawingScene::toPhysValPoint(const QPointF& i_pt) const
 //}
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given point value into the current unit of the drawing scene.
+/*! @brief Converts the given point in pixels into the current unit of the drawing scene.
+
+    @param [in] i_pt
+
+    @return Converted value.
+*/
+CPhysValPoint CDrawingScene::convert(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValPoint(i_pt, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given point in pixels into the desired unit.
+
+    @param [in] i_pt
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValPoint CDrawingScene::convert(const QPointF& i_pt, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValPoint(i_pt, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given point into the current unit of the drawing scene.
 
     @param [in] i_physValPoint
 
@@ -524,10 +534,10 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given point value into the desired unit.
+/*! @brief Converts the given point into the desired unit.
 
     @param [in] i_physValPoint
-    @param [ib] i_unitDst
+    @param [in] i_unitDst
 
     @return Converted value.
 */
@@ -563,9 +573,36 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given size in pixels into the current unit of the drawing scene.
+
+    @param [in] i_size
+
+    @return Converted value.
+*/
+CPhysValSize CDrawingScene::convert(const QSizeF& i_size) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValSize(i_size, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given size in pixels into the desired unit.
+
+    @param [in] i_size
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValSize CDrawingScene::convert(const QSizeF& i_size, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValSize(i_size, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Converts the given size into the current unit of the drawing scene.
 
-    @param [in] i_physValPoint
+    @param [in] i_physValSize
 
     @return Converted value.
 */
@@ -576,10 +613,10 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Converts the given size value into the desired unit.
+/*! @brief Converts the given size into the desired unit.
 
     @param [in] i_physValSize
-    @param [ib] i_unitDst
+    @param [in] i_unitDst
 
     @return Converted value.
 */
@@ -597,22 +634,73 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
         }
         else if ((i_physValSize.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             QSizeF size = i_physValSize.toQSizeF();
-            CPhysVal physValWidth(m_divLinesMetricsX.getVal(size.width()), m_drawingSize.unit());
-            CPhysVal physValHeight(m_divLinesMetricsY.getVal(size.height()), m_drawingSize.unit());
+            CPhysVal physValWidth(m_drawingSize.unit());
+            CPhysVal physValHeight(m_drawingSize.unit());
+            if (Units.Length.isMetricUnit(m_drawingSize.unit())) {
+                // "divLineMetrics.getVal" returns the value in world coordinates (physical value) for the given
+                // position in pixels. To get the positions for width and height, one pixel must be subtracted.
+                physValWidth = m_divLinesMetricsX.getVal(size.width()) - 1;
+                physValHeight = m_divLinesMetricsY.getVal(size.height()) - 1;
+                physValWidth.setRes(m_drawingSize.imageCoorsResolution());
+                physValHeight.setRes(m_drawingSize.imageCoorsResolution());
+            }
+            else {
+                physValWidth = m_divLinesMetricsX.getVal(size.width()-1);
+                physValHeight = m_divLinesMetricsY.getVal(size.height()-1);
+            }
             physValWidth.convertValue(i_unitDst);
             physValHeight.convertValue(i_unitDst);
             physValSize = CPhysValSize(physValWidth, physValHeight);
+            if (Units.Length.isMetricUnit(i_unitDst)) {
+                physValSize.setResolution(m_drawingSize.imageCoorsResolution().getVal(i_unitDst));
+            }
+            else {
+                physValSize.setResolution(m_drawingSize.imageCoorsResolutionInPx());
+            }
         }
         else if (Units.Length.isMetricUnit(i_physValSize.unit()) && (i_unitDst == Units.Length.px)) {
             CPhysVal physValWidth = i_physValSize.width();
             CPhysVal physValHeight = i_physValSize.height();
-            physValWidth.convertValue(i_unitDst);
-            physValHeight.convertValue(i_unitDst);
+            if (Units.Length.isMetricUnit(m_drawingSize.unit())) {
+                physValWidth = m_divLinesMetricsX.getValInPix(physValWidth.getVal(m_drawingSize.unit())) + 1;
+                physValHeight = m_divLinesMetricsY.getValInPix(physValHeight.getVal(m_drawingSize.unit())) + 1;
+            }
+            else {
+                physValWidth = m_divLinesMetricsX.getValInPix(physValWidth.getVal(m_drawingSize.unit())) + 1;
+                physValHeight = m_divLinesMetricsY.getValInPix(physValHeight.getVal(m_drawingSize.unit())) + 1;
+            }
             physValSize = CPhysValSize(physValWidth, physValHeight);
             physValSize.setResolution(m_drawingSize.imageCoorsResolutionInPx());
         }
     }
     return physValSize;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given line in pixels into the current unit of the drawing scene.
+
+    @param [in] i_line
+
+    @return Converted value.
+*/
+CPhysValLine CDrawingScene::convert(const QLineF& i_line) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValLine(i_line, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given line in pixels into the desired unit.
+
+    @param [in] i_line
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValLine CDrawingScene::convert(const QLineF& i_line, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValLine(i_line, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -632,7 +720,7 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine) const
 /*! @brief Converts the given line value into the desired unit.
 
     @param [in] i_physValLine
-    @param [ib] i_unitDst
+    @param [in] i_unitDst
 
     @return Converted value.
 */
@@ -642,6 +730,33 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUn
     CPhysValPoint physValP1 = convert(i_physValLine.p1(), i_unitDst);
     CPhysValPoint physValP2 = convert(i_physValLine.p2(), i_unitDst);
     return CPhysValLine(physValP1, physValP2);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given rectangle in pixels into the current unit of the drawing scene.
+
+    @param [in] i_rect
+
+    @return Converted value.
+*/
+CPhysValRect CDrawingScene::convert(const QRectF& i_rect) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValRect(i_rect, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), m_drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given rectangle in pixels into the desired unit.
+
+    @param [in] i_rect
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValRect CDrawingScene::convert(const QRectF& i_rect, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    return convert(CPhysValRect(i_rect, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -667,7 +782,7 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect) const
     the top line of the rectangle on the screen is below the bottom line.
 
     @param [in] i_physValRect
-    @param [ib] i_unitDst
+    @param [in] i_unitDst
 
     @return Converted value.
 */
@@ -675,19 +790,17 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect, const CUn
 //------------------------------------------------------------------------------
 {
     CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
-    CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    CPhysValRect physValRect(physValTL, physValBR);
+    CPhysValSize physValSize = convert(i_physValRect.size(), i_unitDst);
+    CPhysValRect physValRect(physValTL, physValSize);
     // When converting from pixels into metric or metric to pixels unit
     // and if the Y Scale is from bottom to top the rectangles top line
     // becomes the bottom line and vice versa (the height and width of a
     // rectangle should always be greater than 0).
     if (physValRect.height().getVal() < 0)
     {
-        CPhysVal physValYT = physValBR.y();
-        CPhysVal physValYB = physValTL.y();
-        physValTL.setY(physValYT);
-        physValBR.setY(physValYB);
-        physValRect = CPhysValRect(physValTL, physValBR);
+        physValTL = physValRect.bottomLeft();
+        physValSize.setHeight(physValSize.height() * -1.0);
+        physValRect = CPhysValRect(physValTL, physValSize);
     }
     return physValRect;
 }
@@ -2030,7 +2143,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
     double fZValue = 0.0;
     for (QGraphicsItem* pGraphicsItem : arpGraphicsItems) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+        if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
             if (pGraphicsItem->zValue() >= fZValue) {
                 fZValue = pGraphicsItem->zValue() + 0.1;
             }
@@ -2040,7 +2153,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QList<
     if (pGraphObj != nullptr) {
         // The zValue of Selection points and Labels are updated if the
         // zValue of their parent object is changed.
-        if (!pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+        if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
             pGraphObj->setStackingOrderValue(fZValue);
         }
     }
@@ -3914,13 +4027,6 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
 
     //traceItemsStates(mthTracer, EMethodDir::Enter);
 
-    // Not a nice hack: mouse double click events will not be dispatched to the graphical objects
-    // but will be converted to mouse press and mouse release events which are just dispatched
-    // to the selection points. The "sceneEventFilter" functions of the graphical objects may
-    // check the "DoubleClickInProcessFlag" to correct again the mouse press event into a mouse
-    // double click event.
-    m_bMouseDoubleClickEventInProcess = true;
-
     int iObjFactoryType = static_cast<int>(EGraphObjTypeUndefined);
     if (m_pObjFactory != nullptr) {
         iObjFactoryType = m_pObjFactory->getGraphObjType();
@@ -3981,8 +4087,6 @@ void CDrawingScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
         QGraphicsScene::mouseDoubleClickEvent(i_pEv);
     }
 
-    m_bMouseDoubleClickEventInProcess = false;
-
     //traceItemsStates(mthTracer, EMethodDir::Leave);
 
 } // mouseDoubleClickEvent
@@ -4013,7 +4117,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
     QGraphicsScene::keyPressEvent(i_pEv);
 
     if (!i_pEv->isAccepted()) {
-        m_iEvKeyModifiers = i_pEv->modifiers();
+        int iEvKeyModifiers = i_pEv->modifiers();
 
         // As default the key is not handled by the manual test.
         i_pEv->ignore();
@@ -4107,7 +4211,7 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
         // Pressed key to copy selected objects to the (internal) clipboard ...
         else if (i_pEv->key() == Qt::Key_C) {
-            if (m_iEvKeyModifiers == Qt::ControlModifier) {
+            if (iEvKeyModifiers == Qt::ControlModifier) {
                 //// Clear internal clipboard.
                 //if (m_dctpGraphObjsClipboard.size() > 0) {
                 //    QMap<QString,CGraphObj*>::iterator itGraphObjsClipboard = m_dctpGraphObjsClipboard.begin();
@@ -4259,12 +4363,12 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
                 //        } // if( pGraphObjCnctLine != nullptr )
                 //    } // if( pGraphObj != nullptr && pGraphObj->getType() == EGraphObjTypeConnectionLine )
                 //} // for( idxGraphObj = 0; idxGraphObj < arpGraphicsItemsSelected.size(); idxGraphObj++ )
-            } // if( m_iEvKeyModifiers == Qt::ControlModifier )
-        } // if( i_pEv->key() == Qt::Key_C )
+            }
+        }
 
         // Pressed key to insert the objects from the (internal) clipboard ...
         else if (i_pEv->key() == Qt::Key_V) {
-            if (m_iEvKeyModifiers == Qt::ControlModifier) {
+            if (iEvKeyModifiers == Qt::ControlModifier) {
                 //CGraphObj*                pGraphObjClone;
                 //QGraphicsItem*            pGraphicsItemClone;
                 //CGraphObjConnectionLine*  pGraphObjCnctLine;
@@ -4433,8 +4537,8 @@ void CDrawingScene::keyPressEvent( QKeyEvent* i_pEv )
 
                 //    } // while( itGraphObjsClipboard != m_dctpGraphObjsClipboard.end() )
                 //} // if( m_dctpGraphObjsClipboard.size() > 0 )
-            } // if( m_iEvKeyModifiers == Qt::ControlModifier )
-        } // if( i_pEv->key() == Qt::Key_V )
+            }
+        }
     } // if( !i_pEv->isAccepted() )
 
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -4463,8 +4567,6 @@ void CDrawingScene::keyReleaseEvent( QKeyEvent* i_pEv )
     //}
 
     QGraphicsScene::keyReleaseEvent(i_pEv);
-
-    m_iEvKeyModifiers = 0;
 
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
     //    traceInternalStates(mthTracer, EMethodDir::Leave);

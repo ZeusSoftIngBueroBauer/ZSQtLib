@@ -175,14 +175,14 @@ ZSSYSDLL_API QString qItemFlags2Str( quint32 i_flags );
 ZSSYSDLL_API QString qKeyCode2Str( int i_iVal, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName );
 ZSSYSDLL_API int char2QKeyCode( const QChar& i_ch );    // e.g. "o", "1", "Z", " ", "?", ..
 ZSSYSDLL_API int str2QKeyCode( const QString& i_str );  // e.g. "F1", "Enter", "Escape", ..
-ZSSYSDLL_API QString qKeyboardModifiers2Str( quint32 i_modifiers );
+ZSSYSDLL_API QString qKeyboardModifiers2Str( Qt::KeyboardModifiers i_modifiers );
 ZSSYSDLL_API Qt::KeyboardModifiers char2QKeyboardModifiers( const QChar& i_ch );
 
 ZSSYSDLL_API QString qMargins2Str( const QMargins& i_margins );
 ZSSYSDLL_API QString qMimeData2Str( const QMimeData* i_pMimeData, int i_iDetailLevel = 0 );
 ZSSYSDLL_API QString qModelIndex2Str( const QModelIndex& i_modelIdx );
-ZSSYSDLL_API QString qMouseButton2Str( int i_iBtn );
-ZSSYSDLL_API QString qMouseButtons2Str( int i_iBtns );
+ZSSYSDLL_API QString qMouseButton2Str( Qt::MouseButton i_mouseButton );
+ZSSYSDLL_API QString qMouseButtons2Str( Qt::MouseButtons i_mouseButtons );
 ZSSYSDLL_API QString qPenStyle2Str( const Qt::PenStyle& i_penStyle );
 ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt );
 ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt );

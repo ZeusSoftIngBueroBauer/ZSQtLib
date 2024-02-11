@@ -271,8 +271,14 @@ QSizeF CPhysValSize::toQSizeF() const
 }
 
 //------------------------------------------------------------------------------
-QString CPhysValSize::toString() const
+QString CPhysValSize::toString(bool i_bAddUnit, const QString& i_strSeparator) const
 //------------------------------------------------------------------------------
 {
-    return width().toString() + ", " + height().toString();
+    QString str = width().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + height().toString(EUnitFind::None, PhysValSubStr::Val);
+    if (i_bAddUnit) {
+        str += " " + m_unit.symbol();
+    }
+    return str;
 }

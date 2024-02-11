@@ -78,6 +78,21 @@ protected: // instance methods
     ZS::Test::CTestStepGroup* createTestGroupPrepareScene(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvert(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertPoints(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertSizes(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertLines(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertRects(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupSaveLoadFile(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize);
@@ -90,13 +105,23 @@ protected: // instance methods
     ZS::Test::CTestStepGroup* createTestGroupMetricsDrawingYScaleBottomUp(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupAddStandardShapes(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapes(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupAddStandardShapesLines(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupAddStandardShapesGroups(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapesLines(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupDrawStandardShapesGroups(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupDrawMouseEventsCreateObject(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const QString& i_strFactoryGroupName, ZS::Draw::EGraphObjType i_graphObjType, const QString& i_strGraphObjName,
@@ -135,6 +160,10 @@ protected slots:
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepDrawingSceneConvertToPhysValPoint( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepDrawingSceneConvertToPhysValSize( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepDrawingSceneConvertToPhysValLine( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepDrawingSceneConvertToPhysValRect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetMode( ZS::Test::CTestStep* i_pTestStep );
@@ -144,9 +173,9 @@ protected slots:
     void doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepShowGeometryLabel( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepMouseReleaseEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseMoveEvents( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepMouseReleaseEvent( ZS::Test::CTestStep* i_pTestStep );
 public: // instance members
     CMainWindow* m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;
