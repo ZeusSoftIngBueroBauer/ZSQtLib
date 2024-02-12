@@ -31,7 +31,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysIdxTree.h"
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-#include <QtCore/qrecursivemutex.h>
+#include <QtCore/qmutex.h>
 #endif
 
 namespace ZS

@@ -24,15 +24,6 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include <QtCore/qcoreapplication.h>
-#include <QtCore/qmutex.h>
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <QtXml/qxmlstream.h>
-#else
-#include <QtCore/qxmlstream.h>
-#endif
-
 #include "ZSIpcLog/ZSIpcLogServer.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
@@ -41,6 +32,15 @@ may result in using the software modules.
 #include "ZSSys/ZSSysLoggerIdxTree.h"
 #include "ZSSys/ZSSysMutex.h"
 #include "ZSSys/ZSSysRequest.h"
+
+#include <QtCore/qcoreapplication.h>
+#include <QtCore/qmutex.h>
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
