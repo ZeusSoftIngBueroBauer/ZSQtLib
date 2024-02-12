@@ -103,9 +103,11 @@ CWdgtEditPhysVal::CWdgtEditPhysVal(const QString& i_strName, QWidget* i_pWdgtPar
     QObject::connect(
         this, &QDoubleSpinBox::editingFinished,
         this, &CWdgtEditPhysVal::onEdtEditingFinished);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QObject::connect(
         this, static_cast<void (QDoubleSpinBox::*)(const QString&)>(&QDoubleSpinBox::textChanged),
         this, static_cast<void (CWdgtEditPhysVal::*)(const QString&)>(&CWdgtEditPhysVal::onEdtTextChanged));
+    #endif
     QObject::connect(
         this, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged),
         this, static_cast<void (CWdgtEditPhysVal::*)(double)>(&CWdgtEditPhysVal::onEdtValueChanged));
@@ -850,6 +852,7 @@ void CWdgtEditPhysVal::setDecimals( int i_iPrecision )
     QDoubleSpinBox::setDecimals(i_iPrecision);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 //------------------------------------------------------------------------------
 /*! @brief Sets the step type for the spin box to stepType, which is single step
            or adaptive decimal step.
@@ -872,6 +875,7 @@ void CWdgtEditPhysVal::setStepType( QAbstractSpinBox::StepType i_stepType )
 
     QDoubleSpinBox::setStepType(i_stepType);
 }
+#endif
 
 //------------------------------------------------------------------------------
 /*! @brief Sets the value to increment/decrement the spin box's value using
@@ -1145,6 +1149,7 @@ void CWdgtEditPhysVal::onEdtValueChanged( double i_fVal )
     }
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 //------------------------------------------------------------------------------
 void CWdgtEditPhysVal::onEdtTextChanged( const QString& i_strText )
 //------------------------------------------------------------------------------
@@ -1170,6 +1175,7 @@ void CWdgtEditPhysVal::onEdtTextChanged( const QString& i_strText )
         emit textChanged(i_strText);
     }
 }
+#endif
 
 /*==============================================================================
 private: // auxiliary instance method

@@ -239,7 +239,11 @@ class CTrcServer : public QObject
 protected: // class members
 ==============================================================================*/
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 QRecursiveMutex CTrcServer::s_mtx;
+#else
+QMutex CTrcServer::s_mtx(QMutex::Recursive);
+#endif
 CTrcServer* CTrcServer::s_pTheInst = nullptr;
 QHash<Qt::HANDLE, QString> CTrcServer::s_hshThreadNames;
 QHash<QString, Qt::HANDLE> CTrcServer::s_hshThreadIds;

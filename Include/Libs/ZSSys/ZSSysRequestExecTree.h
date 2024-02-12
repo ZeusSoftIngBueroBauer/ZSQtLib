@@ -33,7 +33,11 @@ may result in using the software modules.
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysRequest.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class QRecursiveMutex;
+#else
+class QMutex;
+#endif
 class QTimer;
 
 namespace ZS
@@ -125,15 +129,26 @@ protected slots:
     void onTmrGarbageCollectorTimeout();
 protected: // class members
     static CRequestExecTree* s_pInstance;
-    static QRecursiveMutex s_mtx;                  /*!< Mutex to protect the class methods for multithreaded access. */
+    /*!< Mutex to protect the class methods for multithreaded access. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    static QRecursiveMutex s_mtx;
+    #else
+    static QMutex s_mtx;
+    #endif
 protected: // instance members
-    QRecursiveMutex*            m_pMtx;
-    QHash<qint64,SRequestDscr*> m_hshRequestDscrs;  // Entries live longer than CRequest.
-    QHash<qint64,CRequest*>     m_hshRequests;      // Only if the CRequest is still alive.
-    bool                        m_bTmrGarbageCollectorEnabled;
-    double                      m_fTmrGarbageCollecterInterval_s;
-    double                      m_fTmrGarbageCollectorElapsed_s;
-    QTimer*                     m_pTmrGarbageCollector;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex* m_pMtx;
+    #else
+    QMutex* m_pMtx;
+    #endif
+    /*!< Entries live longer than CRequest. */
+    QHash<qint64,SRequestDscr*> m_hshRequestDscrs;
+    /*!< Only if the CRequest is still alive. */
+    QHash<qint64,CRequest*> m_hshRequests;
+    bool m_bTmrGarbageCollectorEnabled;
+    double m_fTmrGarbageCollecterInterval_s;
+    double m_fTmrGarbageCollectorElapsed_s;
+    QTimer* m_pTmrGarbageCollector;
 
 }; // class CRequestExecTree
 

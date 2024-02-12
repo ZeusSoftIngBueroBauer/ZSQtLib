@@ -91,7 +91,9 @@ public: // reimplemented instance methods of QDoubleSpinBox
     void setMinimum(double i_fVal);
     void setMaximum(double i_fVal);
     void setDecimals(int i_iPrecision);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     void setStepType(QAbstractSpinBox::StepType i_stepType);
+    #endif
     void setSingleStep(double i_fVal);
 public: // reimplemented slots of base class QDoubleSpinBox
     void setValue(double i_fVal);
@@ -108,7 +110,9 @@ protected: // overridables of base class QAbstractSpinBox
 protected slots:
     void onEdtEditingFinished();
     void onEdtValueChanged(double i_fVal);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     void onEdtTextChanged(const QString& i_strText);
+    #endif
 private: // auxiliary instance method
     void updateSizeHint();
 private: // instance members

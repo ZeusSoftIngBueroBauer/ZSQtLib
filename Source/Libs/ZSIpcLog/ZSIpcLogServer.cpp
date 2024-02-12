@@ -181,7 +181,11 @@ CIpcLogServer::CIpcLogServer() :
     hostSettings.m_uLocalPort = 24762; // Default listen port for IpcLogServer
     m_pIpcServer->setHostSettings(hostSettings);
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     m_pMtxListLogDataCached = new QRecursiveMutex();
+    #else
+    m_pMtxListLogDataCached = new QMutex(QMutex::Recursive);
+    #endif
 
     // Need direct connections to signals of index tree.
     // If in another thread a trace admin object is created, removed or modified

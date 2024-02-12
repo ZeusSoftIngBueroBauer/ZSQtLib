@@ -39,7 +39,9 @@ namespace ZS
 namespace System
 {
 class CMutex;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class CRecursiveMutex;
+#endif
 class CWaitCondition;
 class CTrcAdminObj;
 }
@@ -134,7 +136,11 @@ protected: // overridables of base class QObject
 private: // instance members
     CMyClass2Thread* m_pMyClass2Thread;
     QTimer* m_pTmrMessages;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     ZS::System::CRecursiveMutex* m_pMtxCounters;
+    #else
+    ZS::System::CMutex* m_pMtxCounters;
+    #endif
     int m_iRecursionCount;
     int m_iMsgCount;
     QString m_strMyClass3ObjName;

@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
+#include <QtCore/qset.h>
 #include <QtGui/qguiapplication.h>
 #include <QtGui/qfontmetrics.h>
 #include <QtQml/qqmlapplicationengine.h>

@@ -181,7 +181,11 @@ class CErrLog : public QObject
 protected: // class members
 ==============================================================================*/
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 QRecursiveMutex CErrLog::s_mtx;
+#else
+QMutex CErrLog::s_mtx(QMutex::Recursive);
+#endif
 QHash<QString, CErrLog*> CErrLog::s_hshpInstances;
 int CErrLog::s_iMsgHandlerInstallCount = 0;
 
@@ -730,7 +734,11 @@ CErrLog::CErrLog(
         #endif
     }
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     m_pMtx = new QRecursiveMutex();
+    #else
+    m_pMtx = new QMutex(QMutex::Recursive);
+    #endif
 
     // Create and/or recall error log file
     //------------------------------------

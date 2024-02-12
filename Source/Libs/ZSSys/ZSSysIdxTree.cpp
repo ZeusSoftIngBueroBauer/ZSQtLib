@@ -342,7 +342,11 @@ CIdxTree::CIdxTree(
 
     if( i_bCreateMutex )
     {
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_pMtx = new CRecursiveMutex("CIdxTree-" + i_strObjName, i_eTrcDetailLevelMutex);
+        #else
+        m_pMtx = new CMutex("CIdxTree-" + i_strObjName, i_eTrcDetailLevelMutex, QMutex::Recursive);
+        #endif
     }
 
     if( m_pRoot == nullptr )

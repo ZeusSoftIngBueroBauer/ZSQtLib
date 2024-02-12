@@ -100,18 +100,6 @@ CUnit::CUnit(const CUnit* i_pUnit) :
 }
 
 //------------------------------------------------------------------------------
-CUnit::CUnit(CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    m_pTreeEntry(i_unit.m_pTreeEntry),
-    m_classType(i_unit.m_classType),
-    m_strKeyInTree(i_unit.m_strKeyInTree),
-    m_strUnitName(i_unit.m_strUnitName),
-    m_strGrpPath(i_unit.m_strGrpPath),
-    m_strSymbol(i_unit.m_strSymbol)
-{
-}
-
-//------------------------------------------------------------------------------
 CUnit::CUnit(const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     m_pTreeEntry(i_unit.m_pTreeEntry),

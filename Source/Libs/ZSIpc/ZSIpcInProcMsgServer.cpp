@@ -397,7 +397,11 @@ CInProcMsgServer::CInProcMsgServer( const QString& i_strObjName, bool i_bTracing
     #endif
     #pragma pop_macro("_ZSSYS_DBGNEW_CLIENT_BLOCK_SUBTYPE")
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     m_pMutex = new QRecursiveMutex();
+    #else
+    m_pMutex = new QMutex(QMutex::Recursive);
+    #endif
 
     m_arpPendingConnections.reserve(m_iMaxPendingConnections);
 

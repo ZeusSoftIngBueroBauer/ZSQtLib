@@ -32,7 +32,11 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class QRecursiveMutex;
+#else
+class QMutex;
+#endif
 class QTimer;
 
 namespace ZS
@@ -146,27 +150,35 @@ protected slots:
     virtual void onServerDestroyed( QObject* i_pServer );
     virtual void onSocketPeerDestroyed( QObject* i_pSocketPeer );
 protected: // instance methods
-    QRecursiveMutex*           m_pMutex;
-    ESrvCltType                m_srvCltType;           // Defines on which side of the connection the socket is existing
-    CInProcMsgServer*          m_pInProcMsgServer;     // On client's side the server to which the socket should be connected to, on server's side the server which created the socket for the new connection.
-    CInProcMsgSocket*          m_pInProcMsgSocketPeer; // "Peer" to which this socket is connected (socket on the other side of the connection).
-    ESocketState               m_socketState;
-    int                        m_iReqMsgId;
-    unsigned int               m_uServerListenPort;
-    QString                    m_strLocalHostName;
-    unsigned int               m_uLocalPort;
-    QString                    m_strRemoteHostName;
-    unsigned int               m_uRemotePort;
-    QTimer*                    m_pTimer;
-    bool                       m_bOnTimerTimeoutConnected;
-    double                     m_fTimerStartTime_ms;
-    int                        m_iConnectTimeout_ms;
-    int                        m_iDisconnectTimeout_ms;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex* m_pMutex;
+    #else
+    QMutex* m_pMutex;
+    #endif
+    /*!< Defines on which side of the connection the socket is existing. */
+    ESrvCltType m_srvCltType;
+    /*!< On client's side the server to which the socket should be connected to,
+         on server's side the server which created the socket for the new connection. */
+    CInProcMsgServer* m_pInProcMsgServer;
+    /*!< "Peer" to which this socket is connected (socket on the other side of the connection). */
+    CInProcMsgSocket* m_pInProcMsgSocketPeer;
+    ESocketState m_socketState;
+    int m_iReqMsgId;
+    unsigned int m_uServerListenPort;
+    QString m_strLocalHostName;
+    unsigned int m_uLocalPort;
+    QString m_strRemoteHostName;
+    unsigned int m_uRemotePort;
+    QTimer* m_pTimer;
+    bool m_bOnTimerTimeoutConnected;
+    double m_fTimerStartTime_ms;
+    int m_iConnectTimeout_ms;
+    int m_iDisconnectTimeout_ms;
     ZS::System::SErrResultInfo m_errResultInfo;
-    ZS::System::ECopyDepth     m_copyDepthMsgReadBuff;
-    QList<ZS::System::CMsg*>   m_arpMsgReadBuff;
-    bool                       m_bTracingEnabled;
-    ZS::System::CTrcAdminObj*  m_pTrcAdminObj;
+    ZS::System::ECopyDepth m_copyDepthMsgReadBuff;
+    QList<ZS::System::CMsg*> m_arpMsgReadBuff;
+    bool m_bTracingEnabled;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CInProcMsgSocket
 

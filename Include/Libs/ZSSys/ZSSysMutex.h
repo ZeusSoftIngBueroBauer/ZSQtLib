@@ -52,8 +52,13 @@ class ZSSYSDLL_API CMutex : public QMutex
     static QString NameSpace() { return "ZS::System"; }
     static QString ClassName() { return "CMutex"; }
 public: // ctors and dtor
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     CMutex(const QString& i_strObjName);
     CMutex(const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel);
+    #else
+    CMutex(const QString& i_strObjName, QMutex::RecursionMode i_mode = QMutex::NonRecursive);
+    CMutex(const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFileDetailLevel, QMutex::RecursionMode i_mode = QMutex::NonRecursive);
+    #endif
     virtual ~CMutex();
 public: // instance methods
     void setObjectName(const QString& i_strObjName);

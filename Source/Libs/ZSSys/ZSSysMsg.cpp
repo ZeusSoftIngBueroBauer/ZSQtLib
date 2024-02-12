@@ -333,14 +333,22 @@ private: // class members
 ==============================================================================*/
 
 static qint64 s_iMsgIdCounter = 0;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 static QRecursiveMutex s_mtxId;
+#else
+static QMutex s_mtxId(QMutex::Recursive);
+#endif
 
-static qint64                s_iMsgObjCtorCounter = 0;
-static qint64                s_iMsgObjDtorCounter = 0;
-static qint64                s_iMsgObjLiveCounter = 0;
-static QHash<qint64,int>     s_hshMsgIdsLiveCounter;
+static qint64 s_iMsgObjCtorCounter = 0;
+static qint64 s_iMsgObjDtorCounter = 0;
+static qint64 s_iMsgObjLiveCounter = 0;
+static QHash<qint64,int> s_hshMsgIdsLiveCounter;
 static QHash<qint64,QString> s_hshMsgIdsLiveTrcInfo;
-static QRecursiveMutex       s_mtxMsgIdsLiveCounter;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+static QRecursiveMutex s_mtxMsgIdsLiveCounter;
+#else
+static QMutex s_mtxMsgIdsLiveCounter(QMutex::Recursive);
+#endif
 
 static bool s_bTracing = false;
 static bool s_bTracingEnabled = false;

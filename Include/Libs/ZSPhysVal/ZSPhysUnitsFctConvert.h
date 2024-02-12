@@ -49,12 +49,10 @@ public: // ctors and dtor
         const CPhysVal& i_physValM,
         const CPhysVal& i_physValT = CPhysVal(),
         const CPhysVal& i_physValK = CPhysVal());
-    SFctConvert(SFctConvert& i_other);
     SFctConvert(const SFctConvert& i_other);
     SFctConvert(SFctConvert&& i_other);
     virtual ~SFctConvert();
 public: // operators
-    SFctConvert& operator=(SFctConvert& i_other);
     SFctConvert& operator=(const SFctConvert& i_other);
     SFctConvert& operator=(SFctConvert&& i_other);
 public: // instance methods

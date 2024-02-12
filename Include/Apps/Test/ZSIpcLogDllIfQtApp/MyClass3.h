@@ -36,7 +36,11 @@ namespace ZS
 {
 namespace System
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class CRecursiveMutex;
+#else
+class CMutex;
+#endif
 class CWaitCondition;
 }
 namespace Log
@@ -119,7 +123,11 @@ private: // instance methods
     int sendData3(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // instance members
     CMyClass3Thread* m_pMyClass3Thread;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     ZS::System::CRecursiveMutex* m_pMtxCounters;
+    #else
+    ZS::System::CMutex* m_pMtxCounters;
+    #endif
     ZS::Log::DllIf::CLogger* m_pLogger;
 
 }; // class CMyClass3

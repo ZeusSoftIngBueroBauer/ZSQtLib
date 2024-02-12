@@ -37,7 +37,11 @@ namespace ZS
 {
 namespace System
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class CRecursiveMutex;
+#else
+class CMutex;
+#endif
 class CTrcAdminObj;
 class CTrcMthFile;
 
@@ -217,7 +221,11 @@ signals:
     void treeEntryKeyInTreeChanged( const QString& i_strNewKeyInTree, const QString& i_strOrigKeyInTree );
 public: // instance methods
     /*! Returns a pointer to the mutex used to protect the index tree if access by different threads. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     CRecursiveMutex* mutex() { return m_pMtx; }
+    #else
+    CMutex* mutex() { return m_pMtx; }
+    #endif
     Q_INVOKABLE void lock();
     Q_INVOKABLE void unlock();
 public: // instance methods
@@ -333,7 +341,11 @@ protected: // instance members
     /*!< String used to seperate the node names with an entries path. */
     QString m_strNodeSeparator;
     /*!< Mutex to protect the instance if accessed by different threads. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     mutable CRecursiveMutex* m_pMtx;
+    #else
+    mutable CMutex* m_pMtx;
+    #endif
     /*!< Map with pointers to all tree entries. */
     QMap<QString, CIdxTreeEntry*> m_mappTreeEntries;
     /*!< Vector with pointers to all tree entries. */

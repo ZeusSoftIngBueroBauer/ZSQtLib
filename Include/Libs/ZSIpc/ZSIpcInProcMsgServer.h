@@ -34,7 +34,11 @@ may result in using the software modules.
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysErrResult.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class QRecursiveMutex;
+#else
+class QMutex;
+#endif
 
 namespace ZS
 {
@@ -112,16 +116,20 @@ public: // overridables
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv );
 protected: // instance methods
-    QRecursiveMutex*           m_pMutex;
-    ESocketState               m_socketState;
-    QString                    m_strHostName;
-    unsigned int               m_uPort;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex* m_pMutex;
+    #else
+    QMutex* m_pMutex;
+    #endif
+    ESocketState m_socketState;
+    QString m_strHostName;
+    unsigned int m_uPort;
     ZS::System::SErrResultInfo m_errResultInfo;
-    int                        m_iMaxPendingConnections;
+    int m_iMaxPendingConnections;
     QVector<CInProcMsgSocket*> m_arpPendingConnections;
-    ZS::System::ECopyDepth     m_copyDepthMsgReadBuff;
-    bool                       m_bTracingEnabled;
-    ZS::System::CTrcAdminObj*  m_pTrcAdminObj;
+    ZS::System::ECopyDepth m_copyDepthMsgReadBuff;
+    bool m_bTracingEnabled;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CInProcMsgServer
 

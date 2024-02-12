@@ -52,7 +52,11 @@ class CTrcMthFile
 protected: // class members
 ==============================================================================*/
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 QRecursiveMutex CTrcMthFile::s_mtx;
+#else
+QMutex CTrcMthFile::s_mtx(QMutex::Recursive);
+#endif
 QMap<QString, CTrcMthFile*> CTrcMthFile::s_mapTrcMthFiles;
 
 /*==============================================================================

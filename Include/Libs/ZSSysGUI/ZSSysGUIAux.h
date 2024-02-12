@@ -83,7 +83,9 @@ ZSSYSGUIDLL_API QString qResizeEvent2Str(QResizeEvent* i_pEv);
 ZSSYSGUIDLL_API QString qPolygon2Str(const QPolygon& i_plg);
 ZSSYSGUIDLL_API QString qPolygon2Str(const QPolygonF& i_plg);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 ZSSYSGUIDLL_API QString qSpinBoxStepType2Str(QAbstractSpinBox::StepType i_stepType, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
+#endif
 ZSSYSGUIDLL_API QString qValidatorState2Str(QValidator::State i_state, EEnumEntryAliasStr i_alias = EEnumEntryAliasStrName);
 
 } // namespace GUI

@@ -39,8 +39,12 @@ namespace ZS
 {
 namespace System
 {
-class CErrLog;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class CRecursiveMutex;
+#else
+class CMutex;
+#endif
+class CErrLog;
 class CRequest;
 class CRequestQueue;
 class CTrcAdminObj;
@@ -181,7 +185,11 @@ protected: // instance methods
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv ) override;
 protected: // instance members
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     ZS::System::CRecursiveMutex* m_pMtx;
+    #else
+    ZS::System::CMutex* m_pMtx;
+    #endif
     QString m_strObjName;
     ZS::System::CErrLog* m_pErrLog;
     // Connection settings

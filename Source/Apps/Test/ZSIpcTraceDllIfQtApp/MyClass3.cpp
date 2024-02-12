@@ -539,7 +539,11 @@ CMyClass3::CMyClass3( const QString& i_strObjName, CMyClass3Thread* i_pMyClass3T
         /* szMethod     */ "ctor",
         /* szMthInArgs  */ strMthInArgs.toLatin1().data() );
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     m_pMtxCounters = new CRecursiveMutex(ClassName() + "-" + objectName() + "-Counters");
+    #else
+    m_pMtxCounters = new CMutex(ClassName() + "-" + objectName() + "-Counters", QMutex::Recursive);
+    #endif
 
 } // ctor
 

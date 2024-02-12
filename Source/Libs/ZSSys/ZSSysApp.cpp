@@ -272,7 +272,11 @@ QList<SLastUsedFile> ZS::System::readLastUsedFiles(
     QString strValue = i_settings.value(i_strKey, "").toString();
     if (!strValue.isEmpty())
     {
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         QStringList strlstLastUsedFiles = strValue.split("<", Qt::SkipEmptyParts);
+        #else
+        QStringList strlstLastUsedFiles = strValue.split("<", QString::SkipEmptyParts);
+        #endif
         for (int idxFile = 0; idxFile < strlstLastUsedFiles.size(); ++idxFile)
         {
             QStringList strlstLastUsedFile = strlstLastUsedFiles[idxFile].remove(">").split("*");

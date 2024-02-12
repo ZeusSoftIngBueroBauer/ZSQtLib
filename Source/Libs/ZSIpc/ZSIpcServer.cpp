@@ -200,11 +200,19 @@ CServer::CServer(
     {
         if( m_pTrcMthFile != nullptr )
         {
-            m_pMtx = new CRecursiveMutex(ClassName() + "-" + i_strObjName, i_eTrcMthFileDetailLevelMutex);
+            #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            m_pMtx = new CRecursiveMutex(ClassName() + "-" + objectName(), i_eTrcMthFileDetailLevelMutex);
+            #else
+            m_pMtx = new CMutex(ClassName() + "-" + objectName(), i_eTrcMthFileDetailLevelMutex, QMutex::Recursive);
+            #endif
         }
         else
         {
-            m_pMtx = new CRecursiveMutex(ClassName() + "-" + i_strObjName);
+            #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+            m_pMtx = new CRecursiveMutex(ClassName() + "-" + objectName());
+            #else
+            m_pMtx = new CMutex(ClassName() + "-" + objectName(), QMutex::Recursive);
+            #endif
         }
     }
 
