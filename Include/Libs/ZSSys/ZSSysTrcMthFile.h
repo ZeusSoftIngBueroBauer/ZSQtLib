@@ -35,7 +35,11 @@ may result in using the software modules.
 #include "ZSSys/ZSSysLogFile.h"
 
 class QFile;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class QRecursiveMutex;
+#else
+class QMutex;
+#endif
 class QTextStream;
 
 namespace ZS
@@ -220,20 +224,28 @@ protected: // auxiliary instance methods
     QString currentThreadName() const;
 protected: // class members
     /*!< Mutex to protect the static and instance methods of the class for multithreaded access. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     static QRecursiveMutex s_mtx;
+    #else
+    static QMutex s_mtx;
+    #endif
     /*!< Map containing all existing (allocated) method trace file instances.
          The key of the entries is the absolute file path of the method trace files.
          The value is the pointer to the method trace file instance. */
     static QMap<QString, CTrcMthFile*> s_mapTrcMthFiles;
 protected: // instance methods
-    bool                  m_bEnabled;               /*!< By setting this flag to false writing method traces to the log file may be temporarily disabled. */
-    ZS::System::CLogFile* m_pLogFile;               /*!< Log file instance used to write the method trace. */
-    int                   m_iRefCount;              /*!< Number of allocs for this method trace file.
-                                                         Will be decreased with each "free" call. If the ref count becomes 0 the method trace file instance will be
-                                                         deleted (but the file of course remains on disk). */
-    QHash<QString,int>    m_hashThreadCallDepths;   /*!< Map containing the call depth for each thread.
-                                                         The key of the entries is the name of the thread (or the tread id converted into a string).
-                                                         The value is the current call depth. */
+    /*!< By setting this flag to false writing method traces to the log file may be temporarily disabled. */
+    bool m_bEnabled;
+    /*!< Log file instance used to write the method trace. */
+    ZS::System::CLogFile* m_pLogFile;
+    /*!< Number of allocs for this method trace file.
+         Will be decreased with each "free" call. If the ref count becomes 0 the method trace file instance will be
+         deleted (but the file of course remains on disk). */
+    int m_iRefCount;
+    /*!< Map containing the call depth for each thread.
+         The key of the entries is the name of the thread (or the tread id converted into a string).
+         The value is the current call depth. */
+    QHash<QString,int> m_hashThreadCallDepths;
 
 }; // class CTrcMthFile
 

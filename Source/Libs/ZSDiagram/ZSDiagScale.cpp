@@ -1193,7 +1193,7 @@ int CDiagScale::getDivLineCount( const CEnumDivLineLayer& i_eLayer ) const
     @return Number of division lines.
 */
 double CDiagScale::getDivLineDistMin(
-    const CEnumDivLineLayer& i_eLayer, const PhysVal::CUnit* i_pUnit ) const
+    const CEnumDivLineLayer& i_eLayer, const CUnit* i_pUnit ) const
 //------------------------------------------------------------------------------
 {
     CUnit unit = m_scale.unit();
@@ -1274,7 +1274,7 @@ double CDiagScale::getDivLinePix( const CEnumDivLineLayer& i_eLayer, int i_idxDi
 */
 double CDiagScale::getDivLineDistVal(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2,
-    const PhysVal::CUnit* i_pUnit) const
+    const CUnit* i_pUnit) const
 //------------------------------------------------------------------------------
 {
     CUnit unit = m_scale.unit();

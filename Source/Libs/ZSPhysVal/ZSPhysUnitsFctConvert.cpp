@@ -171,19 +171,6 @@ SFctConvert::SFctConvert(
 }
 
 //------------------------------------------------------------------------------
-SFctConvert::SFctConvert(SFctConvert& i_other) :
-//------------------------------------------------------------------------------
-    m_pPhysUnitSrc(i_other.m_pPhysUnitSrc),
-    m_pPhysUnitDst(i_other.m_pPhysUnitDst),
-    m_fctConvertType(i_other.m_fctConvertType),
-    m_strFctConvertName(i_other.m_strFctConvertName),
-    m_physValM(i_other.m_physValM),
-    m_physValT(i_other.m_physValT),
-    m_physValK(i_other.m_physValK)
-{
-} // copy ctor
-
-//------------------------------------------------------------------------------
 SFctConvert::SFctConvert(const SFctConvert& i_other) :
 //------------------------------------------------------------------------------
     m_pPhysUnitSrc(i_other.m_pPhysUnitSrc),
@@ -231,21 +218,6 @@ SFctConvert::~SFctConvert()
 /*==============================================================================
 public: // operators
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-SFctConvert& SFctConvert::operator=(SFctConvert& i_other)
-//------------------------------------------------------------------------------
-{
-    m_pPhysUnitSrc = i_other.m_pPhysUnitSrc;
-    m_pPhysUnitDst = i_other.m_pPhysUnitDst;
-    m_fctConvertType = i_other.m_fctConvertType;
-    m_strFctConvertName = i_other.m_strFctConvertName;
-    m_physValM = i_other.m_physValM;
-    m_physValT = i_other.m_physValT;
-    m_physValK = i_other.m_physValK;
-
-    return *this;
-}
 
 //------------------------------------------------------------------------------
 SFctConvert& SFctConvert::operator=(const SFctConvert& i_other)

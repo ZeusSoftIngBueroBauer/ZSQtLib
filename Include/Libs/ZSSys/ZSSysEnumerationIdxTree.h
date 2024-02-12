@@ -30,6 +30,9 @@ may result in using the software modules.
 #include "ZSSys/ZSSysDllMain.h"
 #include "ZSSys/ZSSysIdxTree.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+#include <QtCore/qrecursivemutex.h>
+#endif
 
 namespace ZS
 {
@@ -62,7 +65,11 @@ protected: // ctors and dtor
     virtual ~CEnumerationIdxTree();
 protected: // class members
     /*!< Mutex to protect the class and instance methods of the class for multithreaded access. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     static QRecursiveMutex s_mtx;
+    #else
+    static QMutex s_mtx;
+    #endif
     /*!< Hash with all created enumeration index trees (key is name of instance). */
     static QHash<QString, CEnumerationIdxTree*> s_hshpInstances;
 

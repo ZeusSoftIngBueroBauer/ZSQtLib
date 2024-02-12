@@ -334,7 +334,11 @@ protected: // reference counter
     int decrementRefCount();
 protected: // class members
     /*!< Mutex to protect the class and instance members of the class for multithreaded access. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     static QRecursiveMutex s_mtx;
+    #else
+    static QMutex s_mtx;
+    #endif
     /*!< Pointer to singleton instance. */
     static CTrcServer* s_pTheInst;
     /*!< Hash with registered threads (key is thread id, value is name of thread). */

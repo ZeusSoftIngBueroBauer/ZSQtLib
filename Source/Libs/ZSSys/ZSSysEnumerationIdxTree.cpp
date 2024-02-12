@@ -43,7 +43,11 @@ class CEnumerationIdxTree : public ZS::System::CIdxTree
 protected: // class members
 ==============================================================================*/
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 QRecursiveMutex CEnumerationIdxTree::s_mtx;
+#else
+QMutex CEnumerationIdxTree::s_mtx(QMutex::Recursive);
+#endif
 QHash<QString, CEnumerationIdxTree*> CEnumerationIdxTree::s_hshpInstances;
 
 /*==============================================================================

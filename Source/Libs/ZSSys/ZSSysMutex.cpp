@@ -47,6 +47,7 @@ class CMutex : public QMutex
 public: // ctors and dtor
 ==============================================================================*/
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 //------------------------------------------------------------------------------
 /*! @brief Constructs a new mutex. The mutex is created in an unlocked state.
 
@@ -78,7 +79,9 @@ CMutex::CMutex(const QString& i_strObjName) :
         /* strMthInArgs       */ "" );
     #endif
 }
+#endif
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 //------------------------------------------------------------------------------
 /*! @brief Constructs a new mutex. The mutex is created in an unlocked state.
 
@@ -115,6 +118,91 @@ CMutex::CMutex(const QString& i_strObjName, EMethodTraceDetailLevel i_eTrcMthFil
         /* strMthInArgs       */ "" );
     #endif
 }
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+//------------------------------------------------------------------------------
+/*! @brief Constructs a new mutex. The mutex is created in an unlocked state.
+
+    For further information please refer to documentation of class QMutex.
+
+    @param i_strObjName [in] Descriptive name of the mutex locker.
+    @param i_mode [in]
+        If mode is QMutex::Recursive, a thread can lock the same mutex multiple
+        times and the mutex won't be unlocked until a corresponding number of
+        unlock() calls have been made. The default is QMutex::NonRecursive.
+*/
+CMutex::CMutex(const QString& i_strObjName, QMutex::RecursionMode i_mode) :
+//------------------------------------------------------------------------------
+    QMutex(i_mode),
+    m_strObjName(i_strObjName)
+    #ifdef ZS_TRACE_MUTEXES
+    ,m_eTrcMthFileDetailLevel(EMethodTraceDetailLevel::None),
+    m_pTrcMthFile(nullptr),
+    m_pTrcAdminObj(nullptr)
+    #endif
+{
+    #ifdef ZS_TRACE_MUTEXES
+    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(NameSpace(), ClassName(), i_strObjName);
+    CMethodTracer mthTracer(
+        /* pAdminObj          */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ m_strObjName,
+        /* strMethod          */ "ctor",
+        /* strMthInArgs       */ "" );
+    #endif
+}
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+//------------------------------------------------------------------------------
+/*! @brief Constructs a new mutex. The mutex is created in an unlocked state.
+
+    For further information please refer to documentation of class QMutex.
+
+    @param i_strObjName [in] Descriptive name of the mutex locker.
+    @param i_eTrcMthFileDetailLevel [in]
+        If trace outputs should not be forwarded to the trace server but directly
+        to a trace method file allocated by the server, this detail level has to
+        be to a value greater than None.
+    @param i_mode [in]
+        If mode is QMutex::Recursive, a thread can lock the same mutex multiple
+        times and the mutex won't be unlocked until a corresponding number of
+        unlock() calls have been made. The default is QMutex::NonRecursive.
+*/
+CMutex::CMutex(
+    const QString& i_strObjName,
+    EMethodTraceDetailLevel i_eTrcMthFileDetailLevel,
+    QMutex::RecursionMode i_mode) :
+//------------------------------------------------------------------------------
+    QMutex(i_mode),
+    m_strObjName(i_strObjName)
+    #ifdef ZS_TRACE_MUTEXES
+    ,m_eTrcMthFileDetailLevel(i_eTrcMthFileDetailLevel),
+    m_pTrcMthFile(nullptr),
+    m_pTrcAdminObj(nullptr)
+    #endif
+{
+    #ifdef ZS_TRACE_MUTEXES
+    QString strLocalTrcFileAbsFilePath = CTrcServer::GetLocalTrcFileAbsoluteFilePath();
+    m_pTrcMthFile = CTrcMthFile::Alloc(strLocalTrcFileAbsFilePath);
+    CMethodTracer mthTracer(
+        /* pAdminObj          */ m_pTrcAdminObj,
+        /* pTrcMthFile        */ m_pTrcMthFile,
+        /* iTrcDetailLevel    */ m_eTrcMthFileDetailLevel,
+        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strNameSpace       */ NameSpace(),
+        /* strClassName       */ ClassName(),
+        /* strObjName         */ m_strObjName,
+        /* strMethod          */ "ctor",
+        /* strMthInArgs       */ "" );
+    #endif
+}
+#endif
 
 //------------------------------------------------------------------------------
 /*! @brief Destroys the mutex.

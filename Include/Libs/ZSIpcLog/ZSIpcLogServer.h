@@ -31,7 +31,11 @@ may result in using the software modules.
 #include "ZSIpc/ZSIpcServer.h"
 #include "ZSSys/ZSSysLogServer.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class QRecursiveMutex;
+#else
+class QMutex;
+#endif
 
 namespace ZS
 {
@@ -178,7 +182,11 @@ protected: // instance members
          not be send back to the remote client. */
     bool m_bOnReceivedDataUpdateInProcess;
     /*!< Mutex to protect the list of the temporarily stored (cached) data. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QRecursiveMutex* m_pMtxListLogDataCached;
+    #else
+    QMutex* m_pMtxListLogDataCached;
+    #endif
     /*!< To avoid reallocation (resizing) the cache for the data the cache is allocated
          with the maximum number of elements. Unused elements are set to nullptr. But for this
          the number of used entries must be counted seperately. */

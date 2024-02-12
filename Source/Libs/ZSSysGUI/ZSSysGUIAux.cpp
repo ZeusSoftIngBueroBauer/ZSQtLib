@@ -498,6 +498,7 @@ QString ZS::System::GUI::qPolygon2Str(const QPolygonF& i_plg)
 QAbstractSpinBox
 ==============================================================================*/
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
 //------------------------------------------------------------------------------
 QString ZS::System::GUI::qSpinBoxStepType2Str(QAbstractSpinBox::StepType i_stepType, EEnumEntryAliasStr i_alias)
 //------------------------------------------------------------------------------
@@ -514,6 +515,7 @@ QString ZS::System::GUI::qSpinBoxStepType2Str(QAbstractSpinBox::StepType i_stepT
     }
     return str;
 }
+#endif
 
 /*==============================================================================
 QValidator

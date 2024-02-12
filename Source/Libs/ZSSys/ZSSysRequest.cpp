@@ -531,7 +531,11 @@ protected: // class members
 // But python bindings generated with shiboken will not be compilable then.
 
 static qint64 s_iId = 0;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 static QRecursiveMutex s_mtxId;
+#else
+static QMutex s_mtxId(QMutex::Recursive);
+#endif
 
 /*==============================================================================
 public: // Macros

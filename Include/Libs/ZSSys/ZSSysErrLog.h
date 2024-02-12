@@ -34,7 +34,11 @@ may result in using the software modules.
 //#include "ZSSys/ZSSysMsg.h"
 
 class QFile;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class QRecursiveMutex;
+#else
+class QMutex;
+#endif
 class QWaitCondition;
 class QXmlStreamWriter;
 
@@ -330,7 +334,11 @@ private: // assignment operator not allowed
     CErrLog& operator = ( const CErrLog& );
 protected: // class members
     /*!< Mutex to protect the class variables for multithreaded access. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     static QRecursiveMutex s_mtx;
+    #else
+    static QMutex s_mtx;
+    #endif
     /*!< Hash with all created err log instances (key is name of instance). */
     static QHash<QString, CErrLog*> s_hshpInstances;
     /*!< Counts the number the class method InstallQtMsgHandler is called
@@ -341,7 +349,11 @@ protected: // instance members
          Please note that entries may be added from within different thread contexts
          to the error log object and for this the list of entries of the error
          log object is protected by a mutex and entries will be "immediately" entered. */
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QRecursiveMutex* m_pMtx;
+    #else
+    QMutex* m_pMtx;
+    #endif
     /*!< Absolute path including the file name and suffix of the error logs xml file. */
     QString m_strAbsFilePath;
     /*!< Xml file of the error log instance. */

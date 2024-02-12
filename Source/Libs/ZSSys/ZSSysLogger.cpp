@@ -92,7 +92,11 @@ CLogger::CLogger( const QString& i_strLeaveName ) :
     m_strlstDataFilterInclude(),
     m_strlstDataFilterExclude()
 {
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     m_pMtx = new QRecursiveMutex();
+    #else
+    m_pMtx = new QMutex(QMutex::Recursive);
+    #endif
 }
 
 //------------------------------------------------------------------------------

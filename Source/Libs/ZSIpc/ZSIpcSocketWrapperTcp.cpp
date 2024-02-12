@@ -215,9 +215,15 @@ CTcpSocketWrapper::CTcpSocketWrapper(
     QObject::connect(
         m_pTcpSocket, &QTcpSocket::disconnected,
         this, &CTcpSocketWrapper::onDisconnected);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     QObject::connect(
         m_pTcpSocket, &QTcpSocket::errorOccurred,
         this, &CTcpSocketWrapper::onError);
+    #else
+    QObject::connect(
+        m_pTcpSocket, qOverload<QAbstractSocket::SocketError>(&QTcpSocket::error),
+        this, &CTcpSocketWrapper::onError);
+    #endif
     QObject::connect(
         m_pTcpSocket, &QTcpSocket::stateChanged,
         this, &CTcpSocketWrapper::onStateChanged);
@@ -286,9 +292,15 @@ CTcpSocketWrapper::CTcpSocketWrapper(
     QObject::connect(
         m_pTcpSocket, &QTcpSocket::disconnected,
         this, &CTcpSocketWrapper::onDisconnected);
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     QObject::connect(
         m_pTcpSocket, &QTcpSocket::errorOccurred,
         this, &CTcpSocketWrapper::onError);
+    #else
+    QObject::connect(
+        m_pTcpSocket, qOverload<QAbstractSocket::SocketError>(&QTcpSocket::error),
+        this, &CTcpSocketWrapper::onError);
+    #endif
     QObject::connect(
         m_pTcpSocket, &QTcpSocket::stateChanged,
         this, &CTcpSocketWrapper::onStateChanged);
@@ -329,9 +341,15 @@ CTcpSocketWrapper::~CTcpSocketWrapper()
             QObject::disconnect(
                 m_pTcpSocket, &QTcpSocket::disconnected,
                 this, &CTcpSocketWrapper::onDisconnected);
+            #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
             QObject::disconnect(
                 m_pTcpSocket, &QTcpSocket::errorOccurred,
                 this, &CTcpSocketWrapper::onError);
+            #else
+            QObject::disconnect(
+                m_pTcpSocket, qOverload<QAbstractSocket::SocketError>(&QTcpSocket::error),
+                this, &CTcpSocketWrapper::onError);
+            #endif
             QObject::disconnect(
                 m_pTcpSocket, &QTcpSocket::stateChanged,
                 this, &CTcpSocketWrapper::onStateChanged);

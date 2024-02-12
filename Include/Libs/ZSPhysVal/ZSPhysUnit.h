@@ -64,7 +64,6 @@ public: // ctors and dtor
     CUnit();
     CUnit(CUnit* i_pUnit);
     CUnit(const CUnit* i_pUnit);
-    CUnit(CUnit& i_unit);
     CUnit(const CUnit& i_unit);
     CUnit(CUnitsTreeEntryGrpBase* i_pGrpEntry);
     CUnit(const CUnitsTreeEntryGrpBase* i_pGrpEntry);

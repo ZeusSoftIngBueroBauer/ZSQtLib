@@ -466,7 +466,11 @@ CMyClass2::CMyClass2( const QString& i_strObjName, CMyClass2Thread* i_pMyClass2T
         m_pTmrMessages, &QTimer::timeout,
         this, &CMyClass2::onTmrMessagesTimeout);
 
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     m_pMtxCounters = new CRecursiveMutex(ClassName() + "-" + objectName() + "-Counters");
+    #else
+    m_pMtxCounters = new CMutex(ClassName() + "-" + objectName() + "-Counters", QMutex::Recursive);
+    #endif
     m_pMtxWaitClass3ThreadRunning = new CMutex(ClassName() + "-" + objectName() + "-WaitClass3ThreadRunning");
     m_pWaitClass3ThreadRunning = new CWaitCondition(ClassName() + "-" + objectName() + "-Class3ThreadRunning");
 

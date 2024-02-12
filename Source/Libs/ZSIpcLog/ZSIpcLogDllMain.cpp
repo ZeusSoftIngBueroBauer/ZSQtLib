@@ -109,7 +109,11 @@ public: // ctors and dtor
         DllIf::CLogger(),
         m_szKeyInTree(nullptr)
     {
+        #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         m_pMtx = new QRecursiveMutex();
+        #else
+        m_pMtx = new QMutex(QMutex::Recursive);
+        #endif
 
         size_t iStrLen = strlen(i_szKeyInTree);
         m_szKeyInTree = new char[iStrLen+1];
@@ -130,7 +134,11 @@ public: // instance methods
         return m_szKeyInTree;
     }
 private: // instance members
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     QRecursiveMutex* m_pMtx;
+    #else
+    QMutex* m_pMtx;
+    #endif
     char* m_szKeyInTree;
 };
 } // namespace DllMain

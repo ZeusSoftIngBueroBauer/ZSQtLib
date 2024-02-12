@@ -496,7 +496,11 @@ class CLogServer : public QObject
 protected: // class members
 ==============================================================================*/
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 QRecursiveMutex CLogServer::s_mtx;
+#else
+QMutex CLogServer::s_mtx(QMutex::Recursive);
+#endif
 CLogServer* CLogServer::s_pTheInst;
 QHash<Qt::HANDLE, QString> CLogServer::s_hshThreadNames;
 QHash<QString, Qt::HANDLE> CLogServer::s_hshThreadIds;

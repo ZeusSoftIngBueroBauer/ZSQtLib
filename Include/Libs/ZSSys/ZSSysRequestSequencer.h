@@ -187,17 +187,22 @@ protected slots:
 protected: // overridables of inherited class QObject (state machine)
     virtual bool event( QEvent* i_pEv );
 protected: // instance members
-    QRecursiveMutex*                m_pMtx;
-    bool                            m_bKeepReqDscrInExecTree;
-    bool                            m_bMsgReqContinuePending;
-    bool                            m_bInProgress;
-    CRequest*                       m_pReqParent; // All top level requests will get the same parent request id provided on starting the sequence.
-    qint64                          m_iReqIdParent;
-    QList<qint64>                   m_ariReqIds;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex* m_pMtx;
+    #else
+    QMutex* m_pMtx;
+    #endif
+    bool m_bKeepReqDscrInExecTree;
+    bool m_bMsgReqContinuePending;
+    bool m_bInProgress;
+    /*!< All top level requests will get the same parent request id provided on starting the sequence. */
+    CRequest* m_pReqParent;
+    qint64 m_iReqIdParent;
+    QList<qint64> m_ariReqIds;
     QHash<qint64,SRequestSeqEntry*> m_hshReqSeqs;
-    QHash<qint64,CRequest*>         m_hshpReqs;
-    bool                            m_bTracingEnabled;
-    CTrcAdminObj*                   m_pTrcAdminObj;
+    QHash<qint64,CRequest*> m_hshpReqs;
+    bool m_bTracingEnabled;
+    CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CRequestSequencer
 

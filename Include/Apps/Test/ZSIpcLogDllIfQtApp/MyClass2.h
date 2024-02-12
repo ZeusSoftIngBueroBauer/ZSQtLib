@@ -37,7 +37,9 @@ namespace ZS
 namespace System
 {
 class CMutex;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 class CRecursiveMutex;
+#endif
 class CWaitCondition;
 }
 namespace Log
@@ -130,14 +132,18 @@ private: // instance methods
     int sendData2(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
     int sendData3(const QString& i_strData, double i_fStartTime_s, double i_fCurrTime_s, double i_fDuration_s);
 private: // instance members
-    CMyClass2Thread*             m_pMyClass2Thread;
+    CMyClass2Thread* m_pMyClass2Thread;
+    #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     ZS::System::CRecursiveMutex* m_pMtxCounters;
-    QString                      m_strMyClass3ObjName;
-    CMyClass3Thread*             m_pMyClass3Thread;
-    CMyClass3*                   m_pMyClass3;
-    ZS::System::CMutex*          m_pMtxWaitClass3ThreadRunning;
-    ZS::System::CWaitCondition*  m_pWaitClass3ThreadRunning;
-    ZS::Log::DllIf::CLogger*     m_pLogger;
+    #else
+    ZS::System::CMutex* m_pMtxCounters;
+    #endif
+    QString m_strMyClass3ObjName;
+    CMyClass3Thread* m_pMyClass3Thread;
+    CMyClass3* m_pMyClass3;
+    ZS::System::CMutex* m_pMtxWaitClass3ThreadRunning;
+    ZS::System::CWaitCondition* m_pWaitClass3ThreadRunning;
+    ZS::Log::DllIf::CLogger* m_pLogger;
 
 }; // class CMyClass2
 
