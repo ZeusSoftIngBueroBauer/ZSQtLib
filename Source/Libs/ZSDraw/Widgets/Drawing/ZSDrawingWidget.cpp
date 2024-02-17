@@ -107,6 +107,15 @@ CWdgtDrawing::CWdgtDrawing(QWidget* i_pWdgtParent) :
        +---+----------------------------------+---+
     */
 
+    // The drawing size instance created by the drawing scene accesses the
+    // the unit to get the screen resolution. To get the screen resolution
+    // the screen resolution must be set before. Here it is too late as
+    // the drawing scene is already created. It must be done by the creator
+    // of the drawing view.
+    double fDpiX = logicalDpiX();  // e.g. 100 px/inch
+    double fDpmmX = fDpiX / Units.Length.in.convertValue(1.0, Units.Length.mm);
+    Units.Length.setScreenResolutionInPxPerMM(fDpmmX);
+
     m_pLyt = new QGridLayout();
     setLayout(m_pLyt);
 

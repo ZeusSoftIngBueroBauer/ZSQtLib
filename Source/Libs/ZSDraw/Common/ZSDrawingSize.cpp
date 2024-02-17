@@ -55,7 +55,7 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
     m_strName(i_strName),
     m_eDimensionUnit(EScaleDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
-    m_fScreenResolution_px_mm(4.0), // reasonable value close to what many monitors are using
+    m_fScreenResolution_px_mm(Units.Length.screenResolutionInPxPerMM()), // reasonable value close to what many monitors are using
     m_iImageMetricCoorsDecimals(2), // to indicate 1.0/4.0 = 0.25
     m_fImageMetricWidth(0.0),
     m_fImageMetricHeight(0.0),

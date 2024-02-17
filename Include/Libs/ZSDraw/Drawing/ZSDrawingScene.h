@@ -101,6 +101,7 @@ public: // type definitions and constants
     static const QString c_strXmlAttrPaperOrientation;
     static const QString c_strXmlAttrYScaleAxisOrientation;
     static const QString c_strXmlAttrGridLinesVisible;
+    static const QString c_strXmlAttrGridLinesDistMin;
     static const QString c_strXmlAttrGridLinesStyle;
     static const QString c_strXmlAttrGridLinesWidth;
     static const QString c_strXmlAttrGridLinesColor;

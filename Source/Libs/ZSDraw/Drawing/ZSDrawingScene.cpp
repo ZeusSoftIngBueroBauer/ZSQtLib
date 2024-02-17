@@ -106,6 +106,7 @@ const QString CDrawingScene::c_strXmlAttrPaperSize = "PaperSize";
 const QString CDrawingScene::c_strXmlAttrPaperOrientation = "PaperOrientation";
 const QString CDrawingScene::c_strXmlAttrYScaleAxisOrientation = "YScaleAxisOrientation";
 const QString CDrawingScene::c_strXmlAttrGridLinesVisible = "GridLinesVisible";
+const QString CDrawingScene::c_strXmlAttrGridLinesDistMin = "GridLinesDistMin";
 const QString CDrawingScene::c_strXmlAttrGridLinesStyle = "GridLinesStyle";
 const QString CDrawingScene::c_strXmlAttrGridLinesWidth = "GridLinesWidth";
 const QString CDrawingScene::c_strXmlAttrGridLinesColor = "GridLinesColor";
@@ -1056,6 +1057,14 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                 gridSettings.setLinesVisible(bGridLinesVisible);
                             }
                             if (!xmlStreamReader.hasError()) {
+                                int iDistMin_px = getIntVal(
+                                    xmlStreamReader, xmlStreamAttrs, strElemName,
+                                    c_strXmlAttrGridLinesDistMin, false, 1);
+                                if (!xmlStreamReader.hasError()) {
+                                    gridSettings.setLinesDistMin(iDistMin_px);
+                                }
+                            }
+                            if (!xmlStreamReader.hasError()) {
                                 CEnumLineStyle eLineStyle = getLineStyle(
                                     xmlStreamReader, xmlStreamAttrs, strElemName,
                                     c_strXmlAttrGridLinesStyle, false, ELineStyle::SolidLine);
@@ -1261,6 +1270,7 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
             }
         }
         xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesVisible, bool2Str(m_gridSettings.areLinesVisible()));
+        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesDistMin, QString::number(m_gridSettings.linesDistMin()));
         xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesStyle, CEnumLineStyle(m_gridSettings.linesStyle()).toString());
         xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesWidth, QString::number(m_gridSettings.linesWidth()));
         xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesColor, m_gridSettings.linesColor().name());
@@ -4594,14 +4604,33 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
     QGraphicsScene::drawBackground(i_pPainter, i_rect);
 
     QRectF rctScene = sceneRect();
+    //double xLeft = rctScene.left();
+    //double yTop = rctScene.top();
+    //double xRight = rctScene.right();
+    //double yBottom = rctScene.bottom();
+
+    //static int s_iCallCount = 0;
+    //if (s_iCallCount == 0) {
+    //    QLineF lineTop(xLeft, yTop, xRight, yTop);
+    //    QLineF lineRight(xRight, yTop, xRight, yBottom);
+    //    QLineF lineBottom(xRight, yBottom, xLeft, yBottom);
+    //    QLineF lineLeft(xLeft, yBottom, xLeft, yTop);
+    //    QGraphicsScene::addLine(lineTop, QPen(Qt::red));
+    //    QGraphicsScene::addLine(lineRight, QPen(Qt::red));
+    //    QGraphicsScene::addLine(lineBottom, QPen(Qt::red));
+    //    QGraphicsScene::addLine(lineLeft, QPen(Qt::red));
+    //}
+    //s_iCallCount++;
 
     i_pPainter->save();
 
     #pragma message(__TODO__"Background color as changable property")
 
-    i_pPainter->setPen(Qt::NoPen);
-    i_pPainter->setBrush(Qt::white);
-    i_pPainter->drawRect(rctScene);
+    //rctScene = QRectF(rctScene.x() + 5, rctScene.y() + 5, rctScene.width()-10, rctScene.height()-10);
+    //i_pPainter->setPen(Qt::NoPen);
+    //i_pPainter->setBrush(Qt::yellow);
+    //i_pPainter->setBrush(Qt::white);
+    //i_pPainter->drawRect(rctScene);
 
     if (m_gridSettings.areLinesVisible() || m_gridSettings.areLabelsVisible()) {
         //m_divLinesMetricsX.update();

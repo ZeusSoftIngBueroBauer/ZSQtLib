@@ -1698,8 +1698,8 @@ QPainterPath CGraphObjLine::shape() const
 //------------------------------------------------------------------------------
 void CGraphObjLine::paint(
     QPainter* i_pPainter,
-    const QStyleOptionGraphicsItem* /*i_pStyleOption*/,
-    QWidget* /*i_pWdgt*/ )
+    const QStyleOptionGraphicsItem* i_pStyleOption,
+    QWidget* i_pWdgt )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1714,7 +1714,6 @@ void CGraphObjLine::paint(
         /* strAddInfo   */ strMthInArgs );
 
     i_pPainter->save();
-    i_pPainter->setRenderHint(QPainter::Antialiasing);
 
     QPen pn = pen();
 
@@ -1744,21 +1743,24 @@ void CGraphObjLine::paint(
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
 
     i_pPainter->setPen(pn);
-    i_pPainter->drawLine(lineF);
 
-    //#pragma message(__TODO__"To be removed")
-    //i_pPainter->setPen(Qt::red);
-    //QLineF lineCenterHor(lineF.center().x()-5, lineF.center().y(), lineF.center().x()+5, lineF.center().y());
-    //QLineF lineCenterVer(lineF.center().x(), lineF.center().y()-5, lineF.center().x(), lineF.center().y()+5);
-    //i_pPainter->drawLine(lineCenterHor);
-    //i_pPainter->drawLine(lineCenterVer);
-    //#pragma message(__TODO__"To be removed")
+    QGraphicsLineItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    i_pPainter->setPen(pn);
+    //i_pPainter->drawLine(lineF);
+
+    ////#pragma message(__TODO__"To be removed")
+    ////i_pPainter->setPen(Qt::red);
+    ////QLineF lineCenterHor(lineF.center().x()-5, lineF.center().y(), lineF.center().x()+5, lineF.center().y());
+    ////QLineF lineCenterVer(lineF.center().x(), lineF.center().y()-5, lineF.center().x(), lineF.center().y()+5);
+    ////i_pPainter->drawLine(lineCenterHor);
+    ////i_pPainter->drawLine(lineCenterVer);
+    ////#pragma message(__TODO__"To be removed")
 
     CEnumLineEndStyle lineEndStyleP1 = m_drawSettings.getLineEndStyle(ELinePoint::Start);
     CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.getLineEndStyle(ELinePoint::End);
     if (lineEndStyleP1 != ELineEndStyle::Normal || lineEndStyleP2 != ELineEndStyle::Normal) {
+        i_pPainter->setPen(pn);
+        i_pPainter->setRenderHint(QPainter::Antialiasing);
         CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
         CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
         pn.setWidth(1);

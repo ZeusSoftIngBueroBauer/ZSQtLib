@@ -51,6 +51,7 @@ namespace Draw
 class CDrawingScene;
 class CDrawingView;
 class CDrawingSize;
+class CDrawGridSettings;
 class CGraphObj;
 }
 
@@ -75,12 +76,11 @@ public: // ctors and dtor
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
 protected: // instance methods
+    ZS::Test::CTestStepGroup* createTestGroupPixelsScreenResolutionMetricUnits(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupPrepareScene(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
-    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvert(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
+        const ZS::Draw::CDrawingSize& i_drawingSize, const ZS::Draw::CDrawGridSettings& i_gridSettings);
     ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertPoints(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize);

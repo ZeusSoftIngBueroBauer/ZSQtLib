@@ -100,6 +100,11 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     //Units.Length.setPxpis(logicalDpiX(), logicalDpiY());
     //Units.Length.setDpis(physicalDpiX(), physicalDpiY());
 
+    // When using a background brush, DrawingScene::drawBackground will not be called anymore.
+    //setBackgroundBrush(Qt::yellow);
+    //setAutoFillBackground(true);
+    setStyleSheet("border-style: None");
+
     CDrawingSize drawingSize("DrawingScene");
     drawingSize.setImageSize(CPhysVal(800, Units.Length.px), CPhysVal(600, Units.Length.px));
     m_pDrawingScene->setDrawingSize(drawingSize);

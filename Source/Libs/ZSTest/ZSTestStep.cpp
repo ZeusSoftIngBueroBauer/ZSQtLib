@@ -488,15 +488,14 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Resets the test step to default values by clearing the expected and
-    result values and invalidating the start and end time of the test.
+/*! Resets the test step to default values by clearing the result values and
+    invalidating the start and end time of the test.
     The tree will be informed that the content of the entry has been changed
     and got to be updated.
 */
 void CTestStep::reset()
 //------------------------------------------------------------------------------
 {
-    m_strlstExpectedValues.clear();
     m_strlstResultValues.clear();
     m_testResult = static_cast<ETestResult>(0);
     m_fTimeTestStart_s = 0.0;
