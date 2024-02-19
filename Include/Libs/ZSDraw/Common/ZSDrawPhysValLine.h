@@ -107,7 +107,7 @@ public: // instance methods
     void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)
     QLineF toQLineF() const;
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ",") const;
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
     /*!< Values of the line stored in "m_unit". */
     QLineF m_line;

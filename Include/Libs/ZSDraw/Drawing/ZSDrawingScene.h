@@ -153,7 +153,6 @@ public: // instance methods
     void setDrawingSize( const CDrawingSize& i_drawingSize);
     const CDrawingSize& drawingSize() const;
 public: // instance methods
-    CPhysValPoint toPhysValPoint(const QPointF& i_pt) const;
     CPhysValPoint convert(const QPointF& i_pt) const;
     CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;

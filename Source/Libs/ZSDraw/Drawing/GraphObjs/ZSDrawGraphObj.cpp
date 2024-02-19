@@ -3621,6 +3621,7 @@ public: // overridables
 CPhysValPoint CGraphObj::mapToPhysValPoint(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Add Test")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     // First map the point, which is in this item's coordinate system, to its parent's
     // coordinate system. If the item has no parent, point will be mapped to the scene's
@@ -3661,6 +3662,7 @@ CPhysValPoint CGraphObj::mapToPhysValPoint(const QPointF& i_pt) const
 CPhysValLine CGraphObj::mapToPhysValLine(const QLineF& i_line) const
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Add Test")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     // First map the line, which is in this item's coordinate system, to its parent's
     // coordinate system. If the item has no parent, line will be mapped to the scene's
@@ -3703,6 +3705,7 @@ CPhysValLine CGraphObj::mapToPhysValLine(const QLineF& i_line) const
 CPhysValRect CGraphObj::mapToPhysValRect(const QRectF& i_rect) const
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Add Test")
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     // First map the rectangle, which is in this item's coordinate system, to its parent's
     // coordinate system. If the item has no parent, rect will be mapped to the scene's

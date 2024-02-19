@@ -1023,7 +1023,7 @@ double CGraphObjLine::getAngleInDegrees() const
 CPhysVal CGraphObjLine::getAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return getLine().angle().getVal(i_unit);
+    return CPhysVal(getLine().angle().getVal(i_unit), i_unit);
 }
 
 /*==============================================================================
@@ -2237,7 +2237,7 @@ void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
     QPointF ptParentPosSelPt = mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt = m_pDrawingScene->toPhysValPoint(ptParentPosSelPt);
+    CPhysValPoint physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
 
     if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {

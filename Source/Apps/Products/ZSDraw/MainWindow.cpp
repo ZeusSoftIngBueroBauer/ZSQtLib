@@ -4100,7 +4100,7 @@ void CMainWindow::onDrawingSceneSizeChanged(const CDrawingSize& i_drawingSize)
 
     if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        CPhysValPoint physValPoint = pDrawingScene->toPhysValPoint(m_ptDrawingSceneMouseCursorPos);
+        CPhysValPoint physValPoint = pDrawingScene->convert(m_ptDrawingSceneMouseCursorPos);
         QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos.toPoint()) + "}" +
             "{" + physValPoint.toString() + "}";
         m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);
@@ -4226,7 +4226,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
     m_ptDrawingSceneMouseCursorPos = i_ptMousePos;
     if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        CPhysValPoint physValPoint = pDrawingScene->toPhysValPoint(m_ptDrawingSceneMouseCursorPos);
+        CPhysValPoint physValPoint = pDrawingScene->convert(m_ptDrawingSceneMouseCursorPos);
         QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos.toPoint()) + "}" +
             "{" + physValPoint.toString() + "}";
         m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);
@@ -4387,10 +4387,10 @@ void CMainWindow::onDrawingViewContentAreaChanged()
         CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
         QRect rectScene = pDrawingScene->sceneRect().toRect();
         const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
-        QString strSceneSizeInfo = "SceneRect {" + qRect2Str(rectScene) + "}";
+        QString strSceneSizeInfo = "SceneRect {" + qRect2Str(rectScene) + "} px";
         if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
             CPhysValRect physValRect = pDrawingScene->convert(rectScene);
-            strSceneSizeInfo += "{" + physValRect.toString() + "}";
+            strSceneSizeInfo += " Drawing {" + physValRect.toString() + "} " + physValRect.unit().symbol();
         }
         m_pLblStatusBarDrawingSceneRect->setText(strSceneSizeInfo);
     }

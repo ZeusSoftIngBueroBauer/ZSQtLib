@@ -247,6 +247,44 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+bool CDrawingSize::isValid() const
+//------------------------------------------------------------------------------
+{
+    bool bIsValid = true;
+    if (!m_eDimensionUnit.isValid()) {
+        bIsValid = false;
+    }
+    else if (!m_metricUnit.isValid()) {
+        bIsValid = false;
+    }
+    else if (m_fScreenResolution_px_mm <= 0.0) {
+        bIsValid = false;
+    }
+    else if (m_fImageSizeRes_px <= 0.0) {
+        bIsValid = false;
+    }
+    else if (m_fImageSizeWidth_px <= 0.0 || m_fImageSizeHeight_px <= 0.0) {
+        bIsValid = false;
+    }
+    else if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+        if (m_fImageMetricWidth <= 0.0 || m_fImageMetricHeight <= 0.0) {
+            bIsValid = false;
+        }
+        else if (m_iMetricScaleFactorDividend <= 0.0 || m_iMetricScaleFactorDivisor <= 0.0) {
+            bIsValid = false;
+        }
+        else if (!m_eYScaleAxisOrientation.isValid()) {
+            bIsValid = false;
+        }
+    }
+    return bIsValid;
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 void CDrawingSize::setDimensionUnit( const CEnumScaleDimensionUnit& i_eDimensionUnit )
 //------------------------------------------------------------------------------
 {
@@ -262,13 +300,39 @@ void CDrawingSize::setDimensionUnit( const CEnumScaleDimensionUnit& i_eDimension
 
     if (m_eDimensionUnit != i_eDimensionUnit) {
         m_eDimensionUnit = i_eDimensionUnit;
-        if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
-            // Keep the image size in metric unit but update the image size in pixels.
-            updateImageSizeInPixels();
-        }
-        else /*if (m_eDimensionUnit == EScaleDimensionUnit::Metric)*/ {
-            // Keep the image size in pixels but update the image size in metric unit.
-            updateImageSizeMetrics();
+        if (isValid()) {
+            if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+                CPhysVal physValWidth(m_fImageMetricWidth, m_metricUnit);
+                CPhysVal physValHeight(m_fImageMetricHeight, m_metricUnit);
+                double fImageMetricWidth_mm = physValWidth.getVal(Units.Length.mm);
+                double fImageMetricHeight_mm = physValHeight.getVal(Units.Length.mm);
+                double fFactor =  static_cast<double>(m_iMetricScaleFactorDividend)
+                                / static_cast<double>(m_iMetricScaleFactorDivisor);
+                double fScaledWidth_mm = fFactor * fImageMetricWidth_mm;
+                double fScaledHeight_mm = fFactor * fImageMetricHeight_mm;
+                m_fImageSizeWidth_px = m_fScreenResolution_px_mm * fScaledWidth_mm;
+                m_fImageSizeHeight_px = m_fScreenResolution_px_mm * fScaledHeight_mm;
+            }
+            else /*if (m_eDimensionUnit == EScaleDimensionUnit::Metric)*/ {
+                // Keep the image size in pixels but update the image size in metric unit.
+                double fImageMetricWidth_mm = m_fImageSizeWidth_px / m_fScreenResolution_px_mm;
+                double fImageMetricHeight_mm = m_fImageSizeHeight_px / m_fScreenResolution_px_mm;
+                double fFactor =  static_cast<double>(m_iMetricScaleFactorDividend)
+                                / static_cast<double>(m_iMetricScaleFactorDivisor);
+                double fScaledWidth_mm = fFactor * fImageMetricWidth_mm;
+                double fScaledHeight_mm = fFactor * fImageMetricHeight_mm;
+                CPhysVal physValWidth(fScaledWidth_mm, Units.Length.mm);
+                CPhysVal physValHeight(fScaledHeight_mm, Units.Length.mm);
+                physValWidth.convertValue(m_metricUnit);
+                physValHeight.convertValue(m_metricUnit);
+                m_fImageMetricWidth = physValWidth.getVal();
+                m_fImageMetricHeight = physValHeight.getVal();
+                // In order to draw division lines at min and max scale the width
+                // in pixels got to be extended by one pixel when using metric scales
+                // (see also documentation at class CScaleDivLines).
+                m_fImageSizeWidth_px += 1;
+                m_fImageSizeHeight_px += 1;
+            }
         }
     }
 }
@@ -332,13 +396,15 @@ void CDrawingSize::setScreenResolutionInPxPerMM(double i_fRes_px_mm)
     // updated conversion factor.
     m_fScreenResolution_px_mm = i_fRes_px_mm;
 
-    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
-        // Keep the image size in pixels but update the image size in metric unit.
-        updateImageSizeMetrics();
-    }
-    else /*if (m_eDimensionUnit == EScaleDimensionUnit::Metric)*/ {
-        // Keep the image size in metric unit but update the image size in pixels.
-        updateImageSizeInPixels();
+    if (isValid()) {
+        if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+            // Keep the image size in pixels but update the image size in metric unit.
+            updateImageSizeMetrics();
+        }
+        else /*if (m_eDimensionUnit == EScaleDimensionUnit::Metric)*/ {
+            // Keep the image size in metric unit but update the image size in pixels.
+            updateImageSizeInPixels();
+        }
     }
 }
 
@@ -379,7 +445,9 @@ CPhysVal CDrawingSize::screenPixelWidth(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     if (!Units.Length.isMetricUnit(i_unit)) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        throw CException(
+            __FILE__, __LINE__, EResultArgOutOfRange,
+            ClassName() + "::screenPixelWidth(" + i_unit.symbol() + ")");
     }
     CPhysVal physVal(1.0/m_fScreenResolution_px_mm, m_metricUnit);
     physVal.convertValue(i_unit);
@@ -406,7 +474,9 @@ void CDrawingSize::setMetricImageCoorsDecimals(int i_iDecimals)
         /* strMethod    */ "setMetricImageCoorsDecimals",
         /* strAddInfo   */ strMthInArgs );
     if (i_iDecimals < 0) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        throw CException(
+            __FILE__, __LINE__, EResultArgOutOfRange,
+            ClassName() + "::setMetricImageCoorsDecimals(" + QString::number(i_iDecimals) + ")");
     }
     m_iImageMetricCoorsDecimals = i_iDecimals;
 }
@@ -721,16 +791,27 @@ void CDrawingSize::setImageSize( const CPhysVal& i_physValWidth, const CPhysVal&
     }
 
     if( i_physValWidth.unit() == Units.Length.px ) {
+        if (m_eDimensionUnit != EScaleDimensionUnit::Pixels) {
+            throw CException(__FILE__, __LINE__, EResultInvalidMethodCall,
+            ClassName() + "::setImageSize("
+                + i_physValWidth.toString() + ", " + i_physValHeight.toString() + "): "
+                + "Setting the drawing size in pixels only allowed for pixel drawings");
+        }
         double fImageSizeWidth_px = i_physValWidth.getVal();
         double fImageSizeHeight_px = i_physValHeight.getVal();
         if( m_fImageSizeWidth_px != fImageSizeWidth_px || m_fImageSizeHeight_px != fImageSizeHeight_px ) {
             m_fImageSizeWidth_px = fImageSizeWidth_px;
             m_fImageSizeHeight_px = fImageSizeHeight_px;
             updateImageSizeMetrics();
-            updatePaperFormat();
         }
     }
     else {
+        if (m_eDimensionUnit != EScaleDimensionUnit::Metric) {
+            throw CException(__FILE__, __LINE__, EResultInvalidMethodCall,
+            ClassName() + "::setImageSize("
+                + i_physValWidth.toString() + ", " + i_physValHeight.toString() + "): "
+                + "Setting the drawing size in metric unit only allowed for metric drawings");
+        }
         double fImageMetricWidth = i_physValWidth.getVal(m_metricUnit);
         double fImageMetricHeight = i_physValHeight.getVal(m_metricUnit);
         if( m_fImageMetricWidth != fImageMetricWidth || m_fImageMetricHeight != fImageMetricHeight ) {
@@ -830,33 +911,33 @@ void CDrawingSize::updateImageSizeInPixels()
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+    if (m_eDimensionUnit != EScaleDimensionUnit::Metric) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+    }
 
     CPhysVal physValWidth(m_fImageMetricWidth, m_metricUnit);
     CPhysVal physValHeight(m_fImageMetricHeight, m_metricUnit);
-
     double fImageMetricWidth_mm = physValWidth.getVal(Units.Length.mm);
     double fImageMetricHeight_mm = physValHeight.getVal(Units.Length.mm);
 
-    // In order to draw division lines at min and max scale the width
-    // in pixels got to be extended by one pixel when using metric scales
-    // (see also documentation at class CScaleDivLines).
-    if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
-        fImageMetricWidth_mm += 1.0 / m_fScreenResolution_px_mm;
-        fImageMetricHeight_mm += 1.0 / m_fScreenResolution_px_mm;
-    }
+    //// In order to draw division lines at min and max scale the width
+    //// in pixels got to be extended by one pixel when using metric scales
+    //// (see also documentation at class CScaleDivLines).
+    //if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+    //    fImageMetricWidth_mm += 1.0 / m_fScreenResolution_px_mm;
+    //    fImageMetricHeight_mm += 1.0 / m_fScreenResolution_px_mm;
+    //}
 
     double fFactor =  static_cast<double>(m_iMetricScaleFactorDividend)
                     / static_cast<double>(m_iMetricScaleFactorDivisor);
     double fScaledWidth_mm = fFactor * fImageMetricWidth_mm;
     double fScaledHeight_mm = fFactor * fImageMetricHeight_mm;
-
     m_fImageSizeWidth_px = m_fScreenResolution_px_mm * fScaledWidth_mm;
     m_fImageSizeHeight_px = m_fScreenResolution_px_mm * fScaledHeight_mm;
-
     // In order to draw division lines at min and max scale the width
     // in pixels got to be extended by one pixel when using metric scales
     // (see also documentation at class CScaleDivLines).
-    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+    if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
         m_fImageSizeWidth_px += 1;
         m_fImageSizeHeight_px += 1;
     }
@@ -887,35 +968,32 @@ void CDrawingSize::updateImageSizeMetrics()
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
+    if (m_eDimensionUnit != EScaleDimensionUnit::Pixels) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+    }
 
     double fImageSizeWidth_px = m_fImageSizeWidth_px;
     double fImageSizeHeight_px = m_fImageSizeHeight_px;
-
     // In order to draw division lines at min and max scale the width
     // in pixels got to be extended by one pixel when using metric scales
     // (see also documentation at class CScaleDivLines).
-    if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
-        fImageSizeWidth_px -= 1;
-        fImageSizeHeight_px -= 1;
-    }
-
+    //if (isValid() && m_eDimensionUnit == EScaleDimensionUnit::Metric) {
+    //    fImageSizeWidth_px -= 1;
+    //    fImageSizeHeight_px -= 1;
+    //}
     double fImageMetricWidth_mm = fImageSizeWidth_px / m_fScreenResolution_px_mm;
     double fImageMetricHeight_mm = fImageSizeHeight_px / m_fScreenResolution_px_mm;
-
-    // In order to draw division lines at min and max scale the width
-    // in pixels got to be extended by one pixel when using metric scales
-    // (see also documentation at class CScaleDivLines).
-    if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
-        fImageMetricWidth_mm -= 1.0 / m_fScreenResolution_px_mm;
-        fImageMetricHeight_mm -= 1.0 / m_fScreenResolution_px_mm;
-    }
-
+    //// In order to draw division lines at min and max scale the width
+    //// in pixels got to be extended by one pixel when using metric scales
+    //// (see also documentation at class CScaleDivLines).
+    //if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+    //    fImageMetricWidth_mm -= 1.0 / m_fScreenResolution_px_mm;
+    //    fImageMetricHeight_mm -= 1.0 / m_fScreenResolution_px_mm;
+    //}
     CPhysVal physValWidth(fImageMetricWidth_mm, Units.Length.mm);
     CPhysVal physValHeight(fImageMetricHeight_mm, Units.Length.mm);
-
     physValWidth.convertValue(m_metricUnit);
     physValHeight.convertValue(m_metricUnit);
-
     m_fImageMetricWidth = physValWidth.getVal();
     m_fImageMetricHeight = physValHeight.getVal();
 
@@ -933,9 +1011,12 @@ void CDrawingSize::updatePaperFormat()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updatePaperFormat",
         /* strAddInfo   */ "" );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Enter);
+    }
+
+    if (m_eDimensionUnit != EScaleDimensionUnit::Metric) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
 
     bool bNormedPaperSizeFound = false;
@@ -1000,6 +1081,7 @@ void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
 {
     QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ") +
         m_eDimensionUnit.toString() +
+        ", IsValid: " + bool2Str(isValid()) +
         ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "---") +
         ", NormedOrientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "---") +
         ", Scale (" + QString::number(m_iMetricScaleFactorDividend) +

@@ -116,7 +116,7 @@ public: // instance methods
     void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)
     QRectF toQRectF() const;
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ",") const;
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
     /*!< The rectangle coordinates in the unit 'm_unit'. */
     QRectF m_rect;

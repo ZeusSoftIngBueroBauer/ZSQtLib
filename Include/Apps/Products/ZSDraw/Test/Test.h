@@ -76,24 +76,32 @@ public: // ctors and dtor
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
 protected: // instance methods
-    ZS::Test::CTestStepGroup* createTestGroupPixelsScreenResolutionMetricUnits(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupPrepareScene(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize, const ZS::Draw::CDrawGridSettings& i_gridSettings);
-    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertPoints(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
-    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertSizes(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
-    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertLines(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
-    ZS::Test::CTestStepGroup* createTestGroupDrawingSceneConvertRects(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupSaveLoadFile(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinates(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupPixelsDrawing(

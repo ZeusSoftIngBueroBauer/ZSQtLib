@@ -2395,7 +2395,7 @@ void CGraphObjGroup::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoin
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
     QPointF ptParentPosSelPt = mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt = m_pDrawingScene->toPhysValPoint(ptParentPosSelPt);
+    CPhysValPoint physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
 
     if (selPt.m_selPtType == ESelectionPointType::BoundingRectangle) {

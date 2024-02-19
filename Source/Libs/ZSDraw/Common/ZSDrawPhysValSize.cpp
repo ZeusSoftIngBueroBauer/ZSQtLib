@@ -194,14 +194,14 @@ public: // instance methods
 CPhysVal CPhysValSize::width() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_size.width(), m_unit);
+    return CPhysVal(m_size.width(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValSize::height() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_size.height(), m_unit);
+    return CPhysVal(m_size.height(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------

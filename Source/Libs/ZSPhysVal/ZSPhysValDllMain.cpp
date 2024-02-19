@@ -585,12 +585,12 @@ TFormatResult ZS::PhysVal::formatValue(
                 fValAbs = Math::round2Resolution(fValAbs, fResAbs);
             }
 
-            // If the value was greater than the resolution ...
-            if( fValAbs != 0.0 && iValExp > iResExp )
+            // If the value is greater than the resolution ...
+            if( /*fValAbs != 0.0 &&*/ iValExp > iResExp )
             {
                 iDigitsAccuracy = iValExp - iResExp + 1;
             }
-            // If the value was 0.0 (or if the resolution was greater or equal than the value) ...
+            // If the resolution is greater or equal than the value ...
             else
             {
                 // ... indicate the value 0 with just one digit in the "best unit" of the resolution.

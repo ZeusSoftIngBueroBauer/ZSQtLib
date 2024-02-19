@@ -345,7 +345,10 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         Units.Length.setScreenResolutionInPxPerMM(m_drawingSize.screenResolutionInPxPerMM());
         Units.Length.setScaleFactor(m_drawingSize.scaleFactorDividend(), m_drawingSize.scaleFactorDivisor());
 
-        QRectF rect(QPointF(0.0, 0.0), m_drawingSize.imageSizeInPixels());
+        // When using metric units, one pixel will be automatically added to the pixel range
+        // of the scene to draw lines at pixel positions.
+        QSizeF sizeF = m_drawingSize.imageSizeInPixels();
+        QRectF rect(QPointF(0.0, 0.0), sizeF);
         setSceneRect(rect);
 
         if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -454,23 +457,6 @@ public: // instance methods
 //{
 //    return m_drawingSize.toPhysValYCoor(i_fYCoor_px);
 //}
-
-//------------------------------------------------------------------------------
-/*! @brief Converts the given point coordinate in pixels into a physical point value
-
-    @return Converted value.
-*/
-CPhysValPoint CDrawingScene::toPhysValPoint(const QPointF& i_pt) const
-//------------------------------------------------------------------------------
-{
-    if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        return CPhysValPoint(i_pt, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    }
-    /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/
-    double fXVal = m_divLinesMetricsX.getVal(i_pt.x());
-    double fYVal = m_divLinesMetricsY.getVal(i_pt.y());
-    return CPhysValPoint(fXVal, fYVal, m_drawingSize.imageCoorsResolution().getVal(), m_drawingSize.unit());
-}
 
 ////------------------------------------------------------------------------------
 ///*! @brief Converts the given size coordinate in pixels into a physical size value
@@ -631,47 +617,38 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
             CPhysVal physValHeight = i_physValSize.width();
             physValWidth.convertValue(i_unitDst);
             physValHeight.convertValue(i_unitDst);
+            CPhysValRes physValRes = m_drawingSize.imageCoorsResolution();
+            physValRes.convertValue(i_unitDst);
+            physValWidth.setRes(physValRes);
+            physValHeight.setRes(physValRes);
             physValSize = CPhysValSize(physValWidth, physValHeight);
         }
         else if ((i_physValSize.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
-            QSizeF size = i_physValSize.toQSizeF();
-            CPhysVal physValWidth(m_drawingSize.unit());
-            CPhysVal physValHeight(m_drawingSize.unit());
-            if (Units.Length.isMetricUnit(m_drawingSize.unit())) {
-                // "divLineMetrics.getVal" returns the value in world coordinates (physical value) for the given
-                // position in pixels. To get the positions for width and height, one pixel must be subtracted.
-                physValWidth = m_divLinesMetricsX.getVal(size.width()) - 1;
-                physValHeight = m_divLinesMetricsY.getVal(size.height()) - 1;
-                physValWidth.setRes(m_drawingSize.imageCoorsResolution());
-                physValHeight.setRes(m_drawingSize.imageCoorsResolution());
-            }
-            else {
-                physValWidth = m_divLinesMetricsX.getVal(size.width()-1);
-                physValHeight = m_divLinesMetricsY.getVal(size.height()-1);
-            }
+            // The drawing size in pixels has been incremented by one pixel.
+            // If the pixel resolution is e.g. 3.5 px/mm, and the width is 36 px, the width is 10 mm.
+            CPhysVal physValWidth = i_physValSize.width() - CPhysVal(1.0, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
+            CPhysVal physValHeight = i_physValSize.height() - CPhysVal(1.0, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
             physValWidth.convertValue(i_unitDst);
             physValHeight.convertValue(i_unitDst);
+            CPhysValRes physValRes = m_drawingSize.imageCoorsResolution();
+            physValRes.convertValue(i_unitDst);
+            physValWidth.setRes(physValRes);
+            physValHeight.setRes(physValRes);
             physValSize = CPhysValSize(physValWidth, physValHeight);
-            if (Units.Length.isMetricUnit(i_unitDst)) {
-                physValSize.setResolution(m_drawingSize.imageCoorsResolution().getVal(i_unitDst));
-            }
-            else {
-                physValSize.setResolution(m_drawingSize.imageCoorsResolutionInPx());
-            }
         }
         else if (Units.Length.isMetricUnit(i_physValSize.unit()) && (i_unitDst == Units.Length.px)) {
             CPhysVal physValWidth = i_physValSize.width();
             CPhysVal physValHeight = i_physValSize.height();
-            if (Units.Length.isMetricUnit(m_drawingSize.unit())) {
-                physValWidth = m_divLinesMetricsX.getValInPix(physValWidth.getVal(m_drawingSize.unit())) + 1;
-                physValHeight = m_divLinesMetricsY.getValInPix(physValHeight.getVal(m_drawingSize.unit())) + 1;
-            }
-            else {
-                physValWidth = m_divLinesMetricsX.getValInPix(physValWidth.getVal(m_drawingSize.unit())) + 1;
-                physValHeight = m_divLinesMetricsY.getValInPix(physValHeight.getVal(m_drawingSize.unit())) + 1;
-            }
+            physValWidth.convertValue(i_unitDst);
+            physValHeight.convertValue(i_unitDst);
+            CPhysValRes physValRes(m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+            physValWidth.setRes(physValRes);
+            physValHeight.setRes(physValRes);
+            // The drawing size in pixels has been incremented by one pixel.
+            // If the pixel resolution is e.g. 3.5 px/mm, and the width is 10 mm, the width is 36 pixels.
+            physValWidth += CPhysVal(1.0, Units.Length.px, physValRes);
+            physValHeight += CPhysVal(1.0, Units.Length.px, physValRes);
             physValSize = CPhysValSize(physValWidth, physValHeight);
-            physValSize.setResolution(m_drawingSize.imageCoorsResolutionInPx());
         }
     }
     return physValSize;
@@ -3461,7 +3438,7 @@ void CDrawingScene::dropEvent( QGraphicsSceneDragDropEvent* i_pEv )
                             if (pObjFactory != nullptr) {
                                 CGraphObj* pGraphObj = pObjFactory->createGraphObj(
                                     /* pDrawingScene */ this,
-                                    /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
+                                    /* ptItemPos     */ convert(i_pEv->scenePos()),
                                     /* drawSettings  */ m_drawSettings );
                                 QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
                                 if (pGraphicsItem == nullptr) {
@@ -3607,7 +3584,7 @@ void CDrawingScene::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
                 // This is especially true for connection points and circles.
                 CGraphObj* pGraphObj = m_pObjFactory->createGraphObj(
                     /* pDrawingScene */ this,
-                    /* ptItemPos     */ toPhysValPoint(i_pEv->scenePos()),
+                    /* ptItemPos     */ convert(i_pEv->scenePos()),
                     /* drawSettings  */ m_drawSettings );
                 if (pGraphObj != nullptr) {
                     QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);

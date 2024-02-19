@@ -87,7 +87,7 @@ public: // instance methods
     void setUnit(const ZS::PhysVal::CUnit& unit);
 public: // instance methods (to convert the values into another unit)
     QSizeF toQSizeF() const;
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ",") const;
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
     /*!< The size in width and height in the unit 'm_unit'. */
     QSizeF m_size;

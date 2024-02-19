@@ -750,11 +750,16 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
     }
     m_pLyt->addStretch();
 
-    // Update metrics
-    //---------------
+    // Update user controls
+    //---------------------
 
-    onDrawingSceneDrawingSizeChanged(m_pDrawingView->drawingSize());
-    onDrawingViewGridSettingsChanged(m_pDrawingView->gridSettings());
+    m_drawingSize = m_pDrawingScene->drawingSize();
+    m_gridSettings = m_pDrawingScene->gridSettings();
+
+    updateDimensionUnit();
+    updateResolutions();
+    updateGridSettings();
+    updateButtonsEnabled();
 
 } // ctor
 
@@ -949,7 +954,7 @@ void CWdgtDrawingViewProperties::onDrawingSceneDrawingSizeChanged(const CDrawing
         /* strMethod    */ "onDrawingSceneDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_drawingSize != i_drawingSize ) {
+    if (m_drawingSize != i_drawingSize) {
         m_drawingSize = i_drawingSize;
         CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         updateDimensionUnit();
@@ -997,7 +1002,7 @@ void CWdgtDrawingViewProperties::onDrawingViewGridSettingsChanged(const CDrawGri
         /* strMethod    */ "onDrawingViewGridSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    if( m_gridSettings != i_gridSettings ) {
+    if (m_gridSettings != i_gridSettings) {
         m_gridSettings = i_gridSettings;
         CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         updateGridSettings();
@@ -2263,7 +2268,6 @@ void CWdgtDrawingViewProperties::updateDimensionUnit()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updateDimensionUnit",
         /* strAddInfo   */ "" );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
@@ -2271,7 +2275,6 @@ void CWdgtDrawingViewProperties::updateDimensionUnit()
     CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
     CEnumScaleDimensionUnit eDimensionUnit = m_drawingSize.dimensionUnit();
-
     m_pCmbDimensionUnit->setCurrentIndex(eDimensionUnit.enumeratorAsInt());
     m_pWdgtMetric->setVisible(eDimensionUnit == EScaleDimensionUnit::Metric);
     m_pEdtImageSizeWidth_px->setReadOnly(eDimensionUnit != EScaleDimensionUnit::Pixels);
@@ -2281,8 +2284,7 @@ void CWdgtDrawingViewProperties::updateDimensionUnit()
     updateImageSizeMetrics();
     updateImageSizeInPixels();
     updatePaperFormat();
-
-} // updateDimensionUnit
+}
 
 //------------------------------------------------------------------------------
 void CWdgtDrawingViewProperties::updateResolutions()
@@ -2293,7 +2295,6 @@ void CWdgtDrawingViewProperties::updateResolutions()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updateResolutions",
         /* strAddInfo   */ "" );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
@@ -2325,7 +2326,7 @@ void CWdgtDrawingViewProperties::updateImageSizeInPixels()
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);
     }
-} // updateImageSizeInPixels
+}
 
 //------------------------------------------------------------------------------
 void CWdgtDrawingViewProperties::updateImageSizeMetrics()
@@ -2365,7 +2366,7 @@ void CWdgtDrawingViewProperties::updateImageSizeMetrics()
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);
     }
-} // updateImageSizeMetrics
+} 
 
 //------------------------------------------------------------------------------
 void CWdgtDrawingViewProperties::updatePaperFormat()
@@ -2376,7 +2377,6 @@ void CWdgtDrawingViewProperties::updatePaperFormat()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "updatePaperFormat",
         /* strAddInfo   */ "" );
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
@@ -2404,7 +2404,7 @@ void CWdgtDrawingViewProperties::updatePaperFormat()
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) ) {
         traceValues(mthTracer, EMethodDir::Leave);
     }
-} // updatePaperFormat
+}
 
 /*==============================================================================
 protected: // instance methods

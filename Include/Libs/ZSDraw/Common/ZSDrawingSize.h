@@ -66,6 +66,8 @@ public: // operators
     bool operator == (const CDrawingSize& i_other) const;
     bool operator != (const CDrawingSize& i_other) const;
 public: // instance methods
+    bool isValid() const;
+public: // instance methods
     void setDimensionUnit( const CEnumScaleDimensionUnit& i_eDimensionUnit );
     CEnumScaleDimensionUnit dimensionUnit() const;
     ZS::PhysVal::CUnit unit() const;
