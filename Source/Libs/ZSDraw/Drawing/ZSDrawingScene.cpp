@@ -542,8 +542,10 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
         }
         else if ((i_physValPoint.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             QPointF pt = i_physValPoint.toQPointF();
-            CPhysVal physValX(m_divLinesMetricsX.getVal(pt.x()), m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
-            CPhysVal physValY(m_divLinesMetricsY.getVal(pt.y()), m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
+            double fx = m_divLinesMetricsX.getVal(pt.x());
+            double fy = m_divLinesMetricsY.getVal(pt.y());
+            CPhysVal physValX(fx, m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
+            CPhysVal physValY(fy, m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
             physValX.convertValue(i_unitDst);
             physValY.convertValue(i_unitDst);
             physValPoint = CPhysValPoint(physValX, physValY);
@@ -626,28 +628,24 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
         else if ((i_physValSize.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             // The drawing size in pixels has been incremented by one pixel.
             // If the pixel resolution is e.g. 3.5 px/mm, and the width is 36 px, the width is 10 mm.
-            CPhysVal physValWidth = i_physValSize.width() - CPhysVal(1.0, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
-            CPhysVal physValHeight = i_physValSize.height() - CPhysVal(1.0, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
+            QSizeF sizeF = i_physValSize.toQSizeF();
+            double dx = m_divLinesMetricsX.getDistance(sizeF.width());
+            double dy = m_divLinesMetricsY.getDistance(sizeF.height());
+            CPhysVal physValWidth(dx, m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
+            CPhysVal physValHeight(dy, m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
             physValWidth.convertValue(i_unitDst);
             physValHeight.convertValue(i_unitDst);
-            CPhysValRes physValRes = m_drawingSize.imageCoorsResolution();
-            physValRes.convertValue(i_unitDst);
-            physValWidth.setRes(physValRes);
-            physValHeight.setRes(physValRes);
             physValSize = CPhysValSize(physValWidth, physValHeight);
         }
         else if (Units.Length.isMetricUnit(i_physValSize.unit()) && (i_unitDst == Units.Length.px)) {
-            CPhysVal physValWidth = i_physValSize.width();
-            CPhysVal physValHeight = i_physValSize.height();
-            physValWidth.convertValue(i_unitDst);
-            physValHeight.convertValue(i_unitDst);
-            CPhysValRes physValRes(m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-            physValWidth.setRes(physValRes);
-            physValHeight.setRes(physValRes);
             // The drawing size in pixels has been incremented by one pixel.
-            // If the pixel resolution is e.g. 3.5 px/mm, and the width is 10 mm, the width is 36 pixels.
-            physValWidth += CPhysVal(1.0, Units.Length.px, physValRes);
-            physValHeight += CPhysVal(1.0, Units.Length.px, physValRes);
+            // If the pixel resolution is e.g. 3.5 px/mm, and the width is 36 px, the width is 10 mm.
+            double dx = i_physValSize.width().getVal(m_drawingSize.unit());
+            double dy = i_physValSize.height().getVal(m_drawingSize.unit());
+            double dx_px = m_divLinesMetricsX.getDistanceInPix(dx);
+            double dy_px = m_divLinesMetricsY.getDistanceInPix(dy);
+            CPhysVal physValWidth(dx_px, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
+            CPhysVal physValHeight(dy_px, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
             physValSize = CPhysValSize(physValWidth, physValHeight);
         }
     }

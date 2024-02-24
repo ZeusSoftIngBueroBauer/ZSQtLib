@@ -845,6 +845,26 @@ int CDrawingSize::imageHeightInPixels() const
 }
 
 //------------------------------------------------------------------------------
+CPhysValSize CDrawingSize::metricImageSize() const
+//------------------------------------------------------------------------------
+{
+    double fRes = imageCoorsResolution(m_metricUnit).getVal();
+    return CPhysValSize(m_fImageMetricWidth, m_fImageMetricHeight, fRes, m_metricUnit);
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize CDrawingSize::metricImageSize(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (Units.Length.isMetricUnit(i_unit)) {
+        CPhysVal physValWidth = metricImageWidth(i_unit);
+        CPhysVal physValHeight = metricImageHeight(i_unit);
+        return CPhysValSize(physValWidth, physValHeight);
+    }
+    return CPhysValSize(m_fImageSizeWidth_px, m_fImageSizeHeight_px, m_fImageSizeRes_px, Units.Length.px);
+}
+
+//------------------------------------------------------------------------------
 CPhysVal CDrawingSize::metricImageWidth() const
 //------------------------------------------------------------------------------
 {

@@ -329,7 +329,9 @@ public: // instance methods (returning calculated values)
     double getDivLineDistInPix(const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const;
 public: // instance methods (converting values)
     double getValInPix(double i_fVal) const;
-    double getVal(double i_fPix) const;
+    double getVal(double i_fPos_px) const;
+    double getDistanceInPix(double i_fDistance) const;
+    double getDistance(double i_fDistance_px) const;
 protected: // overridable auxiliary instance methods
     virtual void invalidateResults();
 protected: // auxiliary instance methods (to recalculate division lines after changing settings)

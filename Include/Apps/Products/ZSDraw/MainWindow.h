@@ -480,13 +480,15 @@ protected: // instance members
     ZS::Test::GUI::CDlgTest* m_pDlgTest;
     // Status Bar
     QLabel* m_pLblStatusBarMainWindowSize;
+    QLabel* m_pLblStatusBarDrawingSceneRect;
+    QLabel* m_pLblStatusBarDrawingSize;
+    QPointF m_ptDrawingSceneMouseCursorPos;
+    QLabel* m_pLblStatusBarDrawingSceneMouseCursorPos_px;
+    QLabel* m_pLblStatusBarDrawingSceneMouseCursorPos_metric;
+    QLabel* m_pLblStatusBarDrawingViewMouseCursorPos;
     QLabel* m_pLblStatusBarDrawingSceneEditTool;
     QLabel* m_pLblStatusBarDrawingSceneEditMode;
     QLabel* m_pLblStatusBarDrawingSceneGraphObjEditInfo;
-    QLabel* m_pLblStatusBarDrawingSceneRect;
-    QPointF m_ptDrawingSceneMouseCursorPos;
-    QLabel* m_pLblStatusBarDrawingSceneMouseCursorPos;
-    QLabel* m_pLblStatusBarDrawingViewMouseCursorPos;
     QLabel* m_pLblErrors;
     // Central Widget with Drawing
     CWidgetCentral* m_pWdgtCentral;

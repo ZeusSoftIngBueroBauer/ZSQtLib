@@ -362,13 +362,15 @@ CMainWindow::CMainWindow(
     m_pDlgTest(nullptr),
     // Status Bar
     m_pLblStatusBarMainWindowSize(nullptr),
+    m_pLblStatusBarDrawingSceneRect(nullptr),
+    m_pLblStatusBarDrawingSize(nullptr),
+    m_ptDrawingSceneMouseCursorPos(),
+    m_pLblStatusBarDrawingSceneMouseCursorPos_px(nullptr),
+    m_pLblStatusBarDrawingSceneMouseCursorPos_metric(nullptr),
+    m_pLblStatusBarDrawingViewMouseCursorPos(nullptr),
     m_pLblStatusBarDrawingSceneEditTool(nullptr),
     m_pLblStatusBarDrawingSceneEditMode(nullptr),
     m_pLblStatusBarDrawingSceneGraphObjEditInfo(nullptr),
-    m_pLblStatusBarDrawingSceneRect(nullptr),
-    m_ptDrawingSceneMouseCursorPos(),
-    m_pLblStatusBarDrawingSceneMouseCursorPos(nullptr),
-    m_pLblStatusBarDrawingViewMouseCursorPos(nullptr),
     m_pLblErrors(nullptr),
     // Central Widget with Drawing
     m_pWdgtCentral(nullptr),
@@ -721,7 +723,31 @@ CMainWindow::~CMainWindow()
         delete m_pLblStatusBarMainWindowSize;
         m_pLblStatusBarMainWindowSize = nullptr;
     }
-    // Remove status bar section.
+    if( m_pLblStatusBarDrawingSceneRect != nullptr ) {
+        statusBar()->removeWidget(m_pLblStatusBarDrawingSceneRect);
+        delete m_pLblStatusBarDrawingSceneRect;
+        m_pLblStatusBarDrawingSceneRect = nullptr;
+    }
+    if( m_pLblStatusBarDrawingSize != nullptr ) {
+        statusBar()->removeWidget(m_pLblStatusBarDrawingSize);
+        delete m_pLblStatusBarDrawingSize;
+        m_pLblStatusBarDrawingSize = nullptr;
+    }
+    if( m_pLblStatusBarDrawingSceneMouseCursorPos_px != nullptr ) {
+        statusBar()->removeWidget(m_pLblStatusBarDrawingSceneMouseCursorPos_px);
+        delete m_pLblStatusBarDrawingSceneMouseCursorPos_px;
+        m_pLblStatusBarDrawingSceneMouseCursorPos_px = nullptr;
+    }
+    if( m_pLblStatusBarDrawingSceneMouseCursorPos_metric != nullptr ) {
+        statusBar()->removeWidget(m_pLblStatusBarDrawingSceneMouseCursorPos_metric);
+        delete m_pLblStatusBarDrawingSceneMouseCursorPos_metric;
+        m_pLblStatusBarDrawingSceneMouseCursorPos_metric = nullptr;
+    }
+    if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr ) {
+        statusBar()->removeWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
+        delete m_pLblStatusBarDrawingViewMouseCursorPos;
+        m_pLblStatusBarDrawingViewMouseCursorPos = nullptr;
+    }
     if( m_pLblStatusBarDrawingSceneEditTool != nullptr ) {
         statusBar()->removeWidget(m_pLblStatusBarDrawingSceneEditTool);
         delete m_pLblStatusBarDrawingSceneEditTool;
@@ -736,21 +762,6 @@ CMainWindow::~CMainWindow()
         statusBar()->removeWidget(m_pLblStatusBarDrawingSceneGraphObjEditInfo);
         delete m_pLblStatusBarDrawingSceneGraphObjEditInfo;
         m_pLblStatusBarDrawingSceneGraphObjEditInfo = nullptr;
-    }
-    if( m_pLblStatusBarDrawingSceneRect != nullptr ) {
-        statusBar()->removeWidget(m_pLblStatusBarDrawingSceneRect);
-        delete m_pLblStatusBarDrawingSceneRect;
-        m_pLblStatusBarDrawingSceneRect = nullptr;
-    }
-    if( m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr ) {
-        statusBar()->removeWidget(m_pLblStatusBarDrawingSceneMouseCursorPos);
-        delete m_pLblStatusBarDrawingSceneMouseCursorPos;
-        m_pLblStatusBarDrawingSceneMouseCursorPos = nullptr;
-    }
-    if( m_pLblStatusBarDrawingViewMouseCursorPos != nullptr ) {
-        statusBar()->removeWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
-        delete m_pLblStatusBarDrawingViewMouseCursorPos;
-        m_pLblStatusBarDrawingViewMouseCursorPos = nullptr;
     }
 
     mthTracer.onAdminObjAboutToBeReleased();
@@ -883,13 +894,15 @@ CMainWindow::~CMainWindow()
     m_pDlgTest = nullptr;
     // Status Bar
     m_pLblStatusBarMainWindowSize = nullptr;
+    m_pLblStatusBarDrawingSceneRect = nullptr;
+    m_pLblStatusBarDrawingSize = nullptr;
+    //m_ptDrawingSceneMouseCursorPos;
+    m_pLblStatusBarDrawingSceneMouseCursorPos_px = nullptr;
+    m_pLblStatusBarDrawingSceneMouseCursorPos_metric = nullptr;
+    m_pLblStatusBarDrawingViewMouseCursorPos = nullptr;
     m_pLblStatusBarDrawingSceneEditTool = nullptr;
     m_pLblStatusBarDrawingSceneEditMode = nullptr;
-    m_pLblStatusBarDrawingSceneRect = nullptr;
     m_pLblStatusBarDrawingSceneGraphObjEditInfo = nullptr;
-    //m_ptDrawingSceneMouseCursorPos;
-    m_pLblStatusBarDrawingSceneMouseCursorPos = nullptr;
-    m_pLblStatusBarDrawingViewMouseCursorPos = nullptr;
     m_pLblErrors = nullptr;
     // Central Widget with Drawing
     m_pWdgtCentral = nullptr;
@@ -2005,8 +2018,39 @@ void CMainWindow::createStatusBar()
     //CPageSetup* pageSetup = m_pDrawingView->getPageSetup();
     //CUnit unitWidth = pageSetup->unit(EOrientation::Horizontal);
 
-    m_pLblStatusBarMainWindowSize = new QLabel("MainWindow {-, -}");
+    m_pLblStatusBarMainWindowSize = new QLabel("MainWindow {-, -} px");
     statusBar()->addWidget(m_pLblStatusBarMainWindowSize);
+    QWidget* pWdgtSpacer = new QWidget();
+    pWdgtSpacer->setFixedWidth(10);
+    statusBar()->addWidget(pWdgtSpacer);
+
+    m_pLblStatusBarDrawingSceneRect = new QLabel("SceneRect {-, -} px");
+    statusBar()->addWidget(m_pLblStatusBarDrawingSceneRect);
+    pWdgtSpacer = new QWidget();
+    pWdgtSpacer->setFixedWidth(10);
+    statusBar()->addWidget(pWdgtSpacer);
+
+    m_pLblStatusBarDrawingSize = new QLabel("DrawingSize {-, -} mm");
+    statusBar()->addWidget(m_pLblStatusBarDrawingSize);
+    pWdgtSpacer = new QWidget();
+    pWdgtSpacer->setFixedWidth(10);
+    statusBar()->addWidget(pWdgtSpacer);
+
+    m_pLblStatusBarDrawingSceneMouseCursorPos_px = new QLabel("MousePos {-, -} px");
+    statusBar()->addWidget(m_pLblStatusBarDrawingSceneMouseCursorPos_px);
+    pWdgtSpacer = new QWidget();
+    pWdgtSpacer->setFixedWidth(10);
+    statusBar()->addWidget(pWdgtSpacer);
+
+    m_pLblStatusBarDrawingSceneMouseCursorPos_metric = new QLabel("MousePos {-, -} mm");
+    statusBar()->addWidget(m_pLblStatusBarDrawingSceneMouseCursorPos_metric);
+    pWdgtSpacer = new QWidget();
+    pWdgtSpacer->setFixedWidth(10);
+    statusBar()->addWidget(pWdgtSpacer);
+
+    //m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: -/- [" + unitWidth.symbol() + "]" );
+    //m_pLblStatusBarDrawingViewMouseCursorPos->setMinimumWidth(140);
+    //statusBar()->addPermanentWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
 
     //m_pLblStatusBarDrawingSceneEditTool = new QLabel("Tool: -");
     //m_pLblStatusBarDrawingSceneEditTool->setMinimumWidth(80);
@@ -2019,16 +2063,6 @@ void CMainWindow::createStatusBar()
     //m_pLblStatusBarDrawingSceneGraphObjEditInfo = new QLabel("Edit: -");
     //m_pLblStatusBarDrawingSceneGraphObjEditInfo->setMinimumWidth(120);
     //statusBar()->addPermanentWidget(m_pLblStatusBarDrawingSceneGraphObjEditInfo);
-
-    m_pLblStatusBarDrawingSceneRect = new QLabel("SceneRect {-, -}");
-    statusBar()->addWidget(m_pLblStatusBarDrawingSceneRect);
-
-    m_pLblStatusBarDrawingSceneMouseCursorPos = new QLabel("MousePos {-, -}");
-    statusBar()->addWidget(m_pLblStatusBarDrawingSceneMouseCursorPos);
-
-    //m_pLblStatusBarDrawingViewMouseCursorPos = new QLabel( "ViewPos: -/- [" + unitWidth.symbol() + "]" );
-    //m_pLblStatusBarDrawingViewMouseCursorPos->setMinimumWidth(140);
-    //statusBar()->addPermanentWidget(m_pLblStatusBarDrawingViewMouseCursorPos);
 
     // <Label> Errors
     //---------------
@@ -4098,12 +4132,16 @@ void CMainWindow::onDrawingSceneSizeChanged(const CDrawingSize& i_drawingSize)
 
     onDrawingViewContentAreaChanged();
 
-    if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        CPhysValPoint physValPoint = pDrawingScene->convert(m_ptDrawingSceneMouseCursorPos);
-        QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos.toPoint()) + "}" +
-            "{" + physValPoint.toString() + "}";
-        m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);
+    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    if (m_pLblStatusBarDrawingSceneMouseCursorPos_px != nullptr) {
+        QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos) + "} px";
+        m_pLblStatusBarDrawingSceneMouseCursorPos_px->setText(strPosInfo);
+    }
+    if (m_pLblStatusBarDrawingSceneMouseCursorPos_metric != nullptr) {
+        const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
+        CPhysValPoint physValPoint = pDrawingScene->convert(m_ptDrawingSceneMouseCursorPos, drawingSize.metricUnit());
+        QString strPosInfo = "MousePos {" + physValPoint.toString() + "} " + physValPoint.unit().symbol();
+        m_pLblStatusBarDrawingSceneMouseCursorPos_metric->setText(strPosInfo);
     }
 }
 
@@ -4224,12 +4262,17 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
         /* strAddInfo   */ strMthInArgs );
 
     m_ptDrawingSceneMouseCursorPos = i_ptMousePos;
-    if (m_pLblStatusBarDrawingSceneMouseCursorPos != nullptr) {
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        CPhysValPoint physValPoint = pDrawingScene->convert(m_ptDrawingSceneMouseCursorPos);
-        QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos.toPoint()) + "}" +
-            "{" + physValPoint.toString() + "}";
-        m_pLblStatusBarDrawingSceneMouseCursorPos->setText(strPosInfo);
+
+    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    if (m_pLblStatusBarDrawingSceneMouseCursorPos_px != nullptr) {
+        QString strPosInfo = "MousePos {" + qPoint2Str(m_ptDrawingSceneMouseCursorPos) + "} px";
+        m_pLblStatusBarDrawingSceneMouseCursorPos_px->setText(strPosInfo);
+    }
+    if (m_pLblStatusBarDrawingSceneMouseCursorPos_metric != nullptr) {
+        const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
+        CPhysValPoint physValPoint = pDrawingScene->convert(m_ptDrawingSceneMouseCursorPos, drawingSize.metricUnit());
+        QString strPosInfo = "MousePos {" + physValPoint.toString() + "} " + physValPoint.unit().symbol();
+        m_pLblStatusBarDrawingSceneMouseCursorPos_metric->setText(strPosInfo);
     }
 }
 
@@ -4382,17 +4425,19 @@ void CMainWindow::onDrawingViewContentAreaChanged()
         /* strMethod    */ "onDrawingViewContentAreaChanged",
         /* strAddInfo   */ "" );
 
+    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+    QRect rectScene = pDrawingScene->sceneRect().toRect();
+
     if (m_pLblStatusBarDrawingSceneRect != nullptr) {
-        CDrawingView* pDrawingView = m_pWdgtCentral->drawingView();
-        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-        QRect rectScene = pDrawingScene->sceneRect().toRect();
+        QString strSizeInfo = "SceneRect {" + qSize2Str(rectScene.size()) + "} px";
+        m_pLblStatusBarDrawingSceneRect->setText(strSizeInfo);
+    }
+    if (m_pLblStatusBarDrawingSize != nullptr) {
         const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
-        QString strSceneSizeInfo = "SceneRect {" + qRect2Str(rectScene) + "} px";
-        if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
-            CPhysValRect physValRect = pDrawingScene->convert(rectScene);
-            strSceneSizeInfo += " Drawing {" + physValRect.toString() + "} " + physValRect.unit().symbol();
-        }
-        m_pLblStatusBarDrawingSceneRect->setText(strSceneSizeInfo);
+        QString strSizeInfo =
+            " Drawing {" + drawingSize.metricImageSize().toString() + "} " +
+            drawingSize.metricUnit().symbol();
+        m_pLblStatusBarDrawingSize->setText(strSizeInfo);
     }
 }
 
@@ -4541,7 +4586,7 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
     QMainWindow::resizeEvent(i_pEv);
 
     if (m_pLblStatusBarMainWindowSize != nullptr) {
-        m_pLblStatusBarMainWindowSize->setText("MainWindow {" + qSize2Str(size()) + "}");
+        m_pLblStatusBarMainWindowSize->setText("MainWindow {" + qSize2Str(size()) + "} px");
     }
 }
 

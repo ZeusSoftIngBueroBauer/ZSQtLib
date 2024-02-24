@@ -1116,7 +1116,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{28.6, 0.0} mm");
+    strlstExpectedValues.append("{28.5, 0.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1130,7 +1130,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0.0, 28.6} mm");
+    strlstExpectedValues.append("{0.0, 28.5} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1144,7 +1144,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("(100.0, 0.0} mm");
+    strlstExpectedValues.append("{99.7, 0.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1154,6 +1154,34 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("Size", QSizeF(0.0, 350.0));
+    pTestStep->setConfigValue("Size.Unit", "px");
+    pTestStep->setConfigValue("Size.Resolution", 1.0);
+    pTestStep->setConfigValue("UnitDest", "mm");
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("{0.0, 99.7} mm");
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(351, 0) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Size(351, 0) px, mm)",
+        /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("Size", QSizeF(351.0, 0.0));
+    pTestStep->setConfigValue("Size.Unit", "px");
+    pTestStep->setConfigValue("Size.Resolution", 1.0);
+    pTestStep->setConfigValue("UnitDest", "mm");
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("{100.0, 0.0} mm");
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(0, 351) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Size(0, 351) px, mm)",
+        /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("Size", QSizeF(0.0, 351.0));
     pTestStep->setConfigValue("Size.Unit", "px");
     pTestStep->setConfigValue("Size.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
@@ -1200,7 +1228,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{28.6, 28.6} mm");
+    strlstExpectedValues.append("{28.5, 28.5} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1210,6 +1238,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("Size", QSizeF(350.0, 350.0));
+    pTestStep->setConfigValue("Size.Unit", "px");
+    pTestStep->setConfigValue("Size.Resolution", 0.1);
+    pTestStep->setConfigValue("UnitDest", "mm");
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("{99.7, 99.7} mm");
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(351, 351) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Size(351, 351) px, mm)",
+        /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("Size", QSizeF(351.0, 351.0));
     pTestStep->setConfigValue("Size.Unit", "px");
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "mm");
@@ -1243,58 +1285,30 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(1, 0) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Size(1, 0) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(1, 1) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Size(1, 1) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Size", QSizeF(1.0, 0.0));
+    pTestStep->setConfigValue("Size", QSizeF(1.0, 1.0));
     pTestStep->setConfigValue("Size.Unit", "mm");
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{4, 0} px");
+    strlstExpectedValues.append("{4, 4} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(0, 1) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Size(0, 1) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(10, 10) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Size(10, 10) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Size", QSizeF(0.0, 1.0));
+    pTestStep->setConfigValue("Size", QSizeF(10.0, 10.0));
     pTestStep->setConfigValue("Size.Unit", "mm");
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0, 4} px");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(10, 0) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Size(10, 0) mm, px)",
-        /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Size", QSizeF(10.0, 0.0));
-    pTestStep->setConfigValue("Size.Unit", "mm");
-    pTestStep->setConfigValue("Size.Resolution", 0.1);
-    pTestStep->setConfigValue("UnitDest", "px");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{35, 0} px");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(0, 10) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Size(0, 10) mm, px)",
-        /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Size", QSizeF(0.0, 10.0));
-    pTestStep->setConfigValue("Size.Unit", "mm");
-    pTestStep->setConfigValue("Size.Resolution", 0.1);
-    pTestStep->setConfigValue("UnitDest", "px");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0, 35} px");
+    strlstExpectedValues.append("{35, 35} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1322,7 +1336,21 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{175, 175} px");
+    strlstExpectedValues.append("{176, 176} px");
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(90, 90) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Size(90, 90) mm, px)",
+        /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("Size", QSizeF(90.0, 90.0));
+    pTestStep->setConfigValue("Size.Unit", "mm");
+    pTestStep->setConfigValue("Size.Resolution", 0.1);
+    pTestStep->setConfigValue("UnitDest", "px");
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("{316, 316} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1336,7 +1364,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{350, 350} px");
+    strlstExpectedValues.append("{351, 351} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
