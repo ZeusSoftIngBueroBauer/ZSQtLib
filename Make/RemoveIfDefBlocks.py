@@ -76,6 +76,7 @@ Usage Examples
 
 python RemoveIfDefBlocks.py --path='/home/devel/display_application' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-5808-ReactionToProfileChangeVECUService'
 python RemoveIfDefBlocks.py --path='/home/devel/display_application' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-5936-ReactionToProfileChangeModel_SectionControl'
+python RemoveIfDefBlocks.py --path='/home/devel/display_application' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-6014-CoverageRecordingCockpitButtonDoesNotReactIfTCIsDeactivated'
 python RemoveIfDefBlocks.py --path='/home/devel/display_application' --gitChanges --sinceCommit='fac5073c' --directive='USE_ZS_QTLIBS' --zipOutDir='/mnt/hgfs/vm-share/display_application.zstrace/ITS-5808-ReactionToProfileChangeVECUService
 '''
 

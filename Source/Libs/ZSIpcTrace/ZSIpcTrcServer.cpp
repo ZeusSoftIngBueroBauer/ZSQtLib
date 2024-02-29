@@ -1244,12 +1244,14 @@ public: // overridables of base class CTrcServer
     object was created as an instance tracer and has a valid object name assigned
     or if a class method should be traced.
 
+    The method also traces the method call if the trace detail level of the
+    passed trace admin object is set to None.
+
     The threads call depth counter is incremented after the trace string has been output.
 
     @param i_pTrcAdminObj [in] Pointer to trace admin object.
-        In addition to the trace detail level the name space, the class name
-        and - in case of an instance tracer - the instance name is taken from
-        the trace admin object.
+        The name space, the class name and - in case of an instance tracer -
+        the instance name is taken from the trace admin object.
     @param i_strMethod [in] Name of the entered method.
     @param i_strMethodInArgs [in] String describing the input arguments.
 */
@@ -1260,7 +1262,7 @@ void CIpcTrcServer::traceMethodEnter(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1280,12 +1282,14 @@ void CIpcTrcServer::traceMethodEnter(
     object was created as an class tracer and has no valid object name assigned
     and if an instance method should be traced.
 
+    The method also traces the method call if the trace detail level of the
+    passed trace admin object is set to None.
+
     The threads call depth counter is incremented after the trace string has been output.
 
     @param i_pTrcAdminObj [in] Pointer to trace admin object.
-        In addition to the trace detail level the name space, the class name
-        and - in case of an instance tracer - the instance name is taken from
-        the trace admin object.
+        The name space, the class name and - in case of an instance tracer -
+        the instance name is taken from the trace admin object.
     @param i_strObjName [in] Object name of the instance for which the method is applied.
     @param i_strMethod [in] Name of the entered method.
     @param i_strMethodInArgs [in] String describing the input arguments.
@@ -1298,7 +1302,7 @@ void CIpcTrcServer::traceMethodEnter(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1321,10 +1325,12 @@ void CIpcTrcServer::traceMethodEnter(
     object was created as an instance tracer and has a valid object name assigned
     or if a class method should be traced.
 
+    The method also traces the method call if the trace detail level of the
+    passed trace admin object is set to None.
+
     @param i_pTrcAdminObj [in] Pointer to trace admin object.
-        In addition to the trace detail level the name space, the class name
-        and - in case of an instance tracer - the instance name is taken from
-        the trace admin object.
+        The name space, the class name and - in case of an instance tracer -
+        the instance name is taken from the trace admin object.
     @param i_strMethod [in] Name of the entered method.
     @param i_strAddInfo [in] String containing the additional info to be output
         during the method call.
@@ -1336,7 +1342,7 @@ void CIpcTrcServer::traceMethod(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Fatal) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1356,12 +1362,14 @@ void CIpcTrcServer::traceMethod(
     object was created as an class tracer and has no valid object name assigned
     and if an instance method should be traced.
 
+    The method also traces the method call if the trace detail level of the
+    passed trace admin object is set to None.
+
     The threads call depth counter is not changed by this method.
 
     @param i_pTrcAdminObj [in] Pointer to trace admin object.
-        In addition to the trace detail level the name space, the class name
-        and - in case of an instance tracer - the instance name is taken from
-        the trace admin object.
+        The name space, the class name and - in case of an instance tracer -
+        the instance name is taken from the trace admin object.
     @param i_strObjName [in] Object name of the instance for which the method is applied.
     @param i_strMethod [in] Name of the entered method.
     @param i_strAddInfo [in] String containing the additional info to be output
@@ -1375,7 +1383,7 @@ void CIpcTrcServer::traceMethod(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Fatal) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1395,12 +1403,14 @@ void CIpcTrcServer::traceMethod(
     object was created as an instance tracer and has a valid object name assigned
     or if a class method should be traced.
 
+    The method also traces the method call if the trace detail level of the
+    passed trace admin object is set to None.
+
     The threads call depth counter is decremented before the trace string is output.
 
     @param i_pTrcAdminObj [in] Pointer to trace admin object.
-        In addition to the trace detail level the name space, the class name
-        and - in case of an instance tracer - the instance name is taken from
-        the trace admin object.
+        The name space, the class name and - in case of an instance tracer -
+        the instance name is taken from the trace admin object.
     @param i_strMethod [in] Name of the entered method.
     @param i_strMethodReturn [in] String describing the return value of the method.
     @param i_strMethodOutArgs [in] String describing the output arguments of the method.
@@ -1413,7 +1423,7 @@ void CIpcTrcServer::traceMethodLeave(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1434,12 +1444,14 @@ void CIpcTrcServer::traceMethodLeave(
     object was created as an class tracer and has no valid object name assigned
     and if an instance method should be traced.
 
+    The method also traces the method call if the trace detail level of the
+    passed trace admin object is set to None.
+
     The threads call depth counter is decremented before the trace string is output.
 
     @param i_pTrcAdminObj [in] Pointer to trace admin object.
-        In addition to the trace detail level the name space, the class name
-        and - in case of an instance tracer - the instance name is taken from
-        the trace admin object.
+        The name space, the class name and - in case of an instance tracer -
+        the instance name is taken from the trace admin object.
     @param i_strObjName [in] Object name of the instance for which the method is applied.
     @param i_strMethod [in] Name of the entered method.
     @param i_strMethodReturn [in] String describing the return value of the method.
