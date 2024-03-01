@@ -539,8 +539,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(0, 0)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(100, 0)));
+    pTestStep->setConfigValue("P1", QPointF(0.0, 0.0));
+    pTestStep->setConfigValue("P2", QPointF(100.0, 0.0));
 
     QStringList strlstExpectedValues;
     strlstExpectedValues.append("line.p1 {-50.0, 0.0} px");
@@ -551,9 +551,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     strlstExpectedValues.append("getLine.p1.y: 0 px");
     strlstExpectedValues.append("getLine.p2.x: 100 px");
     strlstExpectedValues.append("getLine.p2.y: 0 px");
-    strlstExpectedValues.append("getLength: 100.0 px");
+    strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-    strlstExpectedValues.append("getPos {50.0, 0.0} px");
+    strlstExpectedValues.append("getPos {50, 0} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (right)
@@ -573,8 +573,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(100, 0)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(100, 100)));
+    pTestStep->setConfigValue("P1", QPointF(100.0, 0.0));
+    pTestStep->setConfigValue("P2", QPointF(100.0, 100.0));
 
     strlstExpectedValues.clear();
     strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
@@ -585,9 +585,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     strlstExpectedValues.append("getLine.p1.y: 0 px");
     strlstExpectedValues.append("getLine.p2.x: 100 px");
     strlstExpectedValues.append("getLine.p2.y: 100 px");
-    strlstExpectedValues.append("getLength: 100.0 px");
+    strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-    strlstExpectedValues.append("getPos {100.0, 50.0} px");
+    strlstExpectedValues.append("getPos {100, 50} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (bottom)
@@ -607,8 +607,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(100, 100)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(0, 100)));
+    pTestStep->setConfigValue("P1", QPointF(100.0, 100.0));
+    pTestStep->setConfigValue("P2", QPointF(0.0, 100.0));
 
     strlstExpectedValues.clear();
     strlstExpectedValues.append("line.p1 {50.0, 0.0} px");
@@ -619,9 +619,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     strlstExpectedValues.append("getLine.p1.y: 100 px");
     strlstExpectedValues.append("getLine.p2.x: 0 px");
     strlstExpectedValues.append("getLine.p2.y: 100 px");
-    strlstExpectedValues.append("getLength: 100.0 px");
+    strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
-    strlstExpectedValues.append("getPos {50.0, 100.0} px");
+    strlstExpectedValues.append("getPos {50, 100} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (left)
@@ -641,8 +641,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(0, 100)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(0, 0)));
+    pTestStep->setConfigValue("P1", QPointF(0.0, 100.0));
+    pTestStep->setConfigValue("P2", QPointF(0.0, 0.0));
 
     strlstExpectedValues.clear();
     strlstExpectedValues.append("line.p1 {0.0, 50.0} px");
@@ -653,9 +653,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     strlstExpectedValues.append("getLine.p1.y: 100 px");
     strlstExpectedValues.append("getLine.p2.x: 0 px");
     strlstExpectedValues.append("getLine.p2.y: 0 px");
-    strlstExpectedValues.append("getLength: 100.0 px");
+    strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
-    strlstExpectedValues.append("getPos {0.0, 50.0} px");
+    strlstExpectedValues.append("getPos {0, 50} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -718,8 +718,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(0, 0)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(100, 0)));
+    pTestStep->setConfigValue("P1", QPointF(0.0, 0.0));
+    pTestStep->setConfigValue("P2", QPointF(100.0, 0.0));
 
     QStringList strlstExpectedValues;
     strlstExpectedValues.append("line.p1 {-175.0, 0.0} px");
@@ -756,12 +756,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(100, 0)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(100, 100)));
+    pTestStep->setConfigValue("P1", QPointF(100.0, 0.0));
+    pTestStep->setConfigValue("P2", QPointF(100.0, 100.0));
 
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, -175.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, 175.0} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("line.p1 {0.0, -175.0} px");
+        strlstExpectedValues.append("line.p2 {0.0, 175.0} px");
+    }
+    else {
+        strlstExpectedValues.append("line.p1 {0.0, 175.0} px");
+        strlstExpectedValues.append("line.p2 {0.0, -175.0} px");
+    }
     strlstExpectedValues.append("line.length: 350.0 px");
     strlstExpectedValues.append("line.pos {350.0, 175.0} px");
     strlstExpectedValues.append("getLine.p1.x: 100.0 mm");
@@ -790,8 +796,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(100, 100)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(0, 100)));
+    pTestStep->setConfigValue("P1", QPointF(100.0, 100.0));
+    pTestStep->setConfigValue("P2", QPointF(0.0, 100.0));
 
     strlstExpectedValues.clear();
     strlstExpectedValues.append("line.p1 {175.0, 0.0} px");
@@ -828,12 +834,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(0, 100)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(0, 0)));
+    pTestStep->setConfigValue("P1", QPointF(0.0, 100.0));
+    pTestStep->setConfigValue("P2", QPointF(0.0, 0.0));
 
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, 175.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, -175.0} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("line.p1 {0.0, 175.0} px");
+        strlstExpectedValues.append("line.p2 {0.0, -175.0} px");
+    }
+    else {
+        strlstExpectedValues.append("line.p1 {0.0, -175.0} px");
+        strlstExpectedValues.append("line.p2 {0.0, 175.0} px");
+    }
     strlstExpectedValues.append("line.length: 350.0 px");
     strlstExpectedValues.append("line.pos {0.0, 175.0} px");
     strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
@@ -843,6 +855,47 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("getLength: 100.0 mm");
     strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
     strlstExpectedValues.append("getPos {0.0, 50.0} mm");
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Line4
+    //------
+
+    strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
+    s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
+    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
+        /* pGrpParent      */ pGrpAddLines,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
+    pTestStep->setConfigValue("P1", QPointF(28.57143, 28.57143));
+    pTestStep->setConfigValue("P2", QPointF(71.42857, 71.42857));
+
+    strlstExpectedValues.clear();
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("line.p1 {-75.0, -75.0} px");
+        strlstExpectedValues.append("line.p2 {75.0, 75.0} px");
+    }
+    else {
+        strlstExpectedValues.append("line.p1 {-75.0, 75.0} px");
+        strlstExpectedValues.append("line.p2 {75.0, -75.0} px");
+    }
+    strlstExpectedValues.append("line.length: 212.1 px");
+    strlstExpectedValues.append("line.pos {175.0, 175.0} px");
+    strlstExpectedValues.append("getLine.p1.x: 28.6 mm");
+    strlstExpectedValues.append("getLine.p1.y: 28.6 mm");
+    strlstExpectedValues.append("getLine.p2.x: 71.4 mm");
+    strlstExpectedValues.append("getLine.p2.y: 71.4 mm");
+    strlstExpectedValues.append("getLength: 60.6 mm");
+    strlstExpectedValues.append("getAngle: 315.0 " + Math::c_strSymbolDegree);
+
+    strlstExpectedValues.append("getPos {50.0, 50.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -936,7 +989,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0.0, 0.0} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("{0.0, 0.0} mm");
+    }
+    else {
+        strlstExpectedValues.append("{0.0, 100.0} mm");
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -950,7 +1008,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{28.6, 28.6} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("{28.6, 28.6} mm");
+    }
+    else {
+        strlstExpectedValues.append("{28.6, 71.4} mm");
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -964,7 +1027,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{57.1, 57.1} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("{57.1, 57.1} mm");
+    }
+    else {
+        strlstExpectedValues.append("{57.1, 42.9} mm");
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -978,7 +1046,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{100.0, 100.0} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("{100.0, 100.0} mm");
+    }
+    else {
+        strlstExpectedValues.append("{100.0, 0.0} mm");
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // mm -> px
@@ -1002,7 +1075,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0, 0} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("{0, 0} px");
+    }
+    else {
+        strlstExpectedValues.append("{0, 350} px");
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1016,7 +1094,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{70, 70} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("{70, 70} px");
+    }
+    else {
+        strlstExpectedValues.append("{70, 280} px");
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1030,7 +1113,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{175, 175} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("{175, 175} px");
+    }
+    else {
+        strlstExpectedValues.append("{175, 175} px");
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1044,7 +1132,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{350, 350} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("{350, 350} px");
+    }
+    else {
+        strlstExpectedValues.append("{350, 0} px");
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -1116,7 +1209,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{28.5, 0.0} mm");
+    strlstExpectedValues.append("{28.6, 0.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1130,7 +1223,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0.0, 28.5} mm");
+    strlstExpectedValues.append("{0.0, 28.6} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1144,7 +1237,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{99.7, 0.0} mm");
+    strlstExpectedValues.append("{100.0, 0.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1154,34 +1247,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("Size", QSizeF(0.0, 350.0));
-    pTestStep->setConfigValue("Size.Unit", "px");
-    pTestStep->setConfigValue("Size.Resolution", 1.0);
-    pTestStep->setConfigValue("UnitDest", "mm");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0.0, 99.7} mm");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(351, 0) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Size(351, 0) px, mm)",
-        /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Size", QSizeF(351.0, 0.0));
-    pTestStep->setConfigValue("Size.Unit", "px");
-    pTestStep->setConfigValue("Size.Resolution", 1.0);
-    pTestStep->setConfigValue("UnitDest", "mm");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{100.0, 0.0} mm");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(0, 351) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Size(0, 351) px, mm)",
-        /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Size", QSizeF(0.0, 351.0));
     pTestStep->setConfigValue("Size.Unit", "px");
     pTestStep->setConfigValue("Size.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
@@ -1228,7 +1293,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{28.5, 28.5} mm");
+    strlstExpectedValues.append("{28.6, 28.6} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1238,20 +1303,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("Size", QSizeF(350.0, 350.0));
-    pTestStep->setConfigValue("Size.Unit", "px");
-    pTestStep->setConfigValue("Size.Resolution", 0.1);
-    pTestStep->setConfigValue("UnitDest", "mm");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{99.7, 99.7} mm");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(351, 351) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Size(351, 351) px, mm)",
-        /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Size", QSizeF(351.0, 351.0));
     pTestStep->setConfigValue("Size.Unit", "px");
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "mm");
@@ -1336,7 +1387,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{176, 176} px");
+    strlstExpectedValues.append("{175, 175} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1350,7 +1401,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{316, 316} px");
+    strlstExpectedValues.append("{315, 315} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1364,7 +1415,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Size.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{351, 351} px");
+    strlstExpectedValues.append("{350, 350} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -1413,58 +1464,155 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(0, 0) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Line(0, 0) px, mm)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(0, 0), P2(350, 0)) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(0, 0), P2(350, 0)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Line", QLineF(0.0, 0.0, 100.0, 100.0));
+    pTestStep->setConfigValue("Line", QLineF(0.0, 0.0, 350.0, 0.0));
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("Line.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0.0, 0.0} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {0.0, 0.0} mm");
+        strlstExpectedValues.append("P2 {100.0, 0.0} mm");
+        strlstExpectedValues.append("Center {50.0, 0.0} mm");
+        strlstExpectedValues.append("dx: 100.0 mm");
+        strlstExpectedValues.append("dy: 0.0 mm");
+    }
+    else {
+        strlstExpectedValues.append("P1 {0.0, 100.0} mm");
+        strlstExpectedValues.append("P2 {100.0, 100.0} mm");
+        strlstExpectedValues.append("Center {50.0, 100.0} mm");
+        strlstExpectedValues.append("dx: 100.0 mm");
+        strlstExpectedValues.append("dy: 0.0 mm");
+    }
+    strlstExpectedValues.append("Length: 100.0 mm");
+    strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(100, 100) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Line(100, 100) px, mm)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(350, 0), P2(350, 350)) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(350, 0), P2(350, 350)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Line", QLineF(100.0, 100.0, 100.0, 100.0));
+    pTestStep->setConfigValue("Line", QLineF(350.0, 0.0, 350.0, 350.0));
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("Line.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{28.6, 28.6} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {100.0, 0.0} mm");
+        strlstExpectedValues.append("P2 {100.0, 100.0} mm");
+        strlstExpectedValues.append("Center {100.0, 50.0} mm");
+        strlstExpectedValues.append("dx: 0.0 mm");
+        strlstExpectedValues.append("dy: 100.0 mm");
+        strlstExpectedValues.append("Length: 100.0 mm");
+        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {100.0, 100.0} mm");
+        strlstExpectedValues.append("P2 {100.0, 0.0} mm");
+        strlstExpectedValues.append("Center {100.0, 50.0} mm");
+        strlstExpectedValues.append("dx: 0.0 mm");
+        strlstExpectedValues.append("dy: -100.0 mm");
+        strlstExpectedValues.append("Length: 100.0 mm");
+        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(200, 200) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Line(200, 200) px, mm)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(350, 350), P2(0, 350)) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(350, 350), P2(0, 350)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Line", QLineF(200.0, 200.0, 100.0, 100.0));
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Line", QLineF(350.0, 350.0, 0.0, 350.0));
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("Line.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{57.1, 57.1} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {100.0, 100.0} mm");
+        strlstExpectedValues.append("P2 {0.0, 100.0} mm");
+        strlstExpectedValues.append("Center {50.0, 100.0} mm");
+        strlstExpectedValues.append("dx: -100.0 mm");
+        strlstExpectedValues.append("dy: 0.0 mm");
+        strlstExpectedValues.append("Length: 100.0 mm");
+        strlstExpectedValues.append("Angle: 180.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {100.0, 0.0} mm");
+        strlstExpectedValues.append("P2 {0.0, 0.0} mm");
+        strlstExpectedValues.append("Center {50.0, 0.0} mm");
+        strlstExpectedValues.append("dx: -100.0 mm");
+        strlstExpectedValues.append("dy: 0.0 mm");
+        strlstExpectedValues.append("Length: 100.0 mm");
+        strlstExpectedValues.append("Angle: 180.0 " + Math::c_strSymbolDegree);
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(350, 350) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Line(350, 350) px, mm)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(0, 350), P2(0, 0)) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(0, 350), P2(0, 0)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Line", QLineF(350.0, 350.0, 100.0, 100.0));
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Line", QLineF(0.0, 350.0, 0.0, 0.0));
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("Line.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{100.0, 100.0} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {0.0, 100.0} mm");
+        strlstExpectedValues.append("P2 {0.0, 0.0} mm");
+        strlstExpectedValues.append("Center {0.0, 50.0} mm");
+        strlstExpectedValues.append("dx: 0.0 mm");
+        strlstExpectedValues.append("dy: -100.0 mm");
+        strlstExpectedValues.append("Length: 100.0 mm");
+        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {0.0, 0.0} mm");
+        strlstExpectedValues.append("P2 {0.0, 100.0} mm");
+        strlstExpectedValues.append("Center {0.0, 50.0} mm");
+        strlstExpectedValues.append("dx: 0.0 mm");
+        strlstExpectedValues.append("dy: 100.0 mm");
+        strlstExpectedValues.append("Length: 100.0 mm");
+        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(100, 100), P2(250, 250)) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(100, 100), P2(250, 250)) px, mm)",
+        /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Line", QLineF(100.0, 100.0, 250.0, 250.0));
+    pTestStep->setConfigValue("Line.Unit", "px");
+    pTestStep->setConfigValue("Line.Resolution", 1.0);
+    pTestStep->setConfigValue("UnitDest", "mm");
+    strlstExpectedValues.clear();
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {28.6, 28.6} mm");
+        strlstExpectedValues.append("P2 {71.4, 71.4} mm");
+        strlstExpectedValues.append("Center {50.0, 50.0} mm");
+        strlstExpectedValues.append("dx: 42.9 mm");
+        strlstExpectedValues.append("dy: 42.9 mm");
+        strlstExpectedValues.append("Length: 60.6 mm");
+        strlstExpectedValues.append("Angle: 315.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {28.6, 71.4} mm");
+        strlstExpectedValues.append("P2 {71.4, 28.6} mm");
+        strlstExpectedValues.append("Center {50.0, 50.0} mm");
+        strlstExpectedValues.append("dx: 42.9 mm");
+        strlstExpectedValues.append("dy: -42.9 mm");
+        strlstExpectedValues.append("Length: 60.6 mm");
+        strlstExpectedValues.append("Angle: 45.0 " + Math::c_strSymbolDegree);
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // mm -> px
@@ -1479,58 +1627,157 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(0, 0) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Line(0, 0) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(0, 0), P2(100, 0)) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(0, 0), P2(100, 0)) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Line", QLineF(0.0, 0.0, 100.0, 100.0));
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Line", QLineF(0.0, 0.0, 100.0, 0.0));
     pTestStep->setConfigValue("Line.Unit", "mm");
     pTestStep->setConfigValue("Line.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0, 0} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {0, 0} px");
+        strlstExpectedValues.append("P2 {350, 0} px");
+        strlstExpectedValues.append("Center {175, 0} px");
+        strlstExpectedValues.append("dx: 350 px");
+        strlstExpectedValues.append("dy: 0 px");
+        strlstExpectedValues.append("Length: 350 px");
+        strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {0, 350} px");
+        strlstExpectedValues.append("P2 {350, 350} px");
+        strlstExpectedValues.append("Center {175, 350} px");
+        strlstExpectedValues.append("dx: 350 px");
+        strlstExpectedValues.append("dy: 0 px");
+        strlstExpectedValues.append("Length: 350 px");
+        strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(20, 20) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Line(20, 20) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(100, 0), P2(100, 100)) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(100, 0), P2(100, 100)) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Line", QLineF(20.0, 20.0, 100.0, 100.0));
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Line", QLineF(100.0, 0.0, 100.0, 100.0));
     pTestStep->setConfigValue("Line.Unit", "mm");
     pTestStep->setConfigValue("Line.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{70, 70} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {350, 0} px");
+        strlstExpectedValues.append("P2 {350, 350} px");
+        strlstExpectedValues.append("Center {350, 175} px");
+        strlstExpectedValues.append("dx: 0 px");
+        strlstExpectedValues.append("dy: 350 px");
+        strlstExpectedValues.append("Length: 350 px");
+        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {350, 350} px");
+        strlstExpectedValues.append("P2 {350, 0} px");
+        strlstExpectedValues.append("Center {350, 175} px");
+        strlstExpectedValues.append("dx: 0 px");
+        strlstExpectedValues.append("dy: -350 px");
+        strlstExpectedValues.append("Length: 350 px");
+        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(50, 50) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Line(50, 50) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(100, 100), P2(0, 100)) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(100, 100), P2(0, 100)) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Line", QLineF(50.0, 50.0, 100.0, 100.0));
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Line", QLineF(100.0, 100.0, 0.0, 100.0));
     pTestStep->setConfigValue("Line.Unit", "mm");
     pTestStep->setConfigValue("Line.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{175, 175} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {350, 350} px");
+        strlstExpectedValues.append("P2 {0, 350} px");
+        strlstExpectedValues.append("Center {175, 350} px");
+        strlstExpectedValues.append("dx: -350 px");
+        strlstExpectedValues.append("dy: 0 px");
+        strlstExpectedValues.append("Length: 350 px");
+        strlstExpectedValues.append("Angle: 180.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {350, 0} px");
+        strlstExpectedValues.append("P2 {0, 0} px");
+        strlstExpectedValues.append("Center {175, 0} px");
+        strlstExpectedValues.append("dx: -350 px");
+        strlstExpectedValues.append("dy: 0 px");
+        strlstExpectedValues.append("Length: 350 px");
+        strlstExpectedValues.append("Angle: 180.0 " + Math::c_strSymbolDegree);
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(100, 100) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Line(100, 100) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(0, 100), P2(0, 0)) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(0, 100), P2(0, 0)) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Line", QLineF(100.0, 100.0, 100.0, 100.0));
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Line", QLineF(0.0, 100.0, 0.0, 0.0));
     pTestStep->setConfigValue("Line.Unit", "mm");
     pTestStep->setConfigValue("Line.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{350, 350} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {0, 350} px");
+        strlstExpectedValues.append("P2 {0, 0} px");
+        strlstExpectedValues.append("Center {0, 175} px");
+        strlstExpectedValues.append("dx: 0 px");
+        strlstExpectedValues.append("dy: -350 px");
+        strlstExpectedValues.append("Length: 350 px");
+        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {0, 0} px");
+        strlstExpectedValues.append("P2 {0, 350} px");
+        strlstExpectedValues.append("Center {0, 175} px");
+        strlstExpectedValues.append("dx: 0 px");
+        strlstExpectedValues.append("dy: 350 px");
+        strlstExpectedValues.append("Length: 350 px");
+        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(28.6, 28.6), P2(71.4, 71.4)) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Line(P1(28.6, 28.6), P2(71.4, 71.4)) mm, px)",
+        /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Line", QLineF(28.6, 28.6, 71.4, 71.4));
+    pTestStep->setConfigValue("Line.Unit", "mm");
+    pTestStep->setConfigValue("Line.Resolution", 0.1);
+    pTestStep->setConfigValue("UnitDest", "px");
+    strlstExpectedValues.clear();
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("P1 {100, 100} px");
+        strlstExpectedValues.append("P2 {250, 250} px");
+        strlstExpectedValues.append("Center {175, 175} px");
+        strlstExpectedValues.append("dx: 150 px");
+        strlstExpectedValues.append("dy: 150 px");
+        strlstExpectedValues.append("Length: 212 px");
+        strlstExpectedValues.append("Angle: 315.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        strlstExpectedValues.append("P1 {100, 250} px");
+        strlstExpectedValues.append("P2 {250, 100} px");
+        strlstExpectedValues.append("Center {175, 175} px");
+        strlstExpectedValues.append("dx: 150 px");
+        strlstExpectedValues.append("dy: -150 px");
+        strlstExpectedValues.append("Length: 212 px");
+        strlstExpectedValues.append("Angle: 45.0 " + Math::c_strSymbolDegree);
+    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -1579,58 +1826,76 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(0, 0) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Rect(0, 0) px, mm)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect((0, 0), (350, 350)) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Rect((0, 0), (350, 350)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(0.0, 0.0, 100.0, 100.0));
+    pTestStep->setConfigValue("Rect", QRectF(QPointF(0.0, 0.0), QPointF(350.0, 350.0)));
     pTestStep->setConfigValue("Rect.Unit", "px");
     pTestStep->setConfigValue("Rect.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0.0, 0.0} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("Top: 0.0 mm");
+        strlstExpectedValues.append("Bottom: 100.0 mm");
+        strlstExpectedValues.append("Left: 0.0 mm");
+        strlstExpectedValues.append("Right: 100.0 mm");
+        strlstExpectedValues.append("TopLeft {0.0, 0.0} mm");
+        strlstExpectedValues.append("TopRight {100.0, 0.0} mm");
+        strlstExpectedValues.append("BottomRight {100.0, 100.0} mm");
+        strlstExpectedValues.append("BottomLeft {0.0, 100.0} mm");
+        strlstExpectedValues.append("Center {50.0, 50.0} mm");
+    }
+    else {
+        strlstExpectedValues.append("Top: 100.0 mm");
+        strlstExpectedValues.append("Bottom: 0.0 mm");
+        strlstExpectedValues.append("Left: 0.0 mm");
+        strlstExpectedValues.append("Right: 100.0 mm");
+        strlstExpectedValues.append("TopLeft {0.0, 100.0} mm");
+        strlstExpectedValues.append("TopRight {100.0, 100.0} mm");
+        strlstExpectedValues.append("BottomRight {100.0, 0.0} mm");
+        strlstExpectedValues.append("BottomLeft {0.0, 0.0} mm");
+        strlstExpectedValues.append("Center {50.0, 50.0} mm");
+    }
+    strlstExpectedValues.append("Width: 100.0 mm");
+    strlstExpectedValues.append("Height: 100.0 mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(100, 100) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Rect(100, 100) px, mm)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect((70, 180), (130, 320)) px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Rect((70, 180), (130, 320)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(100.0, 100.0, 100.0, 100.0));
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Rect", QRectF(QPointF(70.0, 180.0), QPointF(130.0, 320.0)));
     pTestStep->setConfigValue("Rect.Unit", "px");
     pTestStep->setConfigValue("Rect.Resolution", 1.0);
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{28.6, 28.6} mm");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(200, 200) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Rect(200, 200) px, mm)",
-        /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(200.0, 200.0, 100.0, 100.0));
-    pTestStep->setConfigValue("Rect.Unit", "px");
-    pTestStep->setConfigValue("Rect.Resolution", 1.0);
-    pTestStep->setConfigValue("UnitDest", "mm");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{57.1, 57.1} mm");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(350, 350) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Rect(350, 350) px, mm)",
-        /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(350.0, 350.0, 100.0, 100.0));
-    pTestStep->setConfigValue("Rect.Unit", "px");
-    pTestStep->setConfigValue("Rect.Resolution", 1.0);
-    pTestStep->setConfigValue("UnitDest", "mm");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{100.0, 100.0} mm");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("Top: 51.4 mm");
+        strlstExpectedValues.append("Bottom: 91.4 mm");
+        strlstExpectedValues.append("Left: 20.0 mm");
+        strlstExpectedValues.append("Right: 37.1 mm");
+        strlstExpectedValues.append("TopLeft {20.0, 51.4} mm");
+        strlstExpectedValues.append("TopRight {37.1, 51.4} mm");
+        strlstExpectedValues.append("BottomRight {37.1, 91.4} mm");
+        strlstExpectedValues.append("BottomLeft {20.0, 91.4} mm");
+        strlstExpectedValues.append("Center {28.6, 71.4} mm");
+    }
+    else {
+        strlstExpectedValues.append("Top: 91.4 mm");
+        strlstExpectedValues.append("Bottom: 51.4 mm");
+        strlstExpectedValues.append("Left: 20.0 mm");
+        strlstExpectedValues.append("Right: 37.1 mm");
+        strlstExpectedValues.append("TopLeft {20.0, 91.4} mm");
+        strlstExpectedValues.append("TopRight {37.1, 91.4} mm");
+        strlstExpectedValues.append("BottomRight {37.1, 51.4} mm");
+        strlstExpectedValues.append("BottomLeft {20.0, 51.4} mm");
+        strlstExpectedValues.append("Center {28.6, 51.4} mm");
+    }
+    strlstExpectedValues.append("Width: 17.1 mm");
+    strlstExpectedValues.append("Height: 40.0 mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // mm -> px
@@ -1645,58 +1910,76 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(0, 0) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Rect(0, 0) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect((0, 0), (100, 100)) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Rect((0, 0), (100, 100)) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(0.0, 0.0, 100.0, 100.0));
+    pTestStep->setConfigValue("Rect", QRectF(QPointF(0.0, 0.0), QPointF(100.0, 100.0)));
     pTestStep->setConfigValue("Rect.Unit", "mm");
     pTestStep->setConfigValue("Rect.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{0, 0} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("Top: 0 px");
+        strlstExpectedValues.append("Bottom: 350 px");
+        strlstExpectedValues.append("Left: 0 px");
+        strlstExpectedValues.append("Right: 350 px");
+        strlstExpectedValues.append("TopLeft {0, 0} px");
+        strlstExpectedValues.append("TopRight {350, 0} px");
+        strlstExpectedValues.append("BottomRight {350, 350} px");
+        strlstExpectedValues.append("BottomLeft {0, 350} px");
+        strlstExpectedValues.append("Center {175, 175} px");
+    }
+    else {
+        strlstExpectedValues.append("Top: 350 px");
+        strlstExpectedValues.append("Bottom: 0 px");
+        strlstExpectedValues.append("Left: 0 px");
+        strlstExpectedValues.append("Right: 350 px");
+        strlstExpectedValues.append("TopLeft {0, 350} px");
+        strlstExpectedValues.append("TopRight {350, 350} px");
+        strlstExpectedValues.append("BottomRight {350, 0} px");
+        strlstExpectedValues.append("BottomLeft {0, 0} px");
+        strlstExpectedValues.append("Center {175, 175} px");
+    }
+    strlstExpectedValues.append("Width: 350 px");
+    strlstExpectedValues.append("Height: 350 px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(20, 20) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Rect(20, 20) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect((20.0, 51.4), (37.1, 91.4)) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Rect((20.0, 51.4), (37.1, 91.4)) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(20.0, 20.0, 100.0, 100.0));
+        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)));
+    pTestStep->setConfigValue("Rect", QRectF(QPointF(20.0, 51.4), QPointF(37.1, 91.4)));
     pTestStep->setConfigValue("Rect.Unit", "mm");
     pTestStep->setConfigValue("Rect.Resolution", 0.1);
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("{70, 70} px");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(50, 50) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Rect(50, 50) mm, px)",
-        /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(50.0, 50.0, 100.0, 100.0));
-    pTestStep->setConfigValue("Rect.Unit", "mm");
-    pTestStep->setConfigValue("Rect.Resolution", 0.1);
-    pTestStep->setConfigValue("UnitDest", "px");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{175, 175} px");
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(100, 100) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Rect(100, 100) mm, px)",
-        /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
-        /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(100.0, 100.0, 100.0, 100.0));
-    pTestStep->setConfigValue("Rect.Unit", "mm");
-    pTestStep->setConfigValue("Rect.Resolution", 0.1);
-    pTestStep->setConfigValue("UnitDest", "px");
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append("{350, 350} px");
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("Top: 180 px");
+        strlstExpectedValues.append("Bottom: 320 px");
+        strlstExpectedValues.append("Left: 70 px");
+        strlstExpectedValues.append("Right: 130 px");
+        strlstExpectedValues.append("TopLeft {70, 180} px");
+        strlstExpectedValues.append("TopRight {130, 180} px");
+        strlstExpectedValues.append("BottomRight {130, 320} px");
+        strlstExpectedValues.append("BottomLeft {70, 320} px");
+        strlstExpectedValues.append("Center {100, 250} px");
+    }
+    else {
+        strlstExpectedValues.append("Top: 320 px");
+        strlstExpectedValues.append("Bottom: 180 px");
+        strlstExpectedValues.append("Left: 70 px");
+        strlstExpectedValues.append("Right: 130 px");
+        strlstExpectedValues.append("TopLeft {70, 320} px");
+        strlstExpectedValues.append("TopRight {130, 320} px");
+        strlstExpectedValues.append("BottomRight {130, 180} px");
+        strlstExpectedValues.append("BottomLeft {70, 180} px");
+        strlstExpectedValues.append("Center {100, 100} px");
+    }
+    strlstExpectedValues.append("Width: 60 px");
+    strlstExpectedValues.append("Height: 140 px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2013,8 +2296,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(300, 250)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(300, 350)));
+    pTestStep->setConfigValue("P1", QPointF(300.0, 250.0));
+    pTestStep->setConfigValue("P2", QPointF(300.0, 350.0));
 
     ZS::Test::CTestStepGroup* pGrpLine0ShowAndMoveLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -2052,8 +2335,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(250, 300)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(350, 300)));
+    pTestStep->setConfigValue("P1", QPointF(250.0, 300.0));
+    pTestStep->setConfigValue("P2", QPointF(350.0, 300.0));
 
     ZS::Test::CTestStepGroup* pGrpLine1ShowAndMoveLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -2091,8 +2374,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(250, 250)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(325, 350)));
+    pTestStep->setConfigValue("P1", QPointF(250.0, 250.0));
+    pTestStep->setConfigValue("P2", QPointF(350.0, 350.0));
 
     // Line3 (Checkmark line from bottom to right)
     //---------------------------------------------
@@ -2118,8 +2401,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(325, 350)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(350, 325)));
+    pTestStep->setConfigValue("P1", QPointF(325.0, 350.0));
+    pTestStep->setConfigValue("P2", QPointF(350.0, 325.0));
 
     // Line4 (Top line of rectangle in second quadrant)
     //-------------------------------------------------
@@ -2145,8 +2428,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(320, 270)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(330, 270)));
+    pTestStep->setConfigValue("P1", QPointF(320.0, 270.0));
+    pTestStep->setConfigValue("P2", QPointF(330.0, 270.0));
 
     // Line5 (Right line of rectangle in second quadrant)
     //----------------------------------------------------
@@ -2172,8 +2455,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(330, 270)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(330, 280)));
+    pTestStep->setConfigValue("P1", QPointF(330.0, 270.0));
+    pTestStep->setConfigValue("P2", QPointF(330.0, 280.0));
 
     // Line6 (Bottom line of rectangle in second quadrant)
     //----------------------------------------------------
@@ -2199,8 +2482,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(330, 280)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(320, 280)));
+    pTestStep->setConfigValue("P1", QPointF(330.0, 280.0));
+    pTestStep->setConfigValue("P2", QPointF(320.0, 280.0));
 
     // Line7 (Left line of rectangle in second quadrant)
     //----------------------------------------------------
@@ -2226,8 +2509,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-    pTestStep->setConfigValue("Point1", qPoint2Str(QPoint(320, 280)));
-    pTestStep->setConfigValue("Point2", qPoint2Str(QPoint(320, 270)));
+    pTestStep->setConfigValue("P1", QPointF(320.0, 280.0));
+    pTestStep->setConfigValue("P2", QPointF(320.0, 270.0));
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -3672,27 +3955,28 @@ void CTest::doTestStepDrawingSceneConvertToPhysValPoint( ZS::Test::CTestStep* i_
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CUnit unitPoint = Units.Length.px;
+    CUnit unitSource = Units.Length.px;
     CUnit unitDest = drawingSize.unit();
     if (i_pTestStep->hasConfigValue("Point.Unit")) {
         QString strUnitPoint = i_pTestStep->getConfigValue("Point.Unit").toString();
-        unitPoint = strUnitPoint;
+        unitSource = strUnitPoint;
     }
     if (i_pTestStep->hasConfigValue("UnitDest")) {
         QString strUnitDest = i_pTestStep->getConfigValue("UnitDest").toString();
         unitDest = strUnitDest;
     }
     double fResolution = drawingSize.imageCoorsResolutionInPx();
-    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
-        fResolution = drawingSize.imageCoorsResolution(unitDest).getVal();
+    if (Units.Length.isMetricUnit(unitSource)) {
+        fResolution = drawingSize.imageCoorsResolution(unitSource).getVal();
     }
-    if (i_pTestStep->hasConfigValue("Point.Resolution")) {
-        fResolution = drawingSize.imageCoorsResolution(unitDest).getVal();
+    // Resolution will be ignored if the line is given in pixels (defaults to 1.0 pixels).
+    if (Units.Length.isMetricUnit(unitSource) && i_pTestStep->hasConfigValue("Point.Resolution")) {
+        fResolution = i_pTestStep->getConfigValue("Point.Resolution").toDouble();
     }
     QPointF pt = i_pTestStep->getConfigValue("Point").toPointF();
     CPhysValPoint physValPointResult;
-    if (Units.Length.isMetricUnit(unitPoint)) {
-        CPhysValPoint physValPoint(pt, fResolution, unitPoint);
+    if (Units.Length.isMetricUnit(unitSource)) {
+        CPhysValPoint physValPoint(pt, fResolution, unitSource);
         physValPointResult = m_pDrawingScene->convert(physValPoint, unitDest);
     }
     else {
@@ -3717,27 +4001,28 @@ void CTest::doTestStepDrawingSceneConvertToPhysValSize( ZS::Test::CTestStep* i_p
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CUnit unitPoint = Units.Length.px;
+    CUnit unitSource = Units.Length.px;
     CUnit unitDest = drawingSize.unit();
     if (i_pTestStep->hasConfigValue("Size.Unit")) {
         QString strUnitPoint = i_pTestStep->getConfigValue("Size.Unit").toString();
-        unitPoint = strUnitPoint;
+        unitSource = strUnitPoint;
     }
     if (i_pTestStep->hasConfigValue("UnitDest")) {
         QString strUnitDest = i_pTestStep->getConfigValue("UnitDest").toString();
         unitDest = strUnitDest;
     }
     double fResolution = drawingSize.imageCoorsResolutionInPx();
-    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
-        fResolution = drawingSize.imageCoorsResolution(unitDest).getVal();
+    if (Units.Length.isMetricUnit(unitSource)) {
+        fResolution = drawingSize.imageCoorsResolution(unitSource).getVal();
     }
-    if (i_pTestStep->hasConfigValue("Size.Resolution")) {
-        fResolution = drawingSize.imageCoorsResolution(unitDest).getVal();
+    // Resolution will be ignored if the line is given in pixels (defaults to 1.0 pixels).
+    if (Units.Length.isMetricUnit(unitSource) && i_pTestStep->hasConfigValue("Size.Resolution")) {
+        fResolution = i_pTestStep->getConfigValue("Size.Resolution").toDouble();
     }
     QSizeF sizeF = i_pTestStep->getConfigValue("Size").toSizeF();
     CPhysValSize physValSizeResult;
-    if (Units.Length.isMetricUnit(unitPoint)) {
-        CPhysValSize physValSize(sizeF, fResolution, unitPoint);
+    if (Units.Length.isMetricUnit(unitSource)) {
+        CPhysValSize physValSize(sizeF, fResolution, unitSource);
         physValSizeResult = m_pDrawingScene->convert(physValSize, unitDest);
     }
     else {
@@ -3762,34 +4047,42 @@ void CTest::doTestStepDrawingSceneConvertToPhysValLine( ZS::Test::CTestStep* i_p
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CUnit unitPoint = Units.Length.px;
+    CUnit unitSource = Units.Length.px;
     CUnit unitDest = drawingSize.unit();
     if (i_pTestStep->hasConfigValue("Line.Unit")) {
         QString strUnitPoint = i_pTestStep->getConfigValue("Line.Unit").toString();
-        unitPoint = strUnitPoint;
+        unitSource = strUnitPoint;
     }
     if (i_pTestStep->hasConfigValue("UnitDest")) {
         QString strUnitDest = i_pTestStep->getConfigValue("UnitDest").toString();
         unitDest = strUnitDest;
     }
     double fResolution = drawingSize.imageCoorsResolutionInPx();
-    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
-        fResolution = drawingSize.imageCoorsResolution(unitDest).getVal();
+    if (Units.Length.isMetricUnit(unitSource)) {
+        fResolution = drawingSize.imageCoorsResolution(unitSource).getVal();
     }
-    if (i_pTestStep->hasConfigValue("Line.Resolution")) {
-        fResolution = drawingSize.imageCoorsResolution(unitDest).getVal();
+    // Resolution will be ignored if the line is given in pixels (defaults to 1.0 pixels).
+    if (Units.Length.isMetricUnit(unitSource) && i_pTestStep->hasConfigValue("Line.Resolution")) {
+        fResolution = i_pTestStep->getConfigValue("Line.Resolution").toDouble();
     }
     QLineF lineF = i_pTestStep->getConfigValue("Line").toLineF();
     CPhysValLine physValLineResult;
-    if (Units.Length.isMetricUnit(unitPoint)) {
-        CPhysValLine physValLine(lineF, fResolution, unitPoint);
+    if (Units.Length.isMetricUnit(unitSource)) {
+        CPhysValLine physValLine(lineF, fResolution, unitSource);
         physValLineResult = m_pDrawingScene->convert(physValLine, unitDest);
     }
     else {
         physValLineResult = m_pDrawingScene->convert(lineF, unitDest);
     }
-    QString strResultValue = "{" + physValLineResult.toString() + "} " + physValLineResult.unit().symbol();
-    i_pTestStep->setResultValue(strResultValue);
+    QStringList strlstResultValues;
+    strlstResultValues.append("P1 {" + physValLineResult.p1().toString() + "} " + physValLineResult.unit().symbol());
+    strlstResultValues.append("P2 {" + physValLineResult.p2().toString() + "} " + physValLineResult.unit().symbol());
+    strlstResultValues.append("Center {" + physValLineResult.center().toString() + "} " + physValLineResult.unit().symbol());
+    strlstResultValues.append("dx: " + physValLineResult.dx().toString());
+    strlstResultValues.append("dy: " + physValLineResult.dy().toString());
+    strlstResultValues.append("Length: " + physValLineResult.length().toString());
+    strlstResultValues.append("Angle: " + physValLineResult.angle().toString());
+    i_pTestStep->setResultValues(strlstResultValues);
 }
 
 //------------------------------------------------------------------------------
@@ -3807,34 +4100,46 @@ void CTest::doTestStepDrawingSceneConvertToPhysValRect( ZS::Test::CTestStep* i_p
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CUnit unitPoint = Units.Length.px;
+    CUnit unitSource = Units.Length.px;
     CUnit unitDest = drawingSize.unit();
     if (i_pTestStep->hasConfigValue("Rect.Unit")) {
         QString strUnitPoint = i_pTestStep->getConfigValue("Rect.Unit").toString();
-        unitPoint = strUnitPoint;
+        unitSource = strUnitPoint;
     }
     if (i_pTestStep->hasConfigValue("UnitDest")) {
         QString strUnitDest = i_pTestStep->getConfigValue("UnitDest").toString();
         unitDest = strUnitDest;
     }
     double fResolution = drawingSize.imageCoorsResolutionInPx();
-    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
-        fResolution = drawingSize.imageCoorsResolution(unitDest).getVal();
+    if (Units.Length.isMetricUnit(unitSource)) {
+        fResolution = drawingSize.imageCoorsResolution(unitSource).getVal();
     }
-    if (i_pTestStep->hasConfigValue("Rect.Resolution")) {
-        fResolution = drawingSize.imageCoorsResolution(unitDest).getVal();
+    // Resolution will be ignored if the line is given in pixels (defaults to 1.0 pixels).
+    if (Units.Length.isMetricUnit(unitSource) && i_pTestStep->hasConfigValue("Rect.Resolution")) {
+        fResolution = i_pTestStep->getConfigValue("Rect.Resolution").toDouble();
     }
     QRectF rectF = i_pTestStep->getConfigValue("Rect").toRectF();
     CPhysValRect physValRectResult;
-    if (Units.Length.isMetricUnit(unitPoint)) {
-        CPhysValRect physValRect(rectF, fResolution, unitPoint);
+    if (Units.Length.isMetricUnit(unitSource)) {
+        CPhysValRect physValRect(rectF, fResolution, unitSource);
         physValRectResult = m_pDrawingScene->convert(physValRect, unitDest);
     }
     else {
         physValRectResult = m_pDrawingScene->convert(rectF, unitDest);
     }
-    QString strResultValue = "{" + physValRectResult.toString() + "} " + physValRectResult.unit().symbol();
-    i_pTestStep->setResultValue(strResultValue);
+    QStringList strlstResultValues;
+    strlstResultValues.append("Top: " + physValRectResult.top().toString());
+    strlstResultValues.append("Bottom: " + physValRectResult.bottom().toString());
+    strlstResultValues.append("Left: " + physValRectResult.left().toString());
+    strlstResultValues.append("Right: " + physValRectResult.right().toString());
+    strlstResultValues.append("TopLeft {" + physValRectResult.topLeft().toString() + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("TopRight {" + physValRectResult.topRight().toString() + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("BottomRight {" + physValRectResult.bottomRight().toString() + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("BottomLeft {" + physValRectResult.bottomLeft().toString() + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("Center {" + physValRectResult.center().toString() + "} " + physValRectResult.unit().symbol());
+    strlstResultValues.append("Width: " + physValRectResult.width().toString());
+    strlstResultValues.append("Height: " + physValRectResult.height().toString());
+    i_pTestStep->setResultValues(strlstResultValues);
 }
 
 //------------------------------------------------------------------------------
@@ -4016,9 +4321,9 @@ void CTest::doTestStepAddGraphObj( ZS::Test::CTestStep* i_pTestStep )
     EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
 
     CPhysValPoint physValPoint1(*m_pDrawingScene);
-    physValPoint1 = i_pTestStep->getConfigValue("Point1").toString();
+    physValPoint1 = i_pTestStep->getConfigValue("P1").toPointF();
     CPhysValPoint physValPoint2(*m_pDrawingScene);
-    physValPoint2 = i_pTestStep->getConfigValue("Point2").toString();
+    physValPoint2 = i_pTestStep->getConfigValue("P2").toPointF();
 
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
 

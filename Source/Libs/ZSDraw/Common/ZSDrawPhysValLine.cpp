@@ -280,11 +280,7 @@ CPhysVal CPhysValLine::dy() const
 CPhysVal CPhysValLine::length() const
 //------------------------------------------------------------------------------
 {
-    double fRes = m_fRes;
-    if (m_unit == Units.Length.px) {
-        fRes /= 10.0;
-    }
-    return CPhysVal(m_line.length(), m_unit, fRes);
+    return CPhysVal(m_line.length(), m_unit, m_fRes);
 }
 
 //------------------------------------------------------------------------------
@@ -308,11 +304,7 @@ CPhysVal CPhysValLine::angleTo(const CPhysValLine& i_physValLineOther) const
 CPhysValPoint CPhysValLine::center() const
 //------------------------------------------------------------------------------
 {
-    double fRes = m_fRes;
-    if (m_unit == Units.Length.px) {
-        fRes /= 10.0;
-    }
-    return CPhysValPoint(m_line.center(), fRes, m_unit);
+    return CPhysValPoint(m_line.center(), m_fRes, m_unit);
 }
 
 //------------------------------------------------------------------------------

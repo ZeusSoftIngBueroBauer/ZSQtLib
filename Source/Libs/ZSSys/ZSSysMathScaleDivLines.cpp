@@ -1432,7 +1432,7 @@ double CScaleDivLines::scaleMaxInPix() const
 double CScaleDivLines::scaleRangeInPix() const
 //------------------------------------------------------------------------------
 {
-    return abs(m_fMax_px - m_fMin_px + 1);
+    return fabs(m_fMax_px - m_fMin_px + 1);
 }
 
 /*==============================================================================
@@ -1848,10 +1848,13 @@ double CScaleDivLines::getValInPix(double i_fVal) const
 
     @param i_fPos_px [in]
         Position in pixel coordinates.
+    @param i_bRoundToResolution [in]
+        true if the returned values should be rounded to the resolution of the scale,
+        false otherwise.
 
     @return Value in world coordinates.
 */
-double CScaleDivLines::getVal(double i_fPos_px) const
+double CScaleDivLines::getVal(double i_fPos_px, bool i_bRoundToResolution ) const
 //------------------------------------------------------------------------------
 {
     double fVal = i_fPos_px;
@@ -1961,7 +1964,9 @@ double CScaleDivLines::getVal(double i_fPos_px) const
             } // Neither hit a main nor a sub division line ..
         } // Somewhere between minimum and maximum scale ..
 
-        fVal = Math::round2Resolution(fVal, m_fScaleRes);
+        if (i_bRoundToResolution) {
+            fVal = Math::round2Resolution(fVal, m_fScaleRes);
+        }
     }
 
     return fVal;
@@ -1993,9 +1998,9 @@ double CScaleDivLines::getDistanceInPix(double i_fDistance) const
         }
 
         // Transformation from world coordinates into pixel coordinates:
-        // dx/px = (xRange_px / xScaleRange) * x_px
+        // dx/px = (xDistance_px / xScaleRange) * x_px
         double fScaleRangeVal = fabs(fScaleValMax - fScaleValMin);
-        double fScaleRangePix = scaleRangeInPix();
+        double fScaleRangePix = fabs(m_fMax_px - m_fMin_px);
         double fFactor = fScaleRangePix / fScaleRangeVal;
 
         double fDistance = i_fDistance;
@@ -2011,15 +2016,18 @@ double CScaleDivLines::getDistanceInPix(double i_fDistance) const
 /*! @brief Returns the distance in world coordinates (physical value) for the
            given distance in pixels.
 
-           dx/mm = (xScaleRange/mm / xRange/px) * dx/px
+           dx/mm = (xScaleRange/mm / xDistance/px) * dx/px
 
     @param i_fDistance_px [in]
         Distance in pixel coordinates.
+    @param i_bRoundToResolution [in]
+        true if the returned values should be rounded to the resolution of the scale,
+        false otherwise.
 
     @return Value in world coordinates.
 */
 //------------------------------------------------------------------------------
-double CScaleDivLines::getDistance(double i_fDistance_px) const
+double CScaleDivLines::getDistance(double i_fDistance_px, bool i_bRoundToResolution) const
 {
     double fDistance = i_fDistance_px;
 
@@ -2035,15 +2043,18 @@ double CScaleDivLines::getDistance(double i_fDistance_px) const
         }
 
         // Transformation from pixel coordinates into world coordinates:
-        // Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Min_px)
+        // Val_mm = Min_mm + (ScaleRange_mm / Distance_px) * (Val_px - Min_px)
         double fScaleValRange = fabs(fScaleValMax-fScaleValMin);
-        double fScaleRangePix = scaleRangeInPix();
+        double fScaleRangePix = fabs(m_fMax_px - m_fMin_px);
         double fFactor =  fScaleValRange / fScaleRangePix;
 
         fDistance = fFactor * i_fDistance_px;
 
         if (m_spacing == ESpacing::Logarithmic) {
             fDistance = pow(10.0, fDistance);
+        }
+        if (i_bRoundToResolution) {
+            fDistance = Math::round2Resolution(fDistance, m_fScaleRes);
         }
     }
     return fDistance;

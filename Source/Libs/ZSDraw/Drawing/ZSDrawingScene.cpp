@@ -542,8 +542,8 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
         }
         else if ((i_physValPoint.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             QPointF pt = i_physValPoint.toQPointF();
-            double fx = m_divLinesMetricsX.getVal(pt.x());
-            double fy = m_divLinesMetricsY.getVal(pt.y());
+            double fx = m_divLinesMetricsX.getVal(pt.x(), false);
+            double fy = m_divLinesMetricsY.getVal(pt.y(), false);
             CPhysVal physValX(fx, m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
             CPhysVal physValY(fy, m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
             physValX.convertValue(i_unitDst);
