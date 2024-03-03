@@ -957,6 +957,12 @@ CPhysVal CGraphObjLine::getLength(const CUnit& i_unit) const
     Point 1 remains unchanged. Point 2 is updated correspondingly.
     The length remains the same.
 
+    If the YScale Axis orientation is from top to bottom the angles are measured
+    counter-clockwise from a point on the x-axis to the right of the origin (x > 0).
+
+    If the YScale Axis orientation is from bottom to top the angles are measured
+    clockwise from a point on the x-axis to the right of the origin (x > 0).
+
     @param [in] i_fAngle_degree
         Angle to be set.
 */
@@ -983,6 +989,12 @@ void CGraphObjLine::setAngle(double i_fAngle_degree)
     Point 1 remains unchanged. Point 2 is updated correspondingly.
     The length remains the same.
 
+    If the YScale Axis orientation is from top to bottom the angles are measured
+    counter-clockwise from a point on the x-axis to the right of the origin (x > 0).
+
+    If the YScale Axis orientation is from bottom to top the angles are measured
+    clockwise from a point on the x-axis to the right of the origin (x > 0).
+
     @param [in] i_physValLength
         Angle to be set.
 */
@@ -1007,6 +1019,17 @@ void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the item's angle in degrees.
+
+    The return value will be in the range of values from 0.0 up to but not
+    including 360.0.
+    
+    If the YScale Axis orientation is from top to bottom the angles are measured
+    counter-clockwise from a point on the x-axis to the right of the origin (x > 0).
+
+    If the YScale Axis orientation is from bottom to top the angles are measured
+    clockwise from a point on the x-axis to the right of the origin (x > 0).
+
+    @sa setAngle()
 */
 double CGraphObjLine::getAngleInDegrees() const
 //------------------------------------------------------------------------------
@@ -1017,8 +1040,19 @@ double CGraphObjLine::getAngleInDegrees() const
 //------------------------------------------------------------------------------
 /*! @brief Returns the item's angle in the given unit.
 
+    The return value will be in the range of values from 0.0 up to but not
+    including 360.0.
+    
+    If the YScale Axis orientation is from top to bottom the angles are measured
+    counter-clockwise from a point on the x-axis to the right of the origin (x > 0).
+
+    If the YScale Axis orientation is from bottom to top the angles are measured
+    clockwise from a point on the x-axis to the right of the origin (x > 0).
+
     @param [in] i_unit
         Unit in which the angle should be returned.
+
+    @sa setAngle()
 */
 CPhysVal CGraphObjLine::getAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
