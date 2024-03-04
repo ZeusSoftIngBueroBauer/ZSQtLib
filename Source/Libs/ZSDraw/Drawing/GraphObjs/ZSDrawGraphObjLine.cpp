@@ -1057,7 +1057,7 @@ double CGraphObjLine::getAngleInDegrees() const
 CPhysVal CGraphObjLine::getAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(getLine().angle().getVal(i_unit), i_unit);
+    return CPhysVal(getLine().angle().getVal(i_unit), i_unit, 0.1);
 }
 
 /*==============================================================================

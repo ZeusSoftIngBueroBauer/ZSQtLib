@@ -534,9 +534,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     pTestStep->setConfigValue("P1", QPointF(0.0, 0.0));
@@ -568,9 +566,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     pTestStep->setConfigValue("P1", QPointF(100.0, 0.0));
@@ -602,9 +598,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     pTestStep->setConfigValue("P1", QPointF(100.0, 100.0));
@@ -636,9 +630,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     pTestStep->setConfigValue("P1", QPointF(0.0, 100.0));
@@ -713,9 +705,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -765,9 +755,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -817,9 +805,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -869,9 +855,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -921,9 +905,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)));
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2312,7 +2294,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     int idxStep = 0;
 
     /*-----------------------------------------------------------------------
-    Drawing Size 800 * 600 Pixels or 800 * 600 mm with Resolution = 1.0 px/mm
+    Pixels Drawing:
+        Size: 800 * 600 Pixels
+    Metrics Drawing:
+        Size: 800 * 600 mm
+        ScreenPixelResolution: 1.0 px/mm
+        Decimals: 2
     -----------------------------------------------------------------------*/
 
     // Line0 (vertical)
@@ -2328,9 +2315,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -2339,12 +2324,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            pTestStep->setConfigValue("P1", QPointF(0.0, 0.0));
-            pTestStep->setConfigValue("P2", QPointF(100.0, 0.0));
+            pTestStep->setConfigValue("P1", QPointF(300.0, 250.0));
+            pTestStep->setConfigValue("P2", QPointF(300.0, 350.0));
         }
         else {
-            pTestStep->setConfigValue("P1", QPointF(0.0, 100.0));
-            pTestStep->setConfigValue("P2", QPointF(100.0, 100.0));
+            pTestStep->setConfigValue("P1", QPointF(300.0, 350.0));
+            pTestStep->setConfigValue("P2", QPointF(300.0, 250.0));
         }
     }
     QStringList strlstExpectedValues;
@@ -2363,22 +2348,22 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 0.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 300.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 250.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 300.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 350.00 mm");
+            strlstExpectedValues.append("getLength: 100.00 mm");
+            strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
         }
         else {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 100.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 300.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 350.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 300.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 250.00 mm");
+            strlstExpectedValues.append("getLength: 100.00 mm");
+            strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2395,9 +2380,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -2415,37 +2398,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         }
     }
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
+    strlstExpectedValues.append("line.p1 {-50.0, 0.0} px");
+    strlstExpectedValues.append("line.p2 {50.0, 0.0} px");
     strlstExpectedValues.append("line.length: 100.0 px");
     strlstExpectedValues.append("line.pos {300.0, 300.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("getLine.p1.x: 300 px");
-        strlstExpectedValues.append("getLine.p1.y: 250 px");
-        strlstExpectedValues.append("getLine.p2.x: 300 px");
-        strlstExpectedValues.append("getLine.p2.y: 350 px");
+        strlstExpectedValues.append("getLine.p1.x: 250 px");
+        strlstExpectedValues.append("getLine.p1.y: 300 px");
+        strlstExpectedValues.append("getLine.p2.x: 350 px");
+        strlstExpectedValues.append("getLine.p2.y: 300 px");
         strlstExpectedValues.append("getLength: 100 px");
-        strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("getPos {300, 300} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
+            strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 300.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 300.00 mm");
+            strlstExpectedValues.append("getLength: 100.00 mm");
             strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 0.0} mm");
+            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
         }
         else {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
+            strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 300.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 300.00 mm");
+            strlstExpectedValues.append("getLength: 100.00 mm");
             strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 100.0} mm");
+            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2462,9 +2445,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -2477,42 +2458,42 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             pTestStep->setConfigValue("P2", QPointF(325.0, 350.0));
         }
         else {
-            pTestStep->setConfigValue("P1", QPointF(250.0, 250.0));
-            pTestStep->setConfigValue("P2", QPointF(325.0, 350.0));
+            pTestStep->setConfigValue("P1", QPointF(250.0, 350.0));
+            pTestStep->setConfigValue("P2", QPointF(325.0, 250.0));
         }
     }
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
-    strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("line.p1 {-37.5, -50.0} px");
+    strlstExpectedValues.append("line.p2 {37.5, 50.0} px");
+    strlstExpectedValues.append("line.length: 125.0 px");
+    strlstExpectedValues.append("line.pos {287.5, 300.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("getLine.p1.x: 300 px");
+        strlstExpectedValues.append("getLine.p1.x: 250 px");
         strlstExpectedValues.append("getLine.p1.y: 250 px");
-        strlstExpectedValues.append("getLine.p2.x: 300 px");
+        strlstExpectedValues.append("getLine.p2.x: 325 px");
         strlstExpectedValues.append("getLine.p2.y: 350 px");
-        strlstExpectedValues.append("getLength: 100 px");
-        strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {300, 300} px");
+        strlstExpectedValues.append("getLength: 125 px");
+        strlstExpectedValues.append("getAngle: 306.9 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("getPos {288, 300} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 0.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 250.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 325.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 350.00 mm");
+            strlstExpectedValues.append("getLength: 125.00 mm");
+            strlstExpectedValues.append("getAngle: 306.9 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {287.50, 300.00} mm");
         }
         else {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 100.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 350.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 325.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 250.00 mm");
+            strlstExpectedValues.append("getLength: 125.00 mm");
+            strlstExpectedValues.append("getAngle: 53.1 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {287.50, 300.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2529,9 +2510,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -2544,42 +2523,42 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             pTestStep->setConfigValue("P2", QPointF(350.0, 325.0));
         }
         else {
-            pTestStep->setConfigValue("P1", QPointF(325.0, 350.0));
-            pTestStep->setConfigValue("P2", QPointF(350.0, 325.0));
+            pTestStep->setConfigValue("P1", QPointF(325.0, 250.0));
+            pTestStep->setConfigValue("P2", QPointF(350.0, 275.0));
         }
     }
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
-    strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("line.p1 {-12.5, 12.5} px");
+    strlstExpectedValues.append("line.p2 {12.5, -12.5} px");
+    strlstExpectedValues.append("line.length: 35.4 px");
+    strlstExpectedValues.append("line.pos {337.5, 337.5} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("getLine.p1.x: 300 px");
-        strlstExpectedValues.append("getLine.p1.y: 250 px");
-        strlstExpectedValues.append("getLine.p2.x: 300 px");
-        strlstExpectedValues.append("getLine.p2.y: 350 px");
-        strlstExpectedValues.append("getLength: 100 px");
-        strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {300, 300} px");
+        strlstExpectedValues.append("getLine.p1.x: 325 px");
+        strlstExpectedValues.append("getLine.p1.y: 350 px");
+        strlstExpectedValues.append("getLine.p2.x: 350 px");
+        strlstExpectedValues.append("getLine.p2.y: 325 px");
+        strlstExpectedValues.append("getLength: 35 px");
+        strlstExpectedValues.append("getAngle: 45.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("getPos {338, 338} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 0.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 325.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 350.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 325.00 mm");
+            strlstExpectedValues.append("getLength: 35.36 mm");
+            strlstExpectedValues.append("getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {337.50, 337.50} mm");
         }
         else {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 100.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 325.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 250.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 275.00 mm");
+            strlstExpectedValues.append("getLength: 35.36 mm");
+            strlstExpectedValues.append("getAngle: 315.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {337.50, 262.50} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2596,9 +2575,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -2611,42 +2588,42 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             pTestStep->setConfigValue("P2", QPointF(330.0, 270.0));
         }
         else {
-            pTestStep->setConfigValue("P1", QPointF(320.0, 270.0));
-            pTestStep->setConfigValue("P2", QPointF(330.0, 270.0));
+            pTestStep->setConfigValue("P1", QPointF(320.0, 330.0));
+            pTestStep->setConfigValue("P2", QPointF(330.0, 330.0));
         }
     }
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
-    strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("line.p1 {-5.0, 0.0} px");
+    strlstExpectedValues.append("line.p2 {5.0, 0.0} px");
+    strlstExpectedValues.append("line.length: 10.0 px");
+    strlstExpectedValues.append("line.pos {325.0, 270.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("getLine.p1.x: 300 px");
-        strlstExpectedValues.append("getLine.p1.y: 250 px");
-        strlstExpectedValues.append("getLine.p2.x: 300 px");
-        strlstExpectedValues.append("getLine.p2.y: 350 px");
-        strlstExpectedValues.append("getLength: 100 px");
-        strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {300, 300} px");
+        strlstExpectedValues.append("getLine.p1.x: 320 px");
+        strlstExpectedValues.append("getLine.p1.y: 270 px");
+        strlstExpectedValues.append("getLine.p2.x: 330 px");
+        strlstExpectedValues.append("getLine.p2.y: 270 px");
+        strlstExpectedValues.append("getLength: 10 px");
+        strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("getPos {325, 270} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
+            strlstExpectedValues.append("getLine.p1.x: 320.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 270.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 270.00 mm");
+            strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 0.0} mm");
+            strlstExpectedValues.append("getPos {325.00, 270.00} mm");
         }
         else {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
+            strlstExpectedValues.append("getLine.p1.x: 320.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 330.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 330.00 mm");
+            strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 100.0} mm");
+            strlstExpectedValues.append("getPos {325.00, 330.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2663,9 +2640,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -2678,42 +2653,42 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             pTestStep->setConfigValue("P2", QPointF(330.0, 280.0));
         }
         else {
-            pTestStep->setConfigValue("P1", QPointF(330.0, 270.0));
-            pTestStep->setConfigValue("P2", QPointF(330.0, 280.0));
+            pTestStep->setConfigValue("P1", QPointF(330.0, 330.0));
+            pTestStep->setConfigValue("P2", QPointF(330.0, 320.0));
         }
     }
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
-    strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("line.p1 {0.0, -5.0} px");
+    strlstExpectedValues.append("line.p2 {0.0, 5.0} px");
+    strlstExpectedValues.append("line.length: 10.0 px");
+    strlstExpectedValues.append("line.pos {330.0, 275.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("getLine.p1.x: 300 px");
-        strlstExpectedValues.append("getLine.p1.y: 250 px");
-        strlstExpectedValues.append("getLine.p2.x: 300 px");
-        strlstExpectedValues.append("getLine.p2.y: 350 px");
-        strlstExpectedValues.append("getLength: 100 px");
+        strlstExpectedValues.append("getLine.p1.x: 330 px");
+        strlstExpectedValues.append("getLine.p1.y: 270 px");
+        strlstExpectedValues.append("getLine.p2.x: 330 px");
+        strlstExpectedValues.append("getLine.p2.y: 280 px");
+        strlstExpectedValues.append("getLength: 10 px");
         strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {300, 300} px");
+        strlstExpectedValues.append("getPos {330, 275} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 0.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 330.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 270.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 280.00 mm");
+            strlstExpectedValues.append("getLength: 10.00 mm");
+            strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {330.00, 275.00} mm");
         }
         else {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 100.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 330.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 330.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 320.00 mm");
+            strlstExpectedValues.append("getLength: 10.00 mm");
+            strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {330.00, 325.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2730,9 +2705,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -2745,42 +2718,42 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             pTestStep->setConfigValue("P2", QPointF(320.0, 280.0));
         }
         else {
-            pTestStep->setConfigValue("P1", QPointF(330.0, 280.0));
-            pTestStep->setConfigValue("P2", QPointF(320.0, 280.0));
+            pTestStep->setConfigValue("P1", QPointF(330.0, 320.0));
+            pTestStep->setConfigValue("P2", QPointF(320.0, 320.0));
         }
     }
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
-    strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("line.p1 {5.0, 0.0} px");
+    strlstExpectedValues.append("line.p2 {-5.0, 0.0} px");
+    strlstExpectedValues.append("line.length: 10.0 px");
+    strlstExpectedValues.append("line.pos {325.0, 280.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("getLine.p1.x: 300 px");
-        strlstExpectedValues.append("getLine.p1.y: 250 px");
-        strlstExpectedValues.append("getLine.p2.x: 300 px");
-        strlstExpectedValues.append("getLine.p2.y: 350 px");
-        strlstExpectedValues.append("getLength: 100 px");
-        strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {300, 300} px");
+        strlstExpectedValues.append("getLine.p1.x: 330 px");
+        strlstExpectedValues.append("getLine.p1.y: 280 px");
+        strlstExpectedValues.append("getLine.p2.x: 320 px");
+        strlstExpectedValues.append("getLine.p2.y: 280 px");
+        strlstExpectedValues.append("getLength: 10 px");
+        strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("getPos {325, 280} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 0.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 330.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 280.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 280.00 mm");
+            strlstExpectedValues.append("getLength: 10.00 mm");
+            strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {325.00, 280.00} mm");
         }
         else {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 100.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 330.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 320.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 320.00 mm");
+            strlstExpectedValues.append("getLength: 10.00 mm");
+            strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {325.00, 320.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2797,9 +2770,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
-        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObj(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -2812,42 +2783,42 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             pTestStep->setConfigValue("P2", QPointF(320.0, 270.0));
         }
         else {
-            pTestStep->setConfigValue("P1", QPointF(320.0, 280.0));
-            pTestStep->setConfigValue("P2", QPointF(320.0, 270.0));
+            pTestStep->setConfigValue("P1", QPointF(320.0, 320.0));
+            pTestStep->setConfigValue("P2", QPointF(320.0, 330.0));
         }
     }
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
-    strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
-    strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("line.p1 {0.0, 5.0} px");
+    strlstExpectedValues.append("line.p2 {0.0, -5.0} px");
+    strlstExpectedValues.append("line.length: 10.0 px");
+    strlstExpectedValues.append("line.pos {320.0, 275.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("getLine.p1.x: 300 px");
-        strlstExpectedValues.append("getLine.p1.y: 250 px");
-        strlstExpectedValues.append("getLine.p2.x: 300 px");
-        strlstExpectedValues.append("getLine.p2.y: 350 px");
-        strlstExpectedValues.append("getLength: 100 px");
-        strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {300, 300} px");
+        strlstExpectedValues.append("getLine.p1.x: 320 px");
+        strlstExpectedValues.append("getLine.p1.y: 280 px");
+        strlstExpectedValues.append("getLine.p2.x: 320 px");
+        strlstExpectedValues.append("getLine.p2.y: 270 px");
+        strlstExpectedValues.append("getLength: 10 px");
+        strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("getPos {320, 275} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 0.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 320.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 280.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 270.00 mm");
+            strlstExpectedValues.append("getLength: 10.00 mm");
+            strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {320.00, 275.00} mm");
         }
         else {
-            strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
-            strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
-            strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
-            strlstExpectedValues.append("getLength: 100.0 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {50.0, 100.0} mm");
+            strlstExpectedValues.append("getLine.p1.x: 320.00 mm");
+            strlstExpectedValues.append("getLine.p1.y: 320.00 mm");
+            strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
+            strlstExpectedValues.append("getLine.p2.y: 330.00 mm");
+            strlstExpectedValues.append("getLength: 10.00 mm");
+            strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("getPos {320.00, 325.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2882,7 +2853,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     ZS::Test::CTestStepGroup* pGrpAddGroups = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Groups",
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add Groups",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -2891,320 +2862,48 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     int idxStep = 0;
 
-    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " UnsetCurrentDrawingTool",
-        /* strOperation    */ "DrawingScene.setCurrentDrawingTool(null)",
-        /* pGrpParent      */ pGrpAddGroups,
-        /* szDoTestStepFct */ SLOT(doTestStepUnsetCurrentDrawingTool(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", "");
-    pTestStep->setConfigValue("GraphObjType", "");
-
     // Group0 (short lines which form a rectangle)
     //--------------------------------------------
 
     QString strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
+    QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
+    QString strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
-    ZS::Test::CTestStepGroup* pGrpGroup0 = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName,
-        /* pTSGrpParent */ pGrpAddGroups );
-
-    ZS::Test::CTestStepGroup* pGrpAddGroup0 = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add " + strGraphObjName,
-        /* pTSGrpParent */ pGrpGroup0 );
-
-    idxStep = 0;
-
-    QPoint ptMouseStart = QPoint(325, 265);
-    QPoint ptMouseStop = QPoint(325, 270);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptMouseStart.setY(i_drawingSize.imageHeightInPixels() - ptMouseStart.y() - 1);
-        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
-    }
-
-    pTestStep = new ZS::Test::CTestStep(
+    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
-    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
-    pTestStep->setConfigValue("MovesCount", 5);
-
-    QPoint ptMousePos = QPoint(ptMouseStop);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-
-    ptMouseStart = ptMouseStop;
-    ptMouseStop = QPoint(330, 275);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
-    }
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
-    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
-    pTestStep->setConfigValue("MovesCount", 5);
-
-    ptMousePos = ptMouseStop;
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
-
-    ptMouseStart = ptMouseStop;
-    ptMouseStop = QPoint(325, 280);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
-    }
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
-    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
-    pTestStep->setConfigValue("MovesCount", 5);
-
-    ptMousePos = ptMouseStop;
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
-
-    ptMouseStart = ptMouseStop;
-    ptMouseStop = QPoint(320, 275);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
-    }
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
-    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
-    pTestStep->setConfigValue("MovesCount", 5);
-
-    ptMousePos = ptMouseStop;
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
-
-    ptMouseStart = ptMouseStop;
-    ptMouseStop = QPoint(315, 275);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
-    }
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
-    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
-    pTestStep->setConfigValue("MovesCount", 5);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " GroupSelectedObjects",
-        /* strOperation    */ "DrawingScene.groupGraphObjsSelected()",
-        /* pGrpParent      */ pGrpAddGroup0,
-        /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
+        /* pGrpParent      */ pGrpAddGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
 
     // Group1 (checkmark)
     //-------------------
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-
-    ZS::Test::CTestStepGroup* pGrpGroup1 = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName,
-        /* pTSGrpParent */ pGrpAddGroups );
-
-    ZS::Test::CTestStepGroup* pGrpAddGroup1 = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add " + strGraphObjName,
-        /* pTSGrpParent */ pGrpGroup1 );
-
-    idxStep = 0;
-
-    ptMouseStart = QPoint(280, 300);
-    ptMouseStop = QPoint(287, 300);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptMouseStart.setY(i_drawingSize.imageHeightInPixels() - ptMouseStart.y() - 1);
-        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
-    }
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* pGrpParent      */ pGrpAddGroup1,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
-    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
-    pTestStep->setConfigValue("MovesCount", 5);
-
-    ptMousePos = ptMouseStop;
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup1,
-        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
+    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup1,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-
-    ptMouseStart = ptMouseStop;
-    ptMouseStop = QPoint(337, 337);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
-    }
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* pGrpParent      */ pGrpAddGroup1,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
-    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
-    pTestStep->setConfigValue("MovesCount", 5);
-
-    ptMousePos = ptMouseStop;
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup1,
-        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
-        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
-        /* pGrpParent      */ pGrpAddGroup1,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MousePos", ptMousePos);
-    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
-
-    ptMouseStart = ptMouseStop;
-    ptMouseStop = QPoint(347, 337);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
-    }
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
-        /* pGrpParent      */ pGrpAddGroup1,
-        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
-    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
-    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
-    pTestStep->setConfigValue("MovesCount", 5);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " GroupSelectedObjects",
-        /* strOperation    */ "DrawingScene.groupGraphObjsSelected()",
-        /* pGrpParent      */ pGrpAddGroup1,
-        /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
-    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
+        /* pGrpParent      */ pGrpAddGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
 
     // Group2 (horizonal and vertical lines together with checkmark and rectangle group)
     //----------------------------------------------------------------------------------
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
+    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
-    createTestGroupDrawMouseEventsCreateGroup(
-        pGrpAddGroups, io_idxGroup,
-        strGraphObjName,
-        QPoint(120, 120), QPoint(480, 480), 10, QPoint(490, 490));
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
+        /* pGrpParent      */ pGrpAddGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -3239,7 +2938,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpDrawLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create Lines",
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Draw Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
@@ -3578,25 +3277,327 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     ZS::Test::CTestStepGroup* pGrpDrawGroups = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Groups",
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Draw Groups",
         /* pTSGrpParent */ i_pTestStepGroupParent );
-
-    // Group0
-    //-------
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
     QString strInstCountKey = strFactoryGroupName + "::" + strGraphObjType;
+
+    int idxStep = 0;
+
+    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " UnsetCurrentDrawingTool",
+        /* strOperation    */ "DrawingScene.setCurrentDrawingTool(null)",
+        /* pGrpParent      */ pGrpDrawGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepUnsetCurrentDrawingTool(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FactoryGroupName", "");
+    pTestStep->setConfigValue("GraphObjType", "");
+
+    // Group0 (short lines which form a rectangle)
+    //--------------------------------------------
+
     QString strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
 
-    ZS::Test::CTestStepGroup* pGrpDrawGroup0 = new ZS::Test::CTestStepGroup(
+    ZS::Test::CTestStepGroup* pGrpGroup0 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create, Resize, Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawGroups );
 
+    ZS::Test::CTestStepGroup* pGrpDrawGroup0 = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add " + strGraphObjName,
+        /* pTSGrpParent */ pGrpGroup0 );
+
+    idxStep = 0;
+
+    QPoint ptMouseStart = QPoint(325, 265);
+    QPoint ptMouseStop = QPoint(325, 270);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        ptMouseStart.setY(i_drawingSize.imageHeightInPixels() - ptMouseStart.y() - 1);
+        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
+    }
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
+    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
+    pTestStep->setConfigValue("MovesCount", 5);
+
+    QPoint ptMousePos = QPoint(ptMouseStop);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+
+    ptMouseStart = ptMouseStop;
+    ptMouseStop = QPoint(330, 275);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
+    }
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
+    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
+    pTestStep->setConfigValue("MovesCount", 5);
+
+    ptMousePos = ptMouseStop;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
+
+    ptMouseStart = ptMouseStop;
+    ptMouseStop = QPoint(325, 280);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
+    }
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
+    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
+    pTestStep->setConfigValue("MovesCount", 5);
+
+    ptMousePos = ptMouseStop;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
+
+    ptMouseStart = ptMouseStop;
+    ptMouseStop = QPoint(320, 275);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
+    }
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
+    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
+    pTestStep->setConfigValue("MovesCount", 5);
+
+    ptMousePos = ptMouseStop;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
+
+    ptMouseStart = ptMouseStop;
+    ptMouseStop = QPoint(315, 275);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
+    }
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
+    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
+    pTestStep->setConfigValue("MovesCount", 5);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " GroupSelectedObjects",
+        /* strOperation    */ "DrawingScene.groupGraphObjsSelected()",
+        /* pGrpParent      */ pGrpDrawGroup0,
+        /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+
+    // Group1 (checkmark)
+    //-------------------
+
+    strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
+    s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
+
+    ZS::Test::CTestStepGroup* pGrpGroup1 = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName,
+        /* pTSGrpParent */ pGrpDrawGroups );
+
+    ZS::Test::CTestStepGroup* pGrpDrawGroup1 = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add " + strGraphObjName,
+        /* pTSGrpParent */ pGrpGroup1 );
+
+    idxStep = 0;
+
+    ptMouseStart = QPoint(280, 300);
+    ptMouseStop = QPoint(287, 300);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        ptMouseStart.setY(i_drawingSize.imageHeightInPixels() - ptMouseStart.y() - 1);
+        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
+    }
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* pGrpParent      */ pGrpDrawGroup1,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
+    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
+    pTestStep->setConfigValue("MovesCount", 5);
+
+    ptMousePos = ptMouseStop;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup1,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup1,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+
+    ptMouseStart = ptMouseStop;
+    ptMouseStop = QPoint(337, 337);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
+    }
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* pGrpParent      */ pGrpDrawGroup1,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
+    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
+    pTestStep->setConfigValue("MovesCount", 5);
+
+    ptMousePos = ptMouseStop;
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup1,
+        /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
+        /* pGrpParent      */ pGrpDrawGroup1,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MousePos", ptMousePos);
+    pTestStep->setConfigValue("KeyboardModifiers", Qt::ControlModifier);
+
+    ptMouseStart = ptMouseStop;
+    ptMouseStop = QPoint(347, 337);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        ptMouseStop.setY(i_drawingSize.imageHeightInPixels() - ptMouseStop.y() - 1);
+    }
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* pGrpParent      */ pGrpDrawGroup1,
+        /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("MouseButtons", Qt::NoButton);
+    pTestStep->setConfigValue("MousePosStart", ptMouseStart);
+    pTestStep->setConfigValue("MousePosStop", ptMouseStop);
+    pTestStep->setConfigValue("MovesCount", 5);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " GroupSelectedObjects",
+        /* strOperation    */ "DrawingScene.groupGraphObjsSelected()",
+        /* pGrpParent      */ pGrpDrawGroup1,
+        /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
+    pTestStep->setConfigValue("GraphObjType", strGraphObjType);
+
+    // Group2 (horizonal and vertical lines together with checkmark and rectangle group)
+    //----------------------------------------------------------------------------------
+
+    strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
+    s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
+
     createTestGroupDrawMouseEventsCreateGroup(
-        pGrpDrawGroup0, io_idxGroup,
+        pGrpDrawGroups, io_idxGroup,
         strGraphObjName,
         QPoint(120, 120), QPoint(480, 480), 10, QPoint(490, 490));
 
@@ -4640,7 +4641,7 @@ void CTest::doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep 
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepAddGraphObj( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepAddGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -4650,15 +4651,14 @@ void CTest::doTestStepAddGraphObj( ZS::Test::CTestStep* i_pTestStep )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepAddGraphObj",
+        /* strMethod    */ "doTestStepAddGraphObjLine",
         /* strAddInfo   */ strMthInArgs );
 
-    QString strFactoryGroupName = i_pTestStep->getConfigValue("FactoryGroupName").toString();
-    QString strGraphObjType = i_pTestStep->getConfigValue("GraphObjType").toString();
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
+
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
-
-    EGraphObjType graphObjType = str2GraphObjType(strGraphObjType);
 
     CPhysValPoint physValPoint1(*m_pDrawingScene);
     physValPoint1 = i_pTestStep->getConfigValue("P1").toPointF();
@@ -4668,40 +4668,97 @@ void CTest::doTestStepAddGraphObj( ZS::Test::CTestStep* i_pTestStep )
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
 
     if (pObjFactory != nullptr) {
-        CDrawSettings drawSettings(graphObjType);
+        CDrawSettings drawSettings(EGraphObjTypeLine);
         CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, physValPoint1, drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
-        if (graphObjType == EGraphObjTypeLine) {
-            CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
-            if (pGraphObjLine != nullptr) {
-                pGraphObjLine->setP2(physValPoint2);
-            }
+        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
+        if (pGraphObjLine != nullptr) {
+            pGraphObjLine->setP2(physValPoint2);
         }
     }
 
     QStringList strlstExpectedValues = i_pTestStep->getExpectedValues();
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
-    if (graphObjType == EGraphObjTypeLine) {
-        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
-        if (pGraphObjLine != nullptr) {
-            QLineF lineF = pGraphObjLine->line();
-            strlstResultValues.append("line.p1 {" + qPoint2Str(lineF.p1()) + "} px");
-            strlstResultValues.append("line.p2 {" + qPoint2Str(lineF.p2()) + "} px");
-            strlstResultValues.append("line.length: " + QString::number(lineF.length(), 'f', 1) + " px");
-            strlstResultValues.append("line.pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
-            CPhysValLine physValLine = pGraphObjLine->getLine();
-            strlstResultValues.append("getLine.p1.x: " + physValLine.p1().x().toString());
-            strlstResultValues.append("getLine.p1.y: " + physValLine.p1().y().toString());
-            strlstResultValues.append("getLine.p2.x: " + physValLine.p2().x().toString());
-            strlstResultValues.append("getLine.p2.y: " + physValLine.p2().y().toString());
-            CPhysVal physValLength = pGraphObjLine->getLength();
-            strlstResultValues.append("getLength: " + physValLength.toString());
-            CPhysVal physValAngle = pGraphObjLine->getAngle(Units.Angle.Degree);
-            strlstResultValues.append("getAngle: " + physValAngle.toString());
-            CPhysValPoint physValPointPos = pGraphObjLine->getPos();
-            strlstResultValues.append("getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+    CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
+    if (pGraphObjLine != nullptr) {
+        QLineF lineF = pGraphObjLine->line();
+        strlstResultValues.append("line.p1 {" + qPoint2Str(lineF.p1()) + "} px");
+        strlstResultValues.append("line.p2 {" + qPoint2Str(lineF.p2()) + "} px");
+        strlstResultValues.append("line.length: " + QString::number(lineF.length(), 'f', 1) + " px");
+        strlstResultValues.append("line.pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
+        CPhysValLine physValLine = pGraphObjLine->getLine();
+        strlstResultValues.append("getLine.p1.x: " + physValLine.p1().x().toString());
+        strlstResultValues.append("getLine.p1.y: " + physValLine.p1().y().toString());
+        strlstResultValues.append("getLine.p2.x: " + physValLine.p2().x().toString());
+        strlstResultValues.append("getLine.p2.y: " + physValLine.p2().y().toString());
+        CPhysVal physValLength = pGraphObjLine->getLength();
+        strlstResultValues.append("getLength: " + physValLength.toString());
+        CPhysVal physValAngle = pGraphObjLine->getAngle(Units.Angle.Degree);
+        strlstResultValues.append("getAngle: " + physValAngle.toString());
+        CPhysValPoint physValPointPos = pGraphObjLine->getPos();
+        strlstResultValues.append("getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+    }
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepAddGraphObjGroup",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
+    QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
+
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+
+    CPhysValPoint physValTopLeft(*m_pDrawingScene);
+    physValTopLeft = i_pTestStep->getConfigValue("TopLeft").toPointF();
+    CPhysValSize physValSize(*m_pDrawingScene);
+    physValSize = i_pTestStep->getConfigValue("Size").toSizeF();
+
+    CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+
+    if (pObjFactory != nullptr) {
+        CDrawSettings drawSettings(EGraphObjTypeGroup);
+        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, physValTopLeft, drawSettings);
+        m_pDrawingScene->addGraphObj(pGraphObj);
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
+            pGraphObjGroup->setSize(physValSize);
         }
+    }
+
+    QStringList strlstExpectedValues = i_pTestStep->getExpectedValues();
+    QStringList strlstResultValues;
+    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+    if (pGraphObjGroup != nullptr) {
+        QRectF rectF = pGraphObjGroup->getBoundingRect();
+        strlstResultValues.append("rect.topLeft {" + qPoint2Str(rectF.topLeft()) + "} px");
+        strlstResultValues.append("rect.bottomRight {" + qPoint2Str(rectF.bottomRight()) + "} px");
+        strlstResultValues.append("rect.size {" + qSize2Str(rectF.size()) + "} px");
+        strlstResultValues.append("rect.pos {" + qPoint2Str(pGraphObjGroup->pos()) + "} px");
+        CPhysValRect physValRect = pGraphObjGroup->getRect();
+        strlstResultValues.append("getRect.topLeft.x: " + physValRect.topLeft().x().toString());
+        strlstResultValues.append("getRect.topLeft.y: " + physValRect.topLeft().y().toString());
+        strlstResultValues.append("getRect.bottomRight.x: " + physValRect.bottomRight().x().toString());
+        strlstResultValues.append("getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
+        CPhysValSize physValSize = pGraphObjGroup->getSize();
+        strlstResultValues.append("getRect.size.width: " + physValSize.width().toString());
+        strlstResultValues.append("getRect.size.height: " + physValSize.height().toString());
+        CPhysValPoint physValPointPos = pGraphObjGroup->getPos();
+        strlstResultValues.append("getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }

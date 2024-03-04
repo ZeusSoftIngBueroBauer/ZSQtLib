@@ -177,7 +177,8 @@ protected slots:
     void doTestStepSetMode( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepAddGraphObj( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepAddGraphObjLine( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepShowGeometryLabel( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMousePressEvent( ZS::Test::CTestStep* i_pTestStep );
