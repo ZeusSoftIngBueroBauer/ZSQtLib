@@ -315,8 +315,42 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         /* strObjName   */ m_strName,
         /* strMethod    */ "addToGroup",
         /* strAddInfo   */ strMthInArgs );
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-    QGraphicsItemGroup::addToGroup(pGraphicsItem);
+
+    QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
+    if (i_pGraphObj == nullptr) {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
+    }
+    else if (pGraphicsItemChild == nullptr) {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "pGraphicsItemChild == nullptr");
+    }
+    else if (i_pGraphObj == this) {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "Cannot add myself as a child");
+    }
+    else if (i_pGraphObj->isParentOf(this)) {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "Cannot add a parent as a child");
+    }
+    else {
+        QPointF ptPosThisPrev = pos();
+        QRectF rctBoundingThisPrev = getBoundingRect();
+        rctBoundingThisPrev = mapToParent(rctBoundingThisPrev).boundingRect();
+        QRectF rctBoundingChild = pGraphicsItemChild->mapToParent(i_pGraphObj->getBoundingRect()).boundingRect();
+        QRectF rctBoundingThisNew = rctBoundingThisPrev | rctBoundingChild;
+        CPhysValRect physValRectNew(rctBoundingThisNew, m_pDrawingScene->drawingSize().imageCoorsResolutionInPx(), Units.Length.px);
+        physValRectNew = convert(physValRectNew);
+        setRect(physValRectNew);
+        // Before adding the new child, move all existing childs to their new positions.
+        // If childs have already been added ..
+        if (count() > 0) {
+            QPointF ptPosThisNew = pos();
+            QVector<CGraphObj*> arpGraphObjChilds = childs();
+            for (CGraphObj* pGraphObjChild : arpGraphObjChilds) {
+                pGraphObjChild->QGraphicsItem_setPos(ptPosChildNew);
+            }
+        }
+
+        QGraphicsItemGroup::addToGroup(pGraphicsItemChild);
+        m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, this);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -341,8 +375,30 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
         /* strMethod    */ "removeFromGroup",
         /* strAddInfo   */ strMthInArgs );
 
-    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
-    QGraphicsItemGroup::removeFromGroup(pGraphicsItem);
+    QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
+    if (i_pGraphObj == nullptr) {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "i_pGraphObj == nullptr");
+    }
+    else if (pGraphicsItemChild == nullptr) {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "pGraphicsItemChild == nullptr");
+    }
+    else if (!i_pGraphObj->isChildOf(this, true)) {
+        throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "Cannot only remove direct childs");
+    }
+    else {
+        QRectF rctBoundingThis = getBoundingRect(); // Used if the group will have no more childs anymore
+        QGraphicsItemGroup::removeFromGroup(pGraphicsItemChild);
+        m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, parentBranch());
+        // Keep the current bounding rect.
+        // If childs still belong to the group ..
+        if (count() > 0) {
+            QVector<CGraphObj*> arpGraphObjChilds = childs();
+            rctBoundingThis = ZS::Draw::boundingRect(arpGraphObjChilds);
+        }
+        CPhysValRect physValRect(rctBoundingThis, m_pDrawingScene->drawingSize().imageCoorsResolutionInPx(), Units.Length.px);
+        physValRect = convert(physValRect);
+        setRect(physValRect);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -350,6 +406,23 @@ CGraphObj* CGraphObjGroup::findGraphObj( const QString& i_strObjName )
 //------------------------------------------------------------------------------
 {
     return dynamic_cast<CGraphObj*>(find(i_strObjName));
+}
+
+//------------------------------------------------------------------------------
+/*! @rief Returns the child items of the group.
+*/
+QVector<CGraphObj*> CGraphObjGroup::childs() const
+//------------------------------------------------------------------------------
+{
+    const QVector<CIdxTreeEntry*> arpChildTreeEntries = CIdxTreeEntry::childs();
+    QVector<CGraphObj*> arpGraphObjChilds;
+    for (CIdxTreeEntry* pTreeEntryChild : arpChildTreeEntries) {
+        CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pTreeEntryChild);
+        if (pGraphObjChild != nullptr) {
+            arpGraphObjChilds.append(pGraphObjChild);
+        }
+    }
+    return arpGraphObjChilds;
 }
 
 /*==============================================================================
@@ -495,9 +568,6 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
 
         {   CRefCountGuard refCountGuard(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
 
-            // Store original rectangle coordinates.
-            setRectOrig(rectF);
-
             // Move the object to the parent position.
             // This has to be done after resizing the line which updates the local coordinates
             // of the line with origin (0/0) at the lines center point.
@@ -511,6 +581,9 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
         }
 
         applyGeometryChangeToChildrens();
+
+        // Store the rectangle coordinates as the original coordinates.
+        setRectOrig(rectF);
     }
 }
 
@@ -2259,6 +2332,49 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
+    else if (i_change == ItemParentHasChanged || i_change == ItemPositionHasChanged) {
+        //traceGraphicsItemStates(mthTracer);
+        //traceGraphObjStates(mthTracer);
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+        // Update the transformed line coordinates kept in the unit of the drawing scene.
+        // The group may be moved or transformed by several methods.
+        // "itemChange" is a central point to update the coordinates upon those changes.
+        if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
+            QRectF rectF = getBoundingRect();
+            //QPointF pTL = mapToParent(rectF.topLeft());
+            //QPointF pBR = mapToParent(rectF.bottomRight());
+            //CPhysValPoint physValPTL = m_pDrawingScene->toPhysValPoint(pTL);
+            //CPhysValPoint physValPBR = m_pDrawingScene->toPhysValPoint(pBR);
+            // For groups the original coordinates are only updated when adding the group to
+            // or removing the group from another group.
+            if (i_change == ItemPositionHasChanged) {
+                if (parentItem() == nullptr) {
+                    setRectOrig(rectF);
+                    applyGeometryChangeToChildrens();
+                }
+            }
+            else if (i_change == ItemParentHasChanged) {
+                setRectOrig(rectF);
+            }
+        }
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
+        bGeometryChanged = true;
+        bTreeEntryChanged = true;
+    }
+    else if (i_change == ItemChildAddedChange) {
+        // A child is added to this item. The value argument is the new child item
+        // (i.e., a QGraphicsItem pointer). Do not pass this item to any item's setParentItem()
+        // function as this notification is delivered. The return value is unused; you cannot
+        // adjust anything in this notification. Note that the new child might not be fully
+        // constructed when this notification is sent; calling pure virtual functions on the
+        // child can lead to a crash.
+    }
+    else if (i_change == ItemChildRemovedChange) {
+        // A child is removed from this item. The value argument is the child item that is
+        // about to be removed (i.e., a QGraphicsItem pointer). The return value is unused;
+        // you cannot adjust anything in this notification.
+    }
     else if (i_change == ItemSelectedHasChanged) {
         prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
@@ -2280,46 +2396,6 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         }
         bSelectedChanged = true;
         bTreeEntryChanged = true;
-    }
-    else if (i_change == ItemChildAddedChange || i_change == ItemChildRemovedChange) {
-        //prepareGeometryChange();
-
-        //CGraphObjSelectionPoint* pGraphObjSelPt;
-        //QPointF                  ptSel;
-        //ESelectionPoint          selPt;
-        //int                      idxSelPt;
-
-        //for( idxSelPt = 0; idxSelPt < CEnumSelectionPoint::count(); idxSelPt++ )
-        //{
-        //    selPt = static_cast<ESelectionPoint>(idxSelPt);
-
-        //    pGraphObjSelPt = m_arpSelPtsBoundingRect[idxSelPt];
-
-        //    if( pGraphObjSelPt != nullptr )
-        //    {
-        //        if( idxSelPt == ESelectionPoint::RotateTop && m_fScaleFacYCurr != 0.0 )
-        //        {
-        //            ptSel = getSelectionPointCoors(m_rctCurr,ESelectionPoint::TopCenter);
-        //            ptSel.setY( ptSel.y() - getSelectionPointRotateDistance()/m_fScaleFacYCurr );
-        //            ptSel = mapToScene(ptSel);
-        //        }
-        //        else if( idxSelPt == ESelectionPoint::RotateBottom && m_fScaleFacYCurr != 0.0 )
-        //        {
-        //            ptSel = getSelectionPointCoors(m_rctCurr,ESelectionPoint::BottomCenter);
-        //            ptSel.setY( ptSel.y() + getSelectionPointRotateDistance()/m_fScaleFacYCurr );
-        //            ptSel = mapToScene(ptSel);
-        //        }
-        //        else
-        //        {
-        //            ptSel = getSelectionPointCoors(m_rctCurr,selPt);
-        //            ptSel = mapToScene(ptSel);
-        //        }
-        //        pGraphObjSelPt->setPos(ptSel);
-        //    }
-        //}
-
-        //updateEditInfo();
-        //updateToolTip();
     }
     else if (i_change == ItemZValueHasChanged) {
         bZValueChanged = true;
@@ -2532,6 +2608,9 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
     double fScaleY = rectCurr.height() / m_rectOrig.height();
 
     QList<QGraphicsItem*> arpGraphicsItemsChilds = childItems();
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        mthTracer.trace("Childs [" + QString::number(arpGraphicsItemsChilds.size()) + "]");
+    }
     for (QGraphicsItem* pGraphicsItemChild : arpGraphicsItemsChilds) {
         CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
         if (pGraphObjChild != nullptr) {

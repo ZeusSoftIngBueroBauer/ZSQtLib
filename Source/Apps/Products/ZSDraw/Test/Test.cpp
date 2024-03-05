@@ -515,6 +515,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
         s_hshGraphObjsInstCounts[strKey] = 0;
     }
 
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
     QString strInstCountKey = strFactoryGroupName + "::" + strGraphObjType;
@@ -527,7 +529,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     QString strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -559,7 +561,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -591,7 +593,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -623,7 +625,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -686,6 +688,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         s_hshGraphObjsInstCounts[strKey] = 0;
     }
 
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
     QString strInstCountKey = strFactoryGroupName + "::" + strGraphObjType;
@@ -698,7 +702,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     QString strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -748,7 +752,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -798,7 +802,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -848,7 +852,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -898,7 +902,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2287,6 +2291,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
     QString strInstCountKey = strFactoryGroupName + "::" + strGraphObjType;
@@ -2308,7 +2314,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     QString strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2373,7 +2379,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2438,7 +2444,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2503,7 +2509,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2568,7 +2574,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2633,7 +2639,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2698,7 +2704,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2763,7 +2769,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2856,9 +2862,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add Groups",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
+    CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
     QString strInstCountKey = strFactoryGroupName + "::" + strGraphObjType;
+    QStringList strlstGraphObjsAddToGroup;
 
     int idxStep = 0;
 
@@ -2868,7 +2877,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     QString strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2876,13 +2885,21 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
+    strlstGraphObjsAddToGroup.clear();
+    strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line4"));
+    strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line5"));
+    //strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line6"));
+    //strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line7"));
+    pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
 
     // Group1 (checkmark)
     //-------------------
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2890,13 +2907,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
+    strlstGraphObjsAddToGroup.clear();
+    strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line2"));
+    strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line3"));
+    pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
 
     // Group2 (horizonal and vertical lines together with checkmark and rectangle group)
     //----------------------------------------------------------------------------------
 
     strGraphObjName = strGraphObjType + QString::number(s_hshGraphObjsInstCounts[strInstCountKey]);
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
-    strKeyInTree = m_pDrawingScene->getGraphObjsIdxTree()->buildKeyInTreeStr(strEntryType, strGraphObjName);
+    strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2904,6 +2927,14 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
+    strlstGraphObjsAddToGroup.clear();
+    strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line0"));
+    strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line1"));
+    strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Group0"));
+    strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Group1"));
+    pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -4677,7 +4708,6 @@ void CTest::doTestStepAddGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
         }
     }
 
-    QStringList strlstExpectedValues = i_pTestStep->getExpectedValues();
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
     CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
@@ -4721,25 +4751,24 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
 
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
-
-    CPhysValPoint physValTopLeft(*m_pDrawingScene);
-    physValTopLeft = i_pTestStep->getConfigValue("TopLeft").toPointF();
-    CPhysValSize physValSize(*m_pDrawingScene);
-    physValSize = i_pTestStep->getConfigValue("Size").toSizeF();
+    QStringList strlstGraphObjsAddToGroup = i_pTestStep->getConfigValue("AddToGroup").toStringList();
 
     CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
-
     if (pObjFactory != nullptr) {
         CDrawSettings drawSettings(EGraphObjTypeGroup);
-        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, physValTopLeft, drawSettings);
+        CGraphObj* pGraphObj = pObjFactory->createGraphObj(m_pDrawingScene, CPhysValPoint(*m_pDrawingScene), drawSettings);
         m_pDrawingScene->addGraphObj(pGraphObj);
         CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
         if (pGraphObjGroup != nullptr) {
-            pGraphObjGroup->setSize(physValSize);
+            for (const QString& strKeyInTree : strlstGraphObjsAddToGroup) {
+                CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+                if (pGraphObj != nullptr) {
+                    pGraphObjGroup->addToGroup(pGraphObj);
+                }
+            }
         }
     }
 
-    QStringList strlstExpectedValues = i_pTestStep->getExpectedValues();
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
     CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);

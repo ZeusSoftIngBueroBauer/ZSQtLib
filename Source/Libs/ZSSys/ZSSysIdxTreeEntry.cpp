@@ -449,38 +449,54 @@ public: // instance methods
 =============================================================================*/
 
 //-----------------------------------------------------------------------------
-/*! Returns true if the entry is a child of the given parent entry.
+/*! Returns true if this entry is a child of the given parent entry.
+
+    Depending on i_bDirectlyOnly the whole tree is searched upwards until
+    the root of the tree is reached or only the given parent branch is checked.
 
     @param i_pBranch [in] Pointer to parent branch.
+    @param i_bDirectlyOnly [in]
+        true to check only if this entry belongs directly to the parent branch,
+        false to check the whole tree upwards.
 
     @return true if the entry is a child of the parent entry - false otherwise.
 */
-bool CIdxTreeEntry::isChildOf( CIdxTreeEntry* i_pBranch ) const
+bool CIdxTreeEntry::isChildOf( const CIdxTreeEntry* i_pBranch, bool i_bDirectlyOnly ) const
 //-----------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(m_pMtx);
-
     bool bIs = false;
-
-    if( i_pBranch != nullptr )
-    {
+    if (i_pBranch != nullptr) {
         CIdxTreeEntry* pBranchParent = m_pParentBranch;
-
-        while( pBranchParent != nullptr )
-        {
+        while (pBranchParent != nullptr) {
             bIs = (pBranchParent == i_pBranch);
-
-            if( bIs )
-            {
+            if (bIs || i_bDirectlyOnly) {
                 break;
             }
             pBranchParent = pBranchParent->parentBranch();
         }
-    } // if( i_pBranch != nullptr )
-
+    }
     return bIs;
+}
 
-} // isChildOf
+//-----------------------------------------------------------------------------
+/*! Returns true if this entry is the parent of the given child entry.
+
+    Depending on i_bDirectlyOnly the whole tree is searched downwards
+    or only this entry is checked.
+
+    @param i_pChildTreeEntry [in] Pointer to child entry.
+    @param i_bDirectlyOnly [in]
+        true to check only if the child belongs directly to this entry,
+        false to check the whole tree downwards.
+
+    @return true if the entry is the parent of the child entry - false otherwise.
+*/
+bool CIdxTreeEntry::isParentOf( const CIdxTreeEntry* i_pChildTreeEntry, bool i_bDirectlyOnly ) const
+//-----------------------------------------------------------------------------
+{
+    return i_pChildTreeEntry->isChildOf(this, i_bDirectlyOnly);
+}
 
 /*=============================================================================
 public: // instance methods (applying filter)

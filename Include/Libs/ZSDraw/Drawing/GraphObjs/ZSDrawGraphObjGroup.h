@@ -118,6 +118,7 @@ public: // instance methods
     void addToGroup( CGraphObj* i_pGraphObj );
     void removeFromGroup( CGraphObj* i_pGraphObj );
     CGraphObj* findGraphObj( const QString& i_strObjName );
+    QVector<CGraphObj*> childs() const;
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const; // for subsystem test
 public: // instance methods

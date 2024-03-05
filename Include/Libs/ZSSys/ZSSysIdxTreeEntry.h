@@ -140,7 +140,8 @@ public: // instance methods
     /*! Returns the index of the entry within it's parent branches vector of child entries. */
     int indexInParentBranch() const { return m_idxInParentBranch; }
 public: // instance methods
-    bool isChildOf( CIdxTreeEntry* i_pBranch ) const;
+    bool isChildOf( const CIdxTreeEntry* i_pBranch, bool i_bOnlyDirectParent = false ) const;
+    bool isParentOf( const CIdxTreeEntry* i_pChildTreeEntry, bool i_bOnlyDirectChild = false ) const;
 public: // instance methods (applying filter)
     int indexInParentBranchsChildListWithSameEntryTypes() const;
 public: // instance methods

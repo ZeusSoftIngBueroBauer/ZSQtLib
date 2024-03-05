@@ -26,7 +26,7 @@ may result in using the software modules.
 
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSPhysVal/ZSPhysVal.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
@@ -1003,6 +1003,104 @@ QRectF ZS::Draw::boundingRect(const QLineF& i_line)
     // Width and height of the bounding rectangle must be corrected by one pixel.
     //rectBounding.setWidth(rectBounding.width() + 1.0);
     //rectBounding.setHeight(rectBounding.height() + 1.0);
+    return rectBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle of the given graphics items in coordinates
+           relative to the given parent group.
+
+    If no parent group is passed (nullptr) the bounding rectangle is returned in
+    scene coordinates.
+*/
+QRectF ZS::Draw::boundingRect(
+    const QList<QGraphicsItem*>& i_arpGraphicsItems, QGraphicsItem* i_pGrapicsItemParentGroup)
+//------------------------------------------------------------------------------
+{
+    QVector<CGraphObj*> arpGraphObjChilds;
+    for (QGraphicsItem* pGraphicsItemChild : i_arpGraphicsItems) {
+        CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
+        if (pGraphObjChild != nullptr) {
+            arpGraphObjChilds.append(pGraphObjChild);
+        }
+    }
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(i_pGrapicsItemParentGroup);
+    return boundingRect(arpGraphObjChilds, pGraphObjGroup);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle of the given graphics items in coordinates
+           relative to the given parent group.
+
+    If no parent group is passed (nullptr) the bounding rectangle is returned in
+    scene coordinates.
+*/
+QRectF ZS::Draw::boundingRect(
+    const QVector<CGraphObj*>& i_arpGraphObjs, CGraphObjGroup* i_pGraphObjGroup)
+//------------------------------------------------------------------------------
+{
+    QRectF rectBounding;
+    double fXLeftMin = INT_MAX;
+    double fYTopMin = INT_MAX;
+    double fXRightMax = INT_MIN;
+    double fYBottomMax = INT_MIN;
+    QGraphicsItem* pGraphicsItemParentGroup = dynamic_cast<QGraphicsItem*>(i_pGraphObjGroup);
+    for (CGraphObj* pGraphObj : i_arpGraphObjs) {
+        QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+        if (pGraphicsItem != nullptr) {
+            if (!pGraphObj->isConnectionLine() && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
+                QRectF rectItem = pGraphObj->getBoundingRect();
+                if (i_pGraphObjGroup != nullptr) {
+                    rectItem = pGraphicsItem->mapToItem(pGraphicsItemParentGroup, rectItem).boundingRect();
+                }
+                else {
+                    rectItem = pGraphicsItem->mapToScene(rectItem).boundingRect();
+                }
+                if (rectItem.width() >= 0.0) {
+                    if (rectItem.left() < fXLeftMin) {
+                        fXLeftMin = rectItem.left();
+                    }
+                    if (rectItem.right() > fXRightMax) {
+                        fXRightMax = rectItem.right();
+                    }
+                }
+                else {
+                    if (rectItem.right() < fXLeftMin) {
+                        fXLeftMin = rectItem.right();
+                    }
+                    if (rectItem.left() > fXRightMax) {
+                        fXRightMax = rectItem.left();
+                    }
+                }
+                if (rectItem.height() >= 0.0) {
+                    if (rectItem.top() < fYTopMin) {
+                        fYTopMin = rectItem.top();
+                    }
+                    if (rectItem.bottom() > fYBottomMax) {
+                        fYBottomMax = rectItem.bottom();
+                    }
+                }
+                else {
+                    if (rectItem.bottom() < fYTopMin) {
+                        fYTopMin = rectItem.bottom();
+                    }
+                    if (rectItem.top() > fYBottomMax) {
+                        fYBottomMax = rectItem.top();
+                    }
+                }
+            }
+        }
+    }
+    if (fXLeftMin == INT_MAX || fYTopMin == INT_MAX || fXRightMax == INT_MIN || fYBottomMax == INT_MIN) {
+        fXLeftMin = 0.0;
+        fYTopMin = 0.0;
+        fXRightMax = 0.0;
+        fYBottomMax = 0.0;
+    }
+    rectBounding.setLeft(fXLeftMin);
+    rectBounding.setTop(fYTopMin);
+    rectBounding.setRight(fXRightMax);
+    rectBounding.setBottom(fYBottomMax);
     return rectBounding;
 }
 

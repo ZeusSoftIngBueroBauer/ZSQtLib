@@ -46,11 +46,6 @@ class QPainterPath;
 class QPolygonF;
 class QTransform;
 
-
-/*******************************************************************************
-global type definitions and constants
-*******************************************************************************/
-
 namespace ZS
 {
 namespace PhysVal
@@ -60,8 +55,9 @@ class CPhysVal;
 namespace Draw
 {
 class CDrawSettings;
+class CGraphObj;
+class CGraphObjGroup;
 struct SGraphObjHitInfo;
-
 
 ZSDRAWDLL_API QString qPainterPathElemType2Str( int i_type );
 ZSDRAWDLL_API QString qPainterPath2Str( QGraphicsItem* i_pGraphObj, const QPainterPath& i_painterPath );
@@ -77,11 +73,6 @@ ZSDRAWDLL_API bool isGraphicsSceneMouseEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv );
 ZSDRAWDLL_API bool isGraphicsSceneResizeEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneResizeEvent2Str( QGraphicsSceneResizeEvent* i_pEv );
-
-
-/*******************************************************************************
-interface description of exported methods
-*******************************************************************************/
 
 ZSDRAWDLL_API void getLineEndPolygons(
     const QLineF&        i_line,
@@ -118,6 +109,8 @@ ZSDRAWDLL_API QPolygonF resizePolygon(
 
 ZSDRAWDLL_API QRectF boundingRect(const QPointF& i_pt, double i_fRadius);
 ZSDRAWDLL_API QRectF boundingRect(const QLineF& i_line);
+ZSDRAWDLL_API QRectF boundingRect(const QList<QGraphicsItem*>& i_arpGraphicsItems, QGraphicsItem* i_pGrapicsItemParentGroup = nullptr);
+ZSDRAWDLL_API QRectF boundingRect(const QVector<CGraphObj*>& i_arpGraphObjs, CGraphObjGroup* i_pGraphObjGroup = nullptr);
 ZSDRAWDLL_API QPolygonF line2Polygon(const QLineF& i_line);
 ZSDRAWDLL_API QPolygonF rect2Polygon(const QRectF& i_rct, int i_iSelPtsCount = -1, const ESelectionPoint* i_pSelPts = nullptr);
 ZSDRAWDLL_API bool isLineHit(const QLineF& i_line, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);

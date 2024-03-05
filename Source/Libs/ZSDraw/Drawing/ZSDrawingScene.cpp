@@ -2549,16 +2549,15 @@ int CDrawingScene::groupGraphObjsSelected()
             //    /* refParent */ EAlignmentRef::Top,
             //    /* bAbsolute */ false );
 
-            CPhysValRect physValRect(rctGroupSceneCoors, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-            physValRect = convert(physValRect);
-            pGraphObjGroup->setRect(physValRect);
+            //CPhysValRect physValRect(rctGroupSceneCoors, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+            //physValRect = convert(physValRect);
+            //pGraphObjGroup->setRect(physValRect);
 
             // Add child items to group.
             for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
                 CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
                 if (pGraphObjSelected != nullptr) {
                     pGraphObjGroup->addToGroup(pGraphObjSelected);
-                    m_pGraphObjsIdxTree->move(pGraphObjSelected, pGraphObjGroup);
 
                     //alignmentLeft.m_fVal = 0.0;
                     //alignmentTop.m_fVal = 0.0;
@@ -5114,66 +5113,12 @@ QRectF CDrawingScene::getBoundingRect(const QList<QGraphicsItem*>& i_arpGraphics
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF rectBoundingSceneCoors;
-
-    double fXLeftMin = INT_MAX;
-    double fYTopMin = INT_MAX;
-    double fXRightMax = INT_MIN;
-    double fYBottomMax = INT_MIN;
-    for (QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {
-        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-        if (pGraphObj == nullptr) {
-            throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr");
-        }
-        if (!pGraphObj->isConnectionLine() && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
-            QPointF ptScenePosItem = pGraphicsItem->scenePos();
-            QRectF rectBounding = pGraphObj->getBoundingRect();
-            QRectF rectSceneItem = pGraphicsItem->mapToScene(rectBounding).boundingRect();
-            //QSizeF sizItem = rectBoundingGraphObj.size();
-            //QRectF rectSceneItem = QRectF(ptScenePosItem, sizItem);
-            if (rectSceneItem.width() >= 0.0) {
-                if (rectSceneItem.left() < fXLeftMin) {
-                    fXLeftMin = rectSceneItem.left();
-                }
-                if (rectSceneItem.right() > fXRightMax) {
-                    fXRightMax = rectSceneItem.right();
-                }
-            }
-            else {
-                if (rectSceneItem.right() < fXLeftMin) {
-                    fXLeftMin = rectSceneItem.right();
-                }
-                if (rectSceneItem.left() > fXRightMax) {
-                    fXRightMax = rectSceneItem.left();
-                }
-            }
-            if (rectSceneItem.height() >= 0.0) {
-                if (rectSceneItem.top() < fYTopMin) {
-                    fYTopMin = rectSceneItem.top();
-                }
-                if (rectSceneItem.bottom() > fYBottomMax) {
-                    fYBottomMax = rectSceneItem.bottom();
-                }
-            }
-            else {
-                if (rectSceneItem.bottom() < fYTopMin) {
-                    fYTopMin = rectSceneItem.bottom();
-                }
-                if (rectSceneItem.top() > fYBottomMax) {
-                    fYBottomMax = rectSceneItem.top();
-                }
-            }
-        }
-    }
-    rectBoundingSceneCoors.setLeft(fXLeftMin);
-    rectBoundingSceneCoors.setTop(fYTopMin);
-    rectBoundingSceneCoors.setRight(fXRightMax);
-    rectBoundingSceneCoors.setBottom(fYBottomMax);
+    QRectF rectBounding = boundingRect(i_arpGraphicsItems);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(qRect2Str(rectBoundingSceneCoors));
+        mthTracer.setMethodReturn(qRect2Str(rectBounding));
     }
-    return rectBoundingSceneCoors;
+    return rectBounding;
 }
 
 //------------------------------------------------------------------------------
