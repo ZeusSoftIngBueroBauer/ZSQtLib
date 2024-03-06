@@ -338,16 +338,23 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         CPhysValRect physValRectNew(rctBoundingThisNew, m_pDrawingScene->drawingSize().imageCoorsResolutionInPx(), Units.Length.px);
         physValRectNew = convert(physValRectNew);
         setRect(physValRectNew);
-        // Before adding the new child, move all existing childs to their new positions.
+        // If the group's bounding rectangle has been extended, the group will get a new position
+        // in the parent's coordinate system (as the group's center point has been changed).
+        // The position of all already existing childs got to be moved accordingly as they are
+        // positioned relative to the previous center point of the group's bounding rectangle.
         // If childs have already been added ..
         if (count() > 0) {
             QPointF ptPosThisNew = pos();
+            QPointF ptMove = ptPosThisNew - ptPosThisPrev;
             QVector<CGraphObj*> arpGraphObjChilds = childs();
-            for (CGraphObj* pGraphObjChild : arpGraphObjChilds) {
-                pGraphObjChild->QGraphicsItem_setPos(ptPosChildNew);
+            for (CGraphObj* pGraphObjChildExisting : arpGraphObjChilds) {
+                QGraphicsItem* pGraphicsItemChildExisting = dynamic_cast<QGraphicsItem*>(pGraphObjChildExisting);
+                QPointF ptPosChildPrev = pGraphicsItemChildExisting->pos();
+                QPointF ptPosChildNew = ptPosChildPrev - ptMove;
+                pGraphicsItemChildExisting->setPos(ptPosChildNew);
             }
         }
-
+        // The newly added child will be positioned by the graphics system.
         QGraphicsItemGroup::addToGroup(pGraphicsItemChild);
         m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, this);
     }
@@ -580,7 +587,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             //updateInternalScenePos();
         }
 
-        applyGeometryChangeToChildrens();
+        //applyGeometryChangeToChildrens();
 
         // Store the rectangle coordinates as the original coordinates.
         setRectOrig(rectF);
@@ -2326,7 +2333,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             else if (i_change == ItemParentHasChanged) {
                     setRectOrig(rectF);
             }
-            applyGeometryChangeToChildrens();
+            //applyGeometryChangeToChildrens();
         }
         tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
@@ -2351,7 +2358,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             if (i_change == ItemPositionHasChanged) {
                 if (parentItem() == nullptr) {
                     setRectOrig(rectF);
-                    applyGeometryChangeToChildrens();
+                    //applyGeometryChangeToChildrens();
                 }
             }
             else if (i_change == ItemParentHasChanged) {
