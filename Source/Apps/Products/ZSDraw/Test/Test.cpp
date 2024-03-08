@@ -2895,17 +2895,17 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
 
     QStringList strlstExpectedValues;
-    strlstExpectedValues.append("group.topLeft {-5.0, -5.0} px");
-    strlstExpectedValues.append("group.bottomRight {5.0, 5.0} px");
-    strlstExpectedValues.append("group.size {10.0, 10.0} px");
-    strlstExpectedValues.append("group.pos {325.0, 275.0} px");
-    strlstExpectedValues.append("group.getRect.topLeft.x: 320 px");
-    strlstExpectedValues.append("group.getRect.topLeft.y: 270 px");
-    strlstExpectedValues.append("group.getRect.bottomRight.x: 330 px");
-    strlstExpectedValues.append("group.getRect.bottomRight.y: 280 px");
-    strlstExpectedValues.append("group.getRect.size.width: 10 px");
-    strlstExpectedValues.append("group.getRect.size.height: 10 px");
-    strlstExpectedValues.append("group.getPos {325, 275} px");
+    strlstExpectedValues.append("Group0.topLeft {-5.0, -5.0} px");
+    strlstExpectedValues.append("Group0.bottomRight {5.0, 5.0} px");
+    strlstExpectedValues.append("Group0.size {10.0, 10.0} px");
+    strlstExpectedValues.append("Group0.pos {325.0, 275.0} px");
+    strlstExpectedValues.append("Group0.getRect.topLeft.x: 320 px");
+    strlstExpectedValues.append("Group0.getRect.topLeft.y: 270 px");
+    strlstExpectedValues.append("Group0.getRect.bottomRight.x: 330 px");
+    strlstExpectedValues.append("Group0.getRect.bottomRight.y: 280 px");
+    strlstExpectedValues.append("Group0.getRect.size.width: 10 px");
+    strlstExpectedValues.append("Group0.getRect.size.height: 10 px");
+    strlstExpectedValues.append("Group0.getPos {325, 275} px");
     strlstExpectedValues.append("Line4.pos {0.0, -5.0} px");
     strlstExpectedValues.append("Line4.getLine.p1.x: 0 px");
     strlstExpectedValues.append("Line4.getLine.p1.y: 0 px");
@@ -2960,6 +2960,36 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Line3"));
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
 
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("Group1.topLeft {-50.0, -50.0} px");
+    strlstExpectedValues.append("Group1.bottomRight {50.0, 50.0} px");
+    strlstExpectedValues.append("Group1.size {100.0, 100.0} px");
+    strlstExpectedValues.append("Group1.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("Group1.getRect.topLeft.x: 250 px");
+    strlstExpectedValues.append("Group1.getRect.topLeft.y: 250 px");
+    strlstExpectedValues.append("Group1.getRect.bottomRight.x: 350 px");
+    strlstExpectedValues.append("Group1.getRect.bottomRight.y: 350 px");
+    strlstExpectedValues.append("Group1.getRect.size.width: 100 px");
+    strlstExpectedValues.append("Group1.getRect.size.height: 100 px");
+    strlstExpectedValues.append("Group1.getPos {300, 300} px");
+    strlstExpectedValues.append("Line2.pos {-12.5, 0.0} px");
+    strlstExpectedValues.append("Line2.getLine.p1.x: 0 px");
+    strlstExpectedValues.append("Line2.getLine.p1.y: 0 px");
+    strlstExpectedValues.append("Line2.getLine.p2.x: 75 px");
+    strlstExpectedValues.append("Line2.getLine.p2.y: 100 px");
+    strlstExpectedValues.append("Line2.getLength: 125 px");
+    strlstExpectedValues.append("Line2.getAngle: 306.9 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Line2.getPos {38, 50} px");
+    strlstExpectedValues.append("Line3.pos {37.5, 37.5} px");
+    strlstExpectedValues.append("Line3.getLine.p1.x: 75 px");
+    strlstExpectedValues.append("Line3.getLine.p1.y: 100 px");
+    strlstExpectedValues.append("Line3.getLine.p2.x: 100 px");
+    strlstExpectedValues.append("Line3.getLine.p2.y: 75 px");
+    strlstExpectedValues.append("Line3.getLength: 35 px");
+    strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Line3.getPos {88, 88} px");
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
     // Group2 (horizonal and vertical lines together with checkmark and rectangle group)
     //----------------------------------------------------------------------------------
 
@@ -2981,6 +3011,52 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Group0"));
     strlstGraphObjsAddToGroup.append(pIdxTree->buildKeyInTreeStr(strEntryType, "Group1"));
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
+
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("Group2.topLeft {-50.0, -50.0} px");
+    strlstExpectedValues.append("Group2.bottomRight {50.0, 50.0} px");
+    strlstExpectedValues.append("Group2.size {100.0, 100.0} px");
+    strlstExpectedValues.append("Group2.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("Group2.getRect.topLeft.x: 250 px");
+    strlstExpectedValues.append("Group2.getRect.topLeft.y: 250 px");
+    strlstExpectedValues.append("Group2.getRect.bottomRight.x: 350 px");
+    strlstExpectedValues.append("Group2.getRect.bottomRight.y: 350 px");
+    strlstExpectedValues.append("Group2.getRect.size.width: 100 px");
+    strlstExpectedValues.append("Group2.getRect.size.height: 100 px");
+    strlstExpectedValues.append("Group2.getPos {300, 300} px");
+    strlstExpectedValues.append("Line0.pos {0.0, 0.0} px");
+    strlstExpectedValues.append("Line0.getLine.p1.x: 50 px");
+    strlstExpectedValues.append("Line0.getLine.p1.y: 0 px");
+    strlstExpectedValues.append("Line0.getLine.p2.x: 50 px");
+    strlstExpectedValues.append("Line0.getLine.p2.y: 100 px");
+    strlstExpectedValues.append("Line0.getLength: 100 px");
+    strlstExpectedValues.append("Line0.getAngle: 270.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Line0.getPos {50, 50} px");
+    strlstExpectedValues.append("Line1.pos {0.0, 0.0} px");
+    strlstExpectedValues.append("Line1.getLine.p1.x: 0 px");
+    strlstExpectedValues.append("Line1.getLine.p1.y: 50 px");
+    strlstExpectedValues.append("Line1.getLine.p2.x: 100 px");
+    strlstExpectedValues.append("Line1.getLine.p2.y: 50 px");
+    strlstExpectedValues.append("Line1.getLength: 100 px");
+    strlstExpectedValues.append("Line1.getAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Line1.getPos {50, 50} px");
+    strlstExpectedValues.append("Group0.pos {25.0, -25.0} px");
+    strlstExpectedValues.append("Group0.getRect.topLeft.x: 70 px");
+    strlstExpectedValues.append("Group0.getRect.topLeft.y: 20 px");
+    strlstExpectedValues.append("Group0.getRect.bottomRight.x: 80 px");
+    strlstExpectedValues.append("Group0.getRect.bottomRight.y: 30 px");
+    strlstExpectedValues.append("Group0.getRect.size.width: 10 px");
+    strlstExpectedValues.append("Group0.getRect.size.height: 10 px");
+    strlstExpectedValues.append("Group0.getPos {75, 25} px");
+    strlstExpectedValues.append("Group1.pos {0.0, 0.0} px");
+    strlstExpectedValues.append("Group1.getRect.topLeft.x: 0 px");
+    strlstExpectedValues.append("Group1.getRect.topLeft.y: 0 px");
+    strlstExpectedValues.append("Group1.getRect.bottomRight.x: 100 px");
+    strlstExpectedValues.append("Group1.getRect.bottomRight.y: 100 px");
+    strlstExpectedValues.append("Group1.getRect.size.width: 100 px");
+    strlstExpectedValues.append("Group1.getRect.size.height: 100 px");
+    strlstExpectedValues.append("Group1.getPos {50, 50} px");
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -4820,35 +4896,47 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
     CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
     if (pGraphObjGroup != nullptr) {
         QRectF rectF = pGraphObjGroup->getBoundingRect();
-        strlstResultValues.append("group.topLeft {" + qPoint2Str(rectF.topLeft()) + "} px");
-        strlstResultValues.append("group.bottomRight {" + qPoint2Str(rectF.bottomRight()) + "} px");
-        strlstResultValues.append("group.size {" + qSize2Str(rectF.size()) + "} px");
-        strlstResultValues.append("group.pos {" + qPoint2Str(pGraphObjGroup->pos()) + "} px");
+        strlstResultValues.append(pGraphObjGroup->name() + ".topLeft {" + qPoint2Str(rectF.topLeft()) + "} px");
+        strlstResultValues.append(pGraphObjGroup->name() + ".bottomRight {" + qPoint2Str(rectF.bottomRight()) + "} px");
+        strlstResultValues.append(pGraphObjGroup->name() + ".size {" + qSize2Str(rectF.size()) + "} px");
+        strlstResultValues.append(pGraphObjGroup->name() + ".pos {" + qPoint2Str(pGraphObjGroup->pos()) + "} px");
         CPhysValRect physValRect = pGraphObjGroup->getRect();
-        strlstResultValues.append("group.getRect.topLeft.x: " + physValRect.topLeft().x().toString());
-        strlstResultValues.append("group.getRect.topLeft.y: " + physValRect.topLeft().y().toString());
-        strlstResultValues.append("group.getRect.bottomRight.x: " + physValRect.bottomRight().x().toString());
-        strlstResultValues.append("group.getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
+        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.topLeft.x: " + physValRect.topLeft().x().toString());
+        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.topLeft.y: " + physValRect.topLeft().y().toString());
+        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.bottomRight.x: " + physValRect.bottomRight().x().toString());
+        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
         CPhysValSize physValSize = pGraphObjGroup->getSize();
-        strlstResultValues.append("group.getRect.size.width: " + physValSize.width().toString());
-        strlstResultValues.append("group.getRect.size.height: " + physValSize.height().toString());
+        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.size.width: " + physValSize.width().toString());
+        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.size.height: " + physValSize.height().toString());
         CPhysValPoint physValPointPos = pGraphObjGroup->getPos();
-        strlstResultValues.append("group.getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+        strlstResultValues.append(pGraphObjGroup->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
         for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
             QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(pGraphObjChild);
             strlstResultValues.append(pGraphObjChild->name() + ".pos {" + qPoint2Str(pGraphicsItemChild->pos()) + "} px");
             if (pGraphObjChild->isLine()) {
-                CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObjChild);
-                CPhysValLine physValLine = pGraphObjLine->getLine();
+                CGraphObjLine* pGraphObjChildLine = dynamic_cast<CGraphObjLine*>(pGraphObjChild);
+                CPhysValLine physValLine = pGraphObjChildLine->getLine();
                 strlstResultValues.append(pGraphObjChild->name() + ".getLine.p1.x: " + physValLine.p1().x().toString());
                 strlstResultValues.append(pGraphObjChild->name() + ".getLine.p1.y: " + physValLine.p1().y().toString());
                 strlstResultValues.append(pGraphObjChild->name() + ".getLine.p2.x: " + physValLine.p2().x().toString());
                 strlstResultValues.append(pGraphObjChild->name() + ".getLine.p2.y: " + physValLine.p2().y().toString());
-                CPhysVal physValLength = pGraphObjLine->getLength();
+                CPhysVal physValLength = pGraphObjChildLine->getLength();
                 strlstResultValues.append(pGraphObjChild->name() + ".getLength: " + physValLength.toString());
-                CPhysVal physValAngle = pGraphObjLine->getAngle(Units.Angle.Degree);
+                CPhysVal physValAngle = pGraphObjChildLine->getAngle(Units.Angle.Degree);
                 strlstResultValues.append(pGraphObjChild->name() + ".getAngle: " + physValAngle.toString());
-                CPhysValPoint physValPointPos = pGraphObjLine->getPos();
+                CPhysValPoint physValPointPos = pGraphObjChildLine->getPos();
+                strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+            }
+            else if (pGraphObjChild->isGroup()) {
+                CGraphObjGroup* pGraphObjChildGroup = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
+                CPhysValRect physValRect = pGraphObjChildGroup->getRect();
+                strlstResultValues.append(pGraphObjChild->name() + ".getRect.topLeft.x: " + physValRect.topLeft().x().toString());
+                strlstResultValues.append(pGraphObjChild->name() + ".getRect.topLeft.y: " + physValRect.topLeft().y().toString());
+                strlstResultValues.append(pGraphObjChild->name() + ".getRect.bottomRight.x: " + physValRect.bottomRight().x().toString());
+                strlstResultValues.append(pGraphObjChild->name() + ".getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
+                strlstResultValues.append(pGraphObjChild->name() + ".getRect.size.width: " + physValRect.size().width().toString());
+                strlstResultValues.append(pGraphObjChild->name() + ".getRect.size.height: " + physValRect.size().height().toString());
+                CPhysValPoint physValPointPos = pGraphObjChildGroup->getPos();
                 strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
             }
         }
