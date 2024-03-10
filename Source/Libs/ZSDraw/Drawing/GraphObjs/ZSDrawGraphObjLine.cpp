@@ -329,8 +329,8 @@ public: // instance methods
 /*! @brief Sets the item's line to the given line.
 
     Depending on the Y scale orientation of the drawing scene the line coordinates
-    must be passed either relative to the top left or relative to the bottom right
-    corner of the parent item's bounding rectangle.
+    must be passed either relative to the top left or bottom left corner of the
+    parent item's bounding rectangle.
 
     @param [in] i_physValLine
         Line coordinates to be set.
@@ -388,7 +388,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     //    pt1 = mapFromScene(pt1) - ptCenter;
     //    pt2 = mapFromScene(pt2) - ptCenter;
     //}
-    //// If the line has not added to the scene yet ...
+    //// If the line has not been added to the scene yet ...
     //else {
     //    // .. we must do the transformation to the local coordinate system
     //    // on our own. The origin is the center of the line.
@@ -592,20 +592,7 @@ CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QLineF lineF = line();
-    CPhysValLine physValLine = mapToPhysValLine(lineF);
-    if (physValLine.unit() != i_unit) {
-        QGraphicsItem* pGraphicsItemParent = parentItem();
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
-        // If the item belongs to a group ...
-        if (pGraphObjGroup != nullptr) {
-            physValLine = pGraphObjGroup->convert(physValLine);
-        }
-        // If the item is not a child of a group ...
-        else {
-            physValLine = m_pDrawingScene->convert(physValLine, i_unit);
-        }
-    }
-    return physValLine;
+    return mapToParentPhysValLine(lineF, i_unit);
 }
 
 //------------------------------------------------------------------------------

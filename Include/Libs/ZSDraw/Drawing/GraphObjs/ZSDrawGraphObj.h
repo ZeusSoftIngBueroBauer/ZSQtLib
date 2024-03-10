@@ -716,9 +716,12 @@ public: // must overridables
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // overridables
-    virtual CPhysValPoint mapToPhysValPoint(const QPointF& i_pt) const;
-    virtual CPhysValLine mapToPhysValLine(const QLineF& i_line) const;
-    virtual CPhysValRect mapToPhysValRect(const QRectF& i_rect) const;
+    CPhysValPoint mapToParentPhysValPoint(const QPointF& i_pt) const;
+    CPhysValPoint mapToParentPhysValPoint(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine mapToParentPhysValLine(const QLineF& i_line) const;
+    CPhysValLine mapToParentPhysValLine(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect mapToParentPhysValRect(const QRectF& i_rect) const;
+    CPhysValRect mapToParentPhysValRect(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
 public: // overridables
@@ -1059,6 +1062,7 @@ protected: // instance members
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjCoordinateConversions;
     //ZS::System::CTrcAdminObj* m_pTrcAdminObjIsHit;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCursor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaint;

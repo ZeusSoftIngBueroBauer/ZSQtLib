@@ -76,6 +76,8 @@ public: // ctors and dtor
 public: // instance methods
     void setMainWindow( CMainWindow* i_pMainWindow );
 protected: // instance methods
+    ZS::Test::CTestStepGroup* createTestGroupDrawingSize(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupPrepareScene(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize, const ZS::Draw::CDrawGridSettings& i_gridSettings);
@@ -164,6 +166,7 @@ protected: // instance methods
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
         const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease);
 protected slots:
+    void doTestStepDrawingSize( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep );

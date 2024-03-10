@@ -174,14 +174,22 @@ public: // instance methods
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods
+    CPhysValPoint convert(const QPointF& i_pt) const;
+    CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
     CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValSize convert(const QSizeF& i_size) const;
+    CPhysValSize convert(const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValSize convert(const CPhysValSize& i_physValSize) const;
     CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine convert(const QLineF& i_line) const;
+    CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine) const;
     CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect convert(const CPhysValRect& i_physValLine) const;
-    CPhysValRect convert(const CPhysValRect& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect convert(const QRectF& i_rect) const;
+    CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect convert(const CPhysValRect& i_physValRect) const;
+    CPhysValRect convert(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos() const override;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;

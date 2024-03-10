@@ -93,6 +93,7 @@ public: // instance methods
     int scaleFactorDivisor() const;
     void setYScaleAxisOrientation(const ZS::System::CEnumYScaleAxisOrientation& i_eOrientation);
     ZS::System::CEnumYScaleAxisOrientation yScaleAxisOrientation() const;
+    void setImageSize(const CPhysValSize& i_physValSize);
     void setImageSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     QSize imageSizeInPixels() const;
     int imageWidthInPixels() const;

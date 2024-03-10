@@ -864,6 +864,7 @@ CGraphObj::CGraphObj(
     m_pTrcAdminObjCtorsAndDtor(nullptr),
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
+    m_pTrcAdminObjCoordinateConversions(nullptr),
     //m_pTrcAdminObjIsHit(nullptr),
     m_pTrcAdminObjCursor(nullptr),
     m_pTrcAdminObjPaint(nullptr),
@@ -1094,6 +1095,7 @@ CGraphObj::~CGraphObj()
     m_pTrcAdminObjCtorsAndDtor = nullptr;
     m_pTrcAdminObjItemChange = nullptr;
     m_pTrcAdminObjBoundingRect = nullptr;
+    m_pTrcAdminObjCoordinateConversions = nullptr;
     //m_pTrcAdminObjIsHit = nullptr;
     m_pTrcAdminObjCursor = nullptr;
     m_pTrcAdminObjPaint = nullptr;
@@ -1134,6 +1136,8 @@ void CGraphObj::createTraceAdminObjs(const QString& i_strClassName)
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::ItemChange");
         m_pTrcAdminObjBoundingRect = CTrcServer::GetTraceAdminObj(
             NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::BoundingRect");
+        m_pTrcAdminObjCoordinateConversions = CTrcServer::GetTraceAdminObj(
+            NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::CoordinateConversions");
         //m_pTrcAdminObjIsHit = CTrcServer::GetTraceAdminObj(
         //    NameSpace() + "::Drawing::GraphObjs", i_strClassName + "::IsHit");
         m_pTrcAdminObjCursor = CTrcServer::GetTraceAdminObj(
@@ -1174,6 +1178,8 @@ void CGraphObj::releaseTraceAdminObjs()
         m_pTrcAdminObjItemChange = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjBoundingRect);
         m_pTrcAdminObjBoundingRect = nullptr;
+        CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCoordinateConversions);
+        m_pTrcAdminObjCoordinateConversions = nullptr;
         //CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjIsHit);
         //m_pTrcAdminObjIsHit = nullptr;
         CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjCursor);
@@ -3600,6 +3606,13 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+CPhysValPoint CGraphObj::mapToParentPhysValPoint(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    return mapToParentPhysValPoint(i_pt, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Maps the given point, which is in this item's coordinate system defined
            in pixels, to the physical value in the parent's coordinate system,
            and returns the mapped coordinate in the unit of the drawing scene.
@@ -3618,10 +3631,21 @@ public: // overridables
 
     @return Point in the unit of the drawing scene as it should be provided to the user.
 */
-CPhysValPoint CGraphObj::mapToPhysValPoint(const QPointF& i_pt) const
+CPhysValPoint CGraphObj::mapToParentPhysValPoint(const QPointF& i_pt, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Add Test")
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pt {" + qPoint2Str(i_pt) + "}, UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToParentPhysValPoint",
+        /* strAddInfo   */ strMthInArgs );
+
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     // First map the point, which is in this item's coordinate system, to its parent's
     // coordinate system. If the item has no parent, point will be mapped to the scene's
@@ -3641,28 +3665,49 @@ CPhysValPoint CGraphObj::mapToPhysValPoint(const QPointF& i_pt) const
     // Now point is in pixel coordinates relative to the top left corner of it's parent.
     CPhysValPoint physValPoint(pt, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     // If the drawing scene don't use pixels but a metric system ..
-    if (Units.Length.isMetricUnit(drawingSize.unit())) {
+    if (Units.Length.isMetricUnit(i_unitDst)) {
         // .. the coordinates got to be converted into metric unit taken the Y-Scale
         // orientation into account.
         // If the item belongs to a group ...
         if (pGraphObjGroup != nullptr) {
             // .. let the group convert the pixel values into the unit of the drawing scene.
-            physValPoint = pGraphObjGroup->convert(physValPoint);
+            physValPoint = pGraphObjGroup->convert(physValPoint, i_unitDst);
         }
         // If the item is not a child of a group ...
         else {
             // .. let the scene convert the pixel values into it's unit.
-            physValPoint = m_pDrawingScene->convert(physValPoint);
+            physValPoint = m_pDrawingScene->convert(physValPoint, i_unitDst);
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
     }
     return physValPoint;
 }
 
 //------------------------------------------------------------------------------
-CPhysValLine CGraphObj::mapToPhysValLine(const QLineF& i_line) const
+CPhysValLine CGraphObj::mapToParentPhysValLine(const QLineF& i_line) const
+//------------------------------------------------------------------------------
+{
+    return mapToParentPhysValLine(i_line, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine CGraphObj::mapToParentPhysValLine(const QLineF& i_line, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Add Test")
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Line {" + qLine2Str(i_line) + "}, UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToParentPhysValLine",
+        /* strAddInfo   */ strMthInArgs );
+
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     // First map the line, which is in this item's coordinate system, to its parent's
     // coordinate system. If the item has no parent, line will be mapped to the scene's
@@ -3684,28 +3729,49 @@ CPhysValLine CGraphObj::mapToPhysValLine(const QLineF& i_line) const
     // Now line is in pixel coordinates relative to the top left corner of it's parent.
     CPhysValLine physValLine(pt1, pt2, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     // If the drawing scene don't use pixels but a metric system ..
-    if (Units.Length.isMetricUnit(drawingSize.unit())) {
+    if (Units.Length.isMetricUnit(i_unitDst)) {
         // .. the coordinates got to be converted into metric unit taken the Y-Scale
         // orientation into account.
         // If the item belongs to a group ...
         if (pGraphObjGroup != nullptr) {
             // .. let the group convert the pixel values into the unit of the drawing scene.
-            physValLine = pGraphObjGroup->convert(physValLine);
+            physValLine = pGraphObjGroup->convert(physValLine, i_unitDst);
         }
         // If the item is not a child of a group ...
         else {
             // .. let the scene convert the pixel values into it's unit.
-            physValLine = m_pDrawingScene->convert(physValLine);
+            physValLine = m_pDrawingScene->convert(physValLine, i_unitDst);
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValLine.toString() + "} " + physValLine.unit().symbol());
     }
     return physValLine;
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect CGraphObj::mapToPhysValRect(const QRectF& i_rect) const
+CPhysValRect CGraphObj::mapToParentPhysValRect(const QRectF& i_rect) const
+//------------------------------------------------------------------------------
+{
+    return mapToParentPhysValRect(i_rect, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect CGraphObj::mapToParentPhysValRect(const QRectF& i_rect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Add Test")
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}, UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToParentPhysValRect",
+        /* strAddInfo   */ strMthInArgs );
+
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     // First map the rectangle, which is in this item's coordinate system, to its parent's
     // coordinate system. If the item has no parent, rect will be mapped to the scene's
@@ -3724,22 +3790,25 @@ CPhysValRect CGraphObj::mapToPhysValRect(const QRectF& i_rect) const
         ptTL -= rectBoundingParent.topLeft();
         ptBR -= rectBoundingParent.topLeft();
     }
-    // Now recte is in pixel coordinates relative to the top left corner of it's parent.
+    // Now rect is in pixel coordinates relative to the top left corner of it's parent.
     CPhysValRect physValRect(ptTL, ptBR, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
     // If the drawing scene don't use pixels but a metric system ..
-    if (Units.Length.isMetricUnit(drawingSize.unit())) {
+    if (Units.Length.isMetricUnit(i_unitDst)) {
         // .. the coordinates got to be converted into metric unit taken the Y-Scale
         // orientation into account.
         // If the item belongs to a group ...
         if (pGraphObjGroup != nullptr) {
             // .. let the group convert the pixel values into the unit of the drawing scene.
-            physValRect = pGraphObjGroup->convert(physValRect);
+            physValRect = pGraphObjGroup->convert(physValRect, i_unitDst);
         }
         // If the item is not a child of a group ...
         else {
             // .. let the scene convert the pixel values into it's unit.
-            physValRect = m_pDrawingScene->convert(physValRect);
+            physValRect = m_pDrawingScene->convert(physValRect, i_unitDst);
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValRect.toString() + "} " + physValRect.unit().symbol());
     }
     return physValRect;
 }

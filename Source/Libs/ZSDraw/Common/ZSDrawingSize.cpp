@@ -750,6 +750,23 @@ CEnumYScaleAxisOrientation CDrawingSize::yScaleAxisOrientation() const
 }
 
 //------------------------------------------------------------------------------
+void CDrawingSize::setImageSize( const CPhysValSize& i_physValSize )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValSize.toString() + "} " + i_physValSize.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setImageSize",
+        /* strAddInfo   */ strMthInArgs );
+
+    setImageSize(i_physValSize.width(), i_physValSize.height());
+}
+
+//------------------------------------------------------------------------------
 void CDrawingSize::setImageSize( const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
@@ -1079,15 +1096,16 @@ public: // instance methods
 QString CDrawingSize::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str = m_eDimensionUnit.toString() +
-        ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "Invalid") +
-        ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "Invalid") +
-        ", Scale (" + QString::number(m_iMetricScaleFactorDividend) +
-            "/" + QString::number(m_iMetricScaleFactorDivisor) + ")" +
-        ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, imageCoorsResolution(m_metricUnit)).toString() +
-            " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, imageCoorsResolution(m_metricUnit)).toString() + ")" +
-        ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString() +
-            " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
+    QString str = m_strName +
+        ", IsValid: " + bool2Str(isValid()) +
+        ", DimensionUnit: "+ QString(m_eDimensionUnit.isValid() ? m_eDimensionUnit.toString() : "?") +
+        ", YScale: " + QString(m_eYScaleAxisOrientation.isValid() ? m_eYScaleAxisOrientation.toString() : "?") +
+        ", ScreenResolution: " + QString::number(m_fScreenResolution_px_mm, 'f', 1) + " px/mm" +
+        ", Size/" + m_metricUnit.symbol() + " {" + CPhysValSize(m_fImageMetricWidth, m_fImageMetricHeight, imageCoorsResolution(m_metricUnit).getVal(), m_metricUnit).toString() + "}"
+        ", Size/px {" + CPhysValSize(m_fImageSizeWidth_px, m_fImageSizeHeight_px, m_fImageSizeRes_px, Units.Length.px).toString() + "}" +
+        ", Scale: " + QString::number(m_iMetricScaleFactorDividend) + ":" + QString::number(m_iMetricScaleFactorDivisor) +
+        ", PaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "?") +
+        ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "?");
     return str;
 }
 
@@ -1099,16 +1117,6 @@ protected: // instance methods (method tracing)
 void CDrawingSize::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
 //------------------------------------------------------------------------------
 {
-    QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ") +
-        m_eDimensionUnit.toString() +
-        ", IsValid: " + bool2Str(isValid()) +
-        ", NormedPaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "---") +
-        ", NormedOrientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "---") +
-        ", Scale (" + QString::number(m_iMetricScaleFactorDividend) +
-            + "/" + QString::number(m_iMetricScaleFactorDivisor) + ")" +
-        ", Size (" + CPhysVal(m_fImageMetricWidth, m_metricUnit, imageCoorsResolution(m_metricUnit)).toString() +
-            " * " + CPhysVal(m_fImageMetricHeight, m_metricUnit, imageCoorsResolution(m_metricUnit)).toString() + ")" +
-        ", Size (" + CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString() +
-            " * " + CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString() + ")";
+    QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ") + toString();
     mthTracer.trace(strMthLog);
 }

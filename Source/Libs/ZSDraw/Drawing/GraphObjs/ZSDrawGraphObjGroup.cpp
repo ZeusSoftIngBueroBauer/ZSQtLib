@@ -330,21 +330,47 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "Cannot add a parent as a child");
     }
     else {
-        QPointF ptPosThisPrev = pos();
+        // Remember current position of this group in parent coordinates.
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        QPointF ptPosThisPrev = pGraphicsItemThis->pos();
+
+        // Bounding rectangle of this group in local coordinates (relative to this center).
         QRectF rctBoundingThisPrev = getBoundingRect();
+        // Map the bounding rectangle of this group into the parent coordinates of this group.
         rctBoundingThisPrev = mapToParent(rctBoundingThisPrev).boundingRect();
-        QRectF rctBoundingChild = pGraphicsItemChild->mapToParent(i_pGraphObj->getBoundingRect()).boundingRect();
+
+        // The parent of the child to be added is either the drawing scene or another group.
+        // The bounding rectangle of the new child item need to be added mapped into the parent
+        // coordinates of this group. The parent of this group may either be the scene or a group.
+        QRectF rctBoundingChild = i_pGraphObj->getBoundingRect();
+        rctBoundingChild = pGraphicsItemChild->mapToScene(rctBoundingChild).boundingRect();
+        QGraphicsItem* pGraphicsItemParentThis = parentItem();
+        CGraphObjGroup* pGraphObjGroupParentThis = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParentThis);
+        if (pGraphicsItemParentThis != nullptr) {
+            rctBoundingChild = pGraphicsItemParentThis->mapFromScene(rctBoundingChild).boundingRect();
+        }
+
+        // Resulting, new bounding rectangle of this group in parent coordinates of this group.
         QRectF rctBoundingThisNew = rctBoundingThisPrev | rctBoundingChild;
-        CPhysValRect physValRectNew(rctBoundingThisNew, m_pDrawingScene->drawingSize().imageCoorsResolutionInPx(), Units.Length.px);
-        physValRectNew = convert(physValRectNew);
+
+        // Convert (map) the new bounding rectangle of this group into the coordinate system of
+        // this groups parent in the unit of the drawing scene.
+        CPhysValRect physValRectNew;
+        if (pGraphObjGroupParentThis != nullptr) {
+            physValRectNew = pGraphObjGroupParentThis->convert(rctBoundingThisNew);
+        }
+        else {
+            physValRectNew = m_pDrawingScene->convert(rctBoundingThisNew);
+        }
         setRect(physValRectNew);
+
         // If the group's bounding rectangle has been extended, the group will get a new position
         // in the parent's coordinate system (as the group's center point has been changed).
         // The position of all already existing childs got to be moved accordingly as they are
         // positioned relative to the previous center point of the group's bounding rectangle.
         // If childs have already been added ..
         if (count() > 0) {
-            QPointF ptPosThisNew = pos();
+            QPointF ptPosThisNew = pGraphicsItemThis->pos();
             QPointF ptMove = ptPosThisNew - ptPosThisPrev;
             QVector<CGraphObj*> arpGraphObjChilds = childs();
             for (CGraphObj* pGraphObjChildExisting : arpGraphObjChilds) {
@@ -475,12 +501,11 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
         /* strAddInfo   */ strMthInArgs );
 
     // Depending on the Y scale orientation of the drawing scene the rectangle coordinates
-    // have been passed either relative to the top left or bottom right corner of the
+    // have been passed either relative to the top left or bottom left corner of the
     // parent item's bounding rectangle.
     // The coordinates need to be transformed into the local coordinate system of the graphical
     // object whose origin point is the center of the objects bounding rectangle.
     CPhysValRect physValRect = i_physValRect;
-
     if (Units.Length.isMetricUnit(physValRect.unit())) {
         QGraphicsItem* pGraphicsItemParent = parentItem();
         CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
@@ -543,14 +568,14 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             /* fScaleMaxVal */ physValRect.width().getVal(),
             /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
             /* fMin_px      */ 0,
-            /* fMax_px      */ rectF.width() - 1);
+            /* fMax_px      */ rectF.width());
         m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
         m_divLinesMetricsY.setScale(
             /* fScaleMinVal */ 0.0,
             /* fScaleMaxVal */ physValRect.height().getVal(),
             /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
             /* fMin_px      */ 0,
-            /* fMax_px      */ rectF.height() - 1);
+            /* fMax_px      */ rectF.height());
         m_divLinesMetricsY.setYScaleAxisOrientation(drawingSize.yScaleAxisOrientation());
     }
     m_divLinesMetricsX.update();
@@ -620,7 +645,7 @@ CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 {
     // Object shape points in local coordinates.
     QRectF rectF = getBoundingRect();
-    return mapToPhysValRect(rectF);
+    return mapToParentPhysValRect(rectF, i_unit);
 }
 
 //------------------------------------------------------------------------------
@@ -1276,6 +1301,35 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given point in pixels into the current unit of the drawing scene.
+
+    @param [in] i_pt
+
+    @return Converted value.
+*/
+CPhysValPoint CGraphObjGroup::convert(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValPoint(i_pt, drawingSize.imageCoorsResolutionInPx(), Units.Length.px), drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given point in pixels into the desired unit.
+
+    @param [in] i_pt
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValPoint CGraphObjGroup::convert(const QPointF& i_pt, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValPoint(i_pt, drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Converts the given point value into the current unit of the drawing scene.
 
     @param [in] i_physValPoint
@@ -1312,8 +1366,10 @@ CPhysValPoint CGraphObjGroup::convert(const CPhysValPoint& i_physValPoint, const
         }
         else if ((i_physValPoint.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             QPointF pt = i_physValPoint.toQPointF();
-            CPhysVal physValX(m_divLinesMetricsX.getVal(pt.x()), drawingSize.unit(), drawingSize.imageCoorsResolution());
-            CPhysVal physValY(m_divLinesMetricsY.getVal(pt.y()), drawingSize.unit(), drawingSize.imageCoorsResolution());
+            double fx = m_divLinesMetricsX.getVal(pt.x(), false);
+            double fy = m_divLinesMetricsY.getVal(pt.y(), false);
+            CPhysVal physValX(fx, drawingSize.unit(), drawingSize.imageCoorsResolution());
+            CPhysVal physValY(fy, drawingSize.unit(), drawingSize.imageCoorsResolution());
             physValX.convertValue(i_unitDst);
             physValY.convertValue(i_unitDst);
             physValPoint = CPhysValPoint(physValX, physValY);
@@ -1327,6 +1383,130 @@ CPhysValPoint CGraphObjGroup::convert(const CPhysValPoint& i_physValPoint, const
         }
     }
     return physValPoint;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given size in pixels into the current unit of the drawing scene.
+
+    @param [in] i_size
+
+    @return Converted value.
+*/
+CPhysValSize CGraphObjGroup::convert(const QSizeF& i_size) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValSize(i_size, drawingSize.imageCoorsResolutionInPx(), Units.Length.px), drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given size in pixels into the desired unit.
+
+    @param [in] i_size
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValSize CGraphObjGroup::convert(const QSizeF& i_size, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValSize(i_size, drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given size into the current unit of the drawing scene.
+
+    @param [in] i_physValSize
+
+    @return Converted value.
+*/
+CPhysValSize CGraphObjGroup::convert(const CPhysValSize& i_physValSize) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(i_physValSize, drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given size into the desired unit.
+
+    @param [in] i_physValSize
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValSize CGraphObjGroup::convert(const CPhysValSize& i_physValSize, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysValSize physValSize = i_physValSize;
+    if (i_physValSize.unit() != i_unitDst) {
+        if (Units.Length.isMetricUnit(i_physValSize.unit()) && Units.Length.isMetricUnit(i_unitDst)) {
+            CPhysVal physValWidth = i_physValSize.width();
+            CPhysVal physValHeight = i_physValSize.width();
+            physValWidth.convertValue(i_unitDst);
+            physValHeight.convertValue(i_unitDst);
+            CPhysValRes physValRes = drawingSize.imageCoorsResolution();
+            physValRes.convertValue(i_unitDst);
+            physValWidth.setRes(physValRes);
+            physValHeight.setRes(physValRes);
+            physValSize = CPhysValSize(physValWidth, physValHeight);
+        }
+        else if ((i_physValSize.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
+            // The drawing size in pixels has been incremented by one pixel.
+            // If the pixel resolution is e.g. 3.5 px/mm, and the width is 36 px, the width is 10 mm.
+            QSizeF sizeF = i_physValSize.toQSizeF();
+            double dx = m_divLinesMetricsX.getDistance(sizeF.width());
+            double dy = m_divLinesMetricsY.getDistance(sizeF.height());
+            CPhysVal physValWidth(dx, drawingSize.unit(), drawingSize.imageCoorsResolution());
+            CPhysVal physValHeight(dy, drawingSize.unit(), drawingSize.imageCoorsResolution());
+            physValWidth.convertValue(i_unitDst);
+            physValHeight.convertValue(i_unitDst);
+            physValSize = CPhysValSize(physValWidth, physValHeight);
+        }
+        else if (Units.Length.isMetricUnit(i_physValSize.unit()) && (i_unitDst == Units.Length.px)) {
+            // The drawing size in pixels has been incremented by one pixel.
+            // If the pixel resolution is e.g. 3.5 px/mm, and the width is 36 px, the width is 10 mm.
+            double dx = i_physValSize.width().getVal(drawingSize.unit());
+            double dy = i_physValSize.height().getVal(drawingSize.unit());
+            double dx_px = m_divLinesMetricsX.getDistanceInPix(dx);
+            double dy_px = m_divLinesMetricsY.getDistanceInPix(dy);
+            CPhysVal physValWidth(dx_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+            CPhysVal physValHeight(dy_px, Units.Length.px, drawingSize.imageCoorsResolutionInPx());
+            physValSize = CPhysValSize(physValWidth, physValHeight);
+        }
+    }
+    return physValSize;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given line in pixels into the current unit of the drawing scene.
+
+    @param [in] i_line
+
+    @return Converted value.
+*/
+CPhysValLine CGraphObjGroup::convert(const QLineF& i_line) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValLine(i_line, drawingSize.imageCoorsResolutionInPx(), Units.Length.px), drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given line in pixels into the desired unit.
+
+    @param [in] i_line
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValLine CGraphObjGroup::convert(const QLineF& i_line, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValLine(i_line, drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -1358,6 +1538,35 @@ CPhysValLine CGraphObjGroup::convert(const CPhysValLine& i_physValLine, const CU
     CPhysValPoint physValP1 = convert(i_physValLine.p1(), i_unitDst);
     CPhysValPoint physValP2 = convert(i_physValLine.p2(), i_unitDst);
     return CPhysValLine(physValP1, physValP2);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given rectangle in pixels into the current unit of the drawing scene.
+
+    @param [in] i_rect
+
+    @return Converted value.
+*/
+CPhysValRect CGraphObjGroup::convert(const QRectF& i_rect) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValRect(i_rect, drawingSize.imageCoorsResolutionInPx(), Units.Length.px), drawingSize.unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given rectangle in pixels into the desired unit.
+
+    @param [in] i_rect
+    @param [in] i_unitDst
+
+    @return Converted value.
+*/
+CPhysValRect CGraphObjGroup::convert(const QRectF& i_rect, const CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return convert(CPhysValRect(i_rect, drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -1393,20 +1602,7 @@ CPhysValRect CGraphObjGroup::convert(const CPhysValRect& i_physValRect, const CU
 {
     CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
     CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    CPhysValRect physValRect(physValTL, physValBR);
-    // When converting from pixels into metric or metric to pixels unit
-    // and if the Y Scale is from bottom to top the rectangles top line
-    // becomes the bottom line and vice versa (the height and width of a
-    // rectangle should always be greater than 0).
-    if (physValRect.height().getVal() < 0)
-    {
-        CPhysVal physValYT = physValBR.y();
-        CPhysVal physValYB = physValTL.y();
-        physValTL.setY(physValYT);
-        physValBR.setY(physValYB);
-        physValRect = CPhysValRect(physValTL, physValBR);
-    }
-    return physValRect;
+    return CPhysValRect(physValTL, physValBR);
 }
 
 /*==============================================================================
