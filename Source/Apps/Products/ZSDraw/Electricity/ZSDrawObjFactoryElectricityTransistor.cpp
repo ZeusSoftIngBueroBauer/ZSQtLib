@@ -162,7 +162,7 @@ SErrResultInfo CObjFactoryTransistor::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -173,7 +173,7 @@ SErrResultInfo CObjFactoryTransistor::saveGraphObj(
     QSizeF  siz           = pGraphObj->getSize();
     double  fRotAngle_deg = pGraphObj->getRotationAngleInDegree();
 
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
     i_xmlStreamWriter.writeTextElement( "Size", size2Str(siz) );
     i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
@@ -191,7 +191,7 @@ SErrResultInfo CObjFactoryTransistor::saveGraphObj(
 
     //if( arpLabels.size() > 0 )
     //{
-    //    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
+    //    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);
     //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
     //    i_xmlStreamWriter.writeEndElement();
     //}
@@ -265,12 +265,12 @@ CGraphObj* CObjFactoryTransistor::loadGraphObj(
                 }
             }
 
-            else if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings )
             {
                 drawSettings.load(i_xmlStreamReader);
             }
 
-            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameGeometry )
             {
             }
 
@@ -328,11 +328,11 @@ CGraphObj* CObjFactoryTransistor::loadGraphObj(
 
             } // if( strElemName == "ZValue" )
 
-            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
             {
                 arpLabels = loadGraphObjLabels(i_xmlStreamReader);
 
-            } // if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
+            } // if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
 
         } // if( xmlStreamReader.isStartElement() )
 

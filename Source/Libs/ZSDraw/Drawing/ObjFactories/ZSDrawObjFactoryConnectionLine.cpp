@@ -173,7 +173,7 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -187,7 +187,7 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     // Shape points of connection lines will be stored in scene coordinates.
     plg = pGraphObj->mapToScene(plg);
 
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
 
     for( idxPt = 0; idxPt < plg.size(); idxPt++ )
     {
@@ -269,11 +269,11 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 CGraphObj* pGraphObjTmp = i_pDrawingScene->findGraphObj(strObjId);
                 pCnctPtEnd = dynamic_cast<CGraphObjConnectionPoint*>(pGraphObjTmp);
             }
-            else if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings )
             {
                 drawSettings.load(i_xmlStreamReader);
             }
-            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameGeometry )
             {
             }
             else if( strElemName.contains("Pt",Qt::CaseInsensitive) )
@@ -311,7 +311,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 }
             } // if( strElemName == "ZValue" )
 
-            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
             {
                 arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
             }

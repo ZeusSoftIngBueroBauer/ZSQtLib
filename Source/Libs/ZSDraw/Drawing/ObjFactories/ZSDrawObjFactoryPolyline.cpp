@@ -149,7 +149,7 @@ SErrResultInfo CObjFactoryPolyline::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -162,7 +162,7 @@ SErrResultInfo CObjFactoryPolyline::saveGraphObj(
     QPointF   pt;
     int       idxPt;
 
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
     i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
 
@@ -185,7 +185,7 @@ SErrResultInfo CObjFactoryPolyline::saveGraphObj(
 
     //if( arpLabels.size() > 0 )
     //{
-    //    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
+    //    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);
     //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
     //    i_xmlStreamWriter.writeEndElement();
     //}
@@ -239,12 +239,12 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
         if( i_xmlStreamReader.isStartElement() )
         {
-            if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
+            if( strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings )
             {
                 drawSettings.load(i_xmlStreamReader);
             }
 
-            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameGeometry )
             {
             }
 
@@ -312,11 +312,11 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
 
             } // if( strElemName == "ZValue" )
 
-            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
             {
                 arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
 
-            } // if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
+            } // if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
 
         } // if( xmlStreamReader.isStartElement() )
 

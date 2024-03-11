@@ -508,10 +508,10 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
     CPhysValRect physValRect = i_physValRect;
     if (Units.Length.isMetricUnit(physValRect.unit())) {
         QGraphicsItem* pGraphicsItemParent = parentItem();
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
+        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
         // If the item belongs to a group ...
-        if (pGraphObjGroup != nullptr) {
-            physValRect = pGraphObjGroup->convert(physValRect, Units.Length.px);
+        if (pGraphObjGroupParent != nullptr) {
+            physValRect = pGraphObjGroupParent->convert(physValRect, Units.Length.px);
         }
         // If the item is not a child of a group ...
         else {
@@ -520,66 +520,6 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
     }
 
     QRectF rectF = physValRect.toQRectF();
-
-    // The local coordinates of the item are in pixels relative to the center point
-    // of the item's bounding rectangle. To provide the coordinates to the user they
-    // got to be mapped, depending on the Y-Scale orientation, either to the top left
-    // or bottom left corner of parent's (or scene's) bounding rectangle.
-    // The conversions from pixels to metric units and vice versa are using the
-    // divLinesMetrics instances whose scale values got to be updated correspondingly.
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        // Just a small note about pixel range and min and max values:
-        // If you don't use a metric system like in drawings and define
-        // a 500 pixel range, min is at 0, max is at 499. To have min
-        // and max set to 0 and 500 a range of 501 pixels must be defined.
-        // Pixel drawing: the origin is at the top left corner:
-        // XScaleMin = XMin_px, XScaleMax = XMax_px
-        // YScaleMin = XMin_px, YScaleMax = XMax_px
-        // The greater the value, the greater the pixel coordinate on the screen.
-        m_divLinesMetricsX.setUseWorldCoordinateTransformation(false);
-        m_divLinesMetricsX.setScale(
-            /* fScaleMinVal */ 0.0,
-            /* fScaleMaxVal */ rectF.width() - 1,
-            /* fScaleResVal */ drawingSize.imageCoorsResolution(Units.Length.px).getVal());
-        // The Y scale direction is from top to bottom.
-        m_divLinesMetricsY.setUseWorldCoordinateTransformation(false);
-        m_divLinesMetricsY.setScale(
-            /* fScaleMinVal */ 0.0,
-            /* fScaleMaxVal */ rectF.height() - 1,
-            /* fScaleResVal */ drawingSize.imageCoorsResolution(Units.Length.px).getVal());
-        m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
-    }
-    else /*if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
-        // In order to draw division lines at min and max scale the width
-        // in pixels got to be extended by one pixel when using metric scales
-        // (see also documentation at class CScaleDivLines). This must have
-        // been taken into account by the CDrawingSize class when calculating
-        // the width and height of the image size in pixels.
-        // Metric units:
-        // Depending on the YScaleAxisOrientation the origin is either
-        // at the top left or bottom left corner.
-        // XScaleMin = XMin_px, XScaleMax = XMax_px
-        // YScaleMin = XMax_px, YScaleMax = XMin_px
-        // The greater the value, the less the pixel coordinate on the screen.
-        m_divLinesMetricsX.setUseWorldCoordinateTransformation(true);
-        m_divLinesMetricsX.setScale(
-            /* fScaleMinVal */ 0.0,
-            /* fScaleMaxVal */ physValRect.width().getVal(),
-            /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
-            /* fMin_px      */ 0,
-            /* fMax_px      */ rectF.width());
-        m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
-        m_divLinesMetricsY.setScale(
-            /* fScaleMinVal */ 0.0,
-            /* fScaleMaxVal */ physValRect.height().getVal(),
-            /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
-            /* fMin_px      */ 0,
-            /* fMax_px      */ rectF.height());
-        m_divLinesMetricsY.setYScaleAxisOrientation(drawingSize.yScaleAxisOrientation());
-    }
-    m_divLinesMetricsX.update();
-    m_divLinesMetricsY.update();
 
     // Position of the rectangle in parent (scene or group) coordinates.
     QPointF ptPos = rectF.center();
@@ -594,6 +534,66 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
     // (initially set, changed or after the drawing size has been changed)
     if (m_rectOrig.isNull() || m_rectOrig != rectF || m_bForceConversionToSceneCoors)
     {
+        // The local coordinates of the item are in pixels relative to the center point
+        // of the item's bounding rectangle. To provide the coordinates to the user they
+        // got to be mapped, depending on the Y-Scale orientation, either to the top left
+        // or bottom left corner of parent's (or scene's) bounding rectangle.
+        // The conversions from pixels to metric units and vice versa are using the
+        // divLinesMetrics instances whose scale values got to be updated correspondingly.
+        const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+        if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+            // Just a small note about pixel range and min and max values:
+            // If you don't use a metric system like in drawings and define
+            // a 500 pixel range, min is at 0, max is at 499. To have min
+            // and max set to 0 and 500 a range of 501 pixels must be defined.
+            // Pixel drawing: the origin is at the top left corner:
+            // XScaleMin = XMin_px, XScaleMax = XMax_px
+            // YScaleMin = XMin_px, YScaleMax = XMax_px
+            // The greater the value, the greater the pixel coordinate on the screen.
+            m_divLinesMetricsX.setUseWorldCoordinateTransformation(false);
+            m_divLinesMetricsX.setScale(
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ rectF.width() - 1,
+                /* fScaleResVal */ drawingSize.imageCoorsResolution(Units.Length.px).getVal());
+            // The Y scale direction is from top to bottom.
+            m_divLinesMetricsY.setUseWorldCoordinateTransformation(false);
+            m_divLinesMetricsY.setScale(
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ rectF.height() - 1,
+                /* fScaleResVal */ drawingSize.imageCoorsResolution(Units.Length.px).getVal());
+            m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
+        }
+        else /*if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
+            // In order to draw division lines at min and max scale the width
+            // in pixels got to be extended by one pixel when using metric scales
+            // (see also documentation at class CScaleDivLines). This must have
+            // been taken into account by the CDrawingSize class when calculating
+            // the width and height of the image size in pixels.
+            // Metric units:
+            // Depending on the YScaleAxisOrientation the origin is either
+            // at the top left or bottom left corner.
+            // XScaleMin = XMin_px, XScaleMax = XMax_px
+            // YScaleMin = XMax_px, YScaleMax = XMin_px
+            // The greater the value, the less the pixel coordinate on the screen.
+            m_divLinesMetricsX.setUseWorldCoordinateTransformation(true);
+            m_divLinesMetricsX.setScale(
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ physValRect.width().getVal(),
+                /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
+                /* fMin_px      */ 0,
+                /* fMax_px      */ rectF.width());
+            m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
+            m_divLinesMetricsY.setScale(
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ physValRect.height().getVal(),
+                /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
+                /* fMin_px      */ 0,
+                /* fMax_px      */ rectF.height());
+            m_divLinesMetricsY.setYScaleAxisOrientation(drawingSize.yScaleAxisOrientation());
+        }
+        m_divLinesMetricsX.update();
+        m_divLinesMetricsY.update();
+
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItemGroup::prepareGeometryChange();
@@ -645,7 +645,7 @@ CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 {
     // Object shape points in local coordinates.
     QRectF rectF = getBoundingRect();
-    return mapToParentPhysValRect(rectF, i_unit);
+    return mapPhysValRectToParent(rectF, i_unit);
 }
 
 //------------------------------------------------------------------------------

@@ -715,13 +715,32 @@ public: // must overridables
     //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-public: // overridables
-    CPhysValPoint mapToParentPhysValPoint(const QPointF& i_pt) const;
-    CPhysValPoint mapToParentPhysValPoint(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValLine mapToParentPhysValLine(const QLineF& i_line) const;
-    CPhysValLine mapToParentPhysValLine(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect mapToParentPhysValRect(const QRectF& i_rect) const;
-    CPhysValRect mapToParentPhysValRect(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
+public: // instance methods
+    CPhysValPoint mapPhysValPointToScene(const QPointF& i_pt) const;
+    CPhysValPoint mapPhysValPointToScene(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPoint mapPhysValPointToScene(const CPhysValPoint& i_physValPoint) const;
+    CPhysValPoint mapPhysValPointToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine mapPhysValLineToScene(const QLineF& i_line) const;
+    CPhysValLine mapPhysValLineToScene(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine mapPhysValLineToScene(const CPhysValLine& i_physValLine) const;
+    CPhysValLine mapPhysValLineToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect mapPhysValRectToScene(const QRectF& i_rect) const;
+    CPhysValRect mapPhysValRectToScene(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect mapPhysValRectToScene(const CPhysValRect& i_physValRect) const;
+    CPhysValRect mapPhysValRectToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+public: // instance methods
+    CPhysValPoint mapPhysValPointToParent(const QPointF& i_pt) const;
+    CPhysValPoint mapPhysValPointToParent(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPoint mapPhysValPointToParent(const CPhysValPoint& i_physValPoint) const;
+    CPhysValPoint mapPhysValPointToParent(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine mapPhysValLineToParent(const QLineF& i_line) const;
+    CPhysValLine mapPhysValLineToParent(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine mapPhysValLineToParent(const CPhysValLine& i_physValLine) const;
+    CPhysValLine mapPhysValLineToParent(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect mapPhysValRectToParent(const QRectF& i_rect) const;
+    CPhysValRect mapPhysValRectToParent(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect mapPhysValRectToParent(const CPhysValRect& i_physValRect) const;
+    CPhysValRect mapPhysValRectToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
 public: // overridables

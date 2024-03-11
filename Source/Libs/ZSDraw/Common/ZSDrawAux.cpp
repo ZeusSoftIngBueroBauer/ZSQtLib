@@ -34,6 +34,12 @@ may result in using the software modules.
 #include <QtCore/qmimedata.h>
 #include <QtWidgets/qgraphicsitem.h>
 
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
+
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
@@ -2737,3 +2743,483 @@ QPolygonF ZS::Draw::str2PolygonF( const QString& i_str, bool* i_pbConverted )
     }
     return plg;
 }
+
+//==============================================================================
+namespace ZS { namespace Draw { namespace XmlStreamParser {
+//==============================================================================
+
+//------------------------------------------------------------------------------
+void raiseErrorAttributeNotDefined(
+    QXmlStreamReader& i_xmlStreamReader,
+    const QString& i_strElemName,
+    const QString& i_strAttrName)
+//------------------------------------------------------------------------------
+{
+    i_xmlStreamReader.raiseError(
+        "Attribute \"" + i_strAttrName + "\" for element \"" + i_strElemName + "\" not defined");
+}
+
+//------------------------------------------------------------------------------
+void raiseErrorAttributeOutOfRange(
+    QXmlStreamReader& i_xmlStreamReader,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    const QString& i_strAttrVal)
+//------------------------------------------------------------------------------
+{
+    i_xmlStreamReader.raiseError(
+        "Attribute \"" + i_strAttrName + "\" for element \"" + i_strElemName + "\" (=" + i_strAttrVal + ") is out of range");
+}
+
+//------------------------------------------------------------------------------
+CEnumScaleDimensionUnit getDimensionUnit(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumScaleDimensionUnit& i_eDefaultVal )
+//------------------------------------------------------------------------------
+{
+    CEnumScaleDimensionUnit dimensionUnit = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumScaleDimensionUnit eVal = CEnumScaleDimensionUnit::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            dimensionUnit = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return dimensionUnit;
+}
+
+//------------------------------------------------------------------------------
+CEnumNormedPaperSize getNormedPaperSize(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumNormedPaperSize& i_eDefaultVal )
+//------------------------------------------------------------------------------
+{
+    CEnumNormedPaperSize paperSize = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumNormedPaperSize eVal = CEnumNormedPaperSize::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            paperSize = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return paperSize;
+}
+
+//------------------------------------------------------------------------------
+CEnumOrientation getOrientation(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumOrientation& i_eDefaultVal )
+//------------------------------------------------------------------------------
+{
+    CEnumOrientation orientation = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumOrientation eVal = CEnumOrientation::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            orientation = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return orientation;
+}
+
+//------------------------------------------------------------------------------
+CEnumLineStyle getLineStyle(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumLineStyle& i_eDefaultVal )
+//------------------------------------------------------------------------------
+{
+    CEnumLineStyle eLineStyle = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumLineStyle eVal = CEnumLineStyle::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            eLineStyle = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return eLineStyle;
+}
+
+//------------------------------------------------------------------------------
+ETextSize getTextSize(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    ETextSize i_eDefaultVal )
+//------------------------------------------------------------------------------
+{
+    ETextSize textSize = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        ETextSize eVal = str2TextSize(strAttrVal, &bOk);
+        if (bOk) {
+            textSize = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return textSize;
+}
+
+//------------------------------------------------------------------------------
+CEnumTextStyle getTextStyle(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumTextStyle& i_eDefaulVal )
+//------------------------------------------------------------------------------
+{
+    CEnumTextStyle eTextStyle = i_eDefaulVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumTextStyle eVal = CEnumTextStyle::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            eTextStyle = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return eTextStyle;
+}
+
+//------------------------------------------------------------------------------
+CEnumTextEffect getTextEffect(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumTextEffect& i_eDefaultVal )
+//------------------------------------------------------------------------------
+{
+    CEnumTextEffect eTextEffect = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumTextEffect eVal = CEnumTextEffect::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            eTextEffect = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return eTextEffect;
+}
+
+//------------------------------------------------------------------------------
+CUnit getUnit(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CUnit& i_unitDefault )
+//------------------------------------------------------------------------------
+{
+    CUnit unit = i_unitDefault;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        CUnit unitTmp = strAttrVal;
+        if (unitTmp.isValid()) {
+            unit = unitTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return unit;
+}
+
+//------------------------------------------------------------------------------
+CPhysVal getPhysVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CPhysVal& i_physValDefault )
+//------------------------------------------------------------------------------
+{
+    CPhysVal physVal = i_physValDefault;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        CPhysVal physValTmp(Units.Length);
+        physValTmp = strAttrVal;
+        if (physValTmp.isValid()) {
+            physVal = physValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return physVal;
+}
+
+//------------------------------------------------------------------------------
+QFont getFont(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const QFont& i_fntDefault )
+//------------------------------------------------------------------------------
+{
+    QFont fnt = i_fntDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        fnt.setFamily(strAttrVal);
+    }
+    return fnt;
+}
+
+//------------------------------------------------------------------------------
+QColor getColor(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const QColor& i_clrDefault )
+//------------------------------------------------------------------------------
+{
+    QColor clr = i_clrDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        clr.setNamedColor(strAttrVal);
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+bool getBoolVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    bool i_bValDefault )
+//------------------------------------------------------------------------------
+{
+    bool bVal = i_bValDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        bool bValTmp = str2Bool(strAttrVal, &bOk);
+        if (bOk) {
+            bVal = bValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return bVal;
+}
+
+//------------------------------------------------------------------------------
+int getIntVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    int i_iValDefault )
+//------------------------------------------------------------------------------
+{
+    int iVal = i_iValDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        int iValTmp = strAttrVal.toInt(&bOk);
+        if (bOk) {
+            iVal = iValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return iVal;
+}
+
+//------------------------------------------------------------------------------
+std::pair<int, int> getIntPair(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    const QString& i_strDelimiter,
+    bool i_bAttrIsMandatory,
+    const std::pair<int, int>& i_valDefault )
+//------------------------------------------------------------------------------
+{
+    std::pair<int, int> iPair = i_valDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        QStringList strlstVals = strAttrVal.split(i_strDelimiter, Qt::SkipEmptyParts);
+        if (strlstVals.size() != 2) {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+        else {
+            bool bOk = true;
+            int iVal1 = strlstVals[0].toInt(&bOk);
+            if (!bOk) {
+                raiseErrorAttributeOutOfRange(
+                    i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+            }
+            else {
+                int iVal2 = strlstVals[1].toInt(&bOk);
+                if (!bOk) {
+                    raiseErrorAttributeOutOfRange(
+                        i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+                }
+                else {
+                    iPair = std::make_pair(iVal1, iVal2);
+                }
+            }
+        }
+    }
+    return iPair;
+}
+
+//------------------------------------------------------------------------------
+double getDoubleVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    double i_fValDefault )
+//------------------------------------------------------------------------------
+{
+    double fVal = i_fValDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        double fValTmp = strAttrVal.toDouble(&bOk);
+        if (bOk) {
+            fVal = fValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return fVal;
+}
+
+} } } // namespace ZS::Draw::XmlStreamParser

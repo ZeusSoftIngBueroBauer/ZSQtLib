@@ -155,7 +155,7 @@ SErrResultInfo CObjFactoryConnectionPoint::saveGraphObj(
     //----------------
 
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
@@ -166,7 +166,7 @@ SErrResultInfo CObjFactoryConnectionPoint::saveGraphObj(
     // If the item has no parent, its position is given in scene coordinates.
     QPointF ptPos = pGraphObj->pos();
 
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
     i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
     i_xmlStreamWriter.writeEndElement();
 
@@ -230,12 +230,12 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
 
         if( i_xmlStreamReader.isStartElement() )
         {
-            if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
+            if( strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings )
             {
                 drawSettings.load(i_xmlStreamReader);
             }
 
-            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameGeometry )
             {
             }
 
@@ -266,11 +266,11 @@ CGraphObj* CObjFactoryConnectionPoint::loadGraphObj(
 
             } // if( strElemName == "ZValue" )
 
-            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
+            else if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
             {
                 arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
 
-            } // if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
+            } // if( strElemName == XmlStreamParser::c_strXmlElemNameTextLabels )
 
         } // if( xmlStreamReader.isStartElement() )
 

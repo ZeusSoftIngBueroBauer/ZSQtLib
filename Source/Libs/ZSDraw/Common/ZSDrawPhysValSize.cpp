@@ -148,6 +148,56 @@ CPhysValSize& CPhysValSize::operator = ( const QSizeF& i_size )
     return *this;
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Assigns the string containing a physical point definition to this.
+
+    The current resolution remains unchanged.
+    If no unit is defined in the input string
+        - the current unit remains unchanged or is
+        - is set to "px" if no current unit has been assigned yet.
+
+    @param [in] i_strValOther
+        String containing the physical point definition in the following format:
+        "X [unit] / Y [unit]".
+
+    @return New physical point value.
+
+    @note throws a CUnitConversionException if conversion fails.
+*/
+CPhysValSize& CPhysValSize::operator = ( const QString& i_strValOther )
+//------------------------------------------------------------------------------
+{
+    QStringList strlst = i_strValOther.split("/");
+    if (strlst.size() != 2) {
+        strlst = i_strValOther.split(",");
+    }
+    if (strlst.size() != 2) {
+        throw CUnitConversionException(
+            __FILE__, __LINE__, EResultArgOutOfRange, i_strValOther);
+    }
+
+    CPhysVal physValWidth(m_unit, m_fRes);
+    CPhysVal physValHeight(m_unit, m_fRes);
+    physValWidth = strlst[0];
+    physValHeight = strlst[1];
+    if (!m_unit.isValid()) {
+        if (physValWidth.unit().isValid()) {
+            m_unit = physValWidth.unit();
+        }
+        else if (physValHeight.unit().isValid()) {
+            m_unit = physValHeight.unit();
+        }
+        else {
+            m_unit = Units.Length.px;
+        }
+    }
+    physValWidth.convertValue(m_unit);
+    physValHeight.convertValue(m_unit);
+    m_size.setWidth(physValWidth.getVal());
+    m_size.setHeight(physValHeight.getVal());
+    return *this;
+}
+
 /*==============================================================================
 public: // operators
 ==============================================================================*/

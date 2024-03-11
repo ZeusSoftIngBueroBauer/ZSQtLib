@@ -77,49 +77,6 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
     static QString ClassName() { return "CDrawingScene"; }
-public: // type definitions and constants
-    static const QString c_strXmlElemNameDrawing;
-    static const QString c_strXmlElemNameGraphObj;
-    static const QString c_strXmlElemNameDrawSettings;
-    static const QString c_strXmlElemNameGeometry;
-    static const QString c_strXmlElemNameShapePoints;
-    static const QString c_strXmlElemNameShapePointP1;
-    static const QString c_strXmlElemNameShapePointP2;
-    static const QString c_strXmlElemNameZValue;
-    static const QString c_strXmlElemNameTextLabels;
-    static const QString c_strXmlElemNameGeometryLabels;
-    static const QString c_strXmlElemNameLabel;
-public: // type definitions and constants
-    static const QString c_strXmlAttrDimensionUnit;
-    static const QString c_strXmlAttrScreenResolutionPxPerMilliMeter;
-    static const QString c_strXmlAttrMetricImageCoorsDecimals;
-    static const QString c_strXmlAttrUnit;
-    static const QString c_strXmlAttrWidth;
-    static const QString c_strXmlAttrHeight;
-    static const QString c_strXmlAttrScaleFactor;
-    static const QString c_strXmlAttrPaperSize;
-    static const QString c_strXmlAttrPaperOrientation;
-    static const QString c_strXmlAttrYScaleAxisOrientation;
-    static const QString c_strXmlAttrGridLinesVisible;
-    static const QString c_strXmlAttrGridLinesDistMin;
-    static const QString c_strXmlAttrGridLinesStyle;
-    static const QString c_strXmlAttrGridLinesWidth;
-    static const QString c_strXmlAttrGridLinesColor;
-    static const QString c_strXmlAttrGridLabelsVisible;
-    static const QString c_strXmlAttrGridLabelsFont;
-    static const QString c_strXmlAttrGridLabelsTextSize;
-    static const QString c_strXmlAttrGridLabelsTextColor;
-    static const QString c_strXmlAttrGridLabelsTextStyle;
-    static const QString c_strXmlAttrGridLabelsTextEffect;
-    static const QString c_strXmlAttrGraphObjFactoryGroupName;
-    static const QString c_strXmlAttrGraphObjType;
-    static const QString c_strXmlAttrGraphObjName;
-    static const QString c_strXmlAttrKey;
-    static const QString c_strXmlAttrText;
-    static const QString c_strXmlAttrSelPt;
-    static const QString c_strXmlAttrDistance;
-    static const QString c_strXmlAttrVisible;
-    static const QString c_strXmlAttrAnchorLineVisible;
 public: // class methods
     static QString getGraphObjNameNodeSeparator() { return s_strGraphObjNameSeparator; }
     //static QString FindUniqueGraphObjId(
@@ -301,25 +258,6 @@ protected: // auxiliary instance methods
     void paintGridLines(QPainter* i_pPainter);
     QRectF getBoundingRect(const QList<QGraphicsItem*>& i_arpGraphicsItems) const;
     void unselectGraphicsItems(const QList<QGraphicsItem*>& i_arpGraphicsItems) const;
-protected: // auxiliary instance methods
-    void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName) const;
-    void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal) const;
-protected: // auxiliary instance methods
-    CEnumScaleDimensionUnit getDimensionUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumScaleDimensionUnit& i_eDefaultVal = EScaleDimensionUnit::Pixels) const;
-    CEnumNormedPaperSize getNormedPaperSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumNormedPaperSize& i_eDefaultVal = CEnumNormedPaperSize()) const;
-    ZS::System::CEnumOrientation getOrientation(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::System::CEnumOrientation& i_eDefaultVal = ZS::System::CEnumOrientation()) const;
-    CEnumLineStyle getLineStyle(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumLineStyle& i_eDefaultVal = ELineStyle::SolidLine) const;
-    ETextSize getTextSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, ETextSize i_eDefaultVal = ETextSize11) const;
-    CEnumTextStyle getTextStyle(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumTextStyle& i_eDefaultVal = ETextStyle::Normal) const;
-    CEnumTextEffect getTextEffect(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumTextEffect& i_eDefaultVal = ETextEffect::None) const;
-    ZS::PhysVal::CUnit getUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::PhysVal::CUnit& i_unitDefault = Units.Length.mm) const;
-    ZS::PhysVal::CPhysVal getPhysVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::PhysVal::CPhysVal& i_physValDefault = ZS::PhysVal::CPhysVal(0.0, Units.Length.mm)) const;
-    QFont getFont(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const QFont& i_fntDefault = QFont()) const;
-    QColor getColor(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const QColor& i_clrDefault = Qt::black) const;
-    bool getBoolVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, bool i_bDefaultVal = false) const;
-    int getIntVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, int iValDefault = 0) const;
-    std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":", bool i_bAttrIsMandatory = true, const std::pair<int, int>& i_valDefault = std::make_pair(0, 0)) const;
-    double getDoubleVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, double fValDefault = 0.0) const;
 protected: // auxiliary instance methods (trace emitting signals)
     void emit_aboutToBeCleared();
     void emit_drawingSizeChanged(const ZS::Draw::CDrawingSize& i_size);

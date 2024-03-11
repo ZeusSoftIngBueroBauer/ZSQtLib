@@ -592,7 +592,7 @@ CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     QLineF lineF = line();
-    return mapToParentPhysValLine(lineF, i_unit);
+    return mapPhysValLineToParent(lineF, i_unit);
 }
 
 //------------------------------------------------------------------------------

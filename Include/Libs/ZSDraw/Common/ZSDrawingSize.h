@@ -31,6 +31,9 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
 
+class QXmlStreamReader;
+class QXmlStreamWriter;
+
 namespace ZS
 {
 namespace System
@@ -104,6 +107,9 @@ public: // instance methods
     ZS::PhysVal::CPhysVal metricImageWidth(const ZS::PhysVal::CUnit& i_unit) const;
     ZS::PhysVal::CPhysVal metricImageHeight() const;
     ZS::PhysVal::CPhysVal metricImageHeight(const ZS::PhysVal::CUnit& i_unit) const;
+public: // instance methods
+    void save( QXmlStreamWriter& i_xmlStreamWriter );
+    void load( QXmlStreamReader& i_xmlStreamReader );
 protected: // instance methods
     void updateImageSizeInPixels();
     void updateImageSizeMetrics();

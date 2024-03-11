@@ -74,6 +74,7 @@ public: // operators
 public: // operators
     bool operator == (const CPhysValSize& i_physValSizeOther) const;
     bool operator != (const CPhysValSize& i_physValSizeOther) const;
+    CPhysValSize& operator = ( const QString& i_strValOther );
 public: // instance methods
     ZS::PhysVal::CPhysVal width() const;
     ZS::PhysVal::CPhysVal height() const;

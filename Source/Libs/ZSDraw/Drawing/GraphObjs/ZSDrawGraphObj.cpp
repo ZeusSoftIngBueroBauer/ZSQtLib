@@ -3606,10 +3606,10 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObj::mapToParentPhysValPoint(const QPointF& i_pt) const
+CPhysValPoint CGraphObj::mapPhysValPointToParent(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
-    return mapToParentPhysValPoint(i_pt, m_pDrawingScene->drawingSize().unit());
+    return mapPhysValPointToParent(i_pt, m_pDrawingScene->drawingSize().unit());
 }
 
 //------------------------------------------------------------------------------
@@ -3631,7 +3631,7 @@ CPhysValPoint CGraphObj::mapToParentPhysValPoint(const QPointF& i_pt) const
 
     @return Point in the unit of the drawing scene as it should be provided to the user.
 */
-CPhysValPoint CGraphObj::mapToParentPhysValPoint(const QPointF& i_pt, const CUnit& i_unitDst) const
+CPhysValPoint CGraphObj::mapPhysValPointToParent(const QPointF& i_pt, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Add Test")
@@ -3643,7 +3643,7 @@ CPhysValPoint CGraphObj::mapToParentPhysValPoint(const QPointF& i_pt, const CUni
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "mapToParentPhysValPoint",
+        /* strMethod    */ "mapPhysValPointToParent",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -3686,14 +3686,14 @@ CPhysValPoint CGraphObj::mapToParentPhysValPoint(const QPointF& i_pt, const CUni
 }
 
 //------------------------------------------------------------------------------
-CPhysValLine CGraphObj::mapToParentPhysValLine(const QLineF& i_line) const
+CPhysValLine CGraphObj::mapPhysValLineToParent(const QLineF& i_line) const
 //------------------------------------------------------------------------------
 {
-    return mapToParentPhysValLine(i_line, m_pDrawingScene->drawingSize().unit());
+    return mapPhysValLineToParent(i_line, m_pDrawingScene->drawingSize().unit());
 }
 
 //------------------------------------------------------------------------------
-CPhysValLine CGraphObj::mapToParentPhysValLine(const QLineF& i_line, const CUnit& i_unitDst) const
+CPhysValLine CGraphObj::mapPhysValLineToParent(const QLineF& i_line, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Add Test")
@@ -3705,7 +3705,7 @@ CPhysValLine CGraphObj::mapToParentPhysValLine(const QLineF& i_line, const CUnit
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "mapToParentPhysValLine",
+        /* strMethod    */ "mapPhysValLineToParent",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
@@ -3750,14 +3750,14 @@ CPhysValLine CGraphObj::mapToParentPhysValLine(const QLineF& i_line, const CUnit
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect CGraphObj::mapToParentPhysValRect(const QRectF& i_rect) const
+CPhysValRect CGraphObj::mapPhysValRectToParent(const QRectF& i_rect) const
 //------------------------------------------------------------------------------
 {
-    return mapToParentPhysValRect(i_rect, m_pDrawingScene->drawingSize().unit());
+    return mapPhysValRectToParent(i_rect, m_pDrawingScene->drawingSize().unit());
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect CGraphObj::mapToParentPhysValRect(const QRectF& i_rect, const CUnit& i_unitDst) const
+CPhysValRect CGraphObj::mapPhysValRectToParent(const QRectF& i_rect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
 #pragma message(__TODO__"Add Test")
@@ -3769,7 +3769,7 @@ CPhysValRect CGraphObj::mapToParentPhysValRect(const QRectF& i_rect, const CUnit
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "mapToParentPhysValRect",
+        /* strMethod    */ "mapPhysValRectToParent",
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();

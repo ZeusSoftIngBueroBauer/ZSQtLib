@@ -27,10 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_Aux_h
 #define ZSDraw_Aux_h
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
+#include "ZSPhysVal/ZSPhysUnit.h"
 
 #include <QtCore/qstring.h>
 #include <QtCore/qrect.h>
+#include <QtGui/qfont.h>
+
 
 #if QT_VERSION < 0x050000
 #include <QtGui/qgraphicssceneevent.h>
@@ -45,6 +48,9 @@ class QLineF;
 class QPainterPath;
 class QPolygonF;
 class QTransform;
+class QXmlStreamAttributes;
+class QXmlStreamWriter;
+class QXmlStreamReader;
 
 namespace ZS
 {
@@ -165,6 +171,91 @@ ZSDRAWDLL_API QString   polygon2Str( const QPolygon& i_polygon );
 ZSDRAWDLL_API QString   polygon2Str( const QPolygonF& i_polygon, char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
 ZSDRAWDLL_API QPolygon  str2Polygon( const QString& i_str, bool* i_pbConverted );
 ZSDRAWDLL_API QPolygonF str2PolygonF( const QString& i_str, bool* i_pbConverted );
+
+namespace XmlStreamParser
+{
+const QString c_strXmlElemNameDrawing = "Drawing";
+const QString c_strXmlElemNameGraphObj = "GraphObj";
+const QString c_strXmlElemNameGridSettings = "GridSettings";
+const QString c_strXmlElemNameDrawSettings = "DrawSettings";
+const QString c_strXmlElemNameGeometry = "Geometry";
+const QString c_strXmlElemNameShapePoints = "ShapePoints";
+const QString c_strXmlElemNameShapePointP1 = "P1";
+const QString c_strXmlElemNameShapePointP2 = "P2";
+const QString c_strXmlElemNameRectangle = "Rectangle";
+const QString c_strXmlElemNameShapePointTopLeft = "TopLeft";
+const QString c_strXmlElemNameSize = "Size";
+const QString c_strXmlElemNameZValue = "ZValue";
+const QString c_strXmlElemNameTextLabels = "TextLabels";
+const QString c_strXmlElemNameGeometryLabels = "GeometryLabels";
+const QString c_strXmlElemNameLabel = "Label";
+
+const QString c_strXmlAttrGraphObjFactoryGroupName = "FactoryGroupName";
+const QString c_strXmlAttrGraphObjType = "ObjectType";
+const QString c_strXmlAttrGraphObjName = "ObjectName";
+const QString c_strXmlAttrKey = "Key";
+const QString c_strXmlAttrDimensionUnit = "DimensionUnit";
+const QString c_strXmlAttrScreenResolutionPxPerMilliMeter = "ScreenResolutionPxPerMM";
+const QString c_strXmlAttrMetricImageCoorsDecimals = "MetricImageCoorsDecimals";
+const QString c_strXmlAttrUnit = "Unit";
+const QString c_strXmlAttrWidth = "Width";
+const QString c_strXmlAttrHeight = "Height";
+const QString c_strXmlAttrScaleFactor = "ScaleFactor";
+const QString c_strXmlAttrPaperSize = "PaperSize";
+const QString c_strXmlAttrPaperOrientation = "PaperOrientation";
+const QString c_strXmlAttrYScaleAxisOrientation = "YScaleAxisOrientation";
+const QString c_strXmlAttrLinesVisible = "LinesVisible";
+const QString c_strXmlAttrLinesDistMin = "LinesDistMin";
+const QString c_strXmlAttrLabelsVisible = "LabelsVisible";
+const QString c_strXmlAttrAnchorLineVisible = "AnchorLineVisible";
+const QString c_strXmlAttrVisible = "Visible";
+const QString c_strXmlAttrText = "Text";
+const QString c_strXmlAttrSelPt = "SelPt";
+const QString c_strXmlAttrDistance = "Distance";
+const QString c_strXmlAttrPenColor = "PenColor";
+const QString c_strXmlAttrPenWidth = "PenWidth";
+const QString c_strXmlAttrFillColor = "FillColor";
+const QString c_strXmlAttrFillStyle = "FillStyle";
+const QString c_strXmlAttrLineStyle = "LineStyle";
+const QString c_strXmlAttrLineWidth = "LineWidth";
+const QString c_strXmlAttrLineColor = "LineColor";
+const QString c_strXmlAttrFont = "Font";
+const QString c_strXmlAttrLineRecordType = "LineRecordType";
+const QString c_strXmlAttrLineExtent = "LineExtent";
+const QString c_strXmlAttrLineP1EndStyle = "LineP1EndStyle";
+const QString c_strXmlAttrLineP1ArrowHeadBaseLineType = "LineP1ArrowHeadBaseLineType";
+const QString c_strXmlAttrLineP1ArrowHeadFillStyle = "LineP1ArrowHeadFillStyle";
+const QString c_strXmlAttrLineP1ArrowHeadWidth = "LineP1ArrowHeadWidth";
+const QString c_strXmlAttrLineP1ArrowHeadLength = "LineP1ArrowHeadLength";
+const QString c_strXmlAttrLineP2EndStyle = "LineP2EndStyle";
+const QString c_strXmlAttrLineP2ArrowHeadBaseLineType = "LineP2ArrowHeadBaseLineType";
+const QString c_strXmlAttrLineP2ArrowHeadFillStyle = "LineP2ArrowHeadFillStyle";
+const QString c_strXmlAttrLineP2ArrowHeadWidth = "LineP2ArrowHeadWidth";
+const QString c_strXmlAttrLineP2ArrowHeadLength = "LineP2ArrowHeadLength";
+const QString c_strXmlAttrTextSize = "TextSize";
+const QString c_strXmlAttrTextColor = "TextColor";
+const QString c_strXmlAttrTextStyle = "TextStyle";
+const QString c_strXmlAttrTextEffect = "TextEffect";
+
+ZSDRAWDLL_API void raiseErrorAttributeNotDefined(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName);
+ZSDRAWDLL_API void raiseErrorAttributeOutOfRange(QXmlStreamReader& i_xmlStreamReader, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strAttrVal);
+ZSDRAWDLL_API CEnumScaleDimensionUnit getDimensionUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumScaleDimensionUnit& i_eDefaultVal = EScaleDimensionUnit::Pixels);
+ZSDRAWDLL_API CEnumNormedPaperSize getNormedPaperSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumNormedPaperSize& i_eDefaultVal = CEnumNormedPaperSize());
+ZSDRAWDLL_API ZS::System::CEnumOrientation getOrientation(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::System::CEnumOrientation& i_eDefaultVal = ZS::System::CEnumOrientation());
+ZSDRAWDLL_API CEnumLineStyle getLineStyle(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumLineStyle& i_eDefaultVal = ELineStyle::SolidLine);
+ZSDRAWDLL_API ETextSize getTextSize(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, ETextSize i_eDefaultVal = ETextSize11);
+ZSDRAWDLL_API CEnumTextStyle getTextStyle(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumTextStyle& i_eDefaultVal = ETextStyle::Normal);
+ZSDRAWDLL_API CEnumTextEffect getTextEffect(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const CEnumTextEffect& i_eDefaultVal = ETextEffect::None);
+ZSDRAWDLL_API ZS::PhysVal::CUnit getUnit(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::PhysVal::CUnit& i_unitDefault = Units.Length.mm);
+ZSDRAWDLL_API ZS::PhysVal::CPhysVal getPhysVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const ZS::PhysVal::CPhysVal& i_physValDefault = ZS::PhysVal::CPhysVal(0.0, Units.Length.mm));
+ZSDRAWDLL_API QFont getFont(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const QFont& i_fntDefault = QFont());
+ZSDRAWDLL_API QColor getColor(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, const QColor& i_clrDefault = Qt::black);
+ZSDRAWDLL_API bool getBoolVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, bool i_bDefaultVal = false);
+ZSDRAWDLL_API int getIntVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, int iValDefault = 0);
+ZSDRAWDLL_API std::pair<int, int> getIntPair(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, const QString& i_strDelimiter = ":", bool i_bAttrIsMandatory = true, const std::pair<int, int>& i_valDefault = std::make_pair(0, 0));
+ZSDRAWDLL_API double getDoubleVal(QXmlStreamReader& i_xmlStreamReader, QXmlStreamAttributes& i_xmlStreamAttrs, const QString& i_strElemName, const QString& i_strAttrName, bool i_bAttrIsMandatory = true, double fValDefault = 0.0);
+
+} // namespace XmlStreamParser
 
 } // namespace Draw
 

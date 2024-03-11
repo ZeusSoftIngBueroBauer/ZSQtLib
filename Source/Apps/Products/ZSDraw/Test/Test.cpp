@@ -41,6 +41,7 @@ may result in using the software modules.
 #include "QtWidgets/ZSDrawGraphObjWdgtLineEdit.h"
 #include "QtWidgets/ZSDrawGraphObjWdgtPushButton.h"
 
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
 #include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
@@ -327,26 +328,26 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepSetDrawingSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrDimensionUnit, i_drawingSize.dimensionUnit().toString());
+        XmlStreamParser::c_strXmlAttrDimensionUnit, i_drawingSize.dimensionUnit().toString());
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter, i_drawingSize.screenResolutionInPxPerMM());
+        XmlStreamParser::c_strXmlAttrScreenResolutionPxPerMilliMeter, i_drawingSize.screenResolutionInPxPerMM());
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
         pTestStep->setConfigValue(
-            CDrawingScene::c_strXmlAttrWidth, i_drawingSize.imageWidthInPixels());
+            XmlStreamParser::c_strXmlAttrWidth, i_drawingSize.imageWidthInPixels());
         pTestStep->setConfigValue(
-            CDrawingScene::c_strXmlAttrHeight, i_drawingSize.imageHeightInPixels());
+            XmlStreamParser::c_strXmlAttrHeight, i_drawingSize.imageHeightInPixels());
     }
     else {
         pTestStep->setConfigValue(
-            CDrawingScene::c_strXmlAttrUnit, i_drawingSize.metricUnit().symbol());
+            XmlStreamParser::c_strXmlAttrUnit, i_drawingSize.metricUnit().symbol());
         pTestStep->setConfigValue(
-            CDrawingScene::c_strXmlAttrMetricImageCoorsDecimals, i_drawingSize.metricImageCoorsDecimals());
+            XmlStreamParser::c_strXmlAttrMetricImageCoorsDecimals, i_drawingSize.metricImageCoorsDecimals());
         pTestStep->setConfigValue(
-            CDrawingScene::c_strXmlAttrWidth, i_drawingSize.metricImageWidth().getVal());
+            XmlStreamParser::c_strXmlAttrWidth, i_drawingSize.metricImageWidth().getVal());
         pTestStep->setConfigValue(
-            CDrawingScene::c_strXmlAttrHeight, i_drawingSize.metricImageHeight().getVal());
+            XmlStreamParser::c_strXmlAttrHeight, i_drawingSize.metricImageHeight().getVal());
         pTestStep->setConfigValue(
-            CDrawingScene::c_strXmlAttrYScaleAxisOrientation, i_drawingSize.yScaleAxisOrientation().toString());
+            XmlStreamParser::c_strXmlAttrYScaleAxisOrientation, i_drawingSize.yScaleAxisOrientation().toString());
     }
 
     pTestStep = new ZS::Test::CTestStep(
@@ -356,11 +357,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepSetGridSettings(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrGridLinesVisible, i_gridSettings.areLinesVisible());
+        XmlStreamParser::c_strXmlAttrLinesVisible, i_gridSettings.areLinesVisible());
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrGridLinesDistMin, i_gridSettings.linesDistMin());
+        XmlStreamParser::c_strXmlAttrLinesDistMin, i_gridSettings.linesDistMin());
     pTestStep->setConfigValue(
-        CDrawingScene::c_strXmlAttrGridLabelsVisible, i_gridSettings.areLabelsVisible());
+        XmlStreamParser::c_strXmlAttrLabelsVisible, i_gridSettings.areLabelsVisible());
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -4734,33 +4735,33 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
 
     CDrawingSize drawingSize("Test");
     drawingSize.setDimensionUnit(
-        i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrDimensionUnit).toString());
-    if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter)) {
-        double fResPxPerMM = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter).toDouble();
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrDimensionUnit).toString());
+    if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlAttrScreenResolutionPxPerMilliMeter)) {
+        double fResPxPerMM = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrScreenResolutionPxPerMilliMeter).toDouble();
         drawingSize.setScreenResolutionInPxPerMM(fResPxPerMM);
     }
     if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        int cxWidth = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrWidth).toInt();
-        int cyHeight = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrHeight).toInt();
+        int cxWidth = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrWidth).toInt();
+        int cyHeight = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrHeight).toInt();
         drawingSize.setImageSize(CPhysVal(cxWidth, Units.Length.px), CPhysVal(cyHeight, Units.Length.px));
     }
     else {
         CUnit unit = drawingSize.metricUnit();
-        if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrUnit)) {
-            unit = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrUnit).toString();
+        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlAttrUnit)) {
+            unit = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrUnit).toString();
             drawingSize.setMetricUnit(unit);
         }
-        if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrMetricImageCoorsDecimals)) {
-            int iDecimals = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrMetricImageCoorsDecimals).toInt();
+        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlAttrMetricImageCoorsDecimals)) {
+            int iDecimals = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrMetricImageCoorsDecimals).toInt();
             drawingSize.setMetricImageCoorsDecimals(iDecimals);
         }
-        double fxWidth = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrWidth).toDouble();
-        double fyHeight = i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrHeight).toDouble();
+        double fxWidth = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrWidth).toDouble();
+        double fyHeight = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrHeight).toDouble();
         drawingSize.setImageSize(CPhysVal(fxWidth, unit), CPhysVal(fyHeight, unit));
         bool bOk = false;
-        if (i_pTestStep->hasConfigValue(CDrawingScene::c_strXmlAttrYScaleAxisOrientation)) {
+        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlAttrYScaleAxisOrientation)) {
             CEnumYScaleAxisOrientation eYScaleOrientation = CEnumYScaleAxisOrientation::fromString(
-                i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrYScaleAxisOrientation).toString(), &bOk);
+                i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrYScaleAxisOrientation).toString(), &bOk);
             if (bOk) {
                 drawingSize.setYScaleAxisOrientation(eYScaleOrientation);
             }
@@ -4792,11 +4793,11 @@ void CTest::doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep )
 
     CDrawGridSettings gridSettings("Test");
     gridSettings.setLinesVisible(
-        i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrGridLinesVisible).toBool());
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrLinesVisible).toBool());
     gridSettings.setLinesDistMin(
-        i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrGridLinesDistMin).toInt());
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrLinesDistMin).toInt());
     gridSettings.setLabelsVisible(
-        i_pTestStep->getConfigValue(CDrawingScene::c_strXmlAttrGridLabelsVisible).toBool());
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrLabelsVisible).toBool());
 
     m_pDrawingScene->setGridSettings(gridSettings);
 

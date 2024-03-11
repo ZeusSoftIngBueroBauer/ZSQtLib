@@ -25,11 +25,18 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawGridSettings.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
 
 #include "ZSSys/ZSSysAux.h"
 
-#include "ZSSys/ZSSysMemLeakDump.h"
+#if QT_VERSION < 0x050000
+#include <QtXml/qxmlstream.h>
+#else
+#include <QtCore/qxmlstream.h>
+#endif
 
+#include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
 using namespace ZS::Draw;
@@ -310,6 +317,124 @@ CEnumTextEffect CDrawGridSettings::labelsTextEffect() const
 {
     return m_eTextEffectLabels;
 }
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawGridSettings::save( QXmlStreamWriter& i_xmlStreamWriter )
+//------------------------------------------------------------------------------
+{
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrLinesVisible, bool2Str(areLinesVisible()));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrLinesDistMin, QString::number(linesDistMin()));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrLineStyle, CEnumLineStyle(linesStyle()).toString());
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrLineWidth, QString::number(linesWidth()));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrLineColor, linesColor().name());
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrLabelsVisible, bool2Str(areLabelsVisible()));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrFont, labelsFont().family());
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrTextSize, QString::number(labelsTextSize()));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrTextColor, labelsTextColor().name());
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrTextStyle, CEnumTextStyle(labelsTextStyle()).toString());
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrTextEffect, CEnumTextEffect(labelsTextEffect()).toString());
+}
+
+//------------------------------------------------------------------------------
+void CDrawGridSettings::load( QXmlStreamReader& i_xmlStreamReader )
+//------------------------------------------------------------------------------
+{
+    QString strElemName = i_xmlStreamReader.name().toString();
+    QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
+    if (!i_xmlStreamReader.hasError()) {
+        bool bGridLinesVisible = XmlStreamParser::getBoolVal(
+            i_xmlStreamReader, xmlStreamAttrs, strElemName,
+            XmlStreamParser::c_strXmlAttrLinesVisible, false, false);
+        if (!i_xmlStreamReader.hasError()) {
+            setLinesVisible(bGridLinesVisible);
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            int iDistMin_px = XmlStreamParser::getIntVal(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrLinesDistMin, false, 1);
+            if (!i_xmlStreamReader.hasError()) {
+                setLinesDistMin(iDistMin_px);
+            }
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            CEnumLineStyle eLineStyle = XmlStreamParser::getLineStyle(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrLineStyle, false, ELineStyle::SolidLine);
+            if (!i_xmlStreamReader.hasError() && eLineStyle.isValid()) {
+                setLinesStyle(eLineStyle);
+            }
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            int iPenWidth = XmlStreamParser::getIntVal(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrLineWidth, false, 1);
+            if (!i_xmlStreamReader.hasError()) {
+                setLinesWidth(iPenWidth);
+            }
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            QColor clrPen = XmlStreamParser::getColor(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrLineColor, false, Qt::black);
+            if (!i_xmlStreamReader.hasError()) {
+                setLinesColor(clrPen);
+            }
+        }
+        bool bGridLabelsVisible = false;
+        if (!i_xmlStreamReader.hasError()) {
+            bGridLabelsVisible = XmlStreamParser::getBoolVal(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrLabelsVisible, false, bGridLinesVisible);
+            if (!i_xmlStreamReader.hasError()) {
+                setLabelsVisible(bGridLabelsVisible);
+            }
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            QFont fnt = XmlStreamParser::getFont(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrFont, false, QFont());
+            if (!i_xmlStreamReader.hasError()) {
+                setLabelsFont(fnt);
+            }
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            ETextSize eTextSize = XmlStreamParser::getTextSize(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrTextSize, false, ETextSize8);
+            if (!i_xmlStreamReader.hasError()) {
+                setLabelsTextSize(eTextSize);
+            }
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            QColor clrText = XmlStreamParser::getColor(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrTextColor, false, Qt::black);
+            if (!i_xmlStreamReader.hasError()) {
+                setLabelsTextColor(clrText);
+            }
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            CEnumTextStyle eTextStyle = XmlStreamParser::getTextStyle(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrTextStyle, false, ETextStyle::Normal);
+            if (!i_xmlStreamReader.hasError()) {
+                setLabelsTextStyle(eTextStyle);
+            }
+        }
+        if (!i_xmlStreamReader.hasError()) {
+            CEnumTextEffect eTextEffect = XmlStreamParser::getTextEffect(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName,
+                XmlStreamParser::c_strXmlAttrTextEffect, false, ETextEffect::None);
+            if (!i_xmlStreamReader.hasError()) {
+                setLabelsTextEffect(eTextEffect);
+            }
+        }
+    }
+} // load
 
 /*==============================================================================
 public: // instance methods

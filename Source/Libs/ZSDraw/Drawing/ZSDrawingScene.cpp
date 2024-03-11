@@ -79,53 +79,6 @@ class CDrawingScene : public QGraphicsScene
 public: // type definitions and constants
 ==============================================================================*/
 
-const QString CDrawingScene::c_strXmlElemNameDrawing = "Drawing";
-const QString CDrawingScene::c_strXmlElemNameGraphObj = "GraphObj";
-const QString CDrawingScene::c_strXmlElemNameDrawSettings = "DrawSettings";
-const QString CDrawingScene::c_strXmlElemNameGeometry = "Geometry";
-const QString CDrawingScene::c_strXmlElemNameShapePoints = "ShapePoints";
-const QString CDrawingScene::c_strXmlElemNameShapePointP1 = "P1";
-const QString CDrawingScene::c_strXmlElemNameShapePointP2 = "P2";
-const QString CDrawingScene::c_strXmlElemNameZValue = "ZValue";
-const QString CDrawingScene::c_strXmlElemNameTextLabels = "TextLabels";
-const QString CDrawingScene::c_strXmlElemNameGeometryLabels = "GeometryLabels";
-const QString CDrawingScene::c_strXmlElemNameLabel = "Label";
-
-/*==============================================================================
-public: // type definitions and constants
-==============================================================================*/
-
-const QString CDrawingScene::c_strXmlAttrDimensionUnit = "DimensionUnit";
-const QString CDrawingScene::c_strXmlAttrScreenResolutionPxPerMilliMeter = "ScreenResolutionPxPerMM";
-const QString CDrawingScene::c_strXmlAttrMetricImageCoorsDecimals = "MetricImageCoorsDecimals";
-const QString CDrawingScene::c_strXmlAttrUnit = "Unit";
-const QString CDrawingScene::c_strXmlAttrWidth = "Width";
-const QString CDrawingScene::c_strXmlAttrHeight = "Height";
-const QString CDrawingScene::c_strXmlAttrScaleFactor = "ScaleFactor";
-const QString CDrawingScene::c_strXmlAttrPaperSize = "PaperSize";
-const QString CDrawingScene::c_strXmlAttrPaperOrientation = "PaperOrientation";
-const QString CDrawingScene::c_strXmlAttrYScaleAxisOrientation = "YScaleAxisOrientation";
-const QString CDrawingScene::c_strXmlAttrGridLinesVisible = "GridLinesVisible";
-const QString CDrawingScene::c_strXmlAttrGridLinesDistMin = "GridLinesDistMin";
-const QString CDrawingScene::c_strXmlAttrGridLinesStyle = "GridLinesStyle";
-const QString CDrawingScene::c_strXmlAttrGridLinesWidth = "GridLinesWidth";
-const QString CDrawingScene::c_strXmlAttrGridLinesColor = "GridLinesColor";
-const QString CDrawingScene::c_strXmlAttrGridLabelsVisible = "GridLabelsVisible";
-const QString CDrawingScene::c_strXmlAttrGridLabelsFont = "GridLabelsFont";
-const QString CDrawingScene::c_strXmlAttrGridLabelsTextSize = "GridLabelsTextSize";
-const QString CDrawingScene::c_strXmlAttrGridLabelsTextColor = "GridLabelsTextColor";
-const QString CDrawingScene::c_strXmlAttrGridLabelsTextStyle = "GridLabelsTextStyle";
-const QString CDrawingScene::c_strXmlAttrGridLabelsTextEffect = "GridLabelsTextEffect";
-const QString CDrawingScene::c_strXmlAttrGraphObjFactoryGroupName = "FactoryGroupName";
-const QString CDrawingScene::c_strXmlAttrGraphObjType = "ObjectType";
-const QString CDrawingScene::c_strXmlAttrGraphObjName = "ObjectName";
-const QString CDrawingScene::c_strXmlAttrKey = "Key";
-const QString CDrawingScene::c_strXmlAttrText = "Text";
-const QString CDrawingScene::c_strXmlAttrSelPt = "SelPt";
-const QString CDrawingScene::c_strXmlAttrDistance = "Distance";
-const QString CDrawingScene::c_strXmlAttrVisible = "Visible";
-const QString CDrawingScene::c_strXmlAttrAnchorLineVisible = "AnchorLineVisible";
-
 const QString CDrawingScene::s_strGraphObjNameSeparator = "/";
 
 /*==============================================================================
@@ -937,214 +890,51 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
             if (xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement()) {
                 QString strElemName = xmlStreamReader.name().toString();
                 if (xmlStreamReader.isStartElement()) {
-                    //--------------------------------
-                    if (strElemName == c_strXmlElemNameDrawing)
-                    //--------------------------------
-                    {
-                        QXmlStreamAttributes xmlStreamAttrs = xmlStreamReader.attributes();
-
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameDrawing) {
                         CDrawingSize drawingSize("Drawing");
-                        CDrawGridSettings gridSettings("Drawing");
-
-                        CEnumScaleDimensionUnit dimensionUnit = getDimensionUnit(
-                            xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrDimensionUnit);
-                        if (!xmlStreamReader.hasError()) {
-                            drawingSize.setDimensionUnit(dimensionUnit);
-                            if (dimensionUnit == EScaleDimensionUnit::Pixels) {
-                                double cxWidth_px = getDoubleVal(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrWidth);
-                                double cyHeight_px = getDoubleVal(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrHeight);
-                                if (!xmlStreamReader.hasError()) {
-                                    drawingSize.setImageSize(
-                                        CPhysVal(cxWidth_px, Units.Length.px),
-                                        CPhysVal(cyHeight_px, Units.Length.px));
-                                }
-                            }
-                            else if (dimensionUnit == EScaleDimensionUnit::Metric) {
-                                double fScreenResPxPerMM = getDoubleVal(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrScreenResolutionPxPerMilliMeter);
-                                if (!xmlStreamReader.hasError()) {
-                                    drawingSize.setScreenResolutionInPxPerMM(fScreenResPxPerMM);
-                                }
-                                if (!xmlStreamReader.hasError()) {
-                                    int iDecimals = getIntVal(
-                                        xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrMetricImageCoorsDecimals);
-                                    if (!xmlStreamReader.hasError()) {
-                                        drawingSize.setMetricImageCoorsDecimals(iDecimals);
-                                    }
-                                }
-                                if (!xmlStreamReader.hasError()) {
-                                    CUnit unit = getUnit(
-                                        xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrUnit);
-                                    drawingSize.setMetricUnit(unit);
-                                }
-                                if (!xmlStreamReader.hasError()) {
-                                    CPhysVal physValWidth = getPhysVal(
-                                        xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrWidth);
-                                    CPhysVal physValHeight = getPhysVal(
-                                        xmlStreamReader, xmlStreamAttrs, strElemName, c_strXmlAttrHeight);
-                                    if (!xmlStreamReader.hasError()) {
-                                        drawingSize.setImageSize(physValWidth, physValHeight);
-                                    }
-                                }
-                                if (!xmlStreamReader.hasError()) {
-                                    std::pair<int, int> scaleFactor = getIntPair(
-                                        xmlStreamReader, xmlStreamAttrs, strElemName,
-                                        c_strXmlAttrScaleFactor);
-                                    if (!xmlStreamReader.hasError()) {
-                                        drawingSize.setScaleFactor(scaleFactor.first, scaleFactor.second);
-                                    }
-                                }
-                                if (!xmlStreamReader.hasError()) {
-                                    CEnumNormedPaperSize paperSize = getNormedPaperSize(
-                                        xmlStreamReader, xmlStreamAttrs, strElemName,
-                                        c_strXmlAttrPaperSize, false);
-                                    if (!xmlStreamReader.hasError() && paperSize.isValid()) {
-                                        drawingSize.setNormedPaperSize(paperSize);
-                                    }
-                                }
-                                if (!xmlStreamReader.hasError()) {
-                                    CEnumOrientation orientation = getOrientation(
-                                        xmlStreamReader, xmlStreamAttrs, strElemName,
-                                        c_strXmlAttrPaperOrientation, false);
-                                    if (!xmlStreamReader.hasError() && orientation.isValid()) {
-                                        drawingSize.setNormedPaperOrientation(orientation);
-                                    }
-                                }
-                            }
-                        }
-                        if (!xmlStreamReader.hasError()) {
-                            bool bGridLinesVisible = getBoolVal(
-                                xmlStreamReader, xmlStreamAttrs, strElemName,
-                                c_strXmlAttrGridLinesVisible, false, false);
-                            if (!xmlStreamReader.hasError()) {
-                                gridSettings.setLinesVisible(bGridLinesVisible);
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                int iDistMin_px = getIntVal(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesDistMin, false, 1);
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLinesDistMin(iDistMin_px);
-                                }
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                CEnumLineStyle eLineStyle = getLineStyle(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesStyle, false, ELineStyle::SolidLine);
-                                if (!xmlStreamReader.hasError() && eLineStyle.isValid()) {
-                                    gridSettings.setLinesStyle(eLineStyle);
-                                }
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                int iPenWidth = getIntVal(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesWidth, false, 1);
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLinesWidth(iPenWidth);
-                                }
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                QColor clrPen = getColor(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLinesColor, false, Qt::black);
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLinesColor(clrPen);
-                                }
-                            }
-                            bool bGridLabelsVisible = false;
-                            if (!xmlStreamReader.hasError()) {
-                                bGridLabelsVisible = getBoolVal(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsVisible, false, bGridLinesVisible);
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLabelsVisible(bGridLabelsVisible);
-                                }
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                QFont fnt = getFont(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsFont, false, QFont());
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLabelsFont(fnt);
-                                }
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                ETextSize eTextSize = getTextSize(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsTextSize, false, ETextSize8);
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLabelsTextSize(eTextSize);
-                                }
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                QColor clrText = getColor(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsTextColor, false, Qt::black);
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLabelsTextColor(clrText);
-                                }
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                CEnumTextStyle eTextStyle = getTextStyle(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsTextStyle, false, ETextStyle::Normal);
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLabelsTextStyle(eTextStyle);
-                                }
-                            }
-                            if (!xmlStreamReader.hasError()) {
-                                CEnumTextEffect eTextEffect = getTextEffect(
-                                    xmlStreamReader, xmlStreamAttrs, strElemName,
-                                    c_strXmlAttrGridLabelsTextEffect, false, ETextEffect::None);
-                                if (!xmlStreamReader.hasError()) {
-                                    gridSettings.setLabelsTextEffect(eTextEffect);
-                                }
-                            }
-                        }
+                        drawingSize.load(xmlStreamReader);
                         if (!xmlStreamReader.hasError()) {
                             setDrawingSize(drawingSize);
+                        }
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGridSettings) {
+                        QXmlStreamAttributes xmlStreamAttrs = xmlStreamReader.attributes();
+                        CDrawGridSettings gridSettings("Drawing");
+                        gridSettings.load(xmlStreamReader);
+                        if (!xmlStreamReader.hasError()) {
                             setGridSettings(gridSettings);
                         }
-                    } // if (strElemName == c_strXmlElemNameDrawing)
-
-                    //--------------------------------
-                    else if (strElemName == c_strXmlElemNameGraphObj)
-                    //--------------------------------
-                    {
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGraphObj) {
                         QString strFactoryGroupName;
                         QString strGraphObjType;
                         QString strObjName;
-
                         QXmlStreamAttributes xmlStreamAttrs = xmlStreamReader.attributes();
-
-                        if (xmlStreamAttrs.hasAttribute(c_strXmlAttrGraphObjFactoryGroupName)) {
-                            strFactoryGroupName = xmlStreamAttrs.value(c_strXmlAttrGraphObjFactoryGroupName).toString();
+                        if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName)) {
+                            strFactoryGroupName = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName).toString();
                         }
                         else {
-                            raiseErrorAttributeNotDefined(
-                                xmlStreamReader, strElemName, c_strXmlAttrGraphObjFactoryGroupName);
+                            XmlStreamParser::raiseErrorAttributeNotDefined(
+                                xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName);
                         }
                         if (!xmlStreamReader.hasError()) {
-                            if (xmlStreamAttrs.hasAttribute(c_strXmlAttrGraphObjType)) {
-                                strGraphObjType = xmlStreamAttrs.value(c_strXmlAttrGraphObjType).toString();
+                            if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjType)) {
+                                strGraphObjType = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjType).toString();
                             }
                             else {
-                                raiseErrorAttributeNotDefined(
-                                    xmlStreamReader, strElemName, c_strXmlAttrGraphObjType);
+                                XmlStreamParser::raiseErrorAttributeNotDefined(
+                                    xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjType);
                             }
                         }
                         if (!xmlStreamReader.hasError()) {
-                            if (xmlStreamAttrs.hasAttribute(c_strXmlAttrGraphObjName)) {
-                                strObjName = xmlStreamAttrs.value(c_strXmlAttrGraphObjName).toString();
+                            if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjName)) {
+                                strObjName = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjName).toString();
                             }
                             else {
-                                raiseErrorAttributeNotDefined(
-                                    xmlStreamReader, strElemName, c_strXmlAttrGraphObjName);
+                                XmlStreamParser::raiseErrorAttributeNotDefined(
+                                    xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjName);
                             }
                         }
-
                         if (!xmlStreamReader.hasError()) {
                             CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
                             if (pObjFactory == nullptr) {
@@ -1159,7 +949,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                     /* xmlStreamReader */ xmlStreamReader );
                             }
                         }
-                    } // if (strElemName == c_strXmlElemNameGraphObj)
+                    }
                 } // if (xmlStreamReader.isStartElement())
             } // if (xmlStreamReader.isStartElement() || xmlStreamReader.isEndElement())
         } // while (!xmlStreamReader.hasError() && !xmlStreamReader.atEnd())
@@ -1212,39 +1002,12 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         QXmlStreamWriter xmlStreamWriter(&fileXML);
         xmlStreamWriter.setAutoFormatting(true);
         xmlStreamWriter.writeStartDocument();
-        xmlStreamWriter.writeStartElement(c_strXmlElemNameDrawing);
-        xmlStreamWriter.writeAttribute(c_strXmlAttrDimensionUnit, m_drawingSize.dimensionUnit().toString());
-        if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-            xmlStreamWriter.writeAttribute(c_strXmlAttrWidth, QString::number(m_drawingSize.imageSizeInPixels().width()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrHeight, QString::number(m_drawingSize.imageSizeInPixels().height()));
-        }
-        else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
-            xmlStreamWriter.writeAttribute(c_strXmlAttrScreenResolutionPxPerMilliMeter, QString::number(m_drawingSize.screenResolutionInPxPerMM()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrMetricImageCoorsDecimals, QString::number(m_drawingSize.metricImageCoorsDecimals()));
-            xmlStreamWriter.writeAttribute(c_strXmlAttrUnit, m_drawingSize.metricUnit().symbol());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrWidth, m_drawingSize.metricImageWidth().toString());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrHeight, m_drawingSize.metricImageHeight().toString());
-            xmlStreamWriter.writeAttribute(c_strXmlAttrScaleFactor,
-                QString::number(m_drawingSize.scaleFactorDividend()) +
-                ":" + QString::number(m_drawingSize.scaleFactorDivisor()));
-            if (m_drawingSize.normedPaperSize().isValid()) {
-                xmlStreamWriter.writeAttribute(c_strXmlAttrPaperSize, m_drawingSize.normedPaperSize().toString());
-            }
-            if (m_drawingSize.normedPaperOrientation().isValid()) {
-                xmlStreamWriter.writeAttribute(c_strXmlAttrPaperOrientation, m_drawingSize.normedPaperOrientation().toString());
-            }
-        }
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesVisible, bool2Str(m_gridSettings.areLinesVisible()));
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesDistMin, QString::number(m_gridSettings.linesDistMin()));
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesStyle, CEnumLineStyle(m_gridSettings.linesStyle()).toString());
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesWidth, QString::number(m_gridSettings.linesWidth()));
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLinesColor, m_gridSettings.linesColor().name());
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsVisible, bool2Str(m_gridSettings.areLabelsVisible()));
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsFont, m_gridSettings.labelsFont().family());
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextSize, QString::number(m_gridSettings.labelsTextSize()));
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextColor, m_gridSettings.labelsTextColor().name());
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextStyle, CEnumTextStyle(m_gridSettings.labelsTextStyle()).toString());
-        xmlStreamWriter.writeAttribute(c_strXmlAttrGridLabelsTextEffect, CEnumTextEffect(m_gridSettings.labelsTextEffect()).toString());
+        xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawing);
+        m_drawingSize.save(xmlStreamWriter);
+
+        xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGridSettings);
+        m_gridSettings.save(xmlStreamWriter);
+        xmlStreamWriter.writeEndElement();
 
         // Connection points need to be recalled before the connection lines as on
         // creating the connection lines their connection points must already exist.
@@ -1252,11 +1015,10 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         // Labels and selection points will not be saved at all (labels are created by their parents).
         CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin();
         while (itIdxTree != m_pGraphObjsIdxTree->end()) {
-            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(*itIdxTree);
-            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
             if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
                 // Group members will be saved as child items of the groups.
-                if (pGraphicsItem->parentItem() == nullptr) {
+                if (pGraphObj->parentGraphObj() == nullptr) {
                     errResultInfo = save(pGraphObj, xmlStreamWriter);
                     if (errResultInfo.isErrorResult()) {
                         break;
@@ -1268,12 +1030,10 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
         if (!errResultInfo.isErrorResult()) {
             CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin();
             while (itIdxTree != m_pGraphObjsIdxTree->end()) {
-                QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(*itIdxTree);
-                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
                 if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && pGraphObj->isConnectionLine()) {
                     // Group members will be saved as child items of the groups.
-                    if (pGraphicsItem->parentItem() == nullptr) {
-                        CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+                    if (pGraphObj->parentGraphObj() == nullptr) {
                         errResultInfo = save(pGraphObj, xmlStreamWriter);
                         if (errResultInfo.isErrorResult()) {
                             break;
@@ -1331,10 +1091,10 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
         errResultInfo = ErrResultInfoError("save", EResultObjFactoryNotFound, strAddErrInfo);
     }
     else {
-        i_xmlStreamWriter.writeStartElement(c_strXmlElemNameGraphObj);
-        i_xmlStreamWriter.writeAttribute(c_strXmlAttrGraphObjFactoryGroupName, strFactoryGroupName);
-        i_xmlStreamWriter.writeAttribute(c_strXmlAttrGraphObjType, strGraphObjType);
-        i_xmlStreamWriter.writeAttribute(c_strXmlAttrGraphObjName, strObjName);
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGraphObj);
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName, strFactoryGroupName);
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjType, strGraphObjType);
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjName, strObjName);
         errResultInfo = pObjFactory->saveGraphObj(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
     }
@@ -5149,508 +4909,6 @@ void CDrawingScene::unselectGraphicsItems(const QList<QGraphicsItem*>& i_arpGrap
     for (QGraphicsItem* pGraphicsItemSelected : i_arpGraphicsItems) {
         pGraphicsItemSelected->setSelected(false);
     }
-}
-
-/*==============================================================================
-protected: // auxiliary methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CDrawingScene::raiseErrorAttributeNotDefined(
-    QXmlStreamReader& i_xmlStreamReader,
-    const QString& i_strElemName,
-    const QString& i_strAttrName) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strElemName + ", " + i_strAttrName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "raiseErrorAttributeNotDefined",
-        /* strAddInfo   */ strMthInArgs );
-
-    i_xmlStreamReader.raiseError(
-        "Attribute \"" + i_strAttrName + "\" for element \"" + i_strElemName + "\" not defined");
-}
-
-//------------------------------------------------------------------------------
-void CDrawingScene::raiseErrorAttributeOutOfRange(
-    QXmlStreamReader& i_xmlStreamReader,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    const QString& i_strAttrVal) const
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_strElemName + ", " + i_strAttrName + " = " + i_strAttrVal;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "raiseErrorAttributeNotDefined",
-        /* strAddInfo   */ strMthInArgs );
-
-    i_xmlStreamReader.raiseError(
-        "Attribute \"" + i_strAttrName + "\" for element \"" + i_strElemName + "\" (=" + i_strAttrVal + ") is out of range");
-}
-
-/*==============================================================================
-protected: // auxiliary methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-CEnumScaleDimensionUnit CDrawingScene::getDimensionUnit(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const CEnumScaleDimensionUnit& i_eDefaultVal ) const
-//------------------------------------------------------------------------------
-{
-    CEnumScaleDimensionUnit dimensionUnit = i_eDefaultVal;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        CEnumScaleDimensionUnit eVal = CEnumScaleDimensionUnit::fromString(strAttrVal, &bOk);
-        if (bOk) {
-            dimensionUnit = eVal;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return dimensionUnit;
-}
-
-//------------------------------------------------------------------------------
-CEnumNormedPaperSize CDrawingScene::getNormedPaperSize(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const CEnumNormedPaperSize& i_eDefaultVal ) const
-//------------------------------------------------------------------------------
-{
-    CEnumNormedPaperSize paperSize = i_eDefaultVal;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        CEnumNormedPaperSize eVal = CEnumNormedPaperSize::fromString(strAttrVal, &bOk);
-        if (bOk) {
-            paperSize = eVal;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return paperSize;
-}
-
-//------------------------------------------------------------------------------
-CEnumOrientation CDrawingScene::getOrientation(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const CEnumOrientation& i_eDefaultVal ) const
-//------------------------------------------------------------------------------
-{
-    CEnumOrientation orientation = i_eDefaultVal;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        CEnumOrientation eVal = CEnumOrientation::fromString(strAttrVal, &bOk);
-        if (bOk) {
-            orientation = eVal;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return orientation;
-}
-
-//------------------------------------------------------------------------------
-CEnumLineStyle CDrawingScene::getLineStyle(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const CEnumLineStyle& i_eDefaultVal ) const
-//------------------------------------------------------------------------------
-{
-    CEnumLineStyle eLineStyle = i_eDefaultVal;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        CEnumLineStyle eVal = CEnumLineStyle::fromString(strAttrVal, &bOk);
-        if (bOk) {
-            eLineStyle = eVal;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return eLineStyle;
-}
-
-//------------------------------------------------------------------------------
-ETextSize CDrawingScene::getTextSize(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    ETextSize i_eDefaultVal ) const
-//------------------------------------------------------------------------------
-{
-    ETextSize textSize = i_eDefaultVal;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        ETextSize eVal = str2TextSize(strAttrVal, &bOk);
-        if (bOk) {
-            textSize = eVal;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return textSize;
-}
-
-//------------------------------------------------------------------------------
-CEnumTextStyle CDrawingScene::getTextStyle(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const CEnumTextStyle& i_eDefaulVal ) const
-//------------------------------------------------------------------------------
-{
-    CEnumTextStyle eTextStyle = i_eDefaulVal;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        CEnumTextStyle eVal = CEnumTextStyle::fromString(strAttrVal, &bOk);
-        if (bOk) {
-            eTextStyle = eVal;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return eTextStyle;
-}
-
-//------------------------------------------------------------------------------
-CEnumTextEffect CDrawingScene::getTextEffect(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const CEnumTextEffect& i_eDefaultVal ) const
-//------------------------------------------------------------------------------
-{
-    CEnumTextEffect eTextEffect = i_eDefaultVal;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        CEnumTextEffect eVal = CEnumTextEffect::fromString(strAttrVal, &bOk);
-        if (bOk) {
-            eTextEffect = eVal;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return eTextEffect;
-}
-
-//------------------------------------------------------------------------------
-CUnit CDrawingScene::getUnit(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const CUnit& i_unitDefault ) const
-//------------------------------------------------------------------------------
-{
-    CUnit unit = i_unitDefault;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        CUnit unitTmp = strAttrVal;
-        if (unitTmp.isValid()) {
-            unit = unitTmp;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return unit;
-}
-
-//------------------------------------------------------------------------------
-CPhysVal CDrawingScene::getPhysVal(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const CPhysVal& i_physValDefault ) const
-//------------------------------------------------------------------------------
-{
-    CPhysVal physVal = i_physValDefault;
-    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        CPhysVal physValTmp(Units.Length);
-        physValTmp = strAttrVal;
-        if (physValTmp.isValid()) {
-            physVal = physValTmp;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return physVal;
-}
-
-//------------------------------------------------------------------------------
-QFont CDrawingScene::getFont(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const QFont& i_fntDefault ) const
-//------------------------------------------------------------------------------
-{
-    QFont fnt = i_fntDefault;
-    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        fnt.setFamily(strAttrVal);
-    }
-    return fnt;
-}
-
-//------------------------------------------------------------------------------
-QColor CDrawingScene::getColor(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    const QColor& i_clrDefault ) const
-//------------------------------------------------------------------------------
-{
-    QColor clr = i_clrDefault;
-    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        clr.setNamedColor(strAttrVal);
-    }
-    return clr;
-}
-
-//------------------------------------------------------------------------------
-bool CDrawingScene::getBoolVal(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    bool i_bValDefault ) const
-//------------------------------------------------------------------------------
-{
-    bool bVal = i_bValDefault;
-    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        bool bValTmp = str2Bool(strAttrVal, &bOk);
-        if (bOk) {
-            bVal = bValTmp;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return bVal;
-}
-
-//------------------------------------------------------------------------------
-int CDrawingScene::getIntVal(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    int i_iValDefault ) const
-//------------------------------------------------------------------------------
-{
-    int iVal = i_iValDefault;
-    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        int iValTmp = strAttrVal.toInt(&bOk);
-        if (bOk) {
-            iVal = iValTmp;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return iVal;
-}
-
-//------------------------------------------------------------------------------
-std::pair<int, int> CDrawingScene::getIntPair(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    const QString& i_strDelimiter,
-    bool i_bAttrIsMandatory,
-    const std::pair<int, int>& i_valDefault ) const
-//------------------------------------------------------------------------------
-{
-    std::pair<int, int> iPair = i_valDefault;
-    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        QStringList strlstVals = strAttrVal.split(i_strDelimiter, Qt::SkipEmptyParts);
-        if (strlstVals.size() != 2) {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-        else {
-            bool bOk = true;
-            int iVal1 = strlstVals[0].toInt(&bOk);
-            if (!bOk) {
-                raiseErrorAttributeOutOfRange(
-                    i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-            }
-            else {
-                int iVal2 = strlstVals[1].toInt(&bOk);
-                if (!bOk) {
-                    raiseErrorAttributeOutOfRange(
-                        i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-                }
-                else {
-                    iPair = std::make_pair(iVal1, iVal2);
-                }
-            }
-        }
-    }
-    return iPair;
-}
-
-//------------------------------------------------------------------------------
-double CDrawingScene::getDoubleVal(
-    QXmlStreamReader& i_xmlStreamReader,
-    QXmlStreamAttributes& i_xmlStreamAttrs,
-    const QString& i_strElemName,
-    const QString& i_strAttrName,
-    bool i_bAttrIsMandatory,
-    double i_fValDefault ) const
-//------------------------------------------------------------------------------
-{
-    double fVal = i_fValDefault;
-    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
-        if (i_bAttrIsMandatory) {
-            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
-        }
-    }
-    else {
-        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        bool bOk = true;
-        double fValTmp = strAttrVal.toDouble(&bOk);
-        if (bOk) {
-            fVal = fValTmp;
-        } else {
-            raiseErrorAttributeOutOfRange(
-                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
-        }
-    }
-    return fVal;
 }
 
 /*==============================================================================

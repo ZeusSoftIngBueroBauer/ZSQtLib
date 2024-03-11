@@ -136,39 +136,29 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObj == nullptr" );
     }
 
-    // Draw Attributes
-    //----------------
-
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
-    i_xmlStreamWriter.writeEndElement(); // DrawSettings
+    i_xmlStreamWriter.writeEndElement();
 
-    // Geometry
-    //-------------
-
-    QLineF  lin = pGraphObj->line(); // coordinates are in the objects coordinate system (LT = 0.0/0.0)
-    QPointF pt1 = pGraphObj->mapToParent(lin.p1());
-    QPointF pt2 = pGraphObj->mapToParent(lin.p2());
-
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameShapePoints);
-    i_xmlStreamWriter.writeTextElement(CDrawingScene::c_strXmlElemNameShapePointP1, point2Str(pt1));
-    i_xmlStreamWriter.writeTextElement(CDrawingScene::c_strXmlElemNameShapePointP2, point2Str(pt2));
+    CPhysValPoint physValPoint1 = pGraphObj->getP1();
+    CPhysValPoint physValPoint2 = pGraphObj->getP2();
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameShapePoints);
+    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameShapePointP1, physValPoint1.toString());
+    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameShapePointP2, physValPoint2.toString());
     i_xmlStreamWriter.writeEndElement(); // ShapePoints
     i_xmlStreamWriter.writeEndElement(); // Geometry
-    i_xmlStreamWriter.writeTextElement(CDrawingScene::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
 
-    // Labels
-    //----------------
+    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
 
     if (!i_pGraphObj->getLabelNames().isEmpty()) {
-        i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);
         saveGraphObjTextLabels(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
     }
     if (!i_pGraphObj->getGeometryLabelNames().isEmpty()) {
-        i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometryLabels);
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometryLabels);
         saveGraphObjGeometryLabels(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
     }
@@ -204,6 +194,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObjLine* pGraphObj = new CGraphObjLine(i_pDrawingScene, i_strObjName);
+    i_pDrawingScene->addGraphObj(pGraphObj);
 
     CDrawSettings drawSettings(EGraphObjTypeLine);
     CPhysValPoint physValPoint1;
@@ -215,60 +206,52 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     QList<SLabelDscr> arGeometryLabels;
 
     enum ELevel {
-        ELevelGraphObj = 0,     // expecting DrawSettings, Geometry, ZValue, Labels
+        ELevelThisGraphObj = 0, // expecting DrawSettings, Geometry, ZValue, Labels
         ELevelGeometry = 1,     // expecting ShapePoints
         ELevelShapePoints = 2   // expecting P1, P2
     };
-    int iLevel = ELevelGraphObj;
+    int iLevel = ELevelThisGraphObj;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
-            if (iLevel == ELevelGraphObj) {
+            if (iLevel == ELevelThisGraphObj) {
                 if (i_xmlStreamReader.isStartElement()) {
-                    if (strElemName == CDrawingScene::c_strXmlElemNameDrawSettings) {
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings) {
                         drawSettings.load(i_xmlStreamReader);
                     }
-                    else if (strElemName == CDrawingScene::c_strXmlElemNameGeometry) {
-                        if (i_xmlStreamReader.isStartElement()) {
-                            iLevel++;
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
+                        iLevel++;
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameZValue) {
+                        QString strElemText = i_xmlStreamReader.readElementText();
+                        bool bConverted = false;
+                        double fTmp = strElemText.toDouble(&bConverted);
+                        if (bConverted) {
+                            fZValue = fTmp;
                         }
                     }
-                    else if (strElemName == CDrawingScene::c_strXmlElemNameZValue) {
-                        if (i_xmlStreamReader.isStartElement()) {
-                            QString strElemText = i_xmlStreamReader.readElementText();
-                            bool bConverted = false;
-                            double fTmp = strElemText.toDouble(&bConverted);
-                            if (bConverted) {
-                                fZValue = fTmp;
-                            }
-                        }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameTextLabels) {
+                        arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
                     }
-                    else if (strElemName == CDrawingScene::c_strXmlElemNameTextLabels) {
-                        if (i_xmlStreamReader.isStartElement()) {
-                            arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
-                        }
-                    }
-                    else if (strElemName == CDrawingScene::c_strXmlElemNameGeometryLabels) {
-                        if (i_xmlStreamReader.isStartElement()) {
-                            arGeometryLabels = loadGraphObjGeometryLabels(i_xmlStreamReader);
-                        }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometryLabels) {
+                        arGeometryLabels = loadGraphObjGeometryLabels(i_xmlStreamReader);
                     }
                     else {
                         i_xmlStreamReader.raiseError(
                             "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
                     }
                 }
-                else if (i_xmlStreamReader.isEndElement()) {
-                    if (strElemName == "GraphObj") {
+                else /*if (i_xmlStreamReader.isEndElement())*/ {
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameGraphObj) {
                         break;
                     }
                 }
             }
             else if (iLevel == ELevelGeometry) {
                 if (i_xmlStreamReader.isStartElement()) {
-                    if (strElemName == CDrawingScene::c_strXmlElemNameShapePoints) {
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameShapePoints) {
                         iLevel++;
                     }
                     else {
@@ -282,8 +265,8 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
             }
             else if (iLevel == ELevelShapePoints) {
                 if (i_xmlStreamReader.isStartElement()) {
-                    if ((strElemName == CDrawingScene::c_strXmlElemNameShapePointP1) 
-                     || (strElemName == CDrawingScene::c_strXmlElemNameShapePointP2)) {
+                    if ((strElemName == XmlStreamParser::c_strXmlElemNameShapePointP1) 
+                     || (strElemName == XmlStreamParser::c_strXmlElemNameShapePointP2)) {
                         QString strElemText = i_xmlStreamReader.readElementText();
                         bool bConverted = false;
                         CPhysValPoint physValPointTmp(*i_pDrawingScene);
@@ -298,11 +281,11 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                             i_xmlStreamReader.raiseError(
                                 "Element \"" + strElemName + "\" (" + strElemText + ") cannot be converted to Point");
                         }
-                        else if (strElemName == CDrawingScene::c_strXmlElemNameShapePointP1) {
+                        else if (strElemName == XmlStreamParser::c_strXmlElemNameShapePointP1) {
                             physValPoint1 = physValPointTmp;
                             bPt1Valid = true;
                         }
-                        else if (strElemName == CDrawingScene::c_strXmlElemNameShapePointP2) {
+                        else if (strElemName == XmlStreamParser::c_strXmlElemNameShapePointP2) {
                             physValPoint2 = physValPointTmp;
                             bPt2Valid = true;
                         }
@@ -320,66 +303,74 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
     if (!bPt1Valid || !bPt2Valid) {
-        i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
+        if (!i_xmlStreamReader.hasError()) {
+            i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
+        }
     }
 
     if (!i_xmlStreamReader.hasError()) {
+        pGraphObj->setDrawSettings(drawSettings);
         if (i_pGraphObjGroup != nullptr) {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-            //i_pGraphObjGroup->addGraphObj(pGraphObj);
+            // The object has been added to the drawing scene at position (0, 0) right after creating the object.
+            // The shape points have not been set yet. When adding the object to the group the group will
+            // map the shape point coordinates to the group coordinates and will try to resize the group so that
+            // the newly added object fits into the group. In order for the group to map the coordinates of
+            // the new child object, the group must already have gotten its final size.
+            physValPoint1 = i_pGraphObjGroup->mapPhysValPointToScene(physValPoint1);
+            physValPoint2 = i_pGraphObjGroup->mapPhysValPointToScene(physValPoint2);
+            pGraphObj->setLine(physValPoint1, physValPoint2);
+            i_pGraphObjGroup->addToGroup(pGraphObj);
         }
         else {
             pGraphObj->setLine(physValPoint1, physValPoint2);
-            pGraphObj->setDrawSettings(drawSettings);
-            pGraphObj->setStackingOrderValue(fZValue);
-            i_pDrawingScene->addGraphObj(pGraphObj);
+        }
+        pGraphObj->setStackingOrderValue(fZValue);
 
-            // Labels can only be added if the graphical object got its final position, size and rotation angle
-            // as the labels position themselves depending on the position of the selection points they are linked to.
-            for (const SLabelDscr& labelDscr : arTextLabels) {
-                if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
-                    if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                        pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
-                    }
-                    else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-                        pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
-                    }
+        // Labels can only be added if the graphical object got its final position, size and rotation angle
+        // as the labels position themselves depending on the position of the selection points they are linked to.
+        for (const SLabelDscr& labelDscr : arTextLabels) {
+            if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
+                if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
                 }
-                else {
-                    pGraphObj->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
-                    if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                        pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
-                    }
-                    else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-                        pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
-                    }
+                else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
                 }
-                pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
+            }
+            else {
+                pGraphObj->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
+                if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
+                }
+                else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
+                }
+            }
+            pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
+                labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+            labelDscr.m_bLabelIsVisible ?
+                pGraphObj->showLabel(labelDscr.m_strKey) :
+                pGraphObj->hideLabel(labelDscr.m_strKey);
+            labelDscr.m_bShowAnchorLine ?
+                pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
+                pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
+        }
+
+        // Geometry Labels
+        for (const SLabelDscr& labelDscr : arGeometryLabels) {
+            if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
+                i_xmlStreamReader.raiseError(
+                    "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
+            }
+            else {
+                pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
                 labelDscr.m_bLabelIsVisible ?
-                    pGraphObj->showLabel(labelDscr.m_strKey) :
-                    pGraphObj->hideLabel(labelDscr.m_strKey);
+                    pGraphObj->showGeometryLabel(labelDscr.m_strKey) :
+                    pGraphObj->hideGeometryLabel(labelDscr.m_strKey);
                 labelDscr.m_bShowAnchorLine ?
-                    pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
-                    pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
-            }
-
-            // Geometry Labels
-            for (const SLabelDscr& labelDscr : arGeometryLabels) {
-                if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
-                    i_xmlStreamReader.raiseError(
-                        "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
-                }
-                else {
-                    pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
-                        labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
-                    labelDscr.m_bLabelIsVisible ?
-                        pGraphObj->showGeometryLabel(labelDscr.m_strKey) :
-                        pGraphObj->hideGeometryLabel(labelDscr.m_strKey);
-                    labelDscr.m_bShowAnchorLine ?
-                        pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
-                        pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
-                }
+                    pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
+                    pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
             }
         }
     }

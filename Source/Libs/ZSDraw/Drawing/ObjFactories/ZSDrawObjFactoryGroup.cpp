@@ -124,67 +124,57 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
 
     SErrResultInfo errResultInfo;
 
-    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(i_pGraphObj);
-    if (pGraphObjGroup == nullptr) {
+    CGraphObjGroup* pGraphObj = dynamic_cast<CGraphObjGroup*>(i_pGraphObj);
+    if (pGraphObj == nullptr) {
         throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
     }
 
-    // Draw Attributes
-    //----------------
+    CDrawGridSettings gridSettings = pGraphObj->gridSettings();
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGridSettings);
+    gridSettings.save(i_xmlStreamWriter);
+    i_xmlStreamWriter.writeEndElement();
 
-    CDrawSettings drawSettings = pGraphObjGroup->getDrawSettings();
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameDrawSettings);
+    CDrawSettings drawSettings = pGraphObj->getDrawSettings();
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
-    // Geometry
-    //-------------
+    CPhysValRect physValRect = pGraphObj->getRect();
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
+    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameRectangle);
+    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameShapePointTopLeft, physValRect.topLeft().toString());
+    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameSize, physValRect.size().toString());
+    i_xmlStreamWriter.writeEndElement(); // Rectangle
+    i_xmlStreamWriter.writeEndElement(); // Geometry
 
-    QPointF ptPos = pGraphObjGroup->pos();
-    double  fRotAngle_deg = 0.0; //pGraphObjGroup->getRotationAngleInDegree();
+    i_xmlStreamWriter.writeTextElement("ZValue", QString::number(pGraphObj->getStackingOrderValue()));
 
-    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeTextElement("Pos", point2Str(ptPos));
-    i_xmlStreamWriter.writeTextElement("RotAngleDeg", QString::number(fRotAngle_deg));
-    i_xmlStreamWriter.writeEndElement();
-
-    // Z-Value
-    //---------------
-
-    i_xmlStreamWriter.writeTextElement("ZValue", QString::number(pGraphObjGroup->getStackingOrderValue()));
-
-    // Labels
-    //----------------
-
-    //QHash<QString, CGraphObjLabel*> arpLabels = pGraphObjGroup->getLabels();
-    //if (arpLabels.size() > 0) {
-    //    i_xmlStreamWriter.writeStartElement(CDrawingScene::c_strXmlElemNameTextLabels);
-    //    errResultInfo = saveGraphObjLabels( arpLabels, i_xmlStreamWriter );
-    //    i_xmlStreamWriter.writeEndElement();
-    //}
-
-    // Group members (childrens)
-    //--------------------------
+    if (!i_pGraphObj->getLabelNames().isEmpty()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameTextLabels);
+        saveGraphObjTextLabels(i_pGraphObj, i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
+    if (!i_pGraphObj->getGeometryLabelNames().isEmpty()) {
+        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometryLabels);
+        saveGraphObjGeometryLabels(i_pGraphObj, i_xmlStreamWriter);
+        i_xmlStreamWriter.writeEndElement();
+    }
 
     // Connection points need to be recalled before the connection lines as on
     // creating the connection lines their connection points must already exist.
     // For this the connection lines will be saved at the end of the XML file.
-    for (CIdxTreeEntry* pChildEntry : pGraphObjGroup->childs()) {
-        CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pChildEntry);
+    // Labels and selection points will not be saved at all (labels are created by their parents).
+    for (CGraphObj* pGraphObjChild : pGraphObj->childs()) {
         if (!pGraphObjChild->isSelectionPoint() && !pGraphObjChild->isLabel() && !pGraphObjChild->isConnectionLine()) {
-            QString strNameSpaceChild = pGraphObjChild->NameSpace();
-            QString strClassNameChild = pGraphObjChild->ClassName();
-            QString strObjTypeChild = pGraphObjChild->typeAsString();
-            QString strObjNameChild = pGraphObjChild->name();
-            QString strObjIdChild = pGraphObjChild->keyInTree();
-            CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(pGraphObjChild->getFactoryGroupName(), strObjTypeChild);
+            QString strFactoryGroupName = pGraphObjChild->getFactoryGroupName();
+            QString strGraphObjType = pGraphObjChild->typeAsString();
+            QString strObjName = pGraphObjChild->name();
+            CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
             if (pObjFactoryChild != nullptr) {
-                i_xmlStreamWriter.writeStartElement("GraphObj");
-                i_xmlStreamWriter.writeAttribute( "NameSpace", strNameSpaceChild );
-                i_xmlStreamWriter.writeAttribute( "ClassName", strClassNameChild );
-                i_xmlStreamWriter.writeAttribute( "ObjectType", strObjTypeChild );
-                i_xmlStreamWriter.writeAttribute( "ObjectName", strObjNameChild );
-                i_xmlStreamWriter.writeAttribute( "ObjectId", strObjIdChild );
+                i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGraphObj);
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName, strFactoryGroupName);
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjType, strGraphObjType);
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjName, strObjName);
                 errResultInfo = pObjFactoryChild->saveGraphObj(pGraphObjChild, i_xmlStreamWriter);
                 i_xmlStreamWriter.writeEndElement();
                 if (errResultInfo.isErrorResult()) {
@@ -194,23 +184,18 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
         }
     }
     if (!errResultInfo.isErrorResult()) {
-        for (CIdxTreeEntry* pChildEntry : pGraphObjGroup->childs()) {
-            CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pChildEntry);
-            if (pGraphObjChild->isSelectionPoint() || pGraphObjChild->isLabel() || pGraphObjChild->isConnectionLine()) {
-                QString strNameSpaceChild = pGraphObjChild->NameSpace();
-                QString strClassNameChild = pGraphObjChild->ClassName();
-                QString strObjTypeChild = pGraphObjChild->typeAsString();
-                QString strObjNameChild = pGraphObjChild->name();
-                QString strObjIdChild = pGraphObjChild->keyInTree();
-                CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(pGraphObjChild->getFactoryGroupName(), strObjTypeChild);
+        for (CGraphObj* pGraphObjChild : pGraphObj->childs()) {
+            if (!pGraphObjChild->isSelectionPoint() || !pGraphObjChild->isLabel() || pGraphObjChild->isConnectionLine()) {
+                QString strFactoryGroupName = pGraphObjChild->getFactoryGroupName();
+                QString strGraphObjType = pGraphObjChild->typeAsString();
+                QString strObjName = pGraphObjChild->name();
+                CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
                 if (pObjFactoryChild != nullptr) {
-                    i_xmlStreamWriter.writeStartElement("GraphObj");
-                    i_xmlStreamWriter.writeAttribute( "NameSpace", strNameSpaceChild );
-                    i_xmlStreamWriter.writeAttribute( "ClassName", strClassNameChild );
-                    i_xmlStreamWriter.writeAttribute( "ObjectType", strObjTypeChild );
-                    i_xmlStreamWriter.writeAttribute( "ObjectName", strObjNameChild );
-                    i_xmlStreamWriter.writeAttribute( "ObjectId", strObjIdChild );
-                    errResultInfo = pObjFactoryChild->saveGraphObj(pGraphObjChild,i_xmlStreamWriter);
+                    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGraphObj);
+                    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName, strFactoryGroupName);
+                    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjType, strGraphObjType);
+                    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjName, strObjName);
+                    errResultInfo = pObjFactoryChild->saveGraphObj(pGraphObjChild, i_xmlStreamWriter);
                     i_xmlStreamWriter.writeEndElement();
                     if (errResultInfo.isErrorResult()) {
                         break;
@@ -219,12 +204,9 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
             }
         }
     }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
 
 } // saveGraphObj
@@ -251,298 +233,278 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjGroup* pGraphObjGroup = nullptr;
+    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene, i_strObjName);
+    i_pDrawingScene->addGraphObj(pGraphObj);
 
-#if 0
-    QXmlStreamAttributes            xmlStreamAttrs;
-    QString                         strElemName;
-    QString                         strElemText;
-    bool                            bConverted;
-    CDrawSettings                   drawSettings(EGraphObjTypeGroup);
-    QPointF                         ptPos;
-    bool                            bPosValid = false;
-    double                          fRotAngle_deg = 0.0;
-    double                          fZValue = 0.0;
-    QHash<QString, CGraphObjLabel*> arpLabels;
+    CDrawSettings drawSettings(EGraphObjTypeGroup);
+    CDrawGridSettings gridSettings("Load");
+    CPhysValPoint physValPointTopLeft;
+    CPhysValSize physValSize;
+    bool bRectTopLeftValid = false;
+    bool bRectSizeValid = false;
+    double fZValue = 0.0;
+    QList<SLabelDscr> arTextLabels;
+    QList<SLabelDscr> arGeometryLabels;
 
-    pGraphObjGroup = new CGraphObjGroup(
-        /* pDrawingScene */ i_pDrawingScene,
-        /* drawSettings  */ drawSettings,
-        /* strObjName    */ i_strObjName );
+    enum ELevel {
+        ELevelThisGraphObj      = 0,  // expecting GridSettings, DrawSettings, Geometry, ZValue, Labels, Childs
+        ELevelGeometryAndChilds = 1,  // expecting Rectangle
+        ELevelRectangle         = 2   // expecting TopLeft, Size
+    };
+    int iLevel = ELevelThisGraphObj;
 
-    // Start creation of group.
-    pGraphObjGroup->setEditMode(EEditMode::Creating);
-
-    while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-    {
-        //xmlStreamTokenType = i_xmlStreamReader.readNext();
-        strElemName = i_xmlStreamReader.name().toString();
-
-        if( i_xmlStreamReader.isStartElement() )
-        {
-            if( strElemName == CDrawingScene::c_strXmlElemNameDrawSettings )
-            {
-                drawSettings.load(i_xmlStreamReader);
-            }
-
-            else if( strElemName == CDrawingScene::c_strXmlElemNameGeometry )
-            {
-            }
-
-            else if( strElemName == "Pos" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                QPointF ptTmp = str2PointF(strElemText,&bConverted);
-
-                if( bConverted )
-                {
-                    ptPos = ptTmp;
-                    bPosValid = true;
-                }
-
-            } // if( strElemName == "Pos" )
-
-            else if( strElemName == "RotAngleDeg" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                double fValTmp = strElemText.toDouble(&bConverted);
-
-                if( bConverted )
-                {
-                    fRotAngle_deg = fValTmp;
-                }
-
-            } // if( strElemName == "RotAngleDeg" )
-
-            else if( strElemName == "ZValue" )
-            {
-                strElemText = i_xmlStreamReader.readElementText();
-
-                double fTmp = strElemText.toDouble(&bConverted);
-
-                if( bConverted )
-                {
-                    fZValue = fTmp;
-                }
-
-            } // if( strElemName == "ZValue" )
-
-            else if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
-            {
-                arpLabels = loadGraphObjLabels(i_xmlStreamReader);
-
-            } // if( strElemName == CDrawingScene::c_strXmlElemNameTextLabels )
-
-            //--------------------------------
-            else if( strElemName == "GraphObj" )
-            //--------------------------------
-            {
-                QString strFactoryGroupNameChild;
-                QString strNameSpaceChild;
-                QString strClassNameChild;
-                QString strObjTypeChild;
-                QString strObjNameChild;
-                QString strObjIdChild;
-
-                xmlStreamAttrs = i_xmlStreamReader.attributes();
-
-                if( xmlStreamAttrs.hasAttribute("FactoryGroupName") )
-                {
-                    strFactoryGroupNameChild = xmlStreamAttrs.value("FactoryGroupName").toString();;
-                }
-                if( xmlStreamAttrs.hasAttribute("NameSpace") )
-                {
-                    strNameSpaceChild = xmlStreamAttrs.value("NameSpace").toString();;
-                }
-                if( xmlStreamAttrs.hasAttribute("ClassName") )
-                {
-                    strClassNameChild = xmlStreamAttrs.value("ClassName").toString();;
-                }
-                if( xmlStreamAttrs.hasAttribute("ObjectType") )
-                {
-                    strObjTypeChild = xmlStreamAttrs.value("ObjectType").toString();
-                }
-                if( xmlStreamAttrs.hasAttribute("ObjectName") )
-                {
-                    strObjNameChild = xmlStreamAttrs.value("ObjectName").toString();;
-                }
-                if( xmlStreamAttrs.hasAttribute("ObjectId") )
-                {
-                    strObjIdChild = xmlStreamAttrs.value("ObjectId").toString();;
-                }
-
-                CObjFactory* pObjFactoryChild = CObjFactory::FindObjFactory(strFactoryGroupNameChild, strObjTypeChild);
-
-                if( pObjFactoryChild != nullptr )
-                {
-                    pObjFactoryChild->loadGraphObj(
-                        /* pDrawingScene   */ i_pDrawingScene,
-                        /* pGraphObjGroup  */ pGraphObjGroup,
-                        /* strObjName      */ strObjNameChild,
-                        /* xmlStreamReader */ i_xmlStreamReader );
-                }
-
-            } // if( strElemName == "GraphObj" )
-
-        } // if( xmlStreamReader.isStartElement() )
-
-        else if( i_xmlStreamReader.isEndElement() )
-        {
-            if( strElemName == "GraphObj" )
-            {
-                break;
-            }
-
-        } // if( i_xmlStreamReader.isEndElement() )
-
-    } // while( !i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd() )
-
-    if( bPosValid )
-    {
-        QList<QGraphicsItem*> arpGraphicsItems = pGraphObjGroup->childItems();
-
-        QGraphicsItem* pGraphicsItem;
-        CGraphObj*     pGraphObj;
-        int            idxGraphObj;
-        QPointF        posItem;
-        QSizeF         sizItem;
-        QRectF         rctItem;
-        QRectF         rctGroup;
-        double         fXLeftMin   = INT_MAX;
-        double         fYTopMin    = INT_MAX;
-        double         fXRightMax  = INT_MIN;
-        double         fYBottomMax = INT_MIN;
-
-        // Calculate resulting size of group (without selection rectangle and selection points).
-        for( idxGraphObj = 0; idxGraphObj < arpGraphicsItems.size(); idxGraphObj++ )
-        {
-            pGraphicsItem = arpGraphicsItems[idxGraphObj];
-            pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
-
-            if( pGraphicsItem->type() != EGraphObjTypeConnectionLine )
-            {
-                posItem = pGraphObj->getPos().toQPointF();
-                sizItem = pGraphObj->getSize().toQSizeF();
-                rctItem = QRectF(posItem, sizItem);
-
-                if( rctItem.width() >= 0.0 )
-                {
-                    if( rctItem.left() < fXLeftMin )
-                    {
-                        fXLeftMin = rctItem.left();
+    while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
+        QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
+        if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
+            QString strElemName = i_xmlStreamReader.name().toString();
+            if (iLevel == ELevelThisGraphObj) {
+                if (i_xmlStreamReader.isStartElement()) {
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings) {
+                        drawSettings.load(i_xmlStreamReader);
                     }
-                    if( rctItem.right() > fXRightMax )
-                    {
-                        fXRightMax = rctItem.right();
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGridSettings) {
+                        gridSettings.load(i_xmlStreamReader);
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
+                        iLevel++;
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameZValue) {
+                        QString strElemText = i_xmlStreamReader.readElementText();
+                        bool bConverted = false;
+                        double fTmp = strElemText.toDouble(&bConverted);
+                        if (bConverted) {
+                            fZValue = fTmp;
+                        }
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameTextLabels) {
+                        arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometryLabels) {
+                        arGeometryLabels = loadGraphObjGeometryLabels(i_xmlStreamReader);
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGraphObj) {
+                        // The group has been added to the drawing scene at position (0, 0) right after creating the group.
+                        // By adding child objects to the group the group will map the shape point coordinates of the child
+                        // to the group coordinates and will try to resize the group so that the newly added object fits into
+                        // the group. In order for the group to map the coordinates of the new child object, the group must
+                        // already have gotten its final size.
+                        if (!bRectTopLeftValid || !bRectSizeValid) {
+                            i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
+                        }
+                        else {
+                            pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
+
+                            iLevel++;
+                            QString strFactoryGroupName;
+                            QString strGraphObjType;
+                            QString strObjName;
+                            QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
+                            if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName)) {
+                                strFactoryGroupName = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName).toString();
+                            }
+                            else {
+                                XmlStreamParser::raiseErrorAttributeNotDefined(
+                                    i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName);
+                            }
+                            if (!i_xmlStreamReader.hasError()) {
+                                if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjType)) {
+                                    strGraphObjType = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjType).toString();
+                                }
+                                else {
+                                    XmlStreamParser::raiseErrorAttributeNotDefined(
+                                        i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjType);
+                                }
+                            }
+                            if (!i_xmlStreamReader.hasError()) {
+                                if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjName)) {
+                                    strObjName = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjName).toString();
+                                }
+                                else {
+                                    XmlStreamParser::raiseErrorAttributeNotDefined(
+                                        i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjName);
+                                }
+                            }
+                            if (!i_xmlStreamReader.hasError()) {
+                                CObjFactory* pObjFactory = CObjFactory::FindObjFactory(strFactoryGroupName, strGraphObjType);
+                                if (pObjFactory == nullptr) {
+                                    i_xmlStreamReader.raiseError(
+                                        "ObjectFactory \"" + strFactoryGroupName + "::" + strGraphObjType + "\" for element \"" + strElemName + "\" not found");
+                                }
+                                else {
+                                    pObjFactory->loadGraphObj(
+                                        /* pDrawingScene   */ i_pDrawingScene,
+                                        /* pGraphObjGroup  */ pGraphObj,
+                                        /* strObjName      */ strObjName,
+                                        /* xmlStreamReader */ i_xmlStreamReader );
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        i_xmlStreamReader.raiseError(
+                            "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
                     }
                 }
-                else
-                {
-                    if( rctItem.right() < fXLeftMin )
-                    {
-                        fXLeftMin = rctItem.right();
-                    }
-                    if( rctItem.left() > fXRightMax )
-                    {
-                        fXRightMax = rctItem.left();
-                    }
-                }
-
-                if( rctItem.height() >= 0.0 )
-                {
-                    if( rctItem.top() < fYTopMin )
-                    {
-                        fYTopMin = rctItem.top();
-                    }
-                    if( rctItem.bottom() > fYBottomMax )
-                    {
-                        fYBottomMax = rctItem.bottom();
-                    }
-                }
-                else
-                {
-                    if( rctItem.bottom() < fYTopMin )
-                    {
-                        fYTopMin = rctItem.bottom();
-                    }
-                    if( rctItem.top() > fYBottomMax )
-                    {
-                        fYBottomMax = rctItem.top();
+                else /*if (i_xmlStreamReader.isEndElement())*/ {
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameGraphObj) {
+                        if (iLevel == ELevelThisGraphObj) {
+                            break;
+                        }
+                        else {
+                            --iLevel;
+                        }
                     }
                 }
             }
-        }
+            else if (iLevel == ELevelGeometryAndChilds) {
+                if (i_xmlStreamReader.isStartElement()) {
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameRectangle) {
+                        iLevel++;
+                    }
+                    else {
+                        i_xmlStreamReader.raiseError(
+                            "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
+                    }
+                }
+                else /*if (i_xmlStreamReader.isEndElement())*/ {
+                    iLevel--;
+                }
+            }
+            else if (iLevel == ELevelRectangle) {
+                if (i_xmlStreamReader.isStartElement()) {
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameShapePointTopLeft) {
+                        QString strElemText = i_xmlStreamReader.readElementText();
+                        bool bConverted = false;
+                        CPhysValPoint physValPointTmp(*i_pDrawingScene);
+                        try {
+                            physValPointTmp = strElemText;
+                            bConverted = true;
+                        }
+                        catch (...) {
+                            bConverted = false;
+                        }
+                        if (!bConverted) {
+                            i_xmlStreamReader.raiseError(
+                                "Element \"" + strElemName + "\" (" + strElemText + ") cannot be converted to Point");
+                        }
+                        else {
+                            physValPointTopLeft = physValPointTmp;
+                            bRectTopLeftValid = true;
+                        }
+                    }
+                    else if (strElemName == XmlStreamParser::c_strXmlElemNameSize) {
+                        QString strElemText = i_xmlStreamReader.readElementText();
+                        bool bConverted = false;
+                        CPhysValSize physValSizeTmp(*i_pDrawingScene);
+                        try {
+                            physValSizeTmp = strElemText;
+                            bConverted = true;
+                        }
+                        catch (...) {
+                            bConverted = false;
+                        }
+                        if (!bConverted) {
+                            i_xmlStreamReader.raiseError(
+                                "Element \"" + strElemName + "\" (" + strElemText + ") cannot be converted to Size");
+                        }
+                        else {
+                            physValSize = physValSizeTmp;
+                            bRectSizeValid = true;
+                        }
+                    }
+                    else {
+                        i_xmlStreamReader.raiseError(
+                            "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
+                    }
+                }
+                else /*if (i_xmlStreamReader.isEndElement())*/ {
+                    iLevel--;
+                }
+            }
+        } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
+    } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
-        // TopLeft should be at (0.0/0.0). Otherwise the child object
-        // coordinates where not correctly stored in the XML file.
-        rctGroup.setLeft(fXLeftMin);
-        rctGroup.setTop(fYTopMin);
-        rctGroup.setRight(fXRightMax);
-        rctGroup.setBottom(fYBottomMax);
-
-        pGraphObjGroup->setDrawSettings(drawSettings);
-
-        i_pDrawingScene->addGraphObj(pGraphObjGroup);
-
-        pGraphObjGroup->setPos(ptPos);
-        pGraphObjGroup->setSize(rctGroup.size());
-        pGraphObjGroup->setRotationAngleInDegree(fRotAngle_deg);
-        pGraphObjGroup->setStackingOrderValue(fZValue);
-
-        // Before calling "onGraphObjCreationFinished" the object must have been added
-        // to its parent group. Otherwise the drawing scene is not able to retrieve
-        // the unique object id and add the object to the hash.
-        if( i_pGraphObjGroup != nullptr )
-        {
-            throw ZS::System::CException(__FILE__, __LINE__, EResultMethodNotYetImplemented);
-            //i_pGraphObjGroup->addGraphObj(pGraphObjGroup);
-        }
-
-        i_pDrawingScene->onGraphObjCreationFinished(pGraphObjGroup);
-
-#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-        pGraphObjGroup->acceptCurrentAsOriginalCoors();
-#endif
-        pGraphObjGroup->setEditMode(EEditMode::None);
-        pGraphObjGroup->setEditResizeMode(EEditResizeMode::None);
-
-        //if( arpLabels.size() > 0 )
-        //{
-        //    pGraphObjGroup->addLabels(arpLabels);
-        //}
-    } // if( bPosValid )
-
-    else
-    {
-        delete pGraphObjGroup;
-        pGraphObjGroup = nullptr;
-    }
-
-    if( arpLabels.size() > 0 )
-    {
-        QHashIterator<QString, CGraphObjLabel*> itLabels(arpLabels);
-        CGraphObjLabel* pGraphObjLabel;
-
-        while( itLabels.hasNext() )
-        {
-            itLabels.next();
-
-            pGraphObjLabel = itLabels.value();
-
-            arpLabels.remove(pGraphObjLabel->getKey());
-
-            delete pGraphObjLabel;
-            pGraphObjLabel = nullptr;
+    if (!bRectTopLeftValid || !bRectSizeValid) {
+        if (!i_xmlStreamReader.hasError()) {
+            i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
         }
     }
-#endif
+
+    if (!i_xmlStreamReader.hasError()) {
+        if (i_pGraphObjGroup != nullptr) {
+            // The object has been added to the drawing scene at position (0, 0) right after creating the object.
+            // The shape points have not been set yet. When adding the object to the group the group will
+            // map the shape point coordinates to the group coordinates and will try to resize the group so that
+            // the newly added object fits into the group. In order for the group to map the coordinates of
+            // the new child object, the group must already have gotten its final size.
+            physValPointTopLeft = i_pGraphObjGroup->mapPhysValPointToScene(physValPointTopLeft);
+            pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
+            i_pGraphObjGroup->addToGroup(pGraphObj);
+        }
+        else {
+            pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
+        }
+        pGraphObj->setDrawSettings(drawSettings);
+        pGraphObj->setStackingOrderValue(fZValue);
+
+        // Labels can only be added if the graphical object got its final position, size and rotation angle
+        // as the labels position themselves depending on the position of the selection points they are linked to.
+        for (const SLabelDscr& labelDscr : arTextLabels) {
+            if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
+                if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
+                }
+                else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
+                }
+            }
+            else {
+                pGraphObj->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
+                if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
+                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
+                }
+                else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
+                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
+                }
+            }
+            pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
+                labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+            labelDscr.m_bLabelIsVisible ?
+                pGraphObj->showLabel(labelDscr.m_strKey) :
+                pGraphObj->hideLabel(labelDscr.m_strKey);
+            labelDscr.m_bShowAnchorLine ?
+                pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
+                pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
+        }
+
+        // Geometry Labels
+        for (const SLabelDscr& labelDscr : arGeometryLabels) {
+            if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
+                i_xmlStreamReader.raiseError(
+                    "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
+            }
+            else {
+                pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
+                    labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
+                labelDscr.m_bLabelIsVisible ?
+                    pGraphObj->showGeometryLabel(labelDscr.m_strKey) :
+                    pGraphObj->hideGeometryLabel(labelDscr.m_strKey);
+                labelDscr.m_bShowAnchorLine ?
+                    pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
+                    pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
+            }
+        }
+    }
+    else {
+        delete pGraphObj;
+        pGraphObj = nullptr;
+    }
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
-        QString strMthRet = QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path());
+        QString strMthRet = QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
         mthTracer.setMethodReturn(strMthRet);
     }
-    return pGraphObjGroup;
+    return pGraphObj;
 
 } // loadGraphObj
