@@ -281,15 +281,11 @@ public: // overridables of base class CGraphObj
 QString CGraphObjPolyline::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
-    QString   strScenePolygonShapePoints;
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPolygonF plg = polygon();
-    QPolygonF plgScene = mapToScene(plg);
-
-    strScenePolygonShapePoints = polygon2Str(plgScene);
-
-    return strScenePolygonShapePoints;
-
-} // getScenePolygonShapePointsString
+    QPolygonF plgScene = pGraphicsItemThis->mapToScene(plg);
+    return polygon2Str(plgScene);
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj

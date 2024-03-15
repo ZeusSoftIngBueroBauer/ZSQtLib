@@ -312,12 +312,13 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
         pGraphObj->setDrawSettings(drawSettings);
         if (i_pGraphObjGroup != nullptr) {
             // The object has been added to the drawing scene at position (0, 0) right after creating the object.
-            // The shape points have not been set yet. When adding the object to the group the group will
-            // map the shape point coordinates to the group coordinates and will try to resize the group so that
-            // the newly added object fits into the group. In order for the group to map the coordinates of
-            // the new child object, the group must already have gotten its final size.
-            physValPoint1 = i_pGraphObjGroup->mapPhysValPointToScene(physValPoint1);
-            physValPoint2 = i_pGraphObjGroup->mapPhysValPointToScene(physValPoint2);
+            // The shape points have not been set yet. When adding the object to the group, the group wants to
+            // map the shape point coordinates to the group coordinates in order to resize the group so that the
+            // newly added object fits into the group. For this to work, the object to be added must be able to
+            // provide its position and shape points in scene coordinates to the group and the group must already
+            // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
+            physValPoint1 = dynamic_cast<CGraphObj*>(i_pGraphObjGroup)->mapToScene(physValPoint1);
+            physValPoint2 = dynamic_cast<CGraphObj*>(i_pGraphObjGroup)->mapToScene(physValPoint2);
             pGraphObj->setLine(physValPoint1, physValPoint2);
             i_pGraphObjGroup->addToGroup(pGraphObj);
         }

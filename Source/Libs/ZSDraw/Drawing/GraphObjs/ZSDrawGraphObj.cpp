@@ -420,7 +420,7 @@ SLabelDscr::SLabelDscr(
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(EGraphObjTypeUndefined),
+    m_labelType(i_labelType),
     m_strText(),
     m_selPt1(i_selPt),
     m_selPt2(),
@@ -437,7 +437,7 @@ SLabelDscr::SLabelDscr(
     const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(EGraphObjTypeUndefined),
+    m_labelType(i_labelType),
     m_strText(),
     m_selPt1(i_selPt1),
     m_selPt2(i_selPt2),
@@ -453,7 +453,7 @@ SLabelDscr::SLabelDscr(
     const SGraphObjSelectionPoint& i_selPt) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(EGraphObjTypeUndefined),
+    m_labelType(i_labelType),
     m_strText(i_strText),
     m_selPt1(i_selPt),
     m_selPt2(),
@@ -469,7 +469,7 @@ SLabelDscr::SLabelDscr(
     const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2) :
 //------------------------------------------------------------------------------
     m_strKey(i_strKey),
-    m_labelType(EGraphObjTypeUndefined),
+    m_labelType(i_labelType),
     m_strText(i_strText),
     m_selPt1(i_selPt1),
     m_selPt2(i_selPt2),
@@ -3602,213 +3602,505 @@ CPhysValPoint CGraphObj::getPos(const CUnit& i_unit) const
 //}
 
 /*==============================================================================
-public: // overridables
+protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValPoint CGraphObj::mapPhysValPointToParent(const QPointF& i_pt) const
-//------------------------------------------------------------------------------
-{
-    return mapPhysValPointToParent(i_pt, m_pDrawingScene->drawingSize().unit());
-}
+/*! @brief Maps the given point which is relative to the top left or bottom left
+           corner of the item's bounding rectangle to the graphics item local
+           coordinate system whose origin is in the center of the item's bounding
+           rectangle.
 
-//------------------------------------------------------------------------------
-/*! @brief Maps the given point, which is in this item's coordinate system defined
-           in pixels, to the physical value in the parent's coordinate system,
-           and returns the mapped coordinate in the unit of the drawing scene.
+           0         1         2         3         4         5         6
+           0123456789012345678901234567890123456789012345678901234567890
+         0 +-----------------------------------------------------------+ -10
+         1 |      (10/2) => (-20/-8)                                   |  -9
+         2 |         X                                                 |  -8
+         3 |                                                           |  -7
+         4 |                                                           |  -6
+         5 |                                                           |  -5
+         6 |                                                           |  -4
+         7 |                                                           |  -3
+         8 |                                                           |  -2
+         9 |                       (30/10) => (0/0)                    |  -1
+        10 |                             O                             |   0
+        11 |                                                           |   1
+        12 |                                                           |   2
+        13 |                                                           |   3
+        14 |                                                           |   4
+        15 |                                                           |   5
+        16 |                                                           |   6
+        17 |                                         (50/18) => (20/7) |   7
+        18 |                                                 X         |   8
+        19 |                                                           |   9
+        20 +-----------------------------------------------------------+  10
+           0987654321098765432109876543210123456789012345678901234567890
+          -3        -2        -1         0         1         2         3
 
-    Internally the graphics items coordinates are in pixel coordinates given
-    relative to the center point of its bounding rectangle.
+    @param i_physValPoint [in]
+        Point coordinates as physical value with unit which is passed, depending
+        on the Y-Axis-Scale-Orientation, either relative to the top left or bottom
+        left corner of the item's bounding rectangle.
 
-    For the user the coordinates must be provided relative to the origin point of
-    their parent, which is either the scene or a parent group.
-
-    Depending on the Y-Scale orientation (TopDown or BottomUp) the origin of the
-    parent scene or parent group is either the top left or bottom left corner.
-
-    @param [in] i_pt
-        Point in the item coordinates.
-
-    @return Point in the unit of the drawing scene as it should be provided to the user.
+    @return Point in pixels in the item's local coordinate system.
 */
-CPhysValPoint CGraphObj::mapPhysValPointToParent(const QPointF& i_pt, const CUnit& i_unitDst) const
+QPointF CGraphObj::toLocalCoors(const CPhysValPoint& i_physValPoint) const
 //------------------------------------------------------------------------------
 {
-#pragma message(__TODO__"Add Test")
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pt {" + qPoint2Str(i_pt) + "}, UnitDst: " + i_unitDst.symbol();
+        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "mapPhysValPointToParent",
+        /* strMethod    */ "toLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    // First map the point, which is in this item's coordinate system, to its parent's
-    // coordinate system. If the item has no parent, point will be mapped to the scene's
-    // coordinate system.
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QPointF pt = pGraphicsItemThis->mapToParent(i_pt);
-    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
-    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
-    // If the item belongs to a group ...
-    if (pGraphObjGroup != nullptr) {
-        // The point coordinates are relative to the origin of the parent graphics item
-        // which is the center point of the parents bounding rectangle. The pixel coordinates
-        // got to mapped to the top left corner of the parent's bounding rectangle.
-        QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect();
-        pt -= rectBoundingParent.topLeft();
-    }
-    // Now point is in pixel coordinates relative to the top left corner of it's parent.
-    CPhysValPoint physValPoint(pt, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    // If the drawing scene don't use pixels but a metric system ..
-    if (Units.Length.isMetricUnit(i_unitDst)) {
-        // .. the coordinates got to be converted into metric unit taken the Y-Scale
-        // orientation into account.
-        // If the item belongs to a group ...
-        if (pGraphObjGroup != nullptr) {
-            // .. let the group convert the pixel values into the unit of the drawing scene.
-            physValPoint = pGraphObjGroup->convert(physValPoint, i_unitDst);
-        }
-        // If the item is not a child of a group ...
-        else {
-            // .. let the scene convert the pixel values into it's unit.
-            physValPoint = m_pDrawingScene->convert(physValPoint, i_unitDst);
-        }
-    }
+    QPointF pt = m_pDrawingScene->convert(i_physValPoint, Units.Length.px).toQPointF(); // (10/2)
+    QRectF rctBounding = getBoundingRect();                                             // -30, -10, 60, 20
+    QPointF ptTL = rctBounding.topLeft();                                               // (-30/-10)
+    pt += ptTL;                                                                         // (10/2) + (-30/-10) = (-20/-8)
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
+        mthTracer.setMethodReturn("Pt {" + qPoint2Str(pt) + "} px");
+    }
+    return pt;
+}
+
+//------------------------------------------------------------------------------
+QLineF CGraphObj::toLocalCoors(const CPhysValLine& i_physValLine) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "toLocalCoors",
+        /* strAddInfo   */ strMthInArgs );
+
+    QLineF lineF = m_pDrawingScene->convert(i_physValLine, Units.Length.px).toQLineF();
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptTL = rctBounding.topLeft();
+    lineF.setP1(lineF.p1() += ptTL);
+    lineF.setP2(lineF.p2() += ptTL);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Line {" + qLine2Str(lineF) + "} px");
+    }
+    return lineF;
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObj::toLocalCoors(const CPhysValRect& i_physValRect) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "toLocalCoors",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rectF = m_pDrawingScene->convert(i_physValRect, Units.Length.px).toQRectF();
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptTL = rctBounding.topLeft();
+    rectF.setTopLeft(rectF.topLeft() += ptTL);
+    rectF.setBottomRight(rectF.bottomRight() += ptTL);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Rect {" + qRect2Str(rectF) + "} px");
+    }
+    return rectF;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given point from local coordinates given relative to the
+           center of the item's bounding rectangle to the physical value
+           relative to the top left or bottom left corner of the item's bounding
+           rectangle.
+
+           0         1         2         3         4         5         6
+           0123456789012345678901234567890123456789012345678901234567890
+         0 +-----------------------------------------------------------+ -10
+         1 |      (-20/-8) => (10/2)                                   |  -9
+         2 |         X                                                 |  -8
+         3 |                                                           |  -7
+         4 |                                                           |  -6
+         5 |                                                           |  -5
+         6 |                                                           |  -4
+         7 |                                                           |  -3
+         8 |                                                           |  -2
+         9 |                       (0/0) => (30/10)                    |  -1
+        10 |                             O                             |   0
+        11 |                                                           |   1
+        12 |                                                           |   2
+        13 |                                                           |   3
+        14 |                                                           |   4
+        15 |                                                           |   5
+        16 |                                                           |   6
+        17 |                                         (20/7) => (50/18) |   7
+        18 |                                                 X         |   8
+        19 |                                                           |   9
+        20 +-----------------------------------------------------------+  10
+           0987654321098765432109876543210123456789012345678901234567890
+          -3        -2        -1         0         1         2         3
+
+    @param i_physValPoint [in]
+        Point coordinates as physical value with unit which is passed, depending
+        on the Y-Axis-Scale-Orientation, either relative to the top left or bottom
+        left corner of the item's bounding rectangle.
+
+    @return Point in pixels in the item's local coordinate system.
+*/
+CPhysValPoint CGraphObj::fromLocalCoors(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pt {" + qPoint2Str(i_pt) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "fromLocalCoors",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rctBounding = getBoundingRect();                                             // -30, -10, 60, 20
+    QPointF ptTL = rctBounding.topLeft();                                               // (-30/-10)
+    QPointF pt = i_pt - ptTL;                                                           // (-20/-8) - (-30/-10) = (10/2)
+    CPhysValPoint physValPoint = m_pDrawingScene->convert(pt);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
     }
     return physValPoint;
 }
 
 //------------------------------------------------------------------------------
-CPhysValLine CGraphObj::mapPhysValLineToParent(const QLineF& i_line) const
+CPhysValLine CGraphObj::fromLocalCoors(const QLineF& i_line) const
 //------------------------------------------------------------------------------
 {
-    return mapPhysValLineToParent(i_line, m_pDrawingScene->drawingSize().unit());
-}
-
-//------------------------------------------------------------------------------
-CPhysValLine CGraphObj::mapPhysValLineToParent(const QLineF& i_line, const CUnit& i_unitDst) const
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"Add Test")
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Line {" + qLine2Str(i_line) + "}, UnitDst: " + i_unitDst.symbol();
+        strMthInArgs = "Line {" + qLine2Str(i_line) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "mapPhysValLineToParent",
+        /* strMethod    */ "fromLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    // First map the line, which is in this item's coordinate system, to its parent's
-    // coordinate system. If the item has no parent, line will be mapped to the scene's
-    // coordinate system.
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QPointF pt1 = pGraphicsItemThis->mapToParent(i_line.p1());
-    QPointF pt2 = pGraphicsItemThis->mapToParent(i_line.p2());
-    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
-    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
-    // If the item belongs to a group ...
-    if (pGraphObjGroup != nullptr) {
-        // The line coordinates are relative to the origin of the parent graphics item
-        // which is the center point of the parents bounding rectangle. The pixel coordinates
-        // got to mapped to the top left corner of the parent's bounding rectangle.
-        QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect();
-        pt1 -= rectBoundingParent.topLeft();
-        pt2 -= rectBoundingParent.topLeft();
-    }
-    // Now line is in pixel coordinates relative to the top left corner of it's parent.
-    CPhysValLine physValLine(pt1, pt2, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    // If the drawing scene don't use pixels but a metric system ..
-    if (Units.Length.isMetricUnit(i_unitDst)) {
-        // .. the coordinates got to be converted into metric unit taken the Y-Scale
-        // orientation into account.
-        // If the item belongs to a group ...
-        if (pGraphObjGroup != nullptr) {
-            // .. let the group convert the pixel values into the unit of the drawing scene.
-            physValLine = pGraphObjGroup->convert(physValLine, i_unitDst);
-        }
-        // If the item is not a child of a group ...
-        else {
-            // .. let the scene convert the pixel values into it's unit.
-            physValLine = m_pDrawingScene->convert(physValLine, i_unitDst);
-        }
-    }
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptTL = rctBounding.topLeft();
+    QLineF lineF(i_line.p1() - ptTL, i_line.p2() - ptTL);
+    CPhysValLine physValLine = m_pDrawingScene->convert(lineF);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + physValLine.toString() + "} " + physValLine.unit().symbol());
+        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
     }
     return physValLine;
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect CGraphObj::mapPhysValRectToParent(const QRectF& i_rect) const
+CPhysValRect CGraphObj::fromLocalCoors(const QRectF& i_rect) const
 //------------------------------------------------------------------------------
 {
-    return mapPhysValRectToParent(i_rect, m_pDrawingScene->drawingSize().unit());
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect CGraphObj::mapPhysValRectToParent(const QRectF& i_rect, const CUnit& i_unitDst) const
-//------------------------------------------------------------------------------
-{
-#pragma message(__TODO__"Add Test")
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}, UnitDst: " + i_unitDst.symbol();
+        strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "mapPhysValRectToParent",
+        /* strMethod    */ "fromLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    // First map the rectangle, which is in this item's coordinate system, to its parent's
-    // coordinate system. If the item has no parent, rect will be mapped to the scene's
-    // coordinate system.
-    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QPointF ptTL = pGraphicsItemThis->mapToParent(i_rect.topLeft());
-    QPointF ptBR = pGraphicsItemThis->mapToParent(i_rect.bottomRight());
-    QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
-    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
-    // If the item belongs to a group ...
-    if (pGraphObjGroup != nullptr) {
-        // The line coordinates are relative to the origin of the parent graphics item
-        // which is the center point of the parents bounding rectangle. The pixel coordinates
-        // got to mapped to the top left corner of the parent's bounding rectangle.
-        QRectF rectBoundingParent = pGraphObjGroup->getBoundingRect();
-        ptTL -= rectBoundingParent.topLeft();
-        ptBR -= rectBoundingParent.topLeft();
-    }
-    // Now rect is in pixel coordinates relative to the top left corner of it's parent.
-    CPhysValRect physValRect(ptTL, ptBR, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    // If the drawing scene don't use pixels but a metric system ..
-    if (Units.Length.isMetricUnit(i_unitDst)) {
-        // .. the coordinates got to be converted into metric unit taken the Y-Scale
-        // orientation into account.
-        // If the item belongs to a group ...
-        if (pGraphObjGroup != nullptr) {
-            // .. let the group convert the pixel values into the unit of the drawing scene.
-            physValRect = pGraphObjGroup->convert(physValRect, i_unitDst);
-        }
-        // If the item is not a child of a group ...
-        else {
-            // .. let the scene convert the pixel values into it's unit.
-            physValRect = m_pDrawingScene->convert(physValRect, i_unitDst);
-        }
-    }
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptTL = rctBounding.topLeft();
+    QRectF rectF(i_rect.topLeft() - ptTL, i_rect.bottomRight() - ptTL);
+    CPhysValRect physValRect = m_pDrawingScene->convert(rectF);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + physValRect.toString() + "} " + physValRect.unit().symbol());
+        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
+    }
+    return physValRect;
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
+//------------------------------------------------------------------------------
+{
+    return mapToScene(i_physValPoint, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
+           Orientation, relative to either the top left or bottom left corner of
+           the item's bounding rectangle to the physical value in the drawing scene.
+
+    @param [in] i_physValPoint
+        Point to be mapped.
+    @param [in] i_unitDst
+        Unit in which the coordinate should be returned.
+
+    @return Point in scene coordinates in the desired unit.
+*/
+CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToScene",
+        /* strAddInfo   */ strMthInArgs );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    QPointF pt = toLocalCoors(i_physValPoint);
+    pt = pGraphicsItemThis->mapToScene(pt);
+    CPhysValPoint physValPoint = m_pDrawingScene->convert(pt);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
+    }
+    return physValPoint;
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine CGraphObj::mapToScene(const CPhysValLine& i_physValLine) const
+//------------------------------------------------------------------------------
+{
+    return mapToScene(i_physValLine, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given physical line, which is, depending on the Y-Axis-Scale
+           Orientation, relative to either the top left or bottom left corner of
+           the item's bounding rectangle to the physical value in the drawing scene.
+
+    @param [in] i_physValLine
+        Line to be mapped.
+    @param [in] i_unitDst
+        Unit in which the coordinate should be returned.
+
+    @return Line in scene coordinates in the desired unit.
+*/
+CPhysValLine CGraphObj::mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToScene",
+        /* strAddInfo   */ strMthInArgs );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QLineF lineF = toLocalCoors(i_physValLine);
+    lineF.setP1(pGraphicsItemThis->mapToScene(lineF.p1()));
+    lineF.setP1(pGraphicsItemThis->mapToScene(lineF.p2()));
+    CPhysValLine physValPoint = m_pDrawingScene->convert(lineF);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Line {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
+    }
+    return physValPoint;
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect) const
+//------------------------------------------------------------------------------
+{
+    return mapToScene(i_physValRect, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
+           Orientation, relative to either the top left or bottom left corner of
+           the item's bounding rectangle to the physical value in the drawing scene.
+
+    @param [in] i_physValPoint
+        Point to be mapped.
+    @param [in] i_unitDst
+        Unit in which the coordinate should be returned.
+
+    @return Point in scene coordinates in the desired unit.
+*/
+CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToScene",
+        /* strAddInfo   */ strMthInArgs );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    QRectF rectF = toLocalCoors(i_physValRect);
+    rectF = pGraphicsItemThis->mapToScene(rectF).boundingRect();
+    CPhysValRect physValRect = m_pDrawingScene->convert(rectF);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
+    }
+    return physValRect;
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValPoint CGraphObj::mapToParent(const CPhysValPoint& i_physValPoint) const
+//------------------------------------------------------------------------------
+{
+    return mapToParent(i_physValPoint, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
+           Orientation, relative to either the top left or bottom left corner of
+           the item's bounding rectangle to the physical value in the drawing scene.
+
+    @param [in] i_physValPoint
+        Point to be mapped.
+    @param [in] i_unitDst
+        Unit in which the coordinate should be returned.
+
+    @return Point in scene coordinates in the desired unit.
+*/
+CPhysValPoint CGraphObj::mapToParent(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToParent",
+        /* strAddInfo   */ strMthInArgs );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    QPointF pt = toLocalCoors(i_physValPoint);
+    pt = pGraphicsItemThis->mapToParent(pt);
+    CPhysValPoint physValPoint = m_pDrawingScene->convert(pt);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
+    }
+    return physValPoint;
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine CGraphObj::mapToParent(const CPhysValLine& i_physValLine) const
+//------------------------------------------------------------------------------
+{
+    return mapToParent(i_physValLine, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given physical line, which is, depending on the Y-Axis-Scale
+           Orientation, relative to either the top left or bottom left corner of
+           the item's bounding rectangle to the physical value in the drawing scene.
+
+    @param [in] i_physValLine
+        Line to be mapped.
+    @param [in] i_unitDst
+        Unit in which the coordinate should be returned.
+
+    @return Line in scene coordinates in the desired unit.
+*/
+CPhysValLine CGraphObj::mapToParent(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToParent",
+        /* strAddInfo   */ strMthInArgs );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QLineF lineF = toLocalCoors(i_physValLine);
+    lineF.setP1(pGraphicsItemThis->mapToParent(lineF.p1()));
+    lineF.setP1(pGraphicsItemThis->mapToParent(lineF.p2()));
+    CPhysValLine physValPoint = m_pDrawingScene->convert(lineF);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Line {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
+    }
+    return physValPoint;
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect CGraphObj::mapToParent(const CPhysValRect& i_physValRect) const
+//------------------------------------------------------------------------------
+{
+    return mapToParent(i_physValRect, m_pDrawingScene->drawingSize().unit());
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
+           Orientation, relative to either the top left or bottom left corner of
+           the item's bounding rectangle to the physical value in the drawing scene.
+
+    @param [in] i_physValPoint
+        Point to be mapped.
+    @param [in] i_unitDst
+        Unit in which the coordinate should be returned.
+
+    @return Point in scene coordinates in the desired unit.
+*/
+CPhysValRect CGraphObj::mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCoordinateConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "mapToParent",
+        /* strAddInfo   */ strMthInArgs );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    QRectF rectF = toLocalCoors(i_physValRect);
+    rectF = pGraphicsItemThis->mapToParent(rectF).boundingRect();
+    CPhysValRect physValRect = m_pDrawingScene->convert(rectF);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
     }
     return physValRect;
 }
@@ -5118,6 +5410,26 @@ QList<SGraphObjSelectionPoint> CGraphObj::getPossibleLabelAnchorPoints(const QSt
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObj::labelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    #pragma message(__TODO__"Should become pure virtual")
+    return true;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns whether a label with the passed name has been added to the
            list of text labels.
 
@@ -5820,6 +6132,26 @@ SLabelDscr CGraphObj::getGeometryLabelDescriptor(const QString& i_strName) const
         labelDscr.m_polarCoorsToLinkedSelPt = pGraphObjLabel->polarCoorsToLinkedSelectionPoint();
     }
     return labelDscr;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObj::geometryLabelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    #pragma message(__TODO__"Should become pure virtual")
+    return true;
 }
 
 //------------------------------------------------------------------------------
@@ -7234,7 +7566,7 @@ void CGraphObj::traceParentGroupPositionInfo(
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
                 else strRuntimeInfo = "   ";
-                strRuntimeInfo += "  ParentPos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+                strRuntimeInfo += "  Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
                 i_mthTracer.trace(strRuntimeInfo);
             }
         }

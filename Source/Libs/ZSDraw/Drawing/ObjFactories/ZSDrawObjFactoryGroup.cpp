@@ -185,7 +185,7 @@ SErrResultInfo CObjFactoryGroup::saveGraphObj(
     }
     if (!errResultInfo.isErrorResult()) {
         for (CGraphObj* pGraphObjChild : pGraphObj->childs()) {
-            if (!pGraphObjChild->isSelectionPoint() || !pGraphObjChild->isLabel() || pGraphObjChild->isConnectionLine()) {
+            if (pGraphObjChild->isConnectionLine()) {
                 QString strFactoryGroupName = pGraphObjChild->getFactoryGroupName();
                 QString strGraphObjType = pGraphObjChild->typeAsString();
                 QString strObjName = pGraphObjChild->name();
@@ -292,8 +292,6 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                             i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
                         }
                         else {
-                            pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
-
                             iLevel++;
                             QString strFactoryGroupName;
                             QString strGraphObjType;
@@ -338,6 +336,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                                         /* xmlStreamReader */ i_xmlStreamReader );
                                 }
                             }
+                            iLevel--;
                         }
                     }
                     else {
@@ -367,6 +366,9 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                     }
                 }
                 else /*if (i_xmlStreamReader.isEndElement())*/ {
+                    if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
+                        pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
+                    }
                     iLevel--;
                 }
             }
@@ -433,11 +435,12 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
     if (!i_xmlStreamReader.hasError()) {
         if (i_pGraphObjGroup != nullptr) {
             // The object has been added to the drawing scene at position (0, 0) right after creating the object.
-            // The shape points have not been set yet. When adding the object to the group the group will
-            // map the shape point coordinates to the group coordinates and will try to resize the group so that
-            // the newly added object fits into the group. In order for the group to map the coordinates of
-            // the new child object, the group must already have gotten its final size.
-            physValPointTopLeft = i_pGraphObjGroup->mapPhysValPointToScene(physValPointTopLeft);
+            // The shape points have not been set yet. When adding the object to the group, the group wants to
+            // map the shape point coordinates to the group coordinates in order to resize the group so that the
+            // newly added object fits into the group. For this to work, the object to be added must be able to
+            // provide its position and shape points in scene coordinates to the group and the group must already
+            // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
+            physValPointTopLeft = dynamic_cast<CGraphObj*>(i_pGraphObjGroup)->mapToScene(physValPointTopLeft);
             pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
             i_pGraphObjGroup->addToGroup(pGraphObj);
         }

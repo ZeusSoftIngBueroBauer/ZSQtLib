@@ -95,7 +95,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
         /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsLineItem(),
-    m_lineOrig(),
+    m_physValLineOrig(*m_pDrawingScene),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
@@ -194,7 +194,7 @@ CGraphObjLine::~CGraphObjLine()
 
     emit_aboutToBeDestroyed();
 
-    //m_lineOrig;
+    //m_physValLineOrig;
     //m_plgP1ArrowHead;
     //m_plgP2ArrowHead;
 
@@ -243,11 +243,11 @@ public: // overridables of base class CGraphObj
 QString CGraphObjLine::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
-    QString strScenePolygonShapePoints;
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QLineF lineF = line();
     QPolygonF plgScene;
-    plgScene.append(mapToScene(lineF.p1()));
-    plgScene.append(mapToScene(lineF.p2()));
+    plgScene.append(pGraphicsItemThis->mapToScene(lineF.p1()));
+    plgScene.append(pGraphicsItemThis->mapToScene(lineF.p2()));
     return polygon2Str(plgScene);
 }
 
@@ -396,10 +396,9 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     //    pt2 -= lineF.center();
     //}
 
-
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if the coordinates have been changed ...
-    if (m_lineOrig.isNull() || m_lineOrig != lineF/* || m_bForceConversionToSceneCoors*/)
+    if (m_physValLineOrig.isNull() || m_physValLineOrig != i_physValLine/* || m_bForceConversionToSceneCoors*/)
     {
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
@@ -408,7 +407,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         {   CRefCountGuard refCountGuard(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
 
             // Store original line coordinates.
-            setLineOrig(lineF);
+            setLineOrig(i_physValLine);
 
             // Set the line in local coordinate system.
             // Also note that itemChange must not overwrite the current line value (refCountGuard).
@@ -591,8 +590,9 @@ CPhysValLine CGraphObjLine::getLine() const
 CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    QLineF lineF = line();
-    return mapPhysValLineToParent(lineF, i_unit);
+    CPhysValLine physValLine = m_physValLineOrig;
+    #pragma message(__TODO__"Take transformation into account")
+    return physValLine;
 }
 
 //------------------------------------------------------------------------------
@@ -1454,9 +1454,10 @@ public: // overridables of base class CGraphObj
 SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QLineF thisLine = line();
-    QLineF thisLineSceneCoors(mapToScene(thisLine.p1()), mapToScene(thisLine.p2()));
-    QPointF ptSelPtSceneCoors(mapToScene(thisLine.center()));
+    QLineF thisLineSceneCoors(pGraphicsItemThis->mapToScene(thisLine.p1()), pGraphicsItemThis->mapToScene(thisLine.p2()));
+    QPointF ptSelPtSceneCoors(pGraphicsItemThis->mapToScene(thisLine.center()));
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
     double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
     return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
@@ -1494,16 +1495,19 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPo
 SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QLineF thisLine = line();
     QLineF thisLineSceneCoors;
     QPointF ptSelPtSceneCoors;
     if (i_idxPt == 0) {
-        thisLineSceneCoors = QLineF(mapToScene(thisLine.p1()), mapToScene(thisLine.p2()));
-        ptSelPtSceneCoors = QPointF(mapToScene(thisLine.p1()));
+        thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p1()),
+                                    pGraphicsItemThis->mapToScene(thisLine.p2()));
+        ptSelPtSceneCoors = QPointF(pGraphicsItemThis->mapToScene(thisLine.p1()));
     }
     else {
-        thisLineSceneCoors = QLineF(mapToScene(thisLine.p2()), mapToScene(thisLine.p1()));
-        ptSelPtSceneCoors = QPointF(mapToScene(thisLine.p2()));
+        thisLineSceneCoors = QLineF(pGraphicsItemThis->mapToScene(thisLine.p2()),
+                                    pGraphicsItemThis->mapToScene(thisLine.p1()));
+        ptSelPtSceneCoors = QPointF(pGraphicsItemThis->mapToScene(thisLine.p2()));
     }
     QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
     double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
@@ -1522,8 +1526,10 @@ QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
 //------------------------------------------------------------------------------
 {
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QLineF lineSelPt = line();
-    QLineF lineSelPtSceneCoors(mapToScene(lineSelPt.center()), mapToScene(lineSelPt.p2()));
+    QLineF lineSelPtSceneCoors(pGraphicsItemThis->mapToScene(lineSelPt.center()),
+                               pGraphicsItemThis->mapToScene(lineSelPt.p2()));
     return ZS::Draw::getLineFromPolar(
         i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
 }
@@ -1538,13 +1544,16 @@ QLineF CGraphObjLine::getAnchorLineToSelectionPointFromPolarInSceneCoors(
     const SPolarCoors& i_polarCoors, int i_idxPt) const
 //------------------------------------------------------------------------------
 {
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QLineF lineSelPt = line();
     QLineF lineSelPtSceneCoors;
     if (i_idxPt == 0) {
-        lineSelPtSceneCoors = QLineF(mapToScene(lineSelPt.p1()), mapToScene(lineSelPt.p2()));
+        lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(lineSelPt.p1()),
+                                     pGraphicsItemThis->mapToScene(lineSelPt.p2()));
     }
     else {
-        lineSelPtSceneCoors = QLineF(mapToScene(lineSelPt.p2()), mapToScene(lineSelPt.p1()));
+        lineSelPtSceneCoors = QLineF(pGraphicsItemThis->mapToScene(lineSelPt.p2()),
+                                     pGraphicsItemThis->mapToScene(lineSelPt.p1()));
     }
     return ZS::Draw::getLineFromPolar(
         i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
@@ -1628,6 +1637,72 @@ QList<SGraphObjSelectionPoint> CGraphObjLine::getPossibleLabelAnchorPoints(const
     return s_arSelPtsUserDefined;
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObjLine::labelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bHasDefaultValues = false;
+    if (isPredefinedLabelName(i_strName)) {
+        bHasDefaultValues = true;
+        const SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
+        if (labelDscr.m_bLabelIsVisible) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_bShowAnchorLine) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+            bHasDefaultValues = false;
+        }
+        else if (i_strName == c_strLabelName) {
+            if (labelDscr.m_strText != m_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameP1) {
+            if (labelDscr.m_strText != i_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameP2) {
+            if (labelDscr.m_strText != i_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+                bHasDefaultValues = false;
+            }
+            if (labelDscr.m_selPt1.m_idxPt != 1) {
+                bHasDefaultValues = false;
+            }
+        }
+    }
+    return bHasDefaultValues;
+}
+
 /*==============================================================================
 public: // overridables of base class CGraphObj (geometry labels)
 ==============================================================================*/
@@ -1643,6 +1718,81 @@ QStringList CGraphObjLine::getGeometryLabelNames() const
     };
     return s_strlstValueNames;
 }
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bHasDefaultValues = false;
+    if (m_strlstGeometryLabelNames.contains(i_strName)) {
+        bHasDefaultValues = true;
+        const SLabelDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
+        if (labelDscr.m_bLabelIsVisible) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_bShowAnchorLine) {
+            bHasDefaultValues = false;
+        }
+        else if (!labelDscr.m_strText.isEmpty()) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+            bHasDefaultValues = false;
+        }
+        else if (i_strName == c_strGeometryLabelNameP1) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameP2) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_idxPt != 1) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameCenter) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+        else {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_idxPt != 0) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt2.m_selPtType != ESelectionPointType::PolygonShapePoint) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt2.m_idxPt != 1) {
+                bHasDefaultValues = false;
+            }
+        }
+    }
+    return bHasDefaultValues;
+}
+
 
 /*==============================================================================
 public: // must overridables of base class QGraphicsItem
@@ -2089,6 +2239,8 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
 
+    CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
+
     QVariant valChanged = i_value;
 
     bool bGeometryChanged = false;
@@ -2114,30 +2266,11 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         //traceGraphObjStates(mthTracer);
         tracePositionInfo(mthTracer, EMethodDir::Enter);
 
-        // Update the line coordinates kept in the unit of the drawing scene.
-        // The line may be moved or transformed by several methods.
+        // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
+        QLineF lineF = line();
         if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
-            QLineF lineF = line();
-            // Transform local coordinates to parent groups coordinate system.
-            // The origin of the parents coordinate system is at the center point
-            // of the parents bounding rectangle. The original, untransformed as
-            // provided to the user must be relative to the top left corner of
-            // the parent groups bounding rectangle.
-            // First map to parents coordinate system with origin at center point of parent.
-            //QPointF p1 = mapToParent(lineF.p1());
-            //QPointF p2 = mapToParent(lineF.p2());
-            //// Move the coordinates so that they become relative to the top left corner
-            //// of the parents bounding rectangle.
-            //CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(parentItem());
-            //if (pGraphObjGroup != nullptr) {
-            //    QRectF rectFParent = pGraphObjGroup->getBoundingRect();
-            //    p1 -= rectFParent.topLeft();
-            //    p2 -= rectFParent.topLeft();
-            //}
-            // Convert to unit of drawing scene.
-            //CPhysValPoint physValP1 = m_pDrawingScene->toPhysValPoint(p1);
-            //CPhysValPoint physValP2 = m_pDrawingScene->toPhysValPoint(p2);
+            // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
             // If the item is a child of a group, the current (transformed) coordinates are only
@@ -2145,14 +2278,17 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // adding the item to or removing the item from a group.
             if (i_change == ItemPositionHasChanged) {
                 if (parentItem() == nullptr) {
-                    setLineOrig(lineF);
+                    CPhysValLine physValLine = fromLocalCoors(lineF);
+                    physValLine = pGraphObjThis->mapToParent(physValLine);
+                    setLineOrig(physValLine);
                 }
             }
             else if (i_change == ItemParentHasChanged) {
-                setLineOrig(lineF);
+                CPhysValLine physValLine = fromLocalCoors(lineF);
+                physValLine = pGraphObjThis->mapToParent(physValLine);
+                setLineOrig(physValLine);
             }
         }
-        QLineF lineF = line();
         QPolygonF plg;
         plg.append(lineF.p1());
         plg.append(lineF.p2());
@@ -2253,11 +2389,12 @@ void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint
         /* strMethod    */ "onSelectionPointGeometryChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     CGraphObjSelectionPoint* pGraphObjSelPt = dynamic_cast<CGraphObjSelectionPoint*>(i_pSelectionPoint);
     QGraphicsItem* pGraphicsItemSelPt = dynamic_cast<QGraphicsItem*>(pGraphObjSelPt);
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
-    QPointF ptParentPosSelPt = mapToParent(ptPosSelPt);
+    QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
     CPhysValPoint physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
 
@@ -2406,12 +2543,12 @@ protected: // auxiliary instance methods (method tracing)
 
     @return Previous original line coordinates.
 */
-QLineF CGraphObjLine::setLineOrig(const QLineF& i_line)
+CPhysValLine CGraphObjLine::setLineOrig(const CPhysValLine& i_physValLine)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qLine2Str(i_line);
+        strMthInArgs = "New {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2420,12 +2557,12 @@ QLineF CGraphObjLine::setLineOrig(const QLineF& i_line)
         /* strMethod    */ "setLineOrig",
         /* strAddInfo   */ strMthInArgs );
 
-    QLineF linePrev = m_lineOrig;
-    m_lineOrig = i_line;
+    CPhysValLine physValLinePrev = m_physValLineOrig;
+    m_physValLineOrig = i_physValLine;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(qLine2Str(linePrev));
+        mthTracer.setMethodReturn("Prev {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol());
     }
-    return linePrev;
+    return i_physValLine;
 }
 
 //------------------------------------------------------------------------------
@@ -2505,12 +2642,13 @@ void CGraphObjLine::traceThisPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "PhysValLine {" + getLine().toString() + "}";
+            strRuntimeInfo += "PhysValLine Curr {" + getLine().toString() + "} " + getLine().unit().symbol() +
+            ", Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol();
             i_mthTracer.trace(strRuntimeInfo);
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "Line Curr {" + qLine2Str(line()) + "}, Orig {" + qLine2Str(m_lineOrig) + "}";
+            strRuntimeInfo += "ItemLine Curr {" + qLine2Str(line()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
             CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
         }

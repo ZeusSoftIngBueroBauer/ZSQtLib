@@ -879,11 +879,12 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
             QPolygonF plg;
 
             CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-            if( pGraphObjLine != nullptr && m_plg.size() == 2 )
+            QGraphicsItem* pGraphicsItemLine = dynamic_cast<QGraphicsItem*>(m_pGraphObj);
+            if (pGraphObjLine != nullptr && m_plg.size() == 2)
             {
                 QLineF  lin = pGraphObjLine->line();
-                QPointF pt1 = pGraphObjLine->mapToParent(lin.p1());
-                QPointF pt2 = pGraphObjLine->mapToParent(lin.p2());
+                QPointF pt1 = pGraphicsItemLine->mapToParent(lin.p1());
+                QPointF pt2 = pGraphicsItemLine->mapToParent(lin.p2());
                 plg.append(pt1);
                 plg.append(pt2);
             }
@@ -897,10 +898,11 @@ bool CWdgtFormatGraphObjsGeometry::hasChanges() const
                 else
                 {
                     CGraphObjConnectionLine* pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObj);
-                    if( pGraphObjCnctLine != nullptr )
+                    QGraphicsItem* pGraphicsItemCnctLine = dynamic_cast<QGraphicsItem*>(m_pGraphObj);
+                    if (pGraphObjCnctLine != nullptr)
                     {
                         QPolygonF plgTmp = pGraphObjCnctLine->polygon();
-                        plg = pGraphObjCnctLine->mapToScene(plgTmp);
+                        plg = pGraphicsItemCnctLine->mapToScene(plgTmp);
                     }
                 }
             }
@@ -1048,18 +1050,18 @@ void CWdgtFormatGraphObjsGeometry::fillShapePointsModel( )
         QStandardItem* pItemClmY;
         QPointF        pt;
 
-        CGraphObjLine*           pGraphObjLine     = nullptr;
-        CGraphObjPolyline*       pGraphObjPolyline = nullptr;
+        CGraphObjPolyline* pGraphObjPolyline = nullptr;
         CGraphObjConnectionLine* pGraphObjCnctLine = nullptr;
 
-        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+        CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
+        QGraphicsItem* pGraphicsItemLine = dynamic_cast<QGraphicsItem*>(m_pGraphObj);
         if( pGraphObjLine != nullptr )
         {
             iRowCountMax = 2;
 
             QLineF  lin = pGraphObjLine->line();
-            QPointF pt1 = pGraphObjLine->mapToParent(lin.p1());
-            QPointF pt2 = pGraphObjLine->mapToParent(lin.p2());
+            QPointF pt1 = pGraphicsItemLine->mapToParent(lin.p1());
+            QPointF pt2 = pGraphicsItemLine->mapToParent(lin.p2());
 
             m_plg.append(pt1);
             m_plg.append(pt2);
@@ -1077,10 +1079,11 @@ void CWdgtFormatGraphObjsGeometry::fillShapePointsModel( )
             else
             {
                 pGraphObjCnctLine = dynamic_cast<CGraphObjConnectionLine*>(m_pGraphObj);
+                QGraphicsItem* pGraphicsItemCnctLine = dynamic_cast<QGraphicsItem*>(m_pGraphObj);
                 if( pGraphObjCnctLine != nullptr )
                 {
                     QPolygonF plgTmp = pGraphObjCnctLine->polygon();
-                    m_plg = pGraphObjCnctLine->mapToScene(plgTmp);
+                    m_plg = pGraphicsItemCnctLine->mapToScene(plgTmp);
                 }
             }
         }
@@ -1101,8 +1104,7 @@ void CWdgtFormatGraphObjsGeometry::fillShapePointsModel( )
             pItemClmY->setData( pt.y(), Qt::DisplayRole );
             m_pModelShapePoints->setItem( idxRow, EClmY, pItemClmY );
 
-            if( pGraphObjCnctLine != nullptr )
-            {
+            if (pGraphObjCnctLine != nullptr) {
                 if( idxRow == 0 || (idxRow == m_plg.size()-1) )
                 {
                     pItemClmX->setEditable(false);

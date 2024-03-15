@@ -368,26 +368,7 @@ void CObjFactory::saveGraphObjTextLabels(
     QStringList strlstPredefinedLabelNames = i_pGraphObj->getPredefinedLabelNames();
     QSet<QString> strlstLabelNamesAdded;
     for (const QString& strName : strlstPredefinedLabelNames) {
-        SLabelDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
-        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
-        // To keep the XML file as short as possible the properties of
-        // the labels are stored as attributes and not as text elements.
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrKey, labelDscr.m_strKey);
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrText, labelDscr.m_strText);
-        SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrSelPt, selPt.toString(false));
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
-        if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
-        }
-        i_xmlStreamWriter.writeEndElement();
-        strlstLabelNamesAdded.insert(strName);
-    }
-    // The user defined labels should follow the predefined labels.
-    // Add those after the predefined labels.
-    for (const QString& strName : strlstLabelNames) {
-        if (!strlstLabelNamesAdded.contains(strName)) {
+        if (!i_pGraphObj->labelHasDefaultValues(strName)) {
             SLabelDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
             i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
             // To keep the XML file as short as possible the properties of
@@ -402,6 +383,29 @@ void CObjFactory::saveGraphObjTextLabels(
                 i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
             }
             i_xmlStreamWriter.writeEndElement();
+        }
+        strlstLabelNamesAdded.insert(strName);
+    }
+    // The user defined labels should follow the predefined labels.
+    // Add those after the predefined labels.
+    for (const QString& strName : strlstLabelNames) {
+        if (!strlstLabelNamesAdded.contains(strName)) {
+            if (!i_pGraphObj->labelHasDefaultValues(strName)) {
+                SLabelDscr labelDscr = i_pGraphObj->getLabelDescriptor(strName);
+                i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
+                // To keep the XML file as short as possible the properties of
+                // the labels are stored as attributes and not as text elements.
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrKey, labelDscr.m_strKey);
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrText, labelDscr.m_strText);
+                SGraphObjSelectionPoint selPt = labelDscr.m_selPt1;
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrSelPt, selPt.toString(false));
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isLabelVisible(strName)));
+                if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
+                    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
+                }
+                i_xmlStreamWriter.writeEndElement();
+            }
             strlstLabelNamesAdded.insert(strName);
         }
     }
@@ -497,18 +501,20 @@ void CObjFactory::saveGraphObjGeometryLabels(
     QStringList strlstLabelNames = i_pGraphObj->getGeometryLabelNames();
     strlstLabelNames.sort();
     for (const QString& strName : strlstLabelNames) {
-        SLabelDscr labelDscr = i_pGraphObj->getGeometryLabelDescriptor(strName);
-        i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
-        // To keep the XML file as short as possible the properties of
-        // the labels are stored as attributes and not as text elements.
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrKey, labelDscr.m_strKey);
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrText, labelDscr.m_strText);
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isGeometryLabelVisible(strName)));
-        if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
+        if (!i_pGraphObj->geometryLabelHasDefaultValues(strName)) {
+            SLabelDscr labelDscr = i_pGraphObj->getGeometryLabelDescriptor(strName);
+            i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameLabel);
+            // To keep the XML file as short as possible the properties of
+            // the labels are stored as attributes and not as text elements.
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrKey, labelDscr.m_strKey);
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrText, labelDscr.m_strText);
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrDistance, labelDscr.m_polarCoorsToLinkedSelPt.toString());
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrVisible, bool2Str(i_pGraphObj->isGeometryLabelVisible(strName)));
+            if (labelDscr.m_bShowAnchorLine) { // don't write default for this property
+                i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrAnchorLineVisible, bool2Str(labelDscr.m_bShowAnchorLine));
+            }
+            i_xmlStreamWriter.writeEndElement();
         }
-        i_xmlStreamWriter.writeEndElement();
     }
 }
 

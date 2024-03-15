@@ -331,6 +331,7 @@ protected: // instance members
     QGraphicsRectItem* m_pGraphicsItemSelectionArea;
     /*!< Objects to control method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
+    ZS::System::CTrcAdminObj* m_pTrcAdminObjConversions;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjMouseMoveEvent;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjPaintEvent;
 

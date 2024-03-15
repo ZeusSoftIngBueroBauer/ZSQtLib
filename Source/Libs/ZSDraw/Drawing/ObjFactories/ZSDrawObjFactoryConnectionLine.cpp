@@ -113,24 +113,16 @@ CGraphObj* CObjFactoryConnectionLine::createGraphObj(
 
 //------------------------------------------------------------------------------
 SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
-    CGraphObj*        i_pGraphObj,
-    QXmlStreamWriter& i_xmlStreamWriter )
+    CGraphObj* i_pGraphObj, QXmlStreamWriter& i_xmlStreamWriter )
 //------------------------------------------------------------------------------
 {
-    if( i_pGraphObj == nullptr )
-    {
+    if (i_pGraphObj == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultArgOutOfRange, "pGraphObj == nullptr" );
     }
-
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "GraphObj:" + i_pGraphObj->NameSpace();
-        strMthInArgs += "::" + i_pGraphObj->ClassName();
-        strMthInArgs += "::" + i_pGraphObj->name();
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pGraphObj->path();
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -138,25 +130,18 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
         /* strAddInfo   */ strMthInArgs );
 
     SErrResultInfo errResultInfo;
-
     CGraphObjConnectionLine* pGraphObj = dynamic_cast<CGraphObjConnectionLine*>(i_pGraphObj);
-
-    if( pGraphObj == nullptr )
-    {
+    if (pGraphObj == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjCnctLine == nullptr" );
     }
+    QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(i_pGraphObj);
 
     CGraphObjConnectionPoint* pCnctPtStart = pGraphObj->getConnectionPoint(ELinePoint::Start);
-
-    if( pCnctPtStart == nullptr )
-    {
+    if (pCnctPtStart == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultConnectionError, "pCnctPtStart == nullptr" );
     }
-
     CGraphObjConnectionPoint* pCnctPtEnd = pGraphObj->getConnectionPoint(ELinePoint::End);
-
-    if( pCnctPtEnd == nullptr )
-    {
+    if (pCnctPtEnd == nullptr) {
         throw ZS::System::CException( __FILE__, __LINE__, EResultConnectionError, "pCnctPtEnd == nullptr" );
     }
 
@@ -169,29 +154,18 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     i_xmlStreamWriter.writeTextElement( "ObjIdCnctPtStart", pCnctPtStart->keyInTree() );
     i_xmlStreamWriter.writeTextElement( "ObjIdCnctPtEnd", pCnctPtEnd->keyInTree() );
 
-    // Draw Attributes
-    //----------------
-
     CDrawSettings drawSettings = pGraphObj->getDrawSettings();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameDrawSettings);
     drawSettings.save(i_xmlStreamWriter);
     i_xmlStreamWriter.writeEndElement();
 
-    // Geometry
-    //-------------
-
     QPolygonF plg = pGraphObj->polygon(); // coordinates are in the objects coordinate system (LT = 0.0/0.0)
-    QPointF   pt;
-    int       idxPt;
-
     // Shape points of connection lines will be stored in scene coordinates.
-    plg = pGraphObj->mapToScene(plg);
+    plg = pGraphicsItem->mapToScene(plg);
 
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-
-    for( idxPt = 0; idxPt < plg.size(); idxPt++ )
-    {
-        pt = plg[idxPt];
+    for (int idxPt = 0; idxPt < plg.size(); idxPt++) {
+        QPointF pt = plg[idxPt];
         i_xmlStreamWriter.writeTextElement( "Pt" + QString::number(idxPt), point2Str(pt) );
     }
     i_xmlStreamWriter.writeEndElement();
@@ -200,19 +174,13 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     // The position of connection lines is defined by the connection
     // points they are linked to.
 
-    // Z-Value
-    //---------------
-
     i_xmlStreamWriter.writeTextElement( "ZValue", QString::number(pGraphObj->getStackingOrderValue()) );
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(errResultInfo);
     }
-
     return errResultInfo;
-
-} // saveGraphObj
+}
 
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryConnectionLine::loadGraphObj(

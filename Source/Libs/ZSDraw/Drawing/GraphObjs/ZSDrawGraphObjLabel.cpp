@@ -488,11 +488,12 @@ void CGraphObjLabel::showAnchorLine()
         /* strMethod    */ "showAnchorLine",
         /* strAddInfo   */ "" );
 
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (!m_labelDscr.m_bShowAnchorLine) {
         m_labelDscr.m_bShowAnchorLine = true;
         if (scene() != nullptr) {
             QRectF rctBounding = boundingRect();
-            rctBounding = mapToScene(rctBounding).boundingRect();
+            rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             scene()->update(rctBounding);
         }
         if (m_pTree != nullptr) {
@@ -512,10 +513,11 @@ void CGraphObjLabel::hideAnchorLine()
         /* strMethod    */ "hideAnchorLine",
         /* strAddInfo   */ "" );
 
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (m_labelDscr.m_bShowAnchorLine) {
         if (scene() != nullptr) {
             QRectF rctBounding = boundingRect();
-            rctBounding = mapToScene(rctBounding).boundingRect();
+            rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             m_labelDscr.m_bShowAnchorLine = false;
             scene()->update(rctBounding);
         }
@@ -543,8 +545,9 @@ public: // overridables of base class CGraphObj
 QString CGraphObjLabel::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QRectF rct = getBoundingRect();
-    QPolygonF plgScene = mapToScene(rct);
+    QPolygonF plgScene = pGraphicsItemThis->mapToScene(rct);
     return polygon2Str(plgScene);
 }
 
@@ -1275,10 +1278,10 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
-    QPointF ptScenePosCenterThis = mapToScene(ptCenterThis);
-
+    QPointF ptScenePosCenterThis = pGraphicsItemThis->mapToScene(ptCenterThis);
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
         m_labelDscr.m_polarCoorsToLinkedSelPt = m_labelDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
             ptScenePosCenterThis, m_labelDscr.m_selPt1.m_selPt);
@@ -1287,8 +1290,6 @@ void CGraphObjLabel::updatePolarCoorsToLinkedSelPt()
         m_labelDscr.m_polarCoorsToLinkedSelPt = m_labelDscr.m_selPt1.m_pGraphObj->getPolarCoorsToSelectionPointFromSceneCoors(
             ptScenePosCenterThis, m_labelDscr.m_selPt1.m_idxPt);
     }
-
-    // Update coordinates of the anchor line.
     updateAnchorLines();
 }
 

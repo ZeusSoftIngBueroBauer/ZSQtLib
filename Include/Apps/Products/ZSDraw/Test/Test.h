@@ -188,7 +188,9 @@ protected slots:
     void doTestStepMouseReleaseEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseMoveEvents( ZS::Test::CTestStep* i_pTestStep );
-public: // instance members
+protected: // auxiliary instance methods
+    ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
+protected: // instance members
     CMainWindow* m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;
     ZS::Draw::CDrawingScene* m_pDrawingScene;

@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Drawing DimensionUnit="Metric" ScreenResolutionPxPerMM="1" MetricImageCoorsDecimals="2" Unit="mm" Width="800.00 mm" Height="600.00 mm" ScaleFactor="1:1" GridLinesVisible="true" GridLinesDistMin="20" GridLinesStyle="DotLine" GridLinesWidth="1" GridLinesColor="#c0c0c0" GridLabelsVisible="true" GridLabelsFont="MS Shell Dlg 2" GridLabelsTextSize="2" GridLabelsTextColor="#000000" GridLabelsTextStyle="Normal" GridLabelsTextEffect="None">
+    <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Group" ObjectName="Group2">
+        <DrawSettings/>
+        <Geometry>
+            <Pos>300.0/300.0</Pos>
+            <RotAngleDeg>0</RotAngleDeg>
+        </Geometry>
+        <ZValue>0</ZValue>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Line" ObjectName="Line0" ObjectId="B:Group2::Line0">
+            <DrawSettings/>
+            <Geometry>
+                <ShapePoints>
+                    <P1>0.0/-50.0</P1>
+                    <P2>0.0/50.0</P2>
+                </ShapePoints>
+            </Geometry>
+            <ZValue>0</ZValue>
+            <TextLabels>
+                <Label Key="Name" Text="Line0" SelPt="BoundingRect.Center" Distance="0/0" Visible="false"/>
+                <Label Key="P1" Text="P1" SelPt="PolygonShapePoint.0" Distance="0/0" Visible="false"/>
+                <Label Key="P2" Text="P2" SelPt="PolygonShapePoint.1" Distance="0/0" Visible="false"/>
+            </TextLabels>
+            <GeometryLabels>
+                <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="Center" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="Length" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="P1" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="P2" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="dX" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="dY" Text="" Distance="0/0" Visible="false"/>
+            </GeometryLabels>
+        </GraphObj>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Line" ObjectName="Line1" ObjectId="B:Group2::Line1">
+            <DrawSettings/>
+            <Geometry>
+                <ShapePoints>
+                    <P1>-50.0/0.0</P1>
+                    <P2>50.0/0.0</P2>
+                </ShapePoints>
+            </Geometry>
+            <ZValue>0</ZValue>
+            <TextLabels>
+                <Label Key="Name" Text="Line1" SelPt="BoundingRect.Center" Distance="0/0" Visible="false"/>
+                <Label Key="P1" Text="P1" SelPt="PolygonShapePoint.0" Distance="0/0" Visible="false"/>
+                <Label Key="P2" Text="P2" SelPt="PolygonShapePoint.1" Distance="0/0" Visible="false"/>
+            </TextLabels>
+            <GeometryLabels>
+                <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="Center" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="Length" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="P1" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="P2" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="dX" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="dY" Text="" Distance="0/0" Visible="false"/>
+            </GeometryLabels>
+        </GraphObj>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Group" ObjectName="Group0" ObjectId="B:Group2::Group0">
+            <DrawSettings/>
+            <Geometry>
+                <Pos>25.0/-25.0</Pos>
+                <RotAngleDeg>0</RotAngleDeg>
+            </Geometry>
+            <ZValue>0</ZValue>
+            <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Line" ObjectName="Line4" ObjectId="B:Group2::Group0::Line4">
+                <DrawSettings/>
+                <Geometry>
+                    <ShapePoints>
+                        <P1>-5.0/-5.0</P1>
+                        <P2>5.0/-5.0</P2>
+                    </ShapePoints>
+                </Geometry>
+                <ZValue>0</ZValue>
+                <TextLabels>
+                    <Label Key="Name" Text="Line4" SelPt="BoundingRect.Center" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="P1" SelPt="PolygonShapePoint.0" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="P2" SelPt="PolygonShapePoint.1" Distance="0/0" Visible="false"/>
+                </TextLabels>
+                <GeometryLabels>
+                    <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Center" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Length" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dX" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dY" Text="" Distance="0/0" Visible="false"/>
+                </GeometryLabels>
+            </GraphObj>
+            <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Line" ObjectName="Line5" ObjectId="B:Group2::Group0::Line5">
+                <DrawSettings/>
+                <Geometry>
+                    <ShapePoints>
+                        <P1>5.0/-5.0</P1>
+                        <P2>5.0/5.0</P2>
+                    </ShapePoints>
+                </Geometry>
+                <ZValue>0</ZValue>
+                <TextLabels>
+                    <Label Key="Name" Text="Line5" SelPt="BoundingRect.Center" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="P1" SelPt="PolygonShapePoint.0" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="P2" SelPt="PolygonShapePoint.1" Distance="0/0" Visible="false"/>
+                </TextLabels>
+                <GeometryLabels>
+                    <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Center" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Length" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dX" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dY" Text="" Distance="0/0" Visible="false"/>
+                </GeometryLabels>
+            </GraphObj>
+            <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Line" ObjectName="Line6" ObjectId="B:Group2::Group0::Line6">
+                <DrawSettings/>
+                <Geometry>
+                    <ShapePoints>
+                        <P1>5.0/5.0</P1>
+                        <P2>-5.0/5.0</P2>
+                    </ShapePoints>
+                </Geometry>
+                <ZValue>0</ZValue>
+                <TextLabels>
+                    <Label Key="Name" Text="Line6" SelPt="BoundingRect.Center" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="P1" SelPt="PolygonShapePoint.0" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="P2" SelPt="PolygonShapePoint.1" Distance="0/0" Visible="false"/>
+                </TextLabels>
+                <GeometryLabels>
+                    <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Center" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Length" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dX" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dY" Text="" Distance="0/0" Visible="false"/>
+                </GeometryLabels>
+            </GraphObj>
+            <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Line" ObjectName="Line7" ObjectId="B:Group2::Group0::Line7">
+                <DrawSettings/>
+                <Geometry>
+                    <ShapePoints>
+                        <P1>-5.0/5.0</P1>
+                        <P2>-5.0/-5.0</P2>
+                    </ShapePoints>
+                </Geometry>
+                <ZValue>0</ZValue>
+                <TextLabels>
+                    <Label Key="Name" Text="Line7" SelPt="BoundingRect.Center" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="P1" SelPt="PolygonShapePoint.0" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="P2" SelPt="PolygonShapePoint.1" Distance="0/0" Visible="false"/>
+                </TextLabels>
+                <GeometryLabels>
+                    <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Center" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Length" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dX" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dY" Text="" Distance="0/0" Visible="false"/>
+                </GeometryLabels>
+            </GraphObj>
+        </GraphObj>
+        <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Group" ObjectName="Group1" ObjectId="B:Group2::Group1">
+            <DrawSettings/>
+            <Geometry>
+                <Pos>0.0/0.0</Pos>
+                <RotAngleDeg>0</RotAngleDeg>
+            </Geometry>
+            <ZValue>0</ZValue>
+            <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Line" ObjectName="Line2" ObjectId="B:Group2::Group1::Line2">
+                <DrawSettings/>
+                <Geometry>
+                    <ShapePoints>
+                        <P1>-50.0/-50.0</P1>
+                        <P2>25.0/50.0</P2>
+                    </ShapePoints>
+                </Geometry>
+                <ZValue>0</ZValue>
+                <TextLabels>
+                    <Label Key="Name" Text="Line2" SelPt="BoundingRect.Center" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="P1" SelPt="PolygonShapePoint.0" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="P2" SelPt="PolygonShapePoint.1" Distance="0/0" Visible="false"/>
+                </TextLabels>
+                <GeometryLabels>
+                    <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Center" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Length" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dX" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dY" Text="" Distance="0/0" Visible="false"/>
+                </GeometryLabels>
+            </GraphObj>
+            <GraphObj NameSpace="ZS::Draw" ClassName="CGraphObj" ObjectType="Line" ObjectName="Line3" ObjectId="B:Group2::Group1::Line3">
+                <DrawSettings/>
+                <Geometry>
+                    <ShapePoints>
+                        <P1>25.0/50.0</P1>
+                        <P2>50.0/25.0</P2>
+                    </ShapePoints>
+                </Geometry>
+                <ZValue>0</ZValue>
+                <TextLabels>
+                    <Label Key="Name" Text="Line3" SelPt="BoundingRect.Center" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="P1" SelPt="PolygonShapePoint.0" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="P2" SelPt="PolygonShapePoint.1" Distance="0/0" Visible="false"/>
+                </TextLabels>
+                <GeometryLabels>
+                    <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Center" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="Length" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P1" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="P2" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dX" Text="" Distance="0/0" Visible="false"/>
+                    <Label Key="dY" Text="" Distance="0/0" Visible="false"/>
+                </GeometryLabels>
+            </GraphObj>
+        </GraphObj>
+    </GraphObj>
+</Drawing>

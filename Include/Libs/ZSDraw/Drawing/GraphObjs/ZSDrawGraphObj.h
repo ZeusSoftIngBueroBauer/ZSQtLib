@@ -501,9 +501,23 @@ public: // struct members
     to twice the size also the childrens should become twice the size. Same applies
     when shrinking the group's bounding rectangle.
 
+    If a group is going to be resized, at any time the group's width or height may
+    become zero. Once the width or height of the group becomes zero resizing the
+    children to fit the new groups size would no longer be possible.
+    For this the original size of the child item must be stored and the current
+    scale factor to resize the children is calculated using the current and
+    the original size.
+
     To avoid rounding errors and to be able to calculate a scale factor the items
     must keep the original coordinates in addition to the current, transformed
     coordinates of their shape points.
+
+    Depending on the Y-Axis-Scale-Orientation the coordinates are relative either
+    to the top left or bottom left corner of the parent item's bounding rectange.
+    If the item does not have another item as a  parent (does not belong to a group),
+    the coordinates are in scene coordinates.
+    As long as the item is not added to a group, the original and current
+    coordinates are equal.
 
     If the item is not a group (and not a label or selection point)
     - and the item is not a child of a group
@@ -715,32 +729,27 @@ public: // must overridables
     //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-public: // instance methods
-    CPhysValPoint mapPhysValPointToScene(const QPointF& i_pt) const;
-    CPhysValPoint mapPhysValPointToScene(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValPoint mapPhysValPointToScene(const CPhysValPoint& i_physValPoint) const;
-    CPhysValPoint mapPhysValPointToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValLine mapPhysValLineToScene(const QLineF& i_line) const;
-    CPhysValLine mapPhysValLineToScene(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValLine mapPhysValLineToScene(const CPhysValLine& i_physValLine) const;
-    CPhysValLine mapPhysValLineToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect mapPhysValRectToScene(const QRectF& i_rect) const;
-    CPhysValRect mapPhysValRectToScene(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect mapPhysValRectToScene(const CPhysValRect& i_physValRect) const;
-    CPhysValRect mapPhysValRectToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
-public: // instance methods
-    CPhysValPoint mapPhysValPointToParent(const QPointF& i_pt) const;
-    CPhysValPoint mapPhysValPointToParent(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValPoint mapPhysValPointToParent(const CPhysValPoint& i_physValPoint) const;
-    CPhysValPoint mapPhysValPointToParent(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValLine mapPhysValLineToParent(const QLineF& i_line) const;
-    CPhysValLine mapPhysValLineToParent(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValLine mapPhysValLineToParent(const CPhysValLine& i_physValLine) const;
-    CPhysValLine mapPhysValLineToParent(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect mapPhysValRectToParent(const QRectF& i_rect) const;
-    CPhysValRect mapPhysValRectToParent(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect mapPhysValRectToParent(const CPhysValRect& i_physValRect) const;
-    CPhysValRect mapPhysValRectToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+protected: // overridables
+    virtual QPointF toLocalCoors(const CPhysValPoint& i_physValPoint) const;
+    virtual QLineF toLocalCoors(const CPhysValLine& i_physValLine) const;
+    virtual QRectF toLocalCoors(const CPhysValRect& i_physValRect) const;
+    virtual CPhysValPoint fromLocalCoors(const QPointF& i_pt) const;
+    virtual CPhysValLine fromLocalCoors(const QLineF& i_line) const;
+    virtual CPhysValRect fromLocalCoors(const QRectF& i_rect) const;
+public: // overridables
+    virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint) const;
+    virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine) const;
+    virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
+    virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+public: // overridables
+    virtual CPhysValPoint mapToParent(const CPhysValPoint& i_physValPoint) const;
+    virtual CPhysValPoint mapToParent(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    virtual CPhysValLine mapToParent(const CPhysValLine& i_physValLine) const;
+    virtual CPhysValLine mapToParent(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect) const;
+    virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
 public: // overridables
@@ -790,6 +799,7 @@ public: // overridables (text labels)
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
     SLabelDscr getLabelDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
+    virtual bool labelHasDefaultValues(const QString& i_strName) const;
     virtual bool isLabelAdded(const QString& i_strName) const;
     virtual bool addLabel(const QString& i_strName, const QString& i_strText, ESelectionPoint i_selPt);
     virtual bool addLabel(const QString& i_strName, const QString& i_strText, int i_idxPt);
@@ -812,6 +822,7 @@ public: // overridables (geometry labels)
     virtual QStringList getGeometryLabelNames() const;
     virtual bool isValidGeometryLabelName(const QString& i_strName) const;
     SLabelDscr getGeometryLabelDescriptor(const QString& i_strName) const;
+    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const;
     virtual void showGeometryLabel(const QString& i_strName);
     virtual void hideGeometryLabel(const QString& i_strName);
     virtual bool isGeometryLabelVisible(const QString& i_strName) const;

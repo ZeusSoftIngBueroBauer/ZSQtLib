@@ -173,8 +173,10 @@ protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) override;
 public: // overridables of base class CGraphObj (text labels)
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
     virtual QStringList getGeometryLabelNames() const override;
+    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual QPainterPath shape() const override;
@@ -201,7 +203,7 @@ protected: // instance methods
 protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
-    QLineF setLineOrig(const QLineF& i_line);
+    CPhysValLine setLineOrig(const CPhysValLine& i_physValLine);
     QLineF QGraphicsLineItem_setLine(const QLineF& i_line);
     QLineF QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
@@ -216,26 +218,9 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
-    /*!< The original, untransformed line coordinates with unit.
-         TODO: Coordinates are in scene coordinates (relative to top left corner of scene)
-               or in parent coordinates (relative to center point of parent group).
-               The transformation matrix is used ....
-         The coordinates are relative to the top left corner of the parent item's
-         bounding rectange (real shape points only). If the item does not have another
-         graphical object as a  parent, the coordinates are in scene coordinates.
-         If a group is going to be resized at any time the group's width or height may
-         become zero. Once the width or height of the group becomes zero resizing the
-         children to fit the new groups size would no longer be possible.
-         For this the original size of the child item must be stored and the current
-         scale factor to resize the children is calculated using the current and
-         the original size.
-         As long as the item is not added to a group, the original and current
-         coordinates are equal.
-         When the item is added to or removed from a group the current coordinates
-         are taken over as the original coordinates.
-         When resizing the group many times using the original coordinates also avoids
-         rounding errors. */
-    QLineF m_lineOrig;
+    /*!< The original, untransformed shape point coordinates with unit.
+         @see base class CGraphObj "Current and Original Coordinates". */
+    CPhysValLine m_physValLineOrig;
     /*!< The current, untransformed line coordinates with unit.
          The coordinates are relative to the top left corner of the parent item's
          bounding rectange (real shape points only). If the item does not belong as

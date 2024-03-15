@@ -403,6 +403,8 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
         /* strMethod    */ "updatePolarCoorsToLinkedSelPt",
         /* strAddInfo   */ "" );
 
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+
     // Get anchor line in scene coordinates.
     // The start point of the anchor line should be the center point of the line
     // for which the length has to be indicated.
@@ -426,7 +428,7 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     QPointF ptSelPtSceneCoors = lineSelPtSceneCoors.center();
 
     QRectF rctBoundingThis = getBoundingRect();
-    QPointF ptCenterScenePosThis = mapToScene(rctBoundingThis.center());
+    QPointF ptCenterScenePosThis = pGraphicsItemThis->mapToScene(rctBoundingThis.center());
 
     // The start point of the anchor line should be the center point of the line
     // for which the length has to be indicated.

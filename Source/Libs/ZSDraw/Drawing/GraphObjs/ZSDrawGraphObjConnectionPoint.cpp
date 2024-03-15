@@ -469,7 +469,8 @@ public: // overridables of base class CGraphObj
 QString CGraphObjConnectionPoint::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
-    QPolygonF plgScene = mapToScene(rect());
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QPolygonF plgScene = pGraphicsItemThis->mapToScene(rect());
     return polygon2Str(plgScene);
 }
 

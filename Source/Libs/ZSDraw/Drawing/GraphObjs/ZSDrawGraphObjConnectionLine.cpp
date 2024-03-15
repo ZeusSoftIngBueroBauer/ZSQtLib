@@ -204,13 +204,10 @@ bool CGraphObjConnectionLine::setConnectionPoint( ELinePoint i_linePoint, CGraph
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = CEnumLinePoint(i_linePoint).toString();
         strMthInArgs += ", CnctPoint: " + QString(i_pCnctPt == nullptr ? "nullptr" : i_pCnctPt->name());
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -220,88 +217,58 @@ bool CGraphObjConnectionLine::setConnectionPoint( ELinePoint i_linePoint, CGraph
 
     bool bConnected = false;
 
-    if( static_cast<int>(i_linePoint) >= 0 && static_cast<int>(i_linePoint) < m_arpCnctPts.size() && i_pCnctPt != nullptr )
-    {
+    if (static_cast<int>(i_linePoint) >= 0 && static_cast<int>(i_linePoint) < m_arpCnctPts.size() && i_pCnctPt != nullptr) {
         CGraphObjConnectionPoint* pGraphObjCnctPt = m_arpCnctPts[static_cast<int>(i_linePoint)];
-
-        if( pGraphObjCnctPt == i_pCnctPt )
-        {
+        if (pGraphObjCnctPt == i_pCnctPt) {
             bConnected = true;
         }
-        else // if( pGraphObjCnctPt != i_pCnctPt )
-        {
-            if( pGraphObjCnctPt != nullptr )
-            {
+        else {
+            if (pGraphObjCnctPt != nullptr) {
                 pGraphObjCnctPt->removeConnectionLine(this);
                 pGraphObjCnctPt = nullptr;
                 m_arpCnctPts[static_cast<int>(i_linePoint)] = nullptr;
             }
-
             bConnected = i_pCnctPt->appendConnectionLine(this);
-
-            if( bConnected )
-            {
+            if (bConnected) {
                 m_arpCnctPts[static_cast<int>(i_linePoint)] = i_pCnctPt;
                 pGraphObjCnctPt = m_arpCnctPts[static_cast<int>(i_linePoint)];
             }
-            else
-            {
+            else {
                 pGraphObjCnctPt = nullptr;
             }
-
-        } // if( pGraphObjCnctPt != i_pCnctPt )
-
-        if( pGraphObjCnctPt != nullptr )
-        {
-            QPolygonF  plg = polygon();
+        }
+        if (pGraphObjCnctPt != nullptr) {
+            QGraphicsItem* pGraphicsItemCnctPt = dynamic_cast<QGraphicsItem*>(pGraphObjCnctPt);
+            QPolygonF plg = polygon();
             ELinePoint linePoint = getConnectionLinePoint(pGraphObjCnctPt);
-            QPointF    ptCnctPtPos = pGraphObjCnctPt->rect().center();
-            QPointF    ptCnctPtScenePos = pGraphObjCnctPt->mapToScene(ptCnctPtPos);
-
-            if( linePoint == ELinePoint::Start )
-            {
+            QPointF ptCnctPtPos = pGraphObjCnctPt->rect().center();
+            QPointF ptCnctPtScenePos = pGraphicsItemCnctPt->mapToScene(ptCnctPtPos);
+            if (linePoint == ELinePoint::Start) {
                 QPointF pt(0.0,0.0);
-
-                if( plg.size() == 0 )
-                {
+                if (plg.size() == 0) {
                     plg.append(pt);
                 }
-                else
-                {
+                else {
                     plg[0] = pt;
                 }
-
                 QGraphicsPolygonItem::setPolygon(plg);
-
                 setPos(ptCnctPtScenePos);
-
-            } // if( linePoint == ELinePoint::Start )
-
-            else if( linePoint == ELinePoint::End && plg.size() >= 1 )
-            {
+            }
+            else if (linePoint == ELinePoint::End && plg.size() >= 1) {
                 QPointF pt = mapFromScene(ptCnctPtScenePos);
-
-                if( plg.size() == 1 )
-                {
+                if (plg.size() == 1) {
                     plg.append(pt);
                 }
-                else
-                {
+                else {
                     int idxPt = plg.size()-1;
                     plg[idxPt] = pt;
                 }
-
                 QGraphicsPolygonItem::setPolygon(plg);
-
-            } // if( linePoint == ELinePoint::End )
-
+            }
             //updateToolTip();
             //updateEditInfo();
-
-        } // if( pGraphObjCnctPt != nullptr )
-
-    } // if( static_cast<int>(i_linePoint) >= 0 && static_cast<int>(i_linePoint) < m_arpCnctPts.size() && i_pCnctPt != nullptr )
-
+        }
+    }
     return bConnected;
 
 } // setConnectionPoint
@@ -408,15 +375,11 @@ public: // overridables of base class CGraphObj
 QString CGraphObjConnectionLine::getScenePolygonShapePointsString() const
 //------------------------------------------------------------------------------
 {
-    QString   strScenePolygonShapePoints;
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPolygonF plg = polygon();
-    QPolygonF plgScene = mapToScene(plg);
-
-    strScenePolygonShapePoints = polygon2Str(plgScene);
-
-    return strScenePolygonShapePoints;
-
-} // getScenePolygonShapePointsString
+    QPolygonF plgScene = pGraphicsItemThis->mapToScene(plg);
+    return polygon2Str(plgScene);
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -763,53 +726,43 @@ void CGraphObjConnectionLine::onGraphObjParentGeometryChanged( CGraphObj* i_pGra
         /* strMethod    */ "onGraphObjParentGeometryChanged",
         /* strAddInfo   */ strMthInArgs );
 
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     CGraphObjConnectionPoint* pGraphObjCnctPt = dynamic_cast<CGraphObjConnectionPoint*>(i_pGraphObjParent);
-
-    if (pGraphObjCnctPt != nullptr)
-    {
+    if (pGraphObjCnctPt != nullptr) {
+        QGraphicsItem* pGraphicsItemCnctPt = dynamic_cast<QGraphicsItem*>(pGraphObjCnctPt);
         QPolygonF plg = polygon();
         ELinePoint linePoint = getConnectionLinePoint(pGraphObjCnctPt);
         QPointF ptCnctPtPos = pGraphObjCnctPt->rect().center();
-        QPointF ptCnctPtScenePos = pGraphObjCnctPt->mapToScene(ptCnctPtPos);
+        QPointF ptCnctPtScenePos = pGraphicsItemCnctPt->mapToScene(ptCnctPtPos);
         QPointF ptItemPosNew = mapFromScene(ptCnctPtScenePos);
-
-        if (linePoint == ELinePoint::Start && plg.size() > 0)
-        {
+        if (linePoint == ELinePoint::Start && plg.size() > 0) {
             // The origin of the poly line's coordinate system (the item's position)
             // is the first line point (in poly line's item's coordinate system the
             // first line point is at 0/0). If the first line point is moved it's
             // coordinates remain at 0/0 but all other points must be moved to fit into
             // the new item's coordinate system.
-
             QPointF ptItemPosOld = plg[0];
-
             setPos(ptCnctPtScenePos);
-
             double dx = ptItemPosNew.x() - ptItemPosOld.x();
             double dy = ptItemPosNew.y() - ptItemPosOld.y();
-
             QPointF ptPosOld, ptPosNew;
-
             for (int idxPt = 1; idxPt < plg.size(); idxPt++) {
                 ptPosOld = plg[idxPt];
                 ptPosNew.setX( ptPosOld.x() - dx );
                 ptPosNew.setY( ptPosOld.y() - dy );
                 plg[idxPt] = ptPosNew;
             }
-
             QGraphicsPolygonItem::setPolygon(plg);
-
             for (int idxSelPt = 0; idxSelPt < m_arpSelPtsPolygon.size(); idxSelPt++) {
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
                 if (pGraphObjSelPt != nullptr) {
                     QPointF ptSel = plg[idxSelPt];
-                    ptSel = mapToScene(ptSel);
+                    ptSel = pGraphicsItemThis->mapToScene(ptSel);
                     pGraphObjSelPt->setPos(ptSel);
                 }
             }
         }
-        else if( linePoint == ELinePoint::End && plg.size() > 1 )
-        {
+        else if (linePoint == ELinePoint::End && plg.size() > 1) {
             int idxSelPt = plg.size()-1;
             plg[idxSelPt] = ptItemPosNew;
             QGraphicsPolygonItem::setPolygon(plg);
@@ -817,18 +770,14 @@ void CGraphObjConnectionLine::onGraphObjParentGeometryChanged( CGraphObj* i_pGra
                 CGraphObjSelectionPoint* pGraphObjSelPt = m_arpSelPtsPolygon[idxSelPt];
                 if (pGraphObjSelPt != nullptr) {
                     QPointF ptSel = plg[idxSelPt];
-                    ptSel = mapToScene(ptSel);
+                    ptSel = pGraphicsItemThis->mapToScene(ptSel);
                     pGraphObjSelPt->setPos(ptSel);
                 }
             }
         }
-
         normalize();
-
         m_bCoorsDirty = true;
-
         updateLineEndPolygonCoors();
-
         //updateEditInfo();
         //updateToolTip();
     }

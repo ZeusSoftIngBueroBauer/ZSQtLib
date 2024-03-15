@@ -68,7 +68,9 @@ may result in using the software modules.
 
 #include <QtCore/qdir.h>
 #include <QtCore/qfileinfo.h>
+#include <QtCore/qfile.h>
 #include <QtCore/qstandardpaths.h>
+#include <QtCore/qtextstream.h>
 #include <QtCore/qtimer.h>
 
 #include <QtGui/qevent.h>
@@ -5038,6 +5040,40 @@ void CTest::doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep )
         CErrLog::GetInstance()->addEntry(errResultInfo);
     }
     i_pTestStep->setResultValue(errResultInfo.toString());
+
+    QStringList strlstResultValues;
+
+    QStringList strlstSavedFile;
+    errResultInfo = readFile(strAbsFilePath, strlstSavedFile);
+    if (errResultInfo.isErrorResult()) {
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+        strlstResultValues.append(errResultInfo.toString());
+    }
+
+    QString strExpectedResultsAbsFilePath = c_strTestExpectedResultFilesAbsDirPath + QDir::separator() + strFileName;
+    if (!strExpectedResultsAbsFilePath.endsWith(".xml")) {
+        strExpectedResultsAbsFilePath += ".xml";
+    }
+    QStringList strlstExpectedFile;
+    errResultInfo = readFile(strExpectedResultsAbsFilePath, strlstExpectedFile);
+    if (errResultInfo.isErrorResult()) {
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+        strlstResultValues.append(errResultInfo.toString());
+    }
+
+    for (int iLine = 0; (iLine < strlstSavedFile.size() && iLine < strlstExpectedFile.size()); ++iLine) {
+        if (strlstSavedFile[iLine] != strlstExpectedFile[iLine]) {
+            strlstResultValues.append("Saved file is different from expected result file");
+            strlstResultValues.append("Saved file: " + strAbsFilePath);
+            strlstResultValues.append("Expected file: " + strExpectedResultsAbsFilePath);
+            strlstResultValues.append("First difference recognized in line " + QString::number(iLine+1));
+            break;
+        }
+    }
+
+    if (!strlstResultValues.isEmpty()) {
+        i_pTestStep->setResultValues(strlstResultValues);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -5066,6 +5102,42 @@ void CTest::doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep )
         CErrLog::GetInstance()->addEntry(errResultInfo);
     }
     i_pTestStep->setResultValue(errResultInfo.toString());
+
+    QStringList strlstResultValues;
+
+    QStringList strlstLoadedFile;
+    errResultInfo = readFile(strAbsFilePath, strlstLoadedFile);
+    if (errResultInfo.isErrorResult()) {
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+        strlstResultValues.append(errResultInfo.toString());
+    }
+
+    errResultInfo = m_pDrawingScene->save(strAbsFilePath + ".bak");
+    if (errResultInfo.isErrorResult()) {
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+        strlstResultValues.append(errResultInfo.toString());
+    }
+
+    QStringList strlstSavedFile;
+    errResultInfo = readFile(strAbsFilePath + ".bak", strlstSavedFile);
+    if (errResultInfo.isErrorResult()) {
+        CErrLog::GetInstance()->addEntry(errResultInfo);
+        strlstResultValues.append(errResultInfo.toString());
+    }
+
+    for (int iLine = 0; (iLine < strlstLoadedFile.size() && iLine < strlstSavedFile.size()); ++iLine) {
+        if (strlstLoadedFile[iLine] != strlstSavedFile[iLine]) {
+            strlstResultValues.append("Saved file is different from loaded file");
+            strlstResultValues.append("Loaded file: " + strAbsFilePath);
+            strlstResultValues.append("Saved file: " + strAbsFilePath + ".bak");
+            strlstResultValues.append("First difference recognized in line " + QString::number(iLine+1));
+            break;
+        }
+    }
+
+    if (!strlstResultValues.isEmpty()) {
+        i_pTestStep->setResultValues(strlstResultValues);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -5592,4 +5664,37 @@ void CTest::doTestStepMouseMoveEvents( ZS::Test::CTestStep* i_pTestStep )
 
     QStringList strlstResultValues;
     i_pTestStep->setResultValues(strlstResultValues);
+}
+
+/*==============================================================================
+protected: // auxiliary instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SErrResultInfo CTest::readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const
+//------------------------------------------------------------------------------
+{
+    SErrResultInfo errResultInfo(NameSpace(), ClassName(), objectName(), "readFile(" + i_strAbsFilePath + ")");
+    QFile file;
+    if (i_strAbsFilePath.isEmpty()) {
+        errResultInfo.setSeverity(EResultSeverityError);
+        errResultInfo.setResult(EResultInvalidFileName);
+    }
+    else {
+        QFileInfo fileInfo(i_strAbsFilePath);
+        file.setFileName(i_strAbsFilePath);
+        if (!file.open(QIODevice::ReadOnly)) {
+            errResultInfo.setSeverity(EResultSeverityError);
+            errResultInfo.setResult(EResultFileOpenForRead);
+            errResultInfo.setAddErrInfoDscr(i_strAbsFilePath);
+        }
+    }
+    if (!errResultInfo.isErrorResult()) {
+        QTextStream in(&file);
+        QString line;
+        while (in.readLineInto(&line)) {
+            o_strlstLines << line;
+        }
+    }
+    return errResultInfo;
 }

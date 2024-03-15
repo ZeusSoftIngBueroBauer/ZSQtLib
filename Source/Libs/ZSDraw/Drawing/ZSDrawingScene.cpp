@@ -157,6 +157,7 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_ptMouseEvScenePosOnMousePressEvent(),
     m_pGraphicsItemSelectionArea(nullptr),
     m_pTrcAdminObj(nullptr),
+    m_pTrcAdminObjConversions(nullptr),
     m_pTrcAdminObjMouseMoveEvent(nullptr),
     m_pTrcAdminObjPaintEvent(nullptr)
 {
@@ -164,6 +165,8 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
 
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Drawing", ClassName(), objectName());
+    m_pTrcAdminObjConversions = CTrcServer::GetTraceAdminObj(
+        NameSpace() + "::Drawing", ClassName() + "::Conversions", objectName());
     m_pTrcAdminObjMouseMoveEvent = CTrcServer::GetTraceAdminObj(
         NameSpace() + "::Drawing", ClassName() + "::MouseMoveEvent", objectName());
     m_pTrcAdminObjPaintEvent = CTrcServer::GetTraceAdminObj(
@@ -241,6 +244,7 @@ CDrawingScene::~CDrawingScene()
     mthTracer.onAdminObjAboutToBeReleased();
 
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
+    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjConversions);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjMouseMoveEvent);
     CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObjPaintEvent);
 
@@ -268,6 +272,7 @@ CDrawingScene::~CDrawingScene()
     //m_ptMouseEvScenePosOnMousePressEvent;
     m_pGraphicsItemSelectionArea = nullptr;
     m_pTrcAdminObj = nullptr;
+    m_pTrcAdminObjConversions = nullptr;
     m_pTrcAdminObjMouseMoveEvent = nullptr;
     m_pTrcAdminObjPaintEvent = nullptr;
 
@@ -484,6 +489,16 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint) const
 CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Pt {" + i_physValPoint.toString() + "} " + i_physValPoint.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "convert",
+        /* strAddInfo   */ strMthInArgs );
+
     CPhysValPoint physValPoint = i_physValPoint;
     if (i_physValPoint.unit() != i_unitDst) {
         if (Units.Length.isMetricUnit(i_physValPoint.unit()) && Units.Length.isMetricUnit(i_unitDst)) {
@@ -510,6 +525,9 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
             double fY_px = m_divLinesMetricsY.getValInPix(physValY.getVal(m_drawingSize.unit()));
             physValPoint = CPhysValPoint(fX_px, fY_px, m_drawingSize.imageCoorsResolutionInPx(), i_unitDst);
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Pt {" + physValPoint.toString() + "} " + physValPoint.unit().symbol());
     }
     return physValPoint;
 }
@@ -565,6 +583,16 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize) const
 CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Size {" + i_physValSize.toString() + "} " + i_physValSize.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "convert",
+        /* strAddInfo   */ strMthInArgs );
+
     CPhysValSize physValSize = i_physValSize;
     if (i_physValSize.unit() != i_unitDst) {
         if (Units.Length.isMetricUnit(i_physValSize.unit()) && Units.Length.isMetricUnit(i_unitDst)) {
@@ -601,6 +629,9 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
             CPhysVal physValHeight(dy_px, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
             physValSize = CPhysValSize(physValWidth, physValHeight);
         }
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Size {" + physValSize.toString() + "} " + physValSize.unit().symbol());
     }
     return physValSize;
 }
@@ -656,9 +687,23 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine) const
 CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Line {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "convert",
+        /* strAddInfo   */ strMthInArgs );
+
     CPhysValPoint physValP1 = convert(i_physValLine.p1(), i_unitDst);
     CPhysValPoint physValP2 = convert(i_physValLine.p2(), i_unitDst);
-    return CPhysValLine(physValP1, physValP2);
+    CPhysValLine physValLine(physValP1, physValP2);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
+    }
+    return physValLine;
 }
 
 //------------------------------------------------------------------------------
@@ -719,9 +764,23 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect) const
 CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjConversions, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol() + ", UnitDst: " + i_unitDst.symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjConversions,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "convert",
+        /* strAddInfo   */ strMthInArgs );
+
     CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
     CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    return CPhysValRect(physValTL, physValBR);
+    CPhysValRect physValRect(physValTL, physValBR);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
+    }
+    return physValRect;
 }
 
 ////------------------------------------------------------------------------------
@@ -942,11 +1001,17 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                                     "ObjectFactory \"" + strFactoryGroupName + "::" + strGraphObjType + "\" for element \"" + strElemName + "\" not found");
                             }
                             else {
-                                pObjFactory->loadGraphObj(
-                                    /* pDrawingScene   */ this,
-                                    /* pGraphObjGroup  */ nullptr,
-                                    /* strObjName      */ strObjName,
-                                    /* xmlStreamReader */ xmlStreamReader );
+                                try {
+                                    pObjFactory->loadGraphObj(
+                                        /* pDrawingScene   */ this,
+                                        /* pGraphObjGroup  */ nullptr,
+                                        /* strObjName      */ strObjName,
+                                        /* xmlStreamReader */ xmlStreamReader );
+                                }
+                                catch(CException& exc) {
+                                    QString strAddErrInfo = exc.toString();
+                                    errResultInfo = ErrResultInfoError("load", EResultFileReadContent, strAddErrInfo);
+                                }
                             }
                         }
                     }
@@ -1031,7 +1096,7 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
             CIdxTree::iterator itIdxTree = m_pGraphObjsIdxTree->begin();
             while (itIdxTree != m_pGraphObjsIdxTree->end()) {
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
-                if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && pGraphObj->isConnectionLine()) {
+                if (pGraphObj != nullptr && pGraphObj->isConnectionLine()) {
                     // Group members will be saved as child items of the groups.
                     if (pGraphObj->parentGraphObj() == nullptr) {
                         errResultInfo = save(pGraphObj, xmlStreamWriter);

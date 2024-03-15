@@ -174,22 +174,22 @@ public: // instance methods
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods
-    CPhysValPoint convert(const QPointF& i_pt) const;
-    CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
-    CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValSize convert(const QSizeF& i_size) const;
-    CPhysValSize convert(const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValSize convert(const CPhysValSize& i_physValSize) const;
-    CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValLine convert(const QLineF& i_line) const;
-    CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValLine convert(const CPhysValLine& i_physValLine) const;
-    CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect convert(const QRectF& i_rect) const;
-    CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
-    CPhysValRect convert(const CPhysValRect& i_physValRect) const;
-    CPhysValRect convert(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //CPhysValPoint convert(const QPointF& i_pt) const;
+    //CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
+    //CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //CPhysValSize convert(const QSizeF& i_size) const;
+    //CPhysValSize convert(const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //CPhysValSize convert(const CPhysValSize& i_physValSize) const;
+    //CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //CPhysValLine convert(const QLineF& i_line) const;
+    //CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //CPhysValLine convert(const CPhysValLine& i_physValLine) const;
+    //CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //CPhysValRect convert(const QRectF& i_rect) const;
+    //CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //CPhysValRect convert(const CPhysValRect& i_physValRect) const;
+    //CPhysValRect convert(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos() const override;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
@@ -223,6 +223,7 @@ protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
 protected: // auxiliary instance methods (method tracing)
+    CPhysValRect setRectOrig(const CPhysValRect& i_physValRect);
     QRectF setRectOrig(const QRectF& i_rect);
     void applyGeometryChangeToChildrens();
     void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
@@ -240,31 +241,25 @@ public: // class members
 protected: // instance members
     /*!< Mathematic component to calculate the division lines of the X-Scale.
          Also used to convert pixel values into metric values and vice versa. */
-    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsX;
+    //ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsX;
     /*!< Mathematic component to calculate the division lines of the Y-Scale.
          Also used to convert pixel values into metric values and vice versa. */
-    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
+    //ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
     /*!< Settings about the grid lines (visibility, colors, font, etc.). */
     CDrawGridSettings m_gridSettings;
-    /*!< The original, untransformed group coordinates with unit.
-         TODO: Coordinates are in scene coordinates (relative to top left corner of scene)
-               or in parent coordinates (relative to center point of parent group).
-               The transformation matrix is used ....
-         The coordinates are relative to the top left corner of the parent item's
-         bounding rectange (real shape points only). If the item does not have another
-         graphical object as a  parent, the coordinates are in scene coordinates.
-         If a group is going to be resized at any time the group's width or height may
-         become zero. Once the width or height of the group becomes zero resizing the
-         children to fit the new groups size would no longer be possible.
-         For this the original size of the group must be stored and the current
-         scale factor to resize the children is calculated using the current and
-         the original size.
-         The first "setRect" call whose passed rectangle width and height is not zero
-         is taken as the original group size.
-         When the group is added to or removed from a another group the current
-         coordinates are also taken over as the original coordinates.
-         As long as there is no valid original rectangle childrens cannot be resized. */
+    /*!< The original, untransformed shape point coordinates in pixels.
+         Those are the values in local coordinates relative to the origin of the
+         groups bounding rectangle. Other graphics items, like Line, provide methods
+         to set and retrieve the local coordinates (e.g. "setLine", "line").
+         The group item does not have such methods (e.g. "setRect", "rect").
+         To provide the bounding rectangle of the group in local coordinates
+         this member is maintained. */
     QRectF m_rectOrig;
+    /*!< The original, untransformed shape point coordinates with unit.
+         Those are the values in parent coordinates relative to the top left
+         or bottom left corner of the parent.
+         @see base class CGraphObj "Current and Original Coordinates". */
+    CPhysValRect m_physValRectOrig;
     /*!< The current, untransformed group coordinates with unit.
          The coordinates are relative to the top left corner of the parent item's
          bounding rectange (real shape points only). If the item does not have another
