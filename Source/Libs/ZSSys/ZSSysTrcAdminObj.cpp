@@ -34,6 +34,9 @@ may result in using the software modules.
 #include <QtQml/qqmlengine.h>
 #include <QtCore/qmutex.h>
 #include <QtCore/qthread.h>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QtCore/qregularexpression.h>
+#endif
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 

@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -42,9 +42,9 @@ namespace Draw
                         +
                         |
                Anchor   |<--
-               Line1    |  90\°  AnchorLine2 (circle segment)
+               Line1    |  90\Â°  AnchorLine2 (circle segment)
                (end of  |     |
-               circle   x-----------AnchorLine0 (horizontal Line for 0°)
+               circle   x-----------AnchorLine0 (horizontal Line for 0Â°)
                segment) |
                         |
                         |
@@ -57,9 +57,9 @@ namespace Draw
                         \
                       ---\--------\ AnchorLine2 (circle segment)
                      /    \         \
-                  315°     \          \
+                  315Â°     \          \
                    |        \           |
-                   |         x--------------AnchorLine0 (horizontal Line for 0°)
+                   |         x--------------AnchorLine0 (horizontal Line for 0Â°)
                     |         \
                      \         \AnchorLine1 (end of circle segment to center)
                        \------ >\
@@ -68,15 +68,15 @@ namespace Draw
                                    +
                                    P2
 
-    Example for a Rectangle (rotated by 90°):
+    Example for a Rectangle (rotated by 90Â°):
 
                  TopRight        BottomRight
                     +-----------------+
                     |                 |
                     | Anchor  |<---   |
-                    | Line1   |  90\° AnchorLine2 (circle segment)
+                    | Line1   |  90\Â° AnchorLine2 (circle segment)
                     | (end of |     | |
-                    x circle  x-------x--AnchorLine0 (horizontal Line for 0°)
+                    x circle  x-------x--AnchorLine0 (horizontal Line for 0Â°)
                     | segment)        |
                     |                 |
                     |                 |

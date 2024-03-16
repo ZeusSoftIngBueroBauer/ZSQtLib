@@ -1754,7 +1754,7 @@ void CDiagObjMarker::updateData()
             double fValDst = 0.0;
             CUnit unit = pPhysValSrc->unit();
             EValueValidity valueValid = m_pDiagTrace->getVal(
-                m_scaleAxisCursorMove, pPhysValSrc->getVal(), &pPhysValSrc->unit(),
+                m_scaleAxisCursorMove, pPhysValSrc->getVal(), &unit,
                 scaleAxisDst, &fValDst, &unitDst, false);
             if (valueValid == EValueValidity::Valid) {
                 if( unitDst.isValid() ) {

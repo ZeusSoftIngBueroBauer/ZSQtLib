@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -1622,37 +1622,37 @@ public: // instance methods
     verfahren ist.
 
     Um ein grafisches Objekt ueber Maus Events zu erzeugen, zu verschieben oder zu
-    rotieren, seine Form zu ändern, zu selektieren und zu gruppieren, muessen verschiedene
+    rotieren, seine Form zu Ã¤ndern, zu selektieren und zu gruppieren, muessen verschiedene
     Modi korrekt gesetzt werden.
 
     @param i_mode [in] Range [Edit, View und Undefined]
-        Undefined ist zu übergeben, wenn der Mode nicht geändert werden soll und das Argument
+        Undefined ist zu Ã¼bergeben, wenn der Mode nicht geÃ¤ndert werden soll und das Argument
         somit zu ignorieren ist.
-        Nur im Edit Mode können Objekte auf der grafischen Oberfläche durch die Maus angelegt
-        und verändert werden.
+        Nur im Edit Mode kÃ¶nnen Objekte auf der grafischen OberflÃ¤che durch die Maus angelegt
+        und verÃ¤ndert werden.
         Der View Mode dient dazu, die Maus-Events an die Objekte selbst weiterzuleiten,
-        die entsprechend darauf reagieren können. Ist z.B. eine ComboBox als Objekt der Empfänger
-        der Maus-Events verarbeitet die ComboBox die Events, um z.B. die PullDown-List zu öffnen.
-        Bei dem Objekt kann es sich aber auch um ein vollständig benutzerdefiniertes Objekt wie
-        einen grafischen Schalter handeln, der über Maus-Klicks seinen On/Off Zustand ändert.
+        die entsprechend darauf reagieren kÃ¶nnen. Ist z.B. eine ComboBox als Objekt der EmpfÃ¤nger
+        der Maus-Events verarbeitet die ComboBox die Events, um z.B. die PullDown-List zu Ã¶ffnen.
+        Bei dem Objekt kann es sich aber auch um ein vollstÃ¤ndig benutzerdefiniertes Objekt wie
+        einen grafischen Schalter handeln, der Ã¼ber Maus-Klicks seinen On/Off Zustand Ã¤ndert.
     @param i_editTool [in] Range [None, Select, CreateObjects, Undefined]
-        Undefined ist zu übergeben, wenn das EditTool nicht geändert werden soll und das Argument
+        Undefined ist zu Ã¼bergeben, wenn das EditTool nicht geÃ¤ndert werden soll und das Argument
         somit zu ignorieren ist.
-        None zeigt an, dass kein EditTool ausgewählt ist.
-        Wird Select übergeben, sollen nachfolgende Maus-Events dazu dienen, Objekte zu selektieren.
-        Mit CreateObjects wird angezeigt, dass über nachfolgende Maus-Events Objekte erzeugt werden sollen.
+        None zeigt an, dass kein EditTool ausgewÃ¤hlt ist.
+        Wird Select Ã¼bergeben, sollen nachfolgende Maus-Events dazu dienen, Objekte zu selektieren.
+        Mit CreateObjects wird angezeigt, dass Ã¼ber nachfolgende Maus-Events Objekte erzeugt werden sollen.
     @param i_editMode [in] Range [None, Creating, Move, Resize, Rotate, MoveShapePoint, EditText, Undefined]
-        Undefined ist zu übergeben, wenn der EditMode nicht geändert werden soll und das Argument
+        Undefined ist zu Ã¼bergeben, wenn der EditMode nicht geÃ¤ndert werden soll und das Argument
         somit zu ignorieren ist.
-        None zeigt an, dass kein EditMode ausgewählt ist.
-        Die anderen EditModes zeigen an, auf welche Art und Weise das Objekt zu modifizieren ist und hängen
+        None zeigt an, dass kein EditMode ausgewÃ¤hlt ist.
+        Die anderen EditModes zeigen an, auf welche Art und Weise das Objekt zu modifizieren ist und hÃ¤ngen
         im wesentlichen davon ab, an welchem Eckpunkt (SelectionPoint) das Objekt mit der Maus gepackt wurde.
     @param i_editResizeMode [in] Range [None, ResizeAll, ResizeHor, ResizeVer, Undefined]
-        Undefined ist zu übergeben, wenn der ResizeMode nicht geändert werden soll und das Argument
+        Undefined ist zu Ã¼bergeben, wenn der ResizeMode nicht geÃ¤ndert werden soll und das Argument
         somit zu ignorieren ist.
-        None zeigt an, dass kein ResizeMode ausgewählt ist.
+        None zeigt an, dass kein ResizeMode ausgewÃ¤hlt ist.
     @param i_bObjFactoryTypeChanged [in]
-        true, falls der grafische Object Type und damit die Objekt Factory zur Erzeugung des Objekt verändert wurde.
+        true, falls der grafische Object Type und damit die Objekt Factory zur Erzeugung des Objekt verÃ¤ndert wurde.
         falls otherwise.
 */
 void CDrawingScene::setMode(const ZS::System::CEnumMode& i_mode)
@@ -3977,7 +3977,11 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 QPainterPath path;
                 path.addRect(rctSelectionArea);
+                #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 setSelectionArea(path, Qt::ContainsItemShape);
+                #else
+                setSelectionArea(path, Qt::ReplaceSelection, Qt::ContainsItemShape);
+                #endif
             }
             else {
                 // Dispatch mouse event to objects "under cursor".
@@ -5577,7 +5581,7 @@ QColor CDrawingScene::getColor(
     }
     else {
         QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        clr.setNamedColor(strAttrVal);
+        clr = QColor::fromString(strAttrVal);
     }
     return clr;
 }

@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -27,10 +27,10 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 
-#include "ZSSys/ZSSysMemLeakDump.h"
-
 #include <QtGui/qbitmap.h>
 #include <QtCore/qhash.h>
+
+#include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
 using namespace ZS::Draw;
@@ -619,26 +619,26 @@ QCursor ZS::Draw::selectionPoint2Cursor( ESelectionPoint i_selPt, double i_fRota
                 fCursorAngle_degree = 270.0;
             }
             fCursorAngle_degree += i_fRotationAngle_degree;
-            // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180�)
+            // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
             while (fCursorAngle_degree >= 180.0) {
                 fCursorAngle_degree -= 180.0;
             }
             while (fCursorAngle_degree < 0.0) {
                 fCursorAngle_degree += 180.0;
             }
-            if (fCursorAngle_degree >= 0.0 && fCursorAngle_degree < 45.0/2.0) { // 0.0 .. 22.5�
+            if (fCursorAngle_degree >= 0.0 && fCursorAngle_degree < 45.0/2.0) { // 0.0 .. 22.5°
                 cursor = Qt::SizeHorCursor;
             }
-            else if (fCursorAngle_degree >= 45.0/2.0 && fCursorAngle_degree < 3.0*45.0/2.0) { // 22.5� .. 67.5�
+            else if (fCursorAngle_degree >= 45.0/2.0 && fCursorAngle_degree < 3.0*45.0/2.0) { // 22.5° .. 67.5°
                 cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
             }
-            else if (fCursorAngle_degree >= 3.0*45.0/2.0 && fCursorAngle_degree < 5.0*45.0/2.0) { // 67.5� .. 112.5�
+            else if (fCursorAngle_degree >= 3.0*45.0/2.0 && fCursorAngle_degree < 5.0*45.0/2.0) { // 67.5° .. 112.5°
                 cursor = Qt::SizeVerCursor;
             }
-            else if (fCursorAngle_degree >= 5.0*45.0/2.0 && fCursorAngle_degree < 7.0*45.0/2.0) { // 112.5� .. 157.5�
+            else if (fCursorAngle_degree >= 5.0*45.0/2.0 && fCursorAngle_degree < 7.0*45.0/2.0) { // 112.5° .. 157.5°
                 cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
             }
-            else if (fCursorAngle_degree >= 7.0*45.0/2.0 && fCursorAngle_degree <= 180.0) { // 157.5� .. 180.0�
+            else if (fCursorAngle_degree >= 7.0*45.0/2.0 && fCursorAngle_degree <= 180.0) { // 157.5° .. 180.0°
                 cursor = Qt::SizeHorCursor;
             }
         }

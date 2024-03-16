@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -306,7 +306,7 @@ public: // struct members
     to be rounded to a whole number.
 
     The width and the height of the lines bounding rectangle would be
-    - sqrt(2.0 mm²) = 1.41421... mm = 5,65685... px = 6 pixels
+    - sqrt(2.0 mmÂ²) = 1.41421... mm = 5,65685... px = 6 pixels
     and the resulting length of the line on the screen becomes longer than 2.0 mm.
 
            0.0     0.5     1.0     1.5     2.0 mm
@@ -1013,7 +1013,7 @@ protected: // !!! OBSOLETE !!! instance members
     /*!< Current item coordinates and transform values:
          In item's coordinate system (during mouse resize events topLeft may not be at 0.0/0.0). */
     QRectF m_rctCurr;
-    /*!< Concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°) */
+    /*!< Concerning range see "Draw::getAngleRad" */
     double m_fRotAngleCurr_deg;
     /*!< In item's coordinate system. */
     QPointF m_ptRotOriginCurr;
@@ -1026,7 +1026,7 @@ protected: // !!! OBSOLETE !!! instance members
     /*!< In parent's coordinate system. */
     QPointF m_ptPosOrig;
     QSizeF m_sizOrig;
-    /*!< Concerning range see "Draw::getAngleRad" (Q1: 0..90°, Q2: 90..180°, Q3: -90°..-180°, Q4: 0..-90°) */
+    /*!< Concerning range see "Draw::getAngleRad" */
     double m_fRotAngleOrig_deg;
     /*!< In item's coordinate system. */
     QPointF m_ptRotOriginOrig;

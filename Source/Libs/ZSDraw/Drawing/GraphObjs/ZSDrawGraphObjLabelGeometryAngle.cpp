@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -448,7 +448,7 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
 
     For the Angle label three anchor lines are drawn:
     
-    - An anchor line to indicate the horiuontal 0° degree line.
+    - An anchor line to indicate the horiuontal 0Â° degree line.
     - A line from the center point of the line between the two selection points the label
       is linked to and in the angle to be indicated.
     - A circle segment between the two end points of the anchor lines above.
@@ -462,9 +462,9 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
                         +
                         |
                 Anchor  |<--    AnchorLine2 (circle segment)
-                Line1   |  90\°
+                Line1   |  90\Â°
                 (end of |     |
-                circle  x----------- AnchorLine0 (0° line)
+                circle  x----------- AnchorLine0 (0Â° line)
                 segment)|
                         |
                         |
@@ -472,15 +472,15 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
                         +
                         P1 (SelPt1)
 
-    Example for a Rectangle (rotated by 90°):
+    Example for a Rectangle (rotated by 90Â°):
 
                  TopRight          BottomRight
                     +---------x---------+
                     |      SelPt2       |
                     | Anchor  |<---     |
-                    | Line1   |  90\° AnchorLine2 (circle segment)
+                    | Line1   |  90\Â° AnchorLine2 (circle segment)
                     | (end of |     |   |
-                    x circle  x---------x--AnchorLine0 (horizontal Line for 0°)
+                    x circle  x---------x--AnchorLine0 (horizontal Line for 0Â°)
                     | segment)          |
                     |                   |
                     |                   |
@@ -522,7 +522,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
 
-    // AnchorLine0 (horizontal Line for 0°) in local coordinates
+    // AnchorLine0 (horizontal Line for 0Â°) in local coordinates
     QPointF ptHorLine0DegreesP1(ptCenterLineSelPtPos.x(), ptCenterLineSelPtPos.y());
     QPointF ptHorLine0DegreesP2(ptCenterLineSelPtPos.x() + m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px, ptCenterLineSelPtPos.y());
     m_anchorLines[0] = QLineF(ptHorLine0DegreesP1, ptHorLine0DegreesP2);
