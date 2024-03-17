@@ -3171,14 +3171,14 @@ QString ZS::System::qSize2Str( const QSizeF& i_size )
 QString ZS::System::qLine2Str( const QLine& i_line )
 //------------------------------------------------------------------------------
 {
-    return "P1 {" + qPoint2Str(i_line.p1()) + "}, P2 {" + qPoint2Str(i_line.p2()) + "}";
+    return qPoint2Str(i_line.p1()) + ", " + qPoint2Str(i_line.p2());
 }
 
 //------------------------------------------------------------------------------
 QString ZS::System::qLine2Str( const QLineF& i_line )
 //------------------------------------------------------------------------------
 {
-    return "P1 {" + qPoint2Str(i_line.p1()) + "}, P2 {" + qPoint2Str(i_line.p2()) + "}";
+    return qPoint2Str(i_line.p1()) + ", " + qPoint2Str(i_line.p2());
 }
 
 //------------------------------------------------------------------------------

@@ -1083,7 +1083,7 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
             if (pGraphObj != nullptr && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel() && !pGraphObj->isConnectionLine()) {
                 // Group members will be saved as child items of the groups.
-                if (pGraphObj->parentGraphObj() == nullptr) {
+                if (pGraphObj->parentGroup() == nullptr) {
                     errResultInfo = save(pGraphObj, xmlStreamWriter);
                     if (errResultInfo.isErrorResult()) {
                         break;
@@ -1098,7 +1098,7 @@ SErrResultInfo CDrawingScene::save( const QString& i_strFileName )
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(*itIdxTree);
                 if (pGraphObj != nullptr && pGraphObj->isConnectionLine()) {
                     // Group members will be saved as child items of the groups.
-                    if (pGraphObj->parentGraphObj() == nullptr) {
+                    if (pGraphObj->parentGroup() == nullptr) {
                         errResultInfo = save(pGraphObj, xmlStreamWriter);
                         if (errResultInfo.isErrorResult()) {
                             break;
@@ -2225,8 +2225,8 @@ QString CDrawingScene::findUniqueGraphObjName( CGraphObj* i_pGraphObj )
     }
 
     QString strObjNameParent;
-    if (i_pGraphObj->parentGraphObj() != nullptr) {
-        strObjNameParent = i_pGraphObj->parentGraphObj()->name();
+    if (i_pGraphObj->parentGroup() != nullptr) {
+        strObjNameParent = i_pGraphObj->parentGroup()->name();
     }
 
     QString strObjBaseName = strObjName;

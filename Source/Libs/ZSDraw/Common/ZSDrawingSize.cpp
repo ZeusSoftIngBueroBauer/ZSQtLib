@@ -964,6 +964,7 @@ void CDrawingSize::save( QXmlStreamWriter& i_xmlStreamWriter )
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrUnit, metricUnit().symbol());
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrWidth, metricImageWidth().toString());
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrHeight, metricImageHeight().toString());
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrYScaleAxisOrientation, yScaleAxisOrientation().toString());
         i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrScaleFactor,
             QString::number(scaleFactorDividend()) + ":" + QString::number(scaleFactorDivisor()));
         if (normedPaperSize().isValid()) {
@@ -1027,6 +1028,11 @@ void CDrawingSize::load( QXmlStreamReader& i_xmlStreamReader )
                 if (!i_xmlStreamReader.hasError()) {
                     setScaleFactor(scaleFactor.first, scaleFactor.second);
                 }
+            }
+            CEnumYScaleAxisOrientation yScaleAxisOrientation = XmlStreamParser::getYScaleAxisOrientation(
+                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrYScaleAxisOrientation);
+            if (!i_xmlStreamReader.hasError()) {
+                setYScaleAxisOrientation(yScaleAxisOrientation);
             }
             if (!i_xmlStreamReader.hasError()) {
                 CEnumNormedPaperSize paperSize = XmlStreamParser::getNormedPaperSize(

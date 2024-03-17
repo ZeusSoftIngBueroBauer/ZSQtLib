@@ -308,7 +308,11 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
             s_arEnumStrGraphicsItemChange, _ZSArrLen(s_arEnumStrGraphicsItemChange), i_change);
     }
     if (!str.isEmpty()) str += ", ";
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    str += qVariantType2Str(i_value.type());
+    #else
     str += qVariantType2Str(i_value.typeId());
+    #endif
     if (((i_change == QGraphicsItem::ItemEnabledChange) || (i_change == QGraphicsItem::ItemEnabledHasChanged))
      || ((i_change == QGraphicsItem::ItemSelectedChange) || (i_change == QGraphicsItem::ItemSelectedHasChanged))
      || ((i_change == QGraphicsItem::ItemVisibleChange) || (i_change == QGraphicsItem::ItemVisibleHasChanged))) {
@@ -2271,6 +2275,7 @@ QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt,
     return perpendicularLine;
 }
 
+#pragma message(__TODO__"Move the following methods to ZS::System::Aux")
 //------------------------------------------------------------------------------
 QString ZS::Draw::point2Str( const QPoint& i_pt )
 //------------------------------------------------------------------------------
@@ -2816,6 +2821,36 @@ CEnumScaleDimensionUnit getDimensionUnit(
 }
 
 //------------------------------------------------------------------------------
+CEnumYScaleAxisOrientation getYScaleAxisOrientation(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumYScaleAxisOrientation& i_eDefaultVal )
+//------------------------------------------------------------------------------
+{
+    CEnumYScaleAxisOrientation yScaleAxisOrientation = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumYScaleAxisOrientation eVal = CEnumYScaleAxisOrientation::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            yScaleAxisOrientation = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return yScaleAxisOrientation;
+}
+
+//------------------------------------------------------------------------------
 CEnumNormedPaperSize getNormedPaperSize(
     QXmlStreamReader& i_xmlStreamReader,
     QXmlStreamAttributes& i_xmlStreamAttrs,
@@ -3095,7 +3130,11 @@ QColor getColor(
     }
     else {
         QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        clr.setNamedColor(strAttrVal);
+        #else
         clr = QColor::fromString(strAttrVal);
+        #endif
     }
     return clr;
 }

@@ -174,27 +174,29 @@ public: // instance methods
     CPhysValPoint getBottomLeft() const;
     CPhysValPoint getBottomLeft(const ZS::PhysVal::CUnit& i_unit) const;
 public: // instance methods
-    //CPhysValPoint convert(const QPointF& i_pt) const;
-    //CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
-    //CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //CPhysValSize convert(const QSizeF& i_size) const;
-    //CPhysValSize convert(const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //CPhysValSize convert(const CPhysValSize& i_physValSize) const;
-    //CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //CPhysValLine convert(const QLineF& i_line) const;
-    //CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //CPhysValLine convert(const CPhysValLine& i_physValLine) const;
-    //CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //CPhysValRect convert(const QRectF& i_rect) const;
-    //CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
-    //CPhysValRect convert(const CPhysValRect& i_physValRect) const;
-    //CPhysValRect convert(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPoint convert(const QPointF& i_pt) const;
+    CPhysValPoint convert(const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValPoint convert(const CPhysValPoint& i_physValPoint) const;
+    CPhysValPoint convert(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValSize convert(const QSizeF& i_size) const;
+    CPhysValSize convert(const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValSize convert(const CPhysValSize& i_physValSize) const;
+    CPhysValSize convert(const CPhysValSize& i_physValSize, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine convert(const QLineF& i_line) const;
+    CPhysValLine convert(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine convert(const CPhysValLine& i_physValLine) const;
+    CPhysValLine convert(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect convert(const QRectF& i_rect) const;
+    CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect convert(const CPhysValRect& i_physValRect) const;
+    CPhysValRect convert(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos() const override;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
+public: // must overridables of base class CGraphObj
+    virtual void onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev);
     //virtual QRectF getOriginalBoundingRectInParent() const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
@@ -241,10 +243,12 @@ public: // class members
 protected: // instance members
     /*!< Mathematic component to calculate the division lines of the X-Scale.
          Also used to convert pixel values into metric values and vice versa. */
-    //ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsX;
+    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsX;
     /*!< Mathematic component to calculate the division lines of the Y-Scale.
-         Also used to convert pixel values into metric values and vice versa. */
-    //ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
+         Also used to convert pixel values into metric values and vice versa.
+         @note The drawing scene's conversion functions cannot be used when converting
+               values if the Y-Axis-Scale orientation is set to BottomUp. */
+    ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
     /*!< Settings about the grid lines (visibility, colors, font, etc.). */
     CDrawGridSettings m_gridSettings;
     /*!< The original, untransformed shape point coordinates in pixels.

@@ -355,7 +355,13 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     // parent item's bounding rectangle.
     // The coordinates need to be transformed into the local coordinate system of the graphical
     // object whose origin point is the center of the objects bounding rectangle.
-    QLineF lineF = m_pDrawingScene->convert(i_physValLine, Units.Length.px).toQLineF();
+    QLineF lineF;
+    if (parentGroup() != nullptr) {
+        lineF = parentGroup()->convert(i_physValLine, Units.Length.px).toQLineF();
+    }
+    else {
+        lineF = m_pDrawingScene->convert(i_physValLine, Units.Length.px).toQLineF();
+    }
 
     // Position of the line in parent (scene or group) coordinates.
     QPointF ptPos = lineF.center();
@@ -364,7 +370,6 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     // The origin is the center point of the line.
     QPointF pt1 = lineF.p1() - ptPos;
     QPointF pt2 = lineF.p2() - ptPos;
-    lineF = QLineF(pt1, pt2);
 
     //// If the item belongs to a group ...
     //QGraphicsItem* pGraphicsItemParent = parentItem();
@@ -395,6 +400,8 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     //    pt1 -= lineF.center();
     //    pt2 -= lineF.center();
     //}
+
+    lineF = QLineF(pt1, pt2);
 
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if the coordinates have been changed ...
@@ -1093,11 +1100,49 @@ QRectF CGraphObjLine::getBoundingRect() const
 
     // Line points in local coordinates.
     QLineF lineF = line();
-    QRectF rctBounding = ZS::Draw::boundingRect(lineF);
+    QRectF rctBounding(lineF.p1(), lineF.p2());
+    //QRectF rctBounding = ZS::Draw::boundingRect(lineF);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
+}
+
+/*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Called by the parent group if it's bounding rectangle has been changed and
+           the groups physical origin point (top left or bottom left corner) may have
+           been changed.
+
+    The childs must update their original shape point coordinates. This is also necessary
+    if the groups position and also the childs position (in graphics item pixell coordinates)
+    have not been changed.
+
+    @param [in] i_rctBoundingNew
+    @param [in] i_rctBoundingPrev
+*/
+void CGraphObjLine::onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + qRect2Str(i_rctBoundingNew) + "}, Prev {" + qRect2Str(i_rctBoundingPrev) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "onParentBoundingRectChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
+    QLineF lineF = line();
+    CPhysValLine physValLine = fromLocalCoors(lineF);
+    physValLine = pGraphObjThis->mapToParent(physValLine);
+    setLineOrig(physValLine);
 }
 
 ////------------------------------------------------------------------------------
@@ -2395,7 +2440,13 @@ void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
     QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
+    CPhysValPoint physValParentSelPt;
+    if (parentGroup() != nullptr) {
+        physValParentSelPt = parentGroup()->convert(ptParentPosSelPt);
+    }
+    else {
+        physValParentSelPt = m_pDrawingScene->convert(ptParentPosSelPt);
+    }
     SGraphObjSelectionPoint selPt = pGraphObjSelPt->getSelectionPoint();
 
     if (selPt.m_selPtType == ESelectionPointType::PolygonShapePoint) {

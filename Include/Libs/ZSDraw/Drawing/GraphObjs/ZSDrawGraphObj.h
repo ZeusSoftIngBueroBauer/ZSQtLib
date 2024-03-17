@@ -622,8 +622,9 @@ public: // instance methods
     bool isSelectionPoint() const;
     bool isLabel() const;
 public: // instance methods
-    CDrawingScene* drawingScene();
-    CGraphObj* parentGraphObj();
+    CDrawingScene* drawingScene() const;
+    //CGraphObj* parentGraphObj() const;
+    CGraphObjGroup* parentGroup() const;
 public: // overridables
     //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
     virtual void rename(const QString& i_strNameNew);
@@ -752,7 +753,8 @@ public: // overridables
     virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
-public: // overridables
+public: // must overridables
+    virtual void onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev);
     //virtual QRectF getOriginalBoundingRectInParent() const;
     //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding);
     virtual void setGroupScale(double i_fXScale, double i_fYScale);

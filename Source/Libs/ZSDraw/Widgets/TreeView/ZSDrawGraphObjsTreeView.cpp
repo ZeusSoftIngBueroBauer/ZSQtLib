@@ -960,10 +960,9 @@ void CTreeViewGraphObjs::mousePressEvent( QMouseEvent* i_pEv )
                 // Ensure that only the clicked graphic item is selected taking into accout that selection points
                 // and labels cannot be selected but instead select their parents (if not already selected).
                 if (pGraphObjClicked->isSelectionPoint() || pGraphObjClicked->isLabel()) {
-                    pGraphObj = pGraphObjClicked->parentGraphObj();
                     // Selection points and labels don't have graphics item as a parent.
                     // Instead we must use the parent graph object in the index tree.
-                    pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+                    //pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
                 }
                 if (pGraphicsItem != nullptr) {
                     if (i_pEv->buttons() & Qt::LeftButton) {
@@ -1130,7 +1129,7 @@ void CTreeViewGraphObjs::selectionChanged(
                 if (pGraphObj->isSelectionPoint() || pGraphObj->isLabel()) {
                     // Selection points and labels don't have graphics item as a parent.
                     // Instead we must use the parent graph object in the index tree.
-                    pGraphObj = pGraphObj->parentGraphObj();
+                    //pGraphObj = pGraphObj->parentItem();
                 }
                 if (pGraphObj != nullptr) {
                     if (!hshpGraphObjsSelected.contains(pGraphObj->keyInTree())) {
@@ -1151,7 +1150,7 @@ void CTreeViewGraphObjs::selectionChanged(
                 if (pGraphObj->isSelectionPoint() || pGraphObj->isLabel()) {
                     // Selection points and labels don't have graphics item as a parent.
                     // Instead we must use the parent graph object in the index tree.
-                    pGraphObj = pGraphObj->parentGraphObj();
+                    //pGraphObj = pGraphObj->parentGroup();
                 }
                 if (pGraphObj != nullptr) {
                     // If the tree view entry for a selection point or label is deselected it might be that

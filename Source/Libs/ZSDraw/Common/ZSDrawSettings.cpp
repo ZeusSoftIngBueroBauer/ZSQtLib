@@ -1028,10 +1028,15 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QString& i_strVal )
             default:
             {
                 QVariant valTmp(i_strVal);
-                if( valTmp.canConvert(QMetaType(m_arAttributes[i_iAttribute].m_val.typeId())) )
-                {
+                #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+                if (valTmp.canConvert(m_arAttributes[i_iAttribute].m_val.type())) {
+                    m_arAttributes[i_iAttribute].m_val = valTmp.convert(m_arAttributes[i_iAttribute].m_val.type());
+                }
+                #else
+                if (valTmp.canConvert(QMetaType(m_arAttributes[i_iAttribute].m_val.typeId()))) {
                     m_arAttributes[i_iAttribute].m_val = valTmp.convert(QMetaType(m_arAttributes[i_iAttribute].m_val.typeId()));
                 }
+                #endif
                 break;
             }
         }

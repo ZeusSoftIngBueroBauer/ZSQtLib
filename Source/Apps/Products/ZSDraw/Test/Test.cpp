@@ -411,7 +411,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
     else {
         strFileName = QString::number(static_cast<int>(i_drawingSize.metricImageWidth().getVal())) + "x" +
                       QString::number(static_cast<int>(i_drawingSize.metricImageWidth().getVal())) +
-                      i_drawingSize.metricUnit().symbol() + ".xml";
+                      i_drawingSize.metricUnit().symbol() + "-" + i_drawingSize.yScaleAxisOrientation().toString() + ".xml";
     }
 
     pTestStep = new ZS::Test::CTestStep(
