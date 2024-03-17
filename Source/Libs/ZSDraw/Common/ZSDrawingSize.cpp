@@ -609,7 +609,7 @@ void CDrawingSize::setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize 
             #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if( varPaperSize.type() == QVariant::SizeF ) {
             #else
-            if( varPaperSize.type() == QMetaType::QSizeF ) {
+            if( varPaperSize.typeId() == QMetaType::QSizeF ) {
             #endif
                 QSizeF sizeF = varPaperSize.toSizeF();
                 // Default: Horizontal Orientation
@@ -661,7 +661,7 @@ void CDrawingSize::setNormedPaperOrientation( const CEnumOrientation& i_orientat
             #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if( varPaperSize.type() == QVariant::SizeF ) {
             #else
-            if( varPaperSize.type() == QMetaType::QSizeF ) {
+            if( varPaperSize.typeId() == QMetaType::QSizeF ) {
             #endif
                 QSizeF sizeF = varPaperSize.toSizeF();
                 // Default: Horizontal Orientation

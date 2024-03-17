@@ -97,8 +97,13 @@ const double c_fe = 2.718281828459;
 const QChar   c_chSymbolSquareRoot(0x221A);
 const QString c_strSymbolSquareRoot(c_chSymbolSquareRoot);
 
-const QString c_strSymbolDegree = QString::fromLatin1("\u00b0");
-const QString c_strSymbolMicro = QString::fromLatin1("\u00b5");
+const QChar   c_chSymbolDegree(0x00B0);
+const QString c_strSymbolDegree(c_chSymbolDegree);
+const QChar   c_chSymbolPhi(0x03C6);
+const QString c_strSymbolPhi(c_chSymbolPhi);
+
+const QChar   c_chSymbolMicro(0x00B5);
+const QString c_strSymbolMicro(c_chSymbolMicro);
 
 double ZSSYSDLL_API sqr( double i_fVal );
 double ZSSYSDLL_API sqrt( double i_fVal );

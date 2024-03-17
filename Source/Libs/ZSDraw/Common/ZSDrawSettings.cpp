@@ -861,7 +861,7 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QVariant& i_val )
         #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         if (i_val.type() == QVariant::String) {
         #else
-        if (i_val.type() == QMetaType::QString) {
+        if (i_val.typeId() == QMetaType::QString) {
         #endif
             setAttribute(i_iAttribute, i_val.toString());
         }
@@ -1028,9 +1028,9 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QString& i_strVal )
             default:
             {
                 QVariant valTmp(i_strVal);
-                if( valTmp.canConvert(m_arAttributes[i_iAttribute].m_val.type()) )
+                if( valTmp.canConvert(QMetaType(m_arAttributes[i_iAttribute].m_val.typeId())) )
                 {
-                    m_arAttributes[i_iAttribute].m_val = valTmp.convert(m_arAttributes[i_iAttribute].m_val.type());
+                    m_arAttributes[i_iAttribute].m_val = valTmp.convert(QMetaType(m_arAttributes[i_iAttribute].m_val.typeId()));
                 }
                 break;
             }

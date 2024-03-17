@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -1435,7 +1435,7 @@ public: // overridables of base class CGraphObj
 
                         + Pt
                        /
-                      / Calculated Angle: 60°
+                      / Calculated Angle: 60Â°
         +------------x------------+
         P1         Center         P2
 
@@ -1443,11 +1443,11 @@ public: // overridables of base class CGraphObj
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
 
-          For example if the line would be rotated by 180°:
+          For example if the line would be rotated by 180Â°:
 
             P2         Center         P1
             +------------x------------+
-             Angle: 60° /
+             Angle: 60Â° /
                        /
                    Pt +
 */
@@ -1476,7 +1476,7 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPo
 
            + Pt
           /
-         / Calculated Angle: 60°
+         / Calculated Angle: 60Â°
         +------------x------------+
         P1         Center         P2
 
@@ -1484,11 +1484,11 @@ SPolarCoors CGraphObjLine::getPolarCoorsToSelectionPointFromSceneCoors(const QPo
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
 
-          For example if the line would be rotated by 180°:
+          For example if the line would be rotated by 180Â°:
 
             P2         Center         P1
             +------------x------------+
-                          Angle: 60° /
+                          Angle: 60Â° /
                                     /
                                 Pt +
 */

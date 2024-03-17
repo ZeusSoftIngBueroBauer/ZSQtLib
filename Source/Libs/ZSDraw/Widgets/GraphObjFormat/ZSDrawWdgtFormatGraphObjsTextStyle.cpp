@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -349,7 +349,7 @@ CWdgtFormatGraphObjsTextStyle::CWdgtFormatGraphObjsTextStyle(
 
     m_pLytSample = new QHBoxLayout();
     m_pLyt->addLayout(m_pLytSample);
-    m_pLblSample = new QLabel("AaBbGgÁáZz");
+    m_pLblSample = new QLabel("AaBbGgÃÃ¡Zz");
     m_pLblSample->setMinimumHeight( textSize2SizeInPixels(ETextSizeMax) );
     m_pLblSample->setStyleSheet( "QLabel { background: white; }" );
     m_pLytSample->addWidget(m_pLblSample,1);

@@ -183,8 +183,6 @@ class CUnitsAngle : public ZS::PhysVal::CUnitsTreeEntryGrpPhysUnits
 public: // ctors and dtor
     CUnitsAngle(ZS::System::CIdxTreeEntry* i_pParentBranch);
     virtual ~CUnitsAngle();
-public: // class members
-    static const QString c_strSymbolPhi;
 private: // instance members
     /*!< Unit tree entry for angles in radiants */
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryRad;

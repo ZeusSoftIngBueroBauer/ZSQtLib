@@ -28,7 +28,7 @@ may result in using the software modules.
 #define ZSDraw_Aux_h
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
-#include "ZSPhysVal/ZSPhysUnit.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
 
 #include <QtCore/qstring.h>
 #include <QtCore/qrect.h>

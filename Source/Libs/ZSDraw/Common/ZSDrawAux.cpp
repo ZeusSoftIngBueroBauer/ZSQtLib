@@ -3095,7 +3095,7 @@ QColor getColor(
     }
     else {
         QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
-        clr.setNamedColor(strAttrVal);
+        clr = QColor::fromString(strAttrVal);
     }
     return clr;
 }

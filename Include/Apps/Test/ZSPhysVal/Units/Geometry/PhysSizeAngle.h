@@ -46,8 +46,6 @@ class CPhysSizeAngle : public ZS::PhysVal::CUnitsTreeEntryGrpPhysUnits
 public: // ctors and dtor
     CPhysSizeAngle(ZS::PhysVal::CUnitsTreeEntryGrpScienceField* i_pParentBranch);
     virtual ~CPhysSizeAngle();
-public: // class members
-    static const QString c_strSymbolPhi;
 private: // instance members
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryRad;
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryDegree;

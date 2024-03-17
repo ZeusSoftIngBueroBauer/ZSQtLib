@@ -40,13 +40,6 @@ class CPhysSizeAngle : public CUnitsTreeEntryGrpPhysUnits
 *******************************************************************************/
 
 /*==============================================================================
-public: // class members
-
-==============================================================================*/
-
-const QString CPhysSizeAngle::c_strSymbolPhi(QChar(0x03C6));
-
-/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -58,7 +51,7 @@ CPhysSizeAngle::CPhysSizeAngle( CUnitsTreeEntryGrpScienceField* i_pParentBranch 
         /* strName          */ "Angle",
         /* strSIUnitName    */ "Radiant",
         /* strSIUnitSymbol  */ "rad",
-        /* strFormulaSymbol */ QString(QChar(0x03C6)),
+        /* strFormulaSymbol */ Math::c_strSymbolPhi,
         /* bIsPowerRelated  */ false ),
     m_treeEntryRad(
         /* pPhysSize      */ this,

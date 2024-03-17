@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -363,13 +363,6 @@ class CUnitsAngle : public CUnitsTreeEntryGrpPhysUnits
 *******************************************************************************/
 
 /*==============================================================================
-public: // class members
-
-==============================================================================*/
-
-const QString CUnitsAngle::c_strSymbolPhi(QChar(0x03C6));
-
-/*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
@@ -381,7 +374,7 @@ CUnitsAngle::CUnitsAngle( CIdxTreeEntry* i_pParentBranch ) :
         /* strName          */ "Angle",
         /* strSIUnitName    */ "Radiant",
         /* strSIUnitSymbol  */ "rad",
-        /* strFormulaSymbol */ QString(QChar(0x03C6)),
+        /* strFormulaSymbol */ Math::c_strSymbolPhi,
         /* bIsPowerRelated  */ false ),
     m_treeEntryRad(
         /* pPhysSize      */ this,
@@ -393,7 +386,7 @@ CUnitsAngle::CUnitsAngle( CIdxTreeEntry* i_pParentBranch ) :
       /* pPhysSize      */ this,
       /* bIsLogarithmic */ false,
       /* strName        */ "Degree",
-      /* strSymbol      */ QString::fromLatin1("°"),
+      /* strSymbol      */ Math::c_strSymbolDegree,
       /* fMFromSI       */ 180.0/Math::c_fPI ),
     Rad(m_treeEntryRad),
     Degree(m_treeEntryDegree)
@@ -403,8 +396,9 @@ CUnitsAngle::CUnitsAngle( CIdxTreeEntry* i_pParentBranch ) :
     // and to create the chained list of Lower/Higher units).
     initialize(false);
 
-    // To allow "short" unit strings like "°" we add shortcuts to each unit.
-    m_pTree->addShortcut(&m_treeEntryDegree, QString::fromLatin1("°"));
+    // To allow "short" unit strings like "Â°" we add shortcuts to each unit.
+    //m_pTree->addShortcut(&m_treeEntryDegree, QString::fromLatin1("Â°"));
+    m_pTree->addShortcut(&m_treeEntryDegree, ZS::System::Math::c_strSymbolDegree);
 
 } // ctor
 
