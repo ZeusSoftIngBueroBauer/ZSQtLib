@@ -220,15 +220,18 @@ void doTestStepLoadDll( HMENU i_hMenu )
     else
     {
         LPTSTR  lpFunctionBuf = nullptr;
-        SIZE_T  uFunctionBufSize;
         LPCTSTR lpszFunction = _TEXT("LoadLibrary");
         std::wstring wstrDllFileName = s2ws(ZS::Trace::DllIf::getDllFileName());
 
-        uFunctionBufSize = ( lstrlen(lpszFunction) + lstrlen(wstrDllFileName.c_str()) + 10 ) * sizeof(TCHAR);
-        lpFunctionBuf = (LPTSTR)LocalAlloc( LMEM_ZEROINIT, uFunctionBufSize );
+        SIZE_T uFunctionBufSize =
+            (static_cast<SIZE_T>(lstrlen(lpszFunction))
+           + static_cast<SIZE_T>(lstrlen(wstrDllFileName.c_str())) + 10) * sizeof(TCHAR);
+        lpFunctionBuf = (LPTSTR)LocalAlloc(LMEM_ZEROINIT, uFunctionBufSize);
 
         #pragma warning( disable : 4995 )
-        wsprintf( lpFunctionBuf, _TEXT("%s %s"), lpszFunction, wstrDllFileName.c_str() );
+        #pragma warning( disable : 28183 )
+        wsprintf(lpFunctionBuf, _TEXT("%s %s"), lpszFunction, wstrDllFileName.c_str());
+        #pragma warning( default : 28183 )
         #pragma warning( default : 4995 )
 
         showLastError(lpFunctionBuf);
@@ -926,11 +929,14 @@ void showLastError( LPTSTR i_lpszFunction )
         /* nSize        */ 0,
         /* pArguments   */ nullptr );
 
-    uDisplayBufSize = ( lstrlen((LPCTSTR)i_lpszFunction) + lstrlen((LPCTSTR)lpMsgBuf) + 60 ) * sizeof(TCHAR);
+    uDisplayBufSize = (static_cast<SIZE_T>(lstrlen((LPCTSTR)i_lpszFunction))
+                     + static_cast<SIZE_T>(lstrlen((LPCTSTR)lpMsgBuf)) + 60 ) * sizeof(TCHAR);
     lpDisplayBuf = (LPTSTR)LocalAlloc( LMEM_ZEROINIT, uDisplayBufSize );
 
     #pragma warning( disable : 4995 )
-    wsprintf( lpDisplayBuf, _TEXT("%s failed with error %d: %s"), i_lpszFunction, dw, lpMsgBuf );
+    #pragma warning( disable : 28183 )
+    wsprintf(lpDisplayBuf, _TEXT("%s failed with error %d: %s"), i_lpszFunction, dw, lpMsgBuf);
+    #pragma warning( default : 28183 )
     #pragma warning( default : 4995 )
 
     MessageBox(

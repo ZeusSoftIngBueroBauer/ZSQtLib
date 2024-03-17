@@ -1,4 +1,4 @@
-/*******************************************************************************
+﻿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -671,7 +671,7 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
 //
 //    //if( bSetResizeCursor )
 //    //{
-//    //    // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180�)
+//    //    // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
 //    //    while( fCursorAngle_rad >= Math::c_f180Degrees_rad )
 //    //    {
 //    //        fCursorAngle_rad -= Math::c_f180Degrees_rad;
@@ -680,23 +680,23 @@ bool SGraphObjHitInfo::isLineSegmentHit() const
 //    //    {
 //    //        fCursorAngle_rad += Math::c_f180Degrees_rad;
 //    //    }
-//    //    if( fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0 ) // 0.0 .. 22.5�
+//    //    if( fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0 ) // 0.0 .. 22.5°
 //    //    {
 //    //        m_cursor = Qt::SizeHorCursor;
 //    //    }
-//    //    else if( fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0 ) // 22.5� .. 67.5�
+//    //    else if( fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0 ) // 22.5° .. 67.5°
 //    //    {
 //    //        m_cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
 //    //    }
-//    //    else if( fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0 ) // 67.5� .. 112.5�
+//    //    else if( fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0 ) // 67.5° .. 112.5°
 //    //    {
 //    //        m_cursor = Qt::SizeVerCursor;
 //    //    }
-//    //    else if( fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0 ) // 112.5� .. 157.5�
+//    //    else if( fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0 ) // 112.5° .. 157.5°
 //    //    {
 //    //        m_cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
 //    //    }
-//    //    else if( fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad ) // 157.5� .. 180.0�
+//    //    else if( fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad ) // 157.5° .. 180.0°
 //    //    {
 //    //        m_cursor = Qt::SizeHorCursor;
 //    //    }
@@ -4854,7 +4854,7 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF
                                   +-------+      AnchorLine
                                   | Label |          + P2
                                   +---|---+          |
-                                   90�| Length       | 
+                                   90°| Length       | 
             +-- Line -----------------+              + P1
             P1                        P2
 
@@ -4864,7 +4864,7 @@ SPolarCoors CGraphObj::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF
                     |
                    Line
                     |
-                    | 90� +-------+
+                    | 90° +-------+
                  P2 +-----|-Label |
                    Length +-------+
 

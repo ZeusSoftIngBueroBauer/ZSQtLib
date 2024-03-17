@@ -38,6 +38,8 @@ may result in using the software modules.
 #include "ZSSys/ZSSysTrcMethod.h"
 #include "ZSSys/ZSSysTrcServer.h"
 
+#include <algorithm>
+
 #include <QtGui/qevent.h>
 #include <QtGui/qpainter.h>
 #include <QtGui/qstandarditemmodel.h>
@@ -184,7 +186,7 @@ CWdgtGraphObjTextStyleProperties::CWdgtGraphObjTextStyleProperties(
          0 |Font:     | |   | |Font          | |Size  | |Color  |<-->
          1 |Effects:  | |   | |Bold | |Kursiv| |UnderL| |StrikeT|<-->
     */
-    int iClmCount = std::min(11, m_ariClmWidths.size());
+    int iClmCount = std::min(11, static_cast<int>(m_ariClmWidths.size()));
     for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
         m_pLytWdgtTextStyleSettings->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
     }

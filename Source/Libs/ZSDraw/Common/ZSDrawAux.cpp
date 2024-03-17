@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -46,6 +46,7 @@ may result in using the software modules.
 using namespace ZS::System;
 using namespace ZS::PhysVal;
 using namespace ZS::Draw;
+
 
 
 /*******************************************************************************
@@ -307,14 +308,14 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
             s_arEnumStrGraphicsItemChange, _ZSArrLen(s_arEnumStrGraphicsItemChange), i_change);
     }
     if (!str.isEmpty()) str += ", ";
-    str += qVariantType2Str(i_value.type());
+    str += qVariantType2Str(i_value.typeId());
     if (((i_change == QGraphicsItem::ItemEnabledChange) || (i_change == QGraphicsItem::ItemEnabledHasChanged))
      || ((i_change == QGraphicsItem::ItemSelectedChange) || (i_change == QGraphicsItem::ItemSelectedHasChanged))
      || ((i_change == QGraphicsItem::ItemVisibleChange) || (i_change == QGraphicsItem::ItemVisibleHasChanged))) {
         str += " {" + bool2Str(i_value.toBool()) + "}";
     }
     else if ((i_change == QGraphicsItem::ItemFlagsChange) || (i_change == QGraphicsItem::ItemFlagsHaveChanged)) {
-        str += " {" + qGraphicsItemFlags2Str(i_value.toUInt()) + "}";
+        str += " {" + qGraphicsItemFlags2Str(static_cast<QGraphicsItem::GraphicsItemFlags>(i_value.toUInt())) + "}";
     }
     else if ((i_change == QGraphicsItem::ItemParentChange) || (i_change == QGraphicsItem::ItemParentHasChanged)
           || (i_change == QGraphicsItem::ItemChildAddedChange) || (i_change == QGraphicsItem::ItemChildRemovedChange)) {
@@ -326,6 +327,7 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
             str += "null";
         }
     }
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     else if (i_value.type() == QVariant::Point) {
         str += " {" + point2Str(i_value.toPoint()) + "}";
     } else if (i_value.type() == QVariant::PointF) {
@@ -336,6 +338,18 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
         str += " {" + qTransformation2StrList(i_value.value<QTransform>()).join(", ") + "}";
     } else if (i_value.type() == QVariant::Cursor) {
         str += " {Pos {" + qPoint2Str(i_value.value<QCursor>().pos()) + "}}";
+#else
+    else if (i_value.typeId() == QMetaType::QPoint) {
+        str += " {" + point2Str(i_value.toPoint()) + "}";
+    } else if (i_value.typeId() == QMetaType::QPointF) {
+        str += " {" + point2Str(i_value.toPointF()) + "}";
+    } else if (i_value.typeId() == QMetaType::Bool) {
+        str += " {" + bool2Str(i_value.toBool()) + "}";
+    } else if (i_value.typeId() == QMetaType::QTransform) {
+        str += " {" + qTransformation2StrList(i_value.value<QTransform>()).join(", ") + "}";
+    } else if (i_value.typeId() == QMetaType::QCursor) {
+        str += " {Pos {" + qPoint2Str(i_value.value<QCursor>().pos()) + "}}";
+#endif
     } else {
         str += " {" + i_value.toString() + "}";
     }
@@ -343,7 +357,7 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
 }
 
 //------------------------------------------------------------------------------
-QString ZS::Draw::qGraphicsItemFlags2Str( quint32 i_flags )
+QString ZS::Draw::qGraphicsItemFlags2Str( const QGraphicsItem::GraphicsItemFlags& i_flags )
 //------------------------------------------------------------------------------
 {
     QString str;
@@ -589,10 +603,10 @@ void ZS::Draw::getLineEndPolygons(
         }
         // Right of y axis ..
         if (fdx >= 0.0) {
-            // "Above" x axis ( 1. quadrant, angle returned by acos: 0° <= f <= 90°) ..
+            // "Above" x axis ( 1. quadrant, angle returned by acos: 0Â° <= f <= 90Â°) ..
             if (fdy <= 0.0) {
             }
-            // "Below" x axis ( 2. quadrant, angle returned by acos: 90° <= f <= 180°) ..
+            // "Below" x axis ( 2. quadrant, angle returned by acos: 90Â° <= f <= 180Â°) ..
             else {
                 fAngle_rad *= -1.0;
             }
@@ -600,10 +614,10 @@ void ZS::Draw::getLineEndPolygons(
         // Left of y axis ..
         else
         {
-            // "Above" x axis ( 3. quadrant, angle returned by acos: 0° <= f <= 90°) ..
+            // "Above" x axis ( 3. quadrant, angle returned by acos: 0Â° <= f <= 90Â°) ..
             if (fdy <= 0.0) {
             }
-            // "Below" x axis ( 4. quadrant, angle returned by acos: 90° <= f <= 180°) ..
+            // "Below" x axis ( 4. quadrant, angle returned by acos: 90Â° <= f <= 180Â°) ..
             else {
                 fAngle_rad *= -1.0;
             }
@@ -1526,8 +1540,8 @@ bool ZS::Draw::isEllipseHit(
             // Ellipse is a circle ..
             else if (fa == fb) {
                 // Circle equation:
-                //   x² + y² = r²
-                //   y = sqrt(r² - x²)
+                //   xÂ² + yÂ² = rÂ²
+                //   y = sqrt(rÂ² - xÂ²)
                 double fyTmp = sqrt(Math::sqr(fa) - Math::sqr(fx));
                 if ((fy + fTolerance >= fyTmp) && (fy - fTolerance <= fyTmp)) {
                     bIsHit = true;
@@ -1547,10 +1561,10 @@ bool ZS::Draw::isEllipseHit(
             }
             else  {
                 // Ellipse equation:
-                //   x²/a² + y²/b² = 1
-                //   y²/b² = 1 - x²/a²
-                //   y² = b² * (1 - x²/a²)
-                //   y = b * sqrt(1 - x²/a²)
+                //   xÂ²/aÂ² + yÂ²/bÂ² = 1
+                //   yÂ²/bÂ² = 1 - xÂ²/aÂ²
+                //   yÂ² = bÂ² * (1 - xÂ²/aÂ²)
+                //   y = b * sqrt(1 - xÂ²/aÂ²)
                 if (fx == fa) {
                     if (fabs(fy) <= fTolerance) {
                         bIsHit = true;
@@ -1707,11 +1721,11 @@ double ZS::Draw::getDistance( const QPointF& i_pt, const QLineF& i_line )
 
             Q2        |      Q1        
       (PI/2 .. PI)    | (0.0 .. PI/2)  
-      (90° .. 180°)   | (0 .. 90°)     
+      (90Â° .. 180Â°)   | (0 .. 90Â°)     
                       |                
     -----------------Pt1---------------
                       |                
-      (-180° .. -90°) | (-90 .. 0°)    
+      (-180Â° .. -90Â°) | (-90 .. 0Â°)    
       (-PI .. -PI/2)  | (-PI/2 .. 0.0) 
             Q3        |      Q4        
 */
@@ -2124,23 +2138,23 @@ QPointF ZS::Draw::getSelectionPointCoors( const QRectF& i_rct, ESelectionPoint i
     a point on the x-axis to the right of the origin (x > 0).
     The following diagram should also clarify whats been returned by "QLineF::angle":
 
-                     90°
-       135°    16     1     2    45°
+                     90Â°
+       135Â°    16     1     2    45Â°
             15        |        3
           14      +---+---+      4
-    180° 13-------| Label |-------5   0°  (360°)
+    180Â° 13-------| Label |-------5   0Â°  (360Â°)
           12      +---+---+      6
             11        |        7
-       225°    10     9     8   315°
-                     270°
+       225Â°    10     9     8   315Â°
+                     270Â°
 
     Selection Point Position | clockwise | Selectoin Point
     of "Parent Item"         |           | of Label
     -------------------------+-----------+-----------------
-    16, 1, 2                 | 135°-45°  | TopCenter
-    3, 4, 5, 6, 7            |  45°-315° | RightCenter
-    8, 9, 10                 | 315°-225° | BottomCenter
-    11, 12, 13, 14, 15       | 225°-135° | LeftCenter
+    16, 1, 2                 | 135Â°-45Â°  | TopCenter
+    3, 4, 5, 6, 7            |  45Â°-315Â° | RightCenter
+    8, 9, 10                 | 315Â°-225Â° | BottomCenter
+    11, 12, 13, 14, 15       | 225Â°-135Â° | LeftCenter
 
     If the angle is calculated the distance between the linked selection point
     of the parent item to the anchor line will also be taken into account.
@@ -2181,21 +2195,21 @@ QPointF ZS::Draw::getSelectionPointCoors(
 /*! @brief Returns a line with the given length and angle whose start point is at
            the start point of the passed line.
 
-    Example: Input: Horizontal Line, Any Length, Angle = -90° (or +270)
+    Example: Input: Horizontal Line, Any Length, Angle = -90Â° (or +270)
 
                  P2 +
                     |
          Calculated |
-         Line       | -90°
+         Line       | -90Â°
                  P1 +----------Line-----------+
                     P1                        P2
 
-    Example: Input: Vertical Line, Any Length, Angle = 30°
+    Example: Input: Vertical Line, Any Length, Angle = 30Â°
 
                  P1 + P1
                   / |
       Calculated /  |
-      Line      /30°|
+      Line      /30Â°|
                /    | Line
            P2 +     |
                     + P2

@@ -714,7 +714,7 @@ int CModelGraphObjLabels::rowCount(const QModelIndex& i_modelIdxParent) const
         /* strMethodInArgs    */ strMthInArgs );
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(m_arLabelSettings.size());
+        mthTracer.setMethodReturn(static_cast<int>(m_arLabelSettings.size()));
     }
     return m_arLabelSettings.size();
 }

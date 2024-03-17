@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -1437,37 +1437,37 @@ public: // instance methods
     verfahren ist.
 
     Um ein grafisches Objekt ueber Maus Events zu erzeugen, zu verschieben oder zu
-    rotieren, seine Form zu ändern, zu selektieren und zu gruppieren, muessen verschiedene
+    rotieren, seine Form zu Ã¤ndern, zu selektieren und zu gruppieren, muessen verschiedene
     Modi korrekt gesetzt werden.
 
     @param i_mode [in] Range [Edit, View und Undefined]
-        Undefined ist zu übergeben, wenn der Mode nicht geändert werden soll und das Argument
+        Undefined ist zu Ã¼bergeben, wenn der Mode nicht geÃ¤ndert werden soll und das Argument
         somit zu ignorieren ist.
-        Nur im Edit Mode können Objekte auf der grafischen Oberfläche durch die Maus angelegt
-        und verändert werden.
+        Nur im Edit Mode kÃ¶nnen Objekte auf der grafischen OberflÃ¤che durch die Maus angelegt
+        und verÃ¤ndert werden.
         Der View Mode dient dazu, die Maus-Events an die Objekte selbst weiterzuleiten,
-        die entsprechend darauf reagieren können. Ist z.B. eine ComboBox als Objekt der Empfänger
-        der Maus-Events verarbeitet die ComboBox die Events, um z.B. die PullDown-List zu öffnen.
-        Bei dem Objekt kann es sich aber auch um ein vollständig benutzerdefiniertes Objekt wie
-        einen grafischen Schalter handeln, der über Maus-Klicks seinen On/Off Zustand ändert.
+        die entsprechend darauf reagieren kÃ¶nnen. Ist z.B. eine ComboBox als Objekt der EmpfÃ¤nger
+        der Maus-Events verarbeitet die ComboBox die Events, um z.B. die PullDown-List zu Ã¶ffnen.
+        Bei dem Objekt kann es sich aber auch um ein vollstÃ¤ndig benutzerdefiniertes Objekt wie
+        einen grafischen Schalter handeln, der Ã¼ber Maus-Klicks seinen On/Off Zustand Ã¤ndert.
     @param i_editTool [in] Range [None, Select, CreateObjects, Undefined]
-        Undefined ist zu übergeben, wenn das EditTool nicht geändert werden soll und das Argument
+        Undefined ist zu Ã¼bergeben, wenn das EditTool nicht geÃ¤ndert werden soll und das Argument
         somit zu ignorieren ist.
-        None zeigt an, dass kein EditTool ausgewählt ist.
-        Wird Select übergeben, sollen nachfolgende Maus-Events dazu dienen, Objekte zu selektieren.
-        Mit CreateObjects wird angezeigt, dass über nachfolgende Maus-Events Objekte erzeugt werden sollen.
+        None zeigt an, dass kein EditTool ausgewÃ¤hlt ist.
+        Wird Select Ã¼bergeben, sollen nachfolgende Maus-Events dazu dienen, Objekte zu selektieren.
+        Mit CreateObjects wird angezeigt, dass Ã¼ber nachfolgende Maus-Events Objekte erzeugt werden sollen.
     @param i_editMode [in] Range [None, Creating, Move, Resize, Rotate, MoveShapePoint, EditText, Undefined]
-        Undefined ist zu übergeben, wenn der EditMode nicht geändert werden soll und das Argument
+        Undefined ist zu Ã¼bergeben, wenn der EditMode nicht geÃ¤ndert werden soll und das Argument
         somit zu ignorieren ist.
-        None zeigt an, dass kein EditMode ausgewählt ist.
-        Die anderen EditModes zeigen an, auf welche Art und Weise das Objekt zu modifizieren ist und hängen
+        None zeigt an, dass kein EditMode ausgewÃ¤hlt ist.
+        Die anderen EditModes zeigen an, auf welche Art und Weise das Objekt zu modifizieren ist und hÃ¤ngen
         im wesentlichen davon ab, an welchem Eckpunkt (SelectionPoint) das Objekt mit der Maus gepackt wurde.
     @param i_editResizeMode [in] Range [None, ResizeAll, ResizeHor, ResizeVer, Undefined]
-        Undefined ist zu übergeben, wenn der ResizeMode nicht geändert werden soll und das Argument
+        Undefined ist zu Ã¼bergeben, wenn der ResizeMode nicht geÃ¤ndert werden soll und das Argument
         somit zu ignorieren ist.
-        None zeigt an, dass kein ResizeMode ausgewählt ist.
+        None zeigt an, dass kein ResizeMode ausgewÃ¤hlt ist.
     @param i_bObjFactoryTypeChanged [in]
-        true, falls der grafische Object Type und damit die Objekt Factory zur Erzeugung des Objekt verändert wurde.
+        true, falls der grafische Object Type und damit die Objekt Factory zur Erzeugung des Objekt verÃ¤ndert wurde.
         falls otherwise.
 */
 void CDrawingScene::setMode(const ZS::System::CEnumMode& i_mode)
@@ -3791,7 +3791,11 @@ void CDrawingScene::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 
                 QPainterPath path;
                 path.addRect(rctSelectionArea);
+                #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                 setSelectionArea(path, Qt::ContainsItemShape);
+                #else
+                setSelectionArea(path, Qt::ReplaceSelection, Qt::ContainsItemShape);
+                #endif
             }
             else {
                 // Dispatch mouse event to objects "under cursor".
@@ -4974,6 +4978,508 @@ void CDrawingScene::unselectGraphicsItems(const QList<QGraphicsItem*>& i_arpGrap
     for (QGraphicsItem* pGraphicsItemSelected : i_arpGraphicsItems) {
         pGraphicsItemSelected->setSelected(false);
     }
+}
+
+/*==============================================================================
+protected: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CDrawingScene::raiseErrorAttributeNotDefined(
+    QXmlStreamReader& i_xmlStreamReader,
+    const QString& i_strElemName,
+    const QString& i_strAttrName) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strElemName + ", " + i_strAttrName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "raiseErrorAttributeNotDefined",
+        /* strAddInfo   */ strMthInArgs );
+
+    i_xmlStreamReader.raiseError(
+        "Attribute \"" + i_strAttrName + "\" for element \"" + i_strElemName + "\" not defined");
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::raiseErrorAttributeOutOfRange(
+    QXmlStreamReader& i_xmlStreamReader,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    const QString& i_strAttrVal) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_strElemName + ", " + i_strAttrName + " = " + i_strAttrVal;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "raiseErrorAttributeNotDefined",
+        /* strAddInfo   */ strMthInArgs );
+
+    i_xmlStreamReader.raiseError(
+        "Attribute \"" + i_strAttrName + "\" for element \"" + i_strElemName + "\" (=" + i_strAttrVal + ") is out of range");
+}
+
+/*==============================================================================
+protected: // auxiliary methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CEnumScaleDimensionUnit CDrawingScene::getDimensionUnit(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumScaleDimensionUnit& i_eDefaultVal ) const
+//------------------------------------------------------------------------------
+{
+    CEnumScaleDimensionUnit dimensionUnit = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumScaleDimensionUnit eVal = CEnumScaleDimensionUnit::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            dimensionUnit = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return dimensionUnit;
+}
+
+//------------------------------------------------------------------------------
+CEnumNormedPaperSize CDrawingScene::getNormedPaperSize(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumNormedPaperSize& i_eDefaultVal ) const
+//------------------------------------------------------------------------------
+{
+    CEnumNormedPaperSize paperSize = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumNormedPaperSize eVal = CEnumNormedPaperSize::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            paperSize = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return paperSize;
+}
+
+//------------------------------------------------------------------------------
+CEnumOrientation CDrawingScene::getOrientation(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumOrientation& i_eDefaultVal ) const
+//------------------------------------------------------------------------------
+{
+    CEnumOrientation orientation = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumOrientation eVal = CEnumOrientation::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            orientation = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return orientation;
+}
+
+//------------------------------------------------------------------------------
+CEnumLineStyle CDrawingScene::getLineStyle(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumLineStyle& i_eDefaultVal ) const
+//------------------------------------------------------------------------------
+{
+    CEnumLineStyle eLineStyle = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumLineStyle eVal = CEnumLineStyle::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            eLineStyle = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return eLineStyle;
+}
+
+//------------------------------------------------------------------------------
+ETextSize CDrawingScene::getTextSize(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    ETextSize i_eDefaultVal ) const
+//------------------------------------------------------------------------------
+{
+    ETextSize textSize = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        ETextSize eVal = str2TextSize(strAttrVal, &bOk);
+        if (bOk) {
+            textSize = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return textSize;
+}
+
+//------------------------------------------------------------------------------
+CEnumTextStyle CDrawingScene::getTextStyle(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumTextStyle& i_eDefaulVal ) const
+//------------------------------------------------------------------------------
+{
+    CEnumTextStyle eTextStyle = i_eDefaulVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumTextStyle eVal = CEnumTextStyle::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            eTextStyle = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return eTextStyle;
+}
+
+//------------------------------------------------------------------------------
+CEnumTextEffect CDrawingScene::getTextEffect(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CEnumTextEffect& i_eDefaultVal ) const
+//------------------------------------------------------------------------------
+{
+    CEnumTextEffect eTextEffect = i_eDefaultVal;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        CEnumTextEffect eVal = CEnumTextEffect::fromString(strAttrVal, &bOk);
+        if (bOk) {
+            eTextEffect = eVal;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return eTextEffect;
+}
+
+//------------------------------------------------------------------------------
+CUnit CDrawingScene::getUnit(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CUnit& i_unitDefault ) const
+//------------------------------------------------------------------------------
+{
+    CUnit unit = i_unitDefault;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        CUnit unitTmp = strAttrVal;
+        if (unitTmp.isValid()) {
+            unit = unitTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return unit;
+}
+
+//------------------------------------------------------------------------------
+CPhysVal CDrawingScene::getPhysVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const CPhysVal& i_physValDefault ) const
+//------------------------------------------------------------------------------
+{
+    CPhysVal physVal = i_physValDefault;
+    if( !i_xmlStreamAttrs.hasAttribute(i_strAttrName) ) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        CPhysVal physValTmp(Units.Length);
+        physValTmp = strAttrVal;
+        if (physValTmp.isValid()) {
+            physVal = physValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return physVal;
+}
+
+//------------------------------------------------------------------------------
+QFont CDrawingScene::getFont(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const QFont& i_fntDefault ) const
+//------------------------------------------------------------------------------
+{
+    QFont fnt = i_fntDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        fnt.setFamily(strAttrVal);
+    }
+    return fnt;
+}
+
+//------------------------------------------------------------------------------
+QColor CDrawingScene::getColor(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    const QColor& i_clrDefault ) const
+//------------------------------------------------------------------------------
+{
+    QColor clr = i_clrDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        clr = QColor::fromString(strAttrVal);
+    }
+    return clr;
+}
+
+//------------------------------------------------------------------------------
+bool CDrawingScene::getBoolVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    bool i_bValDefault ) const
+//------------------------------------------------------------------------------
+{
+    bool bVal = i_bValDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        bool bValTmp = str2Bool(strAttrVal, &bOk);
+        if (bOk) {
+            bVal = bValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return bVal;
+}
+
+//------------------------------------------------------------------------------
+int CDrawingScene::getIntVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    int i_iValDefault ) const
+//------------------------------------------------------------------------------
+{
+    int iVal = i_iValDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        int iValTmp = strAttrVal.toInt(&bOk);
+        if (bOk) {
+            iVal = iValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return iVal;
+}
+
+//------------------------------------------------------------------------------
+std::pair<int, int> CDrawingScene::getIntPair(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    const QString& i_strDelimiter,
+    bool i_bAttrIsMandatory,
+    const std::pair<int, int>& i_valDefault ) const
+//------------------------------------------------------------------------------
+{
+    std::pair<int, int> iPair = i_valDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        QStringList strlstVals = strAttrVal.split(i_strDelimiter, Qt::SkipEmptyParts);
+        if (strlstVals.size() != 2) {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+        else {
+            bool bOk = true;
+            int iVal1 = strlstVals[0].toInt(&bOk);
+            if (!bOk) {
+                raiseErrorAttributeOutOfRange(
+                    i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+            }
+            else {
+                int iVal2 = strlstVals[1].toInt(&bOk);
+                if (!bOk) {
+                    raiseErrorAttributeOutOfRange(
+                        i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+                }
+                else {
+                    iPair = std::make_pair(iVal1, iVal2);
+                }
+            }
+        }
+    }
+    return iPair;
+}
+
+//------------------------------------------------------------------------------
+double CDrawingScene::getDoubleVal(
+    QXmlStreamReader& i_xmlStreamReader,
+    QXmlStreamAttributes& i_xmlStreamAttrs,
+    const QString& i_strElemName,
+    const QString& i_strAttrName,
+    bool i_bAttrIsMandatory,
+    double i_fValDefault ) const
+//------------------------------------------------------------------------------
+{
+    double fVal = i_fValDefault;
+    if (!i_xmlStreamAttrs.hasAttribute(i_strAttrName)) {
+        if (i_bAttrIsMandatory) {
+            raiseErrorAttributeNotDefined(i_xmlStreamReader, i_strElemName, i_strAttrName);
+        }
+    }
+    else {
+        QString strAttrVal = i_xmlStreamAttrs.value(i_strAttrName).toString();
+        bool bOk = true;
+        double fValTmp = strAttrVal.toDouble(&bOk);
+        if (bOk) {
+            fVal = fValTmp;
+        } else {
+            raiseErrorAttributeOutOfRange(
+                i_xmlStreamReader, i_strElemName, i_strAttrName, strAttrVal);
+        }
+    }
+    return fVal;
 }
 
 /*==============================================================================

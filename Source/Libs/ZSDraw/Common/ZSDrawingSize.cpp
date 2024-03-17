@@ -606,7 +606,11 @@ void CDrawingSize::setNormedPaperSize( const CEnumNormedPaperSize& i_ePaperSize 
                 m_eNormedPaperOrientation = EOrientation::Horizontal;
             }
             QVariant varPaperSize = m_eNormedPaperSize.toValue();
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if( varPaperSize.type() == QVariant::SizeF ) {
+            #else
+            if( varPaperSize.type() == QMetaType::QSizeF ) {
+            #endif
                 QSizeF sizeF = varPaperSize.toSizeF();
                 // Default: Horizontal Orientation
                 CPhysVal physValWidth(sizeF.height(), Units.Length.mm);
@@ -654,7 +658,11 @@ void CDrawingSize::setNormedPaperOrientation( const CEnumOrientation& i_orientat
         // on a normed paper size is set but for now the values will not be adjusted.
         if (m_eNormedPaperSize.isValid()) {
             QVariant varPaperSize = m_eNormedPaperSize.toValue();
+            #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if( varPaperSize.type() == QVariant::SizeF ) {
+            #else
+            if( varPaperSize.type() == QMetaType::QSizeF ) {
+            #endif
                 QSizeF sizeF = varPaperSize.toSizeF();
                 // Default: Horizontal Orientation
                 CPhysVal physValWidth(sizeF.height(), Units.Length.mm);

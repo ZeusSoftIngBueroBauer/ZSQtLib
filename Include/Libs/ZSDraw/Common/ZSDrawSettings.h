@@ -120,7 +120,11 @@ public: // ctors
         m_bIsUsed(true)
     {
     }
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     SDrawAttribute( const QString& i_strName, QVariant::Type i_type ) :
+    #else
+    SDrawAttribute(const QString& i_strName, QMetaType i_type) :
+    #endif
         m_strName(i_strName),
         m_val(i_type),
         m_bIsUsed(true)

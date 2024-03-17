@@ -38,14 +38,12 @@ may result in using the software modules.
 #include <QtWidgets/qgraphicsitem.h>
 #endif
 
-// The static arrays "CEnum<>::s_arEnumEntries" are defined in the cpp file.
 #ifdef _WINDOWS
 #pragma warning( push )
-#pragma warning( disable : 4661 )
+#pragma warning( disable : 4661 ) // The static arrays "CEnum<>::s_arEnumEntries" are defined in the cpp file.
 #elif defined __linux__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
-#pragma GCC diagnostic pop
 #endif
 
 /*******************************************************************************
@@ -140,7 +138,11 @@ public: // ctors
         m_bIsUsed(true)
     {
     }
-    SAttribute( const QString& i_strName, QVariant::Type i_type ) :
+    #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    SAttribute(const QString& i_strName, QVariant::Type i_type) :
+    #else
+    SAttribute(const QString& i_strName, QMetaType i_type) :
+    #endif
         m_strName(i_strName),
         m_val(i_type),
         m_bIsUsed(true)
@@ -186,7 +188,6 @@ typedef void (*TFctMouseEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGr
 typedef void (*TFctKeyEvent)( void* i_pvThis, void* i_pvData, CGraphObj* i_pGraphObj, QKeyEvent* i_pEv );
 
 } } // ZS::Draw
-
 
 namespace ZS {
 namespace Draw {
@@ -301,8 +302,8 @@ namespace Draw {
 //==============================================================================
 /*! When formating the shape of an object using transformatons like scaling or
     or rotating the original coordinates need to be kept to avoid inaccuracies.
-    E.g. when rotating an object around its center by 360° the objects position
-    and size should be the same as it would not have been rotated at all.
+    E.g. when rotating an object around its center by 360 degrees the objects
+    position and size should be the same as it would not have been rotated at all.
 */
 enum class ECoordinatesVersion
 //==============================================================================
@@ -349,7 +350,6 @@ namespace Draw {
 typedef ::CEnum<EEditMode> CEnumEditMode;
 } }
 
-
 //namespace ZS {
 //namespace Draw {
 ////==============================================================================
@@ -393,7 +393,6 @@ namespace ZS {
 namespace Draw {
 typedef ::CEnum<ESelectionPointType> CEnumSelectionPointType;
 } }
-
 
 namespace ZS {
 namespace Draw {
@@ -853,5 +852,11 @@ namespace ZS {
 namespace Draw {
 typedef ::CEnum<EAlignmentRef> CEnumAlignmentRef;
 } }
+
+#ifdef _WINDOWS
+#pragma warning( pop )
+#elif defined __linux__
+#pragma GCC diagnostic pop
+#endif
 
 #endif // #ifndef ZSDraw_Common_h

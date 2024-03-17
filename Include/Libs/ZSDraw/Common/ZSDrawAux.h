@@ -27,7 +27,7 @@ may result in using the software modules.
 #ifndef ZSDraw_Aux_h
 #define ZSDraw_Aux_h
 
-#include "ZSDraw/Common/ZSDrawUnits.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSPhysVal/ZSPhysUnit.h"
 
 #include <QtCore/qstring.h>
@@ -36,12 +36,12 @@ may result in using the software modules.
 
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qgraphicsitem.h>
 #include <QtGui/qgraphicssceneevent.h>
 #else
+#include <QtWidgets/qgraphicsitem.h>
 #include "QtWidgets/qgraphicssceneevent.h"
 #endif
-
-#include "ZSDraw/Common/ZSDrawCommon.h"
 
 class QGraphicsItem;
 class QLineF;
@@ -70,7 +70,7 @@ ZSDRAWDLL_API QString qPainterPath2Str( QGraphicsItem* i_pGraphObj, const QPaint
 ZSDRAWDLL_API QString qTransformationType2Str( int i_type );
 ZSDRAWDLL_API QStringList qTransformation2StrList( const QTransform& i_transform );
 ZSDRAWDLL_API QString qGraphicsItemChange2Str( int i_change, const QVariant& i_value, bool i_bIncludeChange = true );
-ZSDRAWDLL_API QString qGraphicsItemFlags2Str( quint32 i_flags );
+ZSDRAWDLL_API QString qGraphicsItemFlags2Str( const QGraphicsItem::GraphicsItemFlags& i_flags );
 ZSDRAWDLL_API bool isGraphicsSceneDragDropEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv );
 ZSDRAWDLL_API bool isGraphicsSceneHoverEvent( QEvent* i_pEv );

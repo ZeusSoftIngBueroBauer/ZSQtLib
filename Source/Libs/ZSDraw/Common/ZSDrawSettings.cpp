@@ -858,7 +858,11 @@ void CDrawSettings::setAttribute( int i_iAttribute, const QVariant& i_val )
 //------------------------------------------------------------------------------
 {
     if (i_iAttribute >= 0 && i_iAttribute < EDrawAttributeCount) {
+        #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
         if (i_val.type() == QVariant::String) {
+        #else
+        if (i_val.type() == QMetaType::QString) {
+        #endif
             setAttribute(i_iAttribute, i_val.toString());
         }
         else {

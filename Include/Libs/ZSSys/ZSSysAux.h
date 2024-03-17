@@ -60,7 +60,6 @@ class QPoint;
 class QPointF;
 class QRect;
 class QRectF;
-class QStringList;
 class QVariant;
 
 namespace ZS
