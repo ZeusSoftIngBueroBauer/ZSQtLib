@@ -24,9 +24,9 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h"
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryModel.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryModel.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysValGUI/ZSPhysValEditItemDelegate.h"
 #include "ZSSysGUI/ZSSysCheckBoxItemDelegate.h"
@@ -66,7 +66,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class CWdgtGraphObjLineGeometryProperties : public CWdgtGraphObjPropertiesAbstract
+class CWdgtGraphObjGroupGeometryProperties : public CWdgtGraphObjPropertiesAbstract
 *******************************************************************************/
 
 /*==============================================================================
@@ -74,22 +74,22 @@ public: // type definitions and constants
 ==============================================================================*/
 
 #pragma message(__TODO__ "To be removed")
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorPoint1 = "Point 1";
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorPoint2 = "Point 2";
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorCenter = "Center";
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorWidth = "Width";
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorHeight = "Height";
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorLength = "Length";
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorAngle = "Angle";
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorX = "X";
-const QString CWdgtGraphObjLineGeometryProperties::c_strCoorY = "Y";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorPoint1 = "Point 1";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorPoint2 = "Point 2";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorCenter = "Center";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorWidth = "Width";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorHeight = "Height";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorLength = "Length";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorAngle = "Angle";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorX = "X";
+const QString CWdgtGraphObjGroupGeometryProperties::c_strCoorY = "Y";
 
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
+CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strNameSpace,
     const QString& i_strObjName,
@@ -154,7 +154,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
 
     QObject::connect(
         m_pBtnCollapse, &QPushButton::clicked,
-        this, &CWdgtGraphObjLineGeometryProperties::onBtnCollapseClicked);
+        this, &CWdgtGraphObjGroupGeometryProperties::onBtnCollapseClicked);
 
     QPixmap pxmHeadline(":/ZS/Draw/DrawSettingsGeometry16x16.png");
     m_pLblHeadlineIcon = new QLabel();
@@ -196,7 +196,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytLineTableViewButtons->addStretch();
     QObject::connect(
         m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
-        this, &CWdgtGraphObjLineGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked );
+        this, &CWdgtGraphObjGroupGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked );
 
     // Table View
     //------------------
@@ -204,8 +204,8 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytGeometryTableView = new QVBoxLayout();
     m_pLytWdgtGeometry->addLayout(m_pLytGeometryTableView, 1);
 
-    m_pModelGeometry = new CModelGraphObjLineGeometry(
-        m_pDrawingScene, i_strNameSpace, "StandardShapes::Line",
+    m_pModelGeometry = new CModelGraphObjGroupGeometry(
+        m_pDrawingScene, i_strNameSpace, "StandardShapes::Group",
         i_strObjName, CEnumScaleDimensionUnit(), this);
     m_pTableViewGeometry = new CTableView(i_strObjName);
     m_pTableViewGeometry->setModel(m_pModelGeometry);
@@ -213,28 +213,28 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pEdtPhysValDelegateXVal =
         new CEditPhysValtemDelegate(m_pModelGeometry, m_pTableViewGeometry);
     m_pTableViewGeometry->setItemDelegateForColumn(
-        CModelGraphObjLineGeometry::EColumnXVal, m_pEdtPhysValDelegateXVal);
+        CModelGraphObjGroupGeometry::EColumnXVal, m_pEdtPhysValDelegateXVal);
     m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
-        CModelGraphObjLineGeometry::EColumnXVal, CTableView::SEditTriggerKey(Qt::Key_Return));
+        CModelGraphObjGroupGeometry::EColumnXVal, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pEdtPhysValDelegateYVal =
         new CEditPhysValtemDelegate(m_pModelGeometry, m_pTableViewGeometry);
     m_pTableViewGeometry->setItemDelegateForColumn(
-        CModelGraphObjLineGeometry::EColumnYVal, m_pEdtPhysValDelegateYVal);
+        CModelGraphObjGroupGeometry::EColumnYVal, m_pEdtPhysValDelegateYVal);
     m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
-        CModelGraphObjLineGeometry::EColumnYVal, CTableView::SEditTriggerKey(Qt::Key_Return));
+        CModelGraphObjGroupGeometry::EColumnYVal, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pTableViewGeometry->setItemDelegateForColumn(
-        CModelGraphObjLineGeometry::EColumnShowVals,
+        CModelGraphObjGroupGeometry::EColumnShowVals,
         new CCheckBoxItemDelegate(m_pModelGeometry, m_pTableViewGeometry));
     m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
-        CModelGraphObjLineGeometry::EColumnShowVals, CTableView::SEditTriggerKey(Qt::Key_Return));
+        CModelGraphObjGroupGeometry::EColumnShowVals, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pTableViewGeometry->setItemDelegateForColumn(
-        CModelGraphObjLineGeometry::EColumnShowLine,
+        CModelGraphObjGroupGeometry::EColumnShowLine,
         new CCheckBoxItemDelegate(m_pModelGeometry, m_pTableViewGeometry));
     m_pTableViewGeometry->addKeyAsEditTriggerForColumn(
-        CModelGraphObjLineGeometry::EColumnShowLine, CTableView::SEditTriggerKey(Qt::Key_Return));
+        CModelGraphObjGroupGeometry::EColumnShowLine, CTableView::SEditTriggerKey(Qt::Key_Return));
 
     m_pTableViewGeometry->setEditTriggers(
         QAbstractItemView::DoubleClicked|QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
@@ -243,8 +243,8 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
     m_pLytGeometryTableView->addWidget(m_pTableViewGeometry);
 
     QObject::connect(
-        m_pModelGeometry, &CModelGraphObjLineGeometry::contentChanged,
-        this, &CWdgtGraphObjLineGeometryProperties::onModelGeometryContentChanged);
+        m_pModelGeometry, &CModelGraphObjGroupGeometry::contentChanged,
+        this, &CWdgtGraphObjGroupGeometryProperties::onModelGeometryContentChanged);
 
     // Update controls depending on drawing size (dimension unit etc.)
     //----------------------------------------------------------------
@@ -262,7 +262,7 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
 } // ctor
 
 //------------------------------------------------------------------------------
-CWdgtGraphObjLineGeometryProperties::~CWdgtGraphObjLineGeometryProperties()
+CWdgtGraphObjGroupGeometryProperties::~CWdgtGraphObjGroupGeometryProperties()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -311,7 +311,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::expand(bool i_bExpand)
+void CWdgtGraphObjGroupGeometryProperties::expand(bool i_bExpand)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -344,7 +344,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjLineGeometryProperties::setKeyInTree(const QString& i_strKeyInTree)
+bool CWdgtGraphObjGroupGeometryProperties::setKeyInTree(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -377,7 +377,7 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjLineGeometryProperties::hasErrors() const
+bool CWdgtGraphObjGroupGeometryProperties::hasErrors() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -396,7 +396,7 @@ bool CWdgtGraphObjLineGeometryProperties::hasErrors() const
 }
 
 //------------------------------------------------------------------------------
-bool CWdgtGraphObjLineGeometryProperties::hasChanges() const
+bool CWdgtGraphObjGroupGeometryProperties::hasChanges() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -415,7 +415,7 @@ bool CWdgtGraphObjLineGeometryProperties::hasChanges() const
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::acceptChanges()
+void CWdgtGraphObjGroupGeometryProperties::acceptChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -444,7 +444,7 @@ void CWdgtGraphObjLineGeometryProperties::acceptChanges()
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::rejectChanges()
+void CWdgtGraphObjGroupGeometryProperties::rejectChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -474,7 +474,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjGroupGeometryProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -492,7 +492,7 @@ void CWdgtGraphObjLineGeometryProperties::onBtnCollapseClicked(bool /*i_bChecked
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjGroupGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked(bool /*i_bChecked*/)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -510,7 +510,7 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjLineGeometryProperties::onModelGeometryContentChanged()
+void CWdgtGraphObjGroupGeometryProperties::onModelGeometryContentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -523,7 +523,7 @@ void CWdgtGraphObjLineGeometryProperties::onModelGeometryContentChanged()
 }
 
 ////------------------------------------------------------------------------------
-//void CWdgtGraphObjLineGeometryProperties::onDlgEditPropertyDestroyed(QObject* i_pObj)
+//void CWdgtGraphObjGroupGeometryProperties::onDlgEditPropertyDestroyed(QObject* i_pObj)
 ////------------------------------------------------------------------------------
 //{
 //    CMethodTracer mthTracer(
@@ -550,7 +550,7 @@ void CWdgtGraphObjLineGeometryProperties::onModelGeometryContentChanged()
         edited. E.g. for "Pixels.Point 1.X" the x coordinate of Point 1
         in dimension unit pixels will be edited.
 */
-//void CWdgtGraphObjLineGeometryProperties::registerEditPropertyDialog(CWdgtEditPhysVal* i_pEdtWidget)
+//void CWdgtGraphObjGroupGeometryProperties::registerEditPropertyDialog(CWdgtEditPhysVal* i_pEdtWidget)
 //------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
@@ -580,7 +580,7 @@ protected: // overridables of base class QObject
 //------------------------------------------------------------------------------
 /*! @brief Opens the edit property dialog on pressing Ctrl + MouseDblClick.
 */
-//bool CWdgtGraphObjLineGeometryProperties::eventFilter(QObject* i_pObjWatched, QEvent* i_pEv)
+//bool CWdgtGraphObjGroupGeometryProperties::eventFilter(QObject* i_pObjWatched, QEvent* i_pEv)
 //------------------------------------------------------------------------------
 //{
 //    bool bHandled = false;
@@ -595,7 +595,7 @@ protected: // overridables of base class QObject
 //                    m_pDlgEditProperty->setAttribute(Qt::WA_DeleteOnClose, true);
 //                    QObject::connect(
 //                        m_pDlgEditProperty, &QDialog::destroyed,
-//                        this, &CWdgtGraphObjLineGeometryProperties::onDlgEditPropertyDestroyed);
+//                        this, &CWdgtGraphObjGroupGeometryProperties::onDlgEditPropertyDestroyed);
 //                }
 //                CGraphObjLine* pGraphObjLine = nullptr;
 //                if (m_pGraphObj != nullptr) {

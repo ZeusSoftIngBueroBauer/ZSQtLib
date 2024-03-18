@@ -61,8 +61,10 @@ list(APPEND _HeadersDrawingGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDY.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryHeight.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.h
+    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryWidth.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLine.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h
@@ -70,7 +72,6 @@ list(APPEND _HeadersDrawingGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjRect.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjText.h
-    ${_HeadersPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjTransformations.h
 )
 
 list(APPEND _HeadersDrawingObjFactories
@@ -112,10 +113,14 @@ list(APPEND _HeadersWidgetsGraphObjFormat
 
 list(APPEND _HeadersWidgetsGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h
-    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGeometryModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryModel.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryPropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLabelsModel.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryModel.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.h
@@ -175,8 +180,10 @@ list(APPEND _SourcesDrawingGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDY.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryHeight.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryWidth.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjLine.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjPolygon.cpp
@@ -184,7 +191,6 @@ list(APPEND _SourcesDrawingGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjRect.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjText.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Drawing/GraphObjs/ZSDrawGraphObjTransformations.cpp
 )
 
 list(APPEND _SourcesDrawingObjFactories
@@ -230,10 +236,14 @@ list(APPEND _SourcesWidgetsGraphObjFormat
 
 list(APPEND _SourcesWidgetsGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.cpp
-    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGeometryModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryModel.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryPropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLabelsModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryEditPropertyDlg.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesDlg.cpp

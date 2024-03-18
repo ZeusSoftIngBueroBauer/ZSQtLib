@@ -24,10 +24,10 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjGeometryModel_h
-#define ZSDraw_GraphObjGeometryModel_h
+#ifndef ZSDraw_GraphObjLineGeometryModel_h
+#define ZSDraw_GraphObjLineGeometryModel_h
 
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Common/ZSDrawingSize.h"
 #include "ZSSys/ZSSysErrResult.h"
 
@@ -44,10 +44,9 @@ class CTrcAdminObj;
 namespace Draw
 {
 class CDrawingScene;
-class CGraphObj;
 
 //******************************************************************************
-class ZSDRAWDLL_API CModelGraphObjGeometry : public QAbstractTableModel
+class ZSDRAWDLL_API CModelGraphObjLineGeometry : public QAbstractTableModel
 //******************************************************************************
 {
     Q_OBJECT
@@ -55,7 +54,7 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CModelGraphObjGeometry"; }
+    static QString ClassName() { return "CModelGraphObjLineGeometry"; }
 public: // type definitions and constants
     enum EColumn {
         EColumnName     = 0,
@@ -71,14 +70,14 @@ public: // type definitions and constants
         ERoleMaximumValue
     };
 public: // ctors and dtor
-    CModelGraphObjGeometry(
+    CModelGraphObjLineGeometry(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strNameSpace,
         const QString& i_strGraphObjType,
         const QString& i_strObjName,
         const CEnumScaleDimensionUnit& i_eDimensionUnit = CEnumScaleDimensionUnit(),
         QObject* i_pObjParent = nullptr);
-    virtual ~CModelGraphObjGeometry();
+    virtual ~CModelGraphObjLineGeometry();
 signals:
     /*! This signal is emitted if the indicated content has been changed. */
     void contentChanged();
@@ -171,7 +170,7 @@ protected: // instance members
     QString m_strKeyInTree;
     /*!< If the unique key is set the drawing scene is queried to get the pointer to
          the graphical object which should be edited. */
-    CGraphObj* m_pGraphObj;
+    CGraphObjLine* m_pGraphObjLine;
     /*!< Cached drawing size.
          If the scale dimension or the unit changes, all indicated geometry values need to be updated. */
     CDrawingSize m_drawingSize;
@@ -203,10 +202,10 @@ protected: // instance members
     /*!< Trace admin object to trace noisy methods (often called methods like "data", "columnCount", "RowCount"). */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjNoisyMethods;
 
-}; // class CModelGraphObjGeometry
+}; // class CModelGraphObjLineGeometry
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjGeometryModel_h
+#endif // #ifndef ZSDraw_GraphObjLineGeometryModel_h

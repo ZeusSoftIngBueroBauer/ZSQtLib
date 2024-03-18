@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGraphObjLineGeometryPropertiesWdgt_h
-#define ZSDraw_DrawGraphObjLineGeometryPropertiesWdgt_h
+#ifndef ZSDraw_DrawGraphObjGroupGeometryPropertiesWdgt_h
+#define ZSDraw_DrawGraphObjGroupGeometryPropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
@@ -48,10 +48,10 @@ class CEditPhysValtemDelegate;
 namespace Draw
 {
 //class CDlgGraphObjLineGeometryEditProperty;
-class CModelGraphObjLineGeometry;
+class CModelGraphObjGroupGeometry;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjLineGeometryProperties : public CWdgtGraphObjPropertiesAbstract
+class ZSDRAWDLL_API CWdgtGraphObjGroupGeometryProperties : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
 {
     Q_OBJECT
@@ -69,14 +69,14 @@ public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
     /*! Returns the class name. */
-    static QString ClassName() { return "CWdgtGraphObjLineGeometryProperties"; }
+    static QString ClassName() { return "CWdgtGraphObjGroupGeometryProperties"; }
 public: // ctors and dtor
-    CWdgtGraphObjLineGeometryProperties(
+    CWdgtGraphObjGroupGeometryProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strNameSpace,
         const QString& i_strObjName,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtGraphObjLineGeometryProperties();
+    virtual ~CWdgtGraphObjGroupGeometryProperties();
 public: // instance methods
     void expand(bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -119,15 +119,15 @@ private: // instance members
     ZS::System::GUI::CTableView* m_pTableViewGeometry;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateXVal;
     ZS::PhysVal::GUI::CEditPhysValtemDelegate* m_pEdtPhysValDelegateYVal;
-    CModelGraphObjLineGeometry* m_pModelGeometry;
+    CModelGraphObjGroupGeometry* m_pModelGeometry;
     // Dialog to edit and immediately apply changed properties.
     //QHash<QString, QWidget*> m_hshpRegisteredEditPropertyDialogs;
     //CDlgGraphObjLineGeometryEditProperty* m_pDlgEditProperty;
 
-}; // class CWdgtGraphObjLineGeometryProperties
+}; // class CWdgtGraphObjGroupGeometryProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGraphObjLineGeometryPropertiesWdgt_h
+#endif // #ifndef ZSDraw_DrawGraphObjGroupGeometryPropertiesWdgt_h

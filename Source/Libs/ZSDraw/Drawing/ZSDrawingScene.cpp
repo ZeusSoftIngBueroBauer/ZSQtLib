@@ -199,7 +199,11 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     //    /* bCreateMutex     */ false,
     //    /* pObjParent       */ nullptr );
 
-    //setItemIndexMethod(NoIndex);
+    #pragma message(__TODO__"Crashing when using BspTreeIndex and removing labels after they have been moved and deselected.")
+    #pragma message(__TODO__"If an object is highlighted or selected its geometry and bounding rectangle changes.")
+    #pragma message(__TODO__"Especially for labels drawing anchor lines to their selection points.")
+    #pragma message(__TODO__"Very likely a prepareGeometryChange is missing for this.")
+    setItemIndexMethod(NoIndex);
 
     // To update the mode labels:
     setMode( EMode::Edit/*, m_editTool, m_editMode, m_editResizeMode*/ );

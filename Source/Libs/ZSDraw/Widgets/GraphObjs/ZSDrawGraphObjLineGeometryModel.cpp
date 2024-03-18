@@ -13,7 +13,7 @@ Content: This file is part of the ZSQtLib.
 
 *******************************************************************************/
 
-#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGeometryModel.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineGeometryModel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSSysGUI/ZSSysComboBoxItemDelegate.h"
@@ -35,7 +35,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class ZSDRAWDLL_API CModelGraphObjGeometry : publicQAbstractTableModel
+class ZSDRAWDLL_API CModelGraphObjLineGeometry : publicQAbstractTableModel
 *******************************************************************************/
 
 /*==============================================================================
@@ -43,7 +43,7 @@ public: // type definitions and constants
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString CModelGraphObjGeometry::column2Str(int i_clm)
+QString CModelGraphObjLineGeometry::column2Str(int i_clm)
 //------------------------------------------------------------------------------
 {
     static QHash<int, QByteArray> s_clm2Name {
@@ -71,7 +71,7 @@ protected: // type definitions and constants
 //------------------------------------------------------------------------------
 /*! @brief Fills the label struct with the information retrieved from the graphical object.
 */
-CModelGraphObjGeometry::SLabelSettings CModelGraphObjGeometry::SLabelSettings::fromGraphObj(
+CModelGraphObjLineGeometry::SLabelSettings CModelGraphObjLineGeometry::SLabelSettings::fromGraphObj(
     CGraphObj* i_pGraphObj, const QString& i_strValueName, int i_iRowIdx)
 //------------------------------------------------------------------------------
 {
@@ -85,7 +85,7 @@ CModelGraphObjGeometry::SLabelSettings CModelGraphObjGeometry::SLabelSettings::f
 }
 
 //------------------------------------------------------------------------------
-CModelGraphObjGeometry::SLabelSettings::SLabelSettings() :
+CModelGraphObjLineGeometry::SLabelSettings::SLabelSettings() :
 //------------------------------------------------------------------------------
     m_strValueName(), m_iRowIdx(-1),
     m_bVisible(false), m_bLineVisible(false)
@@ -93,7 +93,7 @@ CModelGraphObjGeometry::SLabelSettings::SLabelSettings() :
 }
 
 //------------------------------------------------------------------------------
-CModelGraphObjGeometry::SLabelSettings::SLabelSettings(
+CModelGraphObjLineGeometry::SLabelSettings::SLabelSettings(
     const QString& i_strValueName, int i_iRowIdx,
     const CPhysVal& i_physValX, const CPhysVal& i_physValY,
     bool i_bVisible, bool i_bLineVisible) :
@@ -104,7 +104,7 @@ CModelGraphObjGeometry::SLabelSettings::SLabelSettings(
 }
 
 //------------------------------------------------------------------------------
-bool CModelGraphObjGeometry::SLabelSettings::operator == (const SLabelSettings& i_other) const
+bool CModelGraphObjLineGeometry::SLabelSettings::operator == (const SLabelSettings& i_other) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
@@ -124,7 +124,7 @@ bool CModelGraphObjGeometry::SLabelSettings::operator == (const SLabelSettings& 
 }
 
 //------------------------------------------------------------------------------
-bool CModelGraphObjGeometry::SLabelSettings::operator != (const SLabelSettings& i_other) const
+bool CModelGraphObjLineGeometry::SLabelSettings::operator != (const SLabelSettings& i_other) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_other);
@@ -158,7 +158,7 @@ public: // ctors and dtor
     @param [in] i_pObjParent
         Parent object.
 */
-CModelGraphObjGeometry::CModelGraphObjGeometry(
+CModelGraphObjLineGeometry::CModelGraphObjLineGeometry(
     CDrawingScene* i_pDrawingScene,
     const QString& i_strNameSpace,
     const QString& i_strGraphObjType,
@@ -172,7 +172,7 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
     m_font(),
     m_fontMetrics(m_font),
     m_strKeyInTree(),
-    m_pGraphObj(nullptr),
+    m_pGraphObjLine(nullptr),
     m_drawingSize(i_pDrawingScene->drawingSize()),
     m_physValLine(),
     m_arLabelSettings(),
@@ -201,12 +201,12 @@ CModelGraphObjGeometry::CModelGraphObjGeometry(
 
     QObject::connect(
         m_pDrawingScene, &CDrawingScene::drawingSizeChanged,
-        this, &CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged);
+        this, &CModelGraphObjLineGeometry::onDrawingSceneDrawingSizeChanged);
 
 } // ctor
 
 //------------------------------------------------------------------------------
-CModelGraphObjGeometry::~CModelGraphObjGeometry()
+CModelGraphObjLineGeometry::~CModelGraphObjLineGeometry()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -228,7 +228,7 @@ CModelGraphObjGeometry::~CModelGraphObjGeometry()
     //m_font;
     //m_fontMetrics;
     //m_strKeyInTree;
-    m_pGraphObj = nullptr;
+    m_pGraphObjLine = nullptr;
     //m_drawingSize;
     //m_physValLine;
     //m_arLabelSettings;
@@ -248,7 +248,7 @@ public: // instance methods
 //------------------------------------------------------------------------------
 /*! @brief Sets the font to be used for the sizeHint role.
 */
-void CModelGraphObjGeometry::setFont(const QFont& i_font)
+void CModelGraphObjLineGeometry::setFont(const QFont& i_font)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -270,7 +270,7 @@ void CModelGraphObjGeometry::setFont(const QFont& i_font)
 //------------------------------------------------------------------------------
 /*! @brief Returns the font used for the sizeHint role.
 */
-QFont CModelGraphObjGeometry::font() const
+QFont CModelGraphObjLineGeometry::font() const
 //------------------------------------------------------------------------------
 {
     return m_font;
@@ -288,7 +288,7 @@ public: // instance methods
     @param i_strKeyInTree [in]
         Unique key of the graphical object.
 */
-bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
+bool CModelGraphObjLineGeometry::setKeyInTree(const QString& i_strKeyInTree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -306,43 +306,43 @@ bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
     if (m_strKeyInTree != i_strKeyInTree) {
         bObjectChanged = true;
 
-        if (m_pGraphObj != nullptr) {
+        if (m_pGraphObjLine != nullptr) {
             QObject::disconnect(
-                m_pGraphObj, &CGraphObj::geometryChanged,
-                this, &CModelGraphObjGeometry::onGraphObjGeometryChanged);
+                m_pGraphObjLine, &CGraphObj::geometryChanged,
+                this, &CModelGraphObjLineGeometry::onGraphObjGeometryChanged);
             QObject::disconnect(
-                m_pGraphObj, &CGraphObj::geometryValuesUnitChanged,
-                this, &CModelGraphObjGeometry::onGraphObjGeometryValuesUnitChanged);
+                m_pGraphObjLine, &CGraphObj::geometryValuesUnitChanged,
+                this, &CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged);
             QObject::disconnect(
-                m_pGraphObj, &CGraphObj::geometryLabelChanged,
-                this, &CModelGraphObjGeometry::onGraphObjGeometryLabelChanged);
+                m_pGraphObjLine, &CGraphObj::geometryLabelChanged,
+                this, &CModelGraphObjLineGeometry::onGraphObjGeometryLabelChanged);
             QObject::disconnect(
-                m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
-                this, &CModelGraphObjGeometry::onGraphObjAboutToBeDestroyed);
+                m_pGraphObjLine, &CGraphObj::aboutToBeDestroyed,
+                this, &CModelGraphObjLineGeometry::onGraphObjAboutToBeDestroyed);
         }
 
         m_strKeyInTree = i_strKeyInTree;
 
         if (m_strKeyInTree.isEmpty()) {
-            m_pGraphObj = nullptr;
+            m_pGraphObjLine = nullptr;
         }
         else {
-            m_pGraphObj = m_pDrawingScene->findGraphObj(i_strKeyInTree);
+            m_pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(i_strKeyInTree));
         }
 
-        if (m_pGraphObj != nullptr) {
+        if (m_pGraphObjLine != nullptr) {
             QObject::connect(
-                m_pGraphObj, &CGraphObj::geometryChanged,
-                this, &CModelGraphObjGeometry::onGraphObjGeometryChanged);
+                m_pGraphObjLine, &CGraphObj::geometryChanged,
+                this, &CModelGraphObjLineGeometry::onGraphObjGeometryChanged);
             QObject::connect(
-                m_pGraphObj, &CGraphObj::geometryValuesUnitChanged,
-                this, &CModelGraphObjGeometry::onGraphObjGeometryValuesUnitChanged);
+                m_pGraphObjLine, &CGraphObj::geometryValuesUnitChanged,
+                this, &CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged);
             QObject::connect(
-                m_pGraphObj, &CGraphObj::geometryLabelChanged,
-                this, &CModelGraphObjGeometry::onGraphObjGeometryLabelChanged);
+                m_pGraphObjLine, &CGraphObj::geometryLabelChanged,
+                this, &CModelGraphObjLineGeometry::onGraphObjGeometryLabelChanged);
             QObject::connect(
-                m_pGraphObj, &CGraphObj::aboutToBeDestroyed,
-                this, &CModelGraphObjGeometry::onGraphObjAboutToBeDestroyed);
+                m_pGraphObjLine, &CGraphObj::aboutToBeDestroyed,
+                this, &CModelGraphObjLineGeometry::onGraphObjAboutToBeDestroyed);
         }
 
         updateXYValueSizeHint();
@@ -363,7 +363,7 @@ bool CModelGraphObjGeometry::setKeyInTree(const QString& i_strKeyInTree)
 /*! @brief Returns the unique key of the graphical object currently shown in
            the widget.
 */
-QString CModelGraphObjGeometry::getKeyInTree() const
+QString CModelGraphObjLineGeometry::getKeyInTree() const
 //------------------------------------------------------------------------------
 {
     return m_strKeyInTree;
@@ -379,7 +379,7 @@ public: // instance methods
     @return true, if at least one data row has an erronous setting that
             cannot be applied to the graphical object, false otherwise.
 */
-bool CModelGraphObjGeometry::hasErrors() const
+bool CModelGraphObjLineGeometry::hasErrors() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -404,7 +404,7 @@ bool CModelGraphObjGeometry::hasErrors() const
             false, if the settings shown are the current settings of the
             graphical object.
 */
-bool CModelGraphObjGeometry::hasChanges() const
+bool CModelGraphObjLineGeometry::hasChanges() const
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -414,16 +414,12 @@ bool CModelGraphObjGeometry::hasChanges() const
         /* strAddInfo   */ "" );
 
     bool bHasChanges = false;
-    CGraphObjLine* pGraphObjLine = nullptr;
-    if (m_pGraphObj != nullptr) {
-        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-    }
-    if (pGraphObjLine != nullptr) {
+    if (m_pGraphObjLine != nullptr) {
         const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-        CPhysValLine physValLine = pGraphObjLine->getLine(drawingSize.unit());
+        CPhysValLine physValLine = m_pGraphObjLine->getLine(drawingSize.unit());
         bHasChanges = (m_physValLine != physValLine);
         if (!bHasChanges) {
-            QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObj);
+            QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObjLine);
             bHasChanges = (arLabelSettings != m_arLabelSettings);
         }
     }
@@ -446,7 +442,7 @@ bool CModelGraphObjGeometry::hasChanges() const
     applied yet the m_iContentChangedSignalBlockedCounter is incremented before applying
     the changes from the model.
 */
-void CModelGraphObjGeometry::acceptChanges()
+void CModelGraphObjLineGeometry::acceptChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -455,23 +451,19 @@ void CModelGraphObjGeometry::acceptChanges()
         /* strMethod    */ "acceptChanges",
         /* strAddInfo   */ "" );
 
-    if (m_pGraphObj != nullptr && !hasErrors())
+    if (m_pGraphObjLine != nullptr && !hasErrors())
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            CGraphObjLine* pGraphObjLine = nullptr;
-            if (m_pGraphObj != nullptr) {
-                pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-            }
-            if (pGraphObjLine != nullptr) {
-                pGraphObjLine->setLine(m_physValLine);
+            if (m_pGraphObjLine != nullptr) {
+                m_pGraphObjLine->setLine(m_physValLine);
                 for (const SLabelSettings& labelSettings : m_arLabelSettings) {
                     labelSettings.m_bVisible ?
-                        m_pGraphObj->showGeometryLabel(labelSettings.m_strValueName) :
-                        m_pGraphObj->hideGeometryLabel(labelSettings.m_strValueName);
+                        m_pGraphObjLine->showGeometryLabel(labelSettings.m_strValueName) :
+                        m_pGraphObjLine->hideGeometryLabel(labelSettings.m_strValueName);
                     labelSettings.m_bLineVisible ?
-                        m_pGraphObj->showGeometryLabelAnchorLine(labelSettings.m_strValueName) :
-                        m_pGraphObj->hideGeometryLabelAnchorLine(labelSettings.m_strValueName);
+                        m_pGraphObjLine->showGeometryLabelAnchorLine(labelSettings.m_strValueName) :
+                        m_pGraphObjLine->hideGeometryLabelAnchorLine(labelSettings.m_strValueName);
                 }
                 m_bContentChanged = true;
             }
@@ -493,7 +485,7 @@ void CModelGraphObjGeometry::acceptChanges()
     Resetting is done be invoking "onGraphObjChanged", which fills the edit
     controls with the current property values of the graphical object.
 */
-void CModelGraphObjGeometry::rejectChanges()
+void CModelGraphObjLineGeometry::rejectChanges()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -535,7 +527,7 @@ public: // instance methods
 
     @return Row index of the label with the given current name, -1 otherwise.
 */
-int CModelGraphObjGeometry::getLabelRowIndex(const QString& i_strName) const
+int CModelGraphObjLineGeometry::getLabelRowIndex(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
     int iRowIdx = -1;
@@ -551,7 +543,7 @@ int CModelGraphObjGeometry::getLabelRowIndex(const QString& i_strName) const
 //------------------------------------------------------------------------------
 /*! @brief Returns a list with the current names of the labels.
 */
-QStringList CModelGraphObjGeometry::labelNames() const
+QStringList CModelGraphObjLineGeometry::labelNames() const
 //------------------------------------------------------------------------------
 {
     QStringList strlstNames;
@@ -566,7 +558,7 @@ public: // must overridables of base class QAbstractItemModel
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-int CModelGraphObjGeometry::rowCount(const QModelIndex& i_modelIdxParent) const
+int CModelGraphObjLineGeometry::rowCount(const QModelIndex& i_modelIdxParent) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -586,7 +578,7 @@ int CModelGraphObjGeometry::rowCount(const QModelIndex& i_modelIdxParent) const
 }
 
 //------------------------------------------------------------------------------
-int CModelGraphObjGeometry::columnCount(const QModelIndex& i_modelIdxParent) const
+int CModelGraphObjLineGeometry::columnCount(const QModelIndex& i_modelIdxParent) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -606,7 +598,7 @@ int CModelGraphObjGeometry::columnCount(const QModelIndex& i_modelIdxParent) con
 }
 
 //------------------------------------------------------------------------------
-QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole) const
+QVariant CModelGraphObjLineGeometry::data(const QModelIndex& i_modelIdx, int i_iRole) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -622,7 +614,7 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
 
     QVariant varData;
 
-    if (m_pGraphObj != nullptr && i_modelIdx.isValid()) {
+    if (m_pGraphObjLine != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
@@ -868,7 +860,7 @@ QVariant CModelGraphObjGeometry::data(const QModelIndex& i_modelIdx, int i_iRole
 }
 
 //------------------------------------------------------------------------------
-bool CModelGraphObjGeometry::setData(
+bool CModelGraphObjLineGeometry::setData(
     const QModelIndex& i_modelIdx, const QVariant& i_varData, int i_iRole)
 //------------------------------------------------------------------------------
 {
@@ -891,7 +883,7 @@ bool CModelGraphObjGeometry::setData(
 
     bool bDataSet = false;
 
-    if (m_pGraphObj != nullptr && i_modelIdx.isValid()) {
+    if (m_pGraphObjLine != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
@@ -1039,7 +1031,7 @@ bool CModelGraphObjGeometry::setData(
 }
 
 //------------------------------------------------------------------------------
-QVariant CModelGraphObjGeometry::headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole) const
+QVariant CModelGraphObjLineGeometry::headerData(int i_iSection, Qt::Orientation i_orientation, int i_iRole) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1100,7 +1092,7 @@ QVariant CModelGraphObjGeometry::headerData(int i_iSection, Qt::Orientation i_or
 }
 
 //------------------------------------------------------------------------------
-Qt::ItemFlags CModelGraphObjGeometry::flags(const QModelIndex& i_modelIdx) const
+Qt::ItemFlags CModelGraphObjLineGeometry::flags(const QModelIndex& i_modelIdx) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1116,7 +1108,7 @@ Qt::ItemFlags CModelGraphObjGeometry::flags(const QModelIndex& i_modelIdx) const
     // The base class implementation returns a combination of flags that enables
     // the item (ItemIsEnabled) and allows it to be selected (ItemIsSelectable).
     Qt::ItemFlags uFlags = uFlags = QAbstractItemModel::flags(i_modelIdx);
-    if (m_pGraphObj != nullptr && i_modelIdx.isValid()) {
+    if (m_pGraphObjLine != nullptr && i_modelIdx.isValid()) {
         int iRow = i_modelIdx.row();
         int iClm = i_modelIdx.column();
         if ((iRow >= 0) && (iRow < m_arLabelSettings.size())) {
@@ -1202,7 +1194,7 @@ protected slots:
 /*! @brief Slot method connected to the drawingSizeChanged signal of the drawingScene.
 
 */
-void CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize)
+void CModelGraphObjLineGeometry::onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1223,7 +1215,7 @@ void CModelGraphObjGeometry::onDrawingSceneDrawingSizeChanged(const CDrawingSize
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pGraphObj)
+void CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pGraphObj)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1246,23 +1238,19 @@ void CModelGraphObjGeometry::onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pG
 
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            CGraphObjLine* pGraphObjLine = nullptr;
-            if (m_pGraphObj != nullptr) {
-                pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-            }
-            if (pGraphObjLine != nullptr) {
+            if (m_pGraphObjLine != nullptr) {
                 // The strings to indicate pixel values are always the same.
                 // When changing from pixel to metric dimension or if the metric dimension unit changes,
                 // the indicated value strings need to be updated to show the values in the new unit.
                 if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
-                    CPhysValLine physValLine = pGraphObjLine->getLine(Units.Length.px);
+                    CPhysValLine physValLine = m_pGraphObjLine->getLine(Units.Length.px);
                     if (physValLine != m_physValLine) {
                         bContentChanged = true;
                         m_physValLine = physValLine;
                     }
                 }
                 else {
-                    CPhysValLine physValLine = pGraphObjLine->getLine();
+                    CPhysValLine physValLine = m_pGraphObjLine->getLine();
                     if (physValLine != m_physValLine) {
                         bContentChanged = true;
                         m_physValLine = physValLine;
@@ -1290,7 +1278,7 @@ void CModelGraphObjGeometry::onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pG
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
+void CModelGraphObjLineGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1311,13 +1299,9 @@ void CModelGraphObjGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
     {
         {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
 
-            CGraphObjLine* pGraphObjLine = nullptr;
-            if (m_pGraphObj != nullptr) {
-                pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-            }
-            if (pGraphObjLine != nullptr) {
+            if (m_pGraphObjLine != nullptr) {
                 const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-                CPhysValLine physValLine = pGraphObjLine->getLine(drawingSize.unit());
+                CPhysValLine physValLine = m_pGraphObjLine->getLine(drawingSize.unit());
                 if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
                     if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
                         // No simple unit conversion is possible here. The Y Scale Axis may
@@ -1357,7 +1341,7 @@ void CModelGraphObjGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::onGraphObjGeometryLabelChanged(
+void CModelGraphObjLineGeometry::onGraphObjGeometryLabelChanged(
     CGraphObj* i_pGraphObj, const QString& i_strName)
 //------------------------------------------------------------------------------
 {
@@ -1381,7 +1365,7 @@ void CModelGraphObjGeometry::onGraphObjGeometryLabelChanged(
 
             int iRow = getLabelRowIndex(i_strName);
             if (iRow >= 0 && iRow < m_arLabelSettings.size()) {
-                SLabelSettings labelSettings = SLabelSettings::fromGraphObj(m_pGraphObj, i_strName, iRow);
+                SLabelSettings labelSettings = SLabelSettings::fromGraphObj(m_pGraphObjLine, i_strName, iRow);
                 if (m_arLabelSettings[iRow] != labelSettings) {
                     m_arLabelSettings[iRow] = labelSettings;
                     QModelIndex modelIdxTL = index(iRow, EColumnShowVals);
@@ -1403,7 +1387,7 @@ void CModelGraphObjGeometry::onGraphObjGeometryLabelChanged(
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::onGraphObjAboutToBeDestroyed(CGraphObj*)
+void CModelGraphObjLineGeometry::onGraphObjAboutToBeDestroyed(CGraphObj*)
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1412,7 +1396,7 @@ void CModelGraphObjGeometry::onGraphObjAboutToBeDestroyed(CGraphObj*)
         /* strMethod    */ "onGraphObjAboutToBeDestroyed",
         /* strAddInfo   */ "" );
 
-    m_pGraphObj = nullptr;
+    m_pGraphObjLine = nullptr;
 
     clearModel();
 }
@@ -1422,7 +1406,7 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::clearModel()
+void CModelGraphObjLineGeometry::clearModel()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1445,7 +1429,7 @@ void CModelGraphObjGeometry::clearModel()
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::fillModel()
+void CModelGraphObjLineGeometry::fillModel()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1456,16 +1440,11 @@ void CModelGraphObjGeometry::fillModel()
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
-    CGraphObjLine* pGraphObjLine = nullptr;
-    if (m_pGraphObj != nullptr) {
-        pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pGraphObj);
-    }
-
-    if (pGraphObjLine == nullptr) {
+    if (m_pGraphObjLine == nullptr) {
         m_physValLine = CPhysValLine(*m_pDrawingScene);
     }
     else {
-        m_physValLine = pGraphObjLine->getLine(drawingSize.unit());
+        m_physValLine = m_pGraphObjLine->getLine(drawingSize.unit());
     }
     if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
         if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
@@ -1480,8 +1459,8 @@ void CModelGraphObjGeometry::fillModel()
     if (m_arLabelSettings.size() > 0) {
         clearModel();
     }
-    if (m_pGraphObj != nullptr) {
-        m_arLabelSettings = getLabelSettings(m_pGraphObj);
+    if (m_pGraphObjLine != nullptr) {
+        m_arLabelSettings = getLabelSettings(m_pGraphObjLine);
         if (m_arLabelSettings.size() > 0) {
             _beginInsertRows(QModelIndex(), 0, m_arLabelSettings.size()-1);
             _endInsertRows();
@@ -1500,7 +1479,7 @@ protected: // auxiliary instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QList<CModelGraphObjGeometry::SLabelSettings> CModelGraphObjGeometry::getLabelSettings(CGraphObj* i_pGraphObj) const
+QList<CModelGraphObjLineGeometry::SLabelSettings> CModelGraphObjLineGeometry::getLabelSettings(CGraphObj* i_pGraphObj) const
 //------------------------------------------------------------------------------
 {
     QList<SLabelSettings> arLabelSettings;
@@ -1521,7 +1500,7 @@ QList<CModelGraphObjGeometry::SLabelSettings> CModelGraphObjGeometry::getLabelSe
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::updateXYValueSizeHint()
+void CModelGraphObjLineGeometry::updateXYValueSizeHint()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1580,7 +1559,7 @@ protected: // instance methods (tracing emitting signals)
 //------------------------------------------------------------------------------
 /*! @brief Emits the contentChanged signal and resets the content changed flags.
 */
-void CModelGraphObjGeometry::emit_contentChanged()
+void CModelGraphObjLineGeometry::emit_contentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1593,7 +1572,7 @@ void CModelGraphObjGeometry::emit_contentChanged()
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::_beginInsertRows(
+void CModelGraphObjLineGeometry::_beginInsertRows(
     const QModelIndex& i_modelIdxParent, int i_iRowFirst, int i_iRowLast)
 //------------------------------------------------------------------------------
 {
@@ -1613,7 +1592,7 @@ void CModelGraphObjGeometry::_beginInsertRows(
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::_endInsertRows()
+void CModelGraphObjLineGeometry::_endInsertRows()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1626,7 +1605,7 @@ void CModelGraphObjGeometry::_endInsertRows()
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::_beginRemoveRows(
+void CModelGraphObjLineGeometry::_beginRemoveRows(
     const QModelIndex& i_modelIdxParent, int i_iRowFirst, int i_iRowLast)
 //------------------------------------------------------------------------------
 {
@@ -1646,7 +1625,7 @@ void CModelGraphObjGeometry::_beginRemoveRows(
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::_endRemoveRows()
+void CModelGraphObjLineGeometry::_endRemoveRows()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -1659,7 +1638,7 @@ void CModelGraphObjGeometry::_endRemoveRows()
 }
 
 //------------------------------------------------------------------------------
-void CModelGraphObjGeometry::emit_dataChanged(
+void CModelGraphObjLineGeometry::emit_dataChanged(
     const QModelIndex& i_modelIdxTL,
     const QModelIndex& i_modelIdxBR,
     const QVector<int>& i_ariRoles)

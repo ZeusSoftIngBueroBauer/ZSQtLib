@@ -65,6 +65,18 @@ class CGraphObjLine : public CGraphObj, public QGraphicsLineItem
 *******************************************************************************/
 
 /*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+const QString CGraphObjLine::c_strGeometryLabelNameP1 = "P1";
+const QString CGraphObjLine::c_strGeometryLabelNameP2 = "P2";
+const QString CGraphObjLine::c_strGeometryLabelNameCenter = "Center";
+const QString CGraphObjLine::c_strGeometryLabelNameDX = "dX";
+const QString CGraphObjLine::c_strGeometryLabelNameDY = "dY";
+const QString CGraphObjLine::c_strGeometryLabelNameLength = "Length";
+const QString CGraphObjLine::c_strGeometryLabelNameAngle = "Angle";
+
+/*==============================================================================
 public: // class members
 ==============================================================================*/
 
@@ -102,6 +114,19 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
     s_iInstCount++;
+
+    createTraceAdminObjs("StandardShapes::" + ClassName());
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ObjName: " + i_strObjName;
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "ctor",
+        /* strAddInfo   */ strMthInArgs );
 
     m_strlstPredefinedLabelNames.append(c_strLabelName);
     m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameP1);
@@ -150,7 +175,7 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, 0, 1);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, 0 ,1);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, 0, 1);
         }
     }
 
@@ -158,19 +183,6 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
     // A line may provide two selection points - at start and end of line.
     m_arpSelPtsPolygon.append(nullptr);
     m_arpSelPtsPolygon.append(nullptr);
-
-    createTraceAdminObjs("StandardShapes::" + ClassName());
-
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjCtorsAndDtor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ObjName: " + i_strObjName;
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges
            | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
@@ -1464,7 +1476,7 @@ QPointF CGraphObjLine::getSelectionPointCoorsInSceneCoors( int i_idxPt ) const
 }
 
 /*==============================================================================
-public: // overridables of base class CGraphObj
+public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -1649,9 +1661,8 @@ public: // overridables of base class CGraphObj (text labels)
 
     User defined labels may be anchored to either Center, Start or End of the line.
 
-    Please note that the most common used selection points should be at the
-    beginning of the list so that combo boxes to select the selection point
-    start with those.
+    Please note that the most common used selection points should be at the beginning
+    of the list so that combo boxes to select the selection point start with those.
 
     @return List of possbile selection points.
 */
@@ -1753,18 +1764,6 @@ public: // overridables of base class CGraphObj (geometry labels)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QStringList CGraphObjLine::getGeometryLabelNames() const
-//------------------------------------------------------------------------------
-{
-    static const QStringList s_strlstValueNames = {
-        c_strGeometryLabelNameP1, c_strGeometryLabelNameP2, c_strGeometryLabelNameCenter,
-        c_strGeometryLabelNameDX, c_strGeometryLabelNameDY, c_strGeometryLabelNameLength,
-        c_strGeometryLabelNameAngle
-    };
-    return s_strlstValueNames;
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Checks whether the label with the passed name has been modified or still
            has its default values.
 
@@ -1837,7 +1836,6 @@ bool CGraphObjLine::geometryLabelHasDefaultValues(const QString& i_strName) cons
     }
     return bHasDefaultValues;
 }
-
 
 /*==============================================================================
 public: // must overridables of base class QGraphicsItem

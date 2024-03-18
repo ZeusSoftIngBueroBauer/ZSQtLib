@@ -30,8 +30,10 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryAngle.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDX.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryDY.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryHeight.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryLength.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryPosition.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabelGeometryWidth.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjSelectionPoint.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/GraphObjFormat/ZSDrawDlgFormatGraphObjs.h"
@@ -750,13 +752,6 @@ public: // type definitions and constants
 ==============================================================================*/
 
 const QString CGraphObj::c_strLabelName = "Name";
-const QString CGraphObj::c_strGeometryLabelNameP1 = "P1";
-const QString CGraphObj::c_strGeometryLabelNameP2 = "P2";
-const QString CGraphObj::c_strGeometryLabelNameCenter = "Center";
-const QString CGraphObj::c_strGeometryLabelNameDX = "dX";
-const QString CGraphObj::c_strGeometryLabelNameDY = "dY";
-const QString CGraphObj::c_strGeometryLabelNameLength = "Length";
-const QString CGraphObj::c_strGeometryLabelNameAngle = "Angle";
 
 /*==============================================================================
 protected: // ctor
@@ -5711,6 +5706,8 @@ bool CGraphObj::removeLabel(const QString& i_strName)
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
             // "onLabelAboutToBeDestroyed" is called which removes the label from the hash.
+            QGraphicsItem* pGraphicsItemLabel = dynamic_cast<QGraphicsItem*>(pGraphObjLabel);
+            pGraphicsItemLabel->hide();
             delete pGraphObjLabel;
             pGraphObjLabel = nullptr;
         }
@@ -6314,12 +6311,20 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
             pGraphObjLabel = new CGraphObjLabelGeometryPosition(
                 m_pDrawingScene, i_strName, labelDscr.m_selPt1);
         }
+        else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryDX) {
+            pGraphObjLabel = new CGraphObjLabelGeometryDX(
+                m_pDrawingScene, i_strName, labelDscr.m_selPt1, labelDscr.m_selPt2);
+        }
         else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryDY) {
             pGraphObjLabel = new CGraphObjLabelGeometryDY(
                 m_pDrawingScene, i_strName, labelDscr.m_selPt1, labelDscr.m_selPt2);
         }
-        else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryDX) {
-            pGraphObjLabel = new CGraphObjLabelGeometryDX(
+        else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryWidth) {
+            pGraphObjLabel = new CGraphObjLabelGeometryWidth(
+                m_pDrawingScene, i_strName, labelDscr.m_selPt1, labelDscr.m_selPt2);
+        }
+        else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryHeight) {
+            pGraphObjLabel = new CGraphObjLabelGeometryHeight(
                 m_pDrawingScene, i_strName, labelDscr.m_selPt1, labelDscr.m_selPt2);
         }
         else if (labelDscr.m_labelType == EGraphObjTypeLabelGeometryLength) {
@@ -6399,6 +6404,9 @@ void CGraphObj::hideGeometryLabel(const QString& i_strName)
 
         // "onGeometryLabelAboutToBeDestroyed" is called which removes the label from the hash.
         // The destructor also removes the label from the graphics scene.
+        QGraphicsItem* pGraphicsItemLabel = dynamic_cast<QGraphicsItem*>(pGraphObjLabel);
+        pGraphicsItemLabel->hide();
+
         delete pGraphObjLabel;
         pGraphObjLabel = nullptr;
         emit_geometryLabelChanged(i_strName);
@@ -6908,6 +6916,7 @@ protected: // overridables (geometry labels)
     @param [in] i_labelType
         Range [EGraphObjTypeLabelGeometryPosition,
                EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
+               EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
                EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
         If not empty defines the text to be shown.
     @param [in] i_selPt1
@@ -6965,6 +6974,7 @@ bool CGraphObj::addGeometryLabel(
     @param [in] i_labelType
         Range [EGraphObjTypeLabelGeometryPosition,
                EGraphObjTypeLabelGeometryDX, EGraphObjTypeLabelGeometryDY,
+               EGraphObjTypeLabelGeometryWidth, EGraphObjTypeLabelGeometryHeight,
                EGraphObjTypeLabelGeometryLength, EGraphObjTypeLabelGeometryAngle]
         If not empty defines the text to be shown.
     @param [in] i_idxPt1

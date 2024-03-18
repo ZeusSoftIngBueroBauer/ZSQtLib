@@ -87,6 +87,15 @@ class ZSDRAWDLL_API CGraphObjGroup : public CGraphObj, public QGraphicsItemGroup
 //******************************************************************************
 {
     Q_OBJECT
+public: // type definitions and constants
+    static const QString c_strGeometryLabelNameTopLeft;
+    static const QString c_strGeometryLabelNameTopRight;
+    static const QString c_strGeometryLabelNameBottomRight;
+    static const QString c_strGeometryLabelNameBottomLeft;
+    static const QString c_strGeometryLabelNameCenter;
+    static const QString c_strGeometryLabelNameWidth;
+    static const QString c_strGeometryLabelNameHeight;
+    static const QString c_strGeometryLabelNameAngle;
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
@@ -198,8 +207,16 @@ public: // must overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     virtual void onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev);
     //virtual QRectF getOriginalBoundingRectInParent() const override;
+public: // must overridables of base class CGraphObj
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
+    virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override;
+public: // overridables of base class CGraphObj (text labels)
+    virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
+    virtual bool labelHasDefaultValues(const QString& i_strName) const override;
+public: // overridables of base class CGraphObj (geometry labels)
+    virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 protected: // overridable slots of base class CGraphObj
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
 public: // must overridables of base class QGraphicsItem

@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_GraphObjLabelGeometryHeight_h
-#define ZSDraw_GraphObjLabelGeometryHeight_h
+#ifndef ZSDraw_GraphObjLabelGeometryDY_h
+#define ZSDraw_GraphObjLabelGeometryDY_h
 
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 
@@ -77,4 +77,4 @@ protected: // instance members
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_GraphObjLabelGeometryHeight_h
+#endif // #ifndef ZSDraw_GraphObjLabelGeometryDY_h

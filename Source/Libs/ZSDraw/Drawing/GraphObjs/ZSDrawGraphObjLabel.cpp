@@ -248,6 +248,7 @@ CGraphObjLabel::~CGraphObjLabel()
     // invoking CDrawingScene::addGraphObj so that they don't appear in the index tree.
     // For this selection points "directly" remove themselves from the graphics scene.
     if (m_pDrawingScene != nullptr) {
+        prepareGeometryChange();
         m_pDrawingScene->removeItem(this);
     }
 
@@ -492,6 +493,7 @@ void CGraphObjLabel::showAnchorLine()
     if (!m_labelDscr.m_bShowAnchorLine) {
         m_labelDscr.m_bShowAnchorLine = true;
         if (scene() != nullptr) {
+            prepareGeometryChange();
             QRectF rctBounding = boundingRect();
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             scene()->update(rctBounding);
@@ -519,6 +521,7 @@ void CGraphObjLabel::hideAnchorLine()
             QRectF rctBounding = boundingRect();
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             m_labelDscr.m_bShowAnchorLine = false;
+            prepareGeometryChange();
             scene()->update(rctBounding);
         }
         else {
@@ -1321,6 +1324,8 @@ void CGraphObjLabel::updateAnchorLines()
     QRectF rctBoundingThis = getBoundingRect();
     QPointF ptCenterThis = rctBoundingThis.center();
     QLineF anchorLine(ptCenterThis, mapFromScene(ptSelScenePosParent));
+
+    prepareGeometryChange();
 
     if (m_anchorLines.isEmpty()) {
         m_anchorLines.append(anchorLine);

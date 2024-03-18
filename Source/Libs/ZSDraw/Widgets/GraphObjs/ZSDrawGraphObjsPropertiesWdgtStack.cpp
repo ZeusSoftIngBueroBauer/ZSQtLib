@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjsPropertiesWdgtStack.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLinePropertiesWdgt.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSDraw/Widgets/Drawing/ZSDrawingViewPropertiesWdgt.h"
@@ -268,6 +269,10 @@ CWdgtGraphObjPropertiesAbstract* CWdgtStackGraphObjsProperties::createGraphObjPr
         EGraphObjType eGraphObjType = str2GraphObjType(i_strGraphObjType);
         if (eGraphObjType == EGraphObjTypeLine) {
             pWidget = new CWdgtGraphObjLineProperties(
+                m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
+        }
+        else if (eGraphObjType == EGraphObjTypeGroup) {
+            pWidget = new CWdgtGraphObjGroupProperties(
                 m_pDrawingView->drawingScene(), "WdgtStackGraphObjProperties", true);
         }
         else {

@@ -543,14 +543,6 @@ class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
     Q_OBJECT
 public: // type definitions and constants
     static const QString c_strLabelName;
-public: // type definitions and constants
-    static const QString c_strGeometryLabelNameP1;
-    static const QString c_strGeometryLabelNameP2;
-    static const QString c_strGeometryLabelNameCenter;
-    static const QString c_strGeometryLabelNameDX;
-    static const QString c_strGeometryLabelNameDY;
-    static const QString c_strGeometryLabelNameLength;
-    static const QString c_strGeometryLabelNameAngle;
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
@@ -783,6 +775,7 @@ public: // overridables
 public: // overridables
     virtual QPointF getSelectionPointCoorsInSceneCoors(ESelectionPoint i_selPt) const;
     virtual QPointF getSelectionPointCoorsInSceneCoors(int i_idxPt) const;
+public: // must overridables
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const;
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const;

@@ -67,6 +67,19 @@ class CGraphObjGroup : public CGraphObj, public QGraphicsItemGroup
 *******************************************************************************/
 
 /*==============================================================================
+public: // type definitions and constants
+==============================================================================*/
+
+const QString CGraphObjGroup::c_strGeometryLabelNameTopLeft = "TL";
+const QString CGraphObjGroup::c_strGeometryLabelNameTopRight = "TR";
+const QString CGraphObjGroup::c_strGeometryLabelNameBottomRight = "BR";
+const QString CGraphObjGroup::c_strGeometryLabelNameBottomLeft = "BL";
+const QString CGraphObjGroup::c_strGeometryLabelNameCenter = "Center";
+const QString CGraphObjGroup::c_strGeometryLabelNameWidth = "Width";
+const QString CGraphObjGroup::c_strGeometryLabelNameHeight = "Height";
+const QString CGraphObjGroup::c_strGeometryLabelNameAngle = "Angle";
+
+/*==============================================================================
 protected: // class members
 ==============================================================================*/
 
@@ -109,6 +122,69 @@ CGraphObjGroup::CGraphObjGroup(
         /* strObjName   */ m_strName,
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
+
+    m_strlstPredefinedLabelNames.append(c_strLabelName);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameTopLeft);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameTopRight);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameBottomLeft);
+    m_strlstPredefinedLabelNames.append(c_strGeometryLabelNameBottomRight);
+
+    for (const QString& strLabelName : m_strlstPredefinedLabelNames) {
+        if (!m_hshpLabels.contains(strLabelName)) {
+            if (strLabelName == c_strGeometryLabelNameTopLeft) {
+                addLabel(strLabelName, strLabelName, ESelectionPoint::TopLeft);
+            }
+            else if (strLabelName == c_strGeometryLabelNameTopRight) {
+                addLabel(strLabelName, strLabelName, ESelectionPoint::TopRight);
+            }
+            else if (strLabelName == c_strGeometryLabelNameBottomRight) {
+                addLabel(strLabelName, strLabelName, ESelectionPoint::BottomRight);
+            }
+            else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
+                addLabel(strLabelName, strLabelName, ESelectionPoint::BottomLeft);
+            }
+            else {
+                addLabel(strLabelName, strLabelName, ESelectionPoint::Center);
+            }
+        }
+    }
+
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopLeft);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameTopRight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomRight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameBottomLeft);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameCenter);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameWidth);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameHeight);
+    m_strlstGeometryLabelNames.append(c_strGeometryLabelNameAngle);
+
+    const CUnit& unit = m_pDrawingScene->drawingSize().unit();
+    for (const QString& strLabelName : m_strlstGeometryLabelNames) {
+        if (strLabelName == c_strGeometryLabelNameTopLeft) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopLeft);
+        }
+        else if (strLabelName == c_strGeometryLabelNameTopRight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::TopRight);
+        }
+        else if (strLabelName == c_strGeometryLabelNameBottomRight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomRight);
+        }
+        else if (strLabelName == c_strGeometryLabelNameBottomLeft) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::BottomLeft);
+        }
+        else if (strLabelName == c_strGeometryLabelNameCenter) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
+        }
+        else if (strLabelName == c_strGeometryLabelNameWidth) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryWidth, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameHeight) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryHeight, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
+        }
+        else if (strLabelName == c_strGeometryLabelNameAngle) {
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::Center, ESelectionPoint::RightCenter);
+        }
+    }
 
     setFlags(QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemIsSelectable
            | QGraphicsItem::ItemIsFocusable | QGraphicsItem::ItemSendsGeometryChanges);
@@ -1844,6 +1920,174 @@ public: // overridables of base class CGraphObj
 //}
 
 /*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the polar coordinates in length and angle of the given point
+           to the selection point of the graphical object.
+
+    How the angle of anchor lines to selection points is interpreted depends on
+    the graphical object type and the selection point.
+
+    For the graphical object Group the center point and all selection point on the
+    bounding rectangle are allowed for this method.
+
+    Example: Horizontal Line
+
+                       + Pt
+                      / Calculated Angle: 60°
+                     /           TC
+                 TL +------------x------------+ TR
+                    |                         |
+                    |         Center          |
+                 LC x            x            x RC
+                    |                         |
+                    |                         |
+                 BL +------------x------------+ BR
+                                 BC
+    @note This method is used to keep the relative position of labels to the
+          graphical object they are linked to if the linked object is resized,
+          rotated or moved.
+
+          For example if the group would be rotated by 90°:
+                                RC
+                      TR +-------x--------+ BR
+                         |                |
+                         |                |
+                         |                |
+                         |    Center      |
+                      TC x       x        x BC
+                         |                |
+                         |                |
+                Pt + 60° |                |
+                     \   |                |
+                      TL +-------x--------+ BL
+                                 LC
+*/
+SPolarCoors CGraphObjGroup::getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const
+//------------------------------------------------------------------------------
+{
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QRectF thisRect = getBoundingRect();
+    QPointF ptThisLineSceneCoorsP1;
+    QPointF ptThisLineSceneCoorsP2;
+    QPointF ptSelPtSceneCoors;
+    if (i_selPt == ESelectionPoint::TopLeft) {
+        ptThisLineSceneCoorsP1 = thisRect.topLeft();
+        ptThisLineSceneCoorsP2 = thisRect.topRight();
+        ptSelPtSceneCoors = thisRect.topLeft();
+    }
+    else if (i_selPt == ESelectionPoint::TopRight) {
+        ptThisLineSceneCoorsP1 = thisRect.topRight();
+        ptThisLineSceneCoorsP2 = thisRect.topLeft();
+        ptSelPtSceneCoors = thisRect.topRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        ptThisLineSceneCoorsP1 = thisRect.bottomRight();
+        ptThisLineSceneCoorsP2 = thisRect.bottomLeft();
+        ptSelPtSceneCoors = thisRect.bottomRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomLeft) {
+        ptThisLineSceneCoorsP1 = thisRect.bottomLeft();
+        ptThisLineSceneCoorsP2 = thisRect.bottomRight();
+        ptSelPtSceneCoors = thisRect.bottomLeft();
+    }
+    else if (i_selPt == ESelectionPoint::TopCenter) {
+        ptThisLineSceneCoorsP1 = QPointF(thisRect.center().x(), thisRect.top());
+        ptThisLineSceneCoorsP2 = thisRect.topRight();
+        ptSelPtSceneCoors = QPointF(thisRect.center().x(), thisRect.top());
+    }
+    else if (i_selPt == ESelectionPoint::RightCenter) {
+        ptThisLineSceneCoorsP1 = QPointF(thisRect.right(), thisRect.center().y());
+        ptThisLineSceneCoorsP2 = thisRect.bottomRight();
+        ptSelPtSceneCoors = QPointF(thisRect.right(), thisRect.center().y());
+    }
+    else if (i_selPt == ESelectionPoint::BottomCenter) {
+        ptThisLineSceneCoorsP1 = QPointF(thisRect.center().x(), thisRect.bottom());
+        ptThisLineSceneCoorsP2 = thisRect.bottomLeft();
+        ptSelPtSceneCoors = QPointF(thisRect.center().x(), thisRect.bottom());
+    }
+    else if (i_selPt == ESelectionPoint::LeftCenter) {
+        ptThisLineSceneCoorsP1 = QPointF(thisRect.left(), thisRect.center().y());
+        ptThisLineSceneCoorsP2 = thisRect.topLeft();
+        ptSelPtSceneCoors = QPointF(thisRect.left(), thisRect.center().y());
+    }
+    else /*if (i_selPt == ESelectionPoint::Center)*/ {
+        ptThisLineSceneCoorsP1 = thisRect.center();
+        ptThisLineSceneCoorsP2 = QPointF(thisRect.right(), thisRect.center().y());
+        ptSelPtSceneCoors = thisRect.center();
+    }
+    ptThisLineSceneCoorsP1 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP1);
+    ptThisLineSceneCoorsP2 = pGraphicsItemThis->mapToScene(ptThisLineSceneCoorsP2);
+    ptSelPtSceneCoors = pGraphicsItemThis->mapToScene(ptSelPtSceneCoors);
+    QLineF thisLineSceneCoors(ptThisLineSceneCoorsP1, ptThisLineSceneCoorsP2);
+    QLineF lineFromSelPtSceneCoors(ptSelPtSceneCoors, i_pt);
+    double fAngle_degree = thisLineSceneCoors.angleTo(lineFromSelPtSceneCoors);
+    return SPolarCoors(lineFromSelPtSceneCoors.length(), fAngle_degree);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns a line with the given length and angle with the start point (P1)
+           at the given selection point in scene coordinates.
+
+    For the graphical object Group the center point and all selection point on the
+    bounding rectangle are allowed for this method.
+
+    For more details see base implementation in CGraphObj.
+*/
+QLineF CGraphObjGroup::getAnchorLineToSelectionPointFromPolarInSceneCoors(
+    const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const
+//------------------------------------------------------------------------------
+{
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    QRectF thisRect = getBoundingRect();
+    QPointF ptSelPtLineP1;
+    QPointF ptSelPtLineP2;
+    if (i_selPt == ESelectionPoint::TopLeft) {
+        ptSelPtLineP1 = thisRect.topLeft();
+        ptSelPtLineP2 = thisRect.topRight();
+    }
+    else if (i_selPt == ESelectionPoint::TopRight) {
+        ptSelPtLineP1 = thisRect.topRight();
+        ptSelPtLineP2 = thisRect.topLeft();
+    }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        ptSelPtLineP1 = thisRect.bottomRight();
+        ptSelPtLineP2 = thisRect.bottomLeft();
+    }
+    else if (i_selPt == ESelectionPoint::BottomLeft) {
+        ptSelPtLineP1 = thisRect.bottomLeft();
+        ptSelPtLineP2 = thisRect.bottomRight();
+    }
+    else if (i_selPt == ESelectionPoint::TopCenter) {
+        ptSelPtLineP1 = QPointF(thisRect.center().x(), thisRect.top());
+        ptSelPtLineP2 = thisRect.topRight();
+    }
+    else if (i_selPt == ESelectionPoint::RightCenter) {
+        ptSelPtLineP1 = QPointF(thisRect.right(), thisRect.center().y());
+        ptSelPtLineP2 = thisRect.bottomRight();
+    }
+    else if (i_selPt == ESelectionPoint::BottomCenter) {
+        ptSelPtLineP1 = QPointF(thisRect.center().x(), thisRect.bottom());
+        ptSelPtLineP2 = thisRect.bottomLeft();
+    }
+    else if (i_selPt == ESelectionPoint::LeftCenter) {
+        ptSelPtLineP1 = QPointF(thisRect.left(), thisRect.center().y());
+        ptSelPtLineP2 = thisRect.topLeft();
+    }
+    else /*if (i_selPt == ESelectionPoint::Center)*/ {
+        ptSelPtLineP1 = thisRect.center();
+        ptSelPtLineP2 = QPointF(thisRect.right(), thisRect.center().y());
+    }
+    QLineF lineSelPt(ptSelPtLineP1, ptSelPtLineP2);
+    QLineF lineSelPtSceneCoors(pGraphicsItemThis->mapToScene(lineSelPt.center()),
+                               pGraphicsItemThis->mapToScene(lineSelPt.p2()));
+    return ZS::Draw::getLineFromPolar(
+        i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
+}
+
+/*==============================================================================
 protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
@@ -1867,6 +2111,271 @@ void CGraphObjGroup::showSelectionPoints( unsigned char i_selPts )
             showSelectionPointsOfBoundingRect(getBoundingRect());
         }
     }
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj (text labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the list of the possible anchor points for the given label name.
+
+    For the predefined labels of the group the following applies:
+
+    - The "Name" label may be anchored to the center point of the bounding rectangle
+      and the center points of the border lines.
+    - "TopLeft", "TopRight", "BottomRight" and "BottomLeft" may be anchored to their
+       corresponding bounding rectangle corners.
+
+    User defined labels may be anchored to any selection point at the bounding rectangle.
+
+    Please note that the most common used selection points should be at the beginning
+    of the list so that combo boxes to select the selection point start with those.
+
+    @return List of possbile selection points.
+*/
+QList<SGraphObjSelectionPoint> CGraphObjGroup::getPossibleLabelAnchorPoints(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    static QList<SGraphObjSelectionPoint> s_arSelPtsUserDefined;
+    if (s_arSelPtsUserDefined.isEmpty()) {
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::Center));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopCenter));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomCenter));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::LeftCenter));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::RightCenter));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopLeft));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopRight));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomRight));
+        s_arSelPtsUserDefined.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomLeft));
+    }
+    static QHash<QString, QList<SGraphObjSelectionPoint>> s_hshSelPtsPredefined;
+    if (s_hshSelPtsPredefined.isEmpty()) {
+        QList<SGraphObjSelectionPoint> arSelPts;
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::Center));
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopCenter));
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomCenter));
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::LeftCenter));
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::RightCenter));
+        s_hshSelPtsPredefined.insert(c_strLabelName, arSelPts);
+        arSelPts.clear();
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopLeft));
+        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameTopLeft, arSelPts);
+        arSelPts.clear();
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::TopRight));
+        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameTopRight, arSelPts);
+        arSelPts.clear();
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomRight));
+        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameBottomRight, arSelPts);
+        arSelPts.clear();
+        arSelPts.append(SGraphObjSelectionPoint(const_cast<CGraphObjGroup*>(this), ESelectionPoint::BottomLeft));
+        s_hshSelPtsPredefined.insert(c_strGeometryLabelNameBottomLeft, arSelPts);
+    }
+    if (s_hshSelPtsPredefined.contains(i_strName)) {
+        return s_hshSelPtsPredefined.value(i_strName);
+    }
+    return s_arSelPtsUserDefined;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObjGroup::labelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bHasDefaultValues = false;
+    if (isPredefinedLabelName(i_strName)) {
+        bHasDefaultValues = true;
+        const SLabelDscr& labelDscr = m_hshLabelDscrs[i_strName];
+        if (labelDscr.m_bLabelIsVisible) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_bShowAnchorLine) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+            bHasDefaultValues = false;
+        }
+        else if (i_strName == c_strLabelName) {
+            if (labelDscr.m_strText != m_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameTopLeft) {
+            if (labelDscr.m_strText != i_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::TopLeft) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameTopRight) {
+            if (labelDscr.m_strText != i_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::TopRight) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameBottomRight) {
+            if (labelDscr.m_strText != i_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::BottomRight) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameBottomLeft) {
+            if (labelDscr.m_strText != i_strName) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::BottomLeft) {
+                bHasDefaultValues = false;
+            }
+        }
+    }
+    return bHasDefaultValues;
+}
+
+/*==============================================================================
+public: // overridables of base class CGraphObj (geometry labels)
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the label with the passed name has been modified or still
+           has its default values.
+
+    @param [in] i_strName
+        Name of the label to be checked.
+
+    @return true if the label still has its default values, false otherwise.
+*/
+bool CGraphObjGroup::geometryLabelHasDefaultValues(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    if (!m_hshGeometryLabelDscrs.contains(i_strName)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
+    }
+
+    bool bHasDefaultValues = false;
+    if (m_strlstGeometryLabelNames.contains(i_strName)) {
+        bHasDefaultValues = true;
+        const SLabelDscr& labelDscr = m_hshGeometryLabelDscrs[i_strName];
+        if (labelDscr.m_bLabelIsVisible) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_bShowAnchorLine) {
+            bHasDefaultValues = false;
+        }
+        else if (!labelDscr.m_strText.isEmpty()) {
+            bHasDefaultValues = false;
+        }
+        else if (labelDscr.m_polarCoorsToLinkedSelPt != SPolarCoors()) {
+            bHasDefaultValues = false;
+        }
+        else if (i_strName == c_strGeometryLabelNameTopLeft) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::TopLeft) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameTopRight) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::TopRight) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameBottomRight) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::BottomRight) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameBottomLeft) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::BottomLeft) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameCenter) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameWidth) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::LeftCenter) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt2.m_selPt != ESelectionPoint::RightCenter) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameHeight) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::Center) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt2.m_selPt != ESelectionPoint::BottomCenter) {
+                bHasDefaultValues = false;
+            }
+        }
+        else if (i_strName == c_strGeometryLabelNameAngle) {
+            if (labelDscr.m_selPt1.m_selPtType != ESelectionPointType::BoundingRectangle) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt1.m_selPt != ESelectionPoint::TopCenter) {
+                bHasDefaultValues = false;
+            }
+            else if (labelDscr.m_selPt2.m_selPt != ESelectionPoint::RightCenter) {
+                bHasDefaultValues = false;
+            }
+        }
+    }
+    return bHasDefaultValues;
 }
 
 /*==============================================================================

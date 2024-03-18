@@ -24,8 +24,8 @@ may result in using the software modules.
 
 *******************************************************************************/
 
-#ifndef ZSDraw_DrawGraphObjLinePropertiesWdgt_h
-#define ZSDraw_DrawGraphObjLinePropertiesWdgt_h
+#ifndef ZSDraw_DrawGraphObjGroupPropertiesWdgt_h
+#define ZSDraw_DrawGraphObjGroupPropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
 
@@ -34,19 +34,19 @@ namespace ZS
 namespace Draw
 {
 class CDrawingScene;
-class CGraphObjLine;
-class CWdgtGraphObjLineGeometryProperties;
+class CGraphObjGroup;
+class CWdgtGraphObjGroupGeometryProperties;
 class CWdgtGraphObjLineStyleProperties;
 class CWdgtGraphObjLabelsProperties;
 
 //******************************************************************************
-class ZSDRAWDLL_API CWdgtGraphObjLineProperties : public CWdgtGraphObjPropertiesAbstract
+class ZSDRAWDLL_API CWdgtGraphObjGroupProperties : public CWdgtGraphObjPropertiesAbstract
 //******************************************************************************
 {
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
-    static QString ClassName() { return "CWdgtGraphObjLineProperties"; }
+    static QString ClassName() { return "CWdgtGraphObjGroupProperties"; }
     enum class EWidget {
         Labels,
         Geometry,
@@ -54,12 +54,12 @@ public: // class methods
     };
     static QString widgetName(EWidget i_widget);
 public: // ctors and dtor
-    CWdgtGraphObjLineProperties(
+    CWdgtGraphObjGroupProperties(
         CDrawingScene* i_pDrawingScene,
         const QString& i_strObjName,
         bool i_bAddApplyResetButtons,
         QWidget* i_pWdgtParent = nullptr);
-    virtual ~CWdgtGraphObjLineProperties();
+    virtual ~CWdgtGraphObjGroupProperties();
 public: // instance methods
     void expand(EWidget i_widget, bool i_bExpand);
 public: // overridables of base class CWdgtGraphObjPropertiesAbstract
@@ -75,13 +75,13 @@ protected slots:
     void onWdgtLineStyleContentChanged();
 protected: // instance members
     CWdgtGraphObjLabelsProperties* m_pWdgtLabels;
-    CWdgtGraphObjLineGeometryProperties* m_pWdgtGeometry;
+    CWdgtGraphObjGroupGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
 
-}; // class CWdgtGraphObjLineProperties
+}; // class CWdgtGraphObjGroupProperties
 
 } // namespace Draw
 
 } // namespace ZS
 
-#endif // #ifndef ZSDraw_DrawGraphObjLinePropertiesWdgt_h
+#endif // #ifndef ZSDraw_DrawGraphObjGroupPropertiesWdgt_h

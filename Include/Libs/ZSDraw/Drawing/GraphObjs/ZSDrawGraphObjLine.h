@@ -105,6 +105,14 @@ namespace Draw
 class ZSDRAWDLL_API CGraphObjLine : public CGraphObj, public QGraphicsLineItem
 //******************************************************************************
 {
+public: // type definitions and constants
+    static const QString c_strGeometryLabelNameP1;
+    static const QString c_strGeometryLabelNameP2;
+    static const QString c_strGeometryLabelNameCenter;
+    static const QString c_strGeometryLabelNameDX;
+    static const QString c_strGeometryLabelNameDY;
+    static const QString c_strGeometryLabelNameLength;
+    static const QString c_strGeometryLabelNameAngle;
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
@@ -164,11 +172,11 @@ public: // must overridables of base class CGraphObj
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
 public: // overridables of base class CGraphObj
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
-    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const override;
     virtual QPointF getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt ) const override;
     virtual QPointF getSelectionPointCoorsInSceneCoors( int i_idxPt ) const override;
-public: // overridables of base class CGraphObj
+public: // must overridables of base class CGraphObj
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
+    virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const override;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, int i_idxPt) const override;
 protected: // must overridables of base class CGraphObj
@@ -177,7 +185,6 @@ public: // overridables of base class CGraphObj (text labels)
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const override;
     virtual bool labelHasDefaultValues(const QString& i_strName) const override;
 public: // overridables of base class CGraphObj (geometry labels)
-    virtual QStringList getGeometryLabelNames() const override;
     virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
