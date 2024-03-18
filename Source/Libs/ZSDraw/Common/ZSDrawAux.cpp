@@ -85,7 +85,7 @@ QString ZS::Draw::qPainterPath2Str( QGraphicsItem* i_pGraphObj, const QPainterPa
             if (idx > 0) str += ", ";
             QPainterPath::Element elem = painterPatherSimplified.elementAt(idx);
             QPointF ptElem = i_pGraphObj->mapToScene(QPointF(elem.x, elem.y));
-            QString strElem = qPainterPathElemType2Str(elem.type) + " {" + point2Str(ptElem) + "}";
+            QString strElem = qPainterPathElemType2Str(elem.type) + " {" + qPoint2Str(ptElem) + "}";
             str += "[" + QString::number(idx) + "] {" + strElem + "}";
         }
         str += ")";
@@ -333,9 +333,9 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
     }
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     else if (i_value.type() == QVariant::Point) {
-        str += " {" + point2Str(i_value.toPoint()) + "}";
+        str += " {" + qPoint2Str(i_value.toPoint()) + "}";
     } else if (i_value.type() == QVariant::PointF) {
-        str += " {" + point2Str(i_value.toPointF()) + "}";
+        str += " {" + qPoint2Str(i_value.toPointF()) + "}";
     } else if (i_value.type() == QVariant::Bool) {
         str += " {" + bool2Str(i_value.toBool()) + "}";
     } else if (i_value.type() == QVariant::Transform) {
@@ -344,9 +344,9 @@ QString ZS::Draw::qGraphicsItemChange2Str( int i_change, const QVariant& i_value
         str += " {Pos {" + qPoint2Str(i_value.value<QCursor>().pos()) + "}}";
 #else
     else if (i_value.typeId() == QMetaType::QPoint) {
-        str += " {" + point2Str(i_value.toPoint()) + "}";
+        str += " {" + qPoint2Str(i_value.toPoint()) + "}";
     } else if (i_value.typeId() == QMetaType::QPointF) {
-        str += " {" + point2Str(i_value.toPointF()) + "}";
+        str += " {" + qPoint2Str(i_value.toPointF()) + "}";
     } else if (i_value.typeId() == QMetaType::Bool) {
         str += " {" + bool2Str(i_value.toBool()) + "}";
     } else if (i_value.typeId() == QMetaType::QTransform) {
@@ -464,9 +464,9 @@ bool ZS::Draw::isGraphicsSceneDragDropEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneDragDropEvent2Str( QGraphicsSceneDragDropEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString str = "Pos {" + point2Str(i_pEv->pos()) + "}" +
-        ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
-        ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}" +
+    QString str = "Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
+        ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+        ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
         ", Buttons {" + qMouseButtons2Str(i_pEv->buttons()) + "}" +
         ", KeyboardModifiers {" + qKeyboardModifiers2Str(i_pEv->modifiers()) + "}" +
         ", PossibleActions {" + qDropActions2Str(i_pEv->possibleActions()) +
@@ -487,9 +487,9 @@ bool ZS::Draw::isGraphicsSceneHoverEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneHoverEvent2Str( QGraphicsSceneHoverEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    QString str = "Pos {" + point2Str(i_pEv->pos()) + "}" +
-        ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
-        ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}";
+    QString str = "Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
+        ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+        ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}";
     return str;
 }
 
@@ -504,9 +504,9 @@ bool ZS::Draw::isGraphicsSceneMouseEvent( QEvent* i_pEv )
 QString ZS::Draw::qGraphicsSceneMouseEvent2Str( QGraphicsSceneMouseEvent* i_pEv )
 //------------------------------------------------------------------------------
 {
-    return "Pos {" + point2Str(i_pEv->pos()) + "}" +
-        ", ScenePos {" + point2Str(i_pEv->scenePos()) + "}" +
-        ", ScreenPos {" + point2Str(i_pEv->screenPos()) + "}" +
+    return "Pos {" + qPoint2Str(i_pEv->pos()) + "}" +
+        ", ScenePos {" + qPoint2Str(i_pEv->scenePos()) + "}" +
+        ", ScreenPos {" + qPoint2Str(i_pEv->screenPos()) + "}" +
         ", Button: " + qMouseButton2Str(i_pEv->button()) +
         ", Buttons: " + qMouseButtons2Str(i_pEv->buttons()) +
         ", Modifiers: " + qKeyboardModifiers2Str(i_pEv->modifiers());
@@ -1819,8 +1819,8 @@ QPolygonF ZS::Draw::normalizePolygon( const QPolygonF& i_plg, int i_iPrecision )
         for (int idxPt = plg.size()-1; idxPt >= 2; idxPt--) {
             QPointF pt1 = plg[idxPt];
             QPointF pt2 = plg[idxPt-1];
-            QString strPt1 = point2Str(pt1, 'f', 0);
-            QString strPt2 = point2Str(pt2, 'f', 0);
+            QString strPt1 = qPoint2Str(pt1, ",", 'f', 0);
+            QString strPt2 = qPoint2Str(pt2, ",", 'f', 0);
             if (strPt1 == strPt2) {
                 plg.remove(idxPt);
             }
@@ -2275,490 +2275,96 @@ QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt,
     return perpendicularLine;
 }
 
-#pragma message(__TODO__"Move the following methods to ZS::System::Aux")
 //------------------------------------------------------------------------------
-QString ZS::Draw::point2Str( const QPoint& i_pt )
-//------------------------------------------------------------------------------
-{
-    return QString::number(i_pt.x()) + "/" + QString::number(i_pt.y());
-}
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::point2Str( const QPointF& i_pt, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
+QString ZS::Draw::qRect2Str( const QPolygon& i_polygon, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
     QString str;
-    if (i_bRound2Nearest && i_iPrecision > 0) {
-        str = QString::number(Math::round2Nearest(i_pt.x(),1), i_cF, i_iPrecision) + "/"
-            + QString::number(Math::round2Nearest(i_pt.y(),1), i_cF, i_iPrecision);
-    }
-    else {
-        str = QString::number(i_pt.x(), i_cF, i_iPrecision) + "/"
-            + QString::number(i_pt.y(), i_cF, i_iPrecision);
+    if (i_polygon.size() >= 4) {
+        for (int idxPt = 0; idxPt < i_polygon.size() && idxPt < 4; idxPt++) {
+            if (idxPt > 0) str += i_strSeparator;
+            str += qPoint2Str(i_polygon[idxPt], i_strSeparator);
+        }
     }
     return str;
 }
 
 //------------------------------------------------------------------------------
-QPoint ZS::Draw::str2Point( const QString& i_str, bool* i_pbConverted )
-//------------------------------------------------------------------------------
-{
-    bool   bConverted = false;
-    QPoint pt;
-
-    QStringList strlst = i_str.split("/");
-
-    if( strlst.size() == 2 )
-    {
-        QString strX = strlst[0];
-        QString strY = strlst[1];
-        bool    bXOk, bYOk;
-        int     x = strX.toInt(&bXOk);
-        int     y = strY.toInt(&bYOk);
-
-        bConverted = bXOk && bYOk;
-
-        if( bConverted )
-        {
-            pt.setX(x);
-            pt.setY(y);
-        }
-    }
-
-    if( i_pbConverted != nullptr )
-    {
-        *i_pbConverted = bConverted;
-    }
-
-    return pt;
-
-} // str2Point
-
-//------------------------------------------------------------------------------
-QPointF ZS::Draw::str2PointF( const QString& i_str, bool* i_pbConverted )
-//------------------------------------------------------------------------------
-{
-    bool    bConverted = false;
-    QPointF pt;
-
-    QStringList strlst = i_str.split("/");
-
-    if( strlst.size() == 2 )
-    {
-        QString strX = strlst[0];
-        QString strY = strlst[1];
-        bool    bXOk, bYOk;
-        double  x = strX.toDouble(&bXOk);
-        double  y = strY.toDouble(&bYOk);
-
-        bConverted = bXOk && bYOk;
-
-        if( bConverted )
-        {
-            pt.setX(x);
-            pt.setY(y);
-        }
-    }
-
-    if( i_pbConverted != nullptr )
-    {
-        *i_pbConverted = bConverted;
-    }
-
-    return pt;
-
-} // str2PointF
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::size2Str( const QSize& i_size )
-//------------------------------------------------------------------------------
-{
-    return QString::number(i_size.width()) + "/" + QString::number(i_size.height());
-}
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::size2Str( const QSizeF& i_size, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
+QString ZS::Draw::qRect2Str( const QPolygonF& i_polygon, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
 //------------------------------------------------------------------------------
 {
     QString str;
-    if (i_bRound2Nearest && i_iPrecision > 0) {
-        str = QString::number(Math::round2Nearest(i_size.width(),1), i_cF, i_iPrecision) + "/"
-            + QString::number(Math::round2Nearest(i_size.height(),1), i_cF, i_iPrecision);
-    }
-    else {
-        str = QString::number(i_size.width(), i_cF, i_iPrecision) + "/"
-            + QString::number(i_size.height(), i_cF, i_iPrecision);
-    }
-    return str;
-}
-
-//------------------------------------------------------------------------------
-QSize ZS::Draw::str2Size( const QString& i_str, bool* i_pbConverted )
-//------------------------------------------------------------------------------
-{
-    bool  bConverted = false;
-    QSize siz;
-
-    QStringList strlst = i_str.split("/");
-
-    if( strlst.size() == 2 )
-    {
-        QString strX = strlst[0];
-        QString strY = strlst[1];
-        bool    bXOk, bYOk;
-        int     x = strX.toInt(&bXOk);
-        int     y = strY.toInt(&bYOk);
-
-        bConverted = bXOk && bYOk;
-
-        if( bConverted )
-        {
-            siz.setWidth(x);
-            siz.setHeight(y);
-        }
-    }
-
-    if( i_pbConverted != nullptr )
-    {
-        *i_pbConverted = bConverted;
-    }
-
-    return siz;
-
-} // str2Size
-
-//------------------------------------------------------------------------------
-QSizeF ZS::Draw::str2SizeF( const QString& i_str, bool* i_pbConverted )
-//------------------------------------------------------------------------------
-{
-    bool   bConverted = false;
-    QSizeF siz;
-
-    QStringList strlst = i_str.split("/");
-
-    if( strlst.size() == 2 )
-    {
-        QString strX = strlst[0];
-        QString strY = strlst[1];
-        bool    bXOk, bYOk;
-        double  x = strX.toDouble(&bXOk);
-        double  y = strY.toDouble(&bYOk);
-
-        bConverted = bXOk && bYOk;
-
-        if( bConverted )
-        {
-            siz.setWidth(x);
-            siz.setHeight(y);
-        }
-    }
-
-    if( i_pbConverted != nullptr )
-    {
-        *i_pbConverted = bConverted;
-    }
-
-    return siz;
-
-} // str2SizeF
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::line2Str( const QLine& i_line )
-//------------------------------------------------------------------------------
-{
-    return point2Str(i_line.p1()) + ", " + point2Str(i_line.p2());
-}
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::line2Str( const QLineF& i_line, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
-//------------------------------------------------------------------------------
-{
-    return point2Str(i_line.p1(), i_cF, i_iPrecision, i_bRound2Nearest) + ", " +
-           point2Str(i_line.p2(), i_cF, i_iPrecision, i_bRound2Nearest);
-}
-
-//------------------------------------------------------------------------------
-QLine ZS::Draw::str2Line( const QString& i_str, bool* i_pbConverted )
-//------------------------------------------------------------------------------
-{
-    bool  bConverted = false;
-    QLine line;
-
-    QStringList strlst = i_str.split(",");
-
-    if( strlst.size() == 2 )
-    {
-        QString strP1 = strlst[0];
-        QString strP2 = strlst[1];
-        bool    bP1Ok, bP2Ok;
-        QPoint  p1 = str2Point(strP1,&bP1Ok);
-        QPoint  p2 = str2Point(strP2,&bP2Ok);
-
-        bConverted = bP1Ok && bP2Ok;
-
-        if( bConverted )
-        {
-            line.setP1(p1);
-            line.setP2(p2);
-        }
-    }
-
-    if( i_pbConverted != nullptr )
-    {
-        *i_pbConverted = bConverted;
-    }
-
-    return line;
-
-} // str2Line
-
-//------------------------------------------------------------------------------
-QLineF ZS::Draw::str2LineF( const QString& i_str, bool* i_pbConverted )
-//------------------------------------------------------------------------------
-{
-    bool   bConverted = false;
-    QLineF line;
-
-    QStringList strlst = i_str.split(",");
-
-    if( strlst.size() == 2 )
-    {
-        QString strP1 = strlst[0];
-        QString strP2 = strlst[1];
-        bool    bP1Ok, bP2Ok;
-        QPointF p1 = str2PointF(strP1,&bP1Ok);
-        QPointF p2 = str2PointF(strP2,&bP2Ok);
-
-        bConverted = bP1Ok && bP2Ok;
-
-        if( bConverted )
-        {
-            line.setP1(p1);
-            line.setP2(p2);
-        }
-    }
-
-    if( i_pbConverted != nullptr )
-    {
-        *i_pbConverted = bConverted;
-    }
-
-    return line;
-
-} // str2LineF
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::rect2Str( const QRect& i_rct, bool i_bAddWidthAndHeight )
-//------------------------------------------------------------------------------
-{
-    QString str =
-        point2Str(i_rct.topLeft()) + ", " +
-        point2Str(i_rct.topRight()) + ", " +
-        point2Str(i_rct.bottomRight()) + ", " +
-        point2Str(i_rct.bottomLeft());
-    if (i_bAddWidthAndHeight) {
-        str += ", " + size2Str(i_rct.size());
-    }
-    return str;
-}
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::rect2Str( const QRectF& i_rct, char i_cF, int i_iPrecision, bool i_bRound2Nearest, bool i_bAddWidthAndHeight )
-//------------------------------------------------------------------------------
-{
-    QString str =
-        point2Str(i_rct.topLeft(), i_cF, i_iPrecision, i_bRound2Nearest) + ", " +
-        point2Str(i_rct.topRight(), i_cF, i_iPrecision, i_bRound2Nearest) + ", " +
-        point2Str(i_rct.bottomRight(), i_cF, i_iPrecision, i_bRound2Nearest) + ", " +
-        point2Str(i_rct.bottomLeft(), i_cF, i_iPrecision, i_bRound2Nearest);
-    if (i_bAddWidthAndHeight) {
-        str += ", " + size2Str(i_rct.size(), i_cF, i_iPrecision, i_bRound2Nearest);
-    }
-    return str;
-}
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::rect2Str( const QPolygon& i_rct, bool i_bAddWidthAndHeight )
-//------------------------------------------------------------------------------
-{
-    QString str;
-    if (i_rct.size() >= 4) {
-        for (int idxPt = 0; idxPt < i_rct.size() && idxPt < 4; idxPt++) {
-            if (idxPt > 0) str += ", ";
-            str += point2Str(i_rct[idxPt]);
-        }
-        if (i_bAddWidthAndHeight) {
-            double w = QLineF(i_rct[0], i_rct[1]).length();
-            double h = QLineF(i_rct[1], i_rct[2]).length();
-            QSize  siz( static_cast<int>(w), static_cast<int>(h) );
-            str += ", " + size2Str(siz);
+    if (i_polygon.size() >= 4) {
+        for (int idxPt = 0; idxPt < i_polygon.size() && idxPt < 4; idxPt++) {
+            if (idxPt > 0) str += i_strSeparator;
+            str += qPoint2Str(i_polygon[idxPt], i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest);
         }
     }
     return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::Draw::rect2Str( const QPolygonF& i_rct, char i_cF, int i_iPrecision, bool i_bRound2Nearest, bool i_bAddWidthAndHeight )
-//------------------------------------------------------------------------------
-{
-    QString str;
-    if (i_rct.size() >= 4) {
-        for (int idxPt = 0; idxPt < i_rct.size() && idxPt < 4; idxPt++) {
-            if (idxPt > 0) str += ", ";
-            str += point2Str(i_rct[idxPt], i_cF, i_iPrecision, i_bRound2Nearest);
-        }
-        if (i_bAddWidthAndHeight) {
-            double w = QLineF(i_rct[0], i_rct[1]).length();
-            double h = QLineF(i_rct[1], i_rct[2]).length();
-            QSize  siz( static_cast<int>(w), static_cast<int>(h) );
-            str += ", " + size2Str(siz);
-        }
-    }
-    return str;
-}
-
-//------------------------------------------------------------------------------
-QRect ZS::Draw::str2Rect( const QString& i_str, bool* i_pbConverted )
-//------------------------------------------------------------------------------
-{
-    bool  bConverted = false;
-    QRect rct;
-
-    QStringList strlst = i_str.split(",");
-
-    if( strlst.size() >= 4 )
-    {
-        QString strLT = strlst[0];
-        QString strRT = strlst[1];
-        QString strRB = strlst[2];
-        QString strLB = strlst[3];
-
-        bool    bLTOk, bRTOk, bRBOk, bLBOk;
-        QPoint  ptLT = str2Point(strLT,&bLTOk);
-        QPoint  ptRB = str2Point(strRB,&bRBOk);
-
-        str2Point(strRT,&bRTOk);
-        str2Point(strLB,&bLBOk);
-
-        bConverted = bLTOk && bRTOk && bRBOk && bLBOk;
-
-        if( bConverted )
-        {
-            rct = QRect(ptLT,ptRB);
-        }
-    }
-
-    if( i_pbConverted != nullptr )
-    {
-        *i_pbConverted = bConverted;
-    }
-
-    return rct;
-
-} // str2Rect
-
-//------------------------------------------------------------------------------
-QRectF ZS::Draw::str2RectF( const QString& i_str, bool* i_pbConverted )
-//------------------------------------------------------------------------------
-{
-    bool   bConverted = false;
-    QRectF rct;
-
-    QStringList strlst = i_str.split(",");
-
-    if( strlst.size() >= 4 )
-    {
-        QString strLT = strlst[0];
-        QString strRT = strlst[1];
-        QString strRB = strlst[2];
-        QString strLB = strlst[3];
-
-        bool    bLTOk, bRTOk, bRBOk, bLBOk;
-        QPointF ptLT = str2PointF(strLT,&bLTOk);
-        QPointF ptRB = str2PointF(strRB,&bRBOk);
-
-        str2PointF(strRT,&bRTOk);
-        str2PointF(strLB,&bLBOk);
-
-        bConverted = bLTOk && bRTOk && bRBOk && bLBOk;
-
-        if( bConverted )
-        {
-            rct = QRectF(ptLT,ptRB);
-        }
-    }
-
-    if( i_pbConverted != nullptr )
-    {
-        *i_pbConverted = bConverted;
-    }
-
-    return rct;
-
-} // str2RectF
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::polygon2Str( const QPolygon& i_polygon )
+QString ZS::Draw::qPolygon2Str( const QPolygon& i_polygon, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
     QString str;
     for (int idxPt = 0; idxPt < i_polygon.size(); idxPt++) {
-        if (idxPt > 0) str += ", ";
-        str += point2Str(i_polygon[idxPt]);
+        if (idxPt > 0) str += i_strSeparator;
+        str += qPoint2Str(i_polygon[idxPt]);
     }
     return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::Draw::polygon2Str( const QPolygonF& i_polygon, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
+QString ZS::Draw::qPolygon2Str( const QPolygonF& i_polygon, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
 //------------------------------------------------------------------------------
 {
     QString str;
     for (int idxPt = 0; idxPt < i_polygon.size(); idxPt++) {
-        if (idxPt > 0) str += ", ";
-        str += point2Str(i_polygon[idxPt], i_cF, i_iPrecision, i_bRound2Nearest);
+        if (idxPt > 0) str += i_strSeparator;
+        str += qPoint2Str(i_polygon[idxPt], i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest);
     }
     return str;
 }
 
 //------------------------------------------------------------------------------
-QPolygon ZS::Draw::str2Polygon( const QString& i_str, bool* i_pbConverted )
+QPolygon ZS::Draw::str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
     bool bConverted = false;
     QPolygon plg;
-    QStringList strlst = i_str.split(",");
+    QStringList strlst = i_str.split(i_strSeparator);
     for (int idxPt = 0; idxPt < strlst.size(); idxPt++) {
         QString strPt = strlst[idxPt];
-        QPoint pt = str2Point(strPt, &bConverted);
+        QPoint pt = str2QPoint(strPt, &bConverted, i_strSeparator);
         if (!bConverted) {
             break;
         }
         plg.append(pt);
     }
-    if (i_pbConverted != nullptr) {
-        *i_pbConverted = bConverted;
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
     }
     return plg;
 }
 
 //------------------------------------------------------------------------------
-QPolygonF ZS::Draw::str2PolygonF( const QString& i_str, bool* i_pbConverted )
+QPolygonF ZS::Draw::str2QPolygonF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
     bool bConverted = false;
     QPolygonF plg;
-    QStringList strlst = i_str.split(",");
+    QStringList strlst = i_str.split(i_strSeparator);
     for (int idxPt = 0; idxPt < strlst.size(); idxPt++) {
         QString strPt = strlst[idxPt];
-        QPointF pt = str2PointF(strPt, &bConverted);
+        QPointF pt = str2QPointF(strPt, &bConverted, i_strSeparator);
         if (!bConverted) {
             break;
         }
         plg.append(pt);
     }
-    if (i_pbConverted != nullptr) {
-        *i_pbConverted = bConverted;
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
     }
     return plg;
 }

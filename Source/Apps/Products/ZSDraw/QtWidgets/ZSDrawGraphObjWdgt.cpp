@@ -135,7 +135,7 @@ QString CGraphObjWdgt::getScenePolygonShapePointsString() const
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QRectF rctBounding = QGraphicsProxyWidget::boundingRect();
     QPolygonF plgScene = pGraphicsItemThis->mapToScene(rctBounding);
-    return polygon2Str(plgScene);
+    return qPolygon2Str(plgScene);
 }
 
 /*==============================================================================

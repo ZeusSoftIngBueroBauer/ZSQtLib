@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -164,8 +165,8 @@ SErrResultInfo CObjFactoryRect::saveGraphObj(
     double  fRotAngle_deg = 0.0; //pGraphObj->getRotationAngleInDegree();
 
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
-    i_xmlStreamWriter.writeTextElement( "Size", size2Str(rct.size()) );
+    i_xmlStreamWriter.writeTextElement( "Pos", qPoint2Str(ptPos) );
+    i_xmlStreamWriter.writeTextElement( "Size", qSize2Str(rct.size()) );
     i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
     i_xmlStreamWriter.writeEndElement();
 
@@ -253,7 +254,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                 {
                     strElemText = i_xmlStreamReader.readElementText();
 
-                    QPointF ptTmp = str2PointF(strElemText,&bConverted);
+                    QPointF ptTmp = str2QPointF(strElemText,&bConverted);
 
                     if( bConverted )
                     {
@@ -265,7 +266,7 @@ CGraphObj* CObjFactoryRect::loadGraphObj(
                 {
                     strElemText = i_xmlStreamReader.readElementText();
 
-                    QSizeF sizTmp = str2SizeF(strElemText,&bConverted);
+                    QSizeF sizTmp = str2QSizeF(strElemText,&bConverted);
 
                     if( bConverted )
                     {

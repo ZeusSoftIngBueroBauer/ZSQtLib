@@ -140,37 +140,14 @@ ZSDRAWDLL_API QPointF getSelectionPointCoors(const QLineF& i_lin, const QRectF& 
 ZSDRAWDLL_API QLineF getLineFromPolar(double i_fLength_px, double i_fAngle_degrees, const QLineF& i_line);
 ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px = 0.0);
 
-// Format: x/y (e.g. "2.3/4.5")
-ZSDRAWDLL_API QString point2Str( const QPoint& i_pt );
-ZSDRAWDLL_API QString point2Str( const QPointF& i_pt, char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
-ZSDRAWDLL_API QPoint  str2Point( const QString& i_str, bool* i_pbConverted );
-ZSDRAWDLL_API QPointF str2PointF( const QString& i_str, bool* i_pbConverted );
+// QPolygon is defined in QtGui. If available in QtCore the methods should be moved to ZS::System::Aux.
+ZSDRAWDLL_API QString   qRect2Str( const QPolygon& i_plgRect, const QString& i_strSeparator = ", " );
+ZSDRAWDLL_API QString   qRect2Str( const QPolygonF& i_plgRect, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+ZSDRAWDLL_API QString   qPolygon2Str( const QPolygon& i_polygon, const QString& i_strSeparator = ", " );
+ZSDRAWDLL_API QString   qPolygon2Str( const QPolygonF& i_polygon, const QString& i_strSeparator = ", ", char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+ZSDRAWDLL_API QPolygon  str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+ZSDRAWDLL_API QPolygonF str2QPolygonF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
 
-// Format: w/h (e.g. "2.3/4.5")
-ZSDRAWDLL_API QString size2Str( const QSize& i_size );
-ZSDRAWDLL_API QString size2Str( const QSizeF& i_size, char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
-ZSDRAWDLL_API QSize   str2Size( const QString& i_str, bool* i_pbConverted );
-ZSDRAWDLL_API QSizeF  str2SizeF( const QString& i_str, bool* i_pbConverted );
-
-// Format: pt1, pt2 (e.g. "2.3/4.5, 5.6/7.8")
-ZSDRAWDLL_API QString line2Str( const QLine& i_line );
-ZSDRAWDLL_API QString line2Str( const QLineF& i_line, char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
-ZSDRAWDLL_API QLine   str2Line( const QString& i_str, bool* i_pbConverted );
-ZSDRAWDLL_API QLineF  str2LineF( const QString& i_str, bool* i_pbConverted );
-
-// Format: ptLT, ptRT, ptRB, ptLB[, w/h] (e.g. "2.3/4.5, 6.7/4.5, 6.7/8.9, 2.3/8.9")
-ZSDRAWDLL_API QString rect2Str( const QRect& i_rct, bool i_bAddWidthAndHeight = false );
-ZSDRAWDLL_API QString rect2Str( const QRectF& i_rct, char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true, bool i_bAddWidthAndHeight = false );
-ZSDRAWDLL_API QString rect2Str( const QPolygon& i_plgRect, bool i_bAddWidthAndHeight = false );
-ZSDRAWDLL_API QString rect2Str( const QPolygonF& i_plgRect, char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true, bool i_bAddWidthAndHeight = false );
-ZSDRAWDLL_API QRect   str2Rect( const QString& i_str, bool* i_pbConverted );
-ZSDRAWDLL_API QRectF  str2RectF( const QString& i_str, bool* i_pbConverted );
-
-// Format: pt1, .., ptN (e.g. "2.3/4.5, 6.7/8.9, 0.1/2.3, 4.5/6.7")
-ZSDRAWDLL_API QString   polygon2Str( const QPolygon& i_polygon );
-ZSDRAWDLL_API QString   polygon2Str( const QPolygonF& i_polygon, char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
-ZSDRAWDLL_API QPolygon  str2Polygon( const QString& i_str, bool* i_pbConverted );
-ZSDRAWDLL_API QPolygonF str2PolygonF( const QString& i_str, bool* i_pbConverted );
 
 namespace XmlStreamParser
 {

@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -163,13 +164,13 @@ SErrResultInfo CObjFactoryPolyline::saveGraphObj(
     int       idxPt;
 
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
+    i_xmlStreamWriter.writeTextElement( "Pos", qPoint2Str(ptPos) );
     i_xmlStreamWriter.writeTextElement( "RotAngleDeg", QString::number(fRotAngle_deg) );
 
     for( idxPt = 0; idxPt < plg.size(); idxPt++ )
     {
         pt = plg[idxPt];
-        i_xmlStreamWriter.writeTextElement( "Pt" + QString::number(idxPt), point2Str(pt) );
+        i_xmlStreamWriter.writeTextElement( "Pt" + QString::number(idxPt), qPoint2Str(pt) );
     }
     i_xmlStreamWriter.writeEndElement();
 
@@ -252,7 +253,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
             {
                 strElemText = i_xmlStreamReader.readElementText();
 
-                QPointF ptTmp = str2PointF(strElemText,&bConverted);
+                QPointF ptTmp = str2QPointF(strElemText, &bConverted);
 
                 if( bConverted )
                 {
@@ -272,7 +273,7 @@ CGraphObj* CObjFactoryPolyline::loadGraphObj(
                 {
                     strElemText = i_xmlStreamReader.readElementText();
 
-                    QPointF ptTmp = str2PointF(strElemText,&bConverted);
+                    QPointF ptTmp = str2QPointF(strElemText,&bConverted);
 
                     if( bConverted )
                     {

@@ -191,7 +191,7 @@ QString CGraphObjPoint::getScenePolygonShapePointsString() const
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPolygonF plgScene;
     plgScene.append(pGraphicsItemThis->mapToScene(QPointF(0.0,0.0)));
-    return polygon2Str(plgScene);
+    return qPolygon2Str(plgScene);
 }
 
 /*==============================================================================
@@ -496,12 +496,9 @@ QRectF CGraphObjPoint::boundingRect() const
 {
     QString strMthInArgs;
     QString strMthReturn;
-
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
-    {
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Pos:(" + QString::number(pos().x()) + "," + QString::number(pos().y()) + ")";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -564,15 +561,12 @@ QRectF CGraphObjPoint::boundingRect() const
     //    }
     //}
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthReturn = rect2Str(rctBounding);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthReturn = qRect2Str(rctBounding);
         mthTracer.setMethodReturn(strMthReturn);
     }
-
     return rctBounding;
-
-} // boundingRect
+}
 
 //------------------------------------------------------------------------------
 void CGraphObjPoint::paint(

@@ -581,12 +581,9 @@ QRectF CGraphObjImage::boundingRect() const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "PixmapSize:" + size2Str(pixmap().size());
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "PixmapSize {" + qSize2Str(pixmap().size()) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

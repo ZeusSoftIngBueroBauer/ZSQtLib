@@ -220,12 +220,9 @@ void CGraphObjPolyline::setPolygon( const QPolygonF& i_plg )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Polygon:" + polygon2Str(i_plg);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Polygon {" + qPolygon2Str(i_plg) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -284,7 +281,7 @@ QString CGraphObjPolyline::getScenePolygonShapePointsString() const
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPolygonF plg = polygon();
     QPolygonF plgScene = pGraphicsItemThis->mapToScene(plg);
-    return polygon2Str(plgScene);
+    return qPolygon2Str(plgScene);
 }
 
 /*==============================================================================
@@ -675,12 +672,9 @@ QRectF CGraphObjPolyline::boundingRect() const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Polygon:" + polygon2Str(polygon());
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Polygon {" + qPolygon2Str(polygon()) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -790,12 +784,9 @@ QPainterPath CGraphObjPolyline::shape() const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Polygon:" + polygon2Str(polygon());
+    if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Polygon {" + qPolygon2Str(polygon()) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

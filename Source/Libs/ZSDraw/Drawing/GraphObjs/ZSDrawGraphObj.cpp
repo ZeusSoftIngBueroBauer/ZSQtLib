@@ -715,10 +715,10 @@ QString SGraphObjHitInfo::toString() const
 {
     QString str = //"EditMode:" + m_editMode.toString() +
         //", ResizeMode:" + m_editResizeMode.toString() +
-        ", SelPtBoundingRect:" + m_selPtBoundingRect.toString() +
-        ", PolygonShapePoint:" + QString::number(m_idxPolygonShapePoint) +
-        ", LineSegment:" + QString::number(m_idxLineSegment) +
-        ", PointSelected:" + point2Str(m_ptSelected) +
+        ", SelPtBoundingRect: " + m_selPtBoundingRect.toString() +
+        ", PolygonShapePoint: " + QString::number(m_idxPolygonShapePoint) +
+        ", LineSegment: " + QString::number(m_idxLineSegment) +
+        ", PointSelected {" + qPoint2Str(m_ptSelected) + "}" +
         ", Cursor:" + qCursorShape2Str(m_cursor.shape());
     return str;
 }
@@ -4684,7 +4684,7 @@ QCursor CGraphObj::getProposedCursor(const QPointF& i_pt) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Point:" + point2Str(i_pt);
+        strMthInArgs = "Point {" + qPoint2Str(i_pt) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCursor,
@@ -5188,7 +5188,7 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = rect2Str(i_rct);
+        strMthInArgs = "Rect {" + qRect2Str(i_rct) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5327,7 +5327,7 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = polygon2Str(i_plg);
+        strMthInArgs = "Polygon {" + qPolygon2Str(i_plg) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7603,7 +7603,7 @@ void CGraphObj::QGraphicsItem_setPos(const QPointF& i_pos)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = point2Str(i_pos);
+        strMthInArgs = "Pos {" + qPoint2Str(i_pos) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,

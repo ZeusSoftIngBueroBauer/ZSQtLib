@@ -35,6 +35,7 @@ may result in using the software modules.
 #include <QtCore/qmargins.h>
 #include <QtCore/qmutex.h>
 #include <QtCore/qprocess.h>
+#include <QtCore/qrect.h>
 #include <QtCore/qstring.h>
 #include <QtCore/qthread.h>
 
@@ -183,16 +184,24 @@ ZSSYSDLL_API QString qModelIndex2Str( const QModelIndex& i_modelIdx );
 ZSSYSDLL_API QString qMouseButton2Str( Qt::MouseButton i_mouseButton );
 ZSSYSDLL_API QString qMouseButtons2Str( Qt::MouseButtons i_mouseButtons );
 ZSSYSDLL_API QString qPenStyle2Str( const Qt::PenStyle& i_penStyle );
-ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt );
-ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt );
-ZSSYSDLL_API QString qSize2Str( const QSize& i_size );
-ZSSYSDLL_API QString qSize2Str( const QSizeF& i_size );
-ZSSYSDLL_API QString qLine2Str( const QLine& i_line );
-ZSSYSDLL_API QString qLine2Str( const QLineF& i_line );
-ZSSYSDLL_API QString qRect2Str( const QRect& i_rct );
-ZSSYSDLL_API QString qRect2Str( const QRectF& i_rct );
 ZSSYSDLL_API QString qVariantType2Str( int i_iVal );
 
+ZSSYSDLL_API QString qPoint2Str( const QPoint& i_pt, const QString& i_strSeparator = ", " );
+ZSSYSDLL_API QString qPoint2Str( const QPointF& i_pt, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+ZSSYSDLL_API QPoint  str2QPoint( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+ZSSYSDLL_API QPointF str2QPointF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+ZSSYSDLL_API QString qSize2Str( const QSize& i_size, const QString& i_strSeparator = ", " );
+ZSSYSDLL_API QString qSize2Str( const QSizeF& i_size, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+ZSSYSDLL_API QSize   str2QSize( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+ZSSYSDLL_API QSizeF  str2QSizeF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+ZSSYSDLL_API QString qLine2Str( const QLine& i_line, const QString& i_strSeparator = ", " );
+ZSSYSDLL_API QString qLine2Str( const QLineF& i_line, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+ZSSYSDLL_API QLine   str2QLine( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+ZSSYSDLL_API QLineF  str2QLineF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+ZSSYSDLL_API QString qRect2Str( const QRect& i_rct, const QString& i_strSeparator = ", " );
+ZSSYSDLL_API QString qRect2Str( const QRectF& i_rct, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+ZSSYSDLL_API QRect   str2QRect( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
+ZSSYSDLL_API QRectF  str2QRectF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );
 
 /*******************************************************************************
 Creating strings

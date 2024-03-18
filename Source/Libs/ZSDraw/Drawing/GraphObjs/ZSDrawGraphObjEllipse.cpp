@@ -190,12 +190,9 @@ void CGraphObjEllipse::setRect( const QRectF& i_rct )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = "Rect:" + rect2Str(i_rct);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + qRect2Str(i_rct) + "}";
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -238,7 +235,7 @@ QString CGraphObjEllipse::getScenePolygonShapePointsString() const
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QRectF rct = rect();
     QPolygonF plgScene = pGraphicsItemThis->mapToScene(rct);
-    return polygon2Str(plgScene);
+    return qPolygon2Str(plgScene);
 }
 
 /*==============================================================================

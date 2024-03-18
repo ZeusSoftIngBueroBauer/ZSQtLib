@@ -317,10 +317,8 @@ void CGraphObjConnectionLine::setPolygon( const QPolygonF& i_plg )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
-
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs = polygon2Str(i_plg);
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qPolygon2Str(i_plg) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -378,7 +376,7 @@ QString CGraphObjConnectionLine::getScenePolygonShapePointsString() const
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPolygonF plg = polygon();
     QPolygonF plgScene = pGraphicsItemThis->mapToScene(plg);
-    return polygon2Str(plgScene);
+    return qPolygon2Str(plgScene);
 }
 
 /*==============================================================================
@@ -793,7 +791,7 @@ QRectF CGraphObjConnectionLine::boundingRect() const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Polygon:" + polygon2Str(polygon());
+        strMthInArgs = "ConnectionLine {" + qPolygon2Str(polygon()) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
@@ -871,7 +869,7 @@ QPainterPath CGraphObjConnectionLine::shape() const
 
     if (areMethodCallsActive(m_pTrcAdminObjBoundingRect, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strMthInArgs = "Polygon:" + polygon2Str(polygon());
+        strMthInArgs = "ConnectionLine {" + qPolygon2Str(polygon()) + "}";
     }
 
     CMethodTracer mthTracer(

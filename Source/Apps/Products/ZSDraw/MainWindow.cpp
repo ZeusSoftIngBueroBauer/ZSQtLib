@@ -4253,7 +4253,7 @@ void CMainWindow::onDrawingSceneMousePosChanged( const QPointF& i_ptMousePos )
 {
     QString strMthInArgs;
     if( areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal) )  {
-        strMthInArgs = point2Str(i_ptMousePos);
+        strMthInArgs = qPoint2Str(i_ptMousePos);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
@@ -4391,7 +4391,7 @@ void CMainWindow::onDrawingViewMousePosChanged( const QPointF& i_ptMousePos )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseEvents, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = point2Str(i_ptMousePos);
+        strMthInArgs = qPoint2Str(i_ptMousePos);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseEvents,
@@ -4574,8 +4574,8 @@ void CMainWindow::resizeEvent( QResizeEvent* i_pEv )
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs  = "Size: " + size2Str(i_pEv->size());
-        strMthInArgs += ", OldSize: " + size2Str(i_pEv->oldSize());
+        strMthInArgs  = "Size: " + qSize2Str(i_pEv->size());
+        strMthInArgs += ", OldSize: " + qSize2Str(i_pEv->oldSize());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

@@ -248,7 +248,7 @@ QString CGraphObjLine::getScenePolygonShapePointsString() const
     QPolygonF plgScene;
     plgScene.append(pGraphicsItemThis->mapToScene(lineF.p1()));
     plgScene.append(pGraphicsItemThis->mapToScene(lineF.p2()));
-    return polygon2Str(plgScene);
+    return qPolygon2Str(plgScene);
 }
 
 /*==============================================================================
@@ -1397,7 +1397,7 @@ QCursor CGraphObjLine::getProposedCursor(const QPointF& i_pt) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjCursor, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Point:" + point2Str(i_pt);
+        strMthInArgs = "Point {" + qPoint2Str(i_pt) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCursor,
@@ -2629,7 +2629,7 @@ QLineF CGraphObjLine::QGraphicsLineItem_setLine(const QLineF& i_line)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = line2Str(i_line);
+        strMthInArgs = "Line {" + qLine2Str(i_line) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -2659,7 +2659,7 @@ QLineF CGraphObjLine::QGraphicsLineItem_setLine(double i_fX1, double i_fY1, doub
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = line2Str(QLineF(i_fX1, i_fY1, i_fX2, i_fY2));
+        strMthInArgs = "Line {" + qLine2Str(QLineF(i_fX1, i_fY1, i_fX2, i_fY2)) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,

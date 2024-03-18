@@ -336,7 +336,7 @@ QString CGraphObjSelectionPoint::getScenePolygonShapePointsString() const
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPolygonF plgScene = pGraphicsItemThis->mapToScene(rect());
-    return polygon2Str(plgScene);
+    return qPolygon2Str(plgScene);
 }
 
 /*==============================================================================

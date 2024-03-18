@@ -37,6 +37,7 @@ may result in using the software modules.
 #include "ZSSys/ZSSysEnumEntry.h"
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysException.h"
+#include "ZSSys/ZSSysMath.h"
 #include "ZSSys/ZSSysMsg.h"
 #include "ZSSys/ZSSysRequest.h"
 
@@ -3140,65 +3141,280 @@ QString ZS::System::qPenStyle2Str( const Qt::PenStyle& i_penStyle )
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qPoint2Str( const QPoint& i_pt )
+QString ZS::System::qPoint2Str( const QPoint& i_pt, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    return QString::number(i_pt.x()) + ", " + QString::number(i_pt.y());
+    return QString::number(i_pt.x()) + i_strSeparator + QString::number(i_pt.y());
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qPoint2Str( const QPointF& i_pt )
+QString ZS::System::qPoint2Str( const QPointF& i_pt, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
 //------------------------------------------------------------------------------
 {
-    return QString::number(i_pt.x(),'f',1) + ", " + QString::number(i_pt.y(),'f',1);
+    QString str;
+    if (i_bRound2Nearest && i_iPrecision > 0) {
+        str = QString::number(Math::round2Nearest(i_pt.x(),1), i_cF, i_iPrecision) + i_strSeparator
+            + QString::number(Math::round2Nearest(i_pt.y(),1), i_cF, i_iPrecision);
+    }
+    else {
+        str = QString::number(i_pt.x(), i_cF, i_iPrecision) + i_strSeparator
+            + QString::number(i_pt.y(), i_cF, i_iPrecision);
+    }
+    return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qSize2Str( const QSize& i_size )
+QPoint ZS::System::str2QPoint( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    return QString::number(i_size.width()) + ", " + QString::number(i_size.height());
+    bool bConverted = false;
+    QPoint pt;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() == 2) {
+        QString strX = strlst[0];
+        QString strY = strlst[1];
+        bool bXOk, bYOk;
+        int x = strX.toInt(&bXOk);
+        int y = strY.toInt(&bYOk);
+        bConverted = bXOk && bYOk;
+        if (bConverted) {
+            pt.setX(x);
+            pt.setY(y);
+        }
+    }
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
+    }
+    return pt;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qSize2Str( const QSizeF& i_size )
+QPointF ZS::System::str2QPointF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    return QString::number(i_size.width(),'f',1) + ", " + QString::number(i_size.height(),'f',1);
+    bool bConverted = false;
+    QPointF pt;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() == 2) {
+        QString strX = strlst[0];
+        QString strY = strlst[1];
+        bool bXOk, bYOk;
+        double x = strX.toDouble(&bXOk);
+        double y = strY.toDouble(&bYOk);
+        bConverted = bXOk && bYOk;
+        if (bConverted) {
+            pt.setX(x);
+            pt.setY(y);
+        }
+    }
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
+    }
+    return pt;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qLine2Str( const QLine& i_line )
+QString ZS::System::qSize2Str( const QSize& i_size, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    return qPoint2Str(i_line.p1()) + ", " + qPoint2Str(i_line.p2());
+    return QString::number(i_size.width()) + i_strSeparator + QString::number(i_size.height());
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qLine2Str( const QLineF& i_line )
+QString ZS::System::qSize2Str( const QSizeF& i_size, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
 //------------------------------------------------------------------------------
 {
-    return qPoint2Str(i_line.p1()) + ", " + qPoint2Str(i_line.p2());
+    QString str;
+    if (i_bRound2Nearest && i_iPrecision > 0) {
+        str = QString::number(Math::round2Nearest(i_size.width(),1), i_cF, i_iPrecision) + i_strSeparator
+            + QString::number(Math::round2Nearest(i_size.height(),1), i_cF, i_iPrecision);
+    }
+    else {
+        str = QString::number(i_size.width(), i_cF, i_iPrecision) + i_strSeparator
+            + QString::number(i_size.height(), i_cF, i_iPrecision);
+    }
+    return str;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qRect2Str( const QRect& i_rct )
+QSize ZS::System::str2QSize( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    return QString::number(i_rct.x())
-        + ", " + QString::number(i_rct.y())
-        + ", " + QString::number(i_rct.width())
-        + ", " + QString::number(i_rct.height());
+    bool bConverted = false;
+    QSize siz;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() == 2) {
+        QString strX = strlst[0];
+        QString strY = strlst[1];
+        bool bXOk, bYOk;
+        int x = strX.toInt(&bXOk);
+        int y = strY.toInt(&bYOk);
+        bConverted = bXOk && bYOk;
+        if (bConverted) {
+            siz.setWidth(x);
+            siz.setHeight(y);
+        }
+    }
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
+    }
+    return siz;
 }
 
 //------------------------------------------------------------------------------
-QString ZS::System::qRect2Str( const QRectF& i_rct )
+QSizeF ZS::System::str2QSizeF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
 //------------------------------------------------------------------------------
 {
-    return QString::number(i_rct.x(),'f',1)
-        + ", " + QString::number(i_rct.y(),'f',1)
-        + ", " + QString::number(i_rct.width(),'f',1)
-        + ", " + QString::number(i_rct.height(),'f',1);
+    bool bConverted = false;
+    QSizeF siz;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() == 2) {
+        QString strX = strlst[0];
+        QString strY = strlst[1];
+        bool bXOk, bYOk;
+        double x = strX.toDouble(&bXOk);
+        double y = strY.toDouble(&bYOk);
+        bConverted = bXOk && bYOk;
+        if (bConverted) {
+            siz.setWidth(x);
+            siz.setHeight(y);
+        }
+    }
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
+    }
+    return siz;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qLine2Str( const QLine& i_line, const QString& i_strSeparator )
+//------------------------------------------------------------------------------
+{
+    return qPoint2Str(i_line.p1(), i_strSeparator) + i_strSeparator +
+           qPoint2Str(i_line.p2(), i_strSeparator);
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qLine2Str( const QLineF& i_line, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
+//------------------------------------------------------------------------------
+{
+    return qPoint2Str(i_line.p1(), i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest) + i_strSeparator +
+           qPoint2Str(i_line.p2(), i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest);
+}
+
+//------------------------------------------------------------------------------
+QLine ZS::System::str2QLine( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
+//------------------------------------------------------------------------------
+{
+    bool bConverted = false;
+    QLine line;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() == 2) {
+        QString strP1 = strlst[0];
+        QString strP2 = strlst[1];
+        bool bP1Ok, bP2Ok;
+        QPoint p1 = str2QPoint(strP1, &bP1Ok);
+        QPoint p2 = str2QPoint(strP2, &bP2Ok);
+        bConverted = bP1Ok && bP2Ok;
+        if (bConverted) {
+            line.setP1(p1);
+            line.setP2(p2);
+        }
+    }
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
+    }
+    return line;
+}
+
+//------------------------------------------------------------------------------
+QLineF ZS::System::str2QLineF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
+//------------------------------------------------------------------------------
+{
+    bool bConverted = false;
+    QLineF line;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() == 2) {
+        QString strP1 = strlst[0];
+        QString strP2 = strlst[1];
+        bool bP1Ok, bP2Ok;
+        QPointF p1 = str2QPointF(strP1, &bP1Ok);
+        QPointF p2 = str2QPointF(strP2, &bP2Ok);
+        bConverted = bP1Ok && bP2Ok;
+        if (bConverted) {
+            line.setP1(p1);
+            line.setP2(p2);
+        }
+    }
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
+    }
+    return line;
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qRect2Str( const QRect& i_rct, const QString& i_strSeparator )
+//------------------------------------------------------------------------------
+{
+    return qPoint2Str(i_rct.topLeft(), i_strSeparator) + i_strSeparator + qSize2Str(i_rct.size(), i_strSeparator);
+}
+
+//------------------------------------------------------------------------------
+QString ZS::System::qRect2Str( const QRectF& i_rct, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
+//------------------------------------------------------------------------------
+{
+    return qPoint2Str(i_rct.topLeft(), i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest) + i_strSeparator +
+           qSize2Str(i_rct.size(), i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest);
+}
+
+//------------------------------------------------------------------------------
+QRect ZS::System::str2QRect( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
+//------------------------------------------------------------------------------
+{
+    bool bConverted = false;
+    QRect rct;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() >= 4)
+    {
+        QString strLT = strlst[0] + i_strSeparator + strlst[1];
+        QString strSize = strlst[2] + i_strSeparator + strlst[3];
+        bool bLTOk, bSizeOk;
+        QPoint ptLT = str2QPoint(strLT, &bLTOk);
+        QSize siz = str2QSize(strSize, &bSizeOk);
+        bConverted = bLTOk && bSizeOk;
+        if (bConverted) {
+            rct = QRect(ptLT, siz);
+        }
+    }
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
+    }
+    return rct;
+}
+
+//------------------------------------------------------------------------------
+QRectF ZS::System::str2QRectF( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator )
+//------------------------------------------------------------------------------
+{
+    bool bConverted = false;
+    QRectF rct;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() >= 4)
+    {
+        QString strLT = strlst[0] + i_strSeparator + strlst[1];
+        QString strSize = strlst[2] + i_strSeparator + strlst[3];
+        bool bLTOk, bSizeOk;
+        QPointF ptLT = str2QPointF(strLT, &bLTOk);
+        QSizeF siz = str2QSizeF(strSize, &bSizeOk);
+        bConverted = bLTOk && bSizeOk;
+        if (bConverted) {
+            rct = QRectF(ptLT, siz);
+        }
+    }
+    if (o_pbConverted != nullptr) {
+        *o_pbConverted = bConverted;
+    }
+    return rct;
 }
 
 /*==============================================================================

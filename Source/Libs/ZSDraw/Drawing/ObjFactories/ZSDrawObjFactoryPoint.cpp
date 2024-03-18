@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -154,7 +155,7 @@ SErrResultInfo CObjFactoryPoint::saveGraphObj(
     QPointF ptPos = pGraphObj->pos();
 
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeTextElement( "Pos", point2Str(ptPos) );
+    i_xmlStreamWriter.writeTextElement( "Pos", qPoint2Str(ptPos) );
     i_xmlStreamWriter.writeEndElement();
 
     // Neither scaling nor rotating a point makes sense.
@@ -229,7 +230,7 @@ CGraphObj* CObjFactoryPoint::loadGraphObj(
             {
                 strElemText = i_xmlStreamReader.readElementText();
 
-                QPointF ptTmp = str2PointF(strElemText,&bConverted);
+                QPointF ptTmp = str2QPointF(strElemText, &bConverted);
 
                 if( bConverted )
                 {

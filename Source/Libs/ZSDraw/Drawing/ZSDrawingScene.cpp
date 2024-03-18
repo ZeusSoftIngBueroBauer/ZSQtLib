@@ -1761,7 +1761,7 @@ QCursor CDrawingScene::getProposedCursor( const QPointF& i_ptScenePos ) const
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjMouseMoveEvent, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Pos:" + point2Str(i_ptScenePos);
+        strMthInArgs = "Pos:" + qPoint2Str(i_ptScenePos);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvent,
@@ -1853,7 +1853,7 @@ double CDrawingScene::bringToFront( QGraphicsItem* i_pGraphicsItem, const QPoint
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path()) +
-                       ", ScenePos:" + point2Str(i_ptScenePos);
+                       ", ScenePos {" + qPoint2Str(i_ptScenePos) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1873,7 +1873,7 @@ double CDrawingScene::sendToBack( QGraphicsItem* i_pGraphicsItem, const QPointF&
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(i_pGraphicsItem);
         strMthInArgs = QString(pGraphObj == nullptr ? "nullptr" : pGraphObj->path()) +
-                       ", ScenePos:" + point2Str(i_ptScenePos);
+                       ", ScenePos {" + qPoint2Str(i_ptScenePos) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,

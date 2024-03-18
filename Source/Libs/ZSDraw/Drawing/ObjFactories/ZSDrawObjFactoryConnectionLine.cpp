@@ -31,6 +31,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysException.h"
 #include "ZSSys/ZSSysTrcAdminObj.h"
 #include "ZSSys/ZSSysTrcMethod.h"
@@ -166,7 +167,7 @@ SErrResultInfo CObjFactoryConnectionLine::saveGraphObj(
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
     for (int idxPt = 0; idxPt < plg.size(); idxPt++) {
         QPointF pt = plg[idxPt];
-        i_xmlStreamWriter.writeTextElement( "Pt" + QString::number(idxPt), point2Str(pt) );
+        i_xmlStreamWriter.writeTextElement("Pt" + QString::number(idxPt), qPoint2Str(pt));
     }
     i_xmlStreamWriter.writeEndElement();
 
@@ -254,7 +255,7 @@ CGraphObj* CObjFactoryConnectionLine::loadGraphObj(
                 {
                     strElemText = i_xmlStreamReader.readElementText();
 
-                    QPointF ptTmp = str2PointF(strElemText,&bConverted);
+                    QPointF ptTmp = str2QPointF(strElemText, &bConverted);
 
                     if( bConverted )
                     {
