@@ -11,6 +11,11 @@
             </Rectangle>
         </Geometry>
         <ZValue>0</ZValue>
+        <TextLabels/>
+        <GeometryLabels>
+            <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+            <Label Key="Height" Text="" Distance="0/0" Visible="false"/>
+        </GeometryLabels>
         <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Line" ObjectName="Line0">
             <DrawSettings/>
             <Geometry>
@@ -45,6 +50,11 @@
                 </Rectangle>
             </Geometry>
             <ZValue>0</ZValue>
+            <TextLabels/>
+            <GeometryLabels>
+                <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="Height" Text="" Distance="0/0" Visible="false"/>
+            </GeometryLabels>
             <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Line" ObjectName="Line4">
                 <DrawSettings/>
                 <Geometry>
@@ -104,12 +114,17 @@
                 </Rectangle>
             </Geometry>
             <ZValue>0</ZValue>
+            <TextLabels/>
+            <GeometryLabels>
+                <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
+                <Label Key="Height" Text="" Distance="0/0" Visible="false"/>
+            </GeometryLabels>
             <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Line" ObjectName="Line2">
                 <DrawSettings/>
                 <Geometry>
                     <ShapePoints>
-                        <P1>0, 0</P1>
-                        <P2>75, 100</P2>
+                        <P1>25, 25</P1>
+                        <P2>60, 75</P2>
                     </ShapePoints>
                 </Geometry>
                 <ZValue>0</ZValue>
@@ -120,8 +135,8 @@
                 <DrawSettings/>
                 <Geometry>
                     <ShapePoints>
-                        <P1>75, 100</P1>
-                        <P2>100, 75</P2>
+                        <P1>60, 75</P1>
+                        <P2>75, 60</P2>
                     </ShapePoints>
                 </Geometry>
                 <ZValue>0</ZValue>

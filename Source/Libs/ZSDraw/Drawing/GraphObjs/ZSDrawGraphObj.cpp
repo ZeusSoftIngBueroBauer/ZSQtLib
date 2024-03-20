@@ -3630,7 +3630,7 @@ CPhysValPoint CGraphObj::getPos(const CUnit& i_unit) const
 //}
 
 /*==============================================================================
-protected: // overridables
+public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -6224,7 +6224,7 @@ public: // geometry labels
 
     A Line object for example supports the following geometry values:
 
-    - P1 (x/y), P2 (x/y), Center (x/y), Size (width/height), Length("x"), Angle ("x").
+    - P1 (x/y), P2 (x/y), Center (x/y), dX("x"), dY("y"), Length("l"), Angle ("°").
 
     @return Supported value names.
 */

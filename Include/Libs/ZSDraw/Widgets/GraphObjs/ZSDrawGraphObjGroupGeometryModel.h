@@ -118,18 +118,20 @@ protected: // type definitions and constants
         bool operator != (const SLabelSettings& i_other) const;
     public: // struct members
         /*!< Name of the value as retrieved from the graphical object.
-             Possible names could be "P1", "Center", "Size", "Length", "Angle".
-             "Length" and "Angle" are treated special as they are single values
-             and not X/Y value pairs. */
+             Possible names could be TopLeft, TopRight, BottomLeft, BottomRight, Width, Height and Angle.
+             Please note that Width and Height cannot be combined in the same row (e.g. named Size)
+             as the visibility of the Width and Height Labels is set separately.
+             Width, Height and Angle are treated in a special way as those are single values
+             and not a X/Y value pairs. */
         QString m_strValueName;
         /*!< Index in the row of labels. */
         int m_iRowIdx;
         /*!< True if the value should be shown. */
         bool m_bVisible;
-        /*!< True if a line should be drawn from the label showing the value and the
+        /*!< True if a line should be drawn from the label showing the value to the
              corresponding shape point of the object.
-             For "Line" this means that a dimension line is drawn.
-             For "Angle" this means that a circle segment is drawn. */
+             For Width and Height this means that a dimension line is drawn.
+             For Angle this means that a circle segment is drawn. */
         bool m_bLineVisible;
     };
 protected slots:

@@ -722,7 +722,7 @@ public: // must overridables
     //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-protected: // overridables
+public: // overridables
     virtual QPointF toLocalCoors(const CPhysValPoint& i_physValPoint) const;
     virtual QLineF toLocalCoors(const CPhysValLine& i_physValLine) const;
     virtual QRectF toLocalCoors(const CPhysValRect& i_physValRect) const;

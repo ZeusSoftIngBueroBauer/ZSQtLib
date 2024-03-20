@@ -2080,9 +2080,9 @@ QLineF CGraphObjGroup::getAnchorLineToSelectionPointFromPolarInSceneCoors(
         ptSelPtLineP1 = thisRect.center();
         ptSelPtLineP2 = QPointF(thisRect.right(), thisRect.center().y());
     }
-    QLineF lineSelPt(ptSelPtLineP1, ptSelPtLineP2);
-    QLineF lineSelPtSceneCoors(pGraphicsItemThis->mapToScene(lineSelPt.center()),
-                               pGraphicsItemThis->mapToScene(lineSelPt.p2()));
+    ptSelPtLineP1 = pGraphicsItemThis->mapToScene(ptSelPtLineP1);
+    ptSelPtLineP2 = pGraphicsItemThis->mapToScene(ptSelPtLineP2);
+    QLineF lineSelPtSceneCoors(ptSelPtLineP1, ptSelPtLineP2);
     return ZS::Draw::getLineFromPolar(
         i_polarCoors.m_fLength_px, i_polarCoors.m_fAngle_degrees, lineSelPtSceneCoors);
 }
