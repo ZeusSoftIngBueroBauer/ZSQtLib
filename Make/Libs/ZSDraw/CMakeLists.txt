@@ -113,6 +113,7 @@ list(APPEND _HeadersWidgetsGraphObjFormat
 
 list(APPEND _HeadersWidgetsGraphObjs
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h
+    ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGridStylePropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryModel.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryPropertiesWdgt.h
     ${_HeadersPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesDlg.h
@@ -236,6 +237,7 @@ list(APPEND _SourcesWidgetsGraphObjFormat
 
 list(APPEND _SourcesWidgetsGraphObjs
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGridStylePropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryModel.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryPropertiesWdgt.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesDlg.cpp
@@ -287,6 +289,17 @@ list(APPEND _Images
     ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorPin32x32.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorRotateFree16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/CursorSelect16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsBrushStyle16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsGeometry16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsGridStyle16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsLineStyle16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsTextStyle16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorHorizontal16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorVertical16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateLeftBy90Degrees16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateRightBy90Degrees16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/EditGroup16x16.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/EditUngroup16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjConnectionLine16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjConnectionPoint16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjEllipse16x16.png
@@ -298,16 +311,6 @@ list(APPEND _Images
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjRect16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjSelectionPoint16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/GraphObjText16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsBrushStyle16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsGeometry16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsLineStyle16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawSettingsTextStyle16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorHorizontal16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolMirrorVertical16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateLeftBy90Degrees16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/DrawToolRotateRightBy90Degrees16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/EditGroup16x16.png
-    ${_ResourcesPath}/${PROJECT_NAME}/Images/EditUngroup16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/PageSetup16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Key16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/Pen16x16.png

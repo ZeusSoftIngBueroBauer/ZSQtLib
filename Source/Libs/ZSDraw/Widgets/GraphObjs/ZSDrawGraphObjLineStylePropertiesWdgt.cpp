@@ -496,52 +496,51 @@ bool CWdgtGraphObjLineStyleProperties::hasChanges() const
         drawSettings = m_pGraphObj->getDrawSettings();
     }
 
-    if (m_penColor != drawSettings.getPenColor()) {
+    if (drawSettings.isAttributeUsed(EDrawAttributePenColor) && m_penColor != drawSettings.getPenColor()) {
         bHasChanges = true;
     }
-    else if (m_iPenWidth != drawSettings.getPenWidth()) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributePenWidth) && m_iPenWidth != drawSettings.getPenWidth()) {
         bHasChanges = true;
     }
-    else if (m_lineStyle != drawSettings.getLineStyle()) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineStyle) && m_lineStyle != drawSettings.getLineStyle()) {
         bHasChanges = true;
     }
-    else if (m_lineRecordType != drawSettings.getLineRecordType()) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineRecordType) && m_lineRecordType != drawSettings.getLineRecordType()) {
         bHasChanges = true;
     }
-    else if (m_iLineExtent != drawSettings.getLineExtent()) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineExtent) && m_iLineExtent != drawSettings.getLineExtent()) {
         bHasChanges = true;
     }
-    else if (m_lineEndStyleP1 != drawSettings.getLineEndStyle(ELinePoint::Start)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP1EndStyle) && m_lineEndStyleP1 != drawSettings.getLineEndStyle(ELinePoint::Start)) {
         bHasChanges = true;
     }
-    else if (m_arrowHeadBaseLineTypeP1 != drawSettings.getArrowHeadBaseLineType(ELinePoint::Start)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadBaseLineType) && m_arrowHeadBaseLineTypeP1 != drawSettings.getArrowHeadBaseLineType(ELinePoint::Start)) {
         bHasChanges = true;
     }
-    else if (m_arrowHeadFillStyleP1 != drawSettings.getArrowHeadFillStyle(ELinePoint::Start)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadFillStyle) && m_arrowHeadFillStyleP1 != drawSettings.getArrowHeadFillStyle(ELinePoint::Start)) {
         bHasChanges = true;
     }
-    else if (m_arrowHeadWidthP1 != drawSettings.getArrowHeadWidth(ELinePoint::Start)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadWidth) && m_arrowHeadWidthP1 != drawSettings.getArrowHeadWidth(ELinePoint::Start)) {
         bHasChanges = true;
     }
-    else if (m_arrowHeadLengthP1 != drawSettings.getArrowHeadLength(ELinePoint::Start)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadLength) && m_arrowHeadLengthP1 != drawSettings.getArrowHeadLength(ELinePoint::Start)) {
         bHasChanges = true;
     }
-    else if (m_lineEndStyleP2 != drawSettings.getLineEndStyle(ELinePoint::End)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP2EndStyle) && m_lineEndStyleP2 != drawSettings.getLineEndStyle(ELinePoint::End)) {
         bHasChanges = true;
     }
-    else if (m_arrowHeadBaseLineTypeP2 != drawSettings.getArrowHeadBaseLineType(ELinePoint::End)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadBaseLineType) && m_arrowHeadBaseLineTypeP2 != drawSettings.getArrowHeadBaseLineType(ELinePoint::End)) {
         bHasChanges = true;
     }
-    else if (m_arrowHeadFillStyleP2 != drawSettings.getArrowHeadFillStyle(ELinePoint::End)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadFillStyle) && m_arrowHeadFillStyleP2 != drawSettings.getArrowHeadFillStyle(ELinePoint::End)) {
         bHasChanges = true;
     }
-    else if (m_arrowHeadWidthP2 != drawSettings.getArrowHeadWidth(ELinePoint::End)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadWidth) && m_arrowHeadWidthP2 != drawSettings.getArrowHeadWidth(ELinePoint::End)) {
         bHasChanges = true;
     }
-    else if (m_arrowHeadLengthP2 != drawSettings.getArrowHeadLength(ELinePoint::End)) {
+    else if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadLength) && m_arrowHeadLengthP2 != drawSettings.getArrowHeadLength(ELinePoint::End)) {
         bHasChanges = true;
     }
-
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(bHasChanges);
     }
@@ -582,6 +581,7 @@ void CWdgtGraphObjLineStyleProperties::applySettings(bool i_bImmediatelyApplySet
     }
 
     if (!hasErrors() && hasChanges()) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
         if (m_pGraphObj == nullptr) {
             m_pDrawingScene->setPenColor(m_penColor, false);
             m_pDrawingScene->setPenWidth(m_iPenWidth, false);
@@ -603,21 +603,52 @@ void CWdgtGraphObjLineStyleProperties::applySettings(bool i_bImmediatelyApplySet
             }
         }
         else {
-            m_pGraphObj->setPenColor(m_penColor, false);
-            m_pGraphObj->setPenWidth(m_iPenWidth, false);
-            m_pGraphObj->setLineStyle(m_lineStyle, false);
-            m_pGraphObj->setLineRecordType(m_lineRecordType, false);
-            m_pGraphObj->setLineExtent(m_iLineExtent, false);
-            m_pGraphObj->setLineEndStyle(ELinePoint::Start, m_lineEndStyleP1, false);
-            m_pGraphObj->setArrowHeadBaseLineType(ELinePoint::Start, m_arrowHeadBaseLineTypeP1, false);
-            m_pGraphObj->setArrowHeadFillStyle(ELinePoint::Start, m_arrowHeadFillStyleP1, false);
-            m_pGraphObj->setArrowHeadWidth(ELinePoint::Start, m_arrowHeadWidthP1, false);
-            m_pGraphObj->setArrowHeadLength(ELinePoint::Start, m_arrowHeadLengthP1, false);
-            m_pGraphObj->setLineEndStyle(ELinePoint::End, m_lineEndStyleP2, false);
-            m_pGraphObj->setArrowHeadBaseLineType(ELinePoint::End, m_arrowHeadBaseLineTypeP2, false);
-            m_pGraphObj->setArrowHeadFillStyle(ELinePoint::End, m_arrowHeadFillStyleP2, false);
-            m_pGraphObj->setArrowHeadWidth(ELinePoint::End, m_arrowHeadWidthP2, false);
-            m_pGraphObj->setArrowHeadLength(ELinePoint::End, m_arrowHeadLengthP2, false);
+            CDrawSettings drawSettings = m_pGraphObj->getDrawSettings();
+            if (drawSettings.isAttributeUsed(EDrawAttributePenColor)) {
+                m_pGraphObj->setPenColor(m_penColor, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributePenWidth)) {
+                m_pGraphObj->setPenWidth(m_iPenWidth, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineStyle)) {
+                m_pGraphObj->setLineStyle(m_lineStyle, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineRecordType)) {
+                m_pGraphObj->setLineRecordType(m_lineRecordType, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineExtent)) {
+                m_pGraphObj->setLineExtent(m_iLineExtent, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP1EndStyle)) {
+                m_pGraphObj->setLineEndStyle(ELinePoint::Start, m_lineEndStyleP1, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadBaseLineType)) {
+                m_pGraphObj->setArrowHeadBaseLineType(ELinePoint::Start, m_arrowHeadBaseLineTypeP1, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadFillStyle)) {
+                m_pGraphObj->setArrowHeadFillStyle(ELinePoint::Start, m_arrowHeadFillStyleP1, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadWidth)) {
+                m_pGraphObj->setArrowHeadWidth(ELinePoint::Start, m_arrowHeadWidthP1, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadLength)) {
+                m_pGraphObj->setArrowHeadLength(ELinePoint::Start, m_arrowHeadLengthP1, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP2EndStyle)) {
+                m_pGraphObj->setLineEndStyle(ELinePoint::End, m_lineEndStyleP2, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadBaseLineType)) {
+                m_pGraphObj->setArrowHeadBaseLineType(ELinePoint::End, m_arrowHeadBaseLineTypeP2, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadFillStyle)) {
+                m_pGraphObj->setArrowHeadFillStyle(ELinePoint::End, m_arrowHeadFillStyleP2, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadWidth)) {
+                m_pGraphObj->setArrowHeadWidth(ELinePoint::End, m_arrowHeadWidthP2, false);
+            }
+            if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadLength)) {
+                m_pGraphObj->setArrowHeadLength(ELinePoint::End, m_arrowHeadLengthP2, false);
+            }
             if (i_bImmediatelyApplySettings) {
                 m_pGraphObj->updateDrawSettings();
             }
@@ -667,23 +698,144 @@ void CWdgtGraphObjLineStyleProperties::fillEditControls()
     m_arrowHeadWidthP2 = drawSettings.getArrowHeadWidth(ELinePoint::End);
     m_arrowHeadLengthP2 = drawSettings.getArrowHeadLength(ELinePoint::End);
 
+    bool bLineStyleUsed = false;
+    if (drawSettings.isAttributeUsed(EDrawAttributePenColor)) {
+        m_pBtnLineColor->show();
+        bLineStyleUsed = true;
+    }
+    else {
+        m_pBtnLineColor->hide();
+    }
+    if (drawSettings.isAttributeUsed(EDrawAttributePenWidth)) {
+        m_pEdtLineWidth->show();
+        bLineStyleUsed = true;
+    }
+    else {
+        m_pEdtLineWidth->hide();
+    }
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineStyle)) {
+        m_pCmbLineStyle->show();
+        bLineStyleUsed = true;
+    }
+    else {
+        m_pCmbLineStyle->hide();
+    }
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineRecordType)) {
+    }
+    else {
+    }
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineExtent)) {
+    }
+    else {
+    }
+    if (bLineStyleUsed) {
+        m_pLblLineStyle->show();
+    }
+    else {
+        m_pLblLineStyle->hide();
+    }
+
+
+    bool bEndPointsStyleUsed = false;
+    bool bP1EndPointStyleUsed = false;
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineP1EndStyle)
+     || drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadBaseLineType)
+     || drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadFillStyle))
+    {
+        m_pCmbP1LineEndStyle->show();
+        bEndPointsStyleUsed = true;
+        bP1EndPointStyleUsed = true;
+    }
+    else {
+        m_pCmbP1LineEndStyle->hide();
+    }
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadWidth)) {
+        m_pCmbP1ArrowHeadWidth->show();
+        bEndPointsStyleUsed = true;
+        bP1EndPointStyleUsed = true;
+    }
+    else {
+        m_pCmbP1ArrowHeadWidth->hide();
+    }
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineP1ArrowHeadLength)) {
+        m_pCmbP1ArrowHeadLength->show();
+        bEndPointsStyleUsed = true;
+        bP1EndPointStyleUsed = true;
+    }
+    else {
+        m_pCmbP1ArrowHeadLength->hide();
+    }
+
+    bool bP2EndPointStyleUsed = false;
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineP2EndStyle)
+     || drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadBaseLineType)
+     || drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadFillStyle))
+    {
+        m_pCmbP2LineEndStyle->show();
+        bEndPointsStyleUsed = true;
+        bP2EndPointStyleUsed = true;
+    }
+    else {
+        m_pCmbP2LineEndStyle->hide();
+    }
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadWidth)) {
+        m_pCmbP2ArrowHeadWidth->show();
+        bEndPointsStyleUsed = true;
+        bP2EndPointStyleUsed = true;
+    }
+    else {
+        m_pCmbP2ArrowHeadWidth->hide();
+    }
+    if (drawSettings.isAttributeUsed(EDrawAttributeLineP2ArrowHeadLength)) {
+        m_pCmbP2ArrowHeadLength->show();
+        bEndPointsStyleUsed = true;
+        bP2EndPointStyleUsed = true;
+    }
+    else {
+        m_pCmbP2ArrowHeadLength->hide();
+    }
+
+    if (bP1EndPointStyleUsed) {
+        m_pLblP1LineEndStyles->show();
+    }
+    else {
+        m_pLblP1LineEndStyles->hide();
+    }
+    if (bP2EndPointStyleUsed) {
+        m_pLblP2LineEndStyles->show();
+    }
+    else {
+        m_pLblP2LineEndStyles->hide();
+    }
+    if (bEndPointsStyleUsed) {
+        m_pLblLineEndStyles->show();
+    }
+    else {
+        m_pLblLineEndStyles->hide();
+    }
+
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    updateCmbLineStyle(m_lineStyle);
-    m_pEdtLineWidth->setValue(m_iPenWidth);
-    updateBtnPenColor(m_penColor);
+    if (bLineStyleUsed) {
+        updateCmbLineStyle(m_lineStyle);
+        m_pEdtLineWidth->setValue(m_iPenWidth);
+        updateBtnPenColor(m_penColor);
+    }
 
-    ELinePoint linePoint = ELinePoint::Start;
-    updateCmbLineEndStyle(linePoint, m_lineEndStyleP1, m_arrowHeadFillStyleP1, m_arrowHeadBaseLineTypeP1);
-    updateCmbArrowHeadWidth(linePoint, m_arrowHeadWidthP1);
-    updateCmbArrowHeadLength(linePoint, m_arrowHeadLengthP1);
-
-    linePoint = ELinePoint::End;
-    updateCmbLineEndStyle(linePoint, m_lineEndStyleP2, m_arrowHeadFillStyleP2, m_arrowHeadBaseLineTypeP2);
-    updateCmbArrowHeadWidth(linePoint, m_arrowHeadWidthP2);
-    updateCmbArrowHeadLength(linePoint, m_arrowHeadLengthP2);
+    if (bP1EndPointStyleUsed) {
+        ELinePoint linePoint = ELinePoint::Start;
+        updateCmbLineEndStyle(linePoint, m_lineEndStyleP1, m_arrowHeadFillStyleP1, m_arrowHeadBaseLineTypeP1);
+        updateCmbArrowHeadWidth(linePoint, m_arrowHeadWidthP1);
+        updateCmbArrowHeadLength(linePoint, m_arrowHeadLengthP1);
+    }
+    if (bP2EndPointStyleUsed) {
+        ELinePoint linePoint = ELinePoint::End;
+        updateCmbLineEndStyle(linePoint, m_lineEndStyleP2, m_arrowHeadFillStyleP2, m_arrowHeadBaseLineTypeP2);
+        updateCmbArrowHeadWidth(linePoint, m_arrowHeadWidthP2);
+        updateCmbArrowHeadLength(linePoint, m_arrowHeadLengthP2);
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);

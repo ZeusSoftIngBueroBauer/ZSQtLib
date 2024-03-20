@@ -36,6 +36,8 @@ namespace Draw
 class CDrawingScene;
 class CGraphObjGroup;
 class CWdgtGraphObjGroupGeometryProperties;
+class CWdgtGraphObjFillStyleProperties;
+class CWdgtGraphObjGridStyleProperties;
 class CWdgtGraphObjLineStyleProperties;
 class CWdgtGraphObjLabelsProperties;
 
@@ -50,7 +52,9 @@ public: // class methods
     enum class EWidget {
         Labels,
         Geometry,
-        LineStyle
+        LineStyle,
+        FillStyle,
+        GridStyle
     };
     static QString widgetName(EWidget i_widget);
 public: // ctors and dtor
@@ -73,10 +77,14 @@ protected slots:
     void onWdgtLabelsContentChanged();
     void onWdgtGeometryContentChanged();
     void onWdgtLineStyleContentChanged();
+    void onWdgtFillStyleContentChanged();
+    void onWdgtGridStyleContentChanged();
 protected: // instance members
     CWdgtGraphObjLabelsProperties* m_pWdgtLabels;
     CWdgtGraphObjGroupGeometryProperties* m_pWdgtGeometry;
     CWdgtGraphObjLineStyleProperties* m_pWdgtLineStyle;
+    CWdgtGraphObjFillStyleProperties* m_pWdgtFillStyle;
+    CWdgtGraphObjGridStyleProperties* m_pWdgtGridStyle;
 
 }; // class CWdgtGraphObjGroupProperties
 

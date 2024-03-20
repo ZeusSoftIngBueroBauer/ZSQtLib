@@ -26,6 +26,8 @@ may result in using the software modules.
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupPropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGroupGeometryPropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjFillStylePropertiesWdgt.h"
+#include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGridStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLineStylePropertiesWdgt.h"
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjLabelsPropertiesWdgt.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
@@ -78,6 +80,12 @@ QString CWdgtGraphObjGroupProperties::widgetName(EWidget i_widget)
     else if (i_widget == EWidget::LineStyle) {
         str = "LineStyle";
     }
+    else if (i_widget == EWidget::FillStyle) {
+        str = "FillStyle";
+    }
+    else if (i_widget == EWidget::GridStyle) {
+        str = "GridStyle";
+    }
     return str;
 }
 
@@ -97,7 +105,9 @@ CWdgtGraphObjGroupProperties::CWdgtGraphObjGroupProperties(
         ClassName(), i_strObjName, i_pWdgtParent),
     m_pWdgtLabels(nullptr),
     m_pWdgtGeometry(nullptr),
-    m_pWdgtLineStyle(nullptr)
+    m_pWdgtLineStyle(nullptr),
+    m_pWdgtFillStyle(nullptr),
+    m_pWdgtGridStyle(nullptr)
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -135,6 +145,22 @@ CWdgtGraphObjGroupProperties::CWdgtGraphObjGroupProperties(
         m_pWdgtLineStyle, &CWdgtGraphObjLineStyleProperties::contentChanged,
         this, &CWdgtGraphObjGroupProperties::onWdgtLineStyleContentChanged);
 
+    m_pWdgtFillStyle = new CWdgtGraphObjFillStyleProperties(
+        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
+        "StandardShapes::Group", i_strObjName);
+    m_pLyt->addWidget(m_pWdgtFillStyle);
+    QObject::connect(
+        m_pWdgtFillStyle, &CWdgtGraphObjFillStyleProperties::contentChanged,
+        this, &CWdgtGraphObjGroupProperties::onWdgtFillStyleContentChanged);
+
+    m_pWdgtGridStyle = new CWdgtGraphObjGridStyleProperties(
+        i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
+        "StandardShapes::Group", i_strObjName);
+    m_pLyt->addWidget(m_pWdgtGridStyle);
+    QObject::connect(
+        m_pWdgtGridStyle, &CWdgtGraphObjFillStyleProperties::contentChanged,
+        this, &CWdgtGraphObjGroupProperties::onWdgtGridStyleContentChanged);
+
     // <Buttons>
     //==========
 
@@ -160,6 +186,8 @@ CWdgtGraphObjGroupProperties::~CWdgtGraphObjGroupProperties()
     m_pWdgtLabels = nullptr;
     m_pWdgtGeometry = nullptr;
     m_pWdgtLineStyle = nullptr;
+    m_pWdgtFillStyle = nullptr;
+    m_pWdgtGridStyle = nullptr;
 }
 
 /*==============================================================================
@@ -188,6 +216,12 @@ void CWdgtGraphObjGroupProperties::expand(EWidget i_widget, bool i_bExpand)
     }
     else if (i_widget == EWidget::LineStyle) {
         m_pWdgtLineStyle->expand(i_bExpand);
+    }
+    else if (i_widget == EWidget::FillStyle) {
+        m_pWdgtFillStyle->expand(i_bExpand);
+    }
+    else if (i_widget == EWidget::GridStyle) {
+        m_pWdgtGridStyle->expand(i_bExpand);
     }
 }
 
@@ -218,6 +252,8 @@ bool CWdgtGraphObjGroupProperties::setKeyInTree(const QString& i_strKeyInTree)
             m_pWdgtLabels->setKeyInTree(i_strKeyInTree);
             m_pWdgtGeometry->setKeyInTree(i_strKeyInTree);
             m_pWdgtLineStyle->setKeyInTree(i_strKeyInTree);
+            m_pWdgtFillStyle->setKeyInTree(i_strKeyInTree);
+            m_pWdgtGridStyle->setKeyInTree(i_strKeyInTree);
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -246,6 +282,12 @@ bool CWdgtGraphObjGroupProperties::hasErrors() const
     }
     if (!bHasErrors) {
         bHasErrors = m_pWdgtLineStyle->hasErrors();
+    }
+    if (!bHasErrors) {
+        bHasErrors = m_pWdgtFillStyle->hasErrors();
+    }
+    if (!bHasErrors) {
+        bHasErrors = m_pWdgtGridStyle->hasErrors();
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -278,6 +320,12 @@ bool CWdgtGraphObjGroupProperties::hasChanges() const
         }
         if (!bHasChanges) {
             bHasChanges = m_pWdgtLineStyle->hasChanges();
+        }
+        if (!bHasChanges) {
+            bHasChanges = m_pWdgtFillStyle->hasChanges();
+        }
+        if (!bHasChanges) {
+            bHasChanges = m_pWdgtGridStyle->hasChanges();
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -318,6 +366,8 @@ void CWdgtGraphObjGroupProperties::acceptChanges()
                 m_pWdgtLabels->acceptChanges();
                 m_pWdgtGeometry->acceptChanges();
                 m_pWdgtLineStyle->acceptChanges();
+                m_pWdgtFillStyle->acceptChanges();
+                m_pWdgtGridStyle->acceptChanges();
             }
 
             // If the "contentChanged" signal is no longer blocked and the content of
@@ -347,6 +397,8 @@ void CWdgtGraphObjGroupProperties::rejectChanges()
         m_pWdgtLabels->rejectChanges();
         m_pWdgtGeometry->rejectChanges();
         m_pWdgtLineStyle->rejectChanges();
+        m_pWdgtFillStyle->rejectChanges();
+        m_pWdgtGridStyle->rejectChanges();
     }
 
     // If the "contentChanged" signal is no longer blocked and the content of
@@ -409,6 +461,44 @@ void CWdgtGraphObjGroupProperties::onWdgtLineStyleContentChanged()
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "onWdgtLineStyleContentChanged",
+        /* strAddInfo   */ "" );
+
+    if (m_iContentChangedSignalBlockedCounter == 0) {
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+    else {
+        m_bContentChanged = true;
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGroupProperties::onWdgtFillStyleContentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtFillStyleContentChanged",
+        /* strAddInfo   */ "" );
+
+    if (m_iContentChangedSignalBlockedCounter == 0) {
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+    else {
+        m_bContentChanged = true;
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGroupProperties::onWdgtGridStyleContentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onWdgtGridStyleContentChanged",
         /* strAddInfo   */ "" );
 
     if (m_iContentChangedSignalBlockedCounter == 0) {
