@@ -173,11 +173,16 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
        --+----------+-+---+-+-----+-+-----+----
        0 |Brush:    | |   | |Style| |Color|<-->
     */
-    int iClmCount = 7;
+    int iClmCount = m_ariClmWidths.size();
     for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
         m_pLytWdgtFillStyleSettings->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
     }
     m_pLytWdgtFillStyleSettings->setColumnStretch(iClmCount, 1);
+
+    // Row 0:
+    const int iClmLblBrush = 0;
+    const int iClmCmbStyle = 4;
+    const int iClmBtnColor = 6;
 
     // <Row 0> Fill Style
     //-------------------
@@ -185,9 +190,10 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
     int iRow = 0;
 
     m_pLblFillStyle = new QLabel("Brush:");
-    m_pLytWdgtFillStyleSettings->addWidget(m_pLblFillStyle, iRow, 0);
+    m_pLytWdgtFillStyleSettings->addWidget(m_pLblFillStyle, iRow, iClmLblBrush);
 
     QLabel* pLblDummy = new QLabel();
+    //pLblDummy->setMinimumWidth(m_ariClmWidths[2]);
     m_pLytWdgtFillStyleSettings->addWidget(pLblDummy, iRow, 2, Qt::AlignRight);
 
     m_pModelFillStyles = new QStandardItemModel();
@@ -195,7 +201,7 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
     m_pCmbFillStyle = new QComboBox();
     m_pCmbFillStyle->setModel(m_pModelFillStyles);
     m_pCmbFillStyle->setIconSize(iconSize);
-    m_pLytWdgtFillStyleSettings->addWidget(m_pCmbFillStyle, iRow, 4);
+    m_pLytWdgtFillStyleSettings->addWidget(m_pCmbFillStyle, iRow, iClmCmbStyle);
     QObject::connect(
         m_pCmbFillStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtGraphObjFillStyleProperties::onCmbFillStyleCurrentIndexChanged);
@@ -203,7 +209,7 @@ CWdgtGraphObjFillStyleProperties::CWdgtGraphObjFillStyleProperties(
     m_pBtnFillColor = new QPushButton();
     m_pPxmBtnFillColor = new QPixmap(":/ZS/Draw/DrawSettingsBrushStyle16x16.png");
     m_pBtnFillColor->setIcon(*m_pPxmBtnFillColor);
-    m_pLytWdgtFillStyleSettings->addWidget(m_pBtnFillColor, iRow, 6);
+    m_pLytWdgtFillStyleSettings->addWidget(m_pBtnFillColor, iRow, iClmBtnColor);
     QObject::connect(
         m_pBtnFillColor, &QPushButton::clicked,
         this, &CWdgtGraphObjFillStyleProperties::onBtnFillColorClicked);

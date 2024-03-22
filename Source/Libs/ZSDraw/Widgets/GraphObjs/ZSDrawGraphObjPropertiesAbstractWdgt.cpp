@@ -132,7 +132,7 @@ CWdgtGraphObjPropertiesAbstract::CWdgtGraphObjPropertiesAbstract(
     m_ariClmWidths = {
          /*  0 */ 50,
          /*  1 */ m_cxSpacing,
-         /*  2 */ 20,
+         /*  2 */ 32,
          /*  3 */ m_cxSpacing,
          /*  4 */ 60,
          /*  5 */ m_cxSpacing,

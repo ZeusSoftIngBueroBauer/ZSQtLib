@@ -1948,11 +1948,9 @@ void CGraphObjLine::paint(
         i_pPainter->strokePath(outline, pn);
         pn.setWidth(1 + m_drawSettings.getPenWidth());
     }
-    else {
-        pn.setWidth(m_drawSettings.getPenWidth());
-    }
 
     pn.setColor(m_drawSettings.getPenColor());
+    pn.setWidth(m_drawSettings.getPenWidth());
     pn.setStyle(lineStyle2QtPenStyle(m_drawSettings.getLineStyle().enumerator()));
 
     i_pPainter->setPen(pn);

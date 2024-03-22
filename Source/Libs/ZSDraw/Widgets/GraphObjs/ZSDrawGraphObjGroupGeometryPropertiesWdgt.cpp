@@ -115,6 +115,8 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     m_pLytWdgtGeometry(nullptr),
     m_pLytLineTableViewButtons(nullptr),
     m_pBtnResizeRowsAndColumnsToContents(nullptr),
+    m_pLblResizeGraphObjToContent(nullptr),
+    m_pBtnResizeGraphObjToContent(nullptr),
     m_pLytGeometryTableView(nullptr),
     m_pTableViewGeometry(nullptr),
     m_pEdtPhysValDelegateXVal(nullptr),
@@ -197,6 +199,20 @@ CWdgtGraphObjGroupGeometryProperties::CWdgtGraphObjGroupGeometryProperties(
     QObject::connect(
         m_pBtnResizeRowsAndColumnsToContents, &QPushButton::clicked,
         this, &CWdgtGraphObjGroupGeometryProperties::onBtnResizeRowsAndColumnsToContentsClicked );
+
+    m_pLblResizeGraphObjToContent = new QLabel("Resize Group To Content");
+    m_pLytLineTableViewButtons->addWidget(m_pLblResizeGraphObjToContent);
+
+    QPixmap pxmResizeGroupToContent(":/ZS/Button/ResizeToContent.png");
+    m_pBtnResizeGraphObjToContent = new QPushButton();
+    m_pBtnResizeGraphObjToContent->setIcon(pxmResizeToContents);
+    m_pBtnResizeGraphObjToContent->setFixedSize(QSize(24, 24));
+    m_pBtnResizeGraphObjToContent->setToolTip("Press to resize the rows and columns to their contents");
+    m_pLytLineTableViewButtons->addWidget(m_pBtnResizeGraphObjToContent);
+    m_pLytLineTableViewButtons->addStretch();
+    QObject::connect(
+        m_pBtnResizeGraphObjToContent, &QPushButton::clicked,
+        this, &CWdgtGraphObjGroupGeometryProperties::onBtnResizeGraphObjToContentClicked );
 
     // Table View
     //------------------
@@ -296,6 +312,8 @@ CWdgtGraphObjGroupGeometryProperties::~CWdgtGraphObjGroupGeometryProperties()
     m_pLytWdgtGeometry = nullptr;
     m_pLytLineTableViewButtons = nullptr;
     m_pBtnResizeRowsAndColumnsToContents = nullptr;
+    m_pLblResizeGraphObjToContent = nullptr;
+    m_pBtnResizeGraphObjToContent = nullptr;
     m_pLytGeometryTableView = nullptr;
     m_pTableViewGeometry = nullptr;
     m_pEdtPhysValDelegateXVal = nullptr;
@@ -503,6 +521,22 @@ void CWdgtGraphObjGroupGeometryProperties::onBtnResizeRowsAndColumnsToContentsCl
 
     m_pTableViewGeometry->resizeColumnsToContents();
     m_pTableViewGeometry->resizeRowsToContents();
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGroupGeometryProperties::onBtnResizeGraphObjToContentClicked(bool /*i_bChecked*/)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnResizeGraphObjToContentClicked",
+        /* strAddInfo   */ "" );
+
+    if (m_pGraphObj != nullptr && m_pGraphObj->type() == EGraphObjTypeGroup) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObj);
+        pGraphObjGroup->resizeToContent();
+    }
 }
 
 /*==============================================================================

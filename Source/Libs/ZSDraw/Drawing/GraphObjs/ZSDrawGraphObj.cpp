@@ -1781,17 +1781,15 @@ void CGraphObj::onDrawSettingsChanged(const CDrawSettings& i_drawSettingsOld)
         /* strMethod    */ "CGraphObj::onDrawSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
-    /* Template for copy and paste in inherited classes:
     bool bDrawSettingsChanged = (m_drawSettings != i_drawSettingsOld);
     if (bDrawSettingsChanged) {
-        ...
-        Add code to apply changes
-        ...
-        update(); // force paint method
+        QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        if (pGraphicsItemThis != nullptr) {
+            pGraphicsItemThis->update(); // force paint method
+        }
         emit_drawSettingsChanged(); // inform others of changes
     }
-    */
-} // onDrawSettingsChanged
+}
 
 /*==============================================================================
 public: // overridables (you must call those methods (instead of e.g. "QGrahicsLineItem::setPen") ..

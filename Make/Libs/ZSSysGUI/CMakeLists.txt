@@ -190,6 +190,7 @@ list(APPEND _ButtonImages
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonMoveLeft24x24.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonRedo16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonRedo24x24.png
+    ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonResizeToContent.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonTableView16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonUndo16x16.png
     ${_ResourcesPath}/${PROJECT_NAME}/Images/ButtonUndo24x24.png

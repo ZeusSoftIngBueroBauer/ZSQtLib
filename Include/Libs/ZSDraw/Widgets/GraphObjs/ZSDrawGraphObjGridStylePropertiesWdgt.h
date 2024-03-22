@@ -28,6 +28,7 @@ may result in using the software modules.
 #define ZSDraw_DrawGraphObjGridStylePropertiesWdgt_h
 
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjPropertiesAbstractWdgt.h"
+#include "ZSDraw/Common/ZSDrawGridSettings.h"
 
 namespace ZS
 {
@@ -58,24 +59,48 @@ public: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void applySettings(bool i_bImmediatelyApplySettings = true) override;
 protected: // overridables of base class CWdgtGraphObjPropertiesAbstract
     void fillEditControls() override;
-protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
-    void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawingSettings) override;
 protected slots:
     void onBtnCollapseClicked(bool i_bChecked = false);
 protected slots:
-    void onCmbFillStyleCurrentIndexChanged(int i_idx);
-    void onBtnFillColorClicked(bool i_bChecked = false);
-private: // auxiliary instance methods
-    QSize fillFillStylesModel();
-private: // auxiliary instance methods
-    void updateCmbFillStyle(const CEnumFillStyle& i_fillStyle);
-    void updateBtnFillColor(const QColor& i_clr);
+    void onChkGridLinesVisibleStateChanged(int i_iState);
+    void onEdtGridLinesDistMinValueChanged(int i_iVal);
+    void onCmbGridLinesStyleCurrentIndexChanged(int i_idx);
+    void onEdtGridLinesWidthValueChanged(int i_iVal);
+    void onBtnGridLinesColorClicked(bool i_bChecked);
+    void onChkGridScaleLabelsVisibleStateChanged(int i_iState);
+    void onCmbGridScaleLabelsCurrentFontChanged(const QFont& i_fnt);
+    void onCmbGridScaleLabelsFontSizeCurrentIndexChanged(int i_iCurrentIndex);
+    void onBtnGridScaleLabelsTextColorClicked(bool i_bChecked);
+    void onBtnGridScaleLabelsFontStyleBoldToggled(bool i_bChecked);
+    void onBtnGridScaleLabelsFontStyleItalicToggled(bool i_bChecked);
+    void onBtnGridScaleLabelsTextEffectUnderlineToggled(bool i_bChecked);
+    void onBtnGridScaleLabelsTextEffectStrikeoutToggled(bool i_bChecked);
+protected: // instance methods
+    void setGridLinesVisible(bool i_bVisible);
+    void setGridLinesDistMin(int i_iDistMin_px);
+    void setGridLinesStyle(ELineStyle i_lineStyle);
+    void setGridLinesColor(const QColor& i_color);
+    void setGridLinesWidth(int i_iWidth_px);
+    void setGridLabelsVisible(bool i_bVisible);
+    void setGridLabelsFont(const QFont& i_fnt);
+    void setGridLabelsTextSize(ETextSize i_textSize);
+    void setGridLabelsTextColor(const QColor& i_color);
+    void setGridLabelsTextStyle(ETextStyle i_textStyle);
+    void setGridLabelsTextEffect(const ETextEffect i_textEffect);
+protected: // instance methods
+    void updateGridSettings();
+    QSize fillGridLineStylesModel();
+    void updateGridLinesColorButtonIcon();
+    void updateGridLabelsTextColorButtonIcon();
+    void updateGridLabelsTextStyleBoldButton();
+    void updateGridLabelsTextStyleItalicButton();
+    void updateGridLabelsTextEffectUnderlineButton();
+    void updateGridLabelsTextEffectStrikeoutButton();
 protected: // instance methods (method tracing)
     void traceValues(ZS::System::CMethodTracer& i_mthTracer, ZS::System::EMethodDir i_methodDir);
 private: // instance members
-    /*!< Cached draw settings of the graphical object. */
-    QColor m_fillColor;
-    CEnumFillStyle m_fillStyle;
+    /*!< Cached grid settings of the graphical object. */
+    CDrawGridSettings m_gridSettings;
     /*!< Edit controls. */
     QWidget* m_pWdgtHeadline;
     QHBoxLayout* m_pLytWdgtHeadline;
@@ -85,14 +110,32 @@ private: // instance members
     QLabel* m_pLblHeadlineIcon;
     QLabel* m_pLblHeadline;
     ZS::System::GUI::CSepLine* m_pSepHeadline;
-    QWidget* m_pWdgtFillStyleSettings;
-    QGridLayout* m_pLytWdgtFillStyleSettings;
-    // Fill Style and Color
-    QLabel* m_pLblFillStyle;
-    QStandardItemModel* m_pModelFillStyles;
-    QComboBox* m_pCmbFillStyle;
-    QPixmap* m_pPxmBtnFillColor;
-    QPushButton* m_pBtnFillColor;
+    QWidget* m_pWdgtGridStyleSettings;
+    QGridLayout* m_pLytWdgtGridStyleSettings;
+    // Grid Lines
+    QLabel* m_pLblGridLines;
+    QCheckBox* m_pChkGridLinesVisible;
+    QLabel* m_pLblGridLinesDistMin;
+    QSpinBox* m_pEdtGridLinesDistMin;
+    QLabel* m_pLblGridLinesStyle;
+    QComboBox* m_pCmbGridLinesStyle;
+    QStandardItemModel* m_pModelGridLinesStyles;
+    QSpinBox* m_pEdtGridLinesWidth;
+    QPixmap* m_pPxmBtnGridLinesColor;
+    QPushButton* m_pBtnGridLinesColor;
+    // Grid Scale Labels
+    QLabel* m_pLblGridScaleLabels;
+    QCheckBox* m_pChkGridScaleLabelsVisible;
+    QFontComboBox* m_pCmbGridScaleLabelsFont;
+    QComboBox* m_pCmbGridScaleLabelsFontSize;
+    QPixmap* m_pPxmBtnGridScaleLabelsTextColor;
+    QRect m_rctBtnGridScaleLabelsTextColor;
+    QPushButton* m_pBtnGridScaleLabelsTextColor;
+    QLabel* m_pLblGridScaleLabelsTextStyle;
+    QPushButton* m_pBtnGridScaleLabelsFontStyleBold;
+    QPushButton* m_pBtnGridScaleLabelsFontStyleItalic;
+    QPushButton* m_pBtnGridScaleLabelsTextEffectUnderline;
+    QPushButton* m_pBtnGridScaleLabelsTextEffectStrikeout;
 
 }; // class ZSDraw_DrawGraphObjGridStylePropertiesWdgt_h
 

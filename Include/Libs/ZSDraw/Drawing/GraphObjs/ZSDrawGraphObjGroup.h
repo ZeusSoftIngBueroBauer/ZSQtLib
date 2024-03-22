@@ -126,6 +126,7 @@ public: // instance methods
 public: // instance methods
     void addToGroup( CGraphObj* i_pGraphObj );
     void removeFromGroup( CGraphObj* i_pGraphObj );
+    void resizeToContent();
     CGraphObj* findGraphObj( const QString& i_strObjName );
     QVector<CGraphObj*> childs() const;
 public: // overridables of base class CGraphObj
@@ -241,6 +242,8 @@ protected: // overridables of base class QGraphicsItem
 protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
+protected: // auxiliary instance methods
+    void paintGridLines(QPainter* i_pPainter);
 protected: // auxiliary instance methods (method tracing)
     CPhysValRect setRectOrig(const CPhysValRect& i_physValRect);
     QRectF setRectOrig(const QRectF& i_rect);

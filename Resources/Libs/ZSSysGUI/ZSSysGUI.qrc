@@ -48,6 +48,7 @@
         <file alias="ButtonMoveLeft24x24.png">Images/ButtonMoveLeft24x24.png</file>
         <file alias="ButtonRedo16x16.png">Images/ButtonRedo16x16.png</file>
         <file alias="ButtonRedo24x24.png">Images/ButtonRedo24x24.png</file>
+        <file alias="ButtonResizeToContent.png">Images/ButtonResizeToContent.png</file>
         <file alias="ButtonTableView16x16.png">Images/ButtonTableView16x16.png</file>
         <file alias="ButtonUndo16x16.png">Images/ButtonUndo16x16.png</file>
         <file alias="ButtonUndo24x24.png">Images/ButtonUndo24x24.png</file>

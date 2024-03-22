@@ -213,38 +213,63 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
     }
     m_pLytWdgtLineStyleSettings->setColumnStretch(iClmCount, 1);
 
+    // Row 0:
+    const int iClmLblLineStyle = 0;
+    const int iClmCmbLineStyle = 4;
+    const int iClmEdtLineWidth = 6;
+    const int iClmBtnLineColor = 8;
+    // Row 1:
+    const int iClmLblEndPoints = 0;
+    const int iClmLblEndPoint = 2;
+    const int iClmCmbEndPointStyle = 4;
+    const int iClmCmbEndPointWidth = 6;
+    const int iClmCmbEndPointLength = 8;
+    // Row 2:
+    //const int iClmLblEndPoints = 0;
+    //const int iClmLblEndPoint = 2;
+    //const int iClmCmbEndPointStyle = 4;
+    //const int iClmCmbEndPointWidth = 6;
+    //const int iClmCmbEndPointLength = 8;
+
     // <Row 0> Line Style
     //-------------------
 
     int iRow = 0;
 
-    m_pLblLineStyle = new QLabel("Line:");
-    //m_pLblLineStyle->setFixedWidth(m_ariClmWidths[0]);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pLblLineStyle, iRow, 0);
+    int iClm = iClmLblLineStyle;
+    m_pLblLineStyle = new QLabel("Line Style:");
+    m_pLytWdgtLineStyleSettings->addWidget(m_pLblLineStyle, iRow, iClm);
 
+    QLabel* pLblDummy = new QLabel();
+    //pLblDummy->setMinimumWidth(m_ariClmWidths[2]);
+    m_pLytWdgtLineStyleSettings->addWidget(pLblDummy, iRow, 2, Qt::AlignRight);
+
+    iClm = iClmCmbLineStyle;
     m_pModelLineStyles = new QStandardItemModel();
     iconSize = fillLineStylesModel();
     m_pCmbLineStyle = new QComboBox();
     m_pCmbLineStyle->setModel(m_pModelLineStyles);
     m_pCmbLineStyle->setIconSize(iconSize);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbLineStyle, iRow, 4);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbLineStyle, iRow, iClm);
     QObject::connect(
         m_pCmbLineStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtGraphObjLineStyleProperties::onCmbLineStyleCurrentIndexChanged);
 
+    iClm = iClmEdtLineWidth;
     m_pEdtLineWidth = new QSpinBox();
     m_pEdtLineWidth->setMinimum(1);
     m_pEdtLineWidth->setMaximum(9999);
     m_pEdtLineWidth->setSuffix(" px");
-    m_pLytWdgtLineStyleSettings->addWidget(m_pEdtLineWidth, iRow, 6);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pEdtLineWidth, iRow, iClm);
     QObject::connect(
         m_pEdtLineWidth, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
         this, &CWdgtGraphObjLineStyleProperties::onEdtLineWidthValueChanged);
 
+    iClm = iClmBtnLineColor;
     m_pBtnLineColor = new QPushButton();
     m_pPxmBtnLineColor = new QPixmap(":/ZS/Draw/GraphObjLine16x16.png");
     m_pBtnLineColor->setIcon(*m_pPxmBtnLineColor);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pBtnLineColor, iRow, 8);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pBtnLineColor, iRow, iClm);
     QObject::connect(
         m_pBtnLineColor, &QPushButton::clicked,
         this, &CWdgtGraphObjLineStyleProperties::onBtnPenColorClicked);
@@ -254,38 +279,43 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
 
     iRow = 1;
 
+    iClm = iClmLblEndPoints;
     m_pLblLineEndStyles = new QLabel("End Points");
     //m_pLblLineEndStyles->setFixedWidth(m_ariClmWidths[0]);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pLblLineEndStyles, iRow, 0);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pLblLineEndStyles, iRow, iClm);
 
+    iClm = iClmLblEndPoint;
     m_pLblP1LineEndStyles = new QLabel("P1:");
     //m_pLblP1LineEndStyles->setFixedWidth(m_ariClmWidths[2]);
     m_pLytWdgtLineStyleSettings->addWidget(m_pLblP1LineEndStyles, iRow, 2, Qt::AlignRight);
 
+    iClm = iClmCmbEndPointStyle;
     m_pModelP1LineEndStyles = new QStandardItemModel();
     iconSize = fillLineEndStylesModel(ELinePoint::Start);
     m_pCmbP1LineEndStyle = new QComboBox();
     m_pCmbP1LineEndStyle->setModel(m_pModelP1LineEndStyles);
     m_pCmbP1LineEndStyle->setIconSize(iconSize);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP1LineEndStyle, iRow, 4);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP1LineEndStyle, iRow, iClm);
     QObject::connect(
         m_pCmbP1LineEndStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtGraphObjLineStyleProperties::onCmbP1LineEndStyleCurrentIndexChanged);
 
+    iClm = iClmCmbEndPointWidth;
     m_pModelP1ArrowHeadWidth = new QStandardItemModel();
     fillArrowHeadWidthModel(ELinePoint::Start);
     m_pCmbP1ArrowHeadWidth = new QComboBox();
     m_pCmbP1ArrowHeadWidth->setModel(m_pModelP1ArrowHeadWidth);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP1ArrowHeadWidth, iRow, 6);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP1ArrowHeadWidth, iRow, iClm);
     QObject::connect(
         m_pCmbP1ArrowHeadWidth, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtGraphObjLineStyleProperties::onCmbP1ArrowHeadWidthClicked);
 
+    iClm = iClmCmbEndPointLength;
     m_pModelP1ArrowHeadLength = new QStandardItemModel();
     fillArrowHeadLengthModel(ELinePoint::Start);
     m_pCmbP1ArrowHeadLength = new QComboBox();
     m_pCmbP1ArrowHeadLength->setModel(m_pModelP1ArrowHeadLength);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP1ArrowHeadLength, iRow, 8);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP1ArrowHeadLength, iRow, iClm);
     QObject::connect(
         m_pCmbP1ArrowHeadLength, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtGraphObjLineStyleProperties::onCmbP1ArrowHeadLengthClicked);
@@ -295,34 +325,38 @@ CWdgtGraphObjLineStyleProperties::CWdgtGraphObjLineStyleProperties(
 
     iRow = 2;
 
+    iClm = iClmLblEndPoint;
     m_pLblP2LineEndStyles = new QLabel("P2:");
     //m_pLblP2LineEndStyles->setFixedWidth(m_ariClmWidths[2]);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pLblP2LineEndStyles, iRow, 2, Qt::AlignRight);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pLblP2LineEndStyles, iRow, iClm, Qt::AlignRight);
 
+    iClm = iClmCmbEndPointStyle;
     m_pModelP2LineEndStyles = new QStandardItemModel();
     iconSize = fillLineEndStylesModel(ELinePoint::End);
     m_pCmbP2LineEndStyle = new QComboBox();
     m_pCmbP2LineEndStyle->setModel(m_pModelP2LineEndStyles);
     m_pCmbP2LineEndStyle->setIconSize(iconSize);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP2LineEndStyle, iRow, 4);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP2LineEndStyle, iRow, iClm);
     QObject::connect(
         m_pCmbP2LineEndStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtGraphObjLineStyleProperties::onCmbP2LineEndStyleCurrentIndexChanged);
 
+    iClm = iClmCmbEndPointWidth;
     m_pModelP2ArrowHeadWidth = new QStandardItemModel();
     fillArrowHeadWidthModel(ELinePoint::End);
     m_pCmbP2ArrowHeadWidth = new QComboBox();
     m_pCmbP2ArrowHeadWidth->setModel(m_pModelP2ArrowHeadWidth);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP2ArrowHeadWidth, iRow, 6);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP2ArrowHeadWidth, iRow, iClm);
     QObject::connect(
         m_pCmbP2ArrowHeadWidth, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtGraphObjLineStyleProperties::onCmbP2ArrowHeadWidthClicked);
 
+    iClm = iClmCmbEndPointLength;
     m_pModelP2ArrowHeadLength = new QStandardItemModel();
     fillArrowHeadLengthModel(ELinePoint::End);
     m_pCmbP2ArrowHeadLength = new QComboBox();
     m_pCmbP2ArrowHeadLength->setModel(m_pModelP2ArrowHeadLength);
-    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP2ArrowHeadLength, iRow, 8);
+    m_pLytWdgtLineStyleSettings->addWidget(m_pCmbP2ArrowHeadLength, iRow, iClm);
     QObject::connect(
         m_pCmbP2ArrowHeadLength, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
         this, &CWdgtGraphObjLineStyleProperties::onCmbP2ArrowHeadLengthClicked);
@@ -673,6 +707,9 @@ void CWdgtGraphObjLineStyleProperties::fillEditControls()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "fillEditControls",
         /* strAddInfo   */ "" );
+    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
+        traceValues(mthTracer, EMethodDir::Enter);
+    }
 
     CDrawSettings drawSettings;
     if (m_pGraphObj == nullptr) {
@@ -812,10 +849,6 @@ void CWdgtGraphObjLineStyleProperties::fillEditControls()
     }
     else {
         m_pLblLineEndStyles->hide();
-    }
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Enter);
     }
 
     if (bLineStyleUsed) {

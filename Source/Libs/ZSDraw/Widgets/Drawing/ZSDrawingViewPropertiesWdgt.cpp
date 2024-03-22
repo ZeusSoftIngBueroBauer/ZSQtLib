@@ -850,6 +850,7 @@ CWdgtDrawingViewProperties::~CWdgtDrawingViewProperties()
     m_pGrpGrid = nullptr;
     m_pLytGrpGrid = nullptr;
     m_pLytGridSettings = nullptr;
+    // Grid Lines
     m_pLblGridLines = nullptr;
     m_pChkGridLinesVisible = nullptr;
     m_pCmbGridLinesStyle = nullptr;

@@ -880,16 +880,10 @@ void CDrawingScene::setGridSettings( const CDrawGridSettings& i_gridSettings)
 
         m_divLinesMetricsX.setDivLinesDistMinInPix(EDivLineLayer::Main, m_gridSettings.linesDistMin());
         m_divLinesMetricsX.setFont(font);
-        //m_divLinesMetricsX.setDigitsCountMax(0);
-        //m_divLinesMetricsX.setUseEngineeringFormat(false);
-        //m_divLinesMetricsX.setDivLineLabelsMinTextExtent(QSize(0, 0));
         m_divLinesMetricsX.update();
 
         m_divLinesMetricsY.setDivLinesDistMinInPix(EDivLineLayer::Main, m_gridSettings.linesDistMin());
         m_divLinesMetricsY.setFont(font);
-        //m_divLinesMetricsY.setDigitsCountMax(0);
-        //m_divLinesMetricsY.setUseEngineeringFormat(false);
-        //m_divLinesMetricsY.setDivLineLabelsMinTextExtent(QSize(0, 0));
         m_divLinesMetricsY.update();
 
         update();
@@ -4430,8 +4424,6 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
     //i_pPainter->drawRect(rctScene);
 
     if (m_gridSettings.areLinesVisible() || m_gridSettings.areLabelsVisible()) {
-        //m_divLinesMetricsX.update();
-        //m_divLinesMetricsY.update();
         if (m_gridSettings.areLinesVisible()) {
             paintGridLines(i_pPainter);
         }
@@ -4884,38 +4876,29 @@ void CDrawingScene::paintGridLines(QPainter* i_pPainter)
     #pragma message(__TODO__"m_gridSettings.useDivLineDistValDecimalFactor25()")
 
     i_pPainter->save();
-
-    QRectF rctScene = sceneRect();
-
-    if (m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main) > 0)
-    {
+    QRectF rct = sceneRect();
+    if (m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main) > 0) {
         QPen pen(m_gridSettings.linesColor());
         pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.linesStyle().enumerator()));
         pen.setWidth(m_gridSettings.linesWidth());
         i_pPainter->setPen(pen);
-
         for (int idxLine = 0; idxLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
             int x = m_divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
-            i_pPainter->drawLine(x, rctScene.top(), x, rctScene.bottom());
+            i_pPainter->drawLine(x, rct.top(), x, rct.bottom());
         }
     }
-
-    if (m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main) > 0)
-    {
+    if (m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main) > 0) {
         QPen pen(m_gridSettings.linesColor());
         pen.setStyle(lineStyle2QtPenStyle(m_gridSettings.linesStyle().enumerator()));
         pen.setWidth(m_gridSettings.linesWidth());
         i_pPainter->setPen(pen);
-
         for (int idxLine = 0; idxLine < m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
             int y = m_divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxLine);
-            i_pPainter->drawLine(rctScene.left(), y, rctScene.right(), y);
+            i_pPainter->drawLine(rct.left(), y, rct.right(), y);
         }
     }
-
     i_pPainter->restore();
-
-} // paintGridLines
+} 
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the bounding rectangle in scene coordinates of the passed graphics items.

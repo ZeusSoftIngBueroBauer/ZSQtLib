@@ -27,7 +27,7 @@ may result in using the software modules.
 #include "ZSDraw/Widgets/GraphObjs/ZSDrawGraphObjGridStylePropertiesWdgt.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
-#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSSysGUI/ZSSysGUIDllMain.h"
 #include "ZSSysGUI/ZSSysSepLine.h"
 #include "ZSSysGUI/ZSSysGUIAux.h"
@@ -43,16 +43,20 @@ may result in using the software modules.
 #include <QtGui/qstandarditemmodel.h>
 
 #if QT_VERSION < 0x050000
+#include <QtGui/qcheckbox.h>
 #include <QtGui/qcolordialog.h>
 #include <QtGui/qcombobox.h>
+#include <QtGui/qfontcombobox.h>
 #include <QtGui/qlabel.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qlineedit.h>
 #include <QtGui/qpushbutton.h>
 #include <QtGui/qspinbox.h>
 #else
+#include <QtWidgets/qcheckbox.h>
 #include <QtWidgets/qcolordialog.h>
 #include <QtWidgets/qcombobox.h>
+#include <QtWidgets/qfontcombobox.h>
 #include <QtWidgets/qlabel.h>
 #include <QtWidgets/qlayout.h>
 #include <QtWidgets/qlineedit.h>
@@ -89,8 +93,7 @@ CWdgtGraphObjGridStyleProperties::CWdgtGraphObjGridStyleProperties(
         i_strNameSpace, i_strGraphObjType,
         ClassName(), i_strObjName, i_pWdgtParent),
     // Caching values
-    m_fillColor(Qt::white),
-    m_fillStyle(EFillStyle::NoFill),
+    m_gridSettings(i_strObjName),
     // Edit Controls
     m_pWdgtHeadline(nullptr),
     m_pLytWdgtHeadline(nullptr),
@@ -100,14 +103,32 @@ CWdgtGraphObjGridStyleProperties::CWdgtGraphObjGridStyleProperties(
     m_pLblHeadlineIcon(nullptr),
     m_pLblHeadline(nullptr),
     m_pSepHeadline(nullptr),
-    m_pWdgtFillStyleSettings(nullptr),
-    m_pLytWdgtFillStyleSettings(nullptr),
-    // Fill Style
-    m_pLblFillStyle(nullptr),
-    m_pModelFillStyles(nullptr),
-    m_pCmbFillStyle(nullptr),
-    m_pPxmBtnFillColor(nullptr),
-    m_pBtnFillColor(nullptr)
+    m_pWdgtGridStyleSettings(nullptr),
+    m_pLytWdgtGridStyleSettings(nullptr),
+    // Grid Lines
+    m_pLblGridLines(nullptr),
+    m_pChkGridLinesVisible(nullptr),
+    m_pLblGridLinesDistMin(nullptr),
+    m_pEdtGridLinesDistMin(nullptr),
+    m_pLblGridLinesStyle(nullptr),
+    m_pCmbGridLinesStyle(nullptr),
+    m_pModelGridLinesStyles(nullptr),
+    m_pEdtGridLinesWidth(nullptr),
+    m_pPxmBtnGridLinesColor(nullptr),
+    m_pBtnGridLinesColor(nullptr),
+    // Grid Labels
+    m_pLblGridScaleLabels(nullptr),
+    m_pChkGridScaleLabelsVisible(nullptr),
+    m_pCmbGridScaleLabelsFont(nullptr),
+    m_pCmbGridScaleLabelsFontSize(nullptr),
+    m_pPxmBtnGridScaleLabelsTextColor(nullptr),
+    m_rctBtnGridScaleLabelsTextColor(0, 11, 16, 5),
+    m_pBtnGridScaleLabelsTextColor(nullptr),
+    m_pLblGridScaleLabelsTextStyle(nullptr),
+    m_pBtnGridScaleLabelsFontStyleBold(nullptr),
+    m_pBtnGridScaleLabelsFontStyleItalic(nullptr),
+    m_pBtnGridScaleLabelsTextEffectUnderline(nullptr),
+    m_pBtnGridScaleLabelsTextEffectStrikeout(nullptr)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -160,59 +181,224 @@ CWdgtGraphObjGridStyleProperties::CWdgtGraphObjGridStyleProperties(
     // <Widget> Style
     //===============
 
-    QSize iconSize;
+    m_pWdgtGridStyleSettings = new QWidget();
+    m_pLytWdgtGridStyleSettings = new QGridLayout();
+    m_pLytWdgtGridStyleSettings->setContentsMargins(0, 0, 0, 0);
+    m_pWdgtGridStyleSettings->setLayout(m_pLytWdgtGridStyleSettings);
+    m_pLyt->addWidget(m_pWdgtGridStyleSettings);
 
-    m_pWdgtFillStyleSettings = new QWidget();
-    m_pLytWdgtFillStyleSettings = new QGridLayout();
-    m_pLytWdgtFillStyleSettings->setContentsMargins(0, 0, 0, 0);
-    m_pWdgtFillStyleSettings->setLayout(m_pLytWdgtFillStyleSettings);
-    m_pLyt->addWidget(m_pWdgtFillStyleSettings);
-
-    /* Grid Layout (alternative 2)
-         |     0    |1| 2 |3| 4   |5|  6  | 
-       --+----------+-+---+-+-----+-+-----+----
-       0 |Brush:    | |   | |Style| |Color|<-->
+    /* Grid Layout
+         |       0     |1| 2 |3|      4       |5|      6       |7|      8       |9|      10         |
+         |      50     |5| 20|5|     60       |5|     60       |5|     60       |5|      60         |
+       --+-------------+-+---+-+--------------+-+--------------+-+--------------+-+-----------------+
+       0 |Label Lines: | |Chk| |Label MinDist | |Edit MinDist  | |              | |                 |<-->
+       2 |Label Style: | |   | |Edit LineStyle| |Edit LineWidth| |Btn LineColor | |                 |<-->
+       3 |Label Labels:| |Chk| |Cmb Font                       | |Cmb FontSize  | |Btn TextColor    |<-->
+       4 |Label Style: | |   | |Btn Bold      | |Btn Italic    | |Btn Underscore| |Btn StrikeThrough|<-->
     */
-    int iClmCount = 7;
+    int iClmCount = m_ariClmWidths.size();
     for (int idxClm = 0; idxClm < iClmCount; ++idxClm) {
-        m_pLytWdgtFillStyleSettings->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
+        m_pLytWdgtGridStyleSettings->setColumnMinimumWidth(idxClm, m_ariClmWidths[idxClm]);
     }
-    m_pLytWdgtFillStyleSettings->setColumnStretch(iClmCount, 1);
+    m_pLytWdgtGridStyleSettings->setColumnStretch(iClmCount, 1);
 
-    // <Row 0> Fill Style
-    //-------------------
+    // Row 0:
+    const int iClmLblLines = 0;
+    const int iClmChkVisible = 2;
+    const int iClmLblLinesDistMin = 4;
+    const int iClmEdtLinesDistMin = 6;
+    // Row 1:
+    const int iClmLblLineStyle = 0;
+    const int iClmCmbLinesLineStyle = 4;
+    const int iClmEdtLinesLineWidth = 6;
+    const int iClmBtnLinesLineColor = 8;
+    // Row 2:
+    const int iClmLblLabels = 0;
+    //const int iClmChkVisible = 2;
+    const int iClmCmbLabelsFont = 4;
+    const int iClmSpanCmbLabelsFont = 3;
+    const int iClmCmbLabelsFontSize = 8;
+    const int iClmBtnLabelsTextColor = 10;
+    // Row 3:
+    const int iClmLblTextStyle = 0;
+    const int iClmBtnFontStyleBold = 4;
+    const int iClmBtnFontStyleItalic = 6;
+    const int iClmBtnFontEffectUnderline = 8;
+    const int iClmBtnFontEffectStrikeout = 10;
+
+    // <Row 0> Lines Min Distance
+    //---------------------------
 
     int iRow = 0;
 
-    m_pLblFillStyle = new QLabel("Brush:");
-    m_pLytWdgtFillStyleSettings->addWidget(m_pLblFillStyle, iRow, 0);
+    int iClm = iClmLblLines;
+    m_pLblGridLines = new QLabel("Lines:");
+    m_pLytWdgtGridStyleSettings->addWidget(m_pLblGridLines, iRow, iClm);
 
-    QLabel* pLblDummy = new QLabel();
-    m_pLytWdgtFillStyleSettings->addWidget(pLblDummy, iRow, 2, Qt::AlignRight);
-
-    m_pModelFillStyles = new QStandardItemModel();
-    iconSize = fillFillStylesModel();
-    m_pCmbFillStyle = new QComboBox();
-    m_pCmbFillStyle->setModel(m_pModelFillStyles);
-    m_pCmbFillStyle->setIconSize(iconSize);
-    m_pLytWdgtFillStyleSettings->addWidget(m_pCmbFillStyle, iRow, 4);
+    iClm = iClmChkVisible;
+    m_pChkGridLinesVisible = new QCheckBox();
+    m_pLytWdgtGridStyleSettings->addWidget(m_pChkGridLinesVisible, iRow, iClm);
     QObject::connect(
-        m_pCmbFillStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
-        this, &CWdgtGraphObjGridStyleProperties::onCmbFillStyleCurrentIndexChanged);
+        m_pChkGridLinesVisible, &QCheckBox::stateChanged,
+        this, &CWdgtGraphObjGridStyleProperties::onChkGridLinesVisibleStateChanged);
 
-    m_pBtnFillColor = new QPushButton();
-    m_pPxmBtnFillColor = new QPixmap(":/ZS/Draw/DrawSettingsBrushStyle16x16.png");
-    m_pBtnFillColor->setIcon(*m_pPxmBtnFillColor);
-    m_pLytWdgtFillStyleSettings->addWidget(m_pBtnFillColor, iRow, 6);
+    iClm = iClmLblLinesDistMin;
+    m_pLblGridLinesDistMin = new QLabel("Min Distance:");
+    m_pLytWdgtGridStyleSettings->addWidget(m_pLblGridLinesDistMin, iRow, iClm);
+
+    iClm = iClmEdtLinesDistMin;
+    m_pEdtGridLinesDistMin = new QSpinBox();
+    m_pEdtGridLinesDistMin->setMinimum(1);
+    m_pEdtGridLinesDistMin->setMaximum(9999);
+    m_pEdtGridLinesDistMin->setSuffix(" px");
+    m_pLytWdgtGridStyleSettings->addWidget(m_pEdtGridLinesDistMin, iRow, iClm);
     QObject::connect(
-        m_pBtnFillColor, &QPushButton::clicked,
-        this, &CWdgtGraphObjGridStyleProperties::onBtnFillColorClicked);
+        m_pEdtGridLinesDistMin, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+        this, &CWdgtGraphObjGridStyleProperties::onEdtGridLinesDistMinValueChanged);
+
+    // <Row 1> Lines Style, Width, Color
+    //----------------------------------
+
+    ++iRow;
+
+    iClm = iClmLblLineStyle;
+    m_pLblGridLinesStyle = new QLabel("Line Style:");
+    m_pLytWdgtGridStyleSettings->addWidget(m_pLblGridLinesStyle, iRow, iClm);
+
+    iClm = iClmCmbLinesLineStyle;
+    m_pModelGridLinesStyles = new QStandardItemModel();
+    QSize iconSize = fillGridLineStylesModel();
+    m_pCmbGridLinesStyle = new QComboBox();
+    m_pCmbGridLinesStyle->setModel(m_pModelGridLinesStyles);
+    m_pCmbGridLinesStyle->setIconSize(iconSize);
+    m_pLytWdgtGridStyleSettings->addWidget(m_pCmbGridLinesStyle, iRow, iClm);
+    QObject::connect(
+        m_pCmbGridLinesStyle, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtGraphObjGridStyleProperties::onCmbGridLinesStyleCurrentIndexChanged);
+
+    iClm = iClmEdtLinesLineWidth;
+    m_pEdtGridLinesWidth = new QSpinBox();
+    m_pEdtGridLinesWidth->setMinimum(1);
+    m_pEdtGridLinesWidth->setMaximum(9999);
+    m_pEdtGridLinesWidth->setSuffix(" px");
+    m_pLytWdgtGridStyleSettings->addWidget(m_pEdtGridLinesWidth, iRow, iClm);
+    QObject::connect(
+        m_pEdtGridLinesWidth, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+        this, &CWdgtGraphObjGridStyleProperties::onEdtGridLinesWidthValueChanged);
+
+    iClm = iClmBtnLinesLineColor;
+    m_pPxmBtnGridLinesColor = new QPixmap(":/ZS/Draw/GraphObjLine16x16.png");
+    m_pBtnGridLinesColor = new QPushButton();
+    updateGridLinesColorButtonIcon();
+    m_pLytWdgtGridStyleSettings->addWidget(m_pBtnGridLinesColor, iRow, iClm);
+    QObject::connect(
+        m_pBtnGridLinesColor, &QPushButton::clicked,
+        this, &CWdgtGraphObjGridStyleProperties::onBtnGridLinesColorClicked);
+
+    // <Row 2> Grid Scale Labels Visible and Font Size
+    //------------------------------------------------
+
+    ++iRow;
+
+    iClm = iClmLblLabels;
+    m_pLblGridScaleLabels = new QLabel("Labels:");
+    m_pLytWdgtGridStyleSettings->addWidget(m_pLblGridScaleLabels, iRow, iClm);
+
+    iClm = iClmChkVisible;
+    m_pChkGridScaleLabelsVisible = new QCheckBox();
+    m_pLytWdgtGridStyleSettings->addWidget(m_pChkGridScaleLabelsVisible, iRow, iClm);
+    QObject::connect(
+        m_pChkGridScaleLabelsVisible, &QCheckBox::stateChanged,
+        this, &CWdgtGraphObjGridStyleProperties::onChkGridScaleLabelsVisibleStateChanged);
+
+    iClm = iClmCmbLabelsFont;
+    m_pCmbGridScaleLabelsFont = new QFontComboBox();
+    m_pLytWdgtGridStyleSettings->addWidget(m_pCmbGridScaleLabelsFont, iRow, iClm, 1, iClmSpanCmbLabelsFont);
+    QObject::connect(
+        m_pCmbGridScaleLabelsFont, &QFontComboBox::currentFontChanged,
+        this, &CWdgtGraphObjGridStyleProperties::onCmbGridScaleLabelsCurrentFontChanged);
+
+    iClm = iClmCmbLabelsFontSize;
+    m_pCmbGridScaleLabelsFontSize = new QComboBox();
+    m_pLytWdgtGridStyleSettings->addWidget(m_pCmbGridScaleLabelsFontSize, iRow, iClm);
+    for (int idx = 0; idx < ETextSizeCount; idx++) {
+        m_pCmbGridScaleLabelsFontSize->addItem(
+            textSize2Str(static_cast<ETextSize>(idx)),
+            textSize2SizeInPixels(static_cast<ETextSize>(idx)));
+    }
+    QObject::connect(
+        m_pCmbGridScaleLabelsFontSize, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged),
+        this, &CWdgtGraphObjGridStyleProperties::onCmbGridScaleLabelsFontSizeCurrentIndexChanged);
+
+    iClm = iClmBtnLabelsTextColor;
+    m_pPxmBtnGridScaleLabelsTextColor = new QPixmap(":/ZS/Draw/DrawSettingsTextStyle16x16.png");
+    m_pBtnGridScaleLabelsTextColor = new QPushButton();
+    updateGridLabelsTextColorButtonIcon();
+    m_pLytWdgtGridStyleSettings->addWidget(m_pBtnGridScaleLabelsTextColor, iRow, iClm);
+    QObject::connect(
+        m_pBtnGridScaleLabelsTextColor, &QPushButton::clicked,
+        this, &CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsTextColorClicked);
+
+    // <Line> Grid Scale Labels Font Style and Font Effect
+    //----------------------------------------------------
+
+    QFont font;
+
+    ++iRow;
+
+    iClm = iClmLblTextStyle;
+    m_pLblGridScaleLabelsTextStyle = new QLabel("Text Style:");
+    m_pLytWdgtGridStyleSettings->addWidget(m_pLblGridScaleLabelsTextStyle, iRow, iClm);
+
+    iClm = iClmBtnFontStyleBold;
+    m_pBtnGridScaleLabelsFontStyleBold = new QPushButton("F");
+    font = m_pBtnGridScaleLabelsFontStyleBold->font();
+    font.setBold(true);
+    m_pBtnGridScaleLabelsFontStyleBold->setFont(font);
+    m_pBtnGridScaleLabelsFontStyleBold->setCheckable(true);
+    m_pLytWdgtGridStyleSettings->addWidget(m_pBtnGridScaleLabelsFontStyleBold, iRow, iClm);
+    QObject::connect(
+        m_pBtnGridScaleLabelsFontStyleBold, &QPushButton::toggled,
+        this, &CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsFontStyleBoldToggled);
+
+    iClm = iClmBtnFontStyleItalic;
+    m_pBtnGridScaleLabelsFontStyleItalic = new QPushButton("I");
+    font = m_pBtnGridScaleLabelsFontStyleItalic->font();
+    font.setItalic(true);
+    m_pBtnGridScaleLabelsFontStyleItalic->setFont(font);
+    m_pBtnGridScaleLabelsFontStyleItalic->setCheckable(true);
+    m_pLytWdgtGridStyleSettings->addWidget(m_pBtnGridScaleLabelsFontStyleItalic, iRow, iClm);
+    QObject::connect(
+        m_pBtnGridScaleLabelsFontStyleItalic, &QPushButton::toggled,
+        this, &CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsFontStyleItalicToggled);
+
+    iClm = iClmBtnFontEffectUnderline;
+    m_pBtnGridScaleLabelsTextEffectUnderline = new QPushButton("U");
+    font = m_pBtnGridScaleLabelsTextEffectUnderline->font();
+    font.setUnderline(true);
+    m_pBtnGridScaleLabelsTextEffectUnderline->setFont(font);
+    m_pBtnGridScaleLabelsTextEffectUnderline->setCheckable(true);
+    m_pLytWdgtGridStyleSettings->addWidget(m_pBtnGridScaleLabelsTextEffectUnderline, iRow, iClm);
+    QObject::connect(
+        m_pBtnGridScaleLabelsTextEffectUnderline, &QPushButton::toggled,
+        this, &CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsTextEffectUnderlineToggled);
+
+    iClm = iClmBtnFontEffectStrikeout;
+    m_pBtnGridScaleLabelsTextEffectStrikeout = new QPushButton("ab");
+    font = m_pBtnGridScaleLabelsTextEffectStrikeout->font();
+    font.setStrikeOut(true);
+    m_pBtnGridScaleLabelsTextEffectStrikeout->setFont(font);
+    m_pBtnGridScaleLabelsTextEffectStrikeout->setCheckable(true);
+    m_pLytWdgtGridStyleSettings->addWidget(m_pBtnGridScaleLabelsTextEffectStrikeout, iRow, iClm);
+    QObject::connect(
+        m_pBtnGridScaleLabelsTextEffectStrikeout, &QPushButton::toggled,
+        this, &CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled);
 
     // Restore visibility
     //-------------------
 
     if (!s_bWdgtFillStyleVisible) {
-        m_pWdgtFillStyleSettings->hide();
+        m_pWdgtGridStyleSettings->hide();
     }
 
 } // ctor
@@ -228,18 +414,22 @@ CWdgtGraphObjGridStyleProperties::~CWdgtGraphObjGridStyleProperties()
         /* strAddInfo   */ "" );
 
     try {
-        delete m_pModelFillStyles;
+        delete m_pModelGridLinesStyles;
     }
     catch(...) {
     }
     try {
-        delete m_pPxmBtnFillColor;
+        delete m_pPxmBtnGridLinesColor;
+    }
+    catch(...) {
+    }
+    try {
+        delete m_pPxmBtnGridScaleLabelsTextColor;
     }
     catch(...) {
     }
 
-    //m_fillColor;
-    m_fillStyle = static_cast<EFillStyle>(0);
+    //m_gridSettings;
     m_pWdgtHeadline = nullptr;
     m_pLytWdgtHeadline = nullptr;
     //m_pxmBtnDown;
@@ -248,14 +438,32 @@ CWdgtGraphObjGridStyleProperties::~CWdgtGraphObjGridStyleProperties()
     m_pLblHeadlineIcon = nullptr;
     m_pLblHeadline = nullptr;
     m_pSepHeadline = nullptr;
-    m_pWdgtFillStyleSettings = nullptr;
-    m_pLytWdgtFillStyleSettings = nullptr;
-    // Fill Style
-    m_pLblFillStyle = nullptr;
-    m_pModelFillStyles = nullptr;
-    m_pCmbFillStyle = nullptr;
-    m_pPxmBtnFillColor = nullptr;
-    m_pBtnFillColor = nullptr;
+    m_pWdgtGridStyleSettings = nullptr;
+    m_pLytWdgtGridStyleSettings = nullptr;
+    // Grid Lines
+    m_pLblGridLines = nullptr;
+    m_pChkGridLinesVisible = nullptr;
+    m_pLblGridLinesDistMin = nullptr;
+    m_pEdtGridLinesDistMin = nullptr;
+    m_pLblGridLinesStyle = nullptr;
+    m_pCmbGridLinesStyle = nullptr;
+    m_pModelGridLinesStyles = nullptr;
+    m_pEdtGridLinesWidth = nullptr;
+    m_pPxmBtnGridLinesColor = nullptr;
+    m_pBtnGridLinesColor = nullptr;
+    // Grid Scale Labels
+    m_pLblGridScaleLabels = nullptr;
+    m_pChkGridScaleLabelsVisible = nullptr;
+    m_pCmbGridScaleLabelsFont = nullptr;
+    m_pCmbGridScaleLabelsFontSize = nullptr;
+    m_pPxmBtnGridScaleLabelsTextColor = nullptr;
+    //m_rctBtnGridScaleLabelsTextColor;
+    m_pBtnGridScaleLabelsTextColor = nullptr;
+    m_pLblGridScaleLabelsTextStyle = nullptr;
+    m_pBtnGridScaleLabelsFontStyleBold = nullptr;
+    m_pBtnGridScaleLabelsFontStyleItalic = nullptr;
+    m_pBtnGridScaleLabelsTextEffectUnderline = nullptr;
+    m_pBtnGridScaleLabelsTextEffectStrikeout = nullptr;
 }
 
 /*==============================================================================
@@ -276,14 +484,14 @@ void CWdgtGraphObjGridStyleProperties::expand(bool i_bExpand)
         /* strMethod    */ "expand",
         /* strAddInfo   */ strMthInArgs );
 
-    if (i_bExpand && m_pWdgtFillStyleSettings->isHidden()) {
+    if (i_bExpand && m_pWdgtGridStyleSettings->isHidden()) {
         m_pBtnCollapse->setIcon(m_pxmBtnUp);
-        m_pWdgtFillStyleSettings->show();
+        m_pWdgtGridStyleSettings->show();
         s_bWdgtFillStyleVisible = true;
     }
-    else if (!i_bExpand && !m_pWdgtFillStyleSettings->isHidden()) {
+    else if (!i_bExpand && !m_pWdgtGridStyleSettings->isHidden()) {
         m_pBtnCollapse->setIcon(m_pxmBtnDown);
-        m_pWdgtFillStyleSettings->hide();
+        m_pWdgtGridStyleSettings->hide();
         s_bWdgtFillStyleVisible = false;
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -307,19 +515,12 @@ bool CWdgtGraphObjGridStyleProperties::hasChanges() const
 
     bool bHasChanges = false;
 
-    CDrawSettings drawSettings;
     if (m_pGraphObj == nullptr) {
-        drawSettings = m_pDrawingScene->drawSettings();
+        bHasChanges = (m_gridSettings != m_pDrawingScene->gridSettings());
     }
-    else {
-        drawSettings = m_pGraphObj->getDrawSettings();
-    }
-
-    if (m_fillColor != drawSettings.getFillColor()) {
-        bHasChanges = true;
-    }
-    else if (m_fillStyle != drawSettings.getFillStyle()) {
-        bHasChanges = true;
+    else if (m_pGraphObj->type() == EGraphObjTypeGroup) {
+        const CGraphObjGroup* pGraphObjGroup = dynamic_cast<const CGraphObjGroup*>(m_pGraphObj);
+        bHasChanges = (m_gridSettings != pGraphObjGroup->gridSettings());
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -363,18 +564,11 @@ void CWdgtGraphObjGridStyleProperties::applySettings(bool i_bImmediatelyApplySet
 
     if (!hasErrors() && hasChanges()) {
         if (m_pGraphObj == nullptr) {
-            m_pDrawingScene->setFillColor(m_fillColor);
-            m_pDrawingScene->setFillStyle(m_fillStyle);
-            if (i_bImmediatelyApplySettings) {
-                m_pDrawingScene->updateDrawSettings();
-            }
+            m_pDrawingScene->setGridSettings(m_gridSettings);
         }
-        else {
-            m_pGraphObj->setFillColor(m_fillColor);
-            m_pGraphObj->setFillStyle(m_fillStyle);
-            if (i_bImmediatelyApplySettings) {
-                m_pGraphObj->updateDrawSettings();
-            }
+        else if (m_pGraphObj->type() == EGraphObjTypeGroup) {
+            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObj);
+            pGraphObjGroup->setGridSettings(m_gridSettings);
         }
     }
 
@@ -396,75 +590,21 @@ void CWdgtGraphObjGridStyleProperties::fillEditControls()
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "fillEditControls",
         /* strAddInfo   */ "" );
-
-    CDrawSettings drawSettings;
-    if (m_pGraphObj == nullptr) {
-        drawSettings = m_pDrawingScene->drawSettings();
-    }
-    else {
-        drawSettings = m_pGraphObj->getDrawSettings();
-    }
-
-    m_fillColor = drawSettings.getFillColor();
-    m_fillStyle = drawSettings.getFillStyle();
-
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    updateCmbFillStyle(m_fillStyle);
-    updateBtnFillColor(m_fillColor);
+    CDrawGridSettings gridSettings(objectName());
+    if (m_pGraphObj == nullptr) {
+        gridSettings = m_pDrawingScene->gridSettings();
+    }
+    else if (m_pGraphObj->type() == EGraphObjTypeGroup) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObj);
+        gridSettings = pGraphObjGroup->gridSettings();
+    }
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);
-    }
-}
-
-/*==============================================================================
-protected slots: // overridables of base class CWdgtGraphObjPropertiesAbstract
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-void CWdgtGraphObjGridStyleProperties::onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawSettings)
-//------------------------------------------------------------------------------
-{
-    if( m_iContentChangedSignalBlockedCounter > 0 ) {
-        return;
-    }
-
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_drawSettings.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onDrawingSceneDrawSettingsChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    if (m_pGraphObj == nullptr) {
-        // When applying the changes from the edit controls by invoking "acceptChanges"
-        // the ContentChangedSignalBlockedCounter is incremented to avoid that
-        // "onDrawingSceneDrawSettingsChanged" overwrites settings in edit controls which
-        // haven't been applied yet.
-        if (m_iContentChangedSignalBlockedCounter == 0)
-        {
-            {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
-
-                // Here the derived class should apply the properties from the graphical
-                // object to the edit controls.
-                fillEditControls();
-            }
-
-            // If the "contentChanged" signal is no longer blocked and the content of
-            // properties widget has been changed ...
-            if (m_iContentChangedSignalBlockedCounter == 0 && m_bContentChanged) {
-                // .. emit the contentChanged signal and update the enabled state
-                // of the Apply and Reset buttons.
-                emit_contentChanged();
-                m_bContentChanged = false;
-            }
-        }
     }
 }
 
@@ -482,7 +622,7 @@ void CWdgtGraphObjGridStyleProperties::onBtnCollapseClicked(bool /*i_bChecked*/)
         /* strMethod    */ "onBtnCollapseClicked",
         /* strAddInfo   */ "" );
 
-    if (m_pWdgtFillStyleSettings->isHidden()) {
+    if (m_pWdgtGridStyleSettings->isHidden()) {
         expand(true);
     }
     else {
@@ -495,9 +635,55 @@ protected slots:
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGridStyleProperties::onCmbFillStyleCurrentIndexChanged(int i_idx)
+void CWdgtGraphObjGridStyleProperties::onChkGridLinesVisibleStateChanged(int i_iState)
 //------------------------------------------------------------------------------
 {
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qCheckState2Str(i_iState);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onChkGridLinesVisibleStateChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    setGridLinesVisible(i_iState == Qt::Checked);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onEdtGridLinesDistMinValueChanged(int i_iVal)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iVal);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onEdtGridLinesDistMinValueChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    setGridLinesDistMin(i_iVal);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onCmbGridLinesStyleCurrentIndexChanged(int i_idx)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = QString::number(i_idx);
@@ -505,102 +691,598 @@ void CWdgtGraphObjGridStyleProperties::onCmbFillStyleCurrentIndexChanged(int i_i
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onCmbFillStyleCurrentIndexChanged",
+        /* strMethod    */ "onCmbGridLinesStyleCurrentIndexChanged",
         /* strAddInfo   */ strMthInArgs );
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Enter);
-    }
 
-    if (m_iContentChangedSignalBlockedCounter > 0) {
-        m_bContentChanged = true;
-    }
-    else {
-        QVariant varData = m_pCmbFillStyle->itemData(i_idx, Qt::UserRole);
-        m_fillStyle = static_cast<EFillStyle>(varData.toInt());
-        emit_contentChanged();
-    }
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Leave);
+    if( i_idx >= 0 && i_idx < CEnumLineStyle::count() )
+    {
+        QVariant varData = m_pCmbGridLinesStyle->itemData(i_idx, Qt::UserRole);
+        ELineStyle lineStyle = static_cast<ELineStyle>(varData.toInt());
+        setGridLinesStyle(lineStyle);
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGridStyleProperties::onBtnFillColorClicked(bool /*i_bChecked*/)
+void CWdgtGraphObjGridStyleProperties::onEdtGridLinesWidthValueChanged(int i_iVal)
 //------------------------------------------------------------------------------
 {
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iVal);
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "onBtnFillColorClicked",
-        /* strAddInfo   */ "" );
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Enter);
+        /* strMethod    */ "onBtnGridLinesColorClicked",
+        /* strAddInfo   */ strMthInArgs );
+
+    setGridLinesWidth(i_iVal);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onBtnGridLinesColorClicked(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bChecked);
     }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnGridLinesColorClicked",
+        /* strAddInfo   */ strMthInArgs );
 
     QColor clr = QColorDialog::getColor(
-        /* clrInitial  */ m_fillColor,
-        /* pWdgtParent */ m_pBtnFillColor,
+        /* clrInitial  */ m_gridSettings.linesColor(),
+        /* pWdgtParent */ m_pBtnGridLinesColor,
         /* strTitle    */ "Colors",
         /* options     */ QColorDialog::ShowAlphaChannel );
 
     if (clr.isValid()) {
-        if (m_fillColor != clr) {
-            updateBtnFillColor(clr);
-            if (m_iContentChangedSignalBlockedCounter > 0) {
-                m_bContentChanged = true;
-                m_fillColor = clr;
-            }
-            else {
-                m_fillColor = clr;
-                emit_contentChanged();
-            }
-        }
+        setGridLinesColor(clr);
     }
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
-        traceValues(mthTracer, EMethodDir::Leave);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onChkGridScaleLabelsVisibleStateChanged(int i_iState)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = qCheckState2Str(i_iState);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onChkGridScaleLabelsVisibleStateChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    setGridLabelsVisible(i_iState == Qt::Checked);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onCmbGridScaleLabelsCurrentFontChanged(const QFont& i_fnt)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_fnt.family();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onCmbGridScaleLabelsCurrentFontChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    setGridLabelsFont(i_fnt);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onCmbGridScaleLabelsFontSizeCurrentIndexChanged(int i_iCurrentIndex)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iCurrentIndex);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onCmbGridScaleLabelsFontSizeCurrentIndexChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    setGridLabelsTextSize(static_cast<ETextSize>(i_iCurrentIndex));
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsTextColorClicked(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnGridScaleLabelsTextColorClicked",
+        /* strAddInfo   */ strMthInArgs );
+
+    QColor clr = QColorDialog::getColor(
+        /* clrInitial  */ m_gridSettings.labelsTextColor(),
+        /* pWdgtParent */ m_pBtnGridScaleLabelsTextColor,
+        /* strTitle    */ "Colors",
+        /* options     */ QColorDialog::ShowAlphaChannel );
+
+    if (clr.isValid()) {
+        setGridLabelsTextColor(clr);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsFontStyleBoldToggled(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnGridScaleLabelsFontStyleBoldToggled",
+        /* strAddInfo   */ strMthInArgs );
+
+    CEnumTextStyle textStyle = ETextStyle::Normal;
+
+    if (m_pBtnGridScaleLabelsFontStyleItalic->isChecked() && m_pBtnGridScaleLabelsFontStyleBold->isChecked()) {
+        textStyle = ETextStyle::BoldItalic;
+    }
+    else if (m_pBtnGridScaleLabelsFontStyleItalic->isChecked()) {
+        textStyle = ETextStyle::Italic;
+    }
+    else if (m_pBtnGridScaleLabelsFontStyleBold->isChecked()) {
+        textStyle = ETextStyle::Bold;
+    }
+    setGridLabelsTextStyle(textStyle.enumerator());
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsFontStyleItalicToggled(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnGridScaleLabelsFontStyleItalicToggled",
+        /* strAddInfo   */ strMthInArgs );
+
+    CEnumTextStyle textStyle = ETextStyle::Normal;
+
+    if (m_pBtnGridScaleLabelsFontStyleItalic->isChecked() && m_pBtnGridScaleLabelsFontStyleBold->isChecked()) {
+        textStyle = ETextStyle::BoldItalic;
+    }
+    else if (m_pBtnGridScaleLabelsFontStyleItalic->isChecked()) {
+        textStyle = ETextStyle::Italic;
+    }
+    else if (m_pBtnGridScaleLabelsFontStyleBold->isChecked()) {
+        textStyle = ETextStyle::Bold;
+    }
+    setGridLabelsTextStyle(textStyle.enumerator());
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsTextEffectUnderlineToggled(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnGridScaleLabelsTextEffectUnderlineToggled",
+        /* strAddInfo   */ strMthInArgs );
+
+    CEnumTextEffect textEffect = ETextEffect::None;
+
+    if (m_pBtnGridScaleLabelsTextEffectUnderline->isChecked() && m_pBtnGridScaleLabelsTextEffectStrikeout->isChecked()) {
+        textEffect = ETextEffect::StrikeoutUnderline;
+    }
+    else if (m_pBtnGridScaleLabelsTextEffectUnderline->isChecked()) {
+        textEffect = ETextEffect::Underline;
+    }
+    else if (m_pBtnGridScaleLabelsTextEffectStrikeout->isChecked()) {
+        textEffect = ETextEffect::Strikeout;
+    }
+    setGridLabelsTextEffect(textEffect.enumerator());
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::onBtnGridScaleLabelsTextEffectStrikeoutToggled(bool i_bChecked)
+//------------------------------------------------------------------------------
+{
+    if (m_iContentChangedSignalBlockedCounter > 0) {
+        return;
+    }
+
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bChecked);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "onBtnGridScaleLabelsTextEffectStrikeoutToggled",
+        /* strAddInfo   */ strMthInArgs );
+
+    CEnumTextEffect textEffect = ETextEffect::None;
+
+    if (m_pBtnGridScaleLabelsTextEffectUnderline->isChecked() && m_pBtnGridScaleLabelsTextEffectStrikeout->isChecked()) {
+        textEffect = ETextEffect::StrikeoutUnderline;
+    }
+    else if (m_pBtnGridScaleLabelsTextEffectUnderline->isChecked()) {
+        textEffect = ETextEffect::Underline;
+    }
+    else if (m_pBtnGridScaleLabelsTextEffectStrikeout->isChecked()) {
+        textEffect = ETextEffect::Strikeout;
+    }
+    setGridLabelsTextEffect(textEffect.enumerator());
+}
+
+/*==============================================================================
+protected: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLinesVisible(bool i_bVisible)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bVisible);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLinesVisible",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.areLinesVisible() != i_bVisible) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLinesVisible(i_bVisible);
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLinesDistMin(int i_iDistMin_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iDistMin_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLinesDistMin",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.linesDistMin() != i_iDistMin_px) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLinesDistMin(i_iDistMin_px);
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLinesStyle(ELineStyle i_lineStyle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumLineStyle(i_lineStyle).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLinesStyle",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.linesStyle() != i_lineStyle) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLinesStyle(i_lineStyle);
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLinesColor(const QColor& i_color)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_color.name();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLinesColor",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.linesColor() != i_color) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLinesColor(i_color);
+        updateGridLinesColorButtonIcon();
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLinesWidth(int i_iWidth_px)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString::number(i_iWidth_px);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLinesWidth",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.linesWidth() != i_iWidth_px) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLinesWidth(i_iWidth_px);
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLabelsVisible(bool i_bVisible)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bVisible);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLabelsVisible",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.areLabelsVisible() != i_bVisible) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLabelsVisible(i_bVisible);
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLabelsFont(const QFont& i_fnt)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_fnt.family();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLabelsFont",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.labelsFont() != i_fnt) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLabelsFont(i_fnt);
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLabelsTextSize(ETextSize i_textSize)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = textSize2Str(i_textSize);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLabelsTextSize",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.labelsTextSize() != i_textSize) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLabelsTextSize(i_textSize);
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLabelsTextColor(const QColor& i_color)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_color.name();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLabelsTextColor",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.labelsTextColor() != i_color) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLabelsTextColor(i_color);
+        updateGridLabelsTextColorButtonIcon();
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLabelsTextStyle(ETextStyle i_textStyle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumTextStyle(i_textStyle).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLabelsTextStyle",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.labelsTextStyle() != i_textStyle) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLabelsTextStyle(i_textStyle);
+        updateGridLabelsTextStyleBoldButton();
+        updateGridLabelsTextStyleItalicButton();
+        updateButtonsEnabled();
+        emit_contentChanged();
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::setGridLabelsTextEffect(const ETextEffect i_textEffect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = CEnumTextEffect(i_textEffect).toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "setGridLabelsTextEffect",
+        /* strAddInfo   */ strMthInArgs );
+
+    if( m_gridSettings.labelsTextEffect() != i_textEffect) {
+        CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+        m_gridSettings.setLabelsTextEffect(i_textEffect);
+        updateGridLabelsTextEffectUnderlineButton();
+        updateGridLabelsTextEffectStrikeoutButton();
+        updateButtonsEnabled();
+        emit_contentChanged();
     }
 }
 
 /*==============================================================================
-private: // auxiliary instance methods
+protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QSize CWdgtGraphObjGridStyleProperties::fillFillStylesModel()
+void CWdgtGraphObjGridStyleProperties::updateGridSettings()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "fillFillStylesModel",
+        /* strMethod    */ "updateGridSettings",
+        /* strAddInfo   */ "" );
+
+    CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+
+    m_pChkGridLinesVisible->setChecked(m_gridSettings.areLinesVisible());
+    m_pEdtGridLinesDistMin->setValue(m_gridSettings.linesDistMin());
+    m_pEdtGridLinesWidth->setValue(m_gridSettings.linesWidth());
+    m_pChkGridScaleLabelsVisible->setChecked(m_gridSettings.areLabelsVisible());
+    int idx = m_pCmbGridLinesStyle->findData(m_gridSettings.linesStyle().enumeratorAsInt());
+    if (idx >= 0) {
+        m_pCmbGridLinesStyle->setCurrentIndex(idx);
+    }
+    m_pCmbGridScaleLabelsFont->setCurrentFont(m_gridSettings.labelsFont());
+    m_pCmbGridScaleLabelsFontSize->setCurrentIndex(m_gridSettings.labelsTextSize());
+
+    updateGridLinesColorButtonIcon();
+    updateGridLabelsTextColorButtonIcon();
+    updateGridLabelsTextStyleBoldButton();
+    updateGridLabelsTextStyleItalicButton();
+    updateGridLabelsTextEffectUnderlineButton();
+    updateGridLabelsTextEffectStrikeoutButton();
+}
+
+//------------------------------------------------------------------------------
+QSize CWdgtGraphObjGridStyleProperties::fillGridLineStylesModel()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "fillGridLineStylesModel",
         /* strAddInfo   */ "" );
 
     QSize iconSize(48, 16);
-    QPixmap pxmFillStyle(iconSize);
+    QPixmap pxmLineStyle(iconSize);
     QPainter painter;
-    QBrush brsh;
+    QPen pen;
 
-    for (CEnumFillStyle fillStyle = 0; fillStyle < CEnumFillStyle::count(); ++fillStyle) {
-        if (!isFillStyleGradientPattern(fillStyle.enumerator())) {
-            QStandardItem* pFillStyleItem = nullptr;
-            if (fillStyle == EFillStyle::NoFill) {
-                pFillStyleItem = new QStandardItem(" No Fill");
-            }
-            else {
-                pxmFillStyle.fill(Qt::white);
-                painter.begin(&pxmFillStyle);
-                if (fillStyle == EFillStyle::TexturePattern) {
-                    brsh.setTexture(pxmFillStyle);
-                }
-                brsh.setStyle(fillStyle2QtBrushStyle(fillStyle.enumerator()));
-                painter.setBrush(brsh);
-                painter.drawRect(2, 2, pxmFillStyle.width() - 4, pxmFillStyle.height() - 4);
-                painter.end();
-                pFillStyleItem = new QStandardItem();
-                pFillStyleItem->setData(pxmFillStyle, Qt::DecorationRole);
-            }
-            pFillStyleItem->setData(fillStyle.enumeratorAsInt(), Qt::UserRole);
-            m_pModelFillStyles->appendRow(pFillStyleItem);
+    pen.setColor(m_gridSettings.linesColor());
+    pen.setWidth(m_gridSettings.linesWidth());
+
+    for (CEnumLineStyle lineStyle = 0; lineStyle < CEnumLineStyle::count(); ++lineStyle) {
+        if (lineStyle != ELineStyle::NoLine) {
+            pxmLineStyle.fill(Qt::white);
+            painter.begin(&pxmLineStyle);
+            pen.setStyle(lineStyle2QtPenStyle(lineStyle.enumerator()));
+            pen.setColor(Qt::black);
+            pen.setWidth(1);
+            painter.setPen(pen);
+            painter.drawLine(4, pxmLineStyle.height()/2, pxmLineStyle.width()-4, pxmLineStyle.height()/2);
+            painter.end();
+            QStandardItem* pLineStyleItem = new QStandardItem();
+            pLineStyleItem->setData(pxmLineStyle, Qt::DecorationRole);
+            pLineStyleItem->setData(static_cast<int>(lineStyle.enumerator()), Qt::UserRole);
+            m_pModelGridLinesStyles->appendRow(pLineStyleItem);
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -609,55 +1291,128 @@ QSize CWdgtGraphObjGridStyleProperties::fillFillStylesModel()
     return iconSize;
 }
 
-/*==============================================================================
-private: // auxiliary instance methods
-==============================================================================*/
-
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGridStyleProperties::updateCmbFillStyle(const CEnumFillStyle& i_fillStyle)
+void CWdgtGraphObjGridStyleProperties::updateGridLinesColorButtonIcon()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_fillStyle.toString();
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateCmbFillStyle",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMethod    */ "updateGridLinesColorButtonIcon",
+        /* strAddInfo   */ "" );
 
-    int idx = m_pCmbFillStyle->findData(i_fillStyle.enumeratorAsInt(), Qt::UserRole);
-    if (idx >= 0) {
-        m_pCmbFillStyle->setCurrentIndex(idx);
+    QSize sizePxm = m_pPxmBtnGridLinesColor->size();
+    QPainter painter(m_pPxmBtnGridLinesColor);
+    QPen pen(m_gridSettings.linesColor(), 2);
+    painter.setPen(pen);
+    painter.setRenderHints(QPainter::Antialiasing, true);
+    painter.drawLine(3, 3, sizePxm.width()-4, sizePxm.height()-4);
+    m_pBtnGridLinesColor->setIcon(*m_pPxmBtnGridLinesColor);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::updateGridLabelsTextColorButtonIcon()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateGridLabelsTextColorButtonIcon",
+        /* strAddInfo   */ "" );
+
+    QPainter painter(m_pPxmBtnGridScaleLabelsTextColor);
+
+    painter.setPen(m_gridSettings.labelsTextColor());
+    painter.setBrush(Qt::NoBrush);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(m_gridSettings.labelsTextColor());
+    painter.drawRect(m_rctBtnGridScaleLabelsTextColor);
+
+    m_pBtnGridScaleLabelsTextColor->setIcon(*m_pPxmBtnGridScaleLabelsTextColor);
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::updateGridLabelsTextStyleBoldButton()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateGridLabelsTextStyleBoldButton",
+        /* strAddInfo   */ "" );
+
+    QPixmap pxmCheckmark(":/ZS/App/Checkmark.png");
+
+    if (isTextStyleBold(m_gridSettings.labelsTextStyle().enumerator())) {
+        m_pBtnGridScaleLabelsFontStyleBold->setChecked(true);
+        m_pBtnGridScaleLabelsFontStyleBold->setIcon(pxmCheckmark);
+    } else {
+        m_pBtnGridScaleLabelsFontStyleBold->setChecked(false);
+        m_pBtnGridScaleLabelsFontStyleBold->setIcon(QIcon());
     }
 }
 
 //------------------------------------------------------------------------------
-void CWdgtGraphObjGridStyleProperties::updateBtnFillColor(const QColor& i_clr)
+void CWdgtGraphObjGridStyleProperties::updateGridLabelsTextStyleItalicButton()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qColor2Str(i_clr);
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateBtnFillColor",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMethod    */ "updateGridLabelsTextStyleItalicButton",
+        /* strAddInfo   */ "" );
 
-    QSize sizePxm = m_pPxmBtnFillColor->size();
-    QPainter painter(m_pPxmBtnFillColor);
-    painter.setPen(i_clr);
-    painter.setBrush(Qt::NoBrush);
-    painter.drawLine(QPoint(sizePxm.height() - 3, 5), QPoint(sizePxm.height() - 3, sizePxm.width() - 5));
-    painter.drawLine(QPoint(sizePxm.height() - 2, 6), QPoint(sizePxm.height() - 2, sizePxm.width() - 6));
-    painter.drawLine(QPoint(sizePxm.height() - 1, 7), QPoint(sizePxm.height() - 1, sizePxm.width() - 7));
-    painter.setPen(Qt::NoPen);
-    painter.setBrush(i_clr);
-    painter.drawRect(QRect(0, sizePxm.height() - 5, sizePxm.width(), 5));
-    m_pBtnFillColor->setIcon(*m_pPxmBtnFillColor);
+    QPixmap pxmCheckmark(":/ZS/App/Checkmark.png");
+
+    if (isTextStyleItalic(m_gridSettings.labelsTextStyle().enumerator())) {
+        m_pBtnGridScaleLabelsFontStyleItalic->setChecked(true);
+        m_pBtnGridScaleLabelsFontStyleItalic->setIcon(pxmCheckmark);
+    } else {
+        m_pBtnGridScaleLabelsFontStyleItalic->setChecked(false);
+        m_pBtnGridScaleLabelsFontStyleItalic->setIcon(QIcon());
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::updateGridLabelsTextEffectUnderlineButton()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateGridLabelsTextEffectUnderlineButton",
+        /* strAddInfo   */ "" );
+
+    QPixmap pxmCheckmark(":/ZS/App/Checkmark.png");
+
+    if (isTextEffectUnderline(m_gridSettings.labelsTextEffect().enumerator())) {
+        m_pBtnGridScaleLabelsTextEffectUnderline->setChecked(true);
+        m_pBtnGridScaleLabelsTextEffectUnderline->setIcon(pxmCheckmark);
+    } else {
+        m_pBtnGridScaleLabelsTextEffectUnderline->setChecked(false);
+        m_pBtnGridScaleLabelsTextEffectUnderline->setIcon(QIcon());
+    }
+}
+
+//------------------------------------------------------------------------------
+void CWdgtGraphObjGridStyleProperties::updateGridLabelsTextEffectStrikeoutButton()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateGridLabelsTextEffectStrikeoutButton",
+        /* strAddInfo   */ "" );
+
+    QPixmap pxmCheckmark(":/ZS/App/Checkmark.png");
+
+    if (isTextEffectStrikeout(m_gridSettings.labelsTextEffect().enumerator())) {
+        m_pBtnGridScaleLabelsTextEffectStrikeout->setChecked(true);
+        m_pBtnGridScaleLabelsTextEffectStrikeout->setIcon(pxmCheckmark);
+    } else {
+        m_pBtnGridScaleLabelsTextEffectStrikeout->setChecked(false);
+        m_pBtnGridScaleLabelsTextEffectStrikeout->setIcon(QIcon());
+    }
 }
 
 /*==============================================================================
@@ -668,16 +1423,29 @@ protected: // instance methods (method tracing)
 void CWdgtGraphObjGridStyleProperties::traceValues(CMethodTracer& mthTracer, EMethodDir i_methodDir)
 //------------------------------------------------------------------------------
 {
-    QString strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        + "ContentChanged {" + bool2Str(m_bContentChanged)
-            + ", SignalBlockCounter: " + QString::number(m_iContentChangedSignalBlockedCounter) + "}";
-    mthTracer.trace(strMthLog);
-    strMthLog = QString(i_methodDir == EMethodDir::Enter ? "-+ " : "+- ")
-        + "DrawSettings {"
-            "Fill {"
-                + "Color: " + m_fillColor.name()
-                + ", Style: " + m_fillStyle.toString()
-            + "}"
-        + "}";
-    mthTracer.trace(strMthLog);
+    QString strRuntimeInfo;
+    if (i_methodDir == EMethodDir::Enter) {
+        strRuntimeInfo = "-+ ";
+    }
+    else if (i_methodDir == EMethodDir::Leave) {
+        strRuntimeInfo = "+- ";
+    }
+    else {
+        strRuntimeInfo = "   ";
+    }
+    strRuntimeInfo +=
+        "ContentChanged :" + bool2Str(m_bContentChanged) +
+        ", SignalBlockCounter: " + QString::number(m_iContentChangedSignalBlockedCounter);
+    mthTracer.trace(strRuntimeInfo);
+    if (i_methodDir == EMethodDir::Enter) {
+        strRuntimeInfo = "-+ ";
+    }
+    else if (i_methodDir == EMethodDir::Leave) {
+        strRuntimeInfo = "+- ";
+    }
+    else {
+        strRuntimeInfo = "   ";
+    }
+    strRuntimeInfo += "GridSettings {" + m_gridSettings.toString() + "}";
+    mthTracer.trace(strRuntimeInfo);
 }
