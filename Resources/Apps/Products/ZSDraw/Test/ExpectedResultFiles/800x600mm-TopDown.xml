@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Drawing DimensionUnit="Metric" ScreenResolutionPxPerMM="1" MetricImageCoorsDecimals="2" Unit="mm" Width="800.00 mm" Height="600.00 mm" YScaleAxisOrientation="TopDown" ScaleFactor="1:1">
-    <GridSettings LinesVisible="true" LinesDistMin="20" LineStyle="DotLine" LineWidth="1" LineColor="#c0c0c0" LabelsVisible="true" Font="MS Shell Dlg 2" TextSize="2" TextColor="#000000" TextStyle="Normal" TextEffect="None"/>
+    <GridSettings LinesVisible="true" LinesDistMin="20" LineStyle="DotLine" LineWidth="1" LineColor="#c0c0c0" LabelsVisible="true" Font="Terminal" TextSize="2" TextColor="#000000" TextStyle="Normal" TextEffect="None"/>
     <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Group" ObjectName="Group2">
-        <GridSettings LinesVisible="false" LinesDistMin="20" LineStyle="DotLine" LineWidth="1" LineColor="#c0c0c0" LabelsVisible="false" Font="MS Shell Dlg 2" TextSize="2" TextColor="#000000" TextStyle="Normal" TextEffect="None"/>
+        <GridSettings LinesVisible="false" LinesDistMin="20" LineStyle="DotLine" LineWidth="1" LineColor="#c0c0c0" LabelsVisible="false" Font="Terminal" TextSize="2" TextColor="#000000" TextStyle="Normal" TextEffect="None"/>
         <DrawSettings/>
         <Geometry>
             <Rectangle>
@@ -41,7 +41,7 @@
             <GeometryLabels/>
         </GraphObj>
         <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Group" ObjectName="Group0">
-            <GridSettings LinesVisible="false" LinesDistMin="20" LineStyle="DotLine" LineWidth="1" LineColor="#c0c0c0" LabelsVisible="false" Font="MS Shell Dlg 2" TextSize="2" TextColor="#000000" TextStyle="Normal" TextEffect="None"/>
+            <GridSettings LinesVisible="false" LinesDistMin="20" LineStyle="DotLine" LineWidth="1" LineColor="#c0c0c0" LabelsVisible="false" Font="Terminal" TextSize="2" TextColor="#000000" TextStyle="Normal" TextEffect="None"/>
             <DrawSettings/>
             <Geometry>
                 <Rectangle>
@@ -105,12 +105,12 @@
             </GraphObj>
         </GraphObj>
         <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Group" ObjectName="Group1">
-            <GridSettings LinesVisible="false" LinesDistMin="20" LineStyle="DotLine" LineWidth="1" LineColor="#c0c0c0" LabelsVisible="false" Font="MS Shell Dlg 2" TextSize="2" TextColor="#000000" TextStyle="Normal" TextEffect="None"/>
+            <GridSettings LinesVisible="false" LinesDistMin="20" LineStyle="DotLine" LineWidth="1" LineColor="#c0c0c0" LabelsVisible="false" Font="Terminal" TextSize="2" TextColor="#000000" TextStyle="Normal" TextEffect="None"/>
             <DrawSettings/>
             <Geometry>
                 <Rectangle>
-                    <TopLeft>0.00, 0.00</TopLeft>
-                    <Size>100.00, 100.00</Size>
+                    <TopLeft>25.00, 25.00</TopLeft>
+                    <Size>50.00, 50.00</Size>
                 </Rectangle>
             </Geometry>
             <ZValue>0</ZValue>
@@ -123,8 +123,8 @@
                 <DrawSettings/>
                 <Geometry>
                     <ShapePoints>
-                        <P1>25.00, 25.00</P1>
-                        <P2>60.00, 75.00</P2>
+                        <P1>0.00, 0.00</P1>
+                        <P2>35.00, 50.00</P2>
                     </ShapePoints>
                 </Geometry>
                 <ZValue>0</ZValue>
@@ -135,8 +135,8 @@
                 <DrawSettings/>
                 <Geometry>
                     <ShapePoints>
-                        <P1>60.00, 75.00</P1>
-                        <P2>75.00, 60.00</P2>
+                        <P1>35.00, 50.00</P1>
+                        <P2>50.00, 35.00</P2>
                     </ShapePoints>
                 </Geometry>
                 <ZValue>0</ZValue>

@@ -367,51 +367,20 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     // parent item's bounding rectangle.
     // The coordinates need to be transformed into the local coordinate system of the graphical
     // object whose origin point is the center of the objects bounding rectangle.
-    QLineF lineF;
     // First determine the position of the line in the parent's (scene or group) coordinate system.
+    QLineF lineF;
     if (parentGroup() != nullptr) {
         lineF = parentGroup()->toLocalCoors(i_physValLine);
     }
     else {
         lineF = m_pDrawingScene->convert(i_physValLine, Units.Length.px).toQLineF();
     }
-    QPointF ptPos = lineF.center();
 
     // Transform the parent coordinates into local coordinate system.
     // The origin is the center point of the line.
+    QPointF ptPos = lineF.center();
     QPointF pt1 = lineF.p1() - ptPos;
     QPointF pt2 = lineF.p2() - ptPos;
-
-    //// If the item belongs to a group ...
-    //QGraphicsItem* pGraphicsItemParent = parentItem();
-    //CGraphObj* pGraphObjParent = dynamic_cast<CGraphObj*>(pGraphicsItemParent);
-    //if (pGraphObjParent != nullptr) {
-    //    // .. the coordinates were passed relative to the top left
-    //    // corner of the parent item's bounding rectangle.
-    //    pt1 = mapFromParent(pt1);
-    //    pt2 = mapFromParent(pt2);
-    //    QRectF rectBoundingParent = pGraphObjParent->getBoundingRect();
-    //    QPointF ptOriginParent = rectBoundingParent.topLeft();
-    //    pt1 += ptOriginParent;
-    //    pt2 += ptOriginParent;
-    //}
-    //// If the item does not belong to a group but has already been added to the scene ...
-    //else if (scene() != nullptr) {
-    //    // .. the coordinates were passed relative to the top left corner of the scene.
-    //    // The origin of the local coordinates is the center point of the line. We need
-    //    // to move P1 and P2 so that the center line will get the local coordinates (0/0).
-    //    QPointF ptCenter = mapFromScene(ptPos);
-    //    pt1 = mapFromScene(pt1) - ptCenter;
-    //    pt2 = mapFromScene(pt2) - ptCenter;
-    //}
-    //// If the line has not been added to the scene yet ...
-    //else {
-    //    // .. we must do the transformation to the local coordinate system
-    //    // on our own. The origin is the center of the line.
-    //    pt1 -= lineF.center();
-    //    pt2 -= lineF.center();
-    //}
-
     lineF = QLineF(pt1, pt2);
 
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
@@ -422,7 +391,8 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsLineItem::prepareGeometryChange();
 
-        {   CRefCountGuard refCountGuard(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+            CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryChangedSignalBlockedCounter);
 
             // Store original line coordinates.
             setLineOrig(i_physValLine);
@@ -443,6 +413,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
             // Also note that itemChange must not overwrite the current line value (refCountGuard).
             QGraphicsItem_setPos(ptPos);
         }
+        emit_geometryChanged();
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
 }

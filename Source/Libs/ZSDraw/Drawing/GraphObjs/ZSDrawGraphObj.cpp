@@ -848,7 +848,6 @@ CGraphObj::CGraphObj(
     //m_ptMouseEvScenePosOnMousePressEvent(),
     //m_rctOnMousePressEvent(),
     //m_ptRotOriginOnMousePressEvent(),
-    m_iItemChangeUpdateOriginalCoorsBlockedCounter(false),
     // Simulation Functions:
     //m_arMousePressEventFunctions(),
     //m_arMouseReleaseEventFunctions(),
@@ -856,6 +855,8 @@ CGraphObj::CGraphObj(
     //m_arMouseMoveEventFunctions(),
     //m_arKeyPressEventFunctions(),
     //m_arKeyReleaseEventFunctions(),
+    m_iItemChangeUpdateOriginalCoorsBlockedCounter(0),
+    m_iGeometryChangedSignalBlockedCounter(0),
     m_pTrcAdminObjCtorsAndDtor(nullptr),
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
@@ -1078,7 +1079,6 @@ CGraphObj::~CGraphObj()
     //m_ptMouseEvScenePosOnMousePressEvent;
     //m_rctOnMousePressEvent;
     //m_ptRotOriginOnMousePressEvent;
-    m_iItemChangeUpdateOriginalCoorsBlockedCounter = false;
     // Simulation Functions:
     //m_arMousePressEventFunctions;
     //m_arMouseReleaseEventFunctions;
@@ -1086,6 +1086,8 @@ CGraphObj::~CGraphObj()
     //m_arMouseMoveEventFunctions;
     //m_arKeyPressEventFunctions;
     //m_arKeyReleaseEventFunctions;
+    m_iItemChangeUpdateOriginalCoorsBlockedCounter = 0;
+    m_iGeometryChangedSignalBlockedCounter = 0;
     // Method Tracing
     m_pTrcAdminObjCtorsAndDtor = nullptr;
     m_pTrcAdminObjItemChange = nullptr;
@@ -7403,9 +7405,16 @@ void CGraphObj::emit_scenePosChanged()
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Emits the "geometryChanged" signal (with optional trace output).
+
+    The signal is only emitted if not blocked (BlockedCounter == 0).
+*/
 void CGraphObj::emit_geometryChanged()
 //------------------------------------------------------------------------------
 {
+    if (m_iGeometryChangedSignalBlockedCounter > 0) {
+        return;
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
@@ -7758,7 +7767,9 @@ void CGraphObj::traceGraphObjStates(
         if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
-        strRuntimeInfo += "ItemChangeUpdateOriginalCoorsBlockedCounter: " + QString::number(m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+        strRuntimeInfo +=
+            "ItemChangeUpdateOriginalCoorsBlockedCounter: " + QString::number(m_iItemChangeUpdateOriginalCoorsBlockedCounter) +
+            ", SignalBlockedCounter {GeometryChanged: " + QString::number(m_iGeometryChangedSignalBlockedCounter) + "}";
         i_mthTracer.trace(strRuntimeInfo);
     }
 }

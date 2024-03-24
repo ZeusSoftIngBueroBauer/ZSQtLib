@@ -2275,33 +2275,33 @@ QLineF ZS::Draw::getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt,
     return perpendicularLine;
 }
 
-//------------------------------------------------------------------------------
-QString ZS::Draw::qRect2Str( const QPolygon& i_polygon, const QString& i_strSeparator )
-//------------------------------------------------------------------------------
-{
-    QString str;
-    if (i_polygon.size() >= 4) {
-        for (int idxPt = 0; idxPt < i_polygon.size() && idxPt < 4; idxPt++) {
-            if (idxPt > 0) str += i_strSeparator;
-            str += qPoint2Str(i_polygon[idxPt], i_strSeparator);
-        }
-    }
-    return str;
-}
-
-//------------------------------------------------------------------------------
-QString ZS::Draw::qRect2Str( const QPolygonF& i_polygon, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
-//------------------------------------------------------------------------------
-{
-    QString str;
-    if (i_polygon.size() >= 4) {
-        for (int idxPt = 0; idxPt < i_polygon.size() && idxPt < 4; idxPt++) {
-            if (idxPt > 0) str += i_strSeparator;
-            str += qPoint2Str(i_polygon[idxPt], i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest);
-        }
-    }
-    return str;
-}
+////------------------------------------------------------------------------------
+//QString ZS::Draw::qRect2Str( const QPolygon& i_polygon, const QString& i_strSeparator )
+////------------------------------------------------------------------------------
+//{
+//    QString str;
+//    if (i_polygon.size() >= 4) {
+//        for (int idxPt = 0; idxPt < i_polygon.size() && idxPt < 4; idxPt++) {
+//            if (idxPt > 0) str += i_strSeparator;
+//            str += qPoint2Str(i_polygon[idxPt], i_strSeparator);
+//        }
+//    }
+//    return str;
+//}
+//
+////------------------------------------------------------------------------------
+//QString ZS::Draw::qRect2Str( const QPolygonF& i_polygon, const QString& i_strSeparator, char i_cF, int i_iPrecision, bool i_bRound2Nearest )
+////------------------------------------------------------------------------------
+//{
+//    QString str;
+//    if (i_polygon.size() >= 4) {
+//        for (int idxPt = 0; idxPt < i_polygon.size() && idxPt < 4; idxPt++) {
+//            if (idxPt > 0) str += i_strSeparator;
+//            str += qPoint2Str(i_polygon[idxPt], i_strSeparator, i_cF, i_iPrecision, i_bRound2Nearest);
+//        }
+//    }
+//    return str;
+//}
 
 //------------------------------------------------------------------------------
 QString ZS::Draw::qPolygon2Str( const QPolygon& i_polygon, const QString& i_strSeparator )

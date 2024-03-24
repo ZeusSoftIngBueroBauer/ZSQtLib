@@ -413,7 +413,7 @@ static const SDrawAttribute s_ararDrawAttributesDefaultVals[EGraphObjTypeCount][
         /*  1 PenWidth                     */ SDrawAttribute( XmlStreamParser::c_strXmlAttrPenWidth, 1, true),
         /*  2 FillColor                    */ SDrawAttribute( XmlStreamParser::c_strXmlAttrFillColor, QColor(Qt::white), true ),
         /*  3 FillStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlAttrFillStyle, static_cast<int>(EFillStyle::NoFill), true ),
-        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlAttrLineStyle, static_cast<int>(ELineStyle::SolidLine), true ),
+        /*  4 LineStyle                    */ SDrawAttribute( XmlStreamParser::c_strXmlAttrLineStyle, static_cast<int>(ELineStyle::DotLine), true ),
         /*  5 LineRecordType               */ SDrawAttribute( XmlStreamParser::c_strXmlAttrLineRecordType, static_cast<int>(ELineRecordType::Normal), true ),
         /*  6 LineExtent                   */ SDrawAttribute( XmlStreamParser::c_strXmlAttrLineExtent, 1, true ),
         /*  7 LineP1EndStyle               */ SDrawAttribute( XmlStreamParser::c_strXmlAttrLineP1EndStyle, static_cast<int>(ELineEndStyle::Normal), false ),

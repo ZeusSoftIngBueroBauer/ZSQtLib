@@ -76,19 +76,14 @@ CDiagObjGrid::CDiagObjGrid(
     // Further initialization of instance members (arrays)
     //----------------------------------------------------
 
-    int iLayer;
-
-    for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-    {
+    for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++) {
         m_arbShow[iLayer] = true;
         m_arcol[iLayer] = Qt::darkGray;
         m_arpenStyle[iLayer] = Qt::SolidLine;
     }
-
     m_arbShow[static_cast<int>(EDivLineLayer::Sub)] = false;
     m_arcol[static_cast<int>(EDivLineLayer::Sub)] = Qt::lightGray;
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 CDiagObjGrid::~CDiagObjGrid()
@@ -104,8 +99,7 @@ CDiagObjGrid::~CDiagObjGrid()
     //m_arpenStyle.clear();
     //m_arbShow.clear();
     m_bUpdWidget = false;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // instance methods
@@ -117,16 +111,12 @@ void CDiagObjGrid::show( const CEnumDivLineLayer& i_eLayer )
 {
     int iLayerMin = 0;
     int iLayerMax = CEnumDivLineLayer::count() - 1;
-
-    if( i_eLayer.isValid() )
-    {
+    if (i_eLayer.isValid()) {
         iLayerMin = i_eLayer.enumeratorAsInt();
         iLayerMax = i_eLayer.enumeratorAsInt();
     }
-    for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
-    {
-        if( !m_arbShow[iLayer] )
-        {
+    for (int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++) {
+        if (!m_arbShow[iLayer]) {
             m_arbShow[iLayer] = true;
             m_bUpdWidget = true;
             invalidate(EUpdatePixmapWidget,true);
@@ -140,16 +130,12 @@ void CDiagObjGrid::hide( const CEnumDivLineLayer& i_eLayer )
 {
     int iLayerMin = 0;
     int iLayerMax = CEnumDivLineLayer::count() - 1;
-
-    if( i_eLayer.isValid() )
-    {
+    if (i_eLayer.isValid()) {
         iLayerMin = i_eLayer.enumeratorAsInt();
         iLayerMax = i_eLayer.enumeratorAsInt();
     }
-    for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
-    {
-        if( m_arbShow[iLayer] )
-        {
+    for (int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++) {
+        if (m_arbShow[iLayer]) {
             m_arbShow[iLayer] = false;
             m_bUpdWidget = true;
             invalidate(EUpdatePixmapWidget,true);
@@ -163,14 +149,11 @@ void CDiagObjGrid::setCol( const CEnumDivLineLayer& i_eLayer, const QColor& i_co
 {
     int iLayerMin = 0;
     int iLayerMax = CEnumDivLineLayer::count() - 1;
-
-    if( i_eLayer.isValid() )
-    {
+    if (i_eLayer.isValid()) {
         iLayerMin = i_eLayer.enumeratorAsInt();
         iLayerMax = i_eLayer.enumeratorAsInt();
     }
-    for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
-    {
+    for (int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++) {
         m_arcol[iLayer] = i_col;
         m_bUpdWidget = true;
         invalidate(EUpdatePixmapWidget,true);
@@ -190,14 +173,11 @@ void CDiagObjGrid::setPenStyle( const CEnumDivLineLayer& i_eLayer, const Qt::Pen
 {
     int iLayerMin = 0;
     int iLayerMax = CEnumDivLineLayer::count() - 1;
-
-    if( i_eLayer.isValid() )
-    {
+    if (i_eLayer.isValid()) {
         iLayerMin = i_eLayer.enumeratorAsInt();
         iLayerMax = i_eLayer.enumeratorAsInt();
     }
-    for( int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++ )
-    {
+    for (int iLayer = iLayerMin; iLayer <= iLayerMax; iLayer++) {
         m_arpenStyle[iLayer] = i_penStyle;
         m_bUpdWidget = true;
         invalidate(EUpdatePixmapWidget);
@@ -239,21 +219,16 @@ public: // must overridables of base class CDiagObj
 CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
 //------------------------------------------------------------------------------
 {
-    if( i_pDiagramTrg == nullptr )
-    {
+    if (i_pDiagramTrg == nullptr) {
         return nullptr;
     }
-
-    if( m_arpDiagScale[static_cast<int>(EScaleAxis::X)] == nullptr || m_arpDiagScale[static_cast<int>(EScaleAxis::Y)] == nullptr )
-    {
+    if (m_arpDiagScale[static_cast<int>(EScaleAxis::X)] == nullptr || m_arpDiagScale[static_cast<int>(EScaleAxis::Y)] == nullptr) {
         return nullptr;
     }
 
     CDiagScale* pDiagScaleX = i_pDiagramTrg->findDiagScale(m_arpDiagScale[static_cast<int>(EScaleAxis::X)]->getObjName());
     CDiagScale* pDiagScaleY = i_pDiagramTrg->findDiagScale(m_arpDiagScale[static_cast<int>(EScaleAxis::Y)]->getObjName());
-
-    if( pDiagScaleX == nullptr || pDiagScaleY == nullptr )
-    {
+    if (pDiagScaleX == nullptr || pDiagScaleY == nullptr) {
         return nullptr;
     }
 
@@ -261,8 +236,6 @@ CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
         /* strObjName  */ m_strObjName,
         /* pDiagScaleX */ pDiagScaleX,
         /* pDiagScaleY */ pDiagScaleY );
-
-    int iLayer;
 
     // Members from base class CDiagObj:
     pDiagObjCloned->m_layoutPos = m_layoutPos;
@@ -274,45 +247,34 @@ CDiagObj* CDiagObjGrid::clone( CDataDiagram* i_pDiagramTrg ) const
     pDiagObjCloned->m_bIsEditable = m_bIsEditable;
 
     // Members from this class:
-    for( iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++ )
-    {
+    for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++) {
         pDiagObjCloned->m_arcol[iLayer] = m_arcol[iLayer];
         pDiagObjCloned->m_arpenStyle[iLayer] = m_arpenStyle[iLayer];
         pDiagObjCloned->m_arbShow[iLayer] = m_arbShow[iLayer];
     }
-
     i_pDiagramTrg->addDiagObj(pDiagObjCloned);
-
     return pDiagObjCloned;
-
-} // clone
+}
 
 //------------------------------------------------------------------------------
 void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDevice )
 //------------------------------------------------------------------------------
 {
-    QString strTrcMsg;
-
-    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strTrcMsg = updateFlags2Str(i_uUpdateFlags);
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjUpdate, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = updateFlags2Str(i_uUpdateFlags);
     }
-
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjUpdate,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "update",
-        /* strAddInfo   */ strTrcMsg );
-
-    if( i_uUpdateFlags == EUpdateNone )
-    {
+        /* strAddInfo   */ strMthInArgs );
+    if (i_uUpdateFlags == EUpdateNone) {
         return;
     }
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strTrcMsg  = "OldUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
-        mthTracer.trace(strTrcMsg);
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "OldUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strRuntimeInfo);
     }
 
     // Please note that only if by invalidating the flag (setting the bit) in the
@@ -322,119 +284,83 @@ void CDiagObjGrid::update( unsigned int i_uUpdateFlags, QPaintDevice* i_pPaintDe
     // A grid is always drawn in the center area of the diagram
     // and there is no need to update any internal data for the
     // sizeHint method.
-    if( i_uUpdateFlags & EUpdateLayout && m_uUpdateFlags & EUpdateLayout )
-    {
+    if (i_uUpdateFlags & EUpdateLayout && m_uUpdateFlags & EUpdateLayout) {
         mthTracer.trace("Processing Layout", ELogDetailLevel::Debug);
-
         // If layout or data processing was necessary for the grid the scale might have
         // been changed and the grids content need to be updated on the screen.
         m_bUpdWidget = true;
-
         // Mark current process depth as executed (reset bit):
         validate(EUpdateLayout);
     }
 
     // If the internal data structures need to be updated ..
-    if( i_uUpdateFlags & EUpdateData && m_uUpdateFlags & EUpdateData )
-    {
+    if (i_uUpdateFlags & EUpdateData && m_uUpdateFlags & EUpdateData) {
         mthTracer.trace("Processing Data", ELogDetailLevel::Debug);
-
         // The X and Y scale objects are calculating the division lines for the main
         // and sub grid lines.
-
         // If layout or data processing was necessary for the grid the scale might have
         // been changed and the grids content need to be updated on the screen.
         m_bUpdWidget = true;
-
         // Mark current process depth as executed (reset bit):
         validate(EUpdateData);
-
-    } // if( EUpdateData )
+    }
 
     // If recalculation of bitmap is needed ..
-    if( i_uUpdateFlags & EUpdatePixmap && m_uUpdateFlags & EUpdatePixmap && i_pPaintDevice != nullptr )
-    {
+    if (i_uUpdateFlags & EUpdatePixmap && m_uUpdateFlags & EUpdatePixmap && i_pPaintDevice != nullptr) {
         mthTracer.trace("Processing Pixmap", ELogDetailLevel::Debug);
-
-        if( isVisible() )
-        {
+        if (isVisible()) {
             QPainter painter(i_pPaintDevice);
-            int      xDivLine;
-            int      yDivLine;
-            int      xLeft, xRight, yTop, yBottom;
-            int      idxDivLine;
-
             // We are going to draw the grid lines starting with the lowest layer so
             // that main grid lines will not be covered by sub grid lines.
-
-            for( int iLayer = CEnumDivLineLayer::count()-1; iLayer >= 0; iLayer-- )
-            {
-                if( m_arbShow[iLayer] )
-                {
+            for (int iLayer = CEnumDivLineLayer::count()-1; iLayer >= 0; iLayer--) {
+                if (m_arbShow[iLayer]) {
                     QPen pen(m_arcol[iLayer],0,m_arpenStyle[iLayer]);
                     painter.setPen(pen);
-
                     // Vertical lines (from left to right)
-                    yTop    = m_rectContent.top();
-                    yBottom = m_rectContent.bottom();
-                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[static_cast<int>(EScaleAxis::X)]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++ )
-                    {
-                        xDivLine = static_cast<int>(m_arpDiagScale[static_cast<int>(EScaleAxis::X)]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
-                        if( xDivLine > m_rectContent.left()+1 && xDivLine < m_rectContent.right()-1 )
-                        {
+                    int yTop = m_rectContent.top();
+                    int yBottom = m_rectContent.bottom();
+                    for (int idxDivLine = 0; idxDivLine < m_arpDiagScale[static_cast<int>(EScaleAxis::X)]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++) {
+                        int xDivLine = static_cast<int>(m_arpDiagScale[static_cast<int>(EScaleAxis::X)]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
+                        if (xDivLine > m_rectContent.left()+1 && xDivLine < m_rectContent.right()-1) {
                             painter.drawLine(xDivLine,yTop,xDivLine,yBottom);
                         }
                     }
-
                     // Horizontal lines (from bottom to top)
-                    xLeft  = m_rectContent.left();
-                    xRight = m_rectContent.right();
-                    for( idxDivLine = 0; idxDivLine < m_arpDiagScale[static_cast<int>(EScaleAxis::Y)]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++ )
-                    {
+                    int xLeft  = m_rectContent.left();
+                    int xRight = m_rectContent.right();
+                    for (int idxDivLine = 0; idxDivLine < m_arpDiagScale[static_cast<int>(EScaleAxis::Y)]->getDivLineCount(static_cast<EDivLineLayer>(iLayer)); idxDivLine++) {
                         // Remember: drawing from bottom to top: the pixel values of the lower (min)
                         // values are greater than the pixel values of the higher (max) scale values.
-                        yDivLine = static_cast<int>(m_arpDiagScale[static_cast<int>(EScaleAxis::Y)]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
-                        if( yDivLine < m_rectContent.bottom()-1 && yDivLine > m_rectContent.top()+1 )
-                        {
+                        int yDivLine = static_cast<int>(m_arpDiagScale[static_cast<int>(EScaleAxis::Y)]->getDivLinePix(static_cast<EDivLineLayer>(iLayer), idxDivLine) + 0.5);
+                        if (yDivLine < m_rectContent.bottom()-1 && yDivLine > m_rectContent.top()+1) {
                             painter.drawLine(xLeft,yDivLine,xRight,yDivLine);
                         }
                     }
-                } // if( arbShow[iLayer] )
-            } // for( iLayer >= 0 )
-        } // if( isVisible() )
-
+                }
+            }
+        }
         // Mark current process depth as executed (reset bit):
         validate(EUpdatePixmap);
-
-    } // if( EUpdatePixmap )
+    }
 
     // If the widget need to be updated ..
-    if( i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDiagram != nullptr )
-    {
+    if (i_uUpdateFlags & EUpdateWidget && m_uUpdateFlags & EUpdateWidget && m_pDiagram != nullptr) {
         mthTracer.trace("Processing Widget", ELogDetailLevel::Debug);
-
         // Invalidate output region of the diagram object to update (repaint) content of diagram.
-        if( m_rectContent.isValid() && m_bUpdWidget )
-        {
+        if (m_rectContent.isValid() && m_bUpdWidget) {
             m_pDiagram->update(this, m_rectContent);
         }
-
         // Mark current process depth as executed (reset bit):
         validate(EUpdateWidget);
-
         // Only on changing the scale (the division lines), the color or the pen style the grids
         // content need to be updated on the screen. Updating the content rectangle of the grid
         // is therefore only necessary if previously layout or data processing has been executed
         // or if the color or pen style has been changed.
         m_bUpdWidget = false;
-
-    } // if( EUpdateWidget )
-
-    if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug) )
-    {
-        strTrcMsg  = "NewUpdFlags=";
-        strTrcMsg += updateFlags2Str(m_uUpdateFlags);
-        mthTracer.trace(strTrcMsg);
     }
 
+    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+        QString strRuntimeInfo = "NewUpdFlags: " + updateFlags2Str(m_uUpdateFlags);
+        mthTracer.trace(strRuntimeInfo);
+    }
 } // update

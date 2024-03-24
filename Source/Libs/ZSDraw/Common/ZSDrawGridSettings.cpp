@@ -60,7 +60,7 @@ CDrawGridSettings::CDrawGridSettings(const QString& i_strName) :
     m_iLinesWidth_px(1),
     m_colorLines(Qt::lightGray),
     m_bLabelsVisible(false),
-    m_fntLabels(),
+    m_fntLabels("Terminal"),
     m_textSizeLabels(ETextSize8),
     m_colorLabelsText(Qt::black),
     m_eTextStyleLabels(ETextStyle::Normal),

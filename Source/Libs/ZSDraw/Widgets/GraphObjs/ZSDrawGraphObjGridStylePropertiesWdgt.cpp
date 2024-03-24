@@ -594,14 +594,31 @@ void CWdgtGraphObjGridStyleProperties::fillEditControls()
         traceValues(mthTracer, EMethodDir::Enter);
     }
 
-    CDrawGridSettings gridSettings(objectName());
     if (m_pGraphObj == nullptr) {
-        gridSettings = m_pDrawingScene->gridSettings();
+        m_gridSettings = m_pDrawingScene->gridSettings();
     }
     else if (m_pGraphObj->type() == EGraphObjTypeGroup) {
         CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pGraphObj);
-        gridSettings = pGraphObjGroup->gridSettings();
+        m_gridSettings = pGraphObjGroup->gridSettings();
     }
+
+    m_pChkGridLinesVisible->setChecked(m_gridSettings.areLinesVisible());
+    m_pEdtGridLinesDistMin->setValue(m_gridSettings.linesDistMin());
+    m_pEdtGridLinesWidth->setValue(m_gridSettings.linesWidth());
+    m_pChkGridScaleLabelsVisible->setChecked(m_gridSettings.areLabelsVisible());
+    int idx = m_pCmbGridLinesStyle->findData(m_gridSettings.linesStyle().enumeratorAsInt());
+    if (idx >= 0) {
+        m_pCmbGridLinesStyle->setCurrentIndex(idx);
+    }
+    m_pCmbGridScaleLabelsFont->setCurrentFont(m_gridSettings.labelsFont());
+    m_pCmbGridScaleLabelsFontSize->setCurrentIndex(m_gridSettings.labelsTextSize());
+
+    updateGridLinesColorButtonIcon();
+    updateGridLabelsTextColorButtonIcon();
+    updateGridLabelsTextStyleBoldButton();
+    updateGridLabelsTextStyleItalicButton();
+    updateGridLabelsTextEffectUnderlineButton();
+    updateGridLabelsTextEffectStrikeoutButton();
 
     if( mthTracer.isRuntimeInfoActive(ELogDetailLevel::DebugDetailed) ) {
         traceValues(mthTracer, EMethodDir::Leave);

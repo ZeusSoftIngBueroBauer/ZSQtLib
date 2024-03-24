@@ -141,8 +141,8 @@ ZSDRAWDLL_API QLineF getLineFromPolar(double i_fLength_px, double i_fAngle_degre
 ZSDRAWDLL_API QLineF getPerpendicularLine(const QLineF& i_line, const QPointF& i_pt, double i_fMinLength_px = 0.0);
 
 // QPolygon is defined in QtGui. If available in QtCore the methods should be moved to ZS::System::Aux.
-ZSDRAWDLL_API QString   qRect2Str( const QPolygon& i_plgRect, const QString& i_strSeparator = ", " );
-ZSDRAWDLL_API QString   qRect2Str( const QPolygonF& i_plgRect, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
+//ZSDRAWDLL_API QString   qRect2Str( const QPolygon& i_plgRect, const QString& i_strSeparator = ", " );
+//ZSDRAWDLL_API QString   qRect2Str( const QPolygonF& i_plgRect, const QString& i_strSeparator = ", ", char i_chFormat = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
 ZSDRAWDLL_API QString   qPolygon2Str( const QPolygon& i_polygon, const QString& i_strSeparator = ", " );
 ZSDRAWDLL_API QString   qPolygon2Str( const QPolygonF& i_polygon, const QString& i_strSeparator = ", ", char i_cF = 'f', int i_iPrecision = 1, bool i_bRound2Nearest = true );
 ZSDRAWDLL_API QPolygon  str2QPolygon( const QString& i_str, bool* o_pbConverted, const QString& i_strSeparator = "," );

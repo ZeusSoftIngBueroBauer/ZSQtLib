@@ -244,6 +244,8 @@ protected: // overridable slots of base class CGraphObj
     virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
 protected: // auxiliary instance methods
     void paintGridLines(QPainter* i_pPainter);
+    void paintGridLabelsDivisionLines(QPainter* i_pPainter);
+    void paintGridLabels(QPainter* i_pPainter);
 protected: // auxiliary instance methods (method tracing)
     CPhysValRect setRectOrig(const CPhysValRect& i_physValRect);
     QRectF setRectOrig(const QRectF& i_rect);

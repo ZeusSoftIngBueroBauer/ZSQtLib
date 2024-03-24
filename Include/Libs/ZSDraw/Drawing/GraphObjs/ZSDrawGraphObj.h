@@ -1081,7 +1081,20 @@ protected: // !!! OBSOLETE !!! instance members
     //QList<SGraphObjKeyEventFct> m_arKeyReleaseEventFunctions;
 #endif
 protected: // instance members
+    /*!< When modifying the geometry of graphical objects via external "setGeometry" methods
+         like "setLine" or "setRect", the position of the item may be changed and "itemChange"
+         will be triggered with "positionHasChanged". The "itemChange" method with flag
+         "positionHasChanged" may also be triggered by the graphics item system internally.
+         If called internally the original coordinates need to be updated.
+         But when calling the external "setGeometry" methods the original coordinates may have
+         already been updated and may not be overridden by the "itemChange" method triggered by
+         the external "setGeometry" updating the position of the item.
+         In this case the BlockedCounter will (or has to) be set to a value greater than 0
+         (e.g. using CRefCountGuard). */
     int m_iItemChangeUpdateOriginalCoorsBlockedCounter;
+    /*!< To avoid that a signal is emitted twice for the same reason, the signal blocked counter
+         may be set to a value greater than 0 (e.g. using CRefCountGuard). */
+    int m_iGeometryChangedSignalBlockedCounter;
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;

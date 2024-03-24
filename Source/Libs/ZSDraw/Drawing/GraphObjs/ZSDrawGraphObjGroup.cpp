@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -528,7 +528,7 @@ void CGraphObjGroup::resizeToContent()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "addToGroup",
+        /* strMethod    */ "resizeToContent",
         /* strAddInfo   */ "" );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
@@ -560,9 +560,10 @@ void CGraphObjGroup::resizeToContent()
     // this groups parent in the unit of the drawing scene.
     CPhysValRect physValRectNew;
     if (pGraphObjGroupParentThis != nullptr) {
-        physValRectNew = pGraphObjGroupParentThis->convert(rctBoundingThisNew);
+        physValRectNew = pGraphObjGroupParentThis->fromLocalCoors(rctBoundingThisNew);
     }
     else {
+        rctBoundingThisNew = pGraphicsItemThis->mapToScene(rctBoundingThisNew).boundingRect();
         physValRectNew = m_pDrawingScene->convert(rctBoundingThisNew);
     }
     setRect(physValRectNew);
@@ -653,27 +654,33 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
     // parent item's bounding rectangle.
     // The coordinates need to be transformed into the local coordinate system of the graphical
     // object whose origin point is the center of the objects bounding rectangle.
-    CPhysValRect physValRect = i_physValRect;
-    if (Units.Length.isMetricUnit(physValRect.unit())) {
-        QGraphicsItem* pGraphicsItemParent = parentItem();
-        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
-        // If the item belongs to a group ...
-        if (pGraphObjGroupParent != nullptr) {
-            physValRect = pGraphObjGroupParent->convert(physValRect, Units.Length.px);
-        }
-        // If the item is not a child of a group ...
-        else {
-            physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
-        }
+    //CPhysValRect physValRect = i_physValRect;
+    //if (Units.Length.isMetricUnit(physValRect.unit())) {
+    //    QGraphicsItem* pGraphicsItemParent = parentItem();
+    //    CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
+    //    // If the item belongs to a group ...
+    //    if (pGraphObjGroupParent != nullptr) {
+    //        physValRect = pGraphObjGroupParent->convert(physValRect, Units.Length.px);
+    //    }
+    //    // If the item is not a child of a group ...
+    //    else {
+    //        physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
+    //    }
+    //}
+    //QRectF rectF = physValRect.toQRectF();
+
+    // First determine the position of the line in the parent's (scene or group) coordinate system.
+    QRectF rectF;
+    if (parentGroup() != nullptr) {
+        rectF = parentGroup()->toLocalCoors(i_physValRect);
     }
-
-    QRectF rectF = physValRect.toQRectF();
-
-    // Position of the rectangle in parent (scene or group) coordinates.
-    QPointF ptPos = rectF.center();
+    else {
+        rectF = m_pDrawingScene->convert(i_physValRect, Units.Length.px).toQRectF();
+    }
 
     // Transform the parent coordinates into local coordinate system.
     // The origin is the center point of the rectangle.
+    QPointF ptPos = rectF.center();
     QPointF ptTL = rectF.topLeft() - ptPos;
     QPointF ptBR = rectF.bottomRight() - ptPos;
     rectF = QRectF(ptTL, ptBR);
@@ -700,14 +707,14 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             // The greater the value, the greater the pixel coordinate on the screen.
             m_divLinesMetricsX.setUseWorldCoordinateTransformation(false);
             m_divLinesMetricsX.setScale(
-                /* fScaleMinVal */ ptTL.x(),
-                /* fScaleMaxVal */ ptBR.x(),
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ rectF.width() - 1.0,
                 /* fScaleResVal */ drawingSize.imageCoorsResolution(Units.Length.px).getVal());
             // The Y scale direction is from top to bottom.
             m_divLinesMetricsY.setUseWorldCoordinateTransformation(false);
             m_divLinesMetricsY.setScale(
-                /* fScaleMinVal */ ptTL.y(),
-                /* fScaleMaxVal */ ptBR.y(),
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ rectF.height() - 1.0,
                 /* fScaleResVal */ drawingSize.imageCoorsResolution(Units.Length.px).getVal());
             m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
         }
@@ -726,14 +733,14 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             m_divLinesMetricsX.setUseWorldCoordinateTransformation(true);
             m_divLinesMetricsX.setScale(
                 /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ physValRect.width().getVal(),
+                /* fScaleMaxVal */ i_physValRect.width().getVal(),
                 /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ rectF.width());
             m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
             m_divLinesMetricsY.setScale(
                 /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ physValRect.height().getVal(),
+                /* fScaleMaxVal */ i_physValRect.height().getVal(),
                 /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
                 /* fMin_px      */ 0,
                 /* fMax_px      */ rectF.height());
@@ -746,7 +753,8 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItemGroup::prepareGeometryChange();
 
-        {   CRefCountGuard refCountGuard(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+            CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryChangedSignalBlockedCounter);
 
             // Store the rectangle coordinates as the original coordinates.
             setRectOrig(i_physValRect);
@@ -760,11 +768,8 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             // the local coordinate system must be up-to-date.
             // Also note that itemChange must not overwrite the current line value (refCountGuard).
             QGraphicsItem_setPos(ptPos);
-
-            //updateInternalScenePos();
         }
-
-        //applyGeometryChangeToChildrens();
+        emit_geometryChanged();
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
 }
@@ -1994,7 +1999,7 @@ public: // must overridables of base class CGraphObj
     Example: Horizontal Line
 
                        + Pt
-                      / Calculated Angle: 60°
+                      / Calculated Angle: 60Â°
                      /           TC
                  TL +------------x------------+ TR
                     |                         |
@@ -2008,7 +2013,7 @@ public: // must overridables of base class CGraphObj
           graphical object they are linked to if the linked object is resized,
           rotated or moved.
 
-          For example if the group would be rotated by 90°:
+          For example if the group would be rotated by 90Â°:
                                 RC
                       TR +-------x--------+ BR
                          |                |
@@ -2018,7 +2023,7 @@ public: // must overridables of base class CGraphObj
                       TC x       x        x BC
                          |                |
                          |                |
-                Pt + 60° |                |
+                Pt + 60Â° |                |
                      \   |                |
                       TL +-------x--------+ BL
                                  LC
@@ -2610,6 +2615,10 @@ void CGraphObjGroup::paint(
     if (m_gridSettings.areLinesVisible() || m_gridSettings.areLabelsVisible()) {
         if (m_gridSettings.areLinesVisible()) {
             paintGridLines(i_pPainter);
+        }
+        if (m_gridSettings.areLabelsVisible()) {
+            paintGridLabelsDivisionLines(i_pPainter);
+            paintGridLabels(i_pPainter);
         }
     }
     i_pPainter->restore();
@@ -3360,6 +3369,7 @@ void CGraphObjGroup::paintGridLines(QPainter* i_pPainter)
         i_pPainter->setPen(pen);
         for (int idxLine = 0; idxLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
             int x = m_divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
+            x += rct.topLeft().x();
             i_pPainter->drawLine(x, rct.top(), x, rct.bottom());
         }
     }
@@ -3371,7 +3381,89 @@ void CGraphObjGroup::paintGridLines(QPainter* i_pPainter)
 
         for (int idxLine = 0; idxLine < m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
             int y = m_divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxLine);
+            y += rct.topLeft().y();
             i_pPainter->drawLine(rct.left(), y, rct.right(), y);
+        }
+    }
+    i_pPainter->restore();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::paintGridLabelsDivisionLines(QPainter* i_pPainter)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaint,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "paintGridLabelsDivisionLines",
+        /* strAddInfo   */ "" );
+
+    i_pPainter->save();
+    QRectF rctBounding = getBoundingRect();
+    QPen pen(m_gridSettings.linesColor());
+    pen.setStyle(Qt::SolidLine);
+    pen.setWidth(1);
+    i_pPainter->setPen(pen);
+    if (m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main) > 0) {
+        for (int idxLine = 0; idxLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
+            int x = m_divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
+            x += rctBounding.topLeft().x();
+            i_pPainter->drawLine(x, rctBounding.top()-10, x, rctBounding.top());
+            i_pPainter->drawLine(x, rctBounding.bottom()+10, x, rctBounding.bottom());
+        }
+    }
+    if (m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main) > 0) {
+        for (int idxLine = 0; idxLine < m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
+            int y = m_divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxLine);
+            y += rctBounding.topLeft().y();
+            i_pPainter->drawLine(rctBounding.left()-10, y, rctBounding.left(), y);
+            i_pPainter->drawLine(rctBounding.right()+10, y, rctBounding.right(), y);
+        }
+    }
+    i_pPainter->restore();
+}
+
+//------------------------------------------------------------------------------
+void CGraphObjGroup::paintGridLabels(QPainter* i_pPainter)
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaint,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "paintGridLabels",
+        /* strAddInfo   */ "" );
+
+    i_pPainter->save();
+    QRectF rctBounding = getBoundingRect();
+    QFont fnt = m_gridSettings.labelsFont();
+    fnt.setBold(isTextStyleBold(m_gridSettings.labelsTextStyle()));
+    fnt.setItalic(isTextStyleItalic(m_gridSettings.labelsTextStyle()));
+    fnt.setUnderline(isTextEffectUnderline(m_gridSettings.labelsTextEffect()));
+    fnt.setStrikeOut(isTextEffectStrikeout(m_gridSettings.labelsTextEffect()));
+    fnt.setPointSize(textSize2SizeInPixels(m_gridSettings.labelsTextSize());
+    QPen pen(m_gridSettings.labelsTextColor());
+    i_pPainter->setPen(pen);
+    i_pPainter->setFont(fnt);
+    if (m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main) > 0) {
+        for (int idxDivLine = 0; idxDivLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); idxDivLine++) {
+            if (m_divLinesMetricsX.isDivLineLabelVisible(EDivLineLayer::Main, idxDivLine)) {
+                QString strDivLineLabel = m_divLinesMetricsX.getDivLineLabelText(EDivLineLayer::Main, idxDivLine);
+                QRect rectDivLineLabel = m_divLinesMetricsX.getDivLineLabelBoundingRect(EDivLineLayer::Main, idxDivLine);
+                rectDivLineLabel.setBottom(rctBounding.bottom());
+                rectDivLineLabel.setTop(rctBounding.bottom() - rectDivLineLabel.height());
+                i_pPainter->drawText(rectDivLineLabel, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
+            }
+        }
+    }
+    if (m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main) > 0) {
+        for (int idxDivLine = 0; idxDivLine < m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); idxDivLine++) {
+            if (m_divLinesMetricsY.isDivLineLabelVisible(EDivLineLayer::Main, idxDivLine)) {
+                QString strDivLineLabel = m_divLinesMetricsY.getDivLineLabelText(EDivLineLayer::Main, idxDivLine);
+                QRect rectDivLineLabel = m_divLinesMetricsY.getDivLineLabelBoundingRect(EDivLineLayer::Main, idxDivLine);
+                rectDivLineLabel.setLeft(rctBounding.left() - rectDivLineLabel.width());
+                rectDivLineLabel.setRight(rctBounding.left());
+                i_pPainter->drawText(rectDivLineLabel, Qt::AlignVCenter|Qt::AlignRight, strDivLineLabel);
+            }
         }
     }
     i_pPainter->restore();
