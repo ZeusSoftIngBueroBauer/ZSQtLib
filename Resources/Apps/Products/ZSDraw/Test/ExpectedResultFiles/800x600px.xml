@@ -12,10 +12,7 @@
         </Geometry>
         <ZValue>0</ZValue>
         <TextLabels/>
-        <GeometryLabels>
-            <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
-            <Label Key="Height" Text="" Distance="0/0" Visible="false"/>
-        </GeometryLabels>
+        <GeometryLabels/>
         <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Line" ObjectName="Line0">
             <DrawSettings/>
             <Geometry>
@@ -51,10 +48,7 @@
             </Geometry>
             <ZValue>0</ZValue>
             <TextLabels/>
-            <GeometryLabels>
-                <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
-                <Label Key="Height" Text="" Distance="0/0" Visible="false"/>
-            </GeometryLabels>
+            <GeometryLabels/>
             <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Line" ObjectName="Line4">
                 <DrawSettings/>
                 <Geometry>
@@ -115,10 +109,7 @@
             </Geometry>
             <ZValue>0</ZValue>
             <TextLabels/>
-            <GeometryLabels>
-                <Label Key="Angle" Text="" Distance="0/0" Visible="false"/>
-                <Label Key="Height" Text="" Distance="0/0" Visible="false"/>
-            </GeometryLabels>
+            <GeometryLabels/>
             <GraphObj FactoryGroupName="Standard Shapes" ObjectType="Line" ObjectName="Line2">
                 <DrawSettings/>
                 <Geometry>

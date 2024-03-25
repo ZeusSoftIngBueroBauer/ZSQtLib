@@ -302,7 +302,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                                     // newly added object fits into the group. For this to work, the object to be added must be able to
                                     // provide its position and shape points in scene coordinates to the group and the group must already
                                     // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
-                                    physValPointTopLeft = dynamic_cast<CGraphObj*>(i_pGraphObjGroup)->mapToScene(physValPointTopLeft);
+                                    physValPointTopLeft = i_pGraphObjGroup->mapToScene(physValPointTopLeft);
                                     pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
                                     bGeometrySet = true;
                                     i_pGraphObjGroup->addToGroup(pGraphObj);
@@ -466,7 +466,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 // newly added object fits into the group. For this to work, the object to be added must be able to
                 // provide its position and shape points in scene coordinates to the group and the group must already
                 // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
-                physValPointTopLeft = dynamic_cast<CGraphObj*>(i_pGraphObjGroup)->mapToScene(physValPointTopLeft);
+                physValPointTopLeft = i_pGraphObjGroup->mapToScene(physValPointTopLeft);
                 pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
                 bGeometrySet = true;
                 i_pGraphObjGroup->addToGroup(pGraphObj);

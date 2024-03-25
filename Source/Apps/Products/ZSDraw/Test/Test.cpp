@@ -3642,11 +3642,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         }
         else {
             strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 25.00 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 25.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 75.00 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 75.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 50.00 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: 50.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: -50.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line2.pos {-7.5, 0.0} px");
             strlstExpectedValues.append("Line2.getLine.p1.x: 0.00 mm");
@@ -3654,16 +3654,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line2.getLength: 61.03 mm");
-            strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line2.getAngle: 55.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line2.getPos {17.50, 25.00} mm");
             strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
             strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
-            strlstExpectedValues.append("Line3.getLine.p1.y: 50.00 mm");
+            strlstExpectedValues.append("Line3.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
-            strlstExpectedValues.append("Line3.getLine.p2.y: 35.00 mm");
+            strlstExpectedValues.append("Line3.getLine.p2.y: 15.00 mm");
             strlstExpectedValues.append("Line3.getLength: 21.21 mm");
-            strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line3.getPos {42.50, 42.50} mm");
+            strlstExpectedValues.append("Line3.getAngle: 315.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.getPos {42.50, 7.50} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);

@@ -165,7 +165,7 @@ public: // must overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
 public: // must overridables of base class CGraphObj
-    virtual void onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev);
+    virtual void updateOriginalPhysValCoors() override;
     //virtual QRectF getOriginalBoundingRectInParent() const override;
     //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding) override;
     virtual void setGroupScale(double i_fXScale, double i_fYScale) override;

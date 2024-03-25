@@ -370,7 +370,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     // First determine the position of the line in the parent's (scene or group) coordinate system.
     QLineF lineF;
     if (parentGroup() != nullptr) {
-        lineF = parentGroup()->toLocalCoors(i_physValLine);
+        lineF = parentGroup()->convert(i_physValLine, Units.Length.px).toQLineF();
     }
     else {
         lineF = m_pDrawingScene->convert(i_physValLine, Units.Length.px).toQLineF();
@@ -382,6 +382,10 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     QPointF pt1 = lineF.p1() - ptPos;
     QPointF pt2 = lineF.p2() - ptPos;
     lineF = QLineF(pt1, pt2);
+
+    if (parentGroup() != nullptr) {
+        ptPos = parentGroup()->mapFromTopLeftOfBoundingRect(ptPos);
+    }
 
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if the coordinates have been changed ...
@@ -1106,25 +1110,37 @@ public: // must overridables of base class CGraphObj
     @param [in] i_rctBoundingNew
     @param [in] i_rctBoundingPrev
 */
-void CGraphObjLine::onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev)
+void CGraphObjLine::updateOriginalPhysValCoors()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New {" + qRect2Str(i_rctBoundingNew) + "}, Prev {" + qRect2Str(i_rctBoundingPrev) + "}";
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "onParentBoundingRectChanged",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMethod    */ "updateOriginalPhysValCoors",
+        /* strAddInfo   */ "" );
 
-    CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QLineF lineF = line();
-    CPhysValLine physValLine = fromLocalCoors(lineF);
-    physValLine = pGraphObjThis->mapToParent(physValLine);
-    setLineOrig(physValLine);
+    if (parentGroup() != nullptr) {
+        QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
+        QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
+        pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
+        pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
+        CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
+        CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
+        setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+    }
+    else {
+        // Please note that "mapToScene" maps the local coordinates relative to the
+        // top left corner of the item's bounding rectangle and there is no need to
+        // call "mapToBoundingRectTopLeft" beforehand.
+        QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
+        QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
+        CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
+        CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
+        setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+    }
 }
 
 ////------------------------------------------------------------------------------
@@ -2251,6 +2267,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         /* strAddInfo   */ strMthInArgs );
 
     CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
 
     QVariant valChanged = i_value;
 
@@ -2288,16 +2305,27 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // taken over as the original coordinates if initially creating the item or when
             // adding the item to or removing the item from a group.
             if (i_change == ItemPositionHasChanged) {
-                if (parentItem() == nullptr) {
-                    CPhysValLine physValLine = fromLocalCoors(lineF);
-                    physValLine = pGraphObjThis->mapToParent(physValLine);
-                    setLineOrig(physValLine);
+                if (parentGroup() == nullptr) {
+                    // Please note that "mapToScene" maps the local coordinates relative to the
+                    // top left corner of the item's bounding rectangle and there is no need to
+                    // call "mapToBoundingRectTopLeft" beforehand.
+                    QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
+                    QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
+                    CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
+                    CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
+                    setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
                 }
             }
             else if (i_change == ItemParentHasChanged) {
-                CPhysValLine physValLine = fromLocalCoors(lineF);
-                physValLine = pGraphObjThis->mapToParent(physValLine);
-                setLineOrig(physValLine);
+                if (parentGroup() != nullptr) {
+                    QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
+                    QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
+                    pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
+                    pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
+                    CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
+                    CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
+                    setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+                }
             }
         }
         QPolygonF plg;

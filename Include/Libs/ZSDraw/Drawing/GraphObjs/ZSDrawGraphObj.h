@@ -723,30 +723,37 @@ public: // must overridables
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // overridables
-    virtual QPointF toLocalCoors(const CPhysValPoint& i_physValPoint) const;
-    virtual QLineF toLocalCoors(const CPhysValLine& i_physValLine) const;
-    virtual QRectF toLocalCoors(const CPhysValRect& i_physValRect) const;
-    virtual CPhysValPoint fromLocalCoors(const QPointF& i_pt) const;
-    virtual CPhysValLine fromLocalCoors(const QLineF& i_line) const;
-    virtual CPhysValRect fromLocalCoors(const QRectF& i_rect) const;
+    virtual QPointF mapToTopLeftOfBoundingRect(const QPointF& i_pt) const;
+    virtual QLineF mapToTopLeftOfBoundingRect(const QLineF& i_line) const;
+    virtual QRectF mapToTopLeftOfBoundingRect(const QRectF& i_rect) const;
+    virtual QPointF mapFromTopLeftOfBoundingRect(const QPointF& i_pt) const;
+    virtual QLineF mapFromTopLeftOfBoundingRect(const QLineF& i_line) const;
+    virtual QRectF mapFromTopLeftOfBoundingRect(const QRectF& i_rect) const;
 public: // overridables
-    virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint) const;
-    virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
-    virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine) const;
-    virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
-    virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //virtual QPointF toLocalCoors(const CPhysValPoint& i_physValPoint) const;
+    //virtual QLineF toLocalCoors(const CPhysValLine& i_physValLine) const;
+    //virtual QRectF toLocalCoors(const CPhysValRect& i_physValRect) const;
+    //virtual CPhysValPoint fromLocalCoors(const QPointF& i_pt) const;
+    //virtual CPhysValLine fromLocalCoors(const QLineF& i_line) const;
+    //virtual CPhysValRect fromLocalCoors(const QRectF& i_rect) const;
 public: // overridables
-    virtual CPhysValPoint mapToParent(const CPhysValPoint& i_physValPoint) const;
-    virtual CPhysValPoint mapToParent(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
-    virtual CPhysValLine mapToParent(const CPhysValLine& i_physValLine) const;
-    virtual CPhysValLine mapToParent(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
-    virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect) const;
-    virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint) const;
+    //virtual CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine) const;
+    //virtual CPhysValLine mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
+    //virtual CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+public: // overridables
+    //virtual CPhysValPoint mapToParent(const CPhysValPoint& i_physValPoint) const;
+    //virtual CPhysValPoint mapToParent(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //virtual CPhysValLine mapToParent(const CPhysValLine& i_physValLine) const;
+    //virtual CPhysValLine mapToParent(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    //virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect) const;
+    //virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
 public: // must overridables
-    virtual void onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev);
+    virtual void updateOriginalPhysValCoors();
     //virtual QRectF getOriginalBoundingRectInParent() const;
     //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding);
     virtual void setGroupScale(double i_fXScale, double i_fYScale);

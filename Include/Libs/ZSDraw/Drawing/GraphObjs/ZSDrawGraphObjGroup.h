@@ -200,13 +200,20 @@ public: // instance methods
     CPhysValRect convert(const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect convert(const CPhysValRect& i_physValRect) const;
     CPhysValRect convert(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+public: // instance methods
+    CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint) const;
+    CPhysValPoint mapToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValLine mapToScene(const CPhysValLine& i_physValLine) const;
+    CPhysValLine mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
+    CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
+    CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos() const override;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
 public: // must overridables of base class CGraphObj
-    virtual void onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev);
+    virtual void updateOriginalPhysValCoors() override;
     //virtual QRectF getOriginalBoundingRectInParent() const override;
 public: // must overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;

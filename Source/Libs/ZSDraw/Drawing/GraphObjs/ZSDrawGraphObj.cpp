@@ -3634,10 +3634,143 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Maps the given point given in local coordinates relative to the origin
+           point of the item's bounding rectangle to the top left corner of the
+           item's bounding rectangle.
+
+          -3        -2        -1         0         1         2         3
+           0987654321098765432109876543210123456789012345678901234567890
+       -10 +-----------------------------------------------------------+  0
+        -9 |      (-20,-8) => (10,2)                                   |  1
+        -8 |         X                                                 |  2
+        -7 |                                                           |  3
+        -6 |                                                           |  4
+        -5 |                                                           |  5
+        -4 |                                                           |  6
+        -3 |                                                           |  7
+        -2 |                                                           |  8
+        -1 |                       (0,0) => (30,10)                    |  9
+         0 |                             O                             | 10
+         1 |                                                           | 11
+         2 |                                                           | 12
+         3 |                                                           | 13
+         4 |                                                           | 14
+         5 |                                                           | 15
+         6 |                                                           | 16
+         7 |                                         (20,8) => (50,18) | 17
+         8 |                                                 X         | 18
+         9 |                                                           | 19
+        10 +-----------------------------------------------------------+ 20
+           0         1         2         3         4         5         6
+           0123456789012345678901234567890123456789012345678901234567890
+
+    @param [in] i_pt
+        Point in item's local coordinates relative to the origin of the
+        item's bounding rectangle.
+
+    @return Point relative to the top left corner of the item's bounding rectangle.
+*/
+QPointF CGraphObj::mapToTopLeftOfBoundingRect(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();   // (-30, -10, 60, 20)
+    QPointF ptOrigin = rctBounding.topLeft(); // (-30, -10)
+    return i_pt - ptOrigin;                   // (-20, -8) - (-30, -10) = (10, 2)
+}
+
+//------------------------------------------------------------------------------
+QLineF CGraphObj::mapToTopLeftOfBoundingRect(const QLineF& i_line) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptOrigin = rctBounding.topLeft();
+    return QLineF(i_line.p1() - ptOrigin, i_line.p2() - ptOrigin);
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObj::mapToTopLeftOfBoundingRect(const QRectF& i_rect) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptOrigin = rctBounding.topLeft();
+    return QRectF(i_rect.topLeft() - ptOrigin, i_rect.bottomRight() - ptOrigin);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Maps the given point given in local coordinates relative to the top left
+           corner of the item's bounding rectangle to the center point of the
+           item's bounding rectangle.
+
+          0         1         2         3         4         5         6
+          0123456789012345678901234567890123456789012345678901234567890
+        0 +-----------------------------------------------------------+ -10
+        1 |      (10,2) => (-20,-8)                                   |  -9
+        2 |         X                                                 |  -8
+        3 |                                                           |  -7
+        4 |                                                           |  -6
+        5 |                                                           |  -5
+        6 |                                                           |  -4
+        7 |                                                           |  -3
+        8 |                                                           |  -2
+        9 |                       (30,10) => (0,0)                    |  -1
+       10 |                             O                             |   0
+       11 |                                                           |   1
+       12 |                                                           |   2
+       13 |                                                           |   3
+       14 |                                                           |   4
+       15 |                                                           |   5
+       16 |                                                           |   6
+       17 |                                         (50,18) => (20,8) |   7
+       18 |                                                 X         |   8
+       19 |                                                           |   9
+       20 +-----------------------------------------------------------+  10
+         -3        -2        -1         0         1         2         3
+          0987654321098765432109876543210123456789012345678901234567890
+
+    @param [in] i_pt
+        Point in item's local coordinates relative to the top left corner
+        of the item's bounding rectangle.
+
+    @return Point relative to the center point of the item's bounding rectangle.
+*/
+QPointF CGraphObj::mapFromTopLeftOfBoundingRect(const QPointF& i_pt) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();   // (-30, -10, 60, 20)
+    QPointF ptOrigin = rctBounding.topLeft(); // (-30, -10)
+    return i_pt + ptOrigin;                   // (10, 2) + (-30, -10) = (-20, -8)
+}
+
+//------------------------------------------------------------------------------
+QLineF CGraphObj::mapFromTopLeftOfBoundingRect(const QLineF& i_line) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptOrigin = rctBounding.topLeft();
+    return QLineF(i_line.p1() + ptOrigin, i_line.p2() + ptOrigin);
+}
+
+//------------------------------------------------------------------------------
+QRectF CGraphObj::mapFromTopLeftOfBoundingRect(const QRectF& i_rect) const
+//------------------------------------------------------------------------------
+{
+    QRectF rctBounding = getBoundingRect();
+    QPointF ptOrigin = rctBounding.topLeft();
+    return QRectF(i_rect.topLeft() + ptOrigin, i_rect.bottomRight() + ptOrigin);
+}
+
+/*==============================================================================
+public: // overridables
+==============================================================================*/
+
+#if 0
+//------------------------------------------------------------------------------
 /*! @brief Maps the given point which is relative to the top left or bottom left
            corner of the item's bounding rectangle to the graphics item local
            coordinate system whose origin is in the center of the item's bounding
            rectangle.
+
+    YScaleAxisOrientation: TopDown
 
            0         1         2         3         4         5         6
            0123456789012345678901234567890123456789012345678901234567890
@@ -3665,6 +3798,34 @@ public: // overridables
            0987654321098765432109876543210123456789012345678901234567890
           -3        -2        -1         0         1         2         3
 
+    YScaleAxisOrientation: BottomUp
+
+           0         1         2         3         4         5         6
+           0123456789012345678901234567890123456789012345678901234567890
+        20 +-----------------------------------------------------------+ -10
+        19 |      (10/18) => (-20/-8)                                  |  -9
+        18 |         X                                                 |  -8
+        17 |                                                           |  -7
+        16 |                                                           |  -6
+        15 |                                                           |  -5
+        14 |                                                           |  -4
+        13 |                                                           |  -3
+        12 |                                                           |  -2
+        11 |                       (0/0) => (30/10)                    |  -1
+        10 |                             O                             |   0
+         9 |                                                           |   1
+         8 |                                                           |   2
+         7 |                                                           |   3
+         6 |                                                           |   4
+         5 |                                                           |   5
+         4 |                                                           |   6
+         3 |                                         (50/2) => (20/8)  |   7
+         2 |                                                 X         |   8
+         1 |                                                           |   9
+         0 +-----------------------------------------------------------+  10
+           0987654321098765432109876543210123456789012345678901234567890
+          -3        -2        -1         0         1         2         3
+
     @param i_physValPoint [in]
         Point coordinates as physical value with unit which is passed, depending
         on the Y-Axis-Scale-Orientation, either relative to the top left or bottom
@@ -3686,17 +3847,23 @@ QPointF CGraphObj::toLocalCoors(const CPhysValPoint& i_physValPoint) const
         /* strMethod    */ "toLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QPointF pt;
-    const CGraphObjGroup* pGraphObjGroupThis = dynamic_cast<const CGraphObjGroup*>(this);
-    if (pGraphObjGroupThis != nullptr) {
-        pt = pGraphObjGroupThis->convert(i_physValPoint, Units.Length.px).toQPointF();  // (10/2)
+    if (parentGroup() != nullptr) {
+        pt = parentGroup()->convert(i_physValPoint, Units.Length.px).toQPointF();       // (10/2)
     }
     else {
         pt = m_pDrawingScene->convert(i_physValPoint, Units.Length.px).toQPointF();     // (10/2)
     }
     QRectF rctBounding = getBoundingRect();                                             // -30, -10, 60, 20
-    QPointF ptTL = rctBounding.topLeft();                                               // (-30/-10)
-    pt += ptTL;                                                                         // (10/2) + (-30/-10) = (-20/-8)
+    QPointF ptOrigin;
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        ptOrigin = rctBounding.topLeft();                                               // (-30/-10)
+    }
+    else {
+        ptOrigin = rctBounding.bottomLeft();
+    }
+    pt += ptOrigin;                                                                     // (10/2) + (-30/-10) = (-20/-8)
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Pt {" + qPoint2Str(pt) + "} px");
     }
@@ -3718,18 +3885,24 @@ QLineF CGraphObj::toLocalCoors(const CPhysValLine& i_physValLine) const
         /* strMethod    */ "toLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QLineF lineF;
-    const CGraphObjGroup* pGraphObjGroupThis = dynamic_cast<const CGraphObjGroup*>(this);
-    if (pGraphObjGroupThis != nullptr) {
-        lineF = pGraphObjGroupThis->convert(i_physValLine, Units.Length.px).toQLineF();
+    if (parentGroup() != nullptr) {
+        lineF = parentGroup()->convert(i_physValLine, Units.Length.px).toQLineF();
     }
     else {
         lineF = m_pDrawingScene->convert(i_physValLine, Units.Length.px).toQLineF();
     }
     QRectF rctBounding = getBoundingRect();
-    QPointF ptTL = rctBounding.topLeft();
-    lineF.setP1(lineF.p1() += ptTL);
-    lineF.setP2(lineF.p2() += ptTL);
+    QPointF ptOrigin;
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        ptOrigin = rctBounding.topLeft();
+    }
+    else {
+        ptOrigin = rctBounding.bottomLeft();
+    }
+    lineF.setP1(lineF.p1() + ptOrigin);
+    lineF.setP2(lineF.p2() + ptOrigin);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Line {" + qLine2Str(lineF) + "} px");
     }
@@ -3751,24 +3924,32 @@ QRectF CGraphObj::toLocalCoors(const CPhysValRect& i_physValRect) const
         /* strMethod    */ "toLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QRectF rectF;
-    const CGraphObjGroup* pGraphObjGroupThis = dynamic_cast<const CGraphObjGroup*>(this);
-    if (pGraphObjGroupThis != nullptr) {
-        rectF = pGraphObjGroupThis->convert(i_physValRect, Units.Length.px).toQRectF();
+    if (parentGroup() != nullptr) {
+        rectF = parentGroup()->convert(i_physValRect, Units.Length.px).toQRectF();
     }
     else {
         rectF = m_pDrawingScene->convert(i_physValRect, Units.Length.px).toQRectF();
     }
     QRectF rctBounding = getBoundingRect();
-    QPointF ptTL = rctBounding.topLeft();
-    rectF.setTopLeft(rectF.topLeft() += ptTL);
-    rectF.setBottomRight(rectF.bottomRight() += ptTL);
+    QPointF ptOrigin;
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        ptOrigin = rctBounding.topLeft();
+    }
+    else {
+        ptOrigin = rctBounding.bottomLeft();
+    }
+    rectF.setTopLeft(rectF.topLeft() + ptOrigin);
+    rectF.setBottomRight(rectF.bottomRight() + ptOrigin);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Rect {" + qRect2Str(rectF) + "} px");
     }
     return rectF;
 }
+#endif
 
+#if 0
 //------------------------------------------------------------------------------
 /*! @brief Maps the given point from local coordinates given relative to the
            center of the item's bounding rectangle to the physical value,
@@ -3777,59 +3958,59 @@ QRectF CGraphObj::toLocalCoors(const CPhysValRect& i_physValRect) const
 
     YScaleAxisOrientation: TopDown
 
+          -3        -2        -1         0         1         2         3
+           0987654321098765432109876543210123456789012345678901234567890
+       -10 +-----------------------------------------------------------+  0
+        -9 |      (-20/-8) => (10/2)                                   |  1
+        -8 |         X                                                 |  2
+        -7 |                                                           |  3
+        -6 |                                                           |  4
+        -5 |                                                           |  5
+        -4 |                                                           |  6
+        -3 |                                                           |  7
+        -2 |                                                           |  8
+        -1 |                       (0/0) => (30/10)                    |  9
+         0 |                             O                             | 10
+         1 |                                                           | 11
+         2 |                                                           | 12
+         3 |                                                           | 13
+         4 |                                                           | 14
+         5 |                                                           | 15
+         6 |                                                           | 16
+         7 |                                         (20/8) => (50/18) | 17
+         8 |                                                 X         | 18
+         9 |                                                           | 19
+        10 +-----------------------------------------------------------+ 20
            0         1         2         3         4         5         6
            0123456789012345678901234567890123456789012345678901234567890
-         0 +-----------------------------------------------------------+ -10
-         1 |      (-20/-8) => (10/2)                                   |  -9
-         2 |         X                                                 |  -8
-         3 |                                                           |  -7
-         4 |                                                           |  -6
-         5 |                                                           |  -5
-         6 |                                                           |  -4
-         7 |                                                           |  -3
-         8 |                                                           |  -2
-         9 |                       (0/0) => (30/10)                    |  -1
-        10 |                             O                             |   0
-        11 |                                                           |   1
-        12 |                                                           |   2
-        13 |                                                           |   3
-        14 |                                                           |   4
-        15 |                                                           |   5
-        16 |                                                           |   6
-        17 |                                         (20/8) => (50/18) |   7
-        18 |                                                 X         |   8
-        19 |                                                           |   9
-        20 +-----------------------------------------------------------+  10
-           0987654321098765432109876543210123456789012345678901234567890
-          -3        -2        -1         0         1         2         3
 
     YScaleAxisOrientation: BottomUp
 
-           0         1         2         3         4         5         6
-           0123456789012345678901234567890123456789012345678901234567890
-        20 +-----------------------------------------------------------+ -10
-        19 |      (-20/-8) => (10/18)                                  |  -9
-        18 |         X                                                 |  -8
-        17 |                                                           |  -7
-        16 |                                                           |  -6
-        15 |                                                           |  -5
-        14 |                                                           |  -4
-        13 |                                                           |  -3
-        12 |                                                           |  -2
-        11 |                       (0/0) => (30/10)                    |  -1
-        10 |                             O                             |   0
-         9 |                                                           |   1
-         8 |                                                           |   2
-         7 |                                                           |   3
-         6 |                                                           |   4
-         5 |                                                           |   5
-         4 |                                                           |   6
-         3 |                                         (20/8) => (50/2)  |   7
-         2 |                                                 X         |   8
-         1 |                                                           |   9
-         0 +-----------------------------------------------------------+  10
-           0987654321098765432109876543210123456789012345678901234567890
-          -3        -2        -1         0         1         2         3
+            0987654321098765432109876543210123456789012345678901234567890
+           -3        -2        -1         0         1         2         3
+        -10 +-----------------------------------------------------------+ 20
+         -9 |      (-20/-8) => (10/18)                                  | 19
+         -8 |         X                                                 | 18
+         -7 |                                                           | 17
+         -6 |                                                           | 16
+         -5 |                                                           | 15
+         -4 |                                                           | 14
+         -3 |                                                           | 13
+         -2 |                                                           | 12
+         -1 |                       (0/0) => (30/10)                    | 11
+          0 |                             O                             | 10
+          1 |                                                           |  9
+          2 |                                                           |  8
+          3 |                                                           |  7
+          4 |                                                           |  6
+          5 |                                                           |  5
+          6 |                                                           |  4
+          7 |                                         (20/8) => (50/2)  |  3
+          8 |                                                 X         |  2
+          9 |                                                           |  1
+         10 +-----------------------------------------------------------+  0
+            0         1         2         3         4         5         6
+            0123456789012345678901234567890123456789012345678901234567890
 
     @param i_physValPoint [in]
         Point coordinates as physical value with unit which is passed, depending
@@ -3853,19 +4034,25 @@ CPhysValPoint CGraphObj::fromLocalCoors(const QPointF& i_pt) const
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    QRectF rctBounding = getBoundingRect();                                             // -30, -10, 60, 20
-    QPointF ptOrigin;
-    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        ptOrigin = rctBounding.topLeft();                                               // (-30/-10)
-    }
-    else {
-        ptOrigin = rctBounding.bottomLeft();                                            // (-30/10)
-    }
-    QPointF pt = i_pt - ptOrigin;                                                       // (-20/-8) - (-30/-10) = (10/2)
+    QRectF rctBounding = getBoundingRect();     // -30, -10, 60, 20
+    QPointF ptOrigin = rctBounding.topLeft();   // (-30/-10)
+    QPointF pt = i_pt - ptOrigin;               // (-20/-8) - (-30/-10) = (10/2)
+    //QPointF ptOrigin;
+    //if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    //    ptOrigin = rctBounding.topLeft();     // (-30/-10)
+    //    pt = i_pt - ptOrigin;                 // (-20/-8) - (-30/-10) = (10/2)
+    //}
+    //else {
+    //    ptOrigin = rctBounding.bottomLeft();  // (-30/10)
+    //    pt.setX(i_pt.x() - ptOrigin.x());     // x: (-20) - (-30) = (10)
+    //    pt.setY(ptOrigin.y() - i_pt.y());     // y: (10) - (-8) = (18)
+    //}                                         // Pt: (-30/-10) => (10/18)
+
+    // When converting the pixel coordinates into physical values the parent group
+    // or the drawing scene will take the Y-Axis-Scale Orientation into account.
     CPhysValPoint physValPoint;
-    const CGraphObjGroup* pGraphObjGroupThis = dynamic_cast<const CGraphObjGroup*>(this);
-    if (pGraphObjGroupThis != nullptr) {
-        physValPoint = pGraphObjGroupThis->convert(pt);
+    if (parentGroup() != nullptr) {                 // TopDown          | BottomUp
+        physValPoint = parentGroup()->convert(pt);  // (10/2) => (10/2) | (10/2) => (10/18)
     }
     else {
         physValPoint = m_pDrawingScene->convert(pt);
@@ -3898,13 +4085,19 @@ CPhysValLine CGraphObj::fromLocalCoors(const QLineF& i_line) const
         /* strMethod    */ "fromLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QRectF rctBounding = getBoundingRect();
-    QPointF ptTL = rctBounding.topLeft();
-    QLineF lineF(i_line.p1() - ptTL, i_line.p2() - ptTL);
+    QPointF ptOrigin;
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        ptOrigin = rctBounding.topLeft();
+    }
+    else {
+        ptOrigin = rctBounding.bottomLeft();
+    }
+    QLineF lineF(i_line.p1() - ptOrigin, i_line.p2() - ptOrigin);
     CPhysValLine physValLine;
-    const CGraphObjGroup* pGraphObjGroupThis = dynamic_cast<const CGraphObjGroup*>(this);
-    if (pGraphObjGroupThis != nullptr) {
-        physValLine = pGraphObjGroupThis->convert(lineF);
+    if (parentGroup() != nullptr) {
+        physValLine = parentGroup()->convert(lineF);
     }
     else {
         physValLine = m_pDrawingScene->convert(lineF);
@@ -3937,13 +4130,19 @@ CPhysValRect CGraphObj::fromLocalCoors(const QRectF& i_rect) const
         /* strMethod    */ "fromLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QRectF rctBounding = getBoundingRect();
-    QPointF ptTL = rctBounding.topLeft();
-    QRectF rectF(i_rect.topLeft() - ptTL, i_rect.bottomRight() - ptTL);
+    QPointF ptOrigin;
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        ptOrigin = rctBounding.topLeft();
+    }
+    else {
+        ptOrigin = rctBounding.bottomLeft();
+    }
+    QRectF rectF(i_rect.topLeft() - ptOrigin, i_rect.bottomRight() - ptOrigin);
     CPhysValRect physValRect;
-    const CGraphObjGroup* pGraphObjGroupThis = dynamic_cast<const CGraphObjGroup*>(this);
-    if (pGraphObjGroupThis != nullptr) {
-        physValRect = pGraphObjGroupThis->convert(rectF);
+    if (parentGroup() != nullptr) {
+        physValRect = parentGroup()->convert(rectF);
     }
     else {
         physValRect = m_pDrawingScene->convert(rectF);
@@ -3953,11 +4152,13 @@ CPhysValRect CGraphObj::fromLocalCoors(const QRectF& i_rect) const
     }
     return physValRect;
 }
+#endif
 
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
 
+#if 0
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
 //------------------------------------------------------------------------------
@@ -3968,7 +4169,7 @@ CPhysValPoint CGraphObj::mapToScene(const CPhysValPoint& i_physValPoint) const
 //------------------------------------------------------------------------------
 /*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
            Orientation, relative to either the top left or bottom left corner of
-           the item's bounding rectangle to the physical value in the drawing scene.
+           the parent's bounding rectangle to the physical value in the drawing scene.
 
     @param [in] i_physValPoint
         Point to be mapped.
@@ -4089,11 +4290,13 @@ CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect, const ZS::
     }
     return physValRect;
 }
+#endif
 
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
 
+#if 0
 //------------------------------------------------------------------------------
 CPhysValPoint CGraphObj::mapToParent(const CPhysValPoint& i_physValPoint) const
 //------------------------------------------------------------------------------
@@ -4247,6 +4450,7 @@ CPhysValRect CGraphObj::mapToParent(const CPhysValRect& i_physValRect, const ZS:
     }
     return physValRect;
 }
+#endif
 
 /*==============================================================================
 public: // must overridables
@@ -4346,23 +4550,16 @@ public: // must overridables
     The childs must update their original shape point coordinates. This is also necessary
     if the groups position and also the childs position (in graphics item pixell coordinates)
     have not been changed.
-
-    @param [in] i_rctBoundingNew
-    @param [in] i_rctBoundingPrev
 */
-void CGraphObj::onParentBoundingRectChanged(const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingPrev)
+void CGraphObj::updateOriginalPhysValCoors()
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New {" + qRect2Str(i_rctBoundingNew) + "}, Prev {" + qRect2Str(i_rctBoundingPrev) + "}";
-    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::onParentBoundingRectChanged",
-        /* strAddInfo   */ strMthInArgs );
+        /* strMethod    */ "CGraphObj::updateOriginalPhysValCoors",
+        /* strAddInfo   */ "" );
     #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 }
