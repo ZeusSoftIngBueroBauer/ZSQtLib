@@ -635,17 +635,17 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     pTestStep->setConfigValue("P2", QPointF(100.0, 0.0));
 
     QStringList strlstExpectedValues;
+    strlstExpectedValues.append("line.pos {50.0, 0.0} px");
     strlstExpectedValues.append("line.p1 {-50.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {50.0, 0.0} px");
     strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {50.0, 0.0} px");
+    strlstExpectedValues.append("getPos {50, 0} px");
     strlstExpectedValues.append("getLine.p1.x: 0 px");
     strlstExpectedValues.append("getLine.p1.y: 0 px");
     strlstExpectedValues.append("getLine.p2.x: 100 px");
     strlstExpectedValues.append("getLine.p2.y: 0 px");
     strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-    strlstExpectedValues.append("getPos {50, 0} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (right)
@@ -667,17 +667,17 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     pTestStep->setConfigValue("P2", QPointF(100.0, 100.0));
 
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {100.0, 50.0} px");
     strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
     strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
     strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {100.0, 50.0} px");
+    strlstExpectedValues.append("getPos {100, 50} px");
     strlstExpectedValues.append("getLine.p1.x: 100 px");
     strlstExpectedValues.append("getLine.p1.y: 0 px");
     strlstExpectedValues.append("getLine.p2.x: 100 px");
     strlstExpectedValues.append("getLine.p2.y: 100 px");
     strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-    strlstExpectedValues.append("getPos {100, 50} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (bottom)
@@ -699,17 +699,17 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     pTestStep->setConfigValue("P2", QPointF(0.0, 100.0));
 
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {50.0, 100.0} px");
     strlstExpectedValues.append("line.p1 {50.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {-50.0, 0.0} px");
     strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {50.0, 100.0} px");
+    strlstExpectedValues.append("getPos {50, 100} px");
     strlstExpectedValues.append("getLine.p1.x: 100 px");
     strlstExpectedValues.append("getLine.p1.y: 100 px");
     strlstExpectedValues.append("getLine.p2.x: 0 px");
     strlstExpectedValues.append("getLine.p2.y: 100 px");
     strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
-    strlstExpectedValues.append("getPos {50, 100} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (left)
@@ -731,17 +731,17 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     pTestStep->setConfigValue("P2", QPointF(0.0, 0.0));
 
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {0.0, 50.0} px");
     strlstExpectedValues.append("line.p1 {0.0, 50.0} px");
     strlstExpectedValues.append("line.p2 {0.0, -50.0} px");
     strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {0.0, 50.0} px");
+    strlstExpectedValues.append("getPos {0, 50} px");
     strlstExpectedValues.append("getLine.p1.x: 0 px");
     strlstExpectedValues.append("getLine.p1.y: 100 px");
     strlstExpectedValues.append("getLine.p2.x: 0 px");
     strlstExpectedValues.append("getLine.p2.y: 0 px");
     strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
-    strlstExpectedValues.append("getPos {0, 50} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -813,17 +813,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         pTestStep->setConfigValue("P2", QPointF(100.0, 100.0));
     }
     QStringList strlstExpectedValues;
+    strlstExpectedValues.append("line.pos {175.0, 0.0} px");
     strlstExpectedValues.append("line.p1 {-175.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {175.0, 0.0} px");
     strlstExpectedValues.append("line.length: 350.0 px");
-    strlstExpectedValues.append("line.pos {175.0, 0.0} px");
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("getPos {50.0, 0.0} mm");
         strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
         strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
         strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
     }
     else {
+        strlstExpectedValues.append("getPos {50.0, 100.0} mm");
         strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
         strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
@@ -831,12 +833,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
     strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("getPos {50.0, 0.0} mm");
-    }
-    else {
-        strlstExpectedValues.append("getPos {50.0, 100.0} mm");
-    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (right)
@@ -863,10 +859,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         pTestStep->setConfigValue("P2", QPointF(100.0, 0.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {350.0, 175.0} px");
     strlstExpectedValues.append("line.p1 {0.0, -175.0} px");
     strlstExpectedValues.append("line.p2 {0.0, 175.0} px");
     strlstExpectedValues.append("line.length: 350.0 px");
-    strlstExpectedValues.append("line.pos {350.0, 175.0} px");
+    strlstExpectedValues.append("getPos {100.0, 50.0} mm");
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("getLine.p1.x: 100.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
@@ -886,7 +883,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     else {
         strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
     }
-    strlstExpectedValues.append("getPos {100.0, 50.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (bottom)
@@ -913,17 +909,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         pTestStep->setConfigValue("P2", QPointF(0.0, 0.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {175.0, 350.0} px");
     strlstExpectedValues.append("line.p1 {175.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {-175.0, 0.0} px");
     strlstExpectedValues.append("line.length: 350.0 px");
-    strlstExpectedValues.append("line.pos {175.0, 350.0} px");
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        strlstExpectedValues.append("getPos {50.0, 100.0} mm");
         strlstExpectedValues.append("getLine.p1.x: 100.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
         strlstExpectedValues.append("getLine.p2.x: 0.0 mm");
         strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
     }
     else {
+        strlstExpectedValues.append("getPos {50.0, 0.0} mm");
         strlstExpectedValues.append("getLine.p1.x: 100.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
         strlstExpectedValues.append("getLine.p2.x: 0.0 mm");
@@ -931,12 +929,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
     strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("getPos {50.0, 100.0} mm");
-    }
-    else {
-        strlstExpectedValues.append("getPos {50.0, 0.0} mm");
-    }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (left)
@@ -963,10 +955,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         pTestStep->setConfigValue("P2", QPointF(0.0, 100.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {0.0, 175.0} px");
     strlstExpectedValues.append("line.p1 {0.0, 175.0} px");
     strlstExpectedValues.append("line.p2 {0.0, -175.0} px");
     strlstExpectedValues.append("line.length: 350.0 px");
-    strlstExpectedValues.append("line.pos {0.0, 175.0} px");
+    strlstExpectedValues.append("getPos {0.0, 50.0} mm");
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
@@ -986,7 +979,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     else {
         strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
     }
-    strlstExpectedValues.append("getPos {0.0, 50.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line4
@@ -1013,10 +1005,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         pTestStep->setConfigValue("P2", QPointF(71.42857, 28.57143));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {175.0, 175.0} px");
     strlstExpectedValues.append("line.p1 {-75.0, -75.0} px");
     strlstExpectedValues.append("line.p2 {75.0, 75.0} px");
     strlstExpectedValues.append("line.length: 212.1 px");
-    strlstExpectedValues.append("line.pos {175.0, 175.0} px");
+    strlstExpectedValues.append("getPos {50.0, 50.0} mm");
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("getLine.p1.x: 28.6 mm");
         strlstExpectedValues.append("getLine.p1.y: 28.6 mm");
@@ -1036,7 +1029,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     else {
         strlstExpectedValues.append("getAngle: 45.0 " + Math::c_strSymbolDegree);
     }
-    strlstExpectedValues.append("getPos {50.0, 50.0} mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2433,37 +2425,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(300.0, 250.0));
     }
     QStringList strlstExpectedValues;
+    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
     strlstExpectedValues.append("line.p1 {0.0, -50.0} px");
     strlstExpectedValues.append("line.p2 {0.0, 50.0} px");
     strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("getPos {300, 300} px");
         strlstExpectedValues.append("getLine.p1.x: 300 px");
         strlstExpectedValues.append("getLine.p1.y: 250 px");
         strlstExpectedValues.append("getLine.p2.x: 300 px");
         strlstExpectedValues.append("getLine.p2.y: 350 px");
         strlstExpectedValues.append("getLength: 100 px");
         strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {300, 300} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 300.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 250.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 300.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 350.00 mm");
             strlstExpectedValues.append("getLength: 100.00 mm");
             strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
         }
         else {
+            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 300.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 300.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 250.00 mm");
             strlstExpectedValues.append("getLength: 100.00 mm");
             strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2492,37 +2484,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(350.0, 300.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
     strlstExpectedValues.append("line.p1 {-50.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {50.0, 0.0} px");
     strlstExpectedValues.append("line.length: 100.0 px");
-    strlstExpectedValues.append("line.pos {300.0, 300.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("getPos {300, 300} px");
         strlstExpectedValues.append("getLine.p1.x: 250 px");
         strlstExpectedValues.append("getLine.p1.y: 300 px");
         strlstExpectedValues.append("getLine.p2.x: 350 px");
         strlstExpectedValues.append("getLine.p2.y: 300 px");
         strlstExpectedValues.append("getLength: 100 px");
         strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {300, 300} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 300.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 300.00 mm");
             strlstExpectedValues.append("getLength: 100.00 mm");
             strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
         }
         else {
+            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 300.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 300.00 mm");
             strlstExpectedValues.append("getLength: 100.00 mm");
             strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2551,37 +2543,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(325.0, 250.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {287.5, 300.0} px");
     strlstExpectedValues.append("line.p1 {-37.5, -50.0} px");
     strlstExpectedValues.append("line.p2 {37.5, 50.0} px");
     strlstExpectedValues.append("line.length: 125.0 px");
-    strlstExpectedValues.append("line.pos {287.5, 300.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("getPos {288, 300} px");
         strlstExpectedValues.append("getLine.p1.x: 250 px");
         strlstExpectedValues.append("getLine.p1.y: 250 px");
         strlstExpectedValues.append("getLine.p2.x: 325 px");
         strlstExpectedValues.append("getLine.p2.y: 350 px");
         strlstExpectedValues.append("getLength: 125 px");
         strlstExpectedValues.append("getAngle: 306.9 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {288, 300} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("getPos {287.50, 300.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 250.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 325.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 350.00 mm");
             strlstExpectedValues.append("getLength: 125.00 mm");
             strlstExpectedValues.append("getAngle: 306.9 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {287.50, 300.00} mm");
         }
         else {
+            strlstExpectedValues.append("getPos {287.50, 300.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 325.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 250.00 mm");
             strlstExpectedValues.append("getLength: 125.00 mm");
             strlstExpectedValues.append("getAngle: 53.1 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {287.50, 300.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2610,37 +2602,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(350.0, 275.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {337.5, 337.5} px");
     strlstExpectedValues.append("line.p1 {-12.5, 12.5} px");
     strlstExpectedValues.append("line.p2 {12.5, -12.5} px");
     strlstExpectedValues.append("line.length: 35.4 px");
-    strlstExpectedValues.append("line.pos {337.5, 337.5} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("getPos {338, 338} px");
         strlstExpectedValues.append("getLine.p1.x: 325 px");
         strlstExpectedValues.append("getLine.p1.y: 350 px");
         strlstExpectedValues.append("getLine.p2.x: 350 px");
         strlstExpectedValues.append("getLine.p2.y: 325 px");
         strlstExpectedValues.append("getLength: 35 px");
         strlstExpectedValues.append("getAngle: 45.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {338, 338} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("getPos {337.50, 337.50} mm");
             strlstExpectedValues.append("getLine.p1.x: 325.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 325.00 mm");
             strlstExpectedValues.append("getLength: 35.36 mm");
             strlstExpectedValues.append("getAngle: 45.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {337.50, 337.50} mm");
         }
         else {
+            strlstExpectedValues.append("getPos {337.50, 262.50} mm");
             strlstExpectedValues.append("getLine.p1.x: 325.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 250.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 275.00 mm");
             strlstExpectedValues.append("getLength: 35.36 mm");
             strlstExpectedValues.append("getAngle: 315.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {337.50, 262.50} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2669,37 +2661,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(330.0, 330.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {325.0, 270.0} px");
     strlstExpectedValues.append("line.p1 {-5.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {5.0, 0.0} px");
     strlstExpectedValues.append("line.length: 10.0 px");
-    strlstExpectedValues.append("line.pos {325.0, 270.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("getPos {325, 270} px");
         strlstExpectedValues.append("getLine.p1.x: 320 px");
         strlstExpectedValues.append("getLine.p1.y: 270 px");
         strlstExpectedValues.append("getLine.p2.x: 330 px");
         strlstExpectedValues.append("getLine.p2.y: 270 px");
         strlstExpectedValues.append("getLength: 10 px");
         strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {325, 270} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("getPos {325.00, 270.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 270.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 270.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {325.00, 270.00} mm");
         }
         else {
+            strlstExpectedValues.append("getPos {325.00, 330.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 330.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {325.00, 330.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2728,37 +2720,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(330.0, 320.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {330.0, 275.0} px");
     strlstExpectedValues.append("line.p1 {0.0, -5.0} px");
     strlstExpectedValues.append("line.p2 {0.0, 5.0} px");
     strlstExpectedValues.append("line.length: 10.0 px");
-    strlstExpectedValues.append("line.pos {330.0, 275.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("getPos {330, 275} px");
         strlstExpectedValues.append("getLine.p1.x: 330 px");
         strlstExpectedValues.append("getLine.p1.y: 270 px");
         strlstExpectedValues.append("getLine.p2.x: 330 px");
         strlstExpectedValues.append("getLine.p2.y: 280 px");
         strlstExpectedValues.append("getLength: 10 px");
         strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {330, 275} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("getPos {330.00, 275.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 270.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 280.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {330.00, 275.00} mm");
         }
         else {
+            strlstExpectedValues.append("getPos {330.00, 325.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 320.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {330.00, 325.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2787,37 +2779,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(320.0, 320.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {325.0, 280.0} px");
     strlstExpectedValues.append("line.p1 {5.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {-5.0, 0.0} px");
     strlstExpectedValues.append("line.length: 10.0 px");
-    strlstExpectedValues.append("line.pos {325.0, 280.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("getPos {325, 280} px");
         strlstExpectedValues.append("getLine.p1.x: 330 px");
         strlstExpectedValues.append("getLine.p1.y: 280 px");
         strlstExpectedValues.append("getLine.p2.x: 320 px");
         strlstExpectedValues.append("getLine.p2.y: 280 px");
         strlstExpectedValues.append("getLength: 10 px");
         strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {325, 280} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("getPos {325.00, 280.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 280.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 280.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {325.00, 280.00} mm");
         }
         else {
+            strlstExpectedValues.append("getPos {325.00, 320.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 320.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {325.00, 320.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2846,37 +2838,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(320.0, 330.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("line.pos {320.0, 275.0} px");
     strlstExpectedValues.append("line.p1 {0.0, 5.0} px");
     strlstExpectedValues.append("line.p2 {0.0, -5.0} px");
     strlstExpectedValues.append("line.length: 10.0 px");
-    strlstExpectedValues.append("line.pos {320.0, 275.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("getPos {320, 275} px");
         strlstExpectedValues.append("getLine.p1.x: 320 px");
         strlstExpectedValues.append("getLine.p1.y: 280 px");
         strlstExpectedValues.append("getLine.p2.x: 320 px");
         strlstExpectedValues.append("getLine.p2.y: 270 px");
         strlstExpectedValues.append("getLength: 10 px");
         strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("getPos {320, 275} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("getPos {320.00, 275.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 280.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 270.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {320.00, 275.00} mm");
         }
         else {
+            strlstExpectedValues.append("getPos {320.00, 325.00} mm");
             strlstExpectedValues.append("getLine.p1.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p1.y: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 330.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
             strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("getPos {320.00, 325.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -2956,133 +2948,133 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
 
     QStringList strlstExpectedValues;
-    strlstExpectedValues.append("Group0.topLeft {-5.0, -5.0} px");
-    strlstExpectedValues.append("Group0.bottomRight {5.0, 5.0} px");
-    strlstExpectedValues.append("Group0.size {10.0, 10.0} px");
-    strlstExpectedValues.append("Group0.pos {325.0, 275.0} px");
+    strlstExpectedValues.append(strGraphObjName + ".pos {325.0, 275.0} px");
+    strlstExpectedValues.append(strGraphObjName + ".topLeft {-5.0, -5.0} px");
+    strlstExpectedValues.append(strGraphObjName + ".bottomRight {5.0, 5.0} px");
+    strlstExpectedValues.append(strGraphObjName + ".size {10.0, 10.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Group0.getRect.topLeft.x: 320 px");
-        strlstExpectedValues.append("Group0.getRect.topLeft.y: 270 px");
-        strlstExpectedValues.append("Group0.getRect.bottomRight.x: 330 px");
-        strlstExpectedValues.append("Group0.getRect.bottomRight.y: 280 px");
-        strlstExpectedValues.append("Group0.getRect.size.width: 10 px");
-        strlstExpectedValues.append("Group0.getRect.size.height: 10 px");
-        strlstExpectedValues.append("Group0.getPos {325, 275} px");
+        strlstExpectedValues.append(strGraphObjName + ".getPos {325, 275} px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 320 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 270 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 330 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 280 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 10 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: 10 px");
         strlstExpectedValues.append("Line4.pos {0.0, -5.0} px");
+        strlstExpectedValues.append("Line4.getPos {5, 0} px");
         strlstExpectedValues.append("Line4.getLine.p1.x: 0 px");
         strlstExpectedValues.append("Line4.getLine.p1.y: 0 px");
         strlstExpectedValues.append("Line4.getLine.p2.x: 10 px");
         strlstExpectedValues.append("Line4.getLine.p2.y: 0 px");
         strlstExpectedValues.append("Line4.getLength: 10 px");
         strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line4.getPos {5, 0} px");
         strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
+        strlstExpectedValues.append("Line5.getPos {10, 5} px");
         strlstExpectedValues.append("Line5.getLine.p1.x: 10 px");
         strlstExpectedValues.append("Line5.getLine.p1.y: 0 px");
         strlstExpectedValues.append("Line5.getLine.p2.x: 10 px");
         strlstExpectedValues.append("Line5.getLine.p2.y: 10 px");
         strlstExpectedValues.append("Line5.getLength: 10 px");
         strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line5.getPos {10, 5} px");
         strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
+        strlstExpectedValues.append("Line6.getPos {5, 10} px");
         strlstExpectedValues.append("Line6.getLine.p1.x: 10 px");
         strlstExpectedValues.append("Line6.getLine.p1.y: 10 px");
         strlstExpectedValues.append("Line6.getLine.p2.x: 0 px");
         strlstExpectedValues.append("Line6.getLine.p2.y: 10 px");
         strlstExpectedValues.append("Line6.getLength: 10 px");
         strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line6.getPos {5, 10} px");
         strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
+        strlstExpectedValues.append("Line7.getPos {0, 5} px");
         strlstExpectedValues.append("Line7.getLine.p1.x: 0 px");
         strlstExpectedValues.append("Line7.getLine.p1.y: 10 px");
         strlstExpectedValues.append("Line7.getLine.p2.x: 0 px");
         strlstExpectedValues.append("Line7.getLine.p2.y: 0 px");
         strlstExpectedValues.append("Line7.getLength: 10 px");
         strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line7.getPos {0, 5} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("Group0.getRect.topLeft.x: 320.00 mm");
-            strlstExpectedValues.append("Group0.getRect.topLeft.y: 270.00 mm");
-            strlstExpectedValues.append("Group0.getRect.bottomRight.x: 330.00 mm");
-            strlstExpectedValues.append("Group0.getRect.bottomRight.y: 280.00 mm");
-            strlstExpectedValues.append("Group0.getRect.size.width: 10.00 mm");
-            strlstExpectedValues.append("Group0.getRect.size.height: 10.00 mm");
-            strlstExpectedValues.append("Group0.getPos {325.00, 275.00} mm");
+            strlstExpectedValues.append(strGraphObjName + ".getPos {325.00, 275.00} mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 320.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 270.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 330.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 280.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 10.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: 10.00 mm");
             strlstExpectedValues.append("Line4.pos {0.0, -5.0} px");
+            strlstExpectedValues.append("Line4.getPos {5.00, 0.00} mm");
             strlstExpectedValues.append("Line4.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line4.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line4.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line4.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line4.getLength: 10.00 mm");
             strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line4.getPos {5.00, 0.00} mm");
             strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
+            strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
             strlstExpectedValues.append("Line5.getLine.p1.x: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line5.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line5.getLength: 10.00 mm");
             strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
             strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
+            strlstExpectedValues.append("Line6.getPos {5.00, 10.00} mm");
             strlstExpectedValues.append("Line6.getLine.p1.x: 10.00 mm");
             strlstExpectedValues.append("Line6.getLine.p1.y: 10.00 mm");
             strlstExpectedValues.append("Line6.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line6.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line6.getLength: 10.00 mm");
             strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line6.getPos {5.00, 10.00} mm");
             strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
+            strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
             strlstExpectedValues.append("Line7.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p1.y: 10.00 mm");
             strlstExpectedValues.append("Line7.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line7.getLength: 10.00 mm");
             strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
         }
         else {
-            strlstExpectedValues.append("Group0.getRect.topLeft.x: 320.00 mm");
-            strlstExpectedValues.append("Group0.getRect.topLeft.y: 330.00 mm");
-            strlstExpectedValues.append("Group0.getRect.bottomRight.x: 330.00 mm");
-            strlstExpectedValues.append("Group0.getRect.bottomRight.y: 320.00 mm");
-            strlstExpectedValues.append("Group0.getRect.size.width: 10.00 mm");
-            strlstExpectedValues.append("Group0.getRect.size.height: -10.00 mm");
-            strlstExpectedValues.append("Group0.getPos {325.00, 325.00} mm");
+            strlstExpectedValues.append(strGraphObjName + ".getPos {325.00, 325.00} mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 320.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 330.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 330.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 320.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 10.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: -10.00 mm");
             strlstExpectedValues.append("Line4.pos {0.0, -5.0} px");
+            strlstExpectedValues.append("Line4.getPos {5.00, 10.00} mm");
             strlstExpectedValues.append("Line4.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line4.getLine.p1.y: 10.00 mm");
             strlstExpectedValues.append("Line4.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line4.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line4.getLength: 10.00 mm");
             strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line4.getPos {5.00, 10.00} mm");
             strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
+            strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
             strlstExpectedValues.append("Line5.getLine.p1.x: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p1.y: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line5.getLength: 10.00 mm");
             strlstExpectedValues.append("Line5.getAngle: 90.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
             strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
+            strlstExpectedValues.append("Line6.getPos {5.00, 0.00} mm");
             strlstExpectedValues.append("Line6.getLine.p1.x: 10.00 mm");
             strlstExpectedValues.append("Line6.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line6.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line6.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line6.getLength: 10.00 mm");
             strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line6.getPos {5.00, 0.00} mm");
             strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
+            strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
             strlstExpectedValues.append("Line7.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line7.getLength: 10.00 mm");
             strlstExpectedValues.append("Line7.getAngle: 270.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3108,85 +3100,85 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
 
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("Group1.pos {300.0, 300.0} px");
     strlstExpectedValues.append("Group1.topLeft {-50.0, -50.0} px");
     strlstExpectedValues.append("Group1.bottomRight {50.0, 50.0} px");
     strlstExpectedValues.append("Group1.size {100.0, 100.0} px");
-    strlstExpectedValues.append("Group1.pos {300.0, 300.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("Group1.getPos {300, 300} px");
         strlstExpectedValues.append("Group1.getRect.topLeft.x: 250 px");
         strlstExpectedValues.append("Group1.getRect.topLeft.y: 250 px");
         strlstExpectedValues.append("Group1.getRect.bottomRight.x: 350 px");
         strlstExpectedValues.append("Group1.getRect.bottomRight.y: 350 px");
         strlstExpectedValues.append("Group1.getRect.size.width: 100 px");
         strlstExpectedValues.append("Group1.getRect.size.height: 100 px");
-        strlstExpectedValues.append("Group1.getPos {300, 300} px");
         strlstExpectedValues.append("Line2.pos {-12.5, 0.0} px");
+        strlstExpectedValues.append("Line2.getPos {38, 50} px");
         strlstExpectedValues.append("Line2.getLine.p1.x: 0 px");
         strlstExpectedValues.append("Line2.getLine.p1.y: 0 px");
         strlstExpectedValues.append("Line2.getLine.p2.x: 75 px");
         strlstExpectedValues.append("Line2.getLine.p2.y: 100 px");
         strlstExpectedValues.append("Line2.getLength: 125 px");
         strlstExpectedValues.append("Line2.getAngle: 306.9 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line2.getPos {38, 50} px");
         strlstExpectedValues.append("Line3.pos {37.5, 37.5} px");
+        strlstExpectedValues.append("Line3.getPos {88, 88} px");
         strlstExpectedValues.append("Line3.getLine.p1.x: 75 px");
         strlstExpectedValues.append("Line3.getLine.p1.y: 100 px");
         strlstExpectedValues.append("Line3.getLine.p2.x: 100 px");
         strlstExpectedValues.append("Line3.getLine.p2.y: 75 px");
         strlstExpectedValues.append("Line3.getLength: 35 px");
         strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line3.getPos {88, 88} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("Group1.getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("Group1.getRect.topLeft.x: 250.00 mm");
             strlstExpectedValues.append("Group1.getRect.topLeft.y: 250.00 mm");
             strlstExpectedValues.append("Group1.getRect.bottomRight.x: 350.00 mm");
             strlstExpectedValues.append("Group1.getRect.bottomRight.y: 350.00 mm");
             strlstExpectedValues.append("Group1.getRect.size.width: 100.00 mm");
             strlstExpectedValues.append("Group1.getRect.size.height: 100.00 mm");
-            strlstExpectedValues.append("Group1.getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("Line2.pos {-12.5, 0.0} px");
+            strlstExpectedValues.append("Line2.getPos {37.50, 50.00} mm");
             strlstExpectedValues.append("Line2.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line2.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.x: 75.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 100.00 mm");
             strlstExpectedValues.append("Line2.getLength: 125.00 mm");
             strlstExpectedValues.append("Line2.getAngle: 306.9 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line2.getPos {37.50, 50.00} mm");
             strlstExpectedValues.append("Line3.pos {37.5, 37.5} px");
+            strlstExpectedValues.append("Line3.getPos {87.50, 87.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 75.00 mm");
             strlstExpectedValues.append("Line3.getLine.p1.y: 100.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.x: 100.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 75.00 mm");
             strlstExpectedValues.append("Line3.getLength: 35.36 mm");
             strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line3.getPos {87.50, 87.50} mm");
         }
         else {
+            strlstExpectedValues.append("Group1.getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("Group1.getRect.topLeft.x: 250.00 mm");
             strlstExpectedValues.append("Group1.getRect.topLeft.y: 350.00 mm");
             strlstExpectedValues.append("Group1.getRect.bottomRight.x: 350.00 mm");
             strlstExpectedValues.append("Group1.getRect.bottomRight.y: 250.00 mm");
             strlstExpectedValues.append("Group1.getRect.size.width: 100.00 mm");
             strlstExpectedValues.append("Group1.getRect.size.height: -100.00 mm");
-            strlstExpectedValues.append("Group1.getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("Line2.pos {-12.5, 0.0} px");
+            strlstExpectedValues.append("Line2.getPos {37.50, 50.00} mm");
             strlstExpectedValues.append("Line2.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line2.getLine.p1.y: 100.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.x: 75.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line2.getLength: 125.00 mm");
             strlstExpectedValues.append("Line2.getAngle: 53.1 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line2.getPos {37.50, 50.00} mm");
             strlstExpectedValues.append("Line3.pos {37.5, 37.5} px");
+            strlstExpectedValues.append("Line3.getPos {87.50, 12.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 75.00 mm");
             strlstExpectedValues.append("Line3.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.x: 100.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 25.00 mm");
             strlstExpectedValues.append("Line3.getLength: 35.36 mm");
             strlstExpectedValues.append("Line3.getAngle: 315.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line3.getPos {87.50, 12.50} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3214,133 +3206,133 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     pTestStep->setConfigValue("AddToGroup", strlstGraphObjsAddToGroup);
 
     strlstExpectedValues.clear();
+    strlstExpectedValues.append("Group2.pos {300.0, 300.0} px");
     strlstExpectedValues.append("Group2.topLeft {-50.0, -50.0} px");
     strlstExpectedValues.append("Group2.bottomRight {50.0, 50.0} px");
     strlstExpectedValues.append("Group2.size {100.0, 100.0} px");
-    strlstExpectedValues.append("Group2.pos {300.0, 300.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("Group2.getPos {300, 300} px");
         strlstExpectedValues.append("Group2.getRect.topLeft.x: 250 px");
         strlstExpectedValues.append("Group2.getRect.topLeft.y: 250 px");
         strlstExpectedValues.append("Group2.getRect.bottomRight.x: 350 px");
         strlstExpectedValues.append("Group2.getRect.bottomRight.y: 350 px");
         strlstExpectedValues.append("Group2.getRect.size.width: 100 px");
         strlstExpectedValues.append("Group2.getRect.size.height: 100 px");
-        strlstExpectedValues.append("Group2.getPos {300, 300} px");
         strlstExpectedValues.append("Line0.pos {0.0, 0.0} px");
+        strlstExpectedValues.append("Line0.getPos {50, 50} px");
         strlstExpectedValues.append("Line0.getLine.p1.x: 50 px");
         strlstExpectedValues.append("Line0.getLine.p1.y: 0 px");
         strlstExpectedValues.append("Line0.getLine.p2.x: 50 px");
         strlstExpectedValues.append("Line0.getLine.p2.y: 100 px");
         strlstExpectedValues.append("Line0.getLength: 100 px");
         strlstExpectedValues.append("Line0.getAngle: 270.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line0.getPos {50, 50} px");
         strlstExpectedValues.append("Line1.pos {0.0, 0.0} px");
+        strlstExpectedValues.append("Line1.getPos {50, 50} px");
         strlstExpectedValues.append("Line1.getLine.p1.x: 0 px");
         strlstExpectedValues.append("Line1.getLine.p1.y: 50 px");
         strlstExpectedValues.append("Line1.getLine.p2.x: 100 px");
         strlstExpectedValues.append("Line1.getLine.p2.y: 50 px");
         strlstExpectedValues.append("Line1.getLength: 100 px");
         strlstExpectedValues.append("Line1.getAngle: 0.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line1.getPos {50, 50} px");
         strlstExpectedValues.append("Group0.pos {25.0, -25.0} px");
+        strlstExpectedValues.append("Group0.getPos {75, 25} px");
         strlstExpectedValues.append("Group0.getRect.topLeft.x: 70 px");
         strlstExpectedValues.append("Group0.getRect.topLeft.y: 20 px");
         strlstExpectedValues.append("Group0.getRect.bottomRight.x: 80 px");
         strlstExpectedValues.append("Group0.getRect.bottomRight.y: 30 px");
         strlstExpectedValues.append("Group0.getRect.size.width: 10 px");
         strlstExpectedValues.append("Group0.getRect.size.height: 10 px");
-        strlstExpectedValues.append("Group0.getPos {75, 25} px");
         strlstExpectedValues.append("Group1.pos {0.0, 0.0} px");
+        strlstExpectedValues.append("Group1.getPos {50, 50} px");
         strlstExpectedValues.append("Group1.getRect.topLeft.x: 0 px");
         strlstExpectedValues.append("Group1.getRect.topLeft.y: 0 px");
         strlstExpectedValues.append("Group1.getRect.bottomRight.x: 100 px");
         strlstExpectedValues.append("Group1.getRect.bottomRight.y: 100 px");
         strlstExpectedValues.append("Group1.getRect.size.width: 100 px");
         strlstExpectedValues.append("Group1.getRect.size.height: 100 px");
-        strlstExpectedValues.append("Group1.getPos {50, 50} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("Group2.getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("Group2.getRect.topLeft.x: 250.00 mm");
             strlstExpectedValues.append("Group2.getRect.topLeft.y: 250.00 mm");
             strlstExpectedValues.append("Group2.getRect.bottomRight.x: 350.00 mm");
             strlstExpectedValues.append("Group2.getRect.bottomRight.y: 350.00 mm");
             strlstExpectedValues.append("Group2.getRect.size.width: 100.00 mm");
             strlstExpectedValues.append("Group2.getRect.size.height: 100.00 mm");
-            strlstExpectedValues.append("Group2.getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("Line0.pos {0.0, 0.0} px");
+            strlstExpectedValues.append("Line0.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line0.getLine.p1.x: 50.00 mm");
             strlstExpectedValues.append("Line0.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line0.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line0.getLine.p2.y: 100.00 mm");
             strlstExpectedValues.append("Line0.getLength: 100.00 mm");
             strlstExpectedValues.append("Line0.getAngle: 270.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line0.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line1.pos {0.0, 0.0} px");
+            strlstExpectedValues.append("Line1.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line1.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line1.getLine.p1.y: 50.00 mm");
             strlstExpectedValues.append("Line1.getLine.p2.x: 100.00 mm");
             strlstExpectedValues.append("Line1.getLine.p2.y: 50.00 mm");
             strlstExpectedValues.append("Line1.getLength: 100.00 mm");
             strlstExpectedValues.append("Line1.getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line1.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Group0.pos {25.0, -25.0} px");
+            strlstExpectedValues.append("Group0.getPos {75.00, 25.00} mm");
             strlstExpectedValues.append("Group0.getRect.topLeft.x: 70.00 mm");
             strlstExpectedValues.append("Group0.getRect.topLeft.y: 20.00 mm");
             strlstExpectedValues.append("Group0.getRect.bottomRight.x: 80.00 mm");
             strlstExpectedValues.append("Group0.getRect.bottomRight.y: 30.00 mm");
             strlstExpectedValues.append("Group0.getRect.size.width: 10.00 mm");
             strlstExpectedValues.append("Group0.getRect.size.height: 10.00 mm");
-            strlstExpectedValues.append("Group0.getPos {75.00, 25.00} mm");
             strlstExpectedValues.append("Group1.pos {0.0, 0.0} px");
+            strlstExpectedValues.append("Group1.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Group1.getRect.topLeft.x: 0.00 mm");
             strlstExpectedValues.append("Group1.getRect.topLeft.y: 0.00 mm");
             strlstExpectedValues.append("Group1.getRect.bottomRight.x: 100.00 mm");
             strlstExpectedValues.append("Group1.getRect.bottomRight.y: 100.00 mm");
             strlstExpectedValues.append("Group1.getRect.size.width: 100.00 mm");
             strlstExpectedValues.append("Group1.getRect.size.height: 100.00 mm");
-            strlstExpectedValues.append("Group1.getPos {50.00, 50.00} mm");
         }
         else {
+            strlstExpectedValues.append("Group2.getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("Group2.getRect.topLeft.x: 250.00 mm");
             strlstExpectedValues.append("Group2.getRect.topLeft.y: 350.00 mm");
             strlstExpectedValues.append("Group2.getRect.bottomRight.x: 350.00 mm");
             strlstExpectedValues.append("Group2.getRect.bottomRight.y: 250.00 mm");
             strlstExpectedValues.append("Group2.getRect.size.width: 100.00 mm");
             strlstExpectedValues.append("Group2.getRect.size.height: -100.00 mm");
-            strlstExpectedValues.append("Group2.getPos {300.00, 300.00} mm");
             strlstExpectedValues.append("Line0.pos {0.0, 0.0} px");
+            strlstExpectedValues.append("Line0.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line0.getLine.p1.x: 50.00 mm");
             strlstExpectedValues.append("Line0.getLine.p1.y: 100.00 mm");
             strlstExpectedValues.append("Line0.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line0.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line0.getLength: 100.00 mm");
             strlstExpectedValues.append("Line0.getAngle: 90.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line0.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line1.pos {0.0, 0.0} px");
+            strlstExpectedValues.append("Line1.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line1.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line1.getLine.p1.y: 50.00 mm");
             strlstExpectedValues.append("Line1.getLine.p2.x: 100.00 mm");
             strlstExpectedValues.append("Line1.getLine.p2.y: 50.00 mm");
             strlstExpectedValues.append("Line1.getLength: 100.00 mm");
             strlstExpectedValues.append("Line1.getAngle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line1.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Group0.pos {25.0, -25.0} px");
+            strlstExpectedValues.append("Group0.getPos {75.00, 75.00} mm");
             strlstExpectedValues.append("Group0.getRect.topLeft.x: 70.00 mm");
             strlstExpectedValues.append("Group0.getRect.topLeft.y: 80.00 mm");
             strlstExpectedValues.append("Group0.getRect.bottomRight.x: 80.00 mm");
             strlstExpectedValues.append("Group0.getRect.bottomRight.y: 70.00 mm");
             strlstExpectedValues.append("Group0.getRect.size.width: 10.00 mm");
             strlstExpectedValues.append("Group0.getRect.size.height: -10.00 mm");
-            strlstExpectedValues.append("Group0.getPos {75.00, 75.00} mm");
             strlstExpectedValues.append("Group1.pos {0.0, 0.0} px");
+            strlstExpectedValues.append("Group1.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Group1.getRect.topLeft.x: 0.00 mm");
             strlstExpectedValues.append("Group1.getRect.topLeft.y: 100.00 mm");
             strlstExpectedValues.append("Group1.getRect.bottomRight.x: 100.00 mm");
             strlstExpectedValues.append("Group1.getRect.bottomRight.y: 0.00 mm");
             strlstExpectedValues.append("Group1.getRect.size.width: 100.00 mm");
             strlstExpectedValues.append("Group1.getRect.size.height: -100.00 mm");
-            strlstExpectedValues.append("Group1.getPos {50.00, 50.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3421,37 +3413,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(60.0, 25.0));
     }
     QStringList strlstExpectedValues;
+    strlstExpectedValues.append(strGraphObjName + ".pos {-7.5, 0.0} px");
     strlstExpectedValues.append(strGraphObjName + ".line.p1 {-17.5, -25.0} px");
     strlstExpectedValues.append(strGraphObjName + ".line.p2 {17.5, 25.0} px");
     strlstExpectedValues.append(strGraphObjName + ".line.length: 61.0 px");
-    strlstExpectedValues.append(strGraphObjName + ".pos {-7.5, 0.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append(strGraphObjName + ".getPos {43, 50} px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p1.x: 25 px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p1.y: 25 px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 60 px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 75 px");
         strlstExpectedValues.append(strGraphObjName + ".getLength: 61 px");
         strlstExpectedValues.append(strGraphObjName + ".getAngle: 305.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append(strGraphObjName + ".getPos {43, 50} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append(strGraphObjName + ".getPos {42.50, 50.00} mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p1.x: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p1.y: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 60.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLength: 61.03 mm");
             strlstExpectedValues.append(strGraphObjName + ".getAngle: 305.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append(strGraphObjName + ".getPos {42.50, 50.00} mm");
         }
         else {
+            strlstExpectedValues.append(strGraphObjName + ".getPos {42.50, 50.00} mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p1.x: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p1.y: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 60.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLength: 61.03 mm");
             strlstExpectedValues.append(strGraphObjName + ".getAngle: 55.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append(strGraphObjName + ".getPos {42.50, 50.00} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3483,37 +3475,37 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
         pTestStep->setConfigValue("P2", QPointF(75.0, 40.0));
     }
     strlstExpectedValues.clear();
+    strlstExpectedValues.append(strGraphObjName + ".pos {17.5, 17.5} px");
     strlstExpectedValues.append(strGraphObjName + ".line.p1 {-7.5, 7.5} px");
     strlstExpectedValues.append(strGraphObjName + ".line.p2 {7.5, -7.5} px");
     strlstExpectedValues.append(strGraphObjName + ".line.length: 21.2 px");
-    strlstExpectedValues.append(strGraphObjName + ".pos {17.5, 17.5} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append(strGraphObjName + ".getPos {68, 68} px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p1.x: 60 px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p1.y: 75 px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 75 px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 60 px");
         strlstExpectedValues.append(strGraphObjName + ".getLength: 21 px");
         strlstExpectedValues.append(strGraphObjName + ".getAngle: 45.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append(strGraphObjName + ".getPos {68, 68} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append(strGraphObjName + ".getPos {67.50, 67.50} mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p1.x: 60.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p1.y: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 60.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLength: 21.21 mm");
             strlstExpectedValues.append(strGraphObjName + ".getAngle: 45.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append(strGraphObjName + ".getPos {67.50, 67.50} mm");
         }
         else {
+            strlstExpectedValues.append(strGraphObjName + ".getPos {67.50, 32.50} mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p1.x: 60.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p1.y: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 40.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLength: 21.21 mm");
             strlstExpectedValues.append(strGraphObjName + ".getAngle: 315.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append(strGraphObjName + ".getPos {67.50, 32.50} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3569,11 +3561,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
     // Group1 (Checkmark)
     //-------------------
 
-    QString strGroupNameTop = "Group2";
-    QString strGraphObjName = "Group1";
-    QString strGraphObjPath = strGroupNameTop + pIdxTree->nodeSeparator() + strGraphObjName;
+    // Group1.resizeToContent
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
-    QString strKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGroupNameTop, strGraphObjName);
+    QString strGroupNameParent = "Group2";
+    QString strGroupNameParentKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGroupNameParent);
+    QString strGraphObjName = "Group1";
+    QString strGraphObjPath = strGroupNameParent + pIdxTree->nodeSeparator() + strGraphObjName;
+    QString strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGroupNameParent, strGraphObjName);
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -3582,88 +3576,348 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
     pTestStep->setConfigValue("Method", "resizeToContent");
     QStringList strlstExpectedValues;
+    strlstExpectedValues.append(strGraphObjName + ".pos {0.0, 0.0} px");
     strlstExpectedValues.append(strGraphObjName + ".topLeft {-25.0, -25.0} px");
     strlstExpectedValues.append(strGraphObjName + ".bottomRight {25.0, 25.0} px");
     strlstExpectedValues.append(strGraphObjName + ".size {50.0, 50.0} px");
-    strlstExpectedValues.append(strGraphObjName + ".pos {0.0, 0.0} px");
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append(strGraphObjName + ".getPos {50, 50} px");
         strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 25 px");
         strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 25 px");
         strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 75 px");
         strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 75 px");
         strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 50 px");
         strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: 50 px");
-        strlstExpectedValues.append(strGraphObjName + ".getPos {50, 50} px");
         strlstExpectedValues.append("Line2.pos {-7.5, 0.0} px");
+        strlstExpectedValues.append("Line2.getPos {18, 25} px");
         strlstExpectedValues.append("Line2.getLine.p1.x: 0 px");
         strlstExpectedValues.append("Line2.getLine.p1.y: 0 px");
         strlstExpectedValues.append("Line2.getLine.p2.x: 35 px");
         strlstExpectedValues.append("Line2.getLine.p2.y: 50 px");
         strlstExpectedValues.append("Line2.getLength: 61 px");
         strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line2.getPos {18, 25} px");
         strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
+        strlstExpectedValues.append("Line3.getPos {43, 43} px");
         strlstExpectedValues.append("Line3.getLine.p1.x: 35 px");
         strlstExpectedValues.append("Line3.getLine.p1.y: 50 px");
         strlstExpectedValues.append("Line3.getLine.p2.x: 50 px");
         strlstExpectedValues.append("Line3.getLine.p2.y: 35 px");
         strlstExpectedValues.append("Line3.getLength: 21 px");
         strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
-        strlstExpectedValues.append("Line3.getPos {43, 43} px");
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append(strGraphObjName + ".getPos {50.00, 50.00} mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 50.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: 50.00 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line2.pos {-7.5, 0.0} px");
+            strlstExpectedValues.append("Line2.getPos {17.50, 25.00} mm");
             strlstExpectedValues.append("Line2.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line2.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 50.00 mm");
             strlstExpectedValues.append("Line2.getLength: 61.03 mm");
             strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line2.getPos {17.50, 25.00} mm");
             strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
+            strlstExpectedValues.append("Line3.getPos {42.50, 42.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
             strlstExpectedValues.append("Line3.getLine.p1.y: 50.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 35.00 mm");
             strlstExpectedValues.append("Line3.getLength: 21.21 mm");
             strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line3.getPos {42.50, 42.50} mm");
         }
         else {
+            strlstExpectedValues.append(strGraphObjName + ".getPos {50.00, 50.00} mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 50.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: -50.00 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line2.pos {-7.5, 0.0} px");
+            strlstExpectedValues.append("Line2.getPos {17.50, 25.00} mm");
             strlstExpectedValues.append("Line2.getLine.p1.x: 0.00 mm");
             strlstExpectedValues.append("Line2.getLine.p1.y: 50.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line2.getLength: 61.03 mm");
             strlstExpectedValues.append("Line2.getAngle: 55.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("Line2.getPos {17.50, 25.00} mm");
             strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
+            strlstExpectedValues.append("Line3.getPos {42.50, 7.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
             strlstExpectedValues.append("Line3.getLine.p1.y: 0.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 15.00 mm");
             strlstExpectedValues.append("Line3.getLength: 21.21 mm");
             strlstExpectedValues.append("Line3.getAngle: 315.0 " + Math::c_strSymbolDegree);
+        }
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Group2 (horizonal and vertical lines together with checkmark and rectangle group)
+    //----------------------------------------------------------------------------------
+
+    // Group2.removeFromGroup(Group0)
+    strGroupNameParent = "Group2";
+    strGroupNameParentKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGroupNameParent);
+    strGraphObjName = "Group0";
+    strGraphObjPath = strGroupNameParent + pIdxTree->nodeSeparator() + strGraphObjName;
+    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGroupNameParent, strGraphObjName);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
+        /* strOperation    */ strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
+        /* pGrpParent      */ pGrpModifyGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupNameParent", strGroupNameParent);
+    pTestStep->setConfigValue("GroupNameParentKeyInTree", strGroupNameParentKeyInTree);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("Method", "removeFromGroup");
+
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(strGraphObjName + ".pos {325.0, 275.0} px");
+    strlstExpectedValues.append(strGraphObjName + ".topLeft {-5.0, -5.0} px");
+    strlstExpectedValues.append(strGraphObjName + ".bottomRight {5.0, 5.0} px");
+    strlstExpectedValues.append(strGraphObjName + ".size {10.0, 10.0} px");
+    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append(strGraphObjName + ".getPos {325, 275} px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 320 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 270 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 330 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 280 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 10 px");
+        strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: 10 px");
+        strlstExpectedValues.append("Line4.pos {0.0, -5.0} px");
+        strlstExpectedValues.append("Line4.getPos {5, 0} px");
+        strlstExpectedValues.append("Line4.getLine.p1.x: 0 px");
+        strlstExpectedValues.append("Line4.getLine.p1.y: 0 px");
+        strlstExpectedValues.append("Line4.getLine.p2.x: 10 px");
+        strlstExpectedValues.append("Line4.getLine.p2.y: 0 px");
+        strlstExpectedValues.append("Line4.getLength: 10 px");
+        strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
+        strlstExpectedValues.append("Line5.getPos {10, 5} px");
+        strlstExpectedValues.append("Line5.getLine.p1.x: 10 px");
+        strlstExpectedValues.append("Line5.getLine.p1.y: 0 px");
+        strlstExpectedValues.append("Line5.getLine.p2.x: 10 px");
+        strlstExpectedValues.append("Line5.getLine.p2.y: 10 px");
+        strlstExpectedValues.append("Line5.getLength: 10 px");
+        strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
+        strlstExpectedValues.append("Line6.getPos {5, 10} px");
+        strlstExpectedValues.append("Line6.getLine.p1.x: 10 px");
+        strlstExpectedValues.append("Line6.getLine.p1.y: 10 px");
+        strlstExpectedValues.append("Line6.getLine.p2.x: 0 px");
+        strlstExpectedValues.append("Line6.getLine.p2.y: 10 px");
+        strlstExpectedValues.append("Line6.getLength: 10 px");
+        strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
+        strlstExpectedValues.append("Line7.getPos {0, 5} px");
+        strlstExpectedValues.append("Line7.getLine.p1.x: 0 px");
+        strlstExpectedValues.append("Line7.getLine.p1.y: 10 px");
+        strlstExpectedValues.append("Line7.getLine.p2.x: 0 px");
+        strlstExpectedValues.append("Line7.getLine.p2.y: 0 px");
+        strlstExpectedValues.append("Line7.getLength: 10 px");
+        strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append(strGraphObjName + ".getPos {325.00, 275.00} mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 320.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 270.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 330.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 280.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 10.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: 10.00 mm");
+            strlstExpectedValues.append("Line4.pos {0.0, -5.0} px");
+            strlstExpectedValues.append("Line4.getPos {5.00, 0.00} mm");
+            strlstExpectedValues.append("Line4.getLine.p1.x: 0.00 mm");
+            strlstExpectedValues.append("Line4.getLine.p1.y: 0.00 mm");
+            strlstExpectedValues.append("Line4.getLine.p2.x: 10.00 mm");
+            strlstExpectedValues.append("Line4.getLine.p2.y: 0.00 mm");
+            strlstExpectedValues.append("Line4.getLength: 10.00 mm");
+            strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
+            strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
+            strlstExpectedValues.append("Line5.getLine.p1.x: 10.00 mm");
+            strlstExpectedValues.append("Line5.getLine.p1.y: 0.00 mm");
+            strlstExpectedValues.append("Line5.getLine.p2.x: 10.00 mm");
+            strlstExpectedValues.append("Line5.getLine.p2.y: 10.00 mm");
+            strlstExpectedValues.append("Line5.getLength: 10.00 mm");
+            strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
+            strlstExpectedValues.append("Line6.getPos {5.00, 10.00} mm");
+            strlstExpectedValues.append("Line6.getLine.p1.x: 10.00 mm");
+            strlstExpectedValues.append("Line6.getLine.p1.y: 10.00 mm");
+            strlstExpectedValues.append("Line6.getLine.p2.x: 0.00 mm");
+            strlstExpectedValues.append("Line6.getLine.p2.y: 10.00 mm");
+            strlstExpectedValues.append("Line6.getLength: 10.00 mm");
+            strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
+            strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
+            strlstExpectedValues.append("Line7.getLine.p1.x: 0.00 mm");
+            strlstExpectedValues.append("Line7.getLine.p1.y: 10.00 mm");
+            strlstExpectedValues.append("Line7.getLine.p2.x: 0.00 mm");
+            strlstExpectedValues.append("Line7.getLine.p2.y: 0.00 mm");
+            strlstExpectedValues.append("Line7.getLength: 10.00 mm");
+            strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
+        }
+        else {
+            strlstExpectedValues.append(strGraphObjName + ".getPos {325.00, 325.00} mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.x: 320.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.topLeft.y: 330.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.x: 330.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.bottomRight.y: 320.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.width: 10.00 mm");
+            strlstExpectedValues.append(strGraphObjName + ".getRect.size.height: -10.00 mm");
+            strlstExpectedValues.append("Line4.pos {0.0, -5.0} px");
+            strlstExpectedValues.append("Line4.getPos {5.00, 10.00} mm");
+            strlstExpectedValues.append("Line4.getLine.p1.x: 0.00 mm");
+            strlstExpectedValues.append("Line4.getLine.p1.y: 10.00 mm");
+            strlstExpectedValues.append("Line4.getLine.p2.x: 10.00 mm");
+            strlstExpectedValues.append("Line4.getLine.p2.y: 10.00 mm");
+            strlstExpectedValues.append("Line4.getLength: 10.00 mm");
+            strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
+            strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
+            strlstExpectedValues.append("Line5.getLine.p1.x: 10.00 mm");
+            strlstExpectedValues.append("Line5.getLine.p1.y: 10.00 mm");
+            strlstExpectedValues.append("Line5.getLine.p2.x: 10.00 mm");
+            strlstExpectedValues.append("Line5.getLine.p2.y: 0.00 mm");
+            strlstExpectedValues.append("Line5.getLength: 10.00 mm");
+            strlstExpectedValues.append("Line5.getAngle: 90.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
+            strlstExpectedValues.append("Line6.getPos {5.00, 0.00} mm");
+            strlstExpectedValues.append("Line6.getLine.p1.x: 10.00 mm");
+            strlstExpectedValues.append("Line6.getLine.p1.y: 0.00 mm");
+            strlstExpectedValues.append("Line6.getLine.p2.x: 0.00 mm");
+            strlstExpectedValues.append("Line6.getLine.p2.y: 0.00 mm");
+            strlstExpectedValues.append("Line6.getLength: 10.00 mm");
+            strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
+            strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
+            strlstExpectedValues.append("Line7.getLine.p1.x: 0.00 mm");
+            strlstExpectedValues.append("Line7.getLine.p1.y: 0.00 mm");
+            strlstExpectedValues.append("Line7.getLine.p2.x: 0.00 mm");
+            strlstExpectedValues.append("Line7.getLine.p2.y: 10.00 mm");
+            strlstExpectedValues.append("Line7.getLength: 10.00 mm");
+            strlstExpectedValues.append("Line7.getAngle: 270.0 " + Math::c_strSymbolDegree);
+        }
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Group2 (horizonal and vertical lines together with checkmark and rectangle group)
+    //----------------------------------------------------------------------------------
+
+    // Group2.removeFromGroup(Group1)
+    strGroupNameParent = "Group2";
+    strGroupNameParentKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGroupNameParent);
+    strGraphObjName = "Group1";
+    strGraphObjPath = strGroupNameParent + pIdxTree->nodeSeparator() + strGraphObjName;
+    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGroupNameParent, strGraphObjName);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
+        /* strOperation    */ strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
+        /* pGrpParent      */ pGrpModifyGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupNameParent", strGroupNameParent);
+    pTestStep->setConfigValue("GroupNameParentKeyInTree", strGroupNameParentKeyInTree);
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("Method", "removeFromGroup");
+
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append("Group1.pos {300.0, 300.0} px");
+    strlstExpectedValues.append("Group1.topLeft {-25.0, -25.0} px");
+    strlstExpectedValues.append("Group1.bottomRight {25.0, 25.0} px");
+    strlstExpectedValues.append("Group1.size {50.0, 50.0} px");
+    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strlstExpectedValues.append("Group1.getPos {300, 300} px");
+        strlstExpectedValues.append("Group1.getRect.topLeft.x: 275 px");
+        strlstExpectedValues.append("Group1.getRect.topLeft.y: 275 px");
+        strlstExpectedValues.append("Group1.getRect.bottomRight.x: 325 px");
+        strlstExpectedValues.append("Group1.getRect.bottomRight.y: 325 px");
+        strlstExpectedValues.append("Group1.getRect.size.width: 50 px");
+        strlstExpectedValues.append("Group1.getRect.size.height: 50 px");
+        strlstExpectedValues.append("Line2.pos {-7.5, 0.0} px");
+        strlstExpectedValues.append("Line2.getPos {18, 25} px");
+        strlstExpectedValues.append("Line2.getLine.p1.x: 0 px");
+        strlstExpectedValues.append("Line2.getLine.p1.y: 0 px");
+        strlstExpectedValues.append("Line2.getLine.p2.x: 35 px");
+        strlstExpectedValues.append("Line2.getLine.p2.y: 50 px");
+        strlstExpectedValues.append("Line2.getLength: 61 px");
+        strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
+        strlstExpectedValues.append("Line3.getPos {43, 43} px");
+        strlstExpectedValues.append("Line3.getLine.p1.x: 35 px");
+        strlstExpectedValues.append("Line3.getLine.p1.y: 50 px");
+        strlstExpectedValues.append("Line3.getLine.p2.x: 50 px");
+        strlstExpectedValues.append("Line3.getLine.p2.y: 35 px");
+        strlstExpectedValues.append("Line3.getLength: 21 px");
+        strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+    }
+    else {
+        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("Group1.getPos {300.00, 300.00} mm");
+            strlstExpectedValues.append("Group1.getRect.topLeft.x: 275.00 mm");
+            strlstExpectedValues.append("Group1.getRect.topLeft.y: 275.00 mm");
+            strlstExpectedValues.append("Group1.getRect.bottomRight.x: 325.00 mm");
+            strlstExpectedValues.append("Group1.getRect.bottomRight.y: 325.00 mm");
+            strlstExpectedValues.append("Group1.getRect.size.width: 50.00 mm");
+            strlstExpectedValues.append("Group1.getRect.size.height: 50.00 mm");
+            strlstExpectedValues.append("Line2.pos {-7.5, 0.0} px");
+            strlstExpectedValues.append("Line2.getPos {17.50, 25.00} mm");
+            strlstExpectedValues.append("Line2.getLine.p1.x: 0.00 mm");
+            strlstExpectedValues.append("Line2.getLine.p1.y: 0.00 mm");
+            strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
+            strlstExpectedValues.append("Line2.getLine.p2.y: 50.00 mm");
+            strlstExpectedValues.append("Line2.getLength: 61.03 mm");
+            strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
+            strlstExpectedValues.append("Line3.getPos {42.50, 42.50} mm");
+            strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
+            strlstExpectedValues.append("Line3.getLine.p1.y: 50.00 mm");
+            strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
+            strlstExpectedValues.append("Line3.getLine.p2.y: 35.00 mm");
+            strlstExpectedValues.append("Line3.getLength: 21.21 mm");
+            strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+        }
+        else {
+            strlstExpectedValues.append("Group1.getPos {300.00, 300.00} mm");
+            strlstExpectedValues.append("Group1.getRect.topLeft.x: 275.00 mm");
+            strlstExpectedValues.append("Group1.getRect.topLeft.y: 325.00 mm");
+            strlstExpectedValues.append("Group1.getRect.bottomRight.x: 325.00 mm");
+            strlstExpectedValues.append("Group1.getRect.bottomRight.y: 275.00 mm");
+            strlstExpectedValues.append("Group1.getRect.size.width: 50.00 mm");
+            strlstExpectedValues.append("Group1.getRect.size.height: -50.00 mm");
+            strlstExpectedValues.append("Line2.pos {-7.5, 0.0} px");
+            strlstExpectedValues.append("Line2.getPos {17.50, 25.00} mm");
+            strlstExpectedValues.append("Line2.getLine.p1.x: 0.00 mm");
+            strlstExpectedValues.append("Line2.getLine.p1.y: 50.00 mm");
+            strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
+            strlstExpectedValues.append("Line2.getLine.p2.y: 0.00 mm");
+            strlstExpectedValues.append("Line2.getLength: 61.03 mm");
+            strlstExpectedValues.append("Line2.getAngle: 55.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
             strlstExpectedValues.append("Line3.getPos {42.50, 7.50} mm");
+            strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
+            strlstExpectedValues.append("Line3.getLine.p1.y: 0.00 mm");
+            strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
+            strlstExpectedValues.append("Line3.getLine.p2.y: 15.00 mm");
+            strlstExpectedValues.append("Line3.getLength: 21.21 mm");
+            strlstExpectedValues.append("Line3.getAngle: 315.0 " + Math::c_strSymbolDegree);
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -5615,10 +5869,12 @@ void CTest::doTestStepAddGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
     CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
     if (pGraphObjLine != nullptr) {
         QLineF lineF = pGraphObjLine->line();
+        strlstResultValues.append("line.pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
         strlstResultValues.append("line.p1 {" + qPoint2Str(lineF.p1()) + "} px");
         strlstResultValues.append("line.p2 {" + qPoint2Str(lineF.p2()) + "} px");
         strlstResultValues.append("line.length: " + QString::number(lineF.length(), 'f', 1) + " px");
-        strlstResultValues.append("line.pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
+        CPhysValPoint physValPointPos = pGraphObjLine->getPos();
+        strlstResultValues.append("getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
         CPhysValLine physValLine = pGraphObjLine->getLine();
         strlstResultValues.append("getLine.p1.x: " + physValLine.p1().x().toString());
         strlstResultValues.append("getLine.p1.y: " + physValLine.p1().y().toString());
@@ -5628,8 +5884,6 @@ void CTest::doTestStepAddGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append("getLength: " + physValLength.toString());
         CPhysVal physValAngle = pGraphObjLine->getAngle(Units.Angle.Degree);
         strlstResultValues.append("getAngle: " + physValAngle.toString());
-        CPhysValPoint physValPointPos = pGraphObjLine->getPos();
-        strlstResultValues.append("getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5676,10 +5930,12 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
     CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
     if (pGraphObjGroup != nullptr) {
         QRectF rectF = pGraphObjGroup->getBoundingRect();
+        strlstResultValues.append(pGraphObjGroup->name() + ".pos {" + qPoint2Str(pGraphObjGroup->pos()) + "} px");
         strlstResultValues.append(pGraphObjGroup->name() + ".topLeft {" + qPoint2Str(rectF.topLeft()) + "} px");
         strlstResultValues.append(pGraphObjGroup->name() + ".bottomRight {" + qPoint2Str(rectF.bottomRight()) + "} px");
         strlstResultValues.append(pGraphObjGroup->name() + ".size {" + qSize2Str(rectF.size()) + "} px");
-        strlstResultValues.append(pGraphObjGroup->name() + ".pos {" + qPoint2Str(pGraphObjGroup->pos()) + "} px");
+        CPhysValPoint physValPointPos = pGraphObjGroup->getPos();
+        strlstResultValues.append(pGraphObjGroup->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
         CPhysValRect physValRect = pGraphObjGroup->getRect();
         strlstResultValues.append(pGraphObjGroup->name() + ".getRect.topLeft.x: " + physValRect.topLeft().x().toString());
         strlstResultValues.append(pGraphObjGroup->name() + ".getRect.topLeft.y: " + physValRect.topLeft().y().toString());
@@ -5688,13 +5944,13 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
         CPhysValSize physValSize = pGraphObjGroup->getSize();
         strlstResultValues.append(pGraphObjGroup->name() + ".getRect.size.width: " + physValSize.width().toString());
         strlstResultValues.append(pGraphObjGroup->name() + ".getRect.size.height: " + physValSize.height().toString());
-        CPhysValPoint physValPointPos = pGraphObjGroup->getPos();
-        strlstResultValues.append(pGraphObjGroup->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
         for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
             QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(pGraphObjChild);
             strlstResultValues.append(pGraphObjChild->name() + ".pos {" + qPoint2Str(pGraphicsItemChild->pos()) + "} px");
             if (pGraphObjChild->isLine()) {
                 CGraphObjLine* pGraphObjChildLine = dynamic_cast<CGraphObjLine*>(pGraphObjChild);
+                CPhysValPoint physValPointPos = pGraphObjChildLine->getPos();
+                strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
                 CPhysValLine physValLine = pGraphObjChildLine->getLine();
                 strlstResultValues.append(pGraphObjChild->name() + ".getLine.p1.x: " + physValLine.p1().x().toString());
                 strlstResultValues.append(pGraphObjChild->name() + ".getLine.p1.y: " + physValLine.p1().y().toString());
@@ -5704,11 +5960,11 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
                 strlstResultValues.append(pGraphObjChild->name() + ".getLength: " + physValLength.toString());
                 CPhysVal physValAngle = pGraphObjChildLine->getAngle(Units.Angle.Degree);
                 strlstResultValues.append(pGraphObjChild->name() + ".getAngle: " + physValAngle.toString());
-                CPhysValPoint physValPointPos = pGraphObjChildLine->getPos();
-                strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
             }
             else if (pGraphObjChild->isGroup()) {
                 CGraphObjGroup* pGraphObjChildGroup = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
+                CPhysValPoint physValPointPos = pGraphObjChildGroup->getPos();
+                strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
                 CPhysValRect physValRect = pGraphObjChildGroup->getRect();
                 strlstResultValues.append(pGraphObjChild->name() + ".getRect.topLeft.x: " + physValRect.topLeft().x().toString());
                 strlstResultValues.append(pGraphObjChild->name() + ".getRect.topLeft.y: " + physValRect.topLeft().y().toString());
@@ -5716,8 +5972,6 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
                 strlstResultValues.append(pGraphObjChild->name() + ".getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
                 strlstResultValues.append(pGraphObjChild->name() + ".getRect.size.width: " + physValRect.size().width().toString());
                 strlstResultValues.append(pGraphObjChild->name() + ".getRect.size.height: " + physValRect.size().height().toString());
-                CPhysValPoint physValPointPos = pGraphObjChildGroup->getPos();
-                strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
             }
         }
     }
@@ -5762,10 +6016,12 @@ void CTest::doTestStepModifyGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
     QStringList strlstResultValues;
     if (pGraphObjLine != nullptr) {
         QLineF lineF = pGraphObjLine->line();
+        strlstResultValues.append(strGraphObjName + ".pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
         strlstResultValues.append(strGraphObjName + ".line.p1 {" + qPoint2Str(lineF.p1()) + "} px");
         strlstResultValues.append(strGraphObjName + ".line.p2 {" + qPoint2Str(lineF.p2()) + "} px");
         strlstResultValues.append(strGraphObjName + ".line.length: " + QString::number(lineF.length(), 'f', 1) + " px");
-        strlstResultValues.append(strGraphObjName + ".pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
+        CPhysValPoint physValPointPos = pGraphObjLine->getPos();
+        strlstResultValues.append(strGraphObjName + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
         CPhysValLine physValLine = pGraphObjLine->getLine();
         strlstResultValues.append(strGraphObjName + ".getLine.p1.x: " + physValLine.p1().x().toString());
         strlstResultValues.append(strGraphObjName + ".getLine.p1.y: " + physValLine.p1().y().toString());
@@ -5775,8 +6031,6 @@ void CTest::doTestStepModifyGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strGraphObjName + ".getLength: " + physValLength.toString());
         CPhysVal physValAngle = pGraphObjLine->getAngle(Units.Angle.Degree);
         strlstResultValues.append(strGraphObjName + ".getAngle: " + physValAngle.toString());
-        CPhysValPoint physValPointPos = pGraphObjLine->getPos();
-        strlstResultValues.append(strGraphObjName + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5798,63 +6052,74 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
 
+    QString strGroupNameParent = i_pTestStep->getConfigValue("GroupNameParent").toString();
+    QString strGroupNameParentKeyInTree = i_pTestStep->getConfigValue("GroupNameParentKeyInTree").toString();
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
-    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-    if (pGraphObjGroup != nullptr) {
-        if (strMethod.compare("resizeToContent", Qt::CaseInsensitive) == 0) {
+    if (strMethod.compare("resizeToContent", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
             pGraphObjGroup->resizeToContent();
+        }
+    }
+    else if (strMethod.compare("removeFromGroup", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGroupNameParentKeyInTree));
+        if (pGraphObjGroupParent != nullptr && pGraphObj != nullptr) {
+            pGraphObjGroupParent->removeFromGroup(pGraphObj);
         }
     }
 
     QStringList strlstResultValues;
-    if (pGraphObjGroup != nullptr) {
-        QRectF rectF = pGraphObjGroup->getBoundingRect();
-        strlstResultValues.append(pGraphObjGroup->name() + ".topLeft {" + qPoint2Str(rectF.topLeft()) + "} px");
-        strlstResultValues.append(pGraphObjGroup->name() + ".bottomRight {" + qPoint2Str(rectF.bottomRight()) + "} px");
-        strlstResultValues.append(pGraphObjGroup->name() + ".size {" + qSize2Str(rectF.size()) + "} px");
-        strlstResultValues.append(pGraphObjGroup->name() + ".pos {" + qPoint2Str(pGraphObjGroup->pos()) + "} px");
-        CPhysValRect physValRect = pGraphObjGroup->getRect();
-        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.topLeft.x: " + physValRect.topLeft().x().toString());
-        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.topLeft.y: " + physValRect.topLeft().y().toString());
-        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.bottomRight.x: " + physValRect.bottomRight().x().toString());
-        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
-        CPhysValSize physValSize = pGraphObjGroup->getSize();
-        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.size.width: " + physValSize.width().toString());
-        strlstResultValues.append(pGraphObjGroup->name() + ".getRect.size.height: " + physValSize.height().toString());
-        CPhysValPoint physValPointPos = pGraphObjGroup->getPos();
-        strlstResultValues.append(pGraphObjGroup->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-        for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
-            QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(pGraphObjChild);
-            strlstResultValues.append(pGraphObjChild->name() + ".pos {" + qPoint2Str(pGraphicsItemChild->pos()) + "} px");
-            if (pGraphObjChild->isLine()) {
-                CGraphObjLine* pGraphObjChildLine = dynamic_cast<CGraphObjLine*>(pGraphObjChild);
-                CPhysValLine physValLine = pGraphObjChildLine->getLine();
-                strlstResultValues.append(pGraphObjChild->name() + ".getLine.p1.x: " + physValLine.p1().x().toString());
-                strlstResultValues.append(pGraphObjChild->name() + ".getLine.p1.y: " + physValLine.p1().y().toString());
-                strlstResultValues.append(pGraphObjChild->name() + ".getLine.p2.x: " + physValLine.p2().x().toString());
-                strlstResultValues.append(pGraphObjChild->name() + ".getLine.p2.y: " + physValLine.p2().y().toString());
-                CPhysVal physValLength = pGraphObjChildLine->getLength();
-                strlstResultValues.append(pGraphObjChild->name() + ".getLength: " + physValLength.toString());
-                CPhysVal physValAngle = pGraphObjChildLine->getAngle(Units.Angle.Degree);
-                strlstResultValues.append(pGraphObjChild->name() + ".getAngle: " + physValAngle.toString());
-                CPhysValPoint physValPointPos = pGraphObjChildLine->getPos();
-                strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-            }
-            else if (pGraphObjChild->isGroup()) {
-                CGraphObjGroup* pGraphObjChildGroup = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
-                CPhysValRect physValRect = pGraphObjChildGroup->getRect();
-                strlstResultValues.append(pGraphObjChild->name() + ".getRect.topLeft.x: " + physValRect.topLeft().x().toString());
-                strlstResultValues.append(pGraphObjChild->name() + ".getRect.topLeft.y: " + physValRect.topLeft().y().toString());
-                strlstResultValues.append(pGraphObjChild->name() + ".getRect.bottomRight.x: " + physValRect.bottomRight().x().toString());
-                strlstResultValues.append(pGraphObjChild->name() + ".getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
-                strlstResultValues.append(pGraphObjChild->name() + ".getRect.size.width: " + physValRect.size().width().toString());
-                strlstResultValues.append(pGraphObjChild->name() + ".getRect.size.height: " + physValRect.size().height().toString());
-                CPhysValPoint physValPointPos = pGraphObjChildGroup->getPos();
-                strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+    if (pGraphObj != nullptr) {
+        if (pGraphObj->isGroup()) {
+            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+            strlstResultValues.append(pGraphObjGroup->name() + ".pos {" + qPoint2Str(pGraphObjGroup->pos()) + "} px");
+            QRectF rectF = pGraphObjGroup->getBoundingRect();
+            strlstResultValues.append(pGraphObjGroup->name() + ".topLeft {" + qPoint2Str(rectF.topLeft()) + "} px");
+            strlstResultValues.append(pGraphObjGroup->name() + ".bottomRight {" + qPoint2Str(rectF.bottomRight()) + "} px");
+            strlstResultValues.append(pGraphObjGroup->name() + ".size {" + qSize2Str(rectF.size()) + "} px");
+            CPhysValPoint physValPointPos = pGraphObjGroup->getPos();
+            strlstResultValues.append(pGraphObjGroup->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+            CPhysValRect physValRect = pGraphObjGroup->getRect();
+            strlstResultValues.append(pGraphObjGroup->name() + ".getRect.topLeft.x: " + physValRect.topLeft().x().toString());
+            strlstResultValues.append(pGraphObjGroup->name() + ".getRect.topLeft.y: " + physValRect.topLeft().y().toString());
+            strlstResultValues.append(pGraphObjGroup->name() + ".getRect.bottomRight.x: " + physValRect.bottomRight().x().toString());
+            strlstResultValues.append(pGraphObjGroup->name() + ".getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
+            CPhysValSize physValSize = pGraphObjGroup->getSize();
+            strlstResultValues.append(pGraphObjGroup->name() + ".getRect.size.width: " + physValSize.width().toString());
+            strlstResultValues.append(pGraphObjGroup->name() + ".getRect.size.height: " + physValSize.height().toString());
+            for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
+                QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(pGraphObjChild);
+                strlstResultValues.append(pGraphObjChild->name() + ".pos {" + qPoint2Str(pGraphicsItemChild->pos()) + "} px");
+                if (pGraphObjChild->isLine()) {
+                    CGraphObjLine* pGraphObjChildLine = dynamic_cast<CGraphObjLine*>(pGraphObjChild);
+                    CPhysValPoint physValPointPos = pGraphObjChildLine->getPos();
+                    strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+                    CPhysValLine physValLine = pGraphObjChildLine->getLine();
+                    strlstResultValues.append(pGraphObjChild->name() + ".getLine.p1.x: " + physValLine.p1().x().toString());
+                    strlstResultValues.append(pGraphObjChild->name() + ".getLine.p1.y: " + physValLine.p1().y().toString());
+                    strlstResultValues.append(pGraphObjChild->name() + ".getLine.p2.x: " + physValLine.p2().x().toString());
+                    strlstResultValues.append(pGraphObjChild->name() + ".getLine.p2.y: " + physValLine.p2().y().toString());
+                    CPhysVal physValLength = pGraphObjChildLine->getLength();
+                    strlstResultValues.append(pGraphObjChild->name() + ".getLength: " + physValLength.toString());
+                    CPhysVal physValAngle = pGraphObjChildLine->getAngle(Units.Angle.Degree);
+                    strlstResultValues.append(pGraphObjChild->name() + ".getAngle: " + physValAngle.toString());
+                }
+                else if (pGraphObjChild->isGroup()) {
+                    CGraphObjGroup* pGraphObjChildGroup = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
+                    CPhysValPoint physValPointPos = pGraphObjChildGroup->getPos();
+                    strlstResultValues.append(pGraphObjChild->name() + ".getPos {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+                    CPhysValRect physValRect = pGraphObjChildGroup->getRect();
+                    strlstResultValues.append(pGraphObjChild->name() + ".getRect.topLeft.x: " + physValRect.topLeft().x().toString());
+                    strlstResultValues.append(pGraphObjChild->name() + ".getRect.topLeft.y: " + physValRect.topLeft().y().toString());
+                    strlstResultValues.append(pGraphObjChild->name() + ".getRect.bottomRight.x: " + physValRect.bottomRight().x().toString());
+                    strlstResultValues.append(pGraphObjChild->name() + ".getRect.bottomRight.y: " + physValRect.bottomRight().y().toString());
+                    strlstResultValues.append(pGraphObjChild->name() + ".getRect.size.width: " + physValRect.size().width().toString());
+                    strlstResultValues.append(pGraphObjChild->name() + ".getRect.size.height: " + physValRect.size().height().toString());
+                }
             }
         }
     }

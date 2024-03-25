@@ -2304,29 +2304,30 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // If the item is a child of a group, the current (transformed) coordinates are only
             // taken over as the original coordinates if initially creating the item or when
             // adding the item to or removing the item from a group.
-            if (i_change == ItemPositionHasChanged) {
-                if (parentGroup() == nullptr) {
-                    // Please note that "mapToScene" maps the local coordinates relative to the
-                    // top left corner of the item's bounding rectangle and there is no need to
-                    // call "mapToBoundingRectTopLeft" beforehand.
-                    QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
-                    QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
-                    CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
-                    CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
-                    setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
-                }
-            }
-            else if (i_change == ItemParentHasChanged) {
-                if (parentGroup() != nullptr) {
-                    QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
-                    QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
-                    pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
-                    pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
-                    CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
-                    CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
-                    setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
-                }
-            }
+            updateOriginalPhysValCoors();
+            //if (i_change == ItemPositionHasChanged) {
+            //    if (parentGroup() == nullptr) {
+            //        // Please note that "mapToScene" maps the local coordinates relative to the
+            //        // top left corner of the item's bounding rectangle and there is no need to
+            //        // call "mapToBoundingRectTopLeft" beforehand.
+            //        QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
+            //        QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
+            //        CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
+            //        CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
+            //        setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+            //    }
+            //}
+            //else if (i_change == ItemParentHasChanged) {
+            //    if (parentGroup() != nullptr) {
+            //        QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
+            //        QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
+            //        pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
+            //        pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
+            //        CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
+            //        CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
+            //        setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+            //    }
+            //}
         }
         QPolygonF plg;
         plg.append(lineF.p1());

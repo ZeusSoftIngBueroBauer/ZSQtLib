@@ -372,8 +372,6 @@ public: // instance methods
 
     The item and child items will be reparented to this group, but its position
     and transformation relative to the scene will stay intact.
-
-    @Note This method replaces QGraphicsItemGroup::addtoGroup to trace the method call.
 */
 void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
@@ -477,7 +475,7 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
     The item will be reparented to this group's parent item, or to 0 if this group
     has no parent. Its position and transformation relative to the scene will stay intact.
 
-    @Note This method replaces QGraphicsItemGroup::removeFromGroup to trace the method call.
+    @note The groups size and position remains the same and is not resize to its new content.
 */
 void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
 //------------------------------------------------------------------------------
@@ -506,17 +504,12 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
     }
     else {
         QRectF rctBoundingThis = getBoundingRect(); // Used if the group will have no more childs anymore
-        QGraphicsItemGroup::removeFromGroup(pGraphicsItemChild);
+        // The removed child will be positioned by the graphics system.
+        // When mapping local coordinates into parent coordinates and vice versa the parent
+        // group must have been updated. So the new parent graphical object is set before
+        // removing the item from the GraphicsItemGroup.
         m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, parentBranch());
-        // Keep the current bounding rect.
-        // If childs still belong to the group ..
-        if (count() > 0) {
-            QVector<CGraphObj*> arpGraphObjChilds = childs();
-            rctBoundingThis = ZS::Draw::boundingRect(arpGraphObjChilds);
-        }
-        CPhysValRect physValRect(rctBoundingThis, m_pDrawingScene->drawingSize().imageCoorsResolutionInPx(), Units.Length.px);
-        physValRect = convert(physValRect);
-        setRect(physValRect);
+        QGraphicsItemGroup::removeFromGroup(pGraphicsItemChild);
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
 }
@@ -557,9 +550,6 @@ void CGraphObjGroup::resizeToContent()
     }
     rctBoundingThisNew = mapToTopLeftOfBoundingRect(rctBoundingThisNew);
 
-    //QGraphicsItem* pGraphicsItemParentThis = parentItem();
-    //CGraphObjGroup* pGraphObjGroupParentThis = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParentThis);
-
     // Convert (map) the new bounding rectangle of this group into the coordinate system of
     // this groups parent in the unit of the drawing scene.
     CPhysValRect physValRectNew;
@@ -567,7 +557,6 @@ void CGraphObjGroup::resizeToContent()
         physValRectNew = parentGroup()->convert(rctBoundingThisNew);
     }
     else {
-        //rctBoundingThisNew = pGraphicsItemThis->mapToScene(rctBoundingThisNew).boundingRect();
         physValRectNew = m_pDrawingScene->convert(rctBoundingThisNew);
     }
     setRect(physValRectNew);
@@ -3311,31 +3300,32 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
-            if (i_change == ItemPositionHasChanged) {
-                if (parentGroup() == nullptr) {
-                    // Please note that "mapToScene" maps the local coordinates relative to the
-                    // top left corner of the item's bounding rectangle and there is no need to
-                    // call "mapToBoundingRectTopLeft" beforehand.
-                    QRectF rectF = getBoundingRect();
-                    QPointF ptTL = pGraphicsItemThis->mapToScene(rectF.topLeft());
-                    QPointF ptBR = pGraphicsItemThis->mapToScene(rectF.bottomRight());
-                    CPhysValPoint physValPointTL = m_pDrawingScene->convert(ptTL);
-                    CPhysValPoint physValPointBR = m_pDrawingScene->convert(ptBR);
-                    setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
-                }
-            }
-            else if (i_change == ItemParentHasChanged) {
-                if (parentGroup() != nullptr) {
-                    QRectF rectF = getBoundingRect();
-                    QPointF ptTL = pGraphicsItemThis->mapToParent(rectF.topLeft());
-                    QPointF ptBR = pGraphicsItemThis->mapToParent(rectF.bottomRight());
-                    ptTL = parentGroup()->mapToTopLeftOfBoundingRect(ptTL);
-                    ptBR = parentGroup()->mapToTopLeftOfBoundingRect(ptBR);
-                    CPhysValPoint physValPointTL = parentGroup()->convert(ptTL);
-                    CPhysValPoint physValPointBR = parentGroup()->convert(ptBR);
-                    setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
-                }
-            }
+            updateOriginalPhysValCoors();
+            //if (i_change == ItemPositionHasChanged) {
+            //    if (parentGroup() == nullptr) {
+            //        // Please note that "mapToScene" maps the local coordinates relative to the
+            //        // top left corner of the item's bounding rectangle and there is no need to
+            //        // call "mapToBoundingRectTopLeft" beforehand.
+            //        QRectF rectF = getBoundingRect();
+            //        QPointF ptTL = pGraphicsItemThis->mapToScene(rectF.topLeft());
+            //        QPointF ptBR = pGraphicsItemThis->mapToScene(rectF.bottomRight());
+            //        CPhysValPoint physValPointTL = m_pDrawingScene->convert(ptTL);
+            //        CPhysValPoint physValPointBR = m_pDrawingScene->convert(ptBR);
+            //        setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
+            //    }
+            //}
+            //else if (i_change == ItemParentHasChanged) {
+            //    if (parentGroup() != nullptr) {
+            //        QRectF rectF = getBoundingRect();
+            //        QPointF ptTL = pGraphicsItemThis->mapToParent(rectF.topLeft());
+            //        QPointF ptBR = pGraphicsItemThis->mapToParent(rectF.bottomRight());
+            //        ptTL = parentGroup()->mapToTopLeftOfBoundingRect(ptTL);
+            //        ptBR = parentGroup()->mapToTopLeftOfBoundingRect(ptBR);
+            //        CPhysValPoint physValPointTL = parentGroup()->convert(ptTL);
+            //        CPhysValPoint physValPointBR = parentGroup()->convert(ptBR);
+            //        setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
+            //    }
+            //}
             //applyGeometryChangeToChildrens();
         }
         tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -3610,6 +3600,7 @@ void CGraphObjGroup::paintGridLabels(QPainter* i_pPainter)
     QPen pen(m_gridSettings.labelsTextColor());
     i_pPainter->setPen(pen);
     i_pPainter->setFont(fnt);
+    todo: move like division lines
     if (m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main) > 0) {
         for (int idxDivLine = 0; idxDivLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); idxDivLine++) {
             if (m_divLinesMetricsX.isDivLineLabelVisible(EDivLineLayer::Main, idxDivLine)) {
