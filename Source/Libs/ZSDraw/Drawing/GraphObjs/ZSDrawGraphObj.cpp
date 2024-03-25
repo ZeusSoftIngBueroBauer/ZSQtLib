@@ -3771,9 +3771,11 @@ QRectF CGraphObj::toLocalCoors(const CPhysValRect& i_physValRect) const
 
 //------------------------------------------------------------------------------
 /*! @brief Maps the given point from local coordinates given relative to the
-           center of the item's bounding rectangle to the physical value
-           relative to the top left or bottom left corner of the item's bounding
-           rectangle.
+           center of the item's bounding rectangle to the physical value,
+           depending on the YScaleAxisOrientation either relative to the top left
+           or bottom left corner of the item's bounding rectangle.
+
+    YScaleAxisOrientation: TopDown
 
            0         1         2         3         4         5         6
            0123456789012345678901234567890123456789012345678901234567890
@@ -3794,10 +3796,38 @@ QRectF CGraphObj::toLocalCoors(const CPhysValRect& i_physValRect) const
         14 |                                                           |   4
         15 |                                                           |   5
         16 |                                                           |   6
-        17 |                                         (20/7) => (50/18) |   7
+        17 |                                         (20/8) => (50/18) |   7
         18 |                                                 X         |   8
         19 |                                                           |   9
         20 +-----------------------------------------------------------+  10
+           0987654321098765432109876543210123456789012345678901234567890
+          -3        -2        -1         0         1         2         3
+
+    YScaleAxisOrientation: BottomUp
+
+           0         1         2         3         4         5         6
+           0123456789012345678901234567890123456789012345678901234567890
+        20 +-----------------------------------------------------------+ -10
+        19 |      (-20/-8) => (10/18)                                  |  -9
+        18 |         X                                                 |  -8
+        17 |                                                           |  -7
+        16 |                                                           |  -6
+        15 |                                                           |  -5
+        14 |                                                           |  -4
+        13 |                                                           |  -3
+        12 |                                                           |  -2
+        11 |                       (0/0) => (30/10)                    |  -1
+        10 |                             O                             |   0
+         9 |                                                           |   1
+         8 |                                                           |   2
+         7 |                                                           |   3
+         6 |                                                           |   4
+         5 |                                                           |   5
+         4 |                                                           |   6
+         3 |                                         (20/8) => (50/2)  |   7
+         2 |                                                 X         |   8
+         1 |                                                           |   9
+         0 +-----------------------------------------------------------+  10
            0987654321098765432109876543210123456789012345678901234567890
           -3        -2        -1         0         1         2         3
 
@@ -3822,9 +3852,16 @@ CPhysValPoint CGraphObj::fromLocalCoors(const QPointF& i_pt) const
         /* strMethod    */ "fromLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QRectF rctBounding = getBoundingRect();                                             // -30, -10, 60, 20
-    QPointF ptTL = rctBounding.topLeft();                                               // (-30/-10)
-    QPointF pt = i_pt - ptTL;                                                           // (-20/-8) - (-30/-10) = (10/2)
+    QPointF ptOrigin;
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        ptOrigin = rctBounding.topLeft();                                               // (-30/-10)
+    }
+    else {
+        ptOrigin = rctBounding.bottomLeft();                                            // (-30/10)
+    }
+    QPointF pt = i_pt - ptOrigin;                                                       // (-20/-8) - (-30/-10) = (10/2)
     CPhysValPoint physValPoint;
     const CGraphObjGroup* pGraphObjGroupThis = dynamic_cast<const CGraphObjGroup*>(this);
     if (pGraphObjGroupThis != nullptr) {
@@ -3840,6 +3877,13 @@ CPhysValPoint CGraphObj::fromLocalCoors(const QPointF& i_pt) const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Maps the given line from local coordinates given relative to the
+           center of the item's bounding rectangle to the physical line,
+           depending on the YScaleAxisOrientation either relative to the top left
+           or bottom left corner of the item's bounding rectangle.
+
+    @see fromLocalCoors(const QPointF&)
+*/
 CPhysValLine CGraphObj::fromLocalCoors(const QLineF& i_line) const
 //------------------------------------------------------------------------------
 {
@@ -3872,6 +3916,13 @@ CPhysValLine CGraphObj::fromLocalCoors(const QLineF& i_line) const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Maps the given rectangle from local coordinates given relative to the
+           center of the item's bounding rectangle to the physical rectangle,
+           depending on the YScaleAxisOrientation either relative to the top left
+           or bottom left corner of the item's bounding rectangle.
+
+    @see fromLocalCoors(const QPointF&)
+*/
 CPhysValRect CGraphObj::fromLocalCoors(const QRectF& i_rect) const
 //------------------------------------------------------------------------------
 {

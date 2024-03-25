@@ -3440,7 +3440,7 @@ void CGraphObjGroup::paintGridLabels(QPainter* i_pPainter)
     fnt.setItalic(isTextStyleItalic(m_gridSettings.labelsTextStyle()));
     fnt.setUnderline(isTextEffectUnderline(m_gridSettings.labelsTextEffect()));
     fnt.setStrikeOut(isTextEffectStrikeout(m_gridSettings.labelsTextEffect()));
-    fnt.setPointSize(textSize2SizeInPixels(m_gridSettings.labelsTextSize());
+    fnt.setPointSize(textSize2SizeInPixels(m_gridSettings.labelsTextSize()));
     QPen pen(m_gridSettings.labelsTextColor());
     i_pPainter->setPen(pen);
     i_pPainter->setFont(fnt);
