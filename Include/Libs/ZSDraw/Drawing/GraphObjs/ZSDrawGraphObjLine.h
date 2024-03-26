@@ -155,10 +155,10 @@ public: // instance methods
     void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
     ZS::PhysVal::CPhysVal getLength() const;
     ZS::PhysVal::CPhysVal getLength(const ZS::PhysVal::CUnit& i_unit) const;
-    void setAngle(double i_fAngle_degree);
-    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
-    double getAngleInDegrees() const;
-    ZS::PhysVal::CPhysVal getAngle(const ZS::PhysVal::CUnit& i_unit) const;
+public: // overridables of base class CGraphObj
+    void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
+    ZS::PhysVal::CPhysVal rotationAngle() const override;
+    ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class CGraphObj
     virtual CPhysValPoint getPos() const override;
     virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
@@ -168,7 +168,7 @@ public: // must overridables of base class CGraphObj
     virtual void updateOriginalPhysValCoors() override;
     //virtual QRectF getOriginalBoundingRectInParent() const override;
     //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding) override;
-    virtual void setGroupScale(double i_fXScale, double i_fYScale) override;
+    //virtual void setGroupScale(double i_fXScale, double i_fYScale) override;
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
 public: // overridables of base class CGraphObj

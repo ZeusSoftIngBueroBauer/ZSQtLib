@@ -180,6 +180,8 @@ protected: // instance members
          The values are stored in the unit of the drawing size.
          If the drawing size changes the coordinates are updated and converted if necessary. */
     CPhysValRect m_physValRect;
+    /*!< Cached rotation angle of the graphical object. */
+    ZS::PhysVal::CPhysVal m_physValRotationAngle;
     /*!< Cached value label settings of the graphical object.
          The order is defined by the graphical object returning the list of value names. */
     QList<SLabelSettings> m_arLabelSettings;

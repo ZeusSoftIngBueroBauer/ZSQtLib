@@ -823,8 +823,9 @@ CGraphObj::CGraphObj(
     m_editMode(EEditMode::None),
     //m_editResizeMode(EEditResizeMode::None),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
-    m_transform(),
-    m_transformByGroup(),
+    m_physValRotationAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_transform(),
+    //m_transformByGroup(),
     //m_ptScenePos(),
     //m_idxSelPtSelectedPolygon(-1),
     m_arpSelPtsPolygon(),
@@ -1054,6 +1055,7 @@ CGraphObj::~CGraphObj()
     m_editMode = static_cast<EEditMode>(0);
     //m_editResizeMode = static_cast<EEditResizeMode>(0);
     //m_arfZValues.clear();
+    //m_physValRotationAngle;
     //m_transform;
     //m_transformByGroup;
     //m_ptScenePos;
@@ -4290,7 +4292,7 @@ CPhysValRect CGraphObj::mapToScene(const CPhysValRect& i_physValRect, const ZS::
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QRectF rectF = toLocalCoors(i_physValRect);
-    rectF = pGraphicsItemThis->mapToScene(rectF).boundingRect();
+    rectF = pGraphicsItemThis->mapRectToScene(rectF);
     CPhysValRect physValRect = m_pDrawingScene->convert(rectF);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
@@ -4448,7 +4450,7 @@ CPhysValRect CGraphObj::mapToParent(const CPhysValRect& i_physValRect, const ZS:
     }
     else {
         QRectF rectF = toLocalCoors(i_physValRect);
-        rectF = pGraphicsItemThis->mapToParent(rectF).boundingRect();
+        rectF = pGraphicsItemThis->mapRectToParent(rectF);
         physValRect = pGraphObjGroupParent->fromLocalCoors(rectF);
         physValRect = pGraphObjGroupParent->convert(physValRect);
     }
@@ -4571,62 +4573,74 @@ void CGraphObj::updateOriginalPhysValCoors()
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 }
 
-//------------------------------------------------------------------------------
-void CGraphObj::setGroupScale(double i_fXScale, double i_fYScale)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fXScale) + ", " + QString::number(i_fYScale);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "CGraphObj::setGroupScale",
-        /* strAddInfo   */ strMthInArgs );
-    #pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    m_transformByGroup.scale(i_fXScale, i_fYScale);
-}
-
 ////------------------------------------------------------------------------------
-//void CGraphObj::setRotationAngleInDegree( double i_fRotAngle_deg )
+//void CGraphObj::setGroupScale(double i_fXScale, double i_fYScale)
 ////------------------------------------------------------------------------------
 //{
 //    QString strMthInArgs;
 //    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = QString::number(i_fRotAngle_deg, 'f', 1);
+//        strMthInArgs = QString::number(i_fXScale) + ", " + QString::number(i_fYScale);
 //    }
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
 //        /* strObjName   */ m_strName,
-//        /* strMethod    */ "CGraphObj::setRotationAngleInDegree",
+//        /* strMethod    */ "CGraphObj::setGroupScale",
 //        /* strAddInfo   */ strMthInArgs );
-//
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//    m_fRotAngleCurr_deg = i_fRotAngle_deg;
-//#endif
-//
-//    //updateTransform();
+//    #pragma message(__TODO__"Pure virtual")
+//    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+//    m_transformByGroup.scale(i_fXScale, i_fYScale);
 //}
 
-////------------------------------------------------------------------------------
-//double CGraphObj::getRotationAngleInDegree()
-////------------------------------------------------------------------------------
-//{
-//    double fRotAngle_deg = 0.0;
-//#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//    if (i_version == ECoordinatesVersion::Original) {
-//        fRotAngle_deg = m_fRotAngleOrig_deg;
-//    }
-//    else {
-//        fRotAngle_deg = m_fRotAngleCurr_deg;
-//    }
-//#endif
-//    return fRotAngle_deg;
-//}
+//------------------------------------------------------------------------------
+/*! @brief Sets the clockwise rotation angle, in degrees, around the Z axis.
+
+    The default value is 0 (i.e., the item is not rotated). Assigning a negative
+    value will rotate the item counter-clockwise.
+    Normally the rotation angle is in the range (-360, 360), but it's also possible
+    to assign values outside of this range (e.g., a rotation of 370 degrees is the
+    same as a rotation of 10 degrees).
+*/
+void CGraphObj::setRotationAngle(const CPhysVal& i_physValAngle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValAngle.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ m_strName,
+        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    m_physValRotationAngle = i_physValAngle;
+    pGraphicsItemThis->setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the rotation angle of this item in Degree.
+*/
+CPhysVal CGraphObj::rotationAngle() const
+//------------------------------------------------------------------------------
+{
+    return rotationAngle(Units.Angle.Degree);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the rotation angle of this item in the desired unit.
+
+    @param [in] i_unit Desired unit which could be eiterh Degree or Rad.
+*/
+CPhysVal CGraphObj::rotationAngle(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    CPhysVal physValAngle = m_physValRotationAngle;
+    physValAngle.convertValue(i_unit);
+    return physValAngle;
+}
 
 /*==============================================================================
 public: // overridables

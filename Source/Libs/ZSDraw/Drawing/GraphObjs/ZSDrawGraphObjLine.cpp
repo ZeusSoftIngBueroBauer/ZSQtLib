@@ -941,47 +941,29 @@ CPhysVal CGraphObjLine::getLength(const CUnit& i_unit) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the angle of the line in degrees.
+/*! @brief Sets the clockwise rotation angle, in degrees, around the z axis.
+
+    For lines the z-axis goes through P1.
+
+                         P1        0°        P2
+      X P1 ---            X------------------X              X P2
+      |     |                                               |
+      |    / 90°                                         +->|
+      |   /                                             /   |
+      |<-                                              |270°|
+      |                  P2                  P1         \   |
+      X P2                X------------------X           \  X P1 ----
+                          ^                  |            \        /
+                           \                /              +------+
+                            +-----180°-----+
 
     The center point and the length of the line remains unchanged.
     Points 1 and 2 are moved correspondingly.
-
-    The angles are measured counter-clockwise from a point on the x-axis to the
-    right of the origin (x > 0).
-
-    @param [in] i_fAngle_degree
-        Angle to be set.
-*/
-void CGraphObjLine::setAngle(double i_fAngle_degree)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fAngle_degree);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setAngle",
-        /* strAddInfo   */ strMthInArgs );
-
-    setAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the angle of the line in the given unit.
-
-    The center point and the length of the line remains unchanged.
-    Points 1 and 2 are moved correspondingly.
-
-    The angles are measured counter-clockwise from a point on the x-axis to the
-    right of the origin (x > 0).
 
     @param [in] i_physValAngle
         Angle to be set.
 */
-void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
+void CGraphObjLine::setRotationAngle(const CPhysVal& i_physValAngle)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1005,19 +987,13 @@ void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
 
     The return value will be in the range of values from 0.0 up to but not
     including 360.0.
-    
-    If the YScale Axis orientation is from top to bottom the angles are measured
-    counter-clockwise from a point on the x-axis to the right of the origin (x > 0).
-
-    If the YScale Axis orientation is from bottom to top the angles are measured
-    clockwise from a point on the x-axis to the right of the origin (x > 0).
 
     @sa setAngle()
 */
-double CGraphObjLine::getAngleInDegrees() const
+CPhysVal CGraphObjLine::rotationAngle() const
 //------------------------------------------------------------------------------
 {
-    return getAngle(Units.Angle.Degree).getVal();
+    return rotationAngle(Units.Angle.Degree);
 }
 
 //------------------------------------------------------------------------------
@@ -1026,18 +1002,12 @@ double CGraphObjLine::getAngleInDegrees() const
     The return value will be in the range of values from 0.0 up to but not
     including 360.0.
     
-    If the YScale Axis orientation is from top to bottom the angles are measured
-    counter-clockwise from a point on the x-axis to the right of the origin (x > 0).
-
-    If the YScale Axis orientation is from bottom to top the angles are measured
-    clockwise from a point on the x-axis to the right of the origin (x > 0).
-
     @param [in] i_unit
         Unit in which the angle should be returned.
 
     @sa setAngle()
 */
-CPhysVal CGraphObjLine::getAngle(const CUnit& i_unit) const
+CPhysVal CGraphObjLine::rotationAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValLine physValLine = getLine();
@@ -1343,34 +1313,34 @@ void CGraphObjLine::updateOriginalPhysValCoors()
        -30  -25  -20  -15  -10  -5    0    5    10   15   20   25   30
         +----+----+----+----+----+----+----+----+----+----+----+----+
 */
-void CGraphObjLine::setGroupScale(double i_fXScale, double i_fYScale)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fXScale) + ", " + QString::number(i_fYScale);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
-        /* strMethod    */ "setGroupScale",
-        /* strAddInfo   */ strMthInArgs );
-
-    //QPointF posOrig = m_physValLineOrig.center().toQPointF();
-    //QPointF posCurr = posOrig;
-    //posCurr.setX(posCurr.x() * i_fXScale);
-    //posCurr.setY(posCurr.y() * i_fYScale);
-    //double fTranslateDX = posCurr.x() - posOrig.x();
-    //double fTranslateDY = posCurr.y() - posOrig.y();
-    //m_transformationsByGroup.translate(fTranslateDX, fTranslateDY);
-    //m_transformationsByGroup.scale(i_fXScale, i_fYScale);
-    //QLineF lineOrig = m_physValLineOrig.toQLineF();
-    //QLineF lineCurr = m_transformationsByGroup.map(lineOrig);
-    //CPhysValLine physValLineCurr = m_physValLineCurr;
-    //physValLineCurr = lineCurr;
-    //setLine(physValLineCurr);
-}
+//void CGraphObjLine::setGroupScale(double i_fXScale, double i_fYScale)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = QString::number(i_fXScale) + ", " + QString::number(i_fYScale);
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ m_strName,
+//        /* strMethod    */ "setGroupScale",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    //QPointF posOrig = m_physValLineOrig.center().toQPointF();
+//    //QPointF posCurr = posOrig;
+//    //posCurr.setX(posCurr.x() * i_fXScale);
+//    //posCurr.setY(posCurr.y() * i_fYScale);
+//    //double fTranslateDX = posCurr.x() - posOrig.x();
+//    //double fTranslateDY = posCurr.y() - posOrig.y();
+//    //m_transformationsByGroup.translate(fTranslateDX, fTranslateDY);
+//    //m_transformationsByGroup.scale(i_fXScale, i_fYScale);
+//    //QLineF lineOrig = m_physValLineOrig.toQLineF();
+//    //QLineF lineCurr = m_transformationsByGroup.map(lineOrig);
+//    //CPhysValLine physValLineCurr = m_physValLineCurr;
+//    //physValLineCurr = lineCurr;
+//    //setLine(physValLineCurr);
+//}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj

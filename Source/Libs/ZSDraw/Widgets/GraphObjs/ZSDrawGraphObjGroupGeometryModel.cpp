@@ -175,6 +175,7 @@ CModelGraphObjGroupGeometry::CModelGraphObjGroupGeometry(
     m_pGraphObjGroup(nullptr),
     m_drawingSize(i_pDrawingScene->drawingSize()),
     m_physValRect(),
+    m_physValRotationAngle(0.0, Units.Angle.Degree, 0.1),
     m_arLabelSettings(),
     m_strXYValSizeHint("1024 px +-"),
     m_sizeXYValSizeHint(),
@@ -231,6 +232,7 @@ CModelGraphObjGroupGeometry::~CModelGraphObjGroupGeometry()
     m_pGraphObjGroup = nullptr;
     //m_drawingSize;
     //m_physValRect;
+    //m_physValRotationAngle;
     //m_arLabelSettings;
     //m_strXYValSizeHint;
     //m_sizeXYValSizeHint;
@@ -419,6 +421,9 @@ bool CModelGraphObjGroupGeometry::hasChanges() const
         CPhysValRect physValRect = m_pGraphObjGroup->getRect(drawingSize.unit());
         bHasChanges = (m_physValRect != physValRect);
         if (!bHasChanges) {
+            bHasChanges = (m_physValRotationAngle != m_pGraphObjGroup->rotationAngle());
+        }
+        if (!bHasChanges) {
             QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObjGroup);
             bHasChanges = (arLabelSettings != m_arLabelSettings);
         }
@@ -457,6 +462,7 @@ void CModelGraphObjGroupGeometry::acceptChanges()
 
             if (m_pGraphObjGroup != nullptr) {
                 m_pGraphObjGroup->setRect(m_physValRect);
+                m_pGraphObjGroup->setRotationAngle(m_physValRotationAngle);
                 for (const SLabelSettings& labelSettings : m_arLabelSettings) {
                     labelSettings.m_bVisible ?
                         m_pGraphObjGroup->showGeometryLabel(labelSettings.m_strValueName) :
@@ -654,7 +660,7 @@ QVariant CModelGraphObjGroupGeometry::data(const QModelIndex& i_modelIdx, int i_
                             varData = m_physValRect.height().toString();
                         }
                         else if (labelSettings.m_strValueName == CGraphObjGroup::c_strGeometryLabelNameAngle) {
-                            varData = "ToDo"; //m_physValRotationAngle.toString();
+                            varData = m_physValRotationAngle.toString();
                         }
                     }
                     else if (i_iRole == Qt::EditRole) {
@@ -680,7 +686,7 @@ QVariant CModelGraphObjGroupGeometry::data(const QModelIndex& i_modelIdx, int i_
                             varData = QVariant::fromValue(m_physValRect.height());
                         }
                         else if (labelSettings.m_strValueName == CGraphObjGroup::c_strGeometryLabelNameAngle) {
-                            varData = "ToDo"; //QVariant::fromValue(m_physValRotationAngle);
+                            varData = QVariant::fromValue(m_physValRotationAngle);
                         }
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
@@ -691,7 +697,7 @@ QVariant CModelGraphObjGroupGeometry::data(const QModelIndex& i_modelIdx, int i_
                     }
                     else if (i_iRole == ERoleMinimumValue) {
                         if (labelSettings.m_strValueName == CGraphObjGroup::c_strGeometryLabelNameAngle) {
-                            varData = 360.0;
+                            varData = 0.0;
                         }
                         else if (labelSettings.m_strValueName == CGraphObjGroup::c_strGeometryLabelNameWidth) {
                             if (m_eDimensionUnit == EScaleDimensionUnit::Metric) {
@@ -908,6 +914,7 @@ bool CModelGraphObjGroupGeometry::setData(
             QVector<bool> arbColumnsChanged(EColumnCount, false);
             SLabelSettings labelSettings = m_arLabelSettings[iRow];
             CPhysValRect physValRect = m_physValRect;
+            CPhysVal physValRotationAngle = m_physValRotationAngle;
             switch (iClm) {
                 case EColumnName: {
                     break;
@@ -967,9 +974,9 @@ bool CModelGraphObjGroupGeometry::setData(
                             arbColumnsChanged[EColumnYVal] = true;
                         }
                         else if (labelSettings.m_strValueName == CGraphObjGroup::c_strGeometryLabelNameAngle) {
-                            //CPhysVal physVal = i_varData.value<CPhysVal>();
-                            //physValRect.setAngle(physVal);
-                            //arbColumnsChanged[EColumnXVal] = true;
+                            physValRotationAngle = i_varData.value<CPhysVal>();
+                            arbColumnsChanged[EColumnXVal] = true;
+                            arbColumnsChanged[EColumnYVal] = true;
                         }
                         bDataSet = true;
                     }
@@ -1042,6 +1049,10 @@ bool CModelGraphObjGroupGeometry::setData(
             bool bContentChanged = false;
             if (m_physValRect != physValRect) {
                 m_physValRect = physValRect;
+                bContentChanged = true;
+            }
+            if (m_physValRotationAngle != physValRotationAngle) {
+                m_physValRotationAngle = physValRotationAngle;
                 bContentChanged = true;
             }
             if (m_arLabelSettings[iRow] != labelSettings) {
@@ -1362,9 +1373,14 @@ void CModelGraphObjGroupGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphO
                         physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
                     }
                 }
+                CPhysVal physValRotationAngle = m_pGraphObjGroup->rotationAngle();
                 bool bContentChanged = false;
                 if (physValRect != m_physValRect) {
                     m_physValRect = physValRect;
+                    bContentChanged = true;
+                }
+                if (physValRotationAngle != m_physValRotationAngle) {
+                    m_physValRotationAngle = physValRotationAngle;
                     bContentChanged = true;
                 }
                 if (bContentChanged) {
@@ -1493,9 +1509,11 @@ void CModelGraphObjGroupGeometry::fillModel()
 
     if (m_pGraphObjGroup == nullptr) {
         m_physValRect = CPhysValRect(*m_pDrawingScene);
+        m_physValRotationAngle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
     }
     else {
         m_physValRect = m_pGraphObjGroup->getRect(drawingSize.unit());
+        m_physValRotationAngle = m_pGraphObjGroup->rotationAngle();
     }
     if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
         if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {

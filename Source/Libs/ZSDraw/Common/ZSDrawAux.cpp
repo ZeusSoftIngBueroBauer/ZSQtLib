@@ -1075,10 +1075,10 @@ QRectF ZS::Draw::boundingRect(
             if (!pGraphObj->isConnectionLine() && !pGraphObj->isSelectionPoint() && !pGraphObj->isLabel()) {
                 QRectF rectItem = pGraphObj->getBoundingRect();
                 if (i_pGraphObjGroup != nullptr) {
-                    rectItem = pGraphicsItem->mapToItem(pGraphicsItemParentGroup, rectItem).boundingRect();
+                    rectItem = pGraphicsItem->mapRectToItem(pGraphicsItemParentGroup, rectItem);
                 }
                 else {
-                    rectItem = pGraphicsItem->mapToScene(rectItem).boundingRect();
+                    rectItem = pGraphicsItem->mapRectToScene(rectItem);
                 }
                 if (rectItem.width() >= 0.0) {
                     if (rectItem.left() < fXLeftMin) {

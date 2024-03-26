@@ -409,17 +409,17 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         // Bounding rectangle of this group in local coordinates (relative to this center).
         QRectF rctBoundingThisPrev = getBoundingRect();
         // Map the bounding rectangle of this group into the parent coordinates of this group.
-        rctBoundingThisPrev = pGraphicsItemThis->mapToParent(rctBoundingThisPrev).boundingRect();
+        rctBoundingThisPrev = pGraphicsItemThis->mapRectToParent(rctBoundingThisPrev);
 
         // The parent of the child to be added is either the drawing scene or another group.
         // The bounding rectangle of the new child item need to be added mapped into the parent
         // coordinates of this group. The parent of this group may either be the scene or a group.
         QRectF rctBoundingChild = i_pGraphObj->getBoundingRect();
-        rctBoundingChild = pGraphicsItemChild->mapToScene(rctBoundingChild).boundingRect();
+        rctBoundingChild = pGraphicsItemChild->mapRectToScene(rctBoundingChild);
         QGraphicsItem* pGraphicsItemParentThis = parentItem();
         CGraphObjGroup* pGraphObjGroupParentThis = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParentThis);
         if (pGraphicsItemParentThis != nullptr) {
-            rctBoundingChild = pGraphicsItemParentThis->mapFromScene(rctBoundingChild).boundingRect();
+            rctBoundingChild = pGraphicsItemParentThis->mapRectFromScene(rctBoundingChild);
         }
 
         // Resulting, new bounding rectangle of this group in parent coordinates of this group.
@@ -532,11 +532,6 @@ void CGraphObjGroup::resizeToContent()
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QPointF ptPosThisPrev = pGraphicsItemThis->pos();
 
-    //// Bounding rectangle of this group in local coordinates (relative to this center).
-    //QRectF rctBoundingThisPrev = getBoundingRect();
-    //// Map the bounding rectangle of this group into the parent coordinates of this group.
-    //rctBoundingThisPrev = pGraphicsItemThis->mapToParent(rctBoundingThisPrev).boundingRect();
-
     // Resulting, new bounding rectangle of this group in parent coordinates of this group.
     QRectF rctBoundingThisNew;
     if (count() > 0) {
@@ -544,7 +539,7 @@ void CGraphObjGroup::resizeToContent()
         for (CGraphObj* pGraphObjChild : arpGraphObjChilds) {
             QRectF rctBoundingChild = pGraphObjChild->getBoundingRect();
             QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(pGraphObjChild);
-            rctBoundingChild = pGraphicsItemChild->mapToParent(rctBoundingChild).boundingRect();
+            rctBoundingChild = pGraphicsItemChild->mapRectToParent(rctBoundingChild);
             rctBoundingThisNew |= rctBoundingChild;
         }
     }
@@ -1885,7 +1880,7 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QRectF rectF = convert(i_physValRect, Units.Length.px).toQRectF();
-    rectF = pGraphicsItemThis->mapToScene(rectF).boundingRect();
+    rectF = pGraphicsItemThis->mapRectToScene(rectF);
     rectF = mapFromTopLeftOfBoundingRect(rectF);
     CPhysValRect physValRect = m_pDrawingScene->convert(rectF, i_unitDst);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -1938,9 +1933,8 @@ QRectF CGraphObjGroup::getBoundingRect() const
         /* strAddInfo   */ "" );
 
     // Local coordinates, scaled and rotated.
-    QPointF ptTL = m_transform.map(m_rectOrig.topLeft());
-    QPointF ptBR = m_transform.map(m_rectOrig.bottomRight());
-    QRectF rctBounding(ptTL, ptBR);
+    #pragma message(__TODO__"Take scale into account")
+    QRectF rctBounding = m_rectOrig;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -3081,7 +3075,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     //        // position of the mouse is not expected.
 
     //        #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    //        QPolygonF plgSceneNew         = mapToScene(m_rctCurr);
+    //        QRectF rctBoundingSceneNew         = mapRectToScene(m_rctCurr);
     //        QRectF    rctBoundingSceneNew = plgSceneNew.boundingRect();
     //        QPointF   ptRotOriginSceneNew = rctBoundingSceneNew.center();
     //        double    fAngle_rad          = Math::degree2Rad(m_fRotAngleCurr_deg);
@@ -3765,7 +3759,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
     for (QGraphicsItem* pGraphicsItemChild : arpGraphicsItemsChilds) {
         CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
         if (pGraphObjChild != nullptr) {
-            pGraphObjChild->setGroupScale(fScaleX, fScaleY);
+            //pGraphObjChild->setGroupScale(fScaleX, fScaleY);
 
             //QRectF rectChildCurr;
             //if (pGraphObjChild->getAlignmentCount() == 0) {
@@ -3785,8 +3779,8 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
             //    //double fScaleHeight = rectThisCurr.height() / rectThisOrig.height();
 
             //    //// Map the coordinates of this group to the local coordinates of this group.
-            //    ////rectThisOrig = mapFromParent(rectThisOrig).boundingRect();
-            //    ////rectThisCurr = mapFromParent(rectThisCurr).boundingRect();
+            //    ////rectThisOrig = mapRectFromParent(rectThisOrig);
+            //    ////rectThisCurr = mapRectFromParent(rectThisCurr);
 
             //    //// Get position of child relative to this parent group.
             //    ////QPointF ptPosChildPrev = pGraphicsItemChild->pos();

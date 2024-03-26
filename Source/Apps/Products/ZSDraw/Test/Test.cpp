@@ -645,7 +645,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     strlstExpectedValues.append("getLine.p2.x: 100 px");
     strlstExpectedValues.append("getLine.p2.y: 0 px");
     strlstExpectedValues.append("getLength: 100 px");
-    strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (right)
@@ -677,7 +677,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     strlstExpectedValues.append("getLine.p2.x: 100 px");
     strlstExpectedValues.append("getLine.p2.y: 100 px");
     strlstExpectedValues.append("getLength: 100 px");
-    strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 90.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (bottom)
@@ -709,7 +709,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     strlstExpectedValues.append("getLine.p2.x: 0 px");
     strlstExpectedValues.append("getLine.p2.y: 100 px");
     strlstExpectedValues.append("getLength: 100 px");
-    strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 180.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (left)
@@ -741,7 +741,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     strlstExpectedValues.append("getLine.p2.x: 0 px");
     strlstExpectedValues.append("getLine.p2.y: 0 px");
     strlstExpectedValues.append("getLength: 100 px");
-    strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -832,7 +832,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
-    strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (right)
@@ -877,7 +877,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
-    strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 90.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (bottom)
@@ -923,7 +923,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         strlstExpectedValues.append("getLine.p2.y: 0.0 mm");
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
-    strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 180.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (left)
@@ -968,7 +968,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         strlstExpectedValues.append("getLine.p2.y: 100.0 mm");
     }
     strlstExpectedValues.append("getLength: 100.0 mm");
-    strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line4
@@ -1013,7 +1013,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         strlstExpectedValues.append("getLine.p2.y: 28.6 mm");
     }
     strlstExpectedValues.append("getLength: 60.6 mm");
-    strlstExpectedValues.append("getAngle: 315.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("rotationAngle: 45.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -1630,7 +1630,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         strlstExpectedValues.append("dy: -100.0 mm");
     }
     strlstExpectedValues.append("Length: 100.0 mm");
-    strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1686,7 +1686,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         strlstExpectedValues.append("dy: 100.0 mm");
     }
     strlstExpectedValues.append("Length: 100.0 mm");
-    strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     pTestStep = new ZS::Test::CTestStep(
@@ -1715,7 +1715,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         strlstExpectedValues.append("dy: -42.9 mm");
     }
     strlstExpectedValues.append("Length: 60.6 mm");
-    strlstExpectedValues.append("Angle: 315.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append("Angle: 45.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // mm -> px
@@ -1782,10 +1782,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("dy: 350 px");
     strlstExpectedValues.append("Length: 350 px");
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
     }
     else {
-        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -1843,10 +1843,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("dy: -350 px");
     strlstExpectedValues.append("Length: 350 px");
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
     }
     else {
-        strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -1876,10 +1876,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("dy: 150 px");
     strlstExpectedValues.append("Length: 212 px");
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("Angle: 315.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 45.0 " + Math::c_strSymbolDegree);
     }
     else {
-        strlstExpectedValues.append("Angle: 45.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Angle: 315.0 " + Math::c_strSymbolDegree);
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -2424,7 +2424,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         strlstExpectedValues.append("getLine.p2.x: 300 px");
         strlstExpectedValues.append("getLine.p2.y: 350 px");
         strlstExpectedValues.append("getLength: 100 px");
-        strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2434,7 +2433,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 300.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 350.00 mm");
             strlstExpectedValues.append("getLength: 100.00 mm");
-            strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("getPos {300.00, 300.00} mm");
@@ -2443,9 +2441,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 300.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 250.00 mm");
             strlstExpectedValues.append("getLength: 100.00 mm");
-            strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
         }
     }
+    strlstExpectedValues.append("rotationAngle: 90.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line1 (horizontal)
@@ -2483,28 +2481,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         strlstExpectedValues.append("getLine.p2.x: 350 px");
         strlstExpectedValues.append("getLine.p2.y: 300 px");
         strlstExpectedValues.append("getLength: 100 px");
-        strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
     }
     else {
-        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
-            strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
-            strlstExpectedValues.append("getLine.p1.y: 300.00 mm");
-            strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
-            strlstExpectedValues.append("getLine.p2.y: 300.00 mm");
-            strlstExpectedValues.append("getLength: 100.00 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-        }
-        else {
-            strlstExpectedValues.append("getPos {300.00, 300.00} mm");
-            strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
-            strlstExpectedValues.append("getLine.p1.y: 300.00 mm");
-            strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
-            strlstExpectedValues.append("getLine.p2.y: 300.00 mm");
-            strlstExpectedValues.append("getLength: 100.00 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
-        }
+        strlstExpectedValues.append("getPos {300.00, 300.00} mm");
+        strlstExpectedValues.append("getLine.p1.x: 250.00 mm");
+        strlstExpectedValues.append("getLine.p1.y: 300.00 mm");
+        strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
+        strlstExpectedValues.append("getLine.p2.y: 300.00 mm");
+        strlstExpectedValues.append("getLength: 100.00 mm");
     }
+    strlstExpectedValues.append("rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line2 (Checkmark line from left to bottom)
@@ -2542,7 +2528,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         strlstExpectedValues.append("getLine.p2.x: 325 px");
         strlstExpectedValues.append("getLine.p2.y: 350 px");
         strlstExpectedValues.append("getLength: 125 px");
-        strlstExpectedValues.append("getAngle: 306.9 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2552,7 +2537,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 325.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 350.00 mm");
             strlstExpectedValues.append("getLength: 125.00 mm");
-            strlstExpectedValues.append("getAngle: 306.9 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("getPos {287.50, 300.00} mm");
@@ -2561,9 +2545,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 325.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 250.00 mm");
             strlstExpectedValues.append("getLength: 125.00 mm");
-            strlstExpectedValues.append("getAngle: 306.9 " + Math::c_strSymbolDegree);
         }
     }
+    strlstExpectedValues.append("rotationAngle: 53.1 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line3 (Checkmark line from bottom to right)
@@ -2601,7 +2585,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         strlstExpectedValues.append("getLine.p2.x: 350 px");
         strlstExpectedValues.append("getLine.p2.y: 325 px");
         strlstExpectedValues.append("getLength: 35 px");
-        strlstExpectedValues.append("getAngle: 45.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2611,7 +2594,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 325.00 mm");
             strlstExpectedValues.append("getLength: 35.36 mm");
-            strlstExpectedValues.append("getAngle: 45.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("getPos {337.50, 262.50} mm");
@@ -2620,9 +2602,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 350.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 275.00 mm");
             strlstExpectedValues.append("getLength: 35.36 mm");
-            strlstExpectedValues.append("getAngle: 45.0 " + Math::c_strSymbolDegree);
         }
     }
+    strlstExpectedValues.append("rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line4 (Top line of rectangle in second quadrant)
@@ -2660,7 +2642,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         strlstExpectedValues.append("getLine.p2.x: 330 px");
         strlstExpectedValues.append("getLine.p2.y: 270 px");
         strlstExpectedValues.append("getLength: 10 px");
-        strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2670,7 +2651,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 270.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("getPos {325.00, 330.00} mm");
@@ -2679,9 +2659,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 330.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
-            strlstExpectedValues.append("getAngle: 0.0 " + Math::c_strSymbolDegree);
         }
     }
+    strlstExpectedValues.append("rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line5 (Right line of rectangle in second quadrant)
@@ -2719,7 +2699,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         strlstExpectedValues.append("getLine.p2.x: 330 px");
         strlstExpectedValues.append("getLine.p2.y: 280 px");
         strlstExpectedValues.append("getLength: 10 px");
-        strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2729,7 +2708,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 280.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
-            strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("getPos {330.00, 325.00} mm");
@@ -2738,9 +2716,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 330.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 320.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
-            strlstExpectedValues.append("getAngle: 270.0 " + Math::c_strSymbolDegree);
         }
     }
+    strlstExpectedValues.append("rotationAngle: 90.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line6 (Bottom line of rectangle in second quadrant)
@@ -2778,7 +2756,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         strlstExpectedValues.append("getLine.p2.x: 320 px");
         strlstExpectedValues.append("getLine.p2.y: 280 px");
         strlstExpectedValues.append("getLength: 10 px");
-        strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2788,7 +2765,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 280.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
-            strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("getPos {325.00, 320.00} mm");
@@ -2797,9 +2773,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 320.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
-            strlstExpectedValues.append("getAngle: 180.0 " + Math::c_strSymbolDegree);
         }
     }
+    strlstExpectedValues.append("rotationAngle: 180.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Line7 (Left line of rectangle in second quadrant)
@@ -2837,7 +2813,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         strlstExpectedValues.append("getLine.p2.x: 320 px");
         strlstExpectedValues.append("getLine.p2.y: 270 px");
         strlstExpectedValues.append("getLength: 10 px");
-        strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2847,7 +2822,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 270.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
-            strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("getPos {320.00, 325.00} mm");
@@ -2856,9 +2830,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
             strlstExpectedValues.append("getLine.p2.x: 320.00 mm");
             strlstExpectedValues.append("getLine.p2.y: 330.00 mm");
             strlstExpectedValues.append("getLength: 10.00 mm");
-            strlstExpectedValues.append("getAngle: 90.0 " + Math::c_strSymbolDegree);
         }
     }
+    strlstExpectedValues.append("rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -2955,7 +2929,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         strlstExpectedValues.append("Line4.getLine.p2.x: 10 px");
         strlstExpectedValues.append("Line4.getLine.p2.y: 0 px");
         strlstExpectedValues.append("Line4.getLength: 10 px");
-        strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line4.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
         strlstExpectedValues.append("Line5.getPos {10, 5} px");
         strlstExpectedValues.append("Line5.getLine.p1.x: 10 px");
@@ -2963,7 +2937,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         strlstExpectedValues.append("Line5.getLine.p2.x: 10 px");
         strlstExpectedValues.append("Line5.getLine.p2.y: 10 px");
         strlstExpectedValues.append("Line5.getLength: 10 px");
-        strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line5.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
         strlstExpectedValues.append("Line6.getPos {5, 10} px");
         strlstExpectedValues.append("Line6.getLine.p1.x: 10 px");
@@ -2971,7 +2945,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         strlstExpectedValues.append("Line6.getLine.p2.x: 0 px");
         strlstExpectedValues.append("Line6.getLine.p2.y: 10 px");
         strlstExpectedValues.append("Line6.getLength: 10 px");
-        strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line6.rotationAngle: 180.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
         strlstExpectedValues.append("Line7.getPos {0, 5} px");
         strlstExpectedValues.append("Line7.getLine.p1.x: 0 px");
@@ -2979,7 +2953,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         strlstExpectedValues.append("Line7.getLine.p2.x: 0 px");
         strlstExpectedValues.append("Line7.getLine.p2.y: 0 px");
         strlstExpectedValues.append("Line7.getLength: 10 px");
-        strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line7.rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -2997,7 +2971,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line4.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line4.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line4.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line4.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
             strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
             strlstExpectedValues.append("Line5.getLine.p1.x: 10.00 mm");
@@ -3005,7 +2979,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line5.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line5.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line5.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
             strlstExpectedValues.append("Line6.getPos {5.00, 10.00} mm");
             strlstExpectedValues.append("Line6.getLine.p1.x: 10.00 mm");
@@ -3013,7 +2987,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line6.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line6.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line6.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line6.rotationAngle: 180.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
             strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
             strlstExpectedValues.append("Line7.getLine.p1.x: 0.00 mm");
@@ -3021,7 +2995,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line7.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line7.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line7.rotationAngle: 270.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append(strGraphObjName + ".getPos {325.00, 325.00} mm");
@@ -3038,7 +3012,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line4.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line4.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line4.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line4.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
             strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
             strlstExpectedValues.append("Line5.getLine.p1.x: 10.00 mm");
@@ -3046,7 +3020,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line5.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line5.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line5.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
             strlstExpectedValues.append("Line6.getPos {5.00, 0.00} mm");
             strlstExpectedValues.append("Line6.getLine.p1.x: 10.00 mm");
@@ -3054,7 +3028,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line6.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line6.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line6.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line6.rotationAngle: 180.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
             strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
             strlstExpectedValues.append("Line7.getLine.p1.x: 0.00 mm");
@@ -3062,7 +3036,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line7.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line7.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line7.rotationAngle: 270.0 " + Math::c_strSymbolDegree);
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3107,7 +3081,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         strlstExpectedValues.append("Line2.getLine.p2.x: 75 px");
         strlstExpectedValues.append("Line2.getLine.p2.y: 100 px");
         strlstExpectedValues.append("Line2.getLength: 125 px");
-        strlstExpectedValues.append("Line2.getAngle: 306.9 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line2.rotationAngle: 53.1 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line3.pos {37.5, 37.5} px");
         strlstExpectedValues.append("Line3.getPos {88, 88} px");
         strlstExpectedValues.append("Line3.getLine.p1.x: 75 px");
@@ -3115,7 +3089,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         strlstExpectedValues.append("Line3.getLine.p2.x: 100 px");
         strlstExpectedValues.append("Line3.getLine.p2.y: 75 px");
         strlstExpectedValues.append("Line3.getLength: 35 px");
-        strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -3133,7 +3107,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line2.getLine.p2.x: 75.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 100.00 mm");
             strlstExpectedValues.append("Line2.getLength: 125.00 mm");
-            strlstExpectedValues.append("Line2.getAngle: 306.9 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line2.rotationAngle: 53.1 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line3.pos {37.5, 37.5} px");
             strlstExpectedValues.append("Line3.getPos {87.50, 87.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 75.00 mm");
@@ -3141,7 +3115,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line3.getLine.p2.x: 100.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 75.00 mm");
             strlstExpectedValues.append("Line3.getLength: 35.36 mm");
-            strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("Group1.getPos {300.00, 300.00} mm");
@@ -3158,7 +3132,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line2.getLine.p2.x: 75.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line2.getLength: 125.00 mm");
-            strlstExpectedValues.append("Line2.getAngle: 306.9 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line2.rotationAngle: 53.1 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line3.pos {37.5, 37.5} px");
             strlstExpectedValues.append("Line3.getPos {87.50, 12.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 75.00 mm");
@@ -3166,7 +3140,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line3.getLine.p2.x: 100.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 25.00 mm");
             strlstExpectedValues.append("Line3.getLength: 35.36 mm");
-            strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3213,7 +3187,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         strlstExpectedValues.append("Line0.getLine.p2.x: 50 px");
         strlstExpectedValues.append("Line0.getLine.p2.y: 100 px");
         strlstExpectedValues.append("Line0.getLength: 100 px");
-        strlstExpectedValues.append("Line0.getAngle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line0.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line1.pos {0.0, 0.0} px");
         strlstExpectedValues.append("Line1.getPos {50, 50} px");
         strlstExpectedValues.append("Line1.getLine.p1.x: 0 px");
@@ -3221,7 +3195,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
         strlstExpectedValues.append("Line1.getLine.p2.x: 100 px");
         strlstExpectedValues.append("Line1.getLine.p2.y: 50 px");
         strlstExpectedValues.append("Line1.getLength: 100 px");
-        strlstExpectedValues.append("Line1.getAngle: 0.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line1.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Group0.pos {25.0, -25.0} px");
         strlstExpectedValues.append("Group0.getPos {75, 25} px");
         strlstExpectedValues.append("Group0.getRect.topLeft.x: 70 px");
@@ -3255,7 +3229,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line0.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line0.getLine.p2.y: 100.00 mm");
             strlstExpectedValues.append("Line0.getLength: 100.00 mm");
-            strlstExpectedValues.append("Line0.getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line0.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line1.pos {0.0, 0.0} px");
             strlstExpectedValues.append("Line1.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line1.getLine.p1.x: 0.00 mm");
@@ -3263,7 +3237,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line1.getLine.p2.x: 100.00 mm");
             strlstExpectedValues.append("Line1.getLine.p2.y: 50.00 mm");
             strlstExpectedValues.append("Line1.getLength: 100.00 mm");
-            strlstExpectedValues.append("Line1.getAngle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line1.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Group0.pos {25.0, -25.0} px");
             strlstExpectedValues.append("Group0.getPos {75.00, 25.00} mm");
             strlstExpectedValues.append("Group0.getRect.topLeft.x: 70.00 mm");
@@ -3296,7 +3270,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line0.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line0.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line0.getLength: 100.00 mm");
-            strlstExpectedValues.append("Line0.getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line0.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line1.pos {0.0, 0.0} px");
             strlstExpectedValues.append("Line1.getPos {50.00, 50.00} mm");
             strlstExpectedValues.append("Line1.getLine.p1.x: 0.00 mm");
@@ -3304,7 +3278,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
             strlstExpectedValues.append("Line1.getLine.p2.x: 100.00 mm");
             strlstExpectedValues.append("Line1.getLine.p2.y: 50.00 mm");
             strlstExpectedValues.append("Line1.getLength: 100.00 mm");
-            strlstExpectedValues.append("Line1.getAngle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line1.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Group0.pos {25.0, -25.0} px");
             strlstExpectedValues.append("Group0.getPos {75.00, 75.00} mm");
             strlstExpectedValues.append("Group0.getRect.topLeft.x: 70.00 mm");
@@ -3412,7 +3386,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
         strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 60 px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 75 px");
         strlstExpectedValues.append(strGraphObjName + ".getLength: 61 px");
-        strlstExpectedValues.append(strGraphObjName + ".getAngle: 305.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append(strGraphObjName + ".rotationAngle: 55.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -3422,7 +3396,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 60.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLength: 61.03 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getAngle: 305.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append(strGraphObjName + ".rotationAngle: 55.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append(strGraphObjName + ".getPos {42.50, 50.00} mm");
@@ -3431,7 +3405,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 60.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 25.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLength: 61.03 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getAngle: 305.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append(strGraphObjName + ".rotationAngle: 55.0 " + Math::c_strSymbolDegree);
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3474,7 +3448,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
         strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 75 px");
         strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 60 px");
         strlstExpectedValues.append(strGraphObjName + ".getLength: 21 px");
-        strlstExpectedValues.append(strGraphObjName + ".getAngle: 45.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append(strGraphObjName + ".rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -3484,7 +3458,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 60.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLength: 21.21 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append(strGraphObjName + ".rotationAngle: 315.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append(strGraphObjName + ".getPos {67.50, 32.50} mm");
@@ -3493,7 +3467,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.x: 75.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLine.p2.y: 40.00 mm");
             strlstExpectedValues.append(strGraphObjName + ".getLength: 21.21 mm");
-            strlstExpectedValues.append(strGraphObjName + ".getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append(strGraphObjName + ".rotationAngle: 315.0 " + Math::c_strSymbolDegree);
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3586,7 +3560,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         strlstExpectedValues.append("Line2.getLine.p2.x: 35 px");
         strlstExpectedValues.append("Line2.getLine.p2.y: 50 px");
         strlstExpectedValues.append("Line2.getLength: 61 px");
-        strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line2.rotationAngle: 55.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
         strlstExpectedValues.append("Line3.getPos {43, 43} px");
         strlstExpectedValues.append("Line3.getLine.p1.x: 35 px");
@@ -3594,7 +3568,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         strlstExpectedValues.append("Line3.getLine.p2.x: 50 px");
         strlstExpectedValues.append("Line3.getLine.p2.y: 35 px");
         strlstExpectedValues.append("Line3.getLength: 21 px");
-        strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -3612,7 +3586,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 50.00 mm");
             strlstExpectedValues.append("Line2.getLength: 61.03 mm");
-            strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line2.rotationAngle: 55.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
             strlstExpectedValues.append("Line3.getPos {42.50, 42.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
@@ -3620,7 +3594,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 35.00 mm");
             strlstExpectedValues.append("Line3.getLength: 21.21 mm");
-            strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append(strGraphObjName + ".getPos {50.00, 50.00} mm");
@@ -3637,7 +3611,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line2.getLength: 61.03 mm");
-            strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line2.rotationAngle: 55.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
             strlstExpectedValues.append("Line3.getPos {42.50, 7.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
@@ -3645,7 +3619,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 15.00 mm");
             strlstExpectedValues.append("Line3.getLength: 21.21 mm");
-            strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3692,7 +3666,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         strlstExpectedValues.append("Line4.getLine.p2.x: 10 px");
         strlstExpectedValues.append("Line4.getLine.p2.y: 0 px");
         strlstExpectedValues.append("Line4.getLength: 10 px");
-        strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line4.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
         strlstExpectedValues.append("Line5.getPos {10, 5} px");
         strlstExpectedValues.append("Line5.getLine.p1.x: 10 px");
@@ -3700,7 +3674,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         strlstExpectedValues.append("Line5.getLine.p2.x: 10 px");
         strlstExpectedValues.append("Line5.getLine.p2.y: 10 px");
         strlstExpectedValues.append("Line5.getLength: 10 px");
-        strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line5.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
         strlstExpectedValues.append("Line6.getPos {5, 10} px");
         strlstExpectedValues.append("Line6.getLine.p1.x: 10 px");
@@ -3708,7 +3682,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         strlstExpectedValues.append("Line6.getLine.p2.x: 0 px");
         strlstExpectedValues.append("Line6.getLine.p2.y: 10 px");
         strlstExpectedValues.append("Line6.getLength: 10 px");
-        strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line6.rotationAngle: 180.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
         strlstExpectedValues.append("Line7.getPos {0, 5} px");
         strlstExpectedValues.append("Line7.getLine.p1.x: 0 px");
@@ -3716,7 +3690,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         strlstExpectedValues.append("Line7.getLine.p2.x: 0 px");
         strlstExpectedValues.append("Line7.getLine.p2.y: 0 px");
         strlstExpectedValues.append("Line7.getLength: 10 px");
-        strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line7.rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -3734,7 +3708,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line4.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line4.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line4.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line4.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
             strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
             strlstExpectedValues.append("Line5.getLine.p1.x: 10.00 mm");
@@ -3742,7 +3716,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line5.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line5.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line5.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
             strlstExpectedValues.append("Line6.getPos {5.00, 10.00} mm");
             strlstExpectedValues.append("Line6.getLine.p1.x: 10.00 mm");
@@ -3750,7 +3724,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line6.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line6.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line6.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line6.rotationAngle: 180.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
             strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
             strlstExpectedValues.append("Line7.getLine.p1.x: 0.00 mm");
@@ -3758,7 +3732,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line7.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line7.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line7.rotationAngle: 270.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append(strGraphObjName + ".getPos {325.00, 325.00} mm");
@@ -3775,7 +3749,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line4.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line4.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line4.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line4.getAngle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line4.rotationAngle: 0.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line5.pos {5.0, 0.0} px");
             strlstExpectedValues.append("Line5.getPos {10.00, 5.00} mm");
             strlstExpectedValues.append("Line5.getLine.p1.x: 10.00 mm");
@@ -3783,7 +3757,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line5.getLine.p2.x: 10.00 mm");
             strlstExpectedValues.append("Line5.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line5.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line5.getAngle: 270.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line5.rotationAngle: 90.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line6.pos {0.0, 5.0} px");
             strlstExpectedValues.append("Line6.getPos {5.00, 0.00} mm");
             strlstExpectedValues.append("Line6.getLine.p1.x: 10.00 mm");
@@ -3791,7 +3765,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line6.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line6.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line6.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line6.getAngle: 180.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line6.rotationAngle: 180.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line7.pos {-5.0, 0.0} px");
             strlstExpectedValues.append("Line7.getPos {0.00, 5.00} mm");
             strlstExpectedValues.append("Line7.getLine.p1.x: 0.00 mm");
@@ -3799,7 +3773,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line7.getLine.p2.x: 0.00 mm");
             strlstExpectedValues.append("Line7.getLine.p2.y: 10.00 mm");
             strlstExpectedValues.append("Line7.getLength: 10.00 mm");
-            strlstExpectedValues.append("Line7.getAngle: 90.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line7.rotationAngle: 270.0 " + Math::c_strSymbolDegree);
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -3846,7 +3820,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         strlstExpectedValues.append("Line2.getLine.p2.x: 35 px");
         strlstExpectedValues.append("Line2.getLine.p2.y: 50 px");
         strlstExpectedValues.append("Line2.getLength: 61 px");
-        strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line2.rotationAngle: 55.0 " + Math::c_strSymbolDegree);
         strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
         strlstExpectedValues.append("Line3.getPos {43, 43} px");
         strlstExpectedValues.append("Line3.getLine.p1.x: 35 px");
@@ -3854,7 +3828,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         strlstExpectedValues.append("Line3.getLine.p2.x: 50 px");
         strlstExpectedValues.append("Line3.getLine.p2.y: 35 px");
         strlstExpectedValues.append("Line3.getLength: 21 px");
-        strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+        strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
@@ -3872,7 +3846,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 50.00 mm");
             strlstExpectedValues.append("Line2.getLength: 61.03 mm");
-            strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line2.rotationAngle: 55.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
             strlstExpectedValues.append("Line3.getPos {42.50, 42.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
@@ -3880,7 +3854,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 35.00 mm");
             strlstExpectedValues.append("Line3.getLength: 21.21 mm");
-            strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
         }
         else {
             strlstExpectedValues.append("Group1.getPos {300.00, 300.00} mm");
@@ -3897,7 +3871,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line2.getLine.p2.x: 35.00 mm");
             strlstExpectedValues.append("Line2.getLine.p2.y: 0.00 mm");
             strlstExpectedValues.append("Line2.getLength: 61.03 mm");
-            strlstExpectedValues.append("Line2.getAngle: 305.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line2.rotationAngle: 55.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("Line3.pos {17.5, 17.5} px");
             strlstExpectedValues.append("Line3.getPos {42.50, 7.50} mm");
             strlstExpectedValues.append("Line3.getLine.p1.x: 35.00 mm");
@@ -3905,7 +3879,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
             strlstExpectedValues.append("Line3.getLine.p2.x: 50.00 mm");
             strlstExpectedValues.append("Line3.getLine.p2.y: 15.00 mm");
             strlstExpectedValues.append("Line3.getLength: 21.21 mm");
-            strlstExpectedValues.append("Line3.getAngle: 45.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("Line3.rotationAngle: 315.0 " + Math::c_strSymbolDegree);
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -5870,8 +5844,8 @@ void CTest::doTestStepAddGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append("getLine.p2.y: " + physValLine.p2().y().toString());
         CPhysVal physValLength = pGraphObjLine->getLength();
         strlstResultValues.append("getLength: " + physValLength.toString());
-        CPhysVal physValAngle = pGraphObjLine->getAngle(Units.Angle.Degree);
-        strlstResultValues.append("getAngle: " + physValAngle.toString());
+        CPhysVal physValAngle = pGraphObjLine->rotationAngle(Units.Angle.Degree);
+        strlstResultValues.append("rotationAngle: " + physValAngle.toString());
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -5946,8 +5920,8 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
                 strlstResultValues.append(pGraphObjChild->name() + ".getLine.p2.y: " + physValLine.p2().y().toString());
                 CPhysVal physValLength = pGraphObjChildLine->getLength();
                 strlstResultValues.append(pGraphObjChild->name() + ".getLength: " + physValLength.toString());
-                CPhysVal physValAngle = pGraphObjChildLine->getAngle(Units.Angle.Degree);
-                strlstResultValues.append(pGraphObjChild->name() + ".getAngle: " + physValAngle.toString());
+                CPhysVal physValAngle = pGraphObjChildLine->rotationAngle(Units.Angle.Degree);
+                strlstResultValues.append(pGraphObjChild->name() + ".rotationAngle: " + physValAngle.toString());
             }
             else if (pGraphObjChild->isGroup()) {
                 CGraphObjGroup* pGraphObjChildGroup = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
@@ -6017,8 +5991,8 @@ void CTest::doTestStepModifyGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
         strlstResultValues.append(strGraphObjName + ".getLine.p2.y: " + physValLine.p2().y().toString());
         CPhysVal physValLength = pGraphObjLine->getLength();
         strlstResultValues.append(strGraphObjName + ".getLength: " + physValLength.toString());
-        CPhysVal physValAngle = pGraphObjLine->getAngle(Units.Angle.Degree);
-        strlstResultValues.append(strGraphObjName + ".getAngle: " + physValAngle.toString());
+        CPhysVal physValAngle = pGraphObjLine->rotationAngle(Units.Angle.Degree);
+        strlstResultValues.append(strGraphObjName + ".rotationAngle: " + physValAngle.toString());
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -6093,8 +6067,8 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
                     strlstResultValues.append(pGraphObjChild->name() + ".getLine.p2.y: " + physValLine.p2().y().toString());
                     CPhysVal physValLength = pGraphObjChildLine->getLength();
                     strlstResultValues.append(pGraphObjChild->name() + ".getLength: " + physValLength.toString());
-                    CPhysVal physValAngle = pGraphObjChildLine->getAngle(Units.Angle.Degree);
-                    strlstResultValues.append(pGraphObjChild->name() + ".getAngle: " + physValAngle.toString());
+                    CPhysVal physValAngle = pGraphObjChildLine->rotationAngle(Units.Angle.Degree);
+                    strlstResultValues.append(pGraphObjChild->name() + ".rotationAngle: " + physValAngle.toString());
                 }
                 else if (pGraphObjChild->isGroup()) {
                     CGraphObjGroup* pGraphObjChildGroup = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);

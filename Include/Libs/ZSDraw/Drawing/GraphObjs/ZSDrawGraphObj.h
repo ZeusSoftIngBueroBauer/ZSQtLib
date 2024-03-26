@@ -752,14 +752,12 @@ public: // overridables
     //virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
-public: // must overridables
     virtual void updateOriginalPhysValCoors();
-    //virtual QRectF getOriginalBoundingRectInParent() const;
-    //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding);
-    virtual void setGroupScale(double i_fXScale, double i_fYScale);
-    //virtual void setRotationAngleInDegree(double i_fRotAngle_deg);
-    //virtual double getRotationAngleInDegree();
-    //virtual double getRotationAngleInDegree(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed);
+public: // overridables
+    //virtual void setGroupScale(double i_fXScale, double i_fYScale);
+    virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
+    virtual ZS::PhysVal::CPhysVal rotationAngle() const;
+    virtual ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
     virtual void setEditMode(const CEnumEditMode& i_eMode);
     CEnumEditMode editMode() const;
@@ -972,17 +970,19 @@ protected: // instance members
     ///*!< If the graphical object is currently being resized this member defines how the object
     //     will be resized. */
     //CEnumEditResizeMode m_editResizeMode;
-    /*!< Defines the Z-Value which again defines the drawing order within the list
-         of graphics item of the drawing scene.
+    /*!< Defines the Z-Value which again defines the drawing order within the list of graphics item
+         of the drawing scene.
          Two values are stored. The original version is the ZValue which will be initially used
          and if resetStackingOrderValueToOriginalValue is called. The current version is the ZValue
          which is currently set at the graphics item. The current and original versions are mainly
          used to temporarily modify the ZValue to bring the object in front and back again. */
     QVector<double> m_arfZValues;
+    /*!< Rotation angle of this item. */
+    ZS::PhysVal::CPhysVal m_physValRotationAngle;
     /*!< Transformations as applied by modifying (scaling, rotating, shearing) the object directly. */
-    QTransform m_transform;
+    //QTransform m_transform;
     /*!< Transformations as applied by the parent group. */
-    QTransform m_transformByGroup;
+    //QTransform m_transformByGroup;
     ///*!< Current scene position of the object. To keep the relative position of selection points
     //     and labels to their "parent" objects up to date on the scene, the objects need to track
     //     their current scene position. If the objects are childs of groups and the groups are

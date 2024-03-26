@@ -287,8 +287,7 @@ CPhysVal CPhysValLine::length() const
 //------------------------------------------------------------------------------
 /*! @brief Returns the angle in degrees.
 
-    The angles are measured counter-clockwise from a point on the x-axis to the
-    right of the origin (x > 0).
+    The angles are measured clockwise around the z-Axis through point P1.
 
     If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
     correspondingly.
@@ -296,8 +295,10 @@ CPhysVal CPhysValLine::length() const
 CPhysVal CPhysValLine::angle(const CEnumYScaleAxisOrientation& i_yScaleAxisOrientation) const
 //------------------------------------------------------------------------------
 {
+    // QLineF::angle returns the angle counter-clockwise which is in contrast to
+    // the QGraphicsItem::rotationAngle. This will be corrected here.
     CPhysVal physValAngle(m_line.angle(), Units.Angle.Degree, 0.1);
-    if (i_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp) {
+    if (i_yScaleAxisOrientation != EYScaleAxisOrientation::BottomUp) {
         double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
         physValAngle.setVal(fAngle_degree);
     }
@@ -493,8 +494,7 @@ void CPhysValLine::setLength( const CPhysVal& i_physValLength )
     The center point and the length of the line remains unchanged.
     Points 1 and 2 are moved correspondingly.
 
-    The angles are measured counter-clockwise from a point on the x-axis to the
-    right of the origin (x > 0).
+    The angles are measured clockwise around the z-Axis through point P1.
 
     If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
     correspondingly.
@@ -505,9 +505,11 @@ void CPhysValLine::setLength( const CPhysVal& i_physValLength )
 void CPhysValLine::setAngle( const CPhysVal& i_physValAngle, const CEnumYScaleAxisOrientation& i_yScaleAxisOrientation )
 //------------------------------------------------------------------------------
 {
+    // QLineF::angle returns the angle counter-clockwise which is in contrast to
+    // the QGraphicsItem::rotationAngle. This will be corrected here.
     QPointF ptCenter = m_line.center();
     CPhysVal physValAngle = i_physValAngle;
-    if (i_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp) {
+    if (i_yScaleAxisOrientation != EYScaleAxisOrientation::BottomUp) {
         double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
         physValAngle.setVal(fAngle_degree);
     }
