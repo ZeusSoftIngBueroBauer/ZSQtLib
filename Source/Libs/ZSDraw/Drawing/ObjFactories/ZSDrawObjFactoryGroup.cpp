@@ -478,6 +478,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
             bGeometrySet = true;
         }
         pGraphObj->setDrawSettings(drawSettings);
+        pGraphObj->setGridSettings(gridSettings);
         pGraphObj->setStackingOrderValue(fZValue);
 
         // Labels can only be added if the graphical object got its final position, size and rotation angle

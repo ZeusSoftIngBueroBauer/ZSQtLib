@@ -3555,6 +3555,7 @@ void CGraphObjGroup::paintGridLabelsDivisionLines(QPainter* i_pPainter)
         /* strAddInfo   */ "" );
 
     i_pPainter->save();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QRectF rctBounding = getBoundingRect();
     QPen pen(m_gridSettings.linesColor());
     pen.setStyle(Qt::SolidLine);
@@ -3563,17 +3564,20 @@ void CGraphObjGroup::paintGridLabelsDivisionLines(QPainter* i_pPainter)
     if (m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main) > 0) {
         for (int idxLine = 0; idxLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
             int x = m_divLinesMetricsX.getDivLineInPix(EDivLineLayer::Main, idxLine);
-            x += rctBounding.topLeft().x();
-            i_pPainter->drawLine(x, rctBounding.top()-10, x, rctBounding.top());
-            i_pPainter->drawLine(x, rctBounding.bottom()+10, x, rctBounding.bottom());
+            x += rctBounding.left();
+            if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+                i_pPainter->drawLine(x, rctBounding.top()-5, x, rctBounding.top());
+            }
+            else {
+                i_pPainter->drawLine(x, rctBounding.bottom()+5, x, rctBounding.bottom());
+            }
         }
     }
     if (m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main) > 0) {
         for (int idxLine = 0; idxLine < m_divLinesMetricsY.getDivLinesCount(EDivLineLayer::Main); ++idxLine ) {
             int y = m_divLinesMetricsY.getDivLineInPix(EDivLineLayer::Main, idxLine);
-            y += rctBounding.topLeft().y();
-            i_pPainter->drawLine(rctBounding.left()-10, y, rctBounding.left(), y);
-            i_pPainter->drawLine(rctBounding.right()+10, y, rctBounding.right(), y);
+            y += rctBounding.top();
+            i_pPainter->drawLine(rctBounding.left()-5, y, rctBounding.left(), y);
         }
     }
     i_pPainter->restore();
@@ -3590,6 +3594,7 @@ void CGraphObjGroup::paintGridLabels(QPainter* i_pPainter)
         /* strAddInfo   */ "" );
 
     i_pPainter->save();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     QRectF rctBounding = getBoundingRect();
     QFont fnt = m_gridSettings.labelsFont();
     fnt.setBold(isTextStyleBold(m_gridSettings.labelsTextStyle()));
@@ -3600,14 +3605,19 @@ void CGraphObjGroup::paintGridLabels(QPainter* i_pPainter)
     QPen pen(m_gridSettings.labelsTextColor());
     i_pPainter->setPen(pen);
     i_pPainter->setFont(fnt);
-    todo: move like division lines
     if (m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main) > 0) {
         for (int idxDivLine = 0; idxDivLine < m_divLinesMetricsX.getDivLinesCount(EDivLineLayer::Main); idxDivLine++) {
             if (m_divLinesMetricsX.isDivLineLabelVisible(EDivLineLayer::Main, idxDivLine)) {
                 QString strDivLineLabel = m_divLinesMetricsX.getDivLineLabelText(EDivLineLayer::Main, idxDivLine);
                 QRect rectDivLineLabel = m_divLinesMetricsX.getDivLineLabelBoundingRect(EDivLineLayer::Main, idxDivLine);
-                rectDivLineLabel.setBottom(rctBounding.bottom());
-                rectDivLineLabel.setTop(rctBounding.bottom() - rectDivLineLabel.height());
+                rectDivLineLabel.setHeight(rectDivLineLabel.height()+2);
+                int x = rctBounding.left() + rectDivLineLabel.left();
+                int y = rctBounding.top() + rectDivLineLabel.top() - rectDivLineLabel.height() - 5;
+                if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+                    y = rctBounding.bottom() + rectDivLineLabel.top() + 5;
+                }
+                rectDivLineLabel.moveLeft(x);
+                rectDivLineLabel.moveTop(y);
                 i_pPainter->drawText(rectDivLineLabel, Qt::AlignVCenter|Qt::AlignHCenter, strDivLineLabel);
             }
         }
@@ -3617,8 +3627,11 @@ void CGraphObjGroup::paintGridLabels(QPainter* i_pPainter)
             if (m_divLinesMetricsY.isDivLineLabelVisible(EDivLineLayer::Main, idxDivLine)) {
                 QString strDivLineLabel = m_divLinesMetricsY.getDivLineLabelText(EDivLineLayer::Main, idxDivLine);
                 QRect rectDivLineLabel = m_divLinesMetricsY.getDivLineLabelBoundingRect(EDivLineLayer::Main, idxDivLine);
-                rectDivLineLabel.setLeft(rctBounding.left() - rectDivLineLabel.width());
-                rectDivLineLabel.setRight(rctBounding.left());
+                rectDivLineLabel.setHeight(rectDivLineLabel.height()+2);
+                int x = rctBounding.left() - rectDivLineLabel.left() - rectDivLineLabel.width() - 5;
+                int y = rectDivLineLabel.top() + rctBounding.top();
+                rectDivLineLabel.moveLeft(x);
+                rectDivLineLabel.moveTop(y);
                 i_pPainter->drawText(rectDivLineLabel, Qt::AlignVCenter|Qt::AlignRight, strDivLineLabel);
             }
         }

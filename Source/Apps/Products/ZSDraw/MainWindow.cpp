@@ -4425,19 +4425,21 @@ void CMainWindow::onDrawingViewContentAreaChanged()
         /* strMethod    */ "onDrawingViewContentAreaChanged",
         /* strAddInfo   */ "" );
 
-    CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
-    QRect rectScene = pDrawingScene->sceneRect().toRect();
+    if (m_pWdgtCentral != nullptr) {
+        CDrawingScene* pDrawingScene = m_pWdgtCentral->drawingScene();
+        QRect rectScene = pDrawingScene->sceneRect().toRect();
 
-    if (m_pLblStatusBarDrawingSceneRect != nullptr) {
-        QString strSizeInfo = "SceneRect {" + qSize2Str(rectScene.size()) + "} px";
-        m_pLblStatusBarDrawingSceneRect->setText(strSizeInfo);
-    }
-    if (m_pLblStatusBarDrawingSize != nullptr) {
-        const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
-        QString strSizeInfo =
-            " Drawing {" + drawingSize.metricImageSize().toString() + "} " +
-            drawingSize.metricUnit().symbol();
-        m_pLblStatusBarDrawingSize->setText(strSizeInfo);
+        if (m_pLblStatusBarDrawingSceneRect != nullptr) {
+            QString strSizeInfo = "SceneRect {" + qSize2Str(rectScene.size()) + "} px";
+            m_pLblStatusBarDrawingSceneRect->setText(strSizeInfo);
+        }
+        if (m_pLblStatusBarDrawingSize != nullptr) {
+            const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
+            QString strSizeInfo =
+                " Drawing {" + drawingSize.metricImageSize().toString() + "} " +
+                drawingSize.metricUnit().symbol();
+            m_pLblStatusBarDrawingSize->setText(strSizeInfo);
+        }
     }
 }
 
