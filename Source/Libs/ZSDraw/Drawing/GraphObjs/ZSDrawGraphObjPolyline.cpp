@@ -578,7 +578,7 @@ public: // overridables of base class CGraphObj
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
 //        if( bIsHit && o_pHitInfo != nullptr )
 //        {
-//            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
+//            o_pHitInfo->setCursor( Math::degree2Rad(m_fRotAngleCurr_deg) );
 //        }
 //#endif
 //
@@ -1524,7 +1524,7 @@ void CGraphObjPolyline::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
 //                double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
 //
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//                m_fRotAngleCurr_deg = Math::rad2Deg(fRotAngle_rad);
+//                m_fRotAngleCurr_deg = Math::rad2Degree(fRotAngle_rad);
 //
 //                switch( m_selPtSelectedBoundingRect.enumerator() )
 //                {
@@ -1686,7 +1686,7 @@ void CGraphObjPolyline::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //            QPolygonF plgScene         = mapToScene(m_rctCurr);
 //            QRectF    rctBoundingScene = plgScene.boundingRect();
 //            QPointF   ptRotOriginScene = rctBoundingScene.center();
-//            double    fAngle_rad       = Math::deg2Rad(m_fRotAngleCurr_deg);
+//            double    fAngle_rad       = Math::degree2Rad(m_fRotAngleCurr_deg);
 //
 //            ptScenePosNew = rotatePoint( ptRotOriginScene, ptScenePosOld, -fAngle_rad );
 //
@@ -1777,7 +1777,7 @@ void CGraphObjPolyline::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //            QRectF    rctBoundingScene = polygonScene.boundingRect();
 //            QPointF   ptRotOriginScene = rctBoundingScene.center();
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            double    fAngle_rad       = Math::deg2Rad(m_fRotAngleCurr_deg);
+//            double    fAngle_rad       = Math::degree2Rad(m_fRotAngleCurr_deg);
 //#endif
 //
 //            QSizeF    sizMoveOffs( rctItem.left(), rctItem.top() );

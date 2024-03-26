@@ -2111,7 +2111,7 @@ public: // overridables of base class CGraphObj
 //
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
 //        if (bIsHit && o_pHitInfo != nullptr) {
-//            o_pHitInfo->setCursor(Math::deg2Rad(m_fRotAngleCurr_deg));
+//            o_pHitInfo->setCursor(Math::degree2Rad(m_fRotAngleCurr_deg));
 //        }
 //#endif
 //    }
@@ -2706,11 +2706,11 @@ void CGraphObjGroup::paint(
         outline.lineTo(rctBounding.bottomLeft());
         outline.lineTo(rctBounding.topLeft());
         if (isSelected()) {
-            pn.setColor(Qt::magenta);
+            pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
         else {
-            pn.setColor(Qt::cyan);
+            pn.setColor(s_highlightColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
         pn.setStyle(Qt::SolidLine);
@@ -3004,7 +3004,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     //        double fRotAngle_rad = getAngleRad( m_ptRotOriginOnMousePressEvent, ptMouseScenePos );
 
     //        #ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-    //        m_fRotAngleCurr_deg = Math::rad2Deg(fRotAngle_rad);
+    //        m_fRotAngleCurr_deg = Math::rad2Degree(fRotAngle_rad);
 
     //        switch( m_selPtSelectedBoundingRect.enumerator() )
     //        {
@@ -3084,7 +3084,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     //        QPolygonF plgSceneNew         = mapToScene(m_rctCurr);
     //        QRectF    rctBoundingSceneNew = plgSceneNew.boundingRect();
     //        QPointF   ptRotOriginSceneNew = rctBoundingSceneNew.center();
-    //        double    fAngle_rad          = Math::deg2Rad(m_fRotAngleCurr_deg);
+    //        double    fAngle_rad          = Math::degree2Rad(m_fRotAngleCurr_deg);
     //        //QPointF   ptLTScenePosOld   = mapToScene( QPointF(0.0,0.0) );
     //        QPointF   ptLTScenePosNew     = mapToScene( m_rctCurr.topLeft() );
     //        QPointF   ptItemScenePosNew   = rotatePoint( ptRotOriginSceneNew, ptLTScenePosNew, -fAngle_rad );

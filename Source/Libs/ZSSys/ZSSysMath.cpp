@@ -91,6 +91,34 @@ double Math::abs( double i_fVal )
 }
 
 //------------------------------------------------------------------------------
+double Math::normalizeAngleInRad( double i_fAngle_rad )
+//------------------------------------------------------------------------------
+{
+    double fAbsAngle_rad = fabs(i_fAngle_rad);
+    if (fAbsAngle_rad >= c_f2PI) {
+        int iFullCircles = static_cast<int>(fAbsAngle_rad / c_f2PI);
+        if (iFullCircles > 0) {
+            fAbsAngle_rad -= (static_cast<double>(iFullCircles) * c_f2PI);
+        }
+    }
+    return fAbsAngle_rad;
+}
+
+//------------------------------------------------------------------------------
+double Math::normalizeAngleInDegree( double i_fAngle_degree )
+//------------------------------------------------------------------------------
+{
+    double fAbsAngle_degree = fabs(i_fAngle_degree);
+    if (fAbsAngle_degree >= 360.0) {
+        int iFullCircles = static_cast<int>(fAbsAngle_degree) / 360;
+        if (iFullCircles > 0) {
+            fAbsAngle_degree -= (static_cast<double>(iFullCircles) * 360.0);
+        }
+    }
+    return fAbsAngle_degree;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Converts the angle given in rads to an angle in degrees.
 
     When the normalize flag is set to true the result is adjusted to start
@@ -107,49 +135,37 @@ double Math::abs( double i_fVal )
     @return Value converted into degrees.
 
     @Examples:
-        rad2Deg(0.0, true) = 0.0
-        rad2Deg(0.0, false) = 0.0
-        rad2Deg(PI/4, true) = 45.0
-        rad2Deg(PI/4, false) = 45.0
-        rad2Deg(-PI/4, true) = 315.0
-        rad2Deg(-PI/4, false) = -45.0
-        rad2Deg(5PI/4, true) = 225.0
-        rad2Deg(-5PI/4, false) = -135.0
-        rad2Deg(7PI/4, true) = 315.0
-        rad2Deg(-7PI/4, true) = 45.0
-        rad2Deg(2PI, true) = 0.0
-        rad2Deg(2PI, false) = 360.0
-        rad2Deg(-2PI, true) = 0.0
-        rad2Deg(-2PI, false) = -360.0
-        rad2Deg(11PI/4, true) = 135.0
-        rad2Deg(11PI/4, false) = 495.0
-        rad2Deg(-11PI/4, true) = 225.0
-        rad2Deg(-11PI/4, false) = -495.0
+        rad2Degree(0.0, true) = 0.0
+        rad2Degree(0.0, false) = 0.0
+        rad2Degree(PI/4, true) = 45.0
+        rad2Degree(PI/4, false) = 45.0
+        rad2Degree(-PI/4, true) = 315.0
+        rad2Degree(-PI/4, false) = -45.0
+        rad2Degree(5PI/4, true) = 225.0
+        rad2Degree(-5PI/4, false) = -135.0
+        rad2Degree(7PI/4, true) = 315.0
+        rad2Degree(-7PI/4, true) = 45.0
+        rad2Degree(2PI, true) = 0.0
+        rad2Degree(2PI, false) = 360.0
+        rad2Degree(-2PI, true) = 0.0
+        rad2Degree(-2PI, false) = -360.0
+        rad2Degree(11PI/4, true) = 135.0
+        rad2Degree(11PI/4, false) = 495.0
+        rad2Degree(-11PI/4, true) = 225.0
+        rad2Degree(-11PI/4, false) = -495.0
 */
-double Math::rad2Deg( double i_fVal_rad, bool i_bNormalize )
+double Math::rad2Degree( double i_fAngle_rad, bool i_bNormalize )
 //------------------------------------------------------------------------------
 {
-    double fVal_deg = 360.0*i_fVal_rad/Math::c_f2PI;
-
-    if (i_bNormalize)
-    {
-        double fAbsVal_deg = fabs(fVal_deg);
-        if (fAbsVal_deg >= 360.0)
-        {
-            int iFullCircles = static_cast<int>(fAbsVal_deg) / 360;
-            if (iFullCircles > 0)
-            {
-                fAbsVal_deg -= (static_cast<double>(iFullCircles) * 360.0);
-            }
-        }
-        fVal_deg = fAbsVal_deg;
-
-        if (i_fVal_rad < 0.0 && fAbsVal_deg > 0.0)
-        {
-            fVal_deg = 360.0 - fAbsVal_deg;
+    double fAngle_degree = 360.0 * i_fAngle_rad / Math::c_f2PI;
+    if (i_bNormalize) {
+        double fAbsAngle_degree = normalizeAngleInDegree(fAngle_degree);
+        fAngle_degree = fAbsAngle_degree;
+        if (i_fAngle_rad < 0.0 && fAbsAngle_degree > 0.0) {
+            fAngle_degree = 360.0 - fAbsAngle_degree;
         }
     }
-    return fVal_deg;
+    return fAngle_degree;
 }
 
 //------------------------------------------------------------------------------
@@ -169,49 +185,37 @@ double Math::rad2Deg( double i_fVal_rad, bool i_bNormalize )
     @return Value converted into rad.
 
     @Examples:
-        deg2Rad(0.0, true) = 0.0
-        deg2Rad(0.0, false) = 0.0
-        deg2Rad(45.0, true) = PI/4
-        deg2Rad(45.0, false) = PI/4
-        deg2Rad(-45.0, true) = 7PI/4
-        deg2Rad(-45.0, false) = -PI/4
-        deg2Rad(225.0, true) = 5PI/4
-        deg2Rad(-225.0, false) = -5PI/4
-        deg2Rad(315.0, true) = 7PI/4
-        deg2Rad(-315.0, true) = PI/4
-        deg2Rad(360.0, true) = 0.0
-        deg2Rad(360.0, false) = 2PI
-        deg2Rad(-360.0, true) = 0.0
-        deg2Rad(-360.0, false) = -2PI
-        deg2Rad(495.0, true) = 3PI/4
-        deg2Rad(495.0, false) = 11PI/4
-        deg2Rad(-495.0, true) = 3PI/4
-        deg2Rad(-495.0, false) = -11PI/4
+        degree2Rad(0.0, true) = 0.0
+        degree2Rad(0.0, false) = 0.0
+        degree2Rad(45.0, true) = PI/4
+        degree2Rad(45.0, false) = PI/4
+        degree2Rad(-45.0, true) = 7PI/4
+        degree2Rad(-45.0, false) = -PI/4
+        degree2Rad(225.0, true) = 5PI/4
+        degree2Rad(-225.0, false) = -5PI/4
+        degree2Rad(315.0, true) = 7PI/4
+        degree2Rad(-315.0, true) = PI/4
+        degree2Rad(360.0, true) = 0.0
+        degree2Rad(360.0, false) = 2PI
+        degree2Rad(-360.0, true) = 0.0
+        degree2Rad(-360.0, false) = -2PI
+        degree2Rad(495.0, true) = 3PI/4
+        degree2Rad(495.0, false) = 11PI/4
+        degree2Rad(-495.0, true) = 3PI/4
+        degree2Rad(-495.0, false) = -11PI/4
 */
-double Math::deg2Rad( double i_fVal_deg, bool i_bNormalize )
+double Math::degree2Rad( double i_fAngle_degree, bool i_bNormalize )
 //------------------------------------------------------------------------------
 {
-    double fVal_rad = Math::c_f2PI*i_fVal_deg/360.0;
-
-    if (i_bNormalize)
-    {
-        double fAbsVal_rad = fabs(fVal_rad);
-        if (fAbsVal_rad >= c_f2PI)
-        {
-            int iFullCircles = static_cast<int>(fAbsVal_rad / c_f2PI);
-            if (iFullCircles > 0)
-            {
-                fAbsVal_rad -= (static_cast<double>(iFullCircles) * c_f2PI);
-            }
-        }
-        fVal_rad = fAbsVal_rad;
-
-        if (i_fVal_deg < 0.0 && fAbsVal_rad > 0.0)
-        {
-            fVal_rad = c_f2PI - fAbsVal_rad;
+    double fAngle_rad = Math::c_f2PI * i_fAngle_degree / 360.0;
+    if (i_bNormalize) {
+        double fAbsAngle_rad = normalizeAngleInRad(fAngle_rad);
+        fAngle_rad = fAbsAngle_rad;
+        if (i_fAngle_degree < 0.0 && fAbsAngle_rad > 0.0) {
+            fAngle_rad = c_f2PI - fAbsAngle_rad;
         }
     }
-    return fVal_rad;
+    return fAngle_rad;
 }
 
 //------------------------------------------------------------------------------

@@ -902,6 +902,9 @@ public: // overridable auxiliary instance methods (method tracing)
         ZS::System::CMethodTracer& i_mthTracer,
         ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,
         ZS::System::ELogDetailLevel i_detailLevel = ZS::System::ELogDetailLevel::Debug) const;
+protected: // class members
+    static QColor s_selectionColor;
+    static QColor s_highlightColor;
 protected: // instance members
     /*!< Flag to indicate that the destructor has been called. */
     bool m_bDtorInProgress;

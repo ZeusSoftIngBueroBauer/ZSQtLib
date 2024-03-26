@@ -754,6 +754,13 @@ public: // type definitions and constants
 const QString CGraphObj::c_strLabelName = "Name";
 
 /*==============================================================================
+protected: // class members
+==============================================================================*/
+
+QColor CGraphObj::s_selectionColor = QColor::fromHsv(300, 30, 200);
+QColor CGraphObj::s_highlightColor = QColor::fromHsv(240, 10, 235);
+
+/*==============================================================================
 protected: // ctor
 ==============================================================================*/
 
@@ -4856,7 +4863,7 @@ bool CGraphObj::isHit() const
 //        }
 //        if (bIsHit && o_pHitInfo != nullptr) {
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
-//            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
+//            o_pHitInfo->setCursor( Math::degree2Rad(m_fRotAngleCurr_deg) );
 //#endif
 //        }
 //    }

@@ -108,8 +108,10 @@ const QString c_strSymbolMicro(c_chSymbolMicro);
 double ZSSYSDLL_API sqr( double i_fVal );
 double ZSSYSDLL_API sqrt( double i_fVal );
 double ZSSYSDLL_API abs( double i_fVal );
-double ZSSYSDLL_API rad2Deg( double i_fVal_rad, bool i_bNormalize = true );
-double ZSSYSDLL_API deg2Rad( double i_fVal_deg, bool i_bNormalize = true );
+double ZSSYSDLL_API normalizeAngleInRad( double i_fAngle_rad );
+double ZSSYSDLL_API normalizeAngleInDegree( double i_fAngle_degree );
+double ZSSYSDLL_API rad2Degree( double i_fAngle_rad, bool i_bNormalize = true );
+double ZSSYSDLL_API degree2Rad( double i_fAngle_degree, bool i_bNormalize = true );
 double ZSSYSDLL_API round2Nearest( double i_fVal, int i_iTrailingDigits = -1 ); // -1 means c_iCalculationAccuracyTrailingDigits
 double ZSSYSDLL_API round2Lower( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
 double ZSSYSDLL_API round2Upper( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits

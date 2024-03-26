@@ -73,7 +73,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Rad2Deg",
-        /* strOperation    */ "rad2Deg",
+        /* strOperation    */ "rad2Degree",
         /* pGrpParent      */ pGrpAngles,
         /* szDoTestStepFct */ SLOT(doTestStepConvertAngles(ZS::Test::CTestStep*)) );
     /*  1 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", true}, {"Angle_deg", 0.0}});
@@ -130,7 +130,7 @@ CTest::CTest() :
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Deg2Rad",
-        /* strOperation    */ "deg2Rad",
+        /* strOperation    */ "degree2Rad",
         /* pGrpParent      */ pGrpAngles,
         /* szDoTestStepFct */ SLOT(doTestStepConvertAngles(ZS::Test::CTestStep*)) );
     /*  1 */ pTestStep->addDataRow({{"Val", 0.0}, {"Normalize", true}, {"Angle_rad", 0.0}});
@@ -1169,14 +1169,14 @@ void CTest::doTestStepConvertAngles( ZS::Test::CTestStep* i_pTestStep )
             }
         }
 
-        if( strOperation.compare("rad2Deg") == 0)
+        if( strOperation.compare("rad2Degree") == 0)
         {
-            fResult = ZS::System::Math::rad2Deg(fVal, bNormalize);
+            fResult = ZS::System::Math::rad2Degree(fVal, bNormalize);
             mapResultValues["Angle_deg"] = QString::number(fResult);
         }
-        else if( strOperation.compare("deg2Rad") == 0)
+        else if( strOperation.compare("degree2Rad") == 0)
         {
-            fResult = ZS::System::Math::deg2Rad(fVal, bNormalize);
+            fResult = ZS::System::Math::degree2Rad(fVal, bNormalize);
             mapResultValues["Angle_rad"] = QString::number(fResult);
         }
 

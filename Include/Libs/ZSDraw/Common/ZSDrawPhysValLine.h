@@ -80,7 +80,7 @@ public: // instance methods
     ZS::PhysVal::CPhysVal dx() const;
     ZS::PhysVal::CPhysVal dy() const;
     ZS::PhysVal::CPhysVal length() const;
-    ZS::PhysVal::CPhysVal angle() const;
+    ZS::PhysVal::CPhysVal angle(const ZS::System::CEnumYScaleAxisOrientation& i_yScaleScaleOrientation) const;
     ZS::PhysVal::CPhysVal angleTo(const CPhysValLine& i_physValLineOther) const;
     CPhysValPoint center() const;
     double resolution() const;
@@ -100,7 +100,7 @@ public: // instance methods
     void setDY(const ZS::PhysVal::CPhysVal& i_physValDY);
     void setLength(double i_fLength);
     void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
-    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
+    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle, const ZS::System::CEnumYScaleAxisOrientation& i_yScaleAxisOrientation);
     void setCenter(const QPointF& i_pCenter);
     void setCenter(const CPhysValPoint& i_physValPointCenter);
     void setResolution(double i_fRes);

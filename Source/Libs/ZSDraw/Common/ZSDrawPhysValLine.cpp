@@ -28,6 +28,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSSys/ZSSysMath.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -284,10 +285,23 @@ CPhysVal CPhysValLine::length() const
 }
 
 //------------------------------------------------------------------------------
-CPhysVal CPhysValLine::angle() const
+/*! @brief Returns the angle in degrees.
+
+    The angles are measured counter-clockwise from a point on the x-axis to the
+    right of the origin (x > 0).
+
+    If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
+    correspondingly.
+*/
+CPhysVal CPhysValLine::angle(const CEnumYScaleAxisOrientation& i_yScaleAxisOrientation) const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.angle(), Units.Angle.Degree, 0.1);
+    CPhysVal physValAngle(m_line.angle(), Units.Angle.Degree, 0.1);
+    if (i_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp) {
+        double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
+        physValAngle.setVal(fAngle_degree);
+    }
+    return physValAngle;
 }
 
 //------------------------------------------------------------------------------
@@ -474,10 +488,38 @@ void CPhysValLine::setLength( const CPhysVal& i_physValLength )
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
+/*! @brief Sets the angle of the line in the given unit.
+
+    The center point and the length of the line remains unchanged.
+    Points 1 and 2 are moved correspondingly.
+
+    The angles are measured counter-clockwise from a point on the x-axis to the
+    right of the origin (x > 0).
+
+    If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
+    correspondingly.
+
+    @param [in] i_physValAngle
+        Angle to be set.
+*/
+void CPhysValLine::setAngle( const CPhysVal& i_physValAngle, const CEnumYScaleAxisOrientation& i_yScaleAxisOrientation )
 //------------------------------------------------------------------------------
 {
-    m_line.setAngle(i_physValAngle.getVal(Units.Angle.Degree));
+    QPointF ptCenter = m_line.center();
+    CPhysVal physValAngle = i_physValAngle;
+    if (i_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp) {
+        double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
+        physValAngle.setVal(fAngle_degree);
+    }
+    double fAngle_rad = physValAngle.getVal(Units.Angle.Rad);
+    double fRadius = m_line.length() / 2.0;
+    double dx = fRadius * cos(fAngle_rad);
+    double dy = fRadius * sin(fAngle_rad);
+    m_line.setP1(ptCenter + QPointF(-dx, dy));
+    m_line.setP2(ptCenter + QPointF(dx, -dy));
+    //if (m_line.center() != ptCenter) {
+    //    throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    //}
 }
 
 //------------------------------------------------------------------------------

@@ -362,6 +362,8 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
+    QPointF ptPosPrev = pos();
+
     // Depending on the Y scale orientation of the drawing scene the line coordinates
     // have been passed either relative to the top left or bottom right corner of the
     // parent item's bounding rectangle.
@@ -415,7 +417,14 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
             // selection points and labels. To position the selection points and labels correctly
             // the local coordinate system must be up-to-date.
             // Also note that itemChange must not overwrite the current line value (refCountGuard).
-            QGraphicsItem_setPos(ptPos);
+            // If the position is not changed, itemChange is not called with PositionHasChanged and
+            // the position of the arrow heads will not be updated. We got to do this here "manually".
+            if (ptPos != ptPosPrev) {
+                QGraphicsItem_setPos(ptPos);
+            }
+            else {
+                updateLineEndArrowHeadPolygons();
+            }
         }
         emit_geometryChanged();
     }
@@ -934,14 +943,11 @@ CPhysVal CGraphObjLine::getLength(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 /*! @brief Sets the angle of the line in degrees.
 
-    Point 1 remains unchanged. Point 2 is updated correspondingly.
-    The length remains the same.
+    The center point and the length of the line remains unchanged.
+    Points 1 and 2 are moved correspondingly.
 
-    If the YScale Axis orientation is from top to bottom the angles are measured
-    counter-clockwise from a point on the x-axis to the right of the origin (x > 0).
-
-    If the YScale Axis orientation is from bottom to top the angles are measured
-    clockwise from a point on the x-axis to the right of the origin (x > 0).
+    The angles are measured counter-clockwise from a point on the x-axis to the
+    right of the origin (x > 0).
 
     @param [in] i_fAngle_degree
         Angle to be set.
@@ -966,16 +972,13 @@ void CGraphObjLine::setAngle(double i_fAngle_degree)
 //------------------------------------------------------------------------------
 /*! @brief Sets the angle of the line in the given unit.
 
-    Point 1 remains unchanged. Point 2 is updated correspondingly.
-    The length remains the same.
+    The center point and the length of the line remains unchanged.
+    Points 1 and 2 are moved correspondingly.
 
-    If the YScale Axis orientation is from top to bottom the angles are measured
-    counter-clockwise from a point on the x-axis to the right of the origin (x > 0).
+    The angles are measured counter-clockwise from a point on the x-axis to the
+    right of the origin (x > 0).
 
-    If the YScale Axis orientation is from bottom to top the angles are measured
-    clockwise from a point on the x-axis to the right of the origin (x > 0).
-
-    @param [in] i_physValLength
+    @param [in] i_physValAngle
         Angle to be set.
 */
 void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
@@ -993,7 +996,7 @@ void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValLine physValLine = getLine();
-    physValLine.setAngle(i_physValAngle);
+    physValLine.setAngle(i_physValAngle, m_pDrawingScene->drawingSize().yScaleAxisOrientation());
     setLine(physValLine);
 }
 
@@ -1014,7 +1017,7 @@ void CGraphObjLine::setAngle(const CPhysVal& i_physValAngle)
 double CGraphObjLine::getAngleInDegrees() const
 //------------------------------------------------------------------------------
 {
-    return getLine().angle().getVal(Units.Angle.Degree);
+    return getAngle(Units.Angle.Degree).getVal();
 }
 
 //------------------------------------------------------------------------------
@@ -1037,7 +1040,8 @@ double CGraphObjLine::getAngleInDegrees() const
 CPhysVal CGraphObjLine::getAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(getLine().angle().getVal(i_unit), i_unit, 0.1);
+    CPhysValLine physValLine = getLine();
+    return physValLine.angle(m_pDrawingScene->drawingSize().yScaleAxisOrientation());
 }
 
 /*==============================================================================
@@ -1051,8 +1055,7 @@ public: // must overridables of base class CGraphObj
 CPhysValPoint CGraphObjLine::getPos() const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    return getLine(drawingSize.unit()).center();
+    return getLine(m_pDrawingScene->drawingSize().unit()).center();
 }
 
 //------------------------------------------------------------------------------
@@ -1087,7 +1090,6 @@ QRectF CGraphObjLine::getBoundingRect() const
     // Line points in local coordinates.
     QLineF lineF = line();
     QRectF rctBounding(lineF.p1(), lineF.p2());
-    //QRectF rctBounding = ZS::Draw::boundingRect(lineF);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -1924,11 +1926,11 @@ void CGraphObjLine::paint(
         outline.moveTo(lineF.p1());
         outline.lineTo(lineF.p2());
         if (isSelected()) {
-            pn.setColor(Qt::magenta);
+            pn.setColor(s_selectionColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
         else {
-            pn.setColor(Qt::cyan);
+            pn.setColor(s_highlightColor);
             pn.setWidth(3 + m_drawSettings.getPenWidth());
         }
         pn.setStyle(Qt::SolidLine);
@@ -1942,9 +1944,10 @@ void CGraphObjLine::paint(
 
     i_pPainter->setPen(pn);
 
-    QGraphicsLineItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
+    // This will draw the bounding rectangle with dashed lines. I don't want this.
+    //QGraphicsLineItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
-    //i_pPainter->drawLine(lineF);
+    i_pPainter->drawLine(lineF);
 
     ////#pragma message(__TODO__"To be removed")
     ////i_pPainter->setPen(Qt::red);
@@ -1972,6 +1975,12 @@ void CGraphObjLine::paint(
                 i_pPainter->drawPolyline(m_plgP1ArrowHead);
             }
             else {
+                if (m_drawSettings.getArrowHeadFillStyle(ELinePoint::Start) == EArrowHeadFillStyle::NoFill) {
+                    i_pPainter->setBrush(Qt::white);
+                }
+                else {
+                    i_pPainter->setBrush(Qt::black);
+                }
                 i_pPainter->drawPolygon(m_plgP1ArrowHead);
             }
         }
@@ -1982,6 +1991,12 @@ void CGraphObjLine::paint(
                 i_pPainter->drawPolyline(m_plgP2ArrowHead);
             }
             else {
+                if (m_drawSettings.getArrowHeadFillStyle(ELinePoint::End) == EArrowHeadFillStyle::NoFill) {
+                    i_pPainter->setBrush(Qt::white);
+                }
+                else {
+                    i_pPainter->setBrush(Qt::black);
+                }
                 i_pPainter->drawPolygon(m_plgP2ArrowHead);
             }
         }
@@ -2329,9 +2344,9 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             //    }
             //}
         }
-        QPolygonF plg;
-        plg.append(lineF.p1());
-        plg.append(lineF.p2());
+        //QPolygonF plg;
+        //plg.append(lineF.p1());
+        //plg.append(lineF.p2());
         updateLineEndArrowHeadPolygons();
         //updateInternalScenePos();
         tracePositionInfo(mthTracer, EMethodDir::Leave);

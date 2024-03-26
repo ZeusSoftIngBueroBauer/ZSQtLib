@@ -304,7 +304,7 @@ public: // overridables of base class CGraphObj
 //#ifdef ZSDRAW_GRAPHOBJ_USE_OBSOLETE_INSTANCE_MEMBERS
 //        if( bIsHit && o_pHitInfo != nullptr )
 //        {
-//            o_pHitInfo->setCursor( Math::deg2Rad(m_fRotAngleCurr_deg) );
+//            o_pHitInfo->setCursor( Math::degree2Rad(m_fRotAngleCurr_deg) );
 //        }
 //#endif
 //

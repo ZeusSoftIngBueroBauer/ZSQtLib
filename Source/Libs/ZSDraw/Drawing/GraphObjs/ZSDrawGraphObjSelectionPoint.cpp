@@ -611,7 +611,7 @@ QCursor CGraphObjSelectionPoint::getProposedCursor(const QPointF& i_ptScenePos) 
 //            if (m_selPt.m_pGraphObj != nullptr) {
 //                fRotAngleCurr_deg = m_selPt.m_pGraphObj->getRotationAngleInDegree();
 //            }
-//            o_pHitInfo->setCursor( Math::deg2Rad(fRotAngleCurr_deg) );
+//            o_pHitInfo->setCursor( Math::degree2Rad(fRotAngleCurr_deg) );
 //#endif
 //        }
 //    }
