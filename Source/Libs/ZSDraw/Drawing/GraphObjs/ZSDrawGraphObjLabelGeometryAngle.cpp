@@ -285,7 +285,7 @@ void CGraphObjLabelGeometryAngle::paint(
             color.setAlpha(192);
             pn.setColor(color);
             i_pPainter->setPen(pn);
-            i_pPainter->drawPie(m_rectAnchorLine2CircleSegment, 0.0, 16.0 * m_fAnchorLine2Angle_degrees);
+            i_pPainter->drawPie(m_rectAnchorLine2CircleSegment, 0.0, -(16.0 * m_fAnchorLine2Angle_degrees));
             QBrush brsh(pn.color());
             i_pPainter->setBrush(brsh);
             i_pPainter->drawPolygon(m_plgP2ArrowHead);
@@ -311,6 +311,8 @@ void CGraphObjLabelGeometryAngle::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+
     QPointF pt1SelScenePosParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
         pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
@@ -327,8 +329,9 @@ void CGraphObjLabelGeometryAngle::updatePosition()
         pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
 
-    QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);
-    QString strText = CPhysVal(lineSelPtSceneCoors.angle(), Units.Angle.Degree, 0.1).toString();
+    CPhysValLine physValLineSelPtSceneCoors(
+        pt1SelScenePosParent, pt2SelScenePosParent, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    QString strText = physValLineSelPtSceneCoors.angle(drawingSize.yScaleAxisOrientation()).toString();
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {
@@ -343,7 +346,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     // Get anchor line in scene coordinates.
     // The start point of the anchor line should be the center point of the line
     // for which the angle has to be indicated.
-    QLineF lineFPolarBase(lineSelPtSceneCoors.center(), lineSelPtSceneCoors.p2());
+    QLineF lineFPolarBase(physValLineSelPtSceneCoors.center().toQPointF(), physValLineSelPtSceneCoors.p2().toQPointF());
     QLineF anchorLine = ZS::Draw::getLineFromPolar(
         m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px,
         m_labelDscr.m_polarCoorsToLinkedSelPt.m_fAngle_degrees,
@@ -378,7 +381,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
                         |
                         |  Label
                         |  /
-                        | / Angle (to Label, not angle value to be indicated)
+                        | / Angle (to Label, !not angle value to be indicated!)
                         x--------
                         |
                         |
@@ -449,7 +452,7 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
     or to one of the polygon shape points of the linked graphical object.
 
     For the Angle label three anchor lines are drawn:
-    
+
     - An anchor line to indicate the horiuontal 0° degree line.
     - A line from the center point of the line between the two selection points the label
       is linked to and in the angle to be indicated.
@@ -460,35 +463,35 @@ void CGraphObjLabelGeometryAngle::updatePolarCoorsToLinkedSelPt()
 
     Example for a vertical line:
 
-                        P2 (SelPt2)
-                        +
-                        |
-                Anchor  |<--    AnchorLine2 (circle segment)
-                Line1   |  90\°
-                (end of |     |
-                circle  x----------- AnchorLine0 (0° line)
-                segment)|
-                        |
-                        |
-                        |
-                        +
                         P1 (SelPt1)
+                        +
+                        |
+                        |
+                        |
+                        |
+                        x----------- AnchorLine0 (0° line)
+               Anchor   | 90° |
+               Line1    |    /  AnchorLine2 (circle segment)
+               (end of  |<--+
+               circle   |
+               segment) +
+                        P2 (SelPt2)
 
     Example for a Rectangle (rotated by 90°):
 
-                 TopRight          BottomRight
+               BottomLeft   SelPt1   TopLeft
                     +---------x---------+
-                    |      SelPt2       |
-                    | Anchor  |<---     |
-                    | Line1   |  90\° AnchorLine2 (circle segment)
-                    | (end of |     |   |
-                    x circle  x---------x--AnchorLine0 (horizontal Line for 0°)
-                    | segment)          |
-                    |                   |
-                    |                   |
-                    |      SelPt1       |
+                    |         |         |
+                    |         |         |
+                    |         |         |
+                    | Anchor  |         |
+                    x Line1   x---------x--AnchorLine0 (horizontal Line for 0°)
+                    | (end of | 90° |   |
+                    | circle  |    / AnchorLine2 (circle segment)
+                    | segment)|<--+     |
+                    |         |         |
                     +---------x---------+
-                 TopLeft           BottomLeft
+               BottomRight  SelPt2   TopRight
 */
 void CGraphObjLabelGeometryAngle::updateAnchorLines()
 //------------------------------------------------------------------------------
@@ -499,6 +502,8 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
         /* strObjName   */ m_strName,
         /* strMethod    */ "updateAnchorLines",
         /* strAddInfo   */ "" );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
     QPointF pt1SelScenePosParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
@@ -516,9 +521,12 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
         pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
 
-    QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);
-    QPointF ptCenterLineSelPtScenePos = lineSelPtSceneCoors.center();
-    QLineF lineSelPt = QLineF(mapFromScene(lineSelPtSceneCoors.p1()), mapFromScene(lineSelPtSceneCoors.p2()));
+    CPhysValLine physValLineSelPtSceneCoors(
+        pt1SelScenePosParent, pt2SelScenePosParent, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+    QPointF ptCenterLineSelPtScenePos = physValLineSelPtSceneCoors.center().toQPointF();
+    QPointF ptP1LineSetPtScenePos = mapFromScene(physValLineSelPtSceneCoors.p1().toQPointF());
+    QPointF ptP2LineSetPtScenePos = mapFromScene(physValLineSelPtSceneCoors.p2().toQPointF());
+    QLineF lineSelPt = QLineF(ptP1LineSetPtScenePos, ptP2LineSetPtScenePos);
     QPointF ptCenterLineSelPtPos = lineSelPt.center();
 
     QRectF rctBoundingThis = getBoundingRect();
@@ -530,7 +538,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     m_anchorLines[0] = QLineF(ptHorLine0DegreesP1, ptHorLine0DegreesP2);
 
     // AnchorLine1 (end of circle segment) in local coordinates
-    QLineF lineEndOfSegment(ptCenterLineSelPtPos, mapFromScene(lineSelPtSceneCoors.p2()));
+    QLineF lineEndOfSegment(ptCenterLineSelPtPos, ptP2LineSetPtScenePos);
     lineEndOfSegment.setLength(m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
     m_anchorLines[1] = lineEndOfSegment;
 
@@ -538,12 +546,12 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     m_rectAnchorLine2CircleSegment.setWidth(2.0 * m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
     m_rectAnchorLine2CircleSegment.setHeight(2.0 * m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
     m_rectAnchorLine2CircleSegment.moveCenter(ptCenterLineSelPtPos);
-    m_fAnchorLine2Angle_degrees = lineSelPtSceneCoors.angle();
+    m_fAnchorLine2Angle_degrees = physValLineSelPtSceneCoors.angle(drawingSize.yScaleAxisOrientation()).getVal();
 
-    QLineF perpendicularLineHorLine =
-        QLineF(ptHorLine0DegreesP2, QPointF(ptHorLine0DegreesP2.x(), ptHorLine0DegreesP2.y() - 20.0));
+    //QLineF perpendicularLineHorLine =
+    //    QLineF(ptHorLine0DegreesP2, QPointF(ptHorLine0DegreesP2.x(), ptHorLine0DegreesP2.y() - 20.0));
     QLineF perpendicularLineEndOfSegment = ZS::Draw::getPerpendicularLine(
-        QLineF(lineSelPt.p2(), lineSelPt.p1()), lineEndOfSegment.p2(), 10.0);
+        QLineF(lineSelPt.p1(), lineSelPt.p2()), lineEndOfSegment.p2(), 10.0);
 
     getLineEndPolygons(
         /* line          */ perpendicularLineEndOfSegment,
