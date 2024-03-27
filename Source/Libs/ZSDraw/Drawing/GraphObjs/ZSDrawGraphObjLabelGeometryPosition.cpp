@@ -159,26 +159,21 @@ void CGraphObjLabelGeometryPosition::updatePosition()
         /* strMethod    */ "updatePosition",
         /* strAddInfo   */ "" );
 
-    QPointF ptSelScenePosParent;
+    CPhysValPoint physValPos(*m_pDrawingScene);
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
+        physValPos = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPoint(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
+        physValPos = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPoint(m_labelDscr.m_selPt1.m_idxPt);
     }
-
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CPhysValPoint physValPos(ptSelScenePosParent, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-    physValPos = m_pDrawingScene->convert(physValPos, drawingSize.unit());
     QString strText = physValPos.toString();
+    // First set the text at the graphics item so that the bounding rectangle
+    // needed in updatePosition includes the new text.
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);
         }
     }
-
-    // First set the text at the graphics item so that the
-    // bounding rectangle includes the new text.
     CGraphObjLabel::updatePosition();
 }

@@ -262,8 +262,6 @@ typedef enum {
     EGraphObjTypeLabelGeometryPosition,
     EGraphObjTypeLabelGeometryDX,
     EGraphObjTypeLabelGeometryDY,
-    EGraphObjTypeLabelGeometryWidth,
-    EGraphObjTypeLabelGeometryHeight,
     EGraphObjTypeLabelGeometryLength,
     EGraphObjTypeLabelGeometryAngle,
     EGraphObjTypeLabelMax = EGraphObjTypeLabelGeometryAngle,

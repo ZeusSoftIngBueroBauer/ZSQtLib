@@ -214,7 +214,7 @@ CWdgtFormatGraphObjsGeometry::CWdgtFormatGraphObjsGeometry(
         // <Widget> Position and Size
         //===========================
 
-        m_ptPos = m_pGraphObj->getPos(Units.Length.px).toQPointF();
+        m_ptPos = m_pGraphObj->position(Units.Length.px).toQPointF();
         //m_size  = m_pGraphObj->getSize(Units.Length.px).toQSizeF();
 
         if( graphObjType != EGraphObjTypeLine && graphObjType != EGraphObjTypeConnectionLine )

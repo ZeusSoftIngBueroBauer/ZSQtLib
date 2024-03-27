@@ -341,6 +341,9 @@ CUnitsTreeEntryUnitBase* CIdxTreeUnits::findUnit(
     if( pGrp != nullptr ) {
         pUnit = pGrp->findUnit(i_strSymbolOrName);
     }
+    else {
+        pUnit = findUnit(i_strSymbolOrName);
+    }
     return pUnit;
 }
 

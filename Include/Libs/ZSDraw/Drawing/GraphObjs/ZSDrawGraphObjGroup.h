@@ -208,9 +208,6 @@ public: // instance methods
     CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
     CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables of base class CGraphObj
-    virtual CPhysValPoint getPos() const override;
-    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
-public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
 public: // must overridables of base class CGraphObj
     virtual void updateOriginalPhysValCoors() override;

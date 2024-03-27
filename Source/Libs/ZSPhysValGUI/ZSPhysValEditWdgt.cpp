@@ -1112,7 +1112,7 @@ void CWdgtEditPhysVal::onEdtEditingFinished()
         if( strSymbol.startsWith(" ") ) {
             strSymbol.remove(0, 1);
         }
-        m_physVal = CPhysVal(fVal, strSymbol);
+        m_physVal = CPhysVal(fVal, strSymbol, m_physValRes);
         emit editingFinished();
     }
 }
@@ -1138,7 +1138,7 @@ void CWdgtEditPhysVal::onEdtValueChanged( double i_fVal )
         if( strSymbol.startsWith(" ") ) {
             strSymbol.remove(0, 1);
         }
-        m_physVal = CPhysVal(fVal, strSymbol);
+        m_physVal = CPhysVal(fVal, strSymbol, m_physValRes);
         emit valueChanged(m_physVal);
     }
 }
@@ -1164,7 +1164,7 @@ void CWdgtEditPhysVal::onEdtTextChanged( const QString& i_strText )
         if( strSymbol.startsWith(" ") ) {
             strSymbol.remove(0, 1);
         }
-        m_physVal = CPhysVal(fVal, strSymbol);
+        m_physVal = CPhysVal(fVal, strSymbol, m_physValRes);
         emit textChanged(i_strText);
     }
 }

@@ -890,11 +890,6 @@ void CGraphObjLabel::paint(
     // hovered, selected or if the anchor line is set to be visible.
     // Use a different color if the line is hit, hovered or selected.
     if (/*m_bIsHit ||*/ isSelected() || m_labelDscr.m_bShowAnchorLine) {
-        // P1 of the anchor line is on one of the center points of the
-        // bounding rectangle of this label.
-        // P2 is on the selection point of the linked parent item.
-        // If P2 is within the bounding rectangle or very close to the label
-        // (length of line < 5.0 pixels) the anchor line will not be drawn.
         QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
         for (const QLineF& anchorLine : m_anchorLines) {
             if (!rctBounding.contains(anchorLine.p2())) {
@@ -1315,10 +1310,10 @@ void CGraphObjLabel::updateAnchorLines()
 
     QPointF ptSelScenePosParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
+        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
+        ptSelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
     QRectF rctBoundingThis = getBoundingRect();

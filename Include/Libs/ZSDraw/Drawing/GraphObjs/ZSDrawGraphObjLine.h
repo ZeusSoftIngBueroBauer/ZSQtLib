@@ -160,9 +160,6 @@ public: // overridables of base class CGraphObj
     ZS::PhysVal::CPhysVal rotationAngle() const override;
     ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const override;
 public: // must overridables of base class CGraphObj
-    virtual CPhysValPoint getPos() const override;
-    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const override;
-public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
 public: // must overridables of base class CGraphObj
     virtual void updateOriginalPhysValCoors() override;
@@ -172,8 +169,9 @@ public: // must overridables of base class CGraphObj
 public: // overridables of base class CGraphObj
     virtual QCursor getProposedCursor(const QPointF& i_ptScenePos) const override;
 public: // overridables of base class CGraphObj
-    virtual QPointF getSelectionPointCoorsInSceneCoors( ESelectionPoint i_selPt ) const override;
-    virtual QPointF getSelectionPointCoorsInSceneCoors( int i_idxPt ) const override;
+    virtual CPhysValPoint getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const override;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors( ESelectionPoint i_selPt ) const override;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors( int i_idxPt ) const override;
 public: // must overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const override;

@@ -284,11 +284,6 @@ void CGraphObjLabelGeometryDX::paint(
         QPen pn = pen();
         pn.setWidth(1);
         pn.setStyle(Qt::SolidLine);
-        // P1 of the anchor line is on one of the center points of the
-        // bounding rectangle of this label.
-        // P2 is on the selection point of the linked parent item.
-        // If P2 is within the bounding rectangle or very close to the label
-        // (length of line < 5.0 pixels) the anchor line will not be drawn.
         QRectF rctBounding = QGraphicsSimpleTextItem::boundingRect();
         const QLineF& anchorLine = m_anchorLines[2];
          if (!rctBounding.contains(anchorLine.p2())) {
@@ -327,18 +322,18 @@ void CGraphObjLabelGeometryDX::updatePosition()
 
     QPointF pt1SelScenePosParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
+        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
+        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
     QPointF pt2SelScenePosParent;
     if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
+        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
     }
     else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
+        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
 
     QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);
@@ -421,18 +416,18 @@ void CGraphObjLabelGeometryDX::updatePolarCoorsToLinkedSelPt()
     // for which the length has to be indicated.
     QPointF pt1SelScenePosParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
+        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
+        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
     QPointF pt2SelScenePosParent;
     if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
+        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
     }
     else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
+        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
 
     QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);
@@ -491,18 +486,18 @@ void CGraphObjLabelGeometryDX::updateAnchorLines()
 
     QPointF pt1SelScenePosParent;
     if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
+        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt1.m_selPt);
     }
     else if (m_labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
+        pt1SelScenePosParent = m_labelDscr.m_selPt1.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt1.m_idxPt);
     }
 
     QPointF pt2SelScenePosParent;
     if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::BoundingRectangle) {
-        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
+        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt2.m_selPt);
     }
     else if (m_labelDscr.m_selPt2.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getSelectionPointCoorsInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
+        pt2SelScenePosParent = m_labelDscr.m_selPt2.m_pGraphObj->getPositionOfSelectionPointInSceneCoors(m_labelDscr.m_selPt2.m_idxPt);
     }
 
     QLineF lineSelPtSceneCoors(pt1SelScenePosParent, pt2SelScenePosParent);

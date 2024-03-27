@@ -710,18 +710,6 @@ public: // overridables
     virtual void setAlignment(int i_idx, const SGraphObjAlignment& i_alignment);
     virtual void removeAlignment(int i_idx);
     virtual void clearAlignments();
-public: // must overridables
-    virtual CPhysValPoint getPos() const;
-    virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit) const;
-    //virtual CPhysValPoint getPos(ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //virtual CPhysValPoint getPos(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
-    //virtual ZS::PhysVal::CPhysVal getWidth(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
-    //virtual ZS::PhysVal::CPhysVal getHeight(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
-    //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
-    //virtual void setSize(const CPhysValSize& i_physValSize);
-    //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
 public: // overridables
     virtual QPointF mapToTopLeftOfBoundingRect(const QPointF& i_pt) const;
     virtual QLineF mapToTopLeftOfBoundingRect(const QLineF& i_line) const;
@@ -754,6 +742,21 @@ public: // must overridables
     virtual QRectF getBoundingRect() const;
     virtual void updateOriginalPhysValCoors();
 public: // overridables
+    virtual void setPosition(const CPhysValPoint& i_physValPos);
+    virtual CPhysValPoint position() const;
+    virtual CPhysValPoint position(const ZS::PhysVal::CUnit& i_unit) const;
+    virtual void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
+    virtual ZS::PhysVal::CPhysVal length() const;
+    virtual ZS::PhysVal::CPhysVal length(const ZS::PhysVal::CUnit& i_unit) const;
+    virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    virtual ZS::PhysVal::CPhysVal width() const;
+    virtual ZS::PhysVal::CPhysVal width(const ZS::PhysVal::CUnit& i_unit) const;
+    virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    virtual ZS::PhysVal::CPhysVal height() const;
+    virtual ZS::PhysVal::CPhysVal height(const ZS::PhysVal::CUnit& i_unit) const;
+    //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
+    //virtual void setSize(const CPhysValSize& i_physValSize);
+    //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
     //virtual void setGroupScale(double i_fXScale, double i_fYScale);
     virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     virtual ZS::PhysVal::CPhysVal rotationAngle() const;
@@ -778,8 +781,12 @@ public: // overridables
 public: // overridables
     CGraphObjSelectionPoint* getSelectionPointHit(const QPointF& i_pt) const;
 public: // overridables
-    virtual QPointF getSelectionPointCoorsInSceneCoors(ESelectionPoint i_selPt) const;
-    virtual QPointF getSelectionPointCoorsInSceneCoors(int i_idxPt) const;
+    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPoint i_selPt) const;
+    virtual CPhysValPoint getPositionOfSelectionPoint(ESelectionPoint i_selPt, const ZS::PhysVal::CUnit& i_unit) const;
+    virtual CPhysValPoint getPositionOfSelectionPoint(int i_idxPt) const;
+    virtual CPhysValPoint getPositionOfSelectionPoint(int i_idxPt, const ZS::PhysVal::CUnit& i_unit) const;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors(ESelectionPoint i_selPt) const;
+    virtual QPointF getPositionOfSelectionPointInSceneCoors(int i_idxPt) const;
 public: // must overridables
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const;
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, int i_idxPt) const;
@@ -876,9 +883,9 @@ protected: // auxiliary instance methods (method tracing)
     void emit_labelChanged(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
-    //virtual void updateInternalScenePos();
-    //virtual void setInternalScenePos(const QPointF& i_pos);
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
+    virtual void QGraphicsItem_setScale(double i_fFactor);
+    virtual void QGraphicsItem_setRotation(double i_fAngle_degree);
 public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,

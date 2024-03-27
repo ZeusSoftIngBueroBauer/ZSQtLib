@@ -176,13 +176,13 @@ CGraphObjGroup::CGraphObjGroup(
             addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryPosition, ESelectionPoint::Center);
         }
         else if (strLabelName == c_strGeometryLabelNameWidth) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryWidth, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
         }
         else if (strLabelName == c_strGeometryLabelNameHeight) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryHeight, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryLength, ESelectionPoint::TopCenter, ESelectionPoint::BottomCenter);
         }
         else if (strLabelName == c_strGeometryLabelNameAngle) {
-            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::Center, ESelectionPoint::RightCenter);
+            addGeometryLabel(strLabelName, EGraphObjTypeLabelGeometryAngle, ESelectionPoint::LeftCenter, ESelectionPoint::RightCenter);
         }
     }
 
@@ -1894,30 +1894,6 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the position of the item relative to its parent item.
-*/
-CPhysValPoint CGraphObjGroup::getPos() const
-//------------------------------------------------------------------------------
-{
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    return getPos(drawingSize.unit());
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the position of the item relative to its parent item in the
-           given unit.
-*/
-CPhysValPoint CGraphObjGroup::getPos(const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-    return getRect(i_unit).center();
-}
-
-/*==============================================================================
-public: // must overridables of base class CGraphObj
-==============================================================================*/
-
-//------------------------------------------------------------------------------
 /*! @brief Returns the current bounding rectangle of the object in local coordinates.
 
     @return Bounding rectangle in local coordinates.
@@ -1966,6 +1942,11 @@ void CGraphObjGroup::updateOriginalPhysValCoors()
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QRectF rectF = getBoundingRect();
+    // Before mapping to parent or scene, the rotation will be reset.
+    // Otherwise transformed coordinates will be returned.
+    // And itemChange is called but should not emit the geometryChangds signal ..
+    CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryChangedSignalBlockedCounter);
+    QGraphicsItem_setRotation(0.0);
     if (parentGroup() != nullptr) {
         QPointF ptTL = pGraphicsItemThis->mapToParent(rectF.topLeft());
         QPointF ptBR = pGraphicsItemThis->mapToParent(rectF.bottomRight());
@@ -1985,6 +1966,7 @@ void CGraphObjGroup::updateOriginalPhysValCoors()
         CPhysValPoint physValPointBR = m_pDrawingScene->convert(ptBR);
         setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
     }
+    QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
 }
 
 ////------------------------------------------------------------------------------
@@ -3295,34 +3277,16 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
             updateOriginalPhysValCoors();
-            //if (i_change == ItemPositionHasChanged) {
-            //    if (parentGroup() == nullptr) {
-            //        // Please note that "mapToScene" maps the local coordinates relative to the
-            //        // top left corner of the item's bounding rectangle and there is no need to
-            //        // call "mapToBoundingRectTopLeft" beforehand.
-            //        QRectF rectF = getBoundingRect();
-            //        QPointF ptTL = pGraphicsItemThis->mapToScene(rectF.topLeft());
-            //        QPointF ptBR = pGraphicsItemThis->mapToScene(rectF.bottomRight());
-            //        CPhysValPoint physValPointTL = m_pDrawingScene->convert(ptTL);
-            //        CPhysValPoint physValPointBR = m_pDrawingScene->convert(ptBR);
-            //        setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
-            //    }
-            //}
-            //else if (i_change == ItemParentHasChanged) {
-            //    if (parentGroup() != nullptr) {
-            //        QRectF rectF = getBoundingRect();
-            //        QPointF ptTL = pGraphicsItemThis->mapToParent(rectF.topLeft());
-            //        QPointF ptBR = pGraphicsItemThis->mapToParent(rectF.bottomRight());
-            //        ptTL = parentGroup()->mapToTopLeftOfBoundingRect(ptTL);
-            //        ptBR = parentGroup()->mapToTopLeftOfBoundingRect(ptBR);
-            //        CPhysValPoint physValPointTL = parentGroup()->convert(ptTL);
-            //        CPhysValPoint physValPointBR = parentGroup()->convert(ptBR);
-            //        setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
-            //    }
-            //}
             //applyGeometryChangeToChildrens();
         }
         tracePositionInfo(mthTracer, EMethodDir::Leave);
+        bGeometryChanged = true;
+        bTreeEntryChanged = true;
+    }
+    else if (i_change == ItemRotationHasChanged) {
+        //tracePositionInfo(mthTracer, EMethodDir::Enter);
+        //updateLineEndArrowHeadPolygons();
+        //tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
