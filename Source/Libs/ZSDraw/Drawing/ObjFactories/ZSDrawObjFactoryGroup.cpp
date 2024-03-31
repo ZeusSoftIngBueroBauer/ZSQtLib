@@ -238,8 +238,8 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
     CDrawSettings drawSettings(EGraphObjTypeGroup);
     CDrawGridSettings gridSettings("Load");
-    CPhysValPoint physValPointTopLeft;
-    CPhysValSize physValSize;
+    CPhysValPoint physValPointTopLeft(*i_pDrawingScene);
+    CPhysValSize physValSize(*i_pDrawingScene);
     bool bRectTopLeftValid = false;
     bool bRectSizeValid = false;
     double fZValue = 0.0;
@@ -303,14 +303,14 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                                     // provide its position and shape points in scene coordinates to the group and the group must already
                                     // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
                                     physValPointTopLeft = i_pGraphObjGroup->mapToScene(physValPointTopLeft);
-                                    pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
+                                    pGraphObj->setRect(CPhysValRect(*i_pDrawingScene, physValPointTopLeft, physValSize));
                                     bGeometrySet = true;
                                     i_pGraphObjGroup->addToGroup(pGraphObj);
                                     bAddedToParentGroup = true;
                                 }
                             }
                             else if (!bGeometrySet) {
-                                pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
+                                pGraphObj->setRect(CPhysValRect(*i_pDrawingScene, physValPointTopLeft, physValSize));
                                 bGeometrySet = true;
                             }
                             iLevel++;
@@ -467,14 +467,14 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 // provide its position and shape points in scene coordinates to the group and the group must already
                 // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
                 physValPointTopLeft = i_pGraphObjGroup->mapToScene(physValPointTopLeft);
-                pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
+                pGraphObj->setRect(CPhysValRect(*i_pDrawingScene, physValPointTopLeft, physValSize));
                 bGeometrySet = true;
                 i_pGraphObjGroup->addToGroup(pGraphObj);
                 bAddedToParentGroup = true;
             }
         }
         else if (!bGeometrySet) {
-            pGraphObj->setRect(CPhysValRect(physValPointTopLeft, physValSize));
+            pGraphObj->setRect(CPhysValRect(*i_pDrawingScene, physValPointTopLeft, physValSize));
             bGeometrySet = true;
         }
         pGraphObj->setDrawSettings(drawSettings);

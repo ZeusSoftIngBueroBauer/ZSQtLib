@@ -55,13 +55,13 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValRect"; }
 public: // ctors and dtor
-    CPhysValRect();
     CPhysValRect(const CDrawingScene& i_drawingScene);
-    CPhysValRect(const ZS::PhysVal::CUnit& i_unit, double i_fRes);
-    CPhysValRect(const QPointF& i_ptTL, const QPointF& i_ptBR, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValRect(const QRectF& i_rect, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
-    CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i_ptTL, const QPointF& i_ptBR);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i_ptTL, const QPointF& i_ptBR, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize);
     CPhysValRect(const CPhysValRect& i_physValRectOther);
     virtual ~CPhysValRect();
 public: // operators
@@ -112,17 +112,14 @@ public: // instance methods
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
     void setBottomRight(const QPointF& i_pt);
     void setBottomRight(const CPhysValPoint& i_physValPoint);
-    void setResolution(double i_fRes);
-    void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)
     QRectF toQRectF() const;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
+    /*!< Reference to drawing scene. */
+    const CDrawingScene* m_pDrawingScene;
     /*!< The rectangle coordinates in the unit 'm_unit'. */
     QRectF m_rect;
-    /*!< Resolution of the rectangle coordinates.
-         Defines the number of decimals when converting the coordinates into a string. */
-    double m_fRes;
     /*!< Unit (either metric or pixels) in which the rectangle coordinates are in 'm_rect'. */
     ZS::PhysVal::CUnit m_unit;
 

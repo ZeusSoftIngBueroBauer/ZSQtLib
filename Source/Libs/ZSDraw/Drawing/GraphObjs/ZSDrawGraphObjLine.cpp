@@ -470,7 +470,7 @@ void CGraphObjLine::setLine(
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    setLine(CPhysValLine(i_fX1, i_fY1, i_fX2, i_fY2, i_fRes, i_unit));
+    setLine(CPhysValLine(*m_pDrawingScene, i_fX1, i_fY1, i_fX2, i_fY2, i_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -504,7 +504,7 @@ void CGraphObjLine::setLine(
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    setLine(CPhysValLine(i_p1, i_p2, i_fRes, i_unit));
+    setLine(CPhysValLine(*m_pDrawingScene, i_p1, i_p2, i_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -535,7 +535,7 @@ void CGraphObjLine::setLine(const QLineF& i_line, double i_fRes, const CUnit& i_
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    setLine(CPhysValLine(i_line, i_fRes, i_unit));
+    setLine(CPhysValLine(*m_pDrawingScene, i_line, i_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -565,7 +565,7 @@ void CGraphObjLine::setLine(
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    setLine(CPhysValLine(i_physValP1, i_physValP2));
+    setLine(CPhysValLine(*m_pDrawingScene, i_physValP1, i_physValP2));
 }
 
 //------------------------------------------------------------------------------
@@ -978,7 +978,7 @@ void CGraphObjLine::setRotationAngle(const CPhysVal& i_physValAngle)
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValLine physValLine = getLine();
-    physValLine.setAngle(i_physValAngle, m_pDrawingScene->drawingSize().yScaleAxisOrientation());
+    physValLine.setAngle(i_physValAngle);
     setLine(physValLine);
 }
 
@@ -1011,7 +1011,7 @@ CPhysVal CGraphObjLine::rotationAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValLine physValLine = getLine();
-    return physValLine.angle(m_pDrawingScene->drawingSize().yScaleAxisOrientation());
+    return physValLine.angle();
 }
 
 /*==============================================================================
@@ -1082,7 +1082,7 @@ void CGraphObjLine::updateOriginalPhysValCoors()
         pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
         CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
         CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
-        setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+        setLineOrig(CPhysValLine(*m_pDrawingScene, physValPointP1, physValPointP2));
     }
     else {
         // Please note that "mapToScene" maps the local coordinates relative to the
@@ -1092,7 +1092,7 @@ void CGraphObjLine::updateOriginalPhysValCoors()
         QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
         CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
         CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
-        setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+        setLineOrig(CPhysValLine(*m_pDrawingScene, physValPointP1, physValPointP2));
     }
     QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
 }
@@ -1399,7 +1399,7 @@ CPhysValPoint CGraphObjLine::getPositionOfSelectionPoint(int i_idxPt, const ZS::
     pVThis->QGraphicsItem_setRotation(0.0);
     ptPos = pGraphicsItemThis->mapToParent(ptPos);
     pVThis->QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
-    CPhysValPoint physValPos;
+    CPhysValPoint physValPos(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
         ptPos = parentGroup()->mapToTopLeftOfBoundingRect(ptPos);
         physValPos = parentGroup()->convert(ptPos, i_unit);
@@ -2404,7 +2404,7 @@ void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint
     QPointF ptScenePosSelPt = pGraphicsItemSelPt->scenePos();
     QPointF ptPosSelPt = mapFromScene(ptScenePosSelPt);
     QPointF ptParentPosSelPt = pGraphicsItemThis->mapToParent(ptPosSelPt);
-    CPhysValPoint physValParentSelPt;
+    CPhysValPoint physValParentSelPt(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
         physValParentSelPt = parentGroup()->convert(ptParentPosSelPt);
     }

@@ -813,9 +813,9 @@ CGraphObj::CGraphObj(
     m_strType(i_strType),
     m_drawSettings(i_type),
     m_pDrawSettingsTmp(nullptr),
-    m_physValSizeMinimum(),
-    m_physValSizeMaximum(),
-    m_physValSizeFixed(),
+    m_physValSizeMinimum(*i_pDrawingScene),
+    m_physValSizeMaximum(*i_pDrawingScene),
+    m_physValSizeFixed(*i_pDrawingScene),
     m_arAlignments(),
     m_bIsHit(false),
     m_bIsHighlighted(false),
@@ -2809,7 +2809,7 @@ bool CGraphObj::hasMinimumSize() const
 CPhysValSize CGraphObj::getMinimumSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    CPhysValSize physValSize;
+    CPhysValSize physValSize(*m_pDrawingScene);
     if (m_physValSizeFixed.isValid()) {
         physValSize = m_physValSizeFixed;
     }
@@ -2987,7 +2987,7 @@ bool CGraphObj::hasMaximumSize() const
 CPhysValSize CGraphObj::getMaximumSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    CPhysValSize physValSize;
+    CPhysValSize physValSize(*m_pDrawingScene);
     if (m_physValSizeFixed.isValid()) {
         physValSize = m_physValSizeFixed;
     }
@@ -3172,7 +3172,7 @@ bool CGraphObj::hasFixedSize() const
 CPhysValSize CGraphObj::getFixedSize(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    CPhysValSize physValSize;
+    CPhysValSize physValSize(*m_pDrawingScene);
     if (m_physValSizeFixed.isValid()) {
         physValSize = m_physValSizeFixed;
     }
@@ -4314,7 +4314,7 @@ CPhysValPoint CGraphObj::position(const ZS::PhysVal::CUnit& i_unit) const
 {
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPointF ptPos = pGraphicsItemThis->pos();
-    CPhysValPoint physValPos;
+    CPhysValPoint physValPos(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
         ptPos = parentGroup()->mapToTopLeftOfBoundingRect(ptPos);
         physValPos = parentGroup()->convert(ptPos, i_unit);
@@ -5084,7 +5084,7 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(ESelectionPoint i_selPt, co
     CGraphObj* pVThis = const_cast<CGraphObj*>(this);
     CRefCountGuard refCountGuardGeometryChangedSignal(&pVThis->m_iGeometryChangedSignalBlockedCounter);
     pVThis->QGraphicsItem_setRotation(0.0);
-    CPhysValPoint physValPos;
+    CPhysValPoint physValPos(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
         ptPos = mapToTopLeftOfBoundingRect(ptPos);
         physValPos = parentGroup()->convert(ptPos, i_unit);

@@ -452,7 +452,7 @@ public: // instance methods
 CPhysValPoint CDrawingScene::convert(const QPointF& i_pt) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValPoint(i_pt, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), m_drawingSize.unit());
+    return convert(CPhysValPoint(*this, i_pt, Units.Length.px), m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
@@ -466,7 +466,7 @@ CPhysValPoint CDrawingScene::convert(const QPointF& i_pt) const
 CPhysValPoint CDrawingScene::convert(const QPointF& i_pt, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValPoint(i_pt, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
+    return convert(CPhysValPoint(*this, i_pt, Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -510,7 +510,7 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
             CPhysVal physValY = i_physValPoint.y();
             physValX.convertValue(i_unitDst);
             physValY.convertValue(i_unitDst);
-            physValPoint = CPhysValPoint(physValX, physValY);
+            physValPoint = CPhysValPoint(*this, physValX, physValY);
         }
         else if ((i_physValPoint.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             QPointF pt = i_physValPoint.toQPointF();
@@ -520,14 +520,14 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
             CPhysVal physValY(fy, m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
             physValX.convertValue(i_unitDst);
             physValY.convertValue(i_unitDst);
-            physValPoint = CPhysValPoint(physValX, physValY);
+            physValPoint = CPhysValPoint(*this, physValX, physValY);
         }
         else if (Units.Length.isMetricUnit(i_physValPoint.unit()) && (i_unitDst == Units.Length.px)) {
             CPhysVal physValX = i_physValPoint.x();
             CPhysVal physValY = i_physValPoint.y();
             double fX_px = m_divLinesMetricsX.getValInPix(physValX.getVal(m_drawingSize.unit()));
             double fY_px = m_divLinesMetricsY.getValInPix(physValY.getVal(m_drawingSize.unit()));
-            physValPoint = CPhysValPoint(fX_px, fY_px, m_drawingSize.imageCoorsResolutionInPx(), i_unitDst);
+            physValPoint = CPhysValPoint(*this, fX_px, fY_px, i_unitDst);
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -546,7 +546,7 @@ CPhysValPoint CDrawingScene::convert(const CPhysValPoint& i_physValPoint, const 
 CPhysValSize CDrawingScene::convert(const QSizeF& i_size) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValSize(i_size, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), m_drawingSize.unit());
+    return convert(CPhysValSize(*this, i_size, Units.Length.px), m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
@@ -560,7 +560,7 @@ CPhysValSize CDrawingScene::convert(const QSizeF& i_size) const
 CPhysValSize CDrawingScene::convert(const QSizeF& i_size, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValSize(i_size, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
+    return convert(CPhysValSize(*this, i_size, Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -608,7 +608,7 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
             physValRes.convertValue(i_unitDst);
             physValWidth.setRes(physValRes);
             physValHeight.setRes(physValRes);
-            physValSize = CPhysValSize(physValWidth, physValHeight);
+            physValSize = CPhysValSize(*this, physValWidth, physValHeight);
         }
         else if ((i_physValSize.unit() == Units.Length.px) && Units.Length.isMetricUnit(i_unitDst)) {
             // The drawing size in pixels has been incremented by one pixel.
@@ -620,7 +620,7 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
             CPhysVal physValHeight(dy, m_drawingSize.unit(), m_drawingSize.imageCoorsResolution());
             physValWidth.convertValue(i_unitDst);
             physValHeight.convertValue(i_unitDst);
-            physValSize = CPhysValSize(physValWidth, physValHeight);
+            physValSize = CPhysValSize(*this, physValWidth, physValHeight);
         }
         else if (Units.Length.isMetricUnit(i_physValSize.unit()) && (i_unitDst == Units.Length.px)) {
             // The drawing size in pixels has been incremented by one pixel.
@@ -631,7 +631,7 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
             double dy_px = m_divLinesMetricsY.getDistanceInPix(dy);
             CPhysVal physValWidth(dx_px, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
             CPhysVal physValHeight(dy_px, Units.Length.px, m_drawingSize.imageCoorsResolutionInPx());
-            physValSize = CPhysValSize(physValWidth, physValHeight);
+            physValSize = CPhysValSize(*this, physValWidth, physValHeight);
         }
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -650,7 +650,7 @@ CPhysValSize CDrawingScene::convert(const CPhysValSize& i_physValSize, const CUn
 CPhysValLine CDrawingScene::convert(const QLineF& i_line) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValLine(i_line, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), m_drawingSize.unit());
+    return convert(CPhysValLine(*this, i_line, Units.Length.px), m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
@@ -664,7 +664,7 @@ CPhysValLine CDrawingScene::convert(const QLineF& i_line) const
 CPhysValLine CDrawingScene::convert(const QLineF& i_line, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValLine(i_line, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
+    return convert(CPhysValLine(*this, i_line, Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -703,7 +703,7 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUn
 
     CPhysValPoint physValP1 = convert(i_physValLine.p1(), i_unitDst);
     CPhysValPoint physValP2 = convert(i_physValLine.p2(), i_unitDst);
-    CPhysValLine physValLine(physValP1, physValP2);
+    CPhysValLine physValLine(*this, physValP1, physValP2);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
     }
@@ -720,7 +720,7 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUn
 CPhysValRect CDrawingScene::convert(const QRectF& i_rect) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValRect(i_rect, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), m_drawingSize.unit());
+    return convert(CPhysValRect(*this, i_rect, Units.Length.px), m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
@@ -734,7 +734,7 @@ CPhysValRect CDrawingScene::convert(const QRectF& i_rect) const
 CPhysValRect CDrawingScene::convert(const QRectF& i_rect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValRect(i_rect, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px), i_unitDst);
+    return convert(CPhysValRect(*this, i_rect, Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -780,7 +780,7 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect, const CUn
 
     CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
     CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    CPhysValRect physValRect(physValTL, physValBR);
+    CPhysValRect physValRect(*this, physValTL, physValBR);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
     }

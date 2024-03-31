@@ -101,8 +101,6 @@ public: // instance methods
     QSize imageSizeInPixels() const;
     int imageWidthInPixels() const;
     int imageHeightInPixels() const;
-    CPhysValSize metricImageSize() const;
-    CPhysValSize metricImageSize(const ZS::PhysVal::CUnit& i_unit) const;
     ZS::PhysVal::CPhysVal metricImageWidth() const;
     ZS::PhysVal::CPhysVal metricImageWidth(const ZS::PhysVal::CUnit& i_unit) const;
     ZS::PhysVal::CPhysVal metricImageHeight() const;

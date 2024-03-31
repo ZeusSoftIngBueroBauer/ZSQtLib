@@ -47,86 +47,98 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine() :
-//------------------------------------------------------------------------------
-    m_line(),
-    m_fRes(0.0),
-    m_unit()
-{
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Creates a physical line on the drawing scene in the current unit
            and current resolution of the drawing scene.
 */
 CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_line(),
-    m_fRes(i_drawingScene.drawingSize().imageCoorsResolution().getVal()),
     m_unit(i_drawingScene.drawingSize().unit())
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine(const CUnit& i_unit, double i_fRes) :
-//------------------------------------------------------------------------------
-    m_line(),
-    m_fRes(i_fRes),
-    m_unit(i_unit)
-{
-}
-
-//------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(
-    double i_fX1, double i_fY1, double i_fX2, double i_fY2, double i_fRes, const CUnit& i_unit) :
+    const CDrawingScene& i_drawingScene, double i_fX1, double i_fY1, double i_fX2, double i_fY2) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_line(i_fX1, i_fY1, i_fX2, i_fY2),
-    m_fRes(i_fRes),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene, double i_fX1, double i_fY1, double i_fX2, double i_fY2, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_line(i_fX1, i_fY1, i_fX2, i_fY2),
     m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(
-    const QPointF& i_p1, const QPointF& i_p2, double i_fRes, const CUnit& i_unit) :
+    const CDrawingScene& i_drawingScene, const QPointF& i_p1, const QPointF& i_p2) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_line(i_p1, i_p2),
-    m_fRes(i_fRes),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene, const QPointF& i_p1, const QPointF& i_p2, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_line(i_p1, i_p2),
     m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine(const QLineF& i_line, double i_fRes, const CUnit& i_unit) :
+CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene, const QLineF& i_line) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_line(i_line),
-    m_fRes(i_fRes),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene, const QLineF& i_line, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_line(i_line),
     m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
     const CPhysValPoint& i_physValP1,
     const CPhysValPoint& i_physValP2) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_line(i_physValP1.toQPointF(), i_physValP2.toQPointF()),
-    m_fRes(i_physValP1.resolution()),
     m_unit(i_physValP1.unit())
 {
     if (i_physValP1.unit() != i_physValP2.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    if (i_physValP2.resolution() > i_physValP2.resolution()) {
-        m_fRes = i_physValP2.resolution();
+    if (i_physValP1.resolution() != i_physValP2.resolution()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
 }
 
 //------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(const CPhysValLine& i_physValLineOther) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(i_physValLineOther.m_pDrawingScene),
     m_line(i_physValLineOther.m_line),
-    m_fRes(i_physValLineOther.m_fRes),
     m_unit(i_physValLineOther.m_unit)
 {
 }
@@ -135,8 +147,8 @@ CPhysValLine::CPhysValLine(const CPhysValLine& i_physValLineOther) :
 CPhysValLine::~CPhysValLine()
 //------------------------------------------------------------------------------
 {
+    m_pDrawingScene = nullptr;
     //m_line;
-    m_fRes = 0.0;
     //m_unit;
 }
 
@@ -149,7 +161,6 @@ CPhysValLine& CPhysValLine::operator = ( const CPhysValLine& i_physValLineOther 
 //------------------------------------------------------------------------------
 {
     m_line = i_physValLineOther.m_line;
-    m_fRes = i_physValLineOther.m_fRes;
     m_unit = i_physValLineOther.m_unit;
     return *this;
 }
@@ -188,9 +199,6 @@ bool CPhysValLine::operator == ( const CPhysValLine& i_physValLineOther ) const
         if (fX1 != m_line.x1() || fX2 != m_line.x2() || fY1 != m_line.y1() || fY2 != m_line.y2()) {
             bEqual = false;
         }
-        else if (m_fRes != i_physValLineOther.m_fRes) {
-            bEqual = false;
-        }
     }
     return bEqual;
 }
@@ -217,6 +225,13 @@ bool CPhysValLine::isValid() const
     return !m_line.isNull();
 }
 
+//------------------------------------------------------------------------------
+bool CPhysValLine::isNull() const
+//------------------------------------------------------------------------------
+{
+    return m_line.isNull();
+}
+
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
@@ -225,63 +240,77 @@ public: // instance methods
 CPhysValPoint CPhysValLine::p1() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_line.p1(), m_fRes, m_unit);
+    return CPhysValPoint(*m_pDrawingScene, m_line.p1(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValLine::p2() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_line.p2(), m_fRes, m_unit);
+    return CPhysValPoint(*m_pDrawingScene, m_line.p2(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValLine::x1() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.x1(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_line.x1(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValLine::x2() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.x2(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_line.x2(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValLine::y1() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.y1(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_line.y1(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValLine::y2() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.y2(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_line.y2(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValLine::dx() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.dx(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_line.dx(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValLine::dy() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.dy(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_line.dy(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValLine::length() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_line.length(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_line.length(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
+}
+
+//------------------------------------------------------------------------------
+CPhysValPoint CPhysValLine::center() const
+//------------------------------------------------------------------------------
+{
+    return CPhysValPoint(*m_pDrawingScene, m_line.center(), m_unit);
 }
 
 //------------------------------------------------------------------------------
@@ -292,13 +321,14 @@ CPhysVal CPhysValLine::length() const
     If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
     correspondingly.
 */
-CPhysVal CPhysValLine::angle(const CEnumYScaleAxisOrientation& i_yScaleAxisOrientation) const
+CPhysVal CPhysValLine::angle() const
 //------------------------------------------------------------------------------
 {
     // QLineF::angle returns the angle counter-clockwise which is in contrast to
     // the QGraphicsItem::rotationAngle. This will be corrected here.
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysVal physValAngle(m_line.angle(), Units.Angle.Degree, 0.1);
-    if (i_yScaleAxisOrientation != EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
         double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
         physValAngle.setVal(fAngle_degree);
     }
@@ -316,17 +346,10 @@ CPhysVal CPhysValLine::angleTo(const CPhysValLine& i_physValLineOther) const
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint CPhysValLine::center() const
-//------------------------------------------------------------------------------
-{
-    return CPhysValPoint(m_line.center(), m_fRes, m_unit);
-}
-
-//------------------------------------------------------------------------------
 double CPhysValLine::resolution() const
 //------------------------------------------------------------------------------
 {
-    return m_fRes;
+    return m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit).getVal();
 }
 
 //------------------------------------------------------------------------------
@@ -347,16 +370,9 @@ QLineF::IntersectionType CPhysValLine::intersects(
     QPointF ptIntersection;
     QLineF::IntersectionType intersectionType = m_line.intersects(i_physValLineOther.toQLineF(), &ptIntersection);
     if (i_physValPointIntersection != nullptr) {
-        *i_physValPointIntersection = CPhysValPoint(ptIntersection, m_fRes, m_unit);
+        *i_physValPointIntersection = CPhysValPoint(*m_pDrawingScene, ptIntersection, m_unit);
     }
     return intersectionType;
-}
-
-//------------------------------------------------------------------------------
-bool CPhysValLine::isNull() const
-//------------------------------------------------------------------------------
-{
-    return m_line.isNull();
 }
 
 /*==============================================================================
@@ -393,30 +409,27 @@ void CPhysValLine::setP2( const CPhysValPoint& i_physValP2 )
 
 //------------------------------------------------------------------------------
 void CPhysValLine::setLine(
-    double i_fX1, double i_fY1, double i_fX2, double i_fY2, double i_fRes, const CUnit& i_unit)
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     m_line.setLine(i_fX1, i_fY1, i_fX2, i_fY2);
-    m_fRes = i_fRes;
     m_unit = i_unit;
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setLine(const QLineF& i_line, double i_fRes, const CUnit& i_unit)
+void CPhysValLine::setLine(const QLineF& i_line, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     m_line = i_line;
-    m_fRes = i_fRes;
     m_unit = i_unit;
 }
 
 //------------------------------------------------------------------------------
 void CPhysValLine::setPoints(
-    const QPointF& i_p1, const QPointF& i_p2, double i_fRes, const CUnit& i_unit)
+    const QPointF& i_p1, const QPointF& i_p2, const CUnit& i_unit)
 //------------------------------------------------------------------------------
 {
     m_line.setPoints(i_p1, i_p2);
-    m_fRes = i_fRes;
     m_unit = i_unit;
 }
 
@@ -432,7 +445,6 @@ void CPhysValLine::setPoints(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     m_line.setPoints(i_physValP1.toQPointF(), i_physValP2.toQPointF());
-    m_fRes = i_physValP1.resolution();
     m_unit = i_physValP1.unit();
 }
 
@@ -489,42 +501,6 @@ void CPhysValLine::setLength( const CPhysVal& i_physValLength )
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the angle of the line in the given unit.
-
-    The center point and the length of the line remains unchanged.
-    Points 1 and 2 are moved correspondingly.
-
-    The angles are measured clockwise around the z-Axis through point P1.
-
-    If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
-    correspondingly.
-
-    @param [in] i_physValAngle
-        Angle to be set.
-*/
-void CPhysValLine::setAngle( const CPhysVal& i_physValAngle, const CEnumYScaleAxisOrientation& i_yScaleAxisOrientation )
-//------------------------------------------------------------------------------
-{
-    // QLineF::angle returns the angle counter-clockwise which is in contrast to
-    // the QGraphicsItem::rotationAngle. This will be corrected here.
-    QPointF ptCenter = m_line.center();
-    CPhysVal physValAngle = i_physValAngle;
-    if (i_yScaleAxisOrientation != EYScaleAxisOrientation::BottomUp) {
-        double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
-        physValAngle.setVal(fAngle_degree);
-    }
-    double fAngle_rad = physValAngle.getVal(Units.Angle.Rad);
-    double fRadius = m_line.length() / 2.0;
-    double dx = fRadius * cos(fAngle_rad);
-    double dy = fRadius * sin(fAngle_rad);
-    m_line.setP1(ptCenter + QPointF(-dx, dy));
-    m_line.setP2(ptCenter + QPointF(dx, -dy));
-    //if (m_line.center() != ptCenter) {
-    //    throw CException(__FILE__, __LINE__, EResultInternalProgramError);
-    //}
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Moves the center point of the line by keeping the length of the line.
 
     The start and end points of the line are moved to keep the length of the line.
@@ -555,17 +531,40 @@ void CPhysValLine::setCenter(const CPhysValPoint& i_physValPointCenter)
 }
 
 //------------------------------------------------------------------------------
-void CPhysValLine::setResolution( double i_fRes )
-//------------------------------------------------------------------------------
-{
-    m_fRes = i_fRes;
-}
+/*! @brief Sets the angle of the line in the given unit.
 
-//------------------------------------------------------------------------------
-void CPhysValLine::setUnit( const CUnit& i_unit )
+    The center point and the length of the line remains unchanged.
+    Points 1 and 2 are moved correspondingly.
+
+    The angles are measured clockwise around the z-Axis through point P1.
+
+    If the yScaleAxisOrientation is from BottomToTop the angle must be corrected
+    correspondingly.
+
+    @param [in] i_physValAngle
+        Angle to be set.
+*/
+void CPhysValLine::setAngle( const CPhysVal& i_physValAngle )
 //------------------------------------------------------------------------------
 {
-    m_unit = i_unit;
+    // QLineF::angle returns the angle counter-clockwise which is in contrast to
+    // the QGraphicsItem::rotationAngle. This will be corrected here.
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    QPointF ptCenter = m_line.center();
+    CPhysVal physValAngle = i_physValAngle;
+    if (drawingSize.yScaleAxisOrientation() != EYScaleAxisOrientation::BottomUp) {
+        double fAngle_degree = Math::normalizeAngleInDegree(360.0 - physValAngle.getVal());
+        physValAngle.setVal(fAngle_degree);
+    }
+    double fAngle_rad = physValAngle.getVal(Units.Angle.Rad);
+    double fRadius = m_line.length() / 2.0;
+    double dx = fRadius * cos(fAngle_rad);
+    double dy = fRadius * sin(fAngle_rad);
+    m_line.setP1(ptCenter + QPointF(-dx, dy));
+    m_line.setP2(ptCenter + QPointF(dx, -dy));
+    //if (m_line.center() != ptCenter) {
+    //    throw CException(__FILE__, __LINE__, EResultInternalProgramError);
+    //}
 }
 
 /*==============================================================================

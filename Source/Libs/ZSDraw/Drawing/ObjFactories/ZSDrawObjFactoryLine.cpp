@@ -197,8 +197,8 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     i_pDrawingScene->addGraphObj(pGraphObj);
 
     CDrawSettings drawSettings(EGraphObjTypeLine);
-    CPhysValPoint physValPoint1;
-    CPhysValPoint physValPoint2;
+    CPhysValPoint physValPoint1(*i_pDrawingScene);
+    CPhysValPoint physValPoint2(*i_pDrawingScene);
     bool bPt1Valid = false;
     bool bPt2Valid = false;
     double fZValue = 0.0;

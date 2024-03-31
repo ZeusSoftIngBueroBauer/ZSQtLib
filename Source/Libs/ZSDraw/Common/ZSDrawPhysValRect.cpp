@@ -46,59 +46,61 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect() :
-//------------------------------------------------------------------------------
-    m_rect(),
-    m_fRes(0.0),
-    m_unit()
-{
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Creates a physical rectangle on the drawing scene in the current unit
            and current resolution of the drawing scene.
 */
 CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_rect(),
-    m_fRes(i_drawingScene.drawingSize().imageCoorsResolution().getVal()),
     m_unit(i_drawingScene.drawingSize().unit())
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const CUnit& i_unit, double i_fRes) :
+CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i_ptTL, const QPointF& i_ptBR) :
 //------------------------------------------------------------------------------
-    m_rect(),
-    m_fRes(i_fRes),
-    m_unit(i_unit)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const QPointF& i_ptTL, const QPointF& i_ptBR, double i_fRes, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_rect(i_ptTL, i_ptBR),
-    m_fRes(i_fRes),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i_ptTL, const QPointF& i_ptBR, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_rect(i_ptTL, i_ptBR),
     m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const QRectF& i_rect, double i_fRes, const CUnit& i_unit) :
+CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_rect(i_rect),
-    m_fRes(i_fRes),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_rect(i_rect),
     m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(
-    const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight) :
+    const CDrawingScene& i_drawingScene,
+    const CPhysValPoint& i_physValTopLeft,
+    const CPhysValPoint& i_physValBottomRight) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_rect(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()),
-    m_fRes(i_physValTopLeft.resolution()),
     m_unit(i_physValTopLeft.unit())
 {
     if (i_physValTopLeft.unit() != i_physValBottomRight.unit()) {
@@ -111,10 +113,12 @@ CPhysValRect::CPhysValRect(
 
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(
-    const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize) :
+    const CDrawingScene& i_drawingScene,
+    const CPhysValPoint& i_physValTopLeft,
+    const CPhysValSize& i_physValSize) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_rect(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()),
-    m_fRes(i_physValTopLeft.resolution()),
     m_unit(i_physValTopLeft.unit())
 {
     if (i_physValTopLeft.unit() != i_physValSize.unit()) {
@@ -128,8 +132,8 @@ CPhysValRect::CPhysValRect(
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(i_physValRectOther.m_pDrawingScene),
     m_rect(i_physValRectOther.m_rect),
-    m_fRes(i_physValRectOther.m_fRes),
     m_unit(i_physValRectOther.m_unit)
 {
 }
@@ -138,8 +142,8 @@ CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
 CPhysValRect::~CPhysValRect()
 //------------------------------------------------------------------------------
 {
+    m_pDrawingScene = nullptr;
     //m_rect;
-    m_fRes = 0.0;
     //m_unit;
 }
 
@@ -152,7 +156,6 @@ CPhysValRect& CPhysValRect::operator = ( const CPhysValRect& i_physValRectOther 
 //------------------------------------------------------------------------------
 {
     m_rect = i_physValRectOther.m_rect;
-    m_fRes = i_physValRectOther.m_fRes;
     m_unit = i_physValRectOther.m_unit;
     return *this;
 }
@@ -192,9 +195,6 @@ bool CPhysValRect::operator == ( const CPhysValRect& i_physValRectOther ) const
          || fWidth != m_rect.width() || fHeight != m_rect.height()) {
             bEqual = false;
         }
-        else if (m_fRes != i_physValRectOther.m_fRes) {
-            bEqual = false;
-        }
     }
     return bEqual;
 }
@@ -229,91 +229,97 @@ public: // instance methods
 CPhysVal CPhysValRect::top() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.top(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_rect.top(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::bottom() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.bottom(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_rect.bottom(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::left() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.left(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_rect.left(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::right() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.right(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_rect.right(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::width() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.width(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_rect.width(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValRect::height() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_rect.height(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_rect.height(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysValSize CPhysValRect::size() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValSize(m_rect.size(), m_fRes, m_unit);
+    return CPhysValSize(*m_pDrawingScene, m_rect.size(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::center() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.center(), m_fRes, m_unit);
+    return CPhysValPoint(*m_pDrawingScene, m_rect.center(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::topLeft() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.left(), m_rect.top(), m_fRes, m_unit);
+    return CPhysValPoint(*m_pDrawingScene, m_rect.left(), m_rect.top(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::topRight() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.right(), m_rect.top(), m_fRes, m_unit);
+    return CPhysValPoint(*m_pDrawingScene, m_rect.right(), m_rect.top(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::bottomLeft() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.left(), m_rect.bottom(), m_fRes, m_unit);
+    return CPhysValPoint(*m_pDrawingScene, m_rect.left(), m_rect.bottom(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 CPhysValPoint CPhysValRect::bottomRight() const
 //------------------------------------------------------------------------------
 {
-    return CPhysValPoint(m_rect.right(), m_rect.bottom(), m_fRes, m_unit);
+    return CPhysValPoint(*m_pDrawingScene, m_rect.right(), m_rect.bottom(), m_unit);
 }
 
 //------------------------------------------------------------------------------
 double CPhysValRect::resolution() const
 //------------------------------------------------------------------------------
 {
-    return m_fRes;
+    return m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit).getVal();
 }
 
 //------------------------------------------------------------------------------
@@ -493,20 +499,6 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     m_rect.setBottomRight(QPointF(i_physValPoint.x().getVal(m_unit), i_physValPoint.y().getVal(m_unit)));
-}
-
-//------------------------------------------------------------------------------
-void CPhysValRect::setResolution( double i_fRes )
-//------------------------------------------------------------------------------
-{
-    m_fRes = i_fRes;
-}
-
-//------------------------------------------------------------------------------
-void CPhysValRect::setUnit( const CUnit& i_unit )
-//------------------------------------------------------------------------------
-{
-    m_unit = i_unit;
 }
 
 /*==============================================================================

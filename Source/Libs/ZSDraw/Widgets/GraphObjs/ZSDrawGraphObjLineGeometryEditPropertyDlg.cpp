@@ -305,7 +305,7 @@ void CDlgGraphObjLineGeometryEditProperty::onEdtCoorValueChanged(const CPhysVal&
                 physValLine.setLength(m_pEdtCoor->value());
             }
             else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorAngle) {
-                physValLine.setAngle(m_pEdtCoor->value(), drawingSize.yScaleAxisOrientation());
+                physValLine.setAngle(m_pEdtCoor->value());
             }
             else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorCenter) {
                 CPhysValPoint physValCenter = physValLine.center();
@@ -475,7 +475,7 @@ void CDlgGraphObjLineGeometryEditProperty::update()
             fResolution = 0.1;
             fMinimum = -360.0;
             fMaximum = 360.0;
-            fValue = physValLine.angle(drawingSize.yScaleAxisOrientation()).getVal(unit);
+            fValue = physValLine.angle().getVal(unit);
         }
         else if (m_strCoorPart1 == CWdgtGraphObjLineGeometryProperties::c_strCoorCenter) {
             if (m_strCoorPart2 == CWdgtGraphObjLineGeometryProperties::c_strCoorX) {

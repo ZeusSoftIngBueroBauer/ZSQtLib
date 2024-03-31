@@ -60,12 +60,12 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValPoint"; }
 public: // ctors and dtor
-    CPhysValPoint();
     CPhysValPoint(const CDrawingScene& i_drawingScene);
-    CPhysValPoint(const ZS::PhysVal::CUnit& i_unit, double i_fRes);
-    CPhysValPoint(double i_fX, double i_fY, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValPoint(const QPointF& i_pt, double i_fRes, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValPoint(const ZS::PhysVal::CPhysVal& i_physValX, const ZS::PhysVal::CPhysVal& i_physValY);
+    CPhysValPoint(const CDrawingScene& i_drawingScene, double i_fX, double i_fY);
+    CPhysValPoint(const CDrawingScene& i_drawingScene, double i_fX, double i_fY, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValPoint(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CPhysVal& i_physValX, const ZS::PhysVal::CPhysVal& i_physValY);
+    CPhysValPoint(const CDrawingScene& i_drawingScene, const QPointF& i_pt);
+    CPhysValPoint(const CDrawingScene& i_drawingScene, const QPointF& i_pt, const ZS::PhysVal::CUnit& i_unit);
     CPhysValPoint(const CPhysValPoint& i_physValPointOther);
     ~CPhysValPoint();
 public: // operators
@@ -83,17 +83,14 @@ public: // instance methods
 public: // instance methods
     void setX(const ZS::PhysVal::CPhysVal& i_physValX);
     void setY(const ZS::PhysVal::CPhysVal& i_physValY);
-    void setResolution(double i_fRes);
-    void setUnit(const ZS::PhysVal::CUnit& i_unit);
 public: // instance methods (to convert the values into another unit)
     QPointF toQPointF() const;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
+    /*!< Reference to drawing scene. */
+    const CDrawingScene* m_pDrawingScene;
     /*!< The point coordinates stored in the unit 'm_unit'. */
     QPointF m_pt;
-    /*!< Resolution of both the X and Y value.
-         Defines the number of decimals when converting the coordinates into a string. */
-    double m_fRes;
     /*!< Unit (either metric or pixels) in which the line coordinates are internally stored in 'm_pt'. */
     ZS::PhysVal::CUnit m_unit;
 

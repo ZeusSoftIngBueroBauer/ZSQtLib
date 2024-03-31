@@ -46,58 +46,40 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize() :
-//------------------------------------------------------------------------------
-    m_size(),
-    m_fRes(0.0),
-    m_unit()
-{
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Creates a physical size on the drawing scene in the current unit
            and current resolution of the drawing scene.
 */
 CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_size(),
-    m_fRes(i_drawingScene.drawingSize().imageCoorsResolution().getVal()),
     m_unit(i_drawingScene.drawingSize().unit())
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(const CUnit& i_unit, double i_fRes) :
+CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene, double i_fWidth, double i_fHeight) :
 //------------------------------------------------------------------------------
-    m_size(),
-    m_fRes(i_fRes),
-    m_unit(i_unit)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(double i_fWidth, double i_fHeight, double i_fRes, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_size(i_fWidth, i_fHeight),
-    m_fRes(i_fRes),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene, double i_fWidth, double i_fHeight, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_size(i_fWidth, i_fHeight),
     m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(const QSizeF& i_size, double i_fRes, const CUnit& i_unit) :
+CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene, const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight) :
 //------------------------------------------------------------------------------
-    m_size(i_size),
-    m_fRes(i_fRes),
-    m_unit(i_unit)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight) :
-//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_size(i_physValWidth.getVal(), i_physValHeight.getVal()),
-    m_fRes(i_physValWidth.getRes().getVal()),
     m_unit(i_physValWidth.unit())
 {
     if (i_physValWidth.unit() != i_physValHeight.unit()) {
@@ -109,10 +91,28 @@ CPhysValSize::CPhysValSize(const CPhysVal& i_physValWidth, const CPhysVal& i_phy
 }
 
 //------------------------------------------------------------------------------
+CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene, const QSizeF& i_size) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_size(i_size),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValSize::CPhysValSize(const CDrawingScene& i_drawingScene, const QSizeF& i_size, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_size(i_size),
+    m_unit(i_unit)
+{
+}
+
+//------------------------------------------------------------------------------
 CPhysValSize::CPhysValSize(const CPhysValSize& i_physValSizeOther) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(i_physValSizeOther.m_pDrawingScene),
     m_size(i_physValSizeOther.m_size),
-    m_fRes(i_physValSizeOther.m_fRes),
     m_unit(i_physValSizeOther.m_unit)
 {
 }
@@ -121,8 +121,8 @@ CPhysValSize::CPhysValSize(const CPhysValSize& i_physValSizeOther) :
 CPhysValSize::~CPhysValSize()
 //------------------------------------------------------------------------------
 {
+    m_pDrawingScene = nullptr;
     //m_size;
-    m_fRes = 0.0;
     //m_unit;
 }
 
@@ -135,7 +135,6 @@ CPhysValSize& CPhysValSize::operator = ( const CPhysValSize& i_physValSizeOther 
 //------------------------------------------------------------------------------
 {
     m_size = i_physValSizeOther.m_size;
-    m_fRes = i_physValSizeOther.m_fRes;
     m_unit = i_physValSizeOther.m_unit;
     return *this;
 }
@@ -175,23 +174,12 @@ CPhysValSize& CPhysValSize::operator = ( const QString& i_strValOther )
         throw CUnitConversionException(
             __FILE__, __LINE__, EResultArgOutOfRange, i_strValOther);
     }
-
-    CPhysVal physValWidth(m_unit, m_fRes);
-    CPhysVal physValHeight(m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValWidth(m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
+    CPhysVal physValHeight(m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
     physValWidth = strlst[0];
     physValHeight = strlst[1];
-    if (!m_unit.isValid()) {
-        if (physValWidth.unit().isValid()) {
-            m_unit = physValWidth.unit();
-        }
-        else if (physValHeight.unit().isValid()) {
-            m_unit = physValHeight.unit();
-        }
-        else {
-            m_unit = Units.Length.px;
-        }
-    }
-    physValWidth.convertValue(m_unit);
+    m_unit = physValWidth.unit();
     physValHeight.convertValue(m_unit);
     m_size.setWidth(physValWidth.getVal());
     m_size.setHeight(physValHeight.getVal());
@@ -222,9 +210,6 @@ bool CPhysValSize::operator == ( const CPhysValSize& i_physValSizeOther ) const
         if (fWidth != m_size.width() || fHeight != m_size.height()) {
             bEqual = false;
         }
-        else if (m_fRes != i_physValSizeOther.m_fRes) {
-            bEqual = false;
-        }
     }
     return bEqual;
 }
@@ -241,24 +226,37 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+bool CPhysValSize::isValid() const
+//------------------------------------------------------------------------------
+{
+    return m_size.isValid();
+}
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
 CPhysVal CPhysValSize::width() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_size.width(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_size.width(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValSize::height() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_size.height(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_size.height(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 double CPhysValSize::resolution() const
 //------------------------------------------------------------------------------
 {
-    return m_fRes;
+    return m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit).getVal();
 }
 
 //------------------------------------------------------------------------------
@@ -266,13 +264,6 @@ CUnit CPhysValSize::unit() const
 //------------------------------------------------------------------------------
 {
     return m_unit;
-}
-
-//------------------------------------------------------------------------------
-bool CPhysValSize::isValid() const
-//------------------------------------------------------------------------------
-{
-    return m_size.isValid();
 }
 
 /*==============================================================================
@@ -291,20 +282,6 @@ void CPhysValSize::setHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {
     m_size.setHeight(i_physValHeight.getVal(m_unit));
-}
-
-//------------------------------------------------------------------------------
-void CPhysValSize::setResolution( double i_fRes )
-//------------------------------------------------------------------------------
-{
-    m_fRes = i_fRes;
-}
-
-//------------------------------------------------------------------------------
-void CPhysValSize::setUnit( const CUnit& i_unit )
-//------------------------------------------------------------------------------
-{
-    m_unit = i_unit;
 }
 
 /*==============================================================================

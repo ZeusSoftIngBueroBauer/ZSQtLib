@@ -4435,8 +4435,9 @@ void CMainWindow::onDrawingViewContentAreaChanged()
         }
         if (m_pLblStatusBarDrawingSize != nullptr) {
             const CDrawingSize& drawingSize = pDrawingScene->drawingSize();
-            QString strSizeInfo =
-                " Drawing {" + drawingSize.metricImageSize().toString() + "} " +
+            QString strSizeInfo = " Drawing {" +
+                drawingSize.metricImageWidth().toString(EUnitFind::None, PhysValSubStr::Val) + ", " +
+                drawingSize.metricImageHeight().toString(EUnitFind::None, PhysValSubStr::Val) + "} " +
                 drawingSize.metricUnit().symbol();
             m_pLblStatusBarDrawingSize->setText(strSizeInfo);
         }

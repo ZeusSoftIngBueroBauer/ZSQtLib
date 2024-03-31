@@ -174,7 +174,7 @@ CModelGraphObjLineGeometry::CModelGraphObjLineGeometry(
     m_strKeyInTree(),
     m_pGraphObjLine(nullptr),
     m_drawingSize(i_pDrawingScene->drawingSize()),
-    m_physValLine(),
+    m_physValLine(*i_pDrawingScene),
     m_arLabelSettings(),
     m_strXYValSizeHint("1024 px +-"),
     m_sizeXYValSizeHint(),
@@ -651,7 +651,7 @@ QVariant CModelGraphObjLineGeometry::data(const QModelIndex& i_modelIdx, int i_i
                             varData = m_physValLine.length().toString();
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameAngle) {
-                            varData = m_physValLine.angle(drawingSize.yScaleAxisOrientation()).toString();
+                            varData = m_physValLine.angle().toString();
                         }
                     }
                     else if (i_iRole == Qt::EditRole) {
@@ -674,7 +674,7 @@ QVariant CModelGraphObjLineGeometry::data(const QModelIndex& i_modelIdx, int i_i
                             varData = QVariant::fromValue(m_physValLine.length());
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameAngle) {
-                            varData = QVariant::fromValue(m_physValLine.angle(drawingSize.yScaleAxisOrientation()));
+                            varData = QVariant::fromValue(m_physValLine.angle());
                         }
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
@@ -939,7 +939,7 @@ bool CModelGraphObjLineGeometry::setData(
                         }
                         else if (labelSettings.m_strValueName == CGraphObjLine::c_strGeometryLabelNameAngle) {
                             CPhysVal physVal = i_varData.value<CPhysVal>();
-                            physValLine.setAngle(physVal, m_drawingSize.yScaleAxisOrientation());
+                            physValLine.setAngle(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
                         }
                         bDataSet = true;

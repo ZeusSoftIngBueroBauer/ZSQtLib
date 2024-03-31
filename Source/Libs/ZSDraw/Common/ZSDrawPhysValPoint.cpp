@@ -46,40 +46,18 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Default constructor for a phyiscal point.
-*/
-CPhysValPoint::CPhysValPoint() :
-//------------------------------------------------------------------------------
-    m_unit(),
-    m_fRes(0.0),
-    m_pt()
-{
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Creates a physical point on the drawing scene in the current unit
            and current resolution of the drawing scene.
 */
 CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_pt(),
-    m_fRes(i_drawingScene.drawingSize().imageCoorsResolution().getVal()),
     m_unit(i_drawingScene.drawingSize().unit())
 {
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Creates a physical point with the given unit and resolution.
-*/
-CPhysValPoint::CPhysValPoint(const CUnit& i_unit, double i_fRes) :
-//------------------------------------------------------------------------------
-    m_pt(),
-    m_fRes(i_fRes),
-    m_unit(i_unit)
-{
-}
-
-//------------------------------------------------------------------------------
 /*! @brief
 
     @param [in] i_pt
@@ -87,11 +65,11 @@ CPhysValPoint::CPhysValPoint(const CUnit& i_unit, double i_fRes) :
     @param [in] i_unit
         Unit the coordinates are passed.
 */
-CPhysValPoint::CPhysValPoint(double i_fX, double i_fY, double i_fRes, const CUnit& i_unit) :
+CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene, double i_fX, double i_fY) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_pt(i_fX, i_fY),
-    m_fRes(i_fRes),
-    m_unit(i_unit)
+    m_unit(i_drawingScene.drawingSize().unit())
 {
 }
 
@@ -103,19 +81,20 @@ CPhysValPoint::CPhysValPoint(double i_fX, double i_fY, double i_fRes, const CUni
     @param [in] i_unit
         Unit the coordinates are passed.
 */
-CPhysValPoint::CPhysValPoint(const QPointF& i_pt, double i_fRes, const CUnit& i_unit) :
+CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene, double i_fX, double i_fY, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    m_pt(i_pt),
-    m_fRes(i_fRes),
+    m_pDrawingScene(&i_drawingScene),
+    m_pt(i_fX, i_fY),
     m_unit(i_unit)
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValPoint::CPhysValPoint(const CPhysVal& i_physValX, const CPhysVal& i_physValY) :
+CPhysValPoint::CPhysValPoint(
+    const CDrawingScene& i_drawingScene, const CPhysVal& i_physValX, const CPhysVal& i_physValY) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
     m_pt(i_physValX.getVal(), i_physValY.getVal()),
-    m_fRes(i_physValX.getRes().getVal()),
     m_unit(i_physValX.unit())
 {
     if (i_physValX.unit() != i_physValY.unit()) {
@@ -127,10 +106,42 @@ CPhysValPoint::CPhysValPoint(const CPhysVal& i_physValX, const CPhysVal& i_physV
 }
 
 //------------------------------------------------------------------------------
+/*! @brief
+
+    @param [in] i_pt
+        Point whose coordinates are in the given unit.
+    @param [in] i_unit
+        Unit the coordinates are passed.
+*/
+CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene, const QPointF& i_pt) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_pt(i_pt),
+    m_unit(i_drawingScene.drawingSize().unit())
+{
+}
+
+//------------------------------------------------------------------------------
+/*! @brief
+
+    @param [in] i_pt
+        Point whose coordinates are in the given unit.
+    @param [in] i_unit
+        Unit the coordinates are passed.
+*/
+CPhysValPoint::CPhysValPoint(const CDrawingScene& i_drawingScene, const QPointF& i_pt, const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    m_pDrawingScene(&i_drawingScene),
+    m_pt(i_pt),
+    m_unit(i_unit)
+{
+}
+
+//------------------------------------------------------------------------------
 CPhysValPoint::CPhysValPoint( const CPhysValPoint& i_physValPointOther ) :
 //------------------------------------------------------------------------------
+    m_pDrawingScene(i_physValPointOther.m_pDrawingScene),
     m_pt(i_physValPointOther.m_pt),
-    m_fRes(i_physValPointOther.m_fRes),
     m_unit(i_physValPointOther.m_unit)
 {
 }
@@ -139,8 +150,8 @@ CPhysValPoint::CPhysValPoint( const CPhysValPoint& i_physValPointOther ) :
 CPhysValPoint::~CPhysValPoint()
 //------------------------------------------------------------------------------
 {
+    m_pDrawingScene = nullptr;
     //m_pt;
-    m_fRes = 0.0;
     //m_unit;
 }
 
@@ -152,8 +163,8 @@ public: // operators
 CPhysValPoint& CPhysValPoint::operator = ( const CPhysValPoint& i_physValPointOther )
 //------------------------------------------------------------------------------
 {
+    m_pDrawingScene = i_physValPointOther.m_pDrawingScene;
     m_pt = i_physValPointOther.m_pt;
-    m_fRes = i_physValPointOther.m_fRes;
     m_unit = i_physValPointOther.m_unit;
     return *this;
 }
@@ -193,23 +204,12 @@ CPhysValPoint& CPhysValPoint::operator = ( const QString& i_strValOther )
         throw CUnitConversionException(
             __FILE__, __LINE__, EResultArgOutOfRange, i_strValOther);
     }
-
-    CPhysVal physValX(m_unit, m_fRes);
-    CPhysVal physValY(m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CPhysVal physValX(m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
+    CPhysVal physValY(m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
     physValX = strlst[0];
     physValY = strlst[1];
-    if (!m_unit.isValid()) {
-        if (physValX.unit().isValid()) {
-            m_unit = physValX.unit();
-        }
-        else if (physValY.unit().isValid()) {
-            m_unit = physValY.unit();
-        }
-        else {
-            m_unit = Units.Length.px;
-        }
-    }
-    physValX.convertValue(m_unit);
+    m_unit = physValX.unit();
     physValY.convertValue(m_unit);
     m_pt.setX(physValX.getVal());
     m_pt.setY(physValY.getVal());
@@ -225,7 +225,7 @@ bool CPhysValPoint::operator == ( const CPhysValPoint& i_physValPointOther ) con
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-    if (!areOfSameUnitGroup(m_unit, i_physValPointOther.m_unit)) {
+    if (m_pDrawingScene != i_physValPointOther.m_pDrawingScene) {
         bEqual = false;
     }
     else if (m_unit == i_physValPointOther.m_unit && m_pt != i_physValPointOther.m_pt) {
@@ -238,9 +238,6 @@ bool CPhysValPoint::operator == ( const CPhysValPoint& i_physValPointOther ) con
         double fXOther = i_physValPointOther.x().getVal(m_unit);
         double fYOther = i_physValPointOther.y().getVal(m_unit);
         if (fXOther != m_pt.x() || fYOther != m_pt.y()) {
-            bEqual = false;
-        }
-        else if (m_fRes != i_physValPointOther.m_fRes) {
             bEqual = false;
         }
     }
@@ -262,21 +259,23 @@ public: // instance methods
 CPhysVal CPhysValPoint::x() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_pt.x(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_pt.x(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 CPhysVal CPhysValPoint::y() const
 //------------------------------------------------------------------------------
 {
-    return CPhysVal(m_pt.y(), m_unit, m_fRes);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    return CPhysVal(m_pt.y(), m_unit, drawingSize.imageCoorsResolution(m_unit).getVal());
 }
 
 //------------------------------------------------------------------------------
 double CPhysValPoint::resolution() const
 //------------------------------------------------------------------------------
 {
-    return m_fRes;
+    return m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit).getVal();
 }
 
 //------------------------------------------------------------------------------
@@ -302,20 +301,6 @@ void CPhysValPoint::setY( const CPhysVal& i_physValY )
 //------------------------------------------------------------------------------
 {
     m_pt.setY(i_physValY.getVal(m_unit));
-}
-
-//------------------------------------------------------------------------------
-void CPhysValPoint::setResolution( double i_fRes )
-//------------------------------------------------------------------------------
-{
-    m_fRes = i_fRes;
-}
-
-//------------------------------------------------------------------------------
-void CPhysValPoint::setUnit( const CUnit& i_unit )
-//------------------------------------------------------------------------------
-{
-    m_unit = i_unit;
 }
 
 /*==============================================================================

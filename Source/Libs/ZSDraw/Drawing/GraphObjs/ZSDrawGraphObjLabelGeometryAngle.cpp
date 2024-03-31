@@ -330,7 +330,7 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     }
 
     CPhysValLine physValLineSelPtSceneCoors(
-        pt1SelScenePosParent, pt2SelScenePosParent, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+        *m_pDrawingScene, pt1SelScenePosParent, pt2SelScenePosParent, Units.Length.px);
     QString strText;
     // If the label is linked to just one object ..
     if (m_labelDscr.m_selPt1.m_pGraphObj == m_labelDscr.m_selPt2.m_pGraphObj) {
@@ -341,8 +341,8 @@ void CGraphObjLabelGeometryAngle::updatePosition()
     else {
         // .. calculate coordinate from selection points.
         CPhysValLine physValLineSelPtSceneCoors(
-            pt1SelScenePosParent, pt2SelScenePosParent, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-        strText = physValLineSelPtSceneCoors.angle(drawingSize.yScaleAxisOrientation()).toString();
+            *m_pDrawingScene, pt1SelScenePosParent, pt2SelScenePosParent, Units.Length.px);
+        strText = physValLineSelPtSceneCoors.angle().toString();
     }
     if (QGraphicsSimpleTextItem::text() != strText) {
         QGraphicsSimpleTextItem::setText(strText);
@@ -534,7 +534,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     }
 
     CPhysValLine physValLineSelPtSceneCoors(
-        pt1SelScenePosParent, pt2SelScenePosParent, drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+        *m_pDrawingScene, pt1SelScenePosParent, pt2SelScenePosParent, Units.Length.px);
     QPointF ptCenterLineSelPtScenePos = physValLineSelPtSceneCoors.center().toQPointF();
     QPointF ptP1LineSetPtScenePos = mapFromScene(physValLineSelPtSceneCoors.p1().toQPointF());
     QPointF ptP2LineSetPtScenePos = mapFromScene(physValLineSelPtSceneCoors.p2().toQPointF());
@@ -558,7 +558,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
     m_rectAnchorLine2CircleSegment.setWidth(2.0 * m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
     m_rectAnchorLine2CircleSegment.setHeight(2.0 * m_labelDscr.m_polarCoorsToLinkedSelPt.m_fLength_px);
     m_rectAnchorLine2CircleSegment.moveCenter(ptCenterLineSelPtPos);
-    m_fAnchorLine2Angle_degrees = physValLineSelPtSceneCoors.angle(drawingSize.yScaleAxisOrientation()).getVal();
+    m_fAnchorLine2Angle_degrees = physValLineSelPtSceneCoors.angle().getVal();
 
     //QLineF perpendicularLineHorLine =
     //    QLineF(ptHorLine0DegreesP2, QPointF(ptHorLine0DegreesP2.x(), ptHorLine0DegreesP2.y() - 20.0));

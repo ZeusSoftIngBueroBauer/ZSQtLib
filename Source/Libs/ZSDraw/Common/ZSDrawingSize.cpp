@@ -878,26 +878,6 @@ int CDrawingSize::imageHeightInPixels() const
 }
 
 //------------------------------------------------------------------------------
-CPhysValSize CDrawingSize::metricImageSize() const
-//------------------------------------------------------------------------------
-{
-    double fRes = imageCoorsResolution(m_metricUnit).getVal();
-    return CPhysValSize(m_fImageMetricWidth, m_fImageMetricHeight, fRes, m_metricUnit);
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize CDrawingSize::metricImageSize(const CUnit& i_unit) const
-//------------------------------------------------------------------------------
-{
-    if (Units.Length.isMetricUnit(i_unit)) {
-        CPhysVal physValWidth = metricImageWidth(i_unit);
-        CPhysVal physValHeight = metricImageHeight(i_unit);
-        return CPhysValSize(physValWidth, physValHeight);
-    }
-    return CPhysValSize(m_fImageSizeWidth_px, m_fImageSizeHeight_px, m_fImageSizeRes_px, Units.Length.px);
-}
-
-//------------------------------------------------------------------------------
 CPhysVal CDrawingSize::metricImageWidth() const
 //------------------------------------------------------------------------------
 {
@@ -1230,8 +1210,12 @@ QString CDrawingSize::toString() const
         ", DimensionUnit: "+ QString(m_eDimensionUnit.isValid() ? m_eDimensionUnit.toString() : "?") +
         ", YScale: " + QString(m_eYScaleAxisOrientation.isValid() ? m_eYScaleAxisOrientation.toString() : "?") +
         ", ScreenResolution: " + QString::number(m_fScreenResolution_px_mm, 'f', 1) + " px/mm" +
-        ", Size/" + m_metricUnit.symbol() + " {" + CPhysValSize(m_fImageMetricWidth, m_fImageMetricHeight, imageCoorsResolution(m_metricUnit).getVal(), m_metricUnit).toString() + "}"
-        ", Size/px {" + CPhysValSize(m_fImageSizeWidth_px, m_fImageSizeHeight_px, m_fImageSizeRes_px, Units.Length.px).toString() + "}" +
+        ", Size/" + m_metricUnit.symbol() + " {" +
+            metricImageWidth().toString(EUnitFind::None, PhysValSubStr::Val) + ", " +
+            metricImageHeight().toString(EUnitFind::None, PhysValSubStr::Val) + "}" +
+        ", Size/px {" +
+            CPhysVal(m_fImageSizeWidth_px, Units.Length.px, m_fImageSizeRes_px).toString(EUnitFind::None, PhysValSubStr::Val) + ", " +
+            CPhysVal(m_fImageSizeHeight_px, Units.Length.px, m_fImageSizeRes_px).toString(EUnitFind::None, PhysValSubStr::Val) + "}" +
         ", Scale: " + QString::number(m_iMetricScaleFactorDividend) + ":" + QString::number(m_iMetricScaleFactorDivisor) +
         ", PaperSize: " + QString(m_eNormedPaperSize.isValid() ? m_eNormedPaperSize.toString() : "?") +
         ", Orientation: " + QString(m_eNormedPaperOrientation.isValid() ? m_eNormedPaperOrientation.toString() : "?");

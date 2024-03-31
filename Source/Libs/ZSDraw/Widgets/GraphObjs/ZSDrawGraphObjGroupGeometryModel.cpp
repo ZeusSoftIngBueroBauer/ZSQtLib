@@ -174,7 +174,7 @@ CModelGraphObjGroupGeometry::CModelGraphObjGroupGeometry(
     m_strKeyInTree(),
     m_pGraphObjGroup(nullptr),
     m_drawingSize(i_pDrawingScene->drawingSize()),
-    m_physValRect(),
+    m_physValRect(*i_pDrawingScene),
     m_physValRotationAngle(0.0, Units.Angle.Degree, 0.1),
     m_arLabelSettings(),
     m_strXYValSizeHint("1024 px +-"),
