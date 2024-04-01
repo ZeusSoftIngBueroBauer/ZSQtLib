@@ -957,7 +957,7 @@ bool CModelGraphObjGroupGeometry::setData(
                             CPhysValPoint physValPtCenter = physValRect.center();
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPtCenter.setX(physVal);
-                            physValRect.moveCenter(physValPtCenter);
+                            physValRect.setCenter(physValPtCenter);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
@@ -1020,7 +1020,7 @@ bool CModelGraphObjGroupGeometry::setData(
                             CPhysValPoint physValPtCenter = physValRect.center();
                             CPhysVal physVal = i_varData.value<CPhysVal>();
                             physValPtCenter.setY(physVal);
-                            physValRect.moveCenter(physValPtCenter);
+                            physValRect.setCenter(physValPtCenter);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }

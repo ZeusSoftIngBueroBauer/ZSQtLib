@@ -5078,12 +5078,6 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(ESelectionPoint i_selPt, co
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QRectF rctBounding = getBoundingRect();
     QPointF ptPos = ZS::Draw::getSelectionPointCoors(rctBounding, i_selPt);
-    // Before mapping to parent or scene, the rotation will be reset.
-    // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryChanged signal ..
-    CGraphObj* pVThis = const_cast<CGraphObj*>(this);
-    CRefCountGuard refCountGuardGeometryChangedSignal(&pVThis->m_iGeometryChangedSignalBlockedCounter);
-    pVThis->QGraphicsItem_setRotation(0.0);
     CPhysValPoint physValPos(*m_pDrawingScene);
     if (parentGroup() != nullptr) {
         ptPos = mapToTopLeftOfBoundingRect(ptPos);
@@ -5093,7 +5087,6 @@ CPhysValPoint CGraphObj::getPositionOfSelectionPoint(ESelectionPoint i_selPt, co
         ptPos = pGraphicsItemThis->mapToScene(ptPos);
         physValPos = m_pDrawingScene->convert(ptPos, i_unit);
     }
-    pVThis->QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
     return physValPos;
 }
 

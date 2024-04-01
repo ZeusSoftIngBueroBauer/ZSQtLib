@@ -86,6 +86,12 @@ protected: // instance methods
         const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinates(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
     ZS::Test::CTestStepGroup* createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
@@ -177,6 +183,7 @@ protected slots:
     void doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepDrawingSceneConvertToPhysValPoint( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepDrawingSceneConvertToPhysValSize( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepDrawingSceneConvertToPhysValLine( ZS::Test::CTestStep* i_pTestStep );

@@ -37,16 +37,13 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-/*! @brief Corresponds to QRectF but providing a physical unit and a resolution.
+/*! @brief Represents a rectangle on the drawing scene.
 
-    This class is not part of ZS::PhysVal as the namespace ZS::PhysVal is abstract
-    concerning units and the units "pixels" or any metric units is not known within
-    the ZS::PhysVal library. The corresponding unit tree must be configured for the
-    specific application or, as in this case, in the units tree of the ZS::Draw library.
+    Corresponds to QRectF but providing a physical unit and a resolution and
+    the possibility to rotate the rectangle.
 
-    In addition to convert between metric and pixel dimensions (and vice versa)
-    the screen resolution and the scale factor must be known. Both are properties
-    of the physical size "Length" within the ZS::Draw library.
+    To convert between metric and pixel dimensions (and vice versa) the screen
+    resolution, the scale factor and the y-Axis-Scale orientation must be known.
 */
 class ZSDRAWDLL_API CPhysValRect
 //******************************************************************************
@@ -73,53 +70,62 @@ public: // operators
 public: // instance methods
     bool isValid() const;
 public: // instance methods
-    ZS::PhysVal::CPhysVal top() const;
-    ZS::PhysVal::CPhysVal bottom() const;
-    ZS::PhysVal::CPhysVal left() const;
-    ZS::PhysVal::CPhysVal right() const;
+    CPhysValPoint center() const;
+    CPhysValSize size() const;
     ZS::PhysVal::CPhysVal width() const;
     ZS::PhysVal::CPhysVal height() const;
-    CPhysValSize size() const;
-    CPhysValPoint center() const;
+    ZS::PhysVal::CPhysVal angle() const;
     CPhysValPoint topLeft() const;
     CPhysValPoint topRight() const;
-    CPhysValPoint bottomLeft() const;
     CPhysValPoint bottomRight() const;
+    CPhysValPoint bottomLeft() const;
+    CPhysValPoint topCenter() const;
+    CPhysValPoint rightCenter() const;
+    CPhysValPoint bottomCenter() const;
+    CPhysValPoint leftCenter() const;
     double resolution() const;
     ZS::PhysVal::CUnit unit() const;
 public: // instance methods
-    void setTop(double i_fTop);
-    void setTop(const ZS::PhysVal::CPhysVal& i_physValTop);
-    void setBottom(double i_fBottom);
-    void setBottom(const ZS::PhysVal::CPhysVal& i_physValBottom);
-    void setLeft(double i_fLeft);
-    void setLeft(const ZS::PhysVal::CPhysVal& i_physValLeft);
-    void setRight(double i_fRight);
-    void setRight(const ZS::PhysVal::CPhysVal& i_physValRight);
+    void setCenter(const QPointF& i_pt);
+    void setCenter(const CPhysValPoint& i_physValPoint);
+    void setSize(const QSizeF& i_size);
+    void setSize(const CPhysValSize& i_physValSize);
     void setWidth(double i_fWidth);
     void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     void setHeight(double i_fHeight);
     void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
-    void setSize(const QSizeF& i_size);
-    void setSize(const CPhysValSize& i_physValSize);
-    void moveCenter(const QPointF& i_pt);
-    void moveCenter(const CPhysValPoint& i_physValPoint);
+    void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     void setTopLeft(const QPointF& i_pt);
     void setTopLeft(const CPhysValPoint& i_physValPoint);
     void setTopRight(const QPointF& i_pt);
     void setTopRight(const CPhysValPoint& i_physValPoint);
-    void setBottomLeft(const QPointF& i_pt);
-    void setBottomLeft(const CPhysValPoint& i_physValPoint);
     void setBottomRight(const QPointF& i_pt);
     void setBottomRight(const CPhysValPoint& i_physValPoint);
+    void setBottomLeft(const QPointF& i_pt);
+    void setBottomLeft(const CPhysValPoint& i_physValPoint);
+    void setTopCenter(const QPointF& i_pt);
+    void setTopCenter(const CPhysValPoint& i_physValPoint);
+    void setRightCenter(const QPointF& i_pt);
+    void setRightCenter(const CPhysValPoint& i_physValPoint);
+    void setBottomCenter(const QPointF& i_pt);
+    void setBottomCenter(const CPhysValPoint& i_physValPoint);
+    void setLeftCenter(const QPointF& i_pt);
+    void setLeftCenter(const CPhysValPoint& i_physValPoint);
 public: // instance methods (to convert the values into another unit)
-    QRectF toQRectF() const;
+    QRectF toNotRotatedQRectF() const;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
+protected: // auxiliary math functions
+    static double radius(const QSizeF& i_size);
+    static double phi_rad(const QSizeF& i_size);
 protected: // instance members
     /*!< Reference to drawing scene. */
     const CDrawingScene* m_pDrawingScene;
-    /*!< The rectangle coordinates in the unit 'm_unit'. */
-    QRectF m_rect;
+    /*!< The rectangles center coordinates in the unit 'm_unit'. */
+    QPointF m_ptCenter;
+    /*!< The rectangles width and height in the unit 'm_unit'. */
+    QSizeF m_size;
+    /*!< The rotation angle. */
+    ZS::PhysVal::CPhysVal m_physValAngle;
     /*!< Unit (either metric or pixels) in which the rectangle coordinates are in 'm_rect'. */
     ZS::PhysVal::CUnit m_unit;
 
