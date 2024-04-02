@@ -117,6 +117,7 @@ public: // instance methods (to convert the values into another unit)
 protected: // auxiliary math functions
     static double radius(const QSizeF& i_size);
     static double phi_rad(const QSizeF& i_size);
+    void updateFromOppositeCorners(const CPhysValPoint& i_physValPtNew, const CPhysValPoint& i_physValPtOpposite);
 protected: // instance members
     /*!< Reference to drawing scene. */
     const CDrawingScene* m_pDrawingScene;

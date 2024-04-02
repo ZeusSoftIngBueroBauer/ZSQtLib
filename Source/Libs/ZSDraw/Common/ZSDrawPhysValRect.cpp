@@ -571,21 +571,7 @@ void CPhysValRect::setCenter(const CPhysValPoint& i_physValPoint)
 void CPhysValRect::setSize(const QSizeF& i_size)
 //------------------------------------------------------------------------------
 {
-    // Before taken over the new size, get current top left corner.
-    CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal(m_unit);
-    double fY = physValPtTL.y().getVal(m_unit);
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    if (fAngle_rad == 0.0) {
-        fX += i_size.width() / 2.0;
-        fY += i_size.height() / 2.0;
-    }
-    else {
-        fX += radius(i_size) * cos(phi_rad(i_size) + fAngle_rad);
-        fY += radius(i_size) * sin(phi_rad(i_size) + fAngle_rad);
-    }
-    m_ptCenter = QPointF(fX, fY);
-    m_size = i_size;
+    setSize(CPhysValSize(*m_pDrawingScene, i_size, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -640,22 +626,7 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
 void CPhysValRect::setWidth(double i_fWidth)
 //------------------------------------------------------------------------------
 {
-    // Before taken over the new size, get current top left corner.
-    CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal(m_unit);
-    double fY = physValPtTL.y().getVal(m_unit);
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    QSizeF sizeF(i_fWidth, m_size.height());
-    if (fAngle_rad == 0.0) {
-        fX += sizeF.width() / 2.0;
-        fY += sizeF.height() / 2.0;
-    }
-    else {
-        fX += radius(sizeF) * cos(phi_rad(sizeF) + fAngle_rad);
-        fY += radius(sizeF) * sin(phi_rad(sizeF) + fAngle_rad);
-    }
-    m_ptCenter = QPointF(fX, fY);
-    m_size = sizeF;
+    setWidth(CPhysVal(i_fWidth, m_unit, m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit)));
 }
 
 //------------------------------------------------------------------------------
@@ -712,22 +683,7 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
 void CPhysValRect::setHeight(double i_fHeight)
 //------------------------------------------------------------------------------
 {
-    // Before taken over the new size, get current top left corner.
-    CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal(m_unit);
-    double fY = physValPtTL.y().getVal(m_unit);
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    QSizeF sizeF(m_size.width(), i_fHeight);
-    if (fAngle_rad == 0.0) {
-        fX += sizeF.width() / 2.0;
-        fY += sizeF.height() / 2.0;
-    }
-    else {
-        fX += radius(sizeF) * cos(phi_rad(sizeF) + fAngle_rad);
-        fY += radius(sizeF) * sin(phi_rad(sizeF) + fAngle_rad);
-    }
-    m_ptCenter = QPointF(fX, fY);
-    m_size = sizeF;
+    setHeight(CPhysVal(i_fHeight, m_unit, m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit)));
 }
 
 //------------------------------------------------------------------------------
@@ -801,17 +757,7 @@ void CPhysValRect::setAngle( const CPhysVal& i_physValAngle )
 void CPhysValRect::setTopLeft(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite corner.
-    CPhysValPoint physValPtOpposite = bottomRight();
-    CPhysValPoint physValPt(*m_pDrawingScene, i_pt, m_unit);
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fRadius = fabs(QLineF(i_pt, m_ptCenter).length());
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    double fWidth = fRadius * cos(fAngle_rad);
-    double fHeight = fRadius * sin(fAngle_rad);
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
+    setTopLeft(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -831,16 +777,7 @@ void CPhysValRect::setTopLeft(const QPointF& i_pt)
 void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite corner.
-    CPhysValPoint physValPtOpposite = bottomRight();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal() + physValPtOpposite.x().getVal(i_physValPoint.unit())) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal() + physValPtOpposite.y().getVal(i_physValPoint.unit())) / 2.0));
-    double fRadius = fabs(QLineF(i_physValPoint.toQPointF(), m_ptCenter).length());
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    double fWidth = fRadius * cos(fAngle_rad);
-    double fHeight = fRadius * sin(fAngle_rad);
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
+    updateFromOppositeCorners(i_physValPoint, bottomRight());
 }
 
 //------------------------------------------------------------------------------
@@ -858,17 +795,7 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
 void CPhysValRect::setTopRight(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite corner.
-    CPhysValPoint physValPtOpposite = bottomLeft();
-    CPhysValPoint physValPt(*m_pDrawingScene, i_pt, m_unit);
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fRadius = fabs(QLineF(i_pt, m_ptCenter).length());
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    double fWidth = fRadius * cos(fAngle_rad);
-    double fHeight = fRadius * sin(fAngle_rad);
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
+    setTopRight(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -888,16 +815,7 @@ void CPhysValRect::setTopRight(const QPointF& i_pt)
 void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite corner.
-    CPhysValPoint physValPtOpposite = bottomLeft();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal() + physValPtOpposite.x().getVal(i_physValPoint.unit())) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal() + physValPtOpposite.y().getVal(i_physValPoint.unit())) / 2.0));
-    double fRadius = fabs(QLineF(i_physValPoint.toQPointF(), m_ptCenter).length());
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    double fWidth = fRadius * cos(fAngle_rad);
-    double fHeight = fRadius * sin(fAngle_rad);
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
+    updateFromOppositeCorners(i_physValPoint, bottomLeft());
 }
 
 //------------------------------------------------------------------------------
@@ -915,17 +833,7 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
 void CPhysValRect::setBottomRight(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite corner.
-    CPhysValPoint physValPtOpposite = topLeft();
-    CPhysValPoint physValPt(*m_pDrawingScene, i_pt, m_unit);
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fRadius = fabs(QLineF(i_pt, m_ptCenter).length());
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    double fWidth = fRadius * cos(fAngle_rad);
-    double fHeight = fRadius * sin(fAngle_rad);
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
+    setBottomRight(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -945,16 +853,7 @@ void CPhysValRect::setBottomRight(const QPointF& i_pt)
 void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite corner.
-    CPhysValPoint physValPtOpposite = topLeft();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal() + physValPtOpposite.x().getVal(i_physValPoint.unit())) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal() + physValPtOpposite.y().getVal(i_physValPoint.unit())) / 2.0));
-    double fRadius = fabs(QLineF(i_physValPoint.toQPointF(), m_ptCenter).length());
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    double fWidth = fRadius * cos(fAngle_rad);
-    double fHeight = fRadius * sin(fAngle_rad);
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
+    updateFromOppositeCorners(i_physValPoint, topLeft());
 }
 
 //------------------------------------------------------------------------------
@@ -972,17 +871,7 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
 void CPhysValRect::setBottomLeft(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite corner.
-    CPhysValPoint physValPtOpposite = topRight();
-    CPhysValPoint physValPt(*m_pDrawingScene, i_pt, m_unit);
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fRadius = fabs(QLineF(i_pt, m_ptCenter).length());
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    double fWidth = fRadius * cos(fAngle_rad);
-    double fHeight = fRadius * sin(fAngle_rad);
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
+    setBottomLeft(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -1002,16 +891,7 @@ void CPhysValRect::setBottomLeft(const QPointF& i_pt)
 void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite corner.
-    CPhysValPoint physValPtOpposite = topRight();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal() + physValPtOpposite.x().getVal(i_physValPoint.unit())) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal() + physValPtOpposite.y().getVal(i_physValPoint.unit())) / 2.0));
-    double fRadius = fabs(QLineF(i_physValPoint.toQPointF(), m_ptCenter).length());
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    double fWidth = fRadius * cos(fAngle_rad);
-    double fHeight = fRadius * sin(fAngle_rad);
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
+    updateFromOppositeCorners(i_physValPoint, topRight());
 }
 
 //------------------------------------------------------------------------------
@@ -1029,17 +909,7 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
 void CPhysValRect::setTopCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite point.
-    CPhysValPoint physValPtOpposite = bottomCenter();
-    CPhysValPoint physValPt(*m_pDrawingScene, i_pt, m_unit);
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fDX = i_pt.x() - m_ptCenter.x();
-    double fDY = i_pt.y() - m_ptCenter.y();
-    if (fDX != 0.0 || fDY != 0.0) {
-        double fHeight = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
-        m_size.setHeight(fHeight);
-    }
+    setTopCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -1069,6 +939,7 @@ void CPhysValRect::setTopCenter(const CPhysValPoint& i_physValPoint)
         double fHeight = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
         m_size.setHeight(fHeight);
     }
+    m_unit = i_physValPoint.unit();
 }
 
 //------------------------------------------------------------------------------
@@ -1086,17 +957,7 @@ void CPhysValRect::setTopCenter(const CPhysValPoint& i_physValPoint)
 void CPhysValRect::setRightCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite point.
-    CPhysValPoint physValPtOpposite = leftCenter();
-    CPhysValPoint physValPt(*m_pDrawingScene, i_pt, m_unit);
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fDX = i_pt.x() - m_ptCenter.x();
-    double fDY = i_pt.y() - m_ptCenter.y();
-    if (fDX != 0.0 || fDY != 0.0) {
-        double fWidth = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
-        m_size.setWidth(fWidth);
-    }
+    setRightCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -1126,6 +987,7 @@ void CPhysValRect::setRightCenter(const CPhysValPoint& i_physValPoint)
         double fWidth = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
         m_size.setWidth(fWidth);
     }
+    m_unit = i_physValPoint.unit();
 }
 
 //------------------------------------------------------------------------------
@@ -1143,17 +1005,7 @@ void CPhysValRect::setRightCenter(const CPhysValPoint& i_physValPoint)
 void CPhysValRect::setBottomCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite point.
-    CPhysValPoint physValPtOpposite = topCenter();
-    CPhysValPoint physValPt(*m_pDrawingScene, i_pt, m_unit);
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fDX = i_pt.x() - m_ptCenter.x();
-    double fDY = i_pt.y() - m_ptCenter.y();
-    if (fDX != 0.0 || fDY != 0.0) {
-        double fHeight = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
-        m_size.setHeight(fHeight);
-    }
+    setBottomCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -1183,6 +1035,7 @@ void CPhysValRect::setBottomCenter(const CPhysValPoint& i_physValPoint)
         double fHeight = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
         m_size.setHeight(fHeight);
     }
+    m_unit = i_physValPoint.unit();
 }
 
 //------------------------------------------------------------------------------
@@ -1200,17 +1053,7 @@ void CPhysValRect::setBottomCenter(const CPhysValPoint& i_physValPoint)
 void CPhysValRect::setLeftCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 {
-    // Get coordinate of opposite point.
-    CPhysValPoint physValPtOpposite = rightCenter();
-    CPhysValPoint physValPt(*m_pDrawingScene, i_pt, m_unit);
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fDX = i_pt.x() - m_ptCenter.x();
-    double fDY = i_pt.y() - m_ptCenter.y();
-    if (fDX != 0.0 || fDY != 0.0) {
-        double fWidth = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
-        m_size.setWidth(fWidth);
-    }
+    setLeftCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
 }
 
 //------------------------------------------------------------------------------
@@ -1240,6 +1083,7 @@ void CPhysValRect::setLeftCenter(const CPhysValPoint& i_physValPoint)
         double fWidth = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
         m_size.setWidth(fWidth);
     }
+    m_unit = i_physValPoint.unit();
 }
 
 /*==============================================================================
@@ -1292,4 +1136,23 @@ double CPhysValRect::phi_rad(const QSizeF& i_size)
         fAngle_rad = atan(i_size.height()/i_size.width());
     }
     return fAngle_rad;
+}
+
+//------------------------------------------------------------------------------
+void CPhysValRect::updateFromOppositeCorners(const CPhysValPoint& i_physValPtNew, const CPhysValPoint& i_physValPtOpposite)
+//------------------------------------------------------------------------------
+{
+    m_ptCenter.setX(fabs((i_physValPtNew.x().getVal() + i_physValPtOpposite.x().getVal(i_physValPtNew.unit())) / 2.0));
+    m_ptCenter.setY(fabs((i_physValPtNew.y().getVal() + i_physValPtOpposite.y().getVal(i_physValPtNew.unit())) / 2.0));
+    QLineF lineDiagonale(i_physValPtNew.toQPointF(), i_physValPtOpposite.toQPointF());
+    double fDiagonale = lineDiagonale.length();
+    double fWidth = 0.0;
+    double fHeight = 0.0;
+    if (fDiagonale > 0.0) {
+        fWidth = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(lineDiagonale.dy()));
+        fHeight = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(lineDiagonale.dx()));
+    }
+    m_size.setWidth(fWidth);
+    m_size.setHeight(fHeight);
+    m_unit = i_physValPtNew.unit();
 }
