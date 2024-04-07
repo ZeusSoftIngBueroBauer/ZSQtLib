@@ -87,6 +87,7 @@ public: // instance methods
     void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
 public: // instance methods (to convert the values into another unit)
     QSizeF toQSizeF() const;
+    QSizeF toQSizeF(const ZS::PhysVal::CUnit& i_unit) const;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
     /*!< Reference to drawing scene. */

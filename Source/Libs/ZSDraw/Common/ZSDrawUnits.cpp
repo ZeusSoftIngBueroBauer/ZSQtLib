@@ -343,7 +343,7 @@ bool CUnitsLength::isMetricUnit(const QString& i_strSymbolOrName) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Checks whether the given unit string is a metric unit.
+/*! @brief Checks whether the given unit is a metric unit.
 
     @return true, if the given unit string is a metric unit, false otherwise.
 */
@@ -357,6 +357,43 @@ bool CUnitsLength::isMetricUnit(const CUnit& i_unit) const
     return bIsMetricUnit;
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given unit strings are all either metric or pixel units.
+
+    @return true, if all given unit strings are metric units or all given unit strings
+            are pixel units, false otherwise.
+*/
+bool CUnitsLength::unitsAreEitherMetricOrNot(
+    const QString& i_strSymbolOrName1, const QString& i_strSymbolOrName2) const
+//------------------------------------------------------------------------------
+{
+    bool bAllTheSame = false;
+    if ((Units.Length.isMetricUnit(i_strSymbolOrName1) && Units.Length.isMetricUnit(i_strSymbolOrName2))
+     || (!Units.Length.isMetricUnit(i_strSymbolOrName1) && !Units.Length.isMetricUnit(i_strSymbolOrName2)))
+    {
+        bAllTheSame = true;
+    }
+    return bAllTheSame;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Checks whether the given units are all either metric or pixel units.
+
+    @return true, if all given units are metric units or all given units are
+            pixel units, false otherwise.
+*/
+bool CUnitsLength::unitsAreEitherMetricOrNot(
+    const ZS::PhysVal::CUnit& i_unit1, const ZS::PhysVal::CUnit& i_unit2) const
+//------------------------------------------------------------------------------
+{
+    bool bAllTheSame = false;
+    if ((Units.Length.isMetricUnit(i_unit1) && Units.Length.isMetricUnit(i_unit2))
+     || (!Units.Length.isMetricUnit(i_unit1) && !Units.Length.isMetricUnit(i_unit2)))
+    {
+        bAllTheSame = true;
+    }
+    return bAllTheSame;
+}
 
 /*******************************************************************************
 class CUnitsAngle : public CUnitsTreeEntryGrpPhysUnits

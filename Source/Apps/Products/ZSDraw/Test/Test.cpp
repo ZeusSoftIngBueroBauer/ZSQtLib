@@ -713,8 +713,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
 
     int idxStep = 0;
 
-    QRectF rectF(QPointF(250.0, 250.0), QSizeF(100.0, 100.0));
     CUnit unit = i_drawingSize.unit();
+
+    /* 250    300    350
+     250 +-----+------+
+         |            |
+     300 +     X      +
+         |            |
+     350 +-----+------+
+    */
+    QRectF rectF(QPointF(250.0, 250.0), QSizeF(100.0, 100.0));
 
     ZS::Test::CTestStepGroup* pGrpTransformRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -778,13 +786,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* Original Rect (not rotated)
-       250    300    350
-     250 +-----+------+
-         |            |
-     300 +     X      +
-         |            |
-     350 +-----+------+
+    /* setCenter(400, 400)
+    ----------------------
+         250   300   350   400   450   500
+      250 +-----x-----+
+          |           |
+      300 x     X     x
+          |           |
+      350 +-----x-----+-----x-----+
+                      |           |
+      400      =>     x     X     x
+                      |           |
+      450             +-----x-----+
     */
     QPointF ptCenter(400.0, 400.0);
     pTestStep = new ZS::Test::CTestStep(
@@ -844,13 +857,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* Original Rect (not rotated)
-       250    300    350
-     250 +-----+------+
-         |            |
-     300 +     X      +
-         |            |
-     350 +-----+------+
+    /* setSize(200, 200)
+    --------------------
+         250   300   350          250   300   350   400   450  BottomUp
+      250 +-----x-----+        250 +-----------x-----------+     350
+          |           |            |                       |
+      300 x     X     x        300 |                       |     300
+          |           |            |                       |
+      350 +-----x-----+   =>   350 x           X           x     250
+                                   |                       |
+                               400 |                       |     200
+                                   |                       |
+                               450 +-----------x-----------+     150
     */
     QSizeF sizeF(200.0, 200.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
@@ -897,29 +915,30 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
             strlstExpectedValues.append("LeftCenter {250.0, 350.0} mm");
         }
         else {
-            strlstExpectedValues.append("Center {350.0, 350.0} mm");
+            strlstExpectedValues.append("Center {350.0, 250.0} mm");
             strlstExpectedValues.append("Width: 200.0 mm");
             strlstExpectedValues.append("Height: -200.0 mm");
             strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {250.0, 450.0} mm");
-            strlstExpectedValues.append("TopRight {450.0, 450.0} mm");
-            strlstExpectedValues.append("BottomRight {450.0, 250.0} mm");
-            strlstExpectedValues.append("BottomLeft {250.0, 250.0} mm");
-            strlstExpectedValues.append("TopCenter {350.0, 450.0} mm");
-            strlstExpectedValues.append("RightCenter {450.0, 350.0} mm");
-            strlstExpectedValues.append("BottomCenter {350.0, 250.0} mm");
-            strlstExpectedValues.append("LeftCenter {250.0, 350.0} mm");
+            strlstExpectedValues.append("TopLeft {250.0, 350.0} mm");
+            strlstExpectedValues.append("TopRight {450.0, 350.0} mm");
+            strlstExpectedValues.append("BottomRight {450.0, 150.0} mm");
+            strlstExpectedValues.append("BottomLeft {250.0, 150.0} mm");
+            strlstExpectedValues.append("TopCenter {350.0, 350.0} mm");
+            strlstExpectedValues.append("RightCenter {450.0, 250.0} mm");
+            strlstExpectedValues.append("BottomCenter {350.0, 150.0} mm");
+            strlstExpectedValues.append("LeftCenter {250.0, 250.0} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* Original Rect (not rotated)
-       250    300    350
-     250 +-----+------+
-         |            |
-     300 +     X      +
-         |            |
-     350 +-----+------+
+    /* setWidth(200)
+    --------------------
+         250   300   350          250   300   350   400   450  BottomUp
+      250 +-----x-----+        250 +-----------x-----------+     350
+          |           |            |                       |
+      300 x     X     x   =>   300 x           X           x     300
+          |           |            |                       |
+      350 +-----x-----+        350 +-----------x-----------+     250
     */
     CPhysVal physValWidth(200.0, unit, i_drawingSize.imageCoorsResolution());
     pTestStep = new ZS::Test::CTestStep(
@@ -978,13 +997,152 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* Original Rect (not rotated)
-       250    300    350
-     250 +-----+------+
-         |            |
-     300 +     X      +
-         |            |
-     350 +-----+------+
+    /* setWidthByMovingLeftCenter(300, 250)
+    ---------------------------------------
+         250   300   350          300   350  BottomUp
+      250 +-----x-----+        250 +-----+     350
+          |           |            |     |
+      300 x     X     x   =>   300 x     x     300
+          |           |            |     |
+      350 +-----x-----+        350 +-----+     250
+    */
+    QPointF ptLeftCenter(300.0, 250.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(" + qPoint2Str(ptLeftCenter) + " " + unit.symbol() + ")",
+        /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptLeftCenter) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpTransformRect,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("create", rectF);
+    pTestStep->setConfigValue("create.unit", unit.symbol());
+    pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptLeftCenter);
+    pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
+    strlstExpectedValues.clear();
+    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+            strlstExpectedValues.append("Center {275, 325} px");
+            strlstExpectedValues.append("Width: 150 px");
+            strlstExpectedValues.append("Height: 150 px");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {200, 200} px");
+            strlstExpectedValues.append("TopRight {350, 250} px");
+            strlstExpectedValues.append("BottomRight {350, 400} px");
+            strlstExpectedValues.append("BottomLeft {200, 400} px");
+            strlstExpectedValues.append("TopCenter {275, 350} px");
+            strlstExpectedValues.append("RightCenter {350, 325} px");
+            strlstExpectedValues.append("BottomCenter {275, 400} px");
+            strlstExpectedValues.append("LeftCenter {200, 325} px");
+    }
+    else {
+        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("Center {275.0, 325.0} mm");
+            strlstExpectedValues.append("Width: 150.0 mm");
+            strlstExpectedValues.append("Height: 150.0 mm");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {200.0, 200.0} mm");
+            strlstExpectedValues.append("TopRight {350.0, 350.0} mm");
+            strlstExpectedValues.append("BottomRight {350.0, 400.0} mm");
+            strlstExpectedValues.append("BottomLeft {200.0, 400.0} mm");
+            strlstExpectedValues.append("TopCenter {275.0, 350.0} mm");
+            strlstExpectedValues.append("RightCenter {350.0, 325.0} mm");
+            strlstExpectedValues.append("BottomCenter {275.0, 400.0} mm");
+            strlstExpectedValues.append("LeftCenter {200.0, 325.0} mm");
+        }
+        else {
+            strlstExpectedValues.append("Center {275.0, 325.0} mm");
+            strlstExpectedValues.append("Width: 150.0 mm");
+            strlstExpectedValues.append("Height: -150.0 mm");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {200.0, 400.0} mm");
+            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
+            strlstExpectedValues.append("BottomRight {350.0, 250.0} mm");
+            strlstExpectedValues.append("BottomLeft {200.0, 250.0} mm");
+            strlstExpectedValues.append("TopCenter {275.0, 450.0} mm");
+            strlstExpectedValues.append("RightCenter {350.0, 325.0} mm");
+            strlstExpectedValues.append("BottomCenter {400.0, 250.0} mm");
+            strlstExpectedValues.append("LeftCenter {200.0, 325.0} mm");
+        }
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    /* setWidthByMovingRightCenter(300, 350)
+    ----------------------------------------
+         250   300   350          250   300  BottomUp
+      250 +-----x-----+        250 +-----+     350
+          |           |            |     |
+      300 x     X     x   =>   300 x     x     300
+          |           |            |     |
+      350 +-----x-----+        350 +-----+     250
+    */
+    QPointF ptRightCenter(300.0, 350.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(" + qPoint2Str(ptRightCenter) + " " + unit.symbol() + ")",
+        /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptRightCenter) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpTransformRect,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("create", rectF);
+    pTestStep->setConfigValue("create.unit", unit.symbol());
+    pTestStep->setConfigValue("setWidthByMovingRightCenter", ptRightCenter);
+    pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
+    strlstExpectedValues.clear();
+    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+            strlstExpectedValues.append("Center {325, 275} px");
+            strlstExpectedValues.append("Width: 150 px");
+            strlstExpectedValues.append("Height: 150 px");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {250, 200} px");
+            strlstExpectedValues.append("TopRight {400, 200} px");
+            strlstExpectedValues.append("BottomRight {400, 350} px");
+            strlstExpectedValues.append("BottomLeft {250, 350} px");
+            strlstExpectedValues.append("TopCenter {325, 200} px");
+            strlstExpectedValues.append("RightCenter {450, 275} px");
+            strlstExpectedValues.append("BottomCenter {325, 350} px");
+            strlstExpectedValues.append("LeftCenter {350, 275} px");
+    }
+    else {
+        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("Center {325.0, 275.0} mm");
+            strlstExpectedValues.append("Width: 150.0 mm");
+            strlstExpectedValues.append("Height: 150.0 mm");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {250.0, 200.0} mm");
+            strlstExpectedValues.append("TopRight {400.0, 200.0} mm");
+            strlstExpectedValues.append("BottomRight {400.0, 350.0} mm");
+            strlstExpectedValues.append("BottomLeft {250.0, 350.0} mm");
+            strlstExpectedValues.append("TopCenter {325.0, 200.0} mm");
+            strlstExpectedValues.append("RightCenter {400.0, 275.0} mm");
+            strlstExpectedValues.append("BottomCenter {325.0, 350.0} mm");
+            strlstExpectedValues.append("LeftCenter {250.0, 275.0} mm");
+        }
+        else {
+            strlstExpectedValues.append("Center {325.0, 400.0} mm");
+            strlstExpectedValues.append("Width: 150.0 mm");
+            strlstExpectedValues.append("Height: -150.0 mm");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {350.0, 450.0} mm");
+            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
+            strlstExpectedValues.append("BottomRight {350.0, 350.0} mm");
+            strlstExpectedValues.append("BottomLeft {350.0, 350.0} mm");
+            strlstExpectedValues.append("TopCenter {325.0, 450.0} mm");
+            strlstExpectedValues.append("RightCenter {450.0, 400.0} mm");
+            strlstExpectedValues.append("BottomCenter {325.0, 350.0} mm");
+            strlstExpectedValues.append("LeftCenter {350.0, 400.0} mm");
+        }
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    /* setHeight(200)
+    --------------------
+         250   300   350          250   300   350   BottomUp
+      250 +-----x-----+        250 +-----x-----+      350
+          |           |            |           |
+      300 x     X     x        300 |           |      300
+          |           |            |           |
+      350 +-----x-----+   =>   350 x     X     x      250
+                                   |           |
+                               400 |           |      200
+                                   |           |
+                               450 +-----x-----+      150
     */
     CPhysVal physValHeight(200.0, i_drawingSize.unit(), i_drawingSize.imageCoorsResolution());
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
@@ -1016,32 +1174,166 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     else {
         if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("Center {300.0, 350.0} mm");
+            strlstExpectedValues.append("Center {300.0, 250.0} mm");
             strlstExpectedValues.append("Width: 100.0 mm");
             strlstExpectedValues.append("Height: 200.0 mm");
             strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
             strlstExpectedValues.append("TopLeft {250.0, 250.0} mm");
-            strlstExpectedValues.append("TopRight {350.0, 250.0} mm");
-            strlstExpectedValues.append("BottomRight {350.0, 450.0} mm");
-            strlstExpectedValues.append("BottomLeft {250.0, 450.0} mm");
-            strlstExpectedValues.append("TopCenter {300.0, 250.0} mm");
-            strlstExpectedValues.append("RightCenter {350.0, 350.0} mm");
-            strlstExpectedValues.append("BottomCenter {300.0, 450.0} mm");
-            strlstExpectedValues.append("LeftCenter {250.0, 350.0} mm");
+            strlstExpectedValues.append("TopRight {350.0, 350.0} mm");
+            strlstExpectedValues.append("BottomRight {350.0, 150.0} mm");
+            strlstExpectedValues.append("BottomLeft {250.0, 150.0} mm");
+            strlstExpectedValues.append("TopCenter {300.0, 350.0} mm");
+            strlstExpectedValues.append("RightCenter {350.0, 250.0} mm");
+            strlstExpectedValues.append("BottomCenter {300.0, 150.0} mm");
+            strlstExpectedValues.append("LeftCenter {250.0, 250.0} mm");
         }
         else {
-            strlstExpectedValues.append("Center {300.0, 350.0} mm");
+            strlstExpectedValues.append("Center {300.0, 250.0} mm");
             strlstExpectedValues.append("Width: 100.0 mm");
             strlstExpectedValues.append("Height: -200.0 mm");
             strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {250.0, 450.0} mm");
-            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
+            strlstExpectedValues.append("TopLeft {250.0, 350.0} mm");
+            strlstExpectedValues.append("TopRight {350.0, 350.0} mm");
             strlstExpectedValues.append("BottomRight {350.0, 250.0} mm");
             strlstExpectedValues.append("BottomLeft {250.0, 250.0} mm");
             strlstExpectedValues.append("TopCenter {300.0, 450.0} mm");
             strlstExpectedValues.append("RightCenter {350.0, 350.0} mm");
             strlstExpectedValues.append("BottomCenter {300.0, 250.0} mm");
             strlstExpectedValues.append("LeftCenter {250.0, 350.0} mm");
+        }
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    /* setHeightByMovingTopCenter(250, 300)
+    ---------------------------------------
+         250   300   350          250   300   350   BottomUp
+      250 +-----x-----+
+          |           |
+      300 x     X     x        300 +-----x-----+      300
+          |           |   =>       x     X     x
+      350 +-----x-----+        350 +-----x-----+      250
+    */
+    QPointF ptTopCenter(250.0, 300.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(" + qPoint2Str(ptTopCenter) + " " + unit.symbol() + ")",
+        /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptTopCenter) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpTransformRect,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("create", rectF);
+    pTestStep->setConfigValue("create.unit", unit.symbol());
+    pTestStep->setConfigValue("setHeightByMovingTopCenter", ptTopCenter);
+    pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
+    strlstExpectedValues.clear();
+    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+            strlstExpectedValues.append("Center {325, 275} px");
+            strlstExpectedValues.append("Width: 150 px");
+            strlstExpectedValues.append("Height: 150 px");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {250, 200} px");
+            strlstExpectedValues.append("TopRight {400, 200} px");
+            strlstExpectedValues.append("BottomRight {400, 350} px");
+            strlstExpectedValues.append("BottomLeft {250, 350} px");
+            strlstExpectedValues.append("TopCenter {325, 200} px");
+            strlstExpectedValues.append("RightCenter {450, 275} px");
+            strlstExpectedValues.append("BottomCenter {325, 350} px");
+            strlstExpectedValues.append("LeftCenter {350, 275} px");
+    }
+    else {
+        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("Center {325.0, 275.0} mm");
+            strlstExpectedValues.append("Width: 150.0 mm");
+            strlstExpectedValues.append("Height: 150.0 mm");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {250.0, 200.0} mm");
+            strlstExpectedValues.append("TopRight {400.0, 200.0} mm");
+            strlstExpectedValues.append("BottomRight {400.0, 350.0} mm");
+            strlstExpectedValues.append("BottomLeft {250.0, 350.0} mm");
+            strlstExpectedValues.append("TopCenter {325.0, 200.0} mm");
+            strlstExpectedValues.append("RightCenter {400.0, 275.0} mm");
+            strlstExpectedValues.append("BottomCenter {325.0, 350.0} mm");
+            strlstExpectedValues.append("LeftCenter {250.0, 275.0} mm");
+        }
+        else {
+            strlstExpectedValues.append("Center {325.0, 400.0} mm");
+            strlstExpectedValues.append("Width: 150.0 mm");
+            strlstExpectedValues.append("Height: -150.0 mm");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {350.0, 450.0} mm");
+            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
+            strlstExpectedValues.append("BottomRight {350.0, 350.0} mm");
+            strlstExpectedValues.append("BottomLeft {350.0, 350.0} mm");
+            strlstExpectedValues.append("TopCenter {325.0, 450.0} mm");
+            strlstExpectedValues.append("RightCenter {450.0, 400.0} mm");
+            strlstExpectedValues.append("BottomCenter {325.0, 350.0} mm");
+            strlstExpectedValues.append("LeftCenter {350.0, 400.0} mm");
+        }
+    }
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    /* setHeightByMovingBottomCenter(350, 300)
+    ------------------------------------------
+         250   300   350          250   300   350   BottomUp
+      250 +-----x-----+        250 +-----x-----+      350
+          |           |  =>        x     X     x
+      300 x     X     x        300 +-----x-----+      300
+          |           |
+      350 +-----x-----+
+    */
+    QPointF ptBottomCenter(350.0, 300.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(" + qPoint2Str(ptBottomCenter) + " " + unit.symbol() + ")",
+        /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptBottomCenter) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpTransformRect,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("create", rectF);
+    pTestStep->setConfigValue("create.unit", unit.symbol());
+    pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptBottomCenter);
+    pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
+    strlstExpectedValues.clear();
+    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+            strlstExpectedValues.append("Center {275, 325} px");
+            strlstExpectedValues.append("Width: 150 px");
+            strlstExpectedValues.append("Height: 150 px");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {200, 200} px");
+            strlstExpectedValues.append("TopRight {350, 250} px");
+            strlstExpectedValues.append("BottomRight {350, 400} px");
+            strlstExpectedValues.append("BottomLeft {200, 400} px");
+            strlstExpectedValues.append("TopCenter {275, 350} px");
+            strlstExpectedValues.append("RightCenter {350, 325} px");
+            strlstExpectedValues.append("BottomCenter {275, 400} px");
+            strlstExpectedValues.append("LeftCenter {200, 325} px");
+    }
+    else {
+        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            strlstExpectedValues.append("Center {275.0, 325.0} mm");
+            strlstExpectedValues.append("Width: 150.0 mm");
+            strlstExpectedValues.append("Height: 150.0 mm");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {200.0, 200.0} mm");
+            strlstExpectedValues.append("TopRight {350.0, 350.0} mm");
+            strlstExpectedValues.append("BottomRight {350.0, 400.0} mm");
+            strlstExpectedValues.append("BottomLeft {200.0, 400.0} mm");
+            strlstExpectedValues.append("TopCenter {275.0, 350.0} mm");
+            strlstExpectedValues.append("RightCenter {350.0, 325.0} mm");
+            strlstExpectedValues.append("BottomCenter {275.0, 400.0} mm");
+            strlstExpectedValues.append("LeftCenter {200.0, 325.0} mm");
+        }
+        else {
+            strlstExpectedValues.append("Center {275.0, 325.0} mm");
+            strlstExpectedValues.append("Width: 150.0 mm");
+            strlstExpectedValues.append("Height: -150.0 mm");
+            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
+            strlstExpectedValues.append("TopLeft {200.0, 400.0} mm");
+            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
+            strlstExpectedValues.append("BottomRight {350.0, 250.0} mm");
+            strlstExpectedValues.append("BottomLeft {200.0, 250.0} mm");
+            strlstExpectedValues.append("TopCenter {275.0, 450.0} mm");
+            strlstExpectedValues.append("RightCenter {350.0, 325.0} mm");
+            strlstExpectedValues.append("BottomCenter {400.0, 250.0} mm");
+            strlstExpectedValues.append("LeftCenter {200.0, 325.0} mm");
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
@@ -1278,274 +1570,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
             strlstExpectedValues.append("BottomRight {350, 400} px");
             strlstExpectedValues.append("BottomLeft {200, 400} px");
             strlstExpectedValues.append("TopCenter {275, 250} px");
-            strlstExpectedValues.append("RightCenter {350, 325} px");
-            strlstExpectedValues.append("BottomCenter {275, 400} px");
-            strlstExpectedValues.append("LeftCenter {200, 325} px");
-    }
-    else {
-        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("Center {275.0, 325.0} mm");
-            strlstExpectedValues.append("Width: 150.0 mm");
-            strlstExpectedValues.append("Height: 150.0 mm");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {200.0, 200.0} mm");
-            strlstExpectedValues.append("TopRight {350.0, 350.0} mm");
-            strlstExpectedValues.append("BottomRight {350.0, 400.0} mm");
-            strlstExpectedValues.append("BottomLeft {200.0, 400.0} mm");
-            strlstExpectedValues.append("TopCenter {275.0, 350.0} mm");
-            strlstExpectedValues.append("RightCenter {350.0, 325.0} mm");
-            strlstExpectedValues.append("BottomCenter {275.0, 400.0} mm");
-            strlstExpectedValues.append("LeftCenter {200.0, 325.0} mm");
-        }
-        else {
-            strlstExpectedValues.append("Center {275.0, 325.0} mm");
-            strlstExpectedValues.append("Width: 150.0 mm");
-            strlstExpectedValues.append("Height: -150.0 mm");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {200.0, 400.0} mm");
-            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
-            strlstExpectedValues.append("BottomRight {350.0, 250.0} mm");
-            strlstExpectedValues.append("BottomLeft {200.0, 250.0} mm");
-            strlstExpectedValues.append("TopCenter {275.0, 450.0} mm");
-            strlstExpectedValues.append("RightCenter {350.0, 325.0} mm");
-            strlstExpectedValues.append("BottomCenter {400.0, 250.0} mm");
-            strlstExpectedValues.append("LeftCenter {200.0, 325.0} mm");
-        }
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    /*                            250   300   350   400   BottomUp
-                               200 +--------x--------+      400
-        250   300   350            |                 |
-     250 +-----x-----+         250 |                 |      350
-         |           |             x        X        x
-     300 x     X     x    =>   300 |                 |      300
-         |           |             |                 |
-     350 +-----x-----+         350 +--------x--------+      250
-    */
-    QPointF ptTopCenter(325.0, 200.0);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopCenter(" + qPoint2Str(ptTopCenter) + " " + unit.symbol() + ")",
-        /* strOperation    */ "setTopCenter(" + qPoint2Str(ptTopCenter) + " " + unit.symbol() + ")",
-        /* pGrpParent      */ pGrpTransformRect,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectF);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setTopCenter", ptTopCenter);
-    pTestStep->setConfigValue("setTopCenter.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-            strlstExpectedValues.append("Center {325, 275} px");
-            strlstExpectedValues.append("Width: 150 px");
-            strlstExpectedValues.append("Height: 150 px");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {250, 200} px");
-            strlstExpectedValues.append("TopRight {400, 200} px");
-            strlstExpectedValues.append("BottomRight {400, 350} px");
-            strlstExpectedValues.append("BottomLeft {250, 350} px");
-            strlstExpectedValues.append("TopCenter {325, 200} px");
-            strlstExpectedValues.append("RightCenter {450, 275} px");
-            strlstExpectedValues.append("BottomCenter {325, 350} px");
-            strlstExpectedValues.append("LeftCenter {350, 275} px");
-    }
-    else {
-        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("Center {325.0, 275.0} mm");
-            strlstExpectedValues.append("Width: 150.0 mm");
-            strlstExpectedValues.append("Height: 150.0 mm");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {250.0, 200.0} mm");
-            strlstExpectedValues.append("TopRight {400.0, 200.0} mm");
-            strlstExpectedValues.append("BottomRight {400.0, 350.0} mm");
-            strlstExpectedValues.append("BottomLeft {250.0, 350.0} mm");
-            strlstExpectedValues.append("TopCenter {325.0, 200.0} mm");
-            strlstExpectedValues.append("RightCenter {400.0, 275.0} mm");
-            strlstExpectedValues.append("BottomCenter {325.0, 350.0} mm");
-            strlstExpectedValues.append("LeftCenter {250.0, 275.0} mm");
-        }
-        else {
-            strlstExpectedValues.append("Center {325.0, 400.0} mm");
-            strlstExpectedValues.append("Width: 150.0 mm");
-            strlstExpectedValues.append("Height: -150.0 mm");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {350.0, 450.0} mm");
-            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
-            strlstExpectedValues.append("BottomRight {350.0, 350.0} mm");
-            strlstExpectedValues.append("BottomLeft {350.0, 350.0} mm");
-            strlstExpectedValues.append("TopCenter {325.0, 450.0} mm");
-            strlstExpectedValues.append("RightCenter {450.0, 400.0} mm");
-            strlstExpectedValues.append("BottomCenter {325.0, 350.0} mm");
-            strlstExpectedValues.append("LeftCenter {350.0, 400.0} mm");
-        }
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    /*                            250   300   350   400   BottomUp
-                               200 +--------x--------+      400
-        250   300   350            |                 |
-     250 +-----x-----+         250 |                 |      350
-         |           |             x        X        x
-     300 x     X     x    =>   300 |                 |      300
-         |           |             |                 |
-     350 +-----x-----+         350 +--------x--------+      250
-    */
-    QPointF ptRightCenter(400.0, 275.0);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setRightCenter(" + qPoint2Str(ptRightCenter) + " " + unit.symbol() + ")",
-        /* strOperation    */ "setRightCenter(" + qPoint2Str(ptRightCenter) + " " + unit.symbol() + ")",
-        /* pGrpParent      */ pGrpTransformRect,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectF);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setRightCenter", ptRightCenter);
-    pTestStep->setConfigValue("setRightCenter.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-            strlstExpectedValues.append("Center {325, 275} px");
-            strlstExpectedValues.append("Width: 150 px");
-            strlstExpectedValues.append("Height: 150 px");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {250, 200} px");
-            strlstExpectedValues.append("TopRight {400, 200} px");
-            strlstExpectedValues.append("BottomRight {400, 350} px");
-            strlstExpectedValues.append("BottomLeft {250, 350} px");
-            strlstExpectedValues.append("TopCenter {325, 200} px");
-            strlstExpectedValues.append("RightCenter {450, 275} px");
-            strlstExpectedValues.append("BottomCenter {325, 350} px");
-            strlstExpectedValues.append("LeftCenter {350, 275} px");
-    }
-    else {
-        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("Center {325.0, 275.0} mm");
-            strlstExpectedValues.append("Width: 150.0 mm");
-            strlstExpectedValues.append("Height: 150.0 mm");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {250.0, 200.0} mm");
-            strlstExpectedValues.append("TopRight {400.0, 200.0} mm");
-            strlstExpectedValues.append("BottomRight {400.0, 350.0} mm");
-            strlstExpectedValues.append("BottomLeft {250.0, 350.0} mm");
-            strlstExpectedValues.append("TopCenter {325.0, 200.0} mm");
-            strlstExpectedValues.append("RightCenter {400.0, 275.0} mm");
-            strlstExpectedValues.append("BottomCenter {325.0, 350.0} mm");
-            strlstExpectedValues.append("LeftCenter {250.0, 275.0} mm");
-        }
-        else {
-            strlstExpectedValues.append("Center {325.0, 400.0} mm");
-            strlstExpectedValues.append("Width: 150.0 mm");
-            strlstExpectedValues.append("Height: -150.0 mm");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {350.0, 450.0} mm");
-            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
-            strlstExpectedValues.append("BottomRight {350.0, 350.0} mm");
-            strlstExpectedValues.append("BottomLeft {350.0, 350.0} mm");
-            strlstExpectedValues.append("TopCenter {325.0, 450.0} mm");
-            strlstExpectedValues.append("RightCenter {450.0, 400.0} mm");
-            strlstExpectedValues.append("BottomCenter {325.0, 350.0} mm");
-            strlstExpectedValues.append("LeftCenter {350.0, 400.0} mm");
-        }
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    /*   250   300   350          200   250   300   350   BottomUp
-      250 +-----x-----+        250 +--------x--------+      400
-          |           |            |                 |
-      300 x     X     x        300 |                 |      350
-          |           |            x        X        x
-      350 +-----x-----+   =>   350 |                 |      300
-                                   |                 |
-                               400 +--------x--------+      250
-    */
-    QPointF ptBottomCenter(275.0, 400.0);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomCenter(" + qPoint2Str(ptBottomCenter) + " " + unit.symbol() + ")",
-        /* strOperation    */ "setBottomCenter(" + qPoint2Str(ptBottomCenter) + " " + unit.symbol() + ")",
-        /* pGrpParent      */ pGrpTransformRect,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectF);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setBottomCenter", ptBottomCenter);
-    pTestStep->setConfigValue("setBottomCenter.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-            strlstExpectedValues.append("Center {275, 325} px");
-            strlstExpectedValues.append("Width: 150 px");
-            strlstExpectedValues.append("Height: 150 px");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {200, 200} px");
-            strlstExpectedValues.append("TopRight {350, 250} px");
-            strlstExpectedValues.append("BottomRight {350, 400} px");
-            strlstExpectedValues.append("BottomLeft {200, 400} px");
-            strlstExpectedValues.append("TopCenter {275, 350} px");
-            strlstExpectedValues.append("RightCenter {350, 325} px");
-            strlstExpectedValues.append("BottomCenter {275, 400} px");
-            strlstExpectedValues.append("LeftCenter {200, 325} px");
-    }
-    else {
-        if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            strlstExpectedValues.append("Center {275.0, 325.0} mm");
-            strlstExpectedValues.append("Width: 150.0 mm");
-            strlstExpectedValues.append("Height: 150.0 mm");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {200.0, 200.0} mm");
-            strlstExpectedValues.append("TopRight {350.0, 350.0} mm");
-            strlstExpectedValues.append("BottomRight {350.0, 400.0} mm");
-            strlstExpectedValues.append("BottomLeft {200.0, 400.0} mm");
-            strlstExpectedValues.append("TopCenter {275.0, 350.0} mm");
-            strlstExpectedValues.append("RightCenter {350.0, 325.0} mm");
-            strlstExpectedValues.append("BottomCenter {275.0, 400.0} mm");
-            strlstExpectedValues.append("LeftCenter {200.0, 325.0} mm");
-        }
-        else {
-            strlstExpectedValues.append("Center {275.0, 325.0} mm");
-            strlstExpectedValues.append("Width: 150.0 mm");
-            strlstExpectedValues.append("Height: -150.0 mm");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {200.0, 400.0} mm");
-            strlstExpectedValues.append("TopRight {350.0, 450.0} mm");
-            strlstExpectedValues.append("BottomRight {350.0, 250.0} mm");
-            strlstExpectedValues.append("BottomLeft {200.0, 250.0} mm");
-            strlstExpectedValues.append("TopCenter {275.0, 450.0} mm");
-            strlstExpectedValues.append("RightCenter {350.0, 325.0} mm");
-            strlstExpectedValues.append("BottomCenter {400.0, 250.0} mm");
-            strlstExpectedValues.append("LeftCenter {200.0, 325.0} mm");
-        }
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    /*   250   300   350          200   250   300   350   BottomUp
-      250 +-----x-----+        250 +--------x--------+      400
-          |           |            |                 |
-      300 x     X     x        300 |                 |      350
-          |           |            x        X        x
-      350 +-----x-----+   =>   350 |                 |      300
-                                   |                 |
-                               400 +--------x--------+      250
-    */
-    QPointF ptLeftCenter(200.0, 325.0);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setLeftCenter(" + qPoint2Str(ptLeftCenter) + " " + unit.symbol() + ")",
-        /* strOperation    */ "setLeftCenter(" + qPoint2Str(ptLeftCenter) + " " + unit.symbol() + ")",
-        /* pGrpParent      */ pGrpTransformRect,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectF);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setLeftCenter", ptLeftCenter);
-    pTestStep->setConfigValue("setLeftCenter.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-            strlstExpectedValues.append("Center {275, 325} px");
-            strlstExpectedValues.append("Width: 150 px");
-            strlstExpectedValues.append("Height: 150 px");
-            strlstExpectedValues.append("Angle: 0.0 " + Math::c_strSymbolDegree);
-            strlstExpectedValues.append("TopLeft {200, 200} px");
-            strlstExpectedValues.append("TopRight {350, 250} px");
-            strlstExpectedValues.append("BottomRight {350, 400} px");
-            strlstExpectedValues.append("BottomLeft {200, 400} px");
-            strlstExpectedValues.append("TopCenter {275, 350} px");
             strlstExpectedValues.append("RightCenter {350, 325} px");
             strlstExpectedValues.append("BottomCenter {275, 400} px");
             strlstExpectedValues.append("LeftCenter {200, 325} px");
@@ -6884,9 +6908,61 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         CPhysVal physValWidth = i_pTestStep->getConfigValue("setWidth").toString();
         physValRectResult.setWidth(physValWidth);
     }
+    if (i_pTestStep->hasConfigValue("setWidthByMovingLeftCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setWidthByMovingLeftCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setWidthByMovingLeftCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setWidthByMovingLeftCenter.unit").toString();
+            unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValRectResult.setWidthByMovingLeftCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValRectResult.setWidthByMovingLeftCenter(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setWidthByMovingRightCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setWidthByMovingRightCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setWidthByMovingRightCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setWidthByMovingRightCenter.unit").toString();
+            unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValRectResult.setWidthByMovingRightCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValRectResult.setWidthByMovingRightCenter(physValPt);
+        }
+    }
     if (i_pTestStep->hasConfigValue("setHeight")) {
         CPhysVal physValHeight = i_pTestStep->getConfigValue("setHeight").toString();
         physValRectResult.setHeight(physValHeight);
+    }
+    if (i_pTestStep->hasConfigValue("setHeightByMovingTopCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setHeightByMovingTopCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setTopCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setHeightByMovingTopCenter.unit").toString();
+            unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValRectResult.setHeightByMovingTopCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValRectResult.setHeightByMovingTopCenter(physValPt);
+        }
+    }
+    if (i_pTestStep->hasConfigValue("setHeightByMovingBottomCenter")) {
+        QPointF pt = i_pTestStep->getConfigValue("setHeightByMovingBottomCenter").toPointF();
+        if (i_pTestStep->hasConfigValue("setHeightByMovingBottomCenter.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("setHeightByMovingBottomCenter.unit").toString();
+            unit = strUnitPoint;
+            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
+            physValRectResult.setHeightByMovingBottomCenter(physValPt);
+        }
+        else {
+            CPhysValPoint physValPt(*m_pDrawingScene, pt);
+            physValRectResult.setHeightByMovingBottomCenter(physValPt);
+        }
     }
     if (i_pTestStep->hasConfigValue("setTopLeft")) {
         QPointF pt = i_pTestStep->getConfigValue("setTopLeft").toPointF();
@@ -6938,58 +7014,6 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         else {
             CPhysValPoint physValPt(*m_pDrawingScene, pt);
             physValRectResult.setBottomLeft(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setTopCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setTopCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setTopCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setTopCenter.unit").toString();
-            unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValRectResult.setTopCenter(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValRectResult.setTopCenter(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setRightCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setRightCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setRightCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setRightCenter.unit").toString();
-            unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValRectResult.setRightCenter(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValRectResult.setRightCenter(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setBottomCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setBottomCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setBottomCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setBottomCenter.unit").toString();
-            unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValRectResult.setBottomCenter(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValRectResult.setBottomCenter(physValPt);
-        }
-    }
-    if (i_pTestStep->hasConfigValue("setLeftCenter")) {
-        QPointF pt = i_pTestStep->getConfigValue("setLeftCenter").toPointF();
-        if (i_pTestStep->hasConfigValue("setLeftCenter.unit")) {
-            QString strUnitPoint = i_pTestStep->getConfigValue("setLeftCenter.unit").toString();
-            unit = strUnitPoint;
-            CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
-            physValRectResult.setLeftCenter(physValPt);
-        }
-        else {
-            CPhysValPoint physValPt(*m_pDrawingScene, pt);
-            physValRectResult.setLeftCenter(physValPt);
         }
     }
 

@@ -35,16 +35,14 @@ namespace ZS
 namespace Draw
 {
 //******************************************************************************
-/*! @brief Corresponds to QLineF but providing a physical unit and a resolution.
+/*! @brief Represents a line on the drawing scene.
 
-    This class is not part of ZS::PhysVal as the namespace ZS::PhysVal is abstract
-    concerning units and the units "pixels" or any metric units is not known within
-    the ZS::PhysVal library. The corresponding unit tree must be configured for the
-    specific application or, as in this case, in the units tree of the ZS::Draw library.
+    Corresponds to QLineF but providing a physical unit and a resolution.
 
-    In addition to convert between metric and pixel dimensions (and vice versa)
-    the screen resolution and the scale factor must be known. Both are properties
-    of the physical size "Length" within the ZS::Draw library.
+    Converting points (start and end point of the line) from pixels to metric
+    units is not supported. This conversion would have to be done by the parent
+    group or scene to take the different Y-Scale-Axis orientation into account.
+    But the line does not know about groups.
 */
 class ZSDRAWDLL_API CPhysValLine
 //******************************************************************************
@@ -106,6 +104,7 @@ public: // instance methods
     void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
 public: // instance methods (to convert the values into another unit)
     QLineF toQLineF() const;
+    QLineF toQLineF(const ZS::PhysVal::CUnit& i_unit) const;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
     /*!< Reference to drawing scene. */

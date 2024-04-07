@@ -25,6 +25,7 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
+#include "ZSDraw/Common/ZSDrawAux.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
@@ -534,25 +535,16 @@ void CPhysValRect::setCenter(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 /*! @brief Sets the center point of the rectangle.
 
-    The unit will be taken over from the given point.
-
-    The size and rotation angle of the rectangle remain the same but if the
-    unit is changed the size will be converted correspondingly.
+    The size and rotation angle of the rectangle remain the same.
     The rectangle's edges are implicitly changed.
 */
 void CPhysValRect::setCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    m_ptCenter = i_physValPoint.toQPointF();
-    if (m_unit != i_physValPoint.unit()) {
-        CPhysVal physValWidth(m_size.width(), m_unit);
-        CPhysVal physValHeight(m_size.height(), m_unit);
-        physValWidth.convertValue(i_physValPoint.unit());
-        physValHeight.convertValue(i_physValPoint.unit());
-        m_size.setWidth(physValWidth.getVal());
-        m_size.setHeight(physValHeight.getVal());
-        m_unit = i_physValPoint.unit();
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    m_ptCenter = i_physValPoint.toQPointF(m_unit);
 }
 
 //------------------------------------------------------------------------------
@@ -577,11 +569,8 @@ void CPhysValRect::setSize(const QSizeF& i_size)
 //------------------------------------------------------------------------------
 /*! @brief Sets the size (width and height) of the rectangle.
 
-    The unit will be taken over from the given size.
-
     The top left corner and the rotation angle of the rectangle remains the same.
     To keep the top left corner the center point will be moved.
-    If the unit is changed the center point will be converted correspondingly.
 
     The rectangle's right and bottom edges are implicitly changed.
 
@@ -593,10 +582,10 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
 {
     // Before taken over the new size, get current top left corner.
     CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal(i_physValSize.unit());
-    double fY = physValPtTL.y().getVal(i_physValSize.unit());
+    double fX = physValPtTL.x().getVal();
+    double fY = physValPtTL.y().getVal();
     double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    QSizeF sizeF = i_physValSize.toQSizeF();
+    QSizeF sizeF = i_physValSize.toQSizeF(m_unit);
     if (fAngle_rad == 0.0) {
         fX += sizeF.width() / 2.0;
         fY += sizeF.height() / 2.0;
@@ -607,7 +596,6 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
-    m_unit = i_physValSize.unit();
 }
 
 //------------------------------------------------------------------------------
@@ -632,11 +620,8 @@ void CPhysValRect::setWidth(double i_fWidth)
 //------------------------------------------------------------------------------
 /*! @brief Sets the width of the rectangle.
 
-    The unit will be taken over from the given value.
-
     The left, top and bottom edge and the rotation angle of the rectangle remain
     the same. To keep the left, top and bottom edge the center point will be moved.
-    If the unit is changed the center point will be converted correspondingly.
 
     The rectangle's right edge is implicitly changed.
 
@@ -648,12 +633,11 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
 {
     // Before taken over the new size, get current top left corner.
     CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal(i_physValWidth.unit());
-    double fY = physValPtTL.y().getVal(i_physValWidth.unit());
+    double fX = physValPtTL.x().getVal();
+    double fY = physValPtTL.y().getVal();
     double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
     CPhysVal physValHeight = height();
-    physValHeight.convertValue(i_physValWidth.unit());
-    QSizeF sizeF(i_physValWidth.getVal(), physValHeight.getVal());
+    QSizeF sizeF(i_physValWidth.getVal(m_unit), physValHeight.getVal());
     if (fAngle_rad == 0.0) {
         fX += sizeF.width() / 2.0;
         fY += sizeF.height() / 2.0;
@@ -664,7 +648,99 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
-    m_unit = i_physValWidth.unit();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the width of the rectangle by moving the left center point.
+
+    This method is mainly provided to allow resizing a rectangle object on the
+    graphics scene by moving the left center selection point with mouse events.
+
+    The point must be passed in the current unit of the rectangle.
+
+    The rotation angle, the height and the opposite center point (right center)
+    as well as the top right and bottom right corners of the rectangle remain the same.
+    Therefore the width and the center point of the rectangle are adjusted.
+
+    As the rectangle may be rotated the new size must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+void CPhysValRect::setWidthByMovingLeftCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    setWidthByMovingLeftCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the width of the rectangle by moving the left center point.
+
+    This method is mainly provided to allow resizing a rectangle object on the
+    graphics scene by moving the left center selection point with mouse events.
+
+    The rotation angle, the height and the opposite center point (right center)
+    as well as the top right and bottom right corners of the rectangle remain the same.
+    Therefore the width and the center point of the rectangle are adjusted.
+
+    As the rectangle may be rotated the new size must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    QRectF rectF = toNotRotatedQRectF();
+
+    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+
+    // Rotate the given point around the center to fit the unrotated rectangle.
+    QPointF ptNewRotated = i_physValPoint.toQPointF(m_unit);
+
+    QPointF ptNewNotRotated = ZS::Draw::rotatePoint(m_ptCenter, ptNewRotated, -fAngle_rad);
+
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the width of the rectangle by moving the right center point.
+
+    This method is mainly provided to allow resizing a rectangle object on the
+    graphics scene by moving the right center selection point with mouse events.
+
+    The point must be passed in the current unit of the rectangle.
+
+    The rotation angle, the height and the opposite center point (left center)
+    as well as the top left and bottom left corners of the rectangle remain the same.
+    Therefore the width and the center point of the rectangle are adjusted.
+
+    As the rectangle may be rotated the new size must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+void CPhysValRect::setWidthByMovingRightCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    setWidthByMovingRightCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the width of the rectangle by moving the right center point.
+
+    This method is mainly provided to allow resizing a rectangle object on the
+    graphics scene by moving the right center selection point with mouse events.
+
+    The rotation angle, the height and the opposite center point (left center)
+    as well as the top left and bottom left corners of the rectangle remain the same.
+    Therefore the width and the center point of the rectangle are adjusted.
+
+    As the rectangle may be rotated the new size must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -689,8 +765,6 @@ void CPhysValRect::setHeight(double i_fHeight)
 //------------------------------------------------------------------------------
 /*! @brief Sets the height of the rectangle.
 
-    The unit will be taken over from the given value.
-
     The top, left and right edges and the rotation angle of the rectangle remain
     the same. To keep the top, left and right edges the center point will be moved.
     If the unit is changed the center point will be converted correspondingly.
@@ -705,12 +779,11 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
 {
     // Before taken over the new size, get current top left corner.
     CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal(i_physValHeight.unit());
-    double fY = physValPtTL.y().getVal(i_physValHeight.unit());
+    double fX = physValPtTL.x().getVal();
+    double fY = physValPtTL.y().getVal();
     double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
     CPhysVal physValWidth = width();
-    physValWidth.convertValue(i_physValHeight.unit());
-    QSizeF sizeF(physValWidth.getVal(), i_physValHeight.getVal());
+    QSizeF sizeF(physValWidth.getVal(m_unit), i_physValHeight.getVal());
     if (fAngle_rad == 0.0) {
         fX += sizeF.width() / 2.0;
         fY += sizeF.height() / 2.0;
@@ -721,7 +794,90 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
-    m_unit = i_physValHeight.unit();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the height of the rectangle by moving the top center point.
+
+    This method is mainly provided to allow resizing a rectangle object on the
+    graphics scene by moving the top center selection point with mouse events.
+
+    The point must be passed in the current unit of the rectangle.
+
+    The rotation angle, the width and the opposite center point (bottom center)
+    as well as the bottom left and bottom right corners of the rectangle remain the same.
+    Therefore the height and the center point of the rectangle are adjusted.
+
+    As the rectangle may be rotated the new size must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+void CPhysValRect::setHeightByMovingTopCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    setHeightByMovingTopCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the height of the rectangle by moving the top center point.
+
+    This method is mainly provided to allow resizing a rectangle object on the
+    graphics scene by moving the top center selection point with mouse events.
+
+    The rotation angle, the width and the opposite center point (bottom center)
+    as well as the bottom left and bottom right corners of the rectangle remain the same.
+    Therefore the height and the center point of the rectangle are adjusted.
+
+    As the rectangle may be rotated the new size must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the height of the rectangle by moving the bottom center point.
+
+    This method is mainly provided to allow resizing a rectangle object on the
+    graphics scene by moving the bottom center selection point with mouse events.
+
+    The point must be passed in the current unit of the rectangle.
+
+    The rotation angle, the width and the opposite center point (top center)
+    as well as the top left and top right corners of the rectangle remain the same.
+    Therefore the height and the center point of the rectangle are adjusted.
+
+    As the rectangle may be rotated the new size must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+void CPhysValRect::setHeightByMovingBottomCenter(const QPointF& i_pt)
+//------------------------------------------------------------------------------
+{
+    setHeightByMovingBottomCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the height of the rectangle by moving the bottom center point.
+
+    This method is mainly provided to allow resizing a rectangle object on the
+    graphics scene by moving the bottom center selection point with mouse events.
+
+    The rotation angle, the width and the opposite center point (top center)
+    as well as the top left and top right corners of the rectangle remain the same.
+    Therefore the height and the center point of the rectangle are adjusted.
+
+    As the rectangle may be rotated the new size must be calculated using trigonometric
+    functions applied to the distance (radius) of the corner point to the center point.
+*/
+void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint)
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -763,13 +919,9 @@ void CPhysValRect::setTopLeft(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 /*! @brief Sets the top left corner of the rectangle.
 
-    The unit will be taken over from the given point.
-
     The rotation angle and the opposite corner (bottom right) of the rectangle
     remain the same. Therefore the size (width and height) and the center point
     of the rectangle are adjusted.
-
-    If the unit is changed the center point and the size will be converted correspondingly.
 
     As the rectangle may be rotated the new size must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -801,13 +953,9 @@ void CPhysValRect::setTopRight(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 /*! @brief Sets the top right corner of the rectangle.
 
-    The unit will be taken over from the given point.
-
     The rotation angle and the opposite corner (bottom left) of the rectangle
     remain the same. Therefore the size (width and height) and the center point
     of the rectangle are adjusted.
-
-    If the unit is changed the center point and the size will be converted correspondingly.
 
     As the rectangle may be rotated the new size must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -839,13 +987,9 @@ void CPhysValRect::setBottomRight(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 /*! @brief Sets the bottom right corner of the rectangle.
 
-    The unit will be taken over from the given point.
-
     The rotation angle and the opposite corner (top left) of the rectangle
     remain the same. Therefore the size (width and height) and the center point
     of the rectangle are adjusted.
-
-    If the unit is changed the center point and the size will be converted correspondingly.
 
     As the rectangle may be rotated the new size must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -877,13 +1021,9 @@ void CPhysValRect::setBottomLeft(const QPointF& i_pt)
 //------------------------------------------------------------------------------
 /*! @brief Sets the bottom left corner of the rectangle.
 
-    The unit will be taken over from the given point.
-
     The rotation angle and the opposite corner (top right) of the rectangle
     remain the same. Therefore the size (width and height) and the center point
     of the rectangle are adjusted.
-
-    If the unit is changed the center point and the size will be converted correspondingly.
 
     As the rectangle may be rotated the new size must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -892,198 +1032,6 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
     updateFromOppositeCorners(i_physValPoint, topRight());
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the top center point of the rectangle.
-
-    The point must be passed in the current unit of the rectangle.
-
-    The rotation angle, the width and the opposite center point (bottom center)
-    as well as the bottom left and bottom right corners of the rectangle remain the same.
-    Therefore the height and the center point of the rectangle are adjusted.
-
-    As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
-*/
-void CPhysValRect::setTopCenter(const QPointF& i_pt)
-//------------------------------------------------------------------------------
-{
-    setTopCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the top center point of the rectangle.
-
-    The unit will be taken over from the given point.
-
-    The rotation angle, the width and the opposite center point (bottom center)
-    as well as the bottom left and bottom right corners of the rectangle remain the same.
-    Therefore the height and the center point of the rectangle are adjusted.
-
-    If the unit is changed the center point and the height will be converted correspondingly.
-
-    As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
-*/
-void CPhysValRect::setTopCenter(const CPhysValPoint& i_physValPoint)
-//------------------------------------------------------------------------------
-{
-    // Get coordinate of opposite point.
-    CPhysValPoint physValPtOpposite = bottomCenter();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fDX = i_physValPoint.x().getVal() - m_ptCenter.x();
-    double fDY = i_physValPoint.y().getVal() - m_ptCenter.y();
-    if (fDX != 0.0 || fDY != 0.0) {
-        double fHeight = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
-        m_size.setHeight(fHeight);
-    }
-    m_unit = i_physValPoint.unit();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the right center point of the rectangle.
-
-    The point must be passed in the current unit of the rectangle.
-
-    The rotation angle, the height and the opposite center point (left center)
-    as well as the top left and bottom left corners of the rectangle remain the same.
-    Therefore the width and the center point of the rectangle are adjusted.
-
-    As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
-*/
-void CPhysValRect::setRightCenter(const QPointF& i_pt)
-//------------------------------------------------------------------------------
-{
-    setRightCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the right center point of the rectangle.
-
-    The unit will be taken over from the given point.
-
-    The rotation angle, the height and the opposite center point (left center)
-    as well as the top left and bottom left corners of the rectangle remain the same.
-    Therefore the width and the center point of the rectangle are adjusted.
-
-    If the unit is changed the center point and the width will be converted correspondingly.
-
-    As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
-*/
-void CPhysValRect::setRightCenter(const CPhysValPoint& i_physValPoint)
-//------------------------------------------------------------------------------
-{
-    // Get coordinate of opposite point.
-    CPhysValPoint physValPtOpposite = leftCenter();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fDX = i_physValPoint.x().getVal() - m_ptCenter.x();
-    double fDY = i_physValPoint.y().getVal() - m_ptCenter.y();
-    if (fDX != 0.0 || fDY != 0.0) {
-        double fWidth = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
-        m_size.setWidth(fWidth);
-    }
-    m_unit = i_physValPoint.unit();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the bottom center point of the rectangle.
-
-    The point must be passed in the current unit of the rectangle.
-
-    The rotation angle, the width and the opposite center point (top center)
-    as well as the top left and top right corners of the rectangle remain the same.
-    Therefore the height and the center point of the rectangle are adjusted.
-
-    As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
-*/
-void CPhysValRect::setBottomCenter(const QPointF& i_pt)
-//------------------------------------------------------------------------------
-{
-    setBottomCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the bottom center point of the rectangle.
-
-    The unit will be taken over from the given point.
-
-    The rotation angle, the width and the opposite center point (top center)
-    as well as the top left and top right corners of the rectangle remain the same.
-    Therefore the height and the center point of the rectangle are adjusted.
-
-    If the unit is changed the center point and the height will be converted correspondingly.
-
-    As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
-*/
-void CPhysValRect::setBottomCenter(const CPhysValPoint& i_physValPoint)
-//------------------------------------------------------------------------------
-{
-    // Get coordinate of opposite point.
-    CPhysValPoint physValPtOpposite = topCenter();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fDX = i_physValPoint.x().getVal() - m_ptCenter.x();
-    double fDY = i_physValPoint.y().getVal() - m_ptCenter.y();
-    if (fDX != 0.0 || fDY != 0.0) {
-        double fHeight = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
-        m_size.setHeight(fHeight);
-    }
-    m_unit = i_physValPoint.unit();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the left center point of the rectangle.
-
-    The point must be passed in the current unit of the rectangle.
-
-    The rotation angle, the height and the opposite center point (right center)
-    as well as the top right and bottom right corners of the rectangle remain the same.
-    Therefore the width and the center point of the rectangle are adjusted.
-
-    As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
-*/
-void CPhysValRect::setLeftCenter(const QPointF& i_pt)
-//------------------------------------------------------------------------------
-{
-    setLeftCenter(CPhysValPoint(*m_pDrawingScene, i_pt, m_unit));
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the left center point of the rectangle.
-
-    The unit will be taken over from the given point.
-
-    The rotation angle, the height and the opposite center point (right center)
-    as well as the top right and bottom right corners of the rectangle remain the same.
-    Therefore the width and the center point of the rectangle are adjusted.
-
-    If the unit is changed the center point and the width will be converted correspondingly.
-
-    As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
-*/
-void CPhysValRect::setLeftCenter(const CPhysValPoint& i_physValPoint)
-//------------------------------------------------------------------------------
-{
-    // Get coordinate of opposite point.
-    CPhysValPoint physValPtOpposite = rightCenter();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
-    double fDX = i_physValPoint.x().getVal() - m_ptCenter.x();
-    double fDY = i_physValPoint.y().getVal() - m_ptCenter.y();
-    if (fDX != 0.0 || fDY != 0.0) {
-        double fWidth = 2.0 * Math::sqrt(Math::sqr(fDX) + Math::sqr(fDY));
-        m_size.setWidth(fWidth);
-    }
-    m_unit = i_physValPoint.unit();
 }
 
 /*==============================================================================
@@ -1142,8 +1090,11 @@ double CPhysValRect::phi_rad(const QSizeF& i_size)
 void CPhysValRect::updateFromOppositeCorners(const CPhysValPoint& i_physValPtNew, const CPhysValPoint& i_physValPtOpposite)
 //------------------------------------------------------------------------------
 {
-    m_ptCenter.setX(fabs((i_physValPtNew.x().getVal() + i_physValPtOpposite.x().getVal(i_physValPtNew.unit())) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPtNew.y().getVal() + i_physValPtOpposite.y().getVal(i_physValPtNew.unit())) / 2.0));
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPtNew.unit(), i_physValPtNew.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    m_ptCenter.setX(fabs((i_physValPtNew.x().getVal(m_unit) + i_physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((i_physValPtNew.y().getVal(m_unit) + i_physValPtOpposite.y().getVal()) / 2.0));
     QLineF lineDiagonale(i_physValPtNew.toQPointF(), i_physValPtOpposite.toQPointF());
     double fDiagonale = lineDiagonale.length();
     double fWidth = 0.0;
@@ -1154,5 +1105,4 @@ void CPhysValRect::updateFromOppositeCorners(const CPhysValPoint& i_physValPtNew
     }
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
-    m_unit = i_physValPtNew.unit();
 }

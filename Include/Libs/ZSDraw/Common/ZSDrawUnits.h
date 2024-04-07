@@ -133,6 +133,8 @@ public: // instance methods (scale factor of drawing in metric dimension)
 public: // instance methods (distinguish between metric system and pixels or dots)
     bool isMetricUnit(const QString& i_strSymbolOrName) const;
     bool isMetricUnit(const ZS::PhysVal::CUnit& i_unit) const;
+    bool unitsAreEitherMetricOrNot(const QString& i_strSymbolOrName1, const QString& i_strSymbolOrName2) const;
+    bool unitsAreEitherMetricOrNot(const ZS::PhysVal::CUnit& i_unit1, const ZS::PhysVal::CUnit& i_unit2) const;
 private: // instance methods
     /*!< Unit tree entry for metric unit micro meter */
     ZS::PhysVal::CUnitsTreeEntryPhysUnit m_treeEntryMicroMeter;

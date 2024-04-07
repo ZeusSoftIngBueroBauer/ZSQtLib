@@ -42,16 +42,14 @@ namespace Draw
 class CDrawingScene;
 
 //******************************************************************************
-/*! @brief Corresponds to QPointF but providing a physical unit and a resolution.
+/*! @brief Represents a point on the drawing scene.
 
-    This class is not part of ZS::PhysVal as the namespace ZS::PhysVal is abstract
-    concerning units and the units "pixels" or any metric units is not known within
-    the ZS::PhysVal library. The corresponding unit tree must be configured for the
-    specific application or, as in this case, in the units tree of the ZS::Draw library.
+    Corresponds to QPointF but providing a physical unit and a resolution.
 
-    In addition to convert between metric and pixel dimensions (and vice versa)
-    the screen resolution and the scale factor must be known. Both are properties
-    of the physical size "Length" within the ZS::Draw library.
+    Converting points from pixels to metric units is not supported.
+    This conversion would have to be done by the parent group or scene to take
+    the different Y-Scale-Axis orientation into account.
+    But the point does not know about groups.
 */
 class ZSDRAWDLL_API CPhysValPoint
 //******************************************************************************
@@ -85,6 +83,7 @@ public: // instance methods
     void setY(const ZS::PhysVal::CPhysVal& i_physValY);
 public: // instance methods (to convert the values into another unit)
     QPointF toQPointF() const;
+    QPointF toQPointF(const ZS::PhysVal::CUnit& i_unit) const;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
     /*!< Reference to drawing scene. */
