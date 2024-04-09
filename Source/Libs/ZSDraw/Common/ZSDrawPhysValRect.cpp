@@ -255,6 +255,11 @@ CPhysValPoint CPhysValRect::center() const
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the size (width and height) of the rectangle.
+
+    If the left edge of the unrotated rectangle is right of the right edge,
+    the returned width is negative.
+    If the top edge of the unrotated rectangle is below the bottom edge,
+    the returned height is negative.
 */
 CPhysValSize CPhysValRect::size() const
 //------------------------------------------------------------------------------
@@ -264,6 +269,9 @@ CPhysValSize CPhysValRect::size() const
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the width of the rectangle.
+
+    If the left edge of the unrotated rectangle is right of the right edge,
+    the returned width is negative.
 */
 CPhysVal CPhysValRect::width() const
 //------------------------------------------------------------------------------
@@ -274,6 +282,9 @@ CPhysVal CPhysValRect::width() const
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the height of the rectangle.
+
+    If the top edge of the unrotated rectangle is below the bottom edge,
+    the returned height is negative.
 */
 CPhysVal CPhysValRect::height() const
 //------------------------------------------------------------------------------
@@ -574,6 +585,9 @@ void CPhysValRect::setSize(const QSizeF& i_size)
 
     The rectangle's right and bottom edges are implicitly changed.
 
+    If width is negative, the left edge is right of the right edge.
+    If height is negative, the top edge is below the bottom edge.
+
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
 */
@@ -608,6 +622,8 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
 
     The rectangle's right edge is implicitly changed.
 
+    If width is negative, the left edge is right of the right edge.
+
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
 */
@@ -624,6 +640,8 @@ void CPhysValRect::setWidth(double i_fWidth)
     the same. To keep the left, top and bottom edge the center point will be moved.
 
     The rectangle's right edge is implicitly changed.
+
+    If width is negative, the left edge is right of the right edge.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -690,15 +708,16 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    QRectF rectF = toNotRotatedQRectF();
-
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-
-    // Rotate the given point around the center to fit the unrotated rectangle.
-    QPointF ptNewRotated = i_physValPoint.toQPointF(m_unit);
-
-    QPointF ptNewNotRotated = ZS::Draw::rotatePoint(m_ptCenter, ptNewRotated, -fAngle_rad);
-
+    QRectF rectFNotRotated = toNotRotatedQRectF();
+    QPointF ptNew = i_physValPoint.toQPointF(m_unit);
+    if (m_physValAngle.getVal() != 0.0) {
+        // Rotate the given point around the center to fit the unrotated rectangle.
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
+    }
+    rectFNotRotated.setLeft(ptNew.x());
+    m_size = rectFNotRotated.size();
+    m_ptCenter = rectFNotRotated.center();
 }
 
 //------------------------------------------------------------------------------
@@ -741,6 +760,16 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    QRectF rectFNotRotated = toNotRotatedQRectF();
+    QPointF ptNew = i_physValPoint.toQPointF(m_unit);
+    if (m_physValAngle.getVal() != 0.0) {
+        // Rotate the given point around the center to fit the unrotated rectangle.
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
+    }
+    rectFNotRotated.setRight(ptNew.x());
+    m_size = rectFNotRotated.size();
+    m_ptCenter = rectFNotRotated.center();
 }
 
 //------------------------------------------------------------------------------
@@ -752,6 +781,8 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
     the same. To keep the top, left and right edges the center point will be moved.
 
     The rectangle's bottom edge is implicitly changed.
+
+    If height is negative, the top edge is below the bottom edge.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -770,6 +801,8 @@ void CPhysValRect::setHeight(double i_fHeight)
     If the unit is changed the center point will be converted correspondingly.
 
     The rectangle's bottom edge is implicitly changed.
+
+    If height is negative, the top edge is below the bottom edge.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -836,6 +869,16 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    QRectF rectFNotRotated = toNotRotatedQRectF();
+    QPointF ptNew = i_physValPoint.toQPointF(m_unit);
+    if (m_physValAngle.getVal() != 0.0) {
+        // Rotate the given point around the center to fit the unrotated rectangle.
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
+    }
+    rectFNotRotated.setTop(ptNew.y());
+    m_size = rectFNotRotated.size();
+    m_ptCenter = rectFNotRotated.center();
 }
 
 //------------------------------------------------------------------------------
@@ -878,6 +921,16 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    QRectF rectFNotRotated = toNotRotatedQRectF();
+    QPointF ptNew = i_physValPoint.toQPointF(m_unit);
+    if (m_physValAngle.getVal() != 0.0) {
+        // Rotate the given point around the center to fit the unrotated rectangle.
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
+    }
+    rectFNotRotated.setBottom(ptNew.y());
+    m_size = rectFNotRotated.size();
+    m_ptCenter = rectFNotRotated.center();
 }
 
 //------------------------------------------------------------------------------
@@ -929,7 +982,33 @@ void CPhysValRect::setTopLeft(const QPointF& i_pt)
 void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    updateFromOppositeCorners(i_physValPoint, bottomRight());
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    CPhysValPoint physValPtOpposite = bottomRight();
+    m_ptCenter.setX(fabs((i_physValPoint.x().getVal(m_unit) + physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((i_physValPoint.y().getVal(m_unit) + physValPtOpposite.y().getVal()) / 2.0));
+    // Diagonale from TopLeft to BottomRight:
+    // - TopLeft.x may be right of BottomRight.x (dx < 0) -> Width is negative
+    // - TopLeft.y may be below BottomRight.y (dy < 0)  -> Height is negative
+    QLineF lineDiagonale(i_physValPoint.toQPointF(), physValPtOpposite.toQPointF());
+    double fDiagonale = lineDiagonale.length();
+    double fWidth = 0.0;
+    double fHeight = 0.0;
+    if (fDiagonale > 0.0) {
+        double dx = lineDiagonale.dx();
+        double dy = lineDiagonale.dy();
+        fWidth = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(dy));
+        fHeight = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(dx));
+        if (dx < 0.0) {
+            fWidth *= -1.0;
+        }
+        if (dy < 0.0) {
+            fHeight *= -1.0;
+        }
+    }
+    m_size.setWidth(fWidth);
+    m_size.setHeight(fHeight);
 }
 
 //------------------------------------------------------------------------------
@@ -963,7 +1042,33 @@ void CPhysValRect::setTopRight(const QPointF& i_pt)
 void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    updateFromOppositeCorners(i_physValPoint, bottomLeft());
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    CPhysValPoint physValPtOpposite = bottomLeft();
+    m_ptCenter.setX(fabs((i_physValPoint.x().getVal(m_unit) + physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((i_physValPoint.y().getVal(m_unit) + physValPtOpposite.y().getVal()) / 2.0));
+    // Diagonale from TopRight to BottomLeft:
+    // - TopRight.x may be left of BottomLeft.x (dx > 0) -> Width is negative
+    // - TopRight.y may be below BottomLeft.y (dy < 0) -> Height is negative
+    QLineF lineDiagonale(i_physValPoint.toQPointF(), physValPtOpposite.toQPointF());
+    double fDiagonale = lineDiagonale.length();
+    double fWidth = 0.0;
+    double fHeight = 0.0;
+    if (fDiagonale > 0.0) {
+        double dx = lineDiagonale.dx();
+        double dy = lineDiagonale.dy();
+        fWidth = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(dy));
+        fHeight = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(dx));
+        if (dx > 0.0) {
+            fWidth *= -1.0;
+        }
+        if (dy < 0.0) {
+            fHeight *= -1.0;
+        }
+    }
+    m_size.setWidth(fWidth);
+    m_size.setHeight(fHeight);
 }
 
 //------------------------------------------------------------------------------
@@ -997,7 +1102,33 @@ void CPhysValRect::setBottomRight(const QPointF& i_pt)
 void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    updateFromOppositeCorners(i_physValPoint, topLeft());
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    CPhysValPoint physValPtOpposite = topLeft();
+    m_ptCenter.setX(fabs((i_physValPoint.x().getVal(m_unit) + physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((i_physValPoint.y().getVal(m_unit) + physValPtOpposite.y().getVal()) / 2.0));
+    // Diagonale from BottomRight to TopLeft:
+    // - BottomRight.x may be left of TopLeft.x (dx > 0) -> Width is negative
+    // - BottomRight.y may be above TopLeft.y (dy > 0) -> Height is negative
+    QLineF lineDiagonale(i_physValPoint.toQPointF(), physValPtOpposite.toQPointF());
+    double fDiagonale = lineDiagonale.length();
+    double fWidth = 0.0;
+    double fHeight = 0.0;
+    if (fDiagonale > 0.0) {
+        double dx = lineDiagonale.dx();
+        double dy = lineDiagonale.dy();
+        fWidth = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(dy));
+        fHeight = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(dx));
+        if (dx > 0.0) {
+            fWidth *= -1.0;
+        }
+        if (dy > 0.0) {
+            fHeight *= -1.0;
+        }
+    }
+    m_size.setWidth(fWidth);
+    m_size.setHeight(fHeight);
 }
 
 //------------------------------------------------------------------------------
@@ -1031,7 +1162,33 @@ void CPhysValRect::setBottomLeft(const QPointF& i_pt)
 void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
 {
-    updateFromOppositeCorners(i_physValPoint, topRight());
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    CPhysValPoint physValPtOpposite = topRight();
+    m_ptCenter.setX(fabs((i_physValPoint.x().getVal(m_unit) + physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((i_physValPoint.y().getVal(m_unit) + physValPtOpposite.y().getVal()) / 2.0));
+    // Diagonale from BottomLeft to TopTight:
+    // - BottomLeft.x may be right of TopTight.x (dx < 0) -> Width is negative
+    // - BottomLeft.y may be above TopTight.y (dy > 0) -> Height is negative
+    QLineF lineDiagonale(i_physValPoint.toQPointF(), physValPtOpposite.toQPointF());
+    double fDiagonale = lineDiagonale.length();
+    double fWidth = 0.0;
+    double fHeight = 0.0;
+    if (fDiagonale > 0.0) {
+        double dx = lineDiagonale.dx();
+        double dy = lineDiagonale.dy();
+        fWidth = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(dy));
+        fHeight = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(dx));
+        if (dx < 0.0) {
+            fWidth *= -1.0;
+        }
+        if (dy > 0.0) {
+            fHeight *= -1.0;
+        }
+    }
+    m_size.setWidth(fWidth);
+    m_size.setHeight(fHeight);
 }
 
 /*==============================================================================
@@ -1047,6 +1204,27 @@ QRectF CPhysValRect::toNotRotatedQRectF() const
 {
     QPointF ptTopLeft(m_ptCenter.x() - m_size.width()/2.0, m_ptCenter.y() - m_size.height()/2.0);
     return QRectF(ptTopLeft, m_size);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the physical point as a QPointF instance in the desired unit.
+* 
+*/
+QRectF CPhysValRect::toNotRotatedQRectF(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    QPointF ptTopLeft(m_ptCenter.x() - m_size.width()/2.0, m_ptCenter.y() - m_size.height()/2.0);
+    QSizeF sizeF = m_size;
+    if (i_unit != m_unit) {
+        ptTopLeft.setX(CPhysVal(ptTopLeft.x(), m_unit).getVal(i_unit));
+        ptTopLeft.setY(CPhysVal(ptTopLeft.y(), m_unit).getVal(i_unit));
+        sizeF.setWidth(CPhysVal(m_size.width(), m_unit).getVal(i_unit));
+        sizeF.setHeight(CPhysVal(m_size.height(), m_unit).getVal(i_unit));
+    }
+    return QRectF(ptTopLeft, sizeF);
 }
 
 //------------------------------------------------------------------------------
@@ -1084,25 +1262,4 @@ double CPhysValRect::phi_rad(const QSizeF& i_size)
         fAngle_rad = atan(i_size.height()/i_size.width());
     }
     return fAngle_rad;
-}
-
-//------------------------------------------------------------------------------
-void CPhysValRect::updateFromOppositeCorners(const CPhysValPoint& i_physValPtNew, const CPhysValPoint& i_physValPtOpposite)
-//------------------------------------------------------------------------------
-{
-    if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPtNew.unit(), i_physValPtNew.unit())) {
-        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
-    }
-    m_ptCenter.setX(fabs((i_physValPtNew.x().getVal(m_unit) + i_physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPtNew.y().getVal(m_unit) + i_physValPtOpposite.y().getVal()) / 2.0));
-    QLineF lineDiagonale(i_physValPtNew.toQPointF(), i_physValPtOpposite.toQPointF());
-    double fDiagonale = lineDiagonale.length();
-    double fWidth = 0.0;
-    double fHeight = 0.0;
-    if (fDiagonale > 0.0) {
-        fWidth = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(lineDiagonale.dy()));
-        fHeight = Math::sqrt(Math::sqr(fDiagonale) - Math::sqr(lineDiagonale.dx()));
-    }
-    m_size.setWidth(fWidth);
-    m_size.setHeight(fHeight);
 }

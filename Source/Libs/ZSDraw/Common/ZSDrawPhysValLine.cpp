@@ -581,6 +581,30 @@ QLineF CPhysValLine::toQLineF() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the physical point as a QPointF instance in the desired unit.
+* 
+*/
+QLineF CPhysValLine::toQLineF(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    QLineF lineF = m_line;
+    if (i_unit != m_unit) {
+        QPointF pt1(m_line.p1());
+        pt1.setX(CPhysVal(pt1.x(), m_unit).getVal(i_unit));
+        pt1.setY(CPhysVal(pt1.y(), m_unit).getVal(i_unit));
+        QPointF pt2(m_line.p2());
+        pt2.setX(CPhysVal(pt2.x(), m_unit).getVal(i_unit));
+        pt2.setY(CPhysVal(pt2.y(), m_unit).getVal(i_unit));
+        lineF.setP1(pt1);
+        lineF.setP2(pt2);
+    }
+    return lineF;
+}
+
+//------------------------------------------------------------------------------
 QString CPhysValLine::toString(bool i_bAddUnit, const QString& i_strSeparator) const
 //------------------------------------------------------------------------------
 {

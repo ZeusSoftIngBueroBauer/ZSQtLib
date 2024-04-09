@@ -308,12 +308,30 @@ public: // instance methods (to convert the values into another unit)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the physical point as a QPointF instance.
+/*! @brief Returns the physical point as a QPointF instance in the current unit.
 */
 QPointF CPhysValPoint::toQPointF() const
 //------------------------------------------------------------------------------
 {
     return m_pt;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the physical point as a QPointF instance in the desired unit.
+* 
+*/
+QPointF CPhysValPoint::toQPointF(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    QPointF pt = m_pt;
+    if (i_unit != m_unit) {
+        pt.setX(CPhysVal(m_pt.x(), m_unit).getVal(i_unit));
+        pt.setY(CPhysVal(m_pt.y(), m_unit).getVal(i_unit));
+    }
+    return pt;
 }
 
 //------------------------------------------------------------------------------

@@ -298,6 +298,24 @@ QSizeF CPhysValSize::toQSizeF() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the physical point as a QPointF instance in the desired unit.
+* 
+*/
+QSizeF CPhysValSize::toQSizeF(const CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    if (!Units.Length.unitsAreEitherMetricOrNot(i_unit, m_unit)) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    QSizeF sizeF = m_size;
+    if (i_unit != m_unit) {
+        sizeF.setWidth(CPhysVal(m_size.width(), m_unit).getVal(i_unit));
+        sizeF.setHeight(CPhysVal(m_size.height(), m_unit).getVal(i_unit));
+    }
+    return sizeF;
+}
+
+//------------------------------------------------------------------------------
 QString CPhysValSize::toString(bool i_bAddUnit, const QString& i_strSeparator) const
 //------------------------------------------------------------------------------
 {
