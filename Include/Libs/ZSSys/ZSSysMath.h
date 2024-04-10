@@ -91,6 +91,7 @@ const double c_f180Degrees_rad = acos(-1.0);
 const double c_f225Degrees_rad = 5.0 * acos(-1.0) / 4.0;
 const double c_f270Degrees_rad = 3.0 * acos(-1.0) / 2.0;
 const double c_f315Degrees_rad = 7.0 * acos(-1.0) / 4.0;
+const double c_f360Degrees_rad = 2.0 * acos(-1.0);
 
 const double c_fe = 2.718281828459;
 

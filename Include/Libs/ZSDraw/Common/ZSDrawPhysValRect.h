@@ -127,6 +127,18 @@ protected: // instance members
     QPointF m_ptCenter;
     /*!< The rectangles width and height in the unit 'm_unit'. */
     QSizeF m_size;
+    /*!< To rotate a point around another point by angle alpha, the distance (radius)
+         between the points is needed. For the the corners of a rectangle (TL, TR, BR, BL)
+         the distance (radius) is the same and is calculated as follows:
+         r = sqrt(sqr(width/2) + sqr(height/2))
+         Value is cached to speed up calculation of resulting corner points. */
+    double m_fRadius;
+    /*!< Original angle of the top right corner point to the center point
+         which is calculated as abs(arctan(height/width)).
+         To calculate the rotated corner points the rotation angle is
+         added to the original angle.
+         Value is cached to speed up calculation of resulting corner points. */
+    double m_fPhi_rad;
     /*!< The rotation angle. */
     ZS::PhysVal::CPhysVal m_physValAngle;
     /*!< Unit (either metric or pixels) in which the rectangle coordinates are in 'm_rect'. */

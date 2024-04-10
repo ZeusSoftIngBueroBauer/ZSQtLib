@@ -56,6 +56,8 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(),
     m_size(),
+    m_fRadius(0.0),
+    m_fPhi_rad(0.0),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_drawingScene.drawingSize().unit())
 {
@@ -67,6 +69,8 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
     m_size(QRectF(i_ptTL, i_ptBR).size()),
+    m_fRadius(radius(m_size)),
+    m_fPhi_rad(fabs(phi_rad(m_size))),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_drawingScene.drawingSize().unit())
 {
@@ -78,6 +82,8 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
     m_size(QRectF(i_ptTL, i_ptBR).size()),
+    m_fRadius(radius(m_size)),
+    m_fPhi_rad(fabs(phi_rad(m_size))),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_unit)
 {
@@ -89,6 +95,8 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(i_rect.center()),
     m_size(i_rect.size()),
+    m_fRadius(radius(m_size)),
+    m_fPhi_rad(fabs(phi_rad(m_size))),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_drawingScene.drawingSize().unit())
 {
@@ -100,6 +108,8 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(i_rect.center()),
     m_size(i_rect.size()),
+    m_fRadius(radius(m_size)),
+    m_fPhi_rad(fabs(phi_rad(m_size))),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_unit)
 {
@@ -114,6 +124,8 @@ CPhysValRect::CPhysValRect(
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).center()),
     m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).size()),
+    m_fRadius(radius(m_size)),
+    m_fPhi_rad(fabs(phi_rad(m_size))),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_physValTopLeft.unit())
 {
@@ -134,6 +146,8 @@ CPhysValRect::CPhysValRect(
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(QRectF(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()).center()),
     m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()).size()),
+    m_fRadius(radius(m_size)),
+    m_fPhi_rad(fabs(phi_rad(m_size))),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_physValTopLeft.unit())
 {
@@ -151,6 +165,8 @@ CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
     m_pDrawingScene(i_physValRectOther.m_pDrawingScene),
     m_ptCenter(i_physValRectOther.m_ptCenter),
     m_size(i_physValRectOther.m_size),
+    m_fRadius(i_physValRectOther.m_fRadius),
+    m_fPhi_rad(i_physValRectOther.m_fPhi_rad),
     m_physValAngle(i_physValRectOther.m_physValAngle),
     m_unit(i_physValRectOther.m_unit)
 {
@@ -163,6 +179,8 @@ CPhysValRect::~CPhysValRect()
     m_pDrawingScene = nullptr;
     //m_ptCenter;
     //m_size
+    m_fRadius = 0.0;
+    m_fPhi_rad = 0.0;
     //m_unit;
 }
 
@@ -176,6 +194,8 @@ CPhysValRect& CPhysValRect::operator = ( const CPhysValRect& i_physValRectOther 
 {
     m_ptCenter = i_physValRectOther.m_ptCenter;
     m_size = i_physValRectOther.m_size;
+    m_fRadius = i_physValRectOther.m_fRadius;
+    m_fPhi_rad = i_physValRectOther.m_fPhi_rad;
     m_physValAngle = i_physValRectOther.m_physValAngle;
     m_unit = i_physValRectOther.m_unit;
     return *this;
@@ -187,6 +207,8 @@ CPhysValRect& CPhysValRect::operator = ( const QRectF& i_rect )
 {
     m_ptCenter = i_rect.center();
     m_size = i_rect.size();
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
     m_physValAngle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
     return *this;
 }
@@ -315,6 +337,8 @@ CPhysVal CPhysValRect::angle() const
 CPhysValPoint CPhysValRect::topLeft() const
 //------------------------------------------------------------------------------
 {
+    #pragma message(__TODO__"Implement class Unit pixel converter derived from QObject instantiated in drawing scene and groups")
+    #pragma message(__TODO__"Add member to point to Unit pixel converter with destroyed signal instead of reference to drawing scene")
     double fX = m_ptCenter.x();
     double fY = m_ptCenter.y();
     double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
@@ -323,8 +347,9 @@ CPhysValPoint CPhysValRect::topLeft() const
         fY -= m_size.height() / 2.0;
     }
     else {
-        fX -= radius(m_size) * cos(phi_rad(m_size) + fAngle_rad);
-        fY -= radius(m_size) * sin(phi_rad(m_size) + fAngle_rad);
+        double fPhiTL_rad = Math::c_f180Degrees_rad - m_fPhi_rad;
+        fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+        fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
     }
     return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
 }
@@ -348,8 +373,9 @@ CPhysValPoint CPhysValRect::topRight() const
         fY -= m_size.height() / 2.0;
     }
     else {
-        fX += radius(m_size) * cos(phi_rad(m_size) + fAngle_rad);
-        fY -= radius(m_size) * sin(phi_rad(m_size) + fAngle_rad);
+        double fPhiTL_rad = m_fPhi_rad;
+        fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+        fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
     }
     return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
 }
@@ -373,8 +399,9 @@ CPhysValPoint CPhysValRect::bottomRight() const
         fY += m_size.height() / 2.0;
     }
     else {
-        fX += radius(m_size) * cos(phi_rad(m_size) + fAngle_rad);
-        fY += radius(m_size) * sin(phi_rad(m_size) + fAngle_rad);
+        double fPhiTL_rad = Math::c_f360Degrees_rad - m_fPhi_rad;
+        fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+        fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
     }
     return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
 }
@@ -398,8 +425,9 @@ CPhysValPoint CPhysValRect::bottomLeft() const
         fY += m_size.height() / 2.0;
     }
     else {
-        fX -= radius(m_size) * cos(phi_rad(m_size) + fAngle_rad);
-        fY += radius(m_size) * sin(phi_rad(m_size) + fAngle_rad);
+        double fPhiTL_rad = Math::c_f180Degrees_rad + m_fPhi_rad;
+        fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+        fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
     }
     return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
 }
@@ -610,6 +638,8 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -666,6 +696,8 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -716,8 +748,10 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
         ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
     }
     rectFNotRotated.setLeft(ptNew.x());
-    m_size = rectFNotRotated.size();
     m_ptCenter = rectFNotRotated.center();
+    m_size = rectFNotRotated.size();
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -768,8 +802,10 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
         ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
     }
     rectFNotRotated.setRight(ptNew.x());
-    m_size = rectFNotRotated.size();
     m_ptCenter = rectFNotRotated.center();
+    m_size = rectFNotRotated.size();
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -827,6 +863,8 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -877,8 +915,10 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
     }
     rectFNotRotated.setTop(ptNew.y());
-    m_size = rectFNotRotated.size();
     m_ptCenter = rectFNotRotated.center();
+    m_size = rectFNotRotated.size();
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -929,8 +969,10 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
     }
     rectFNotRotated.setBottom(ptNew.y());
-    m_size = rectFNotRotated.size();
     m_ptCenter = rectFNotRotated.center();
+    m_size = rectFNotRotated.size();
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -1009,6 +1051,8 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     }
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -1069,6 +1113,8 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     }
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -1129,6 +1175,8 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     }
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 //------------------------------------------------------------------------------
@@ -1189,6 +1237,8 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     }
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
+    m_fRadius = radius(m_size);
+    m_fPhi_rad = fabs(phi_rad(m_size));
 }
 
 /*==============================================================================
@@ -1248,7 +1298,7 @@ double CPhysValRect::radius(const QSizeF& i_size)
 {
     double fRadius = 0.0;
     if (i_size.isValid()) {
-        fRadius = Math::sqrt(Math::sqr(i_size.width()) + Math::sqr(i_size.height()));
+        fRadius = Math::sqrt(Math::sqr(i_size.width()/2.0) + Math::sqr(i_size.height()/2.0));
     }
     return fRadius;
 }
