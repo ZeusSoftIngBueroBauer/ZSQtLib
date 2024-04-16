@@ -309,7 +309,7 @@ protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjWdgt::showSelectionPoints( unsigned char i_selPts )
+void CGraphObjWdgt::showSelectionPoints(TSelectionPointTypes i_selPts)
 //------------------------------------------------------------------------------
 {
     if (parentItem() == nullptr) {

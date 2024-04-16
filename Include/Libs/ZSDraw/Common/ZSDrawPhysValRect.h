@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
 #include "ZSDraw/Common/ZSDrawPhysValLine.h"
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
 #include "QtCore/qrect.h"
 
 namespace ZS
@@ -120,6 +121,8 @@ public: // instance methods (to convert the values into another unit)
 protected: // auxiliary math functions
     static double radius(const QSizeF& i_size);
     static double phi_rad(const QSizeF& i_size);
+    void initSelectionPoints();
+    void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);
 protected: // instance members
     /*!< Reference to drawing scene. */
     const CDrawingScene* m_pDrawingScene;
@@ -127,6 +130,10 @@ protected: // instance members
     QPointF m_ptCenter;
     /*!< The rectangles width and height in the unit 'm_unit'. */
     QSizeF m_size;
+    /*!< The rotation angle. */
+    ZS::PhysVal::CPhysVal m_physValAngle;
+    /*!< Unit (either metric or pixels) in which the rectangle coordinates are in 'm_rect'. */
+    ZS::PhysVal::CUnit m_unit;
     /*!< To rotate a point around another point by angle alpha, the distance (radius)
          between the points is needed. For the the corners of a rectangle (TL, TR, BR, BL)
          the distance (radius) is the same and is calculated as follows:
@@ -139,10 +146,14 @@ protected: // instance members
          added to the original angle.
          Value is cached to speed up calculation of resulting corner points. */
     double m_fPhi_rad;
-    /*!< The rotation angle. */
-    ZS::PhysVal::CPhysVal m_physValAngle;
-    /*!< Unit (either metric or pixels) in which the rectangle coordinates are in 'm_rect'. */
-    ZS::PhysVal::CUnit m_unit;
+    /*!< Corner and other selection points of a rotated rectangle can be calculated from the
+         center point, the size (width and height) and the rotation angle.
+         As time consuming trigonometric functions and the mathematical root function must be
+         used to calculate the corner points, the corner points (and other selection points)
+         are only calculated if needed. A dirty flag indicates for each point whether calculation
+         is needed. */
+    mutable QVector<CPhysValPoint> m_arphysValPoints;
+    mutable QVector<bool> m_arbPointsCalculated;
 
 }; // class CPhysValRect
 

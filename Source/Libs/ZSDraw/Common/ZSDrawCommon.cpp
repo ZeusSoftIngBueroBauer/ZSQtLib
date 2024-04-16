@@ -322,50 +322,40 @@ Enum ESelectionPoints
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-QString ZS::Draw::selectionPoints2Str( int i_selPts )
+QString ZS::Draw::selectionPointTypes2Str( TSelectionPointTypes i_selPts )
 //------------------------------------------------------------------------------
 {
     QString str;
-
-    if( i_selPts & ESelectionPointsBoundingRectCorner )
-    {
-        str += "BoundingRectCorners";
-    }
-    if( i_selPts & ESelectionPointsBoundingRectLineCenter )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
+    if (i_selPts != c_uSelectionPointsNone) {
+        if (i_selPts & c_uSelectionPointsBoundingRectAll) {
+            str = "BoundingRectAll";
         }
-        str += "BoundingRectLineCenter";
-    }
-    if( i_selPts & ESelectionPointsBoundingRectCenter )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
+        else {
+            if (i_selPts & c_uSelectionPointsBoundingRectCorner) {
+                str = "BoundingRectCorners";
+            }
+            if (i_selPts & c_uSelectionPointsBoundingRectLineCenter) {
+                if (!str.isEmpty()) str += "|";
+                str += "BoundingRectLineCenter";
+            }
+            if (i_selPts & c_uSelectionPointsBoundingRectCenter )
+            {
+                if (!str.isEmpty()) str += "|";
+                str += "BoundingRectCenter";
+            }
+            if (i_selPts & c_uSelectionPointsBoundingRectRotate )
+            {
+                if (!str.isEmpty()) str += "|";
+                str += "BoundingRectRotation";
+            }
         }
-        str += "BoundingRectCenter";
-    }
-    if( i_selPts & ESelectionPointsBoundingRectRotate )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
+        if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
+            if (!str.isEmpty()) str += "|";
+            str += "PolygonShapePoints";
         }
-        str += "BoundingRectRotation";
-    }
-    if( i_selPts & ESelectionPointsPolygonShapePoints )
-    {
-        if( !str.isEmpty() )
-        {
-            str += "|";
-        }
-        str += "PolygonShapePoints";
     }
     return str;
-
-} // selectionPoints2Str
+}
 
 
 /*==============================================================================

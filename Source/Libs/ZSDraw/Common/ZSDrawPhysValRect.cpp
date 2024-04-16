@@ -29,6 +29,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawUnits.h"
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -56,11 +57,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(),
     m_size(),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_unit(i_drawingScene.drawingSize().unit()),
     m_fRadius(0.0),
     m_fPhi_rad(0.0),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_drawingScene.drawingSize().unit())
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
 {
+    initSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -69,11 +73,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
     m_size(QRectF(i_ptTL, i_ptBR).size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_unit(i_drawingScene.drawingSize().unit()),
     m_fRadius(radius(m_size)),
     m_fPhi_rad(fabs(phi_rad(m_size))),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_drawingScene.drawingSize().unit())
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
 {
+    initSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -82,11 +89,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
     m_size(QRectF(i_ptTL, i_ptBR).size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_unit(i_unit),
     m_fRadius(radius(m_size)),
     m_fPhi_rad(fabs(phi_rad(m_size))),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_unit)
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
 {
+    initSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -95,11 +105,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(i_rect.center()),
     m_size(i_rect.size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_unit(i_drawingScene.drawingSize().unit()),
     m_fRadius(radius(m_size)),
     m_fPhi_rad(fabs(phi_rad(m_size))),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_drawingScene.drawingSize().unit())
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
 {
+    initSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -108,11 +121,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(i_rect.center()),
     m_size(i_rect.size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_unit(i_unit),
     m_fRadius(radius(m_size)),
     m_fPhi_rad(fabs(phi_rad(m_size))),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_unit)
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
 {
+    initSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -124,10 +140,12 @@ CPhysValRect::CPhysValRect(
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).center()),
     m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_unit(i_physValTopLeft.unit()),
     m_fRadius(radius(m_size)),
     m_fPhi_rad(fabs(phi_rad(m_size))),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_physValTopLeft.unit())
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
 {
     if (i_physValTopLeft.unit() != i_physValBottomRight.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
@@ -135,6 +153,7 @@ CPhysValRect::CPhysValRect(
     if (i_physValTopLeft.resolution() != i_physValBottomRight.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
+    initSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -146,10 +165,12 @@ CPhysValRect::CPhysValRect(
     m_pDrawingScene(&i_drawingScene),
     m_ptCenter(QRectF(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()).center()),
     m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()).size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_unit(i_physValTopLeft.unit()),
     m_fRadius(radius(m_size)),
     m_fPhi_rad(fabs(phi_rad(m_size))),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_physValTopLeft.unit())
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
 {
     if (i_physValTopLeft.unit() != i_physValSize.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
@@ -157,6 +178,7 @@ CPhysValRect::CPhysValRect(
     if (i_physValTopLeft.resolution() != i_physValSize.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
+    initSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -165,11 +187,14 @@ CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
     m_pDrawingScene(i_physValRectOther.m_pDrawingScene),
     m_ptCenter(i_physValRectOther.m_ptCenter),
     m_size(i_physValRectOther.m_size),
+    m_physValAngle(i_physValRectOther.m_physValAngle),
+    m_unit(i_physValRectOther.m_unit),
     m_fRadius(i_physValRectOther.m_fRadius),
     m_fPhi_rad(i_physValRectOther.m_fPhi_rad),
-    m_physValAngle(i_physValRectOther.m_physValAngle),
-    m_unit(i_physValRectOther.m_unit)
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
 {
+    initSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -178,10 +203,13 @@ CPhysValRect::~CPhysValRect()
 {
     m_pDrawingScene = nullptr;
     //m_ptCenter;
-    //m_size
+    //m_size;
+    //m_physValAngle;
+    //m_unit;
     m_fRadius = 0.0;
     m_fPhi_rad = 0.0;
-    //m_unit;
+    //m_arphysValPoints;
+    //m_arbPointsCalculated;
 }
 
 /*==============================================================================
@@ -194,10 +222,12 @@ CPhysValRect& CPhysValRect::operator = ( const CPhysValRect& i_physValRectOther 
 {
     m_ptCenter = i_physValRectOther.m_ptCenter;
     m_size = i_physValRectOther.m_size;
-    m_fRadius = i_physValRectOther.m_fRadius;
-    m_fPhi_rad = i_physValRectOther.m_fPhi_rad;
     m_physValAngle = i_physValRectOther.m_physValAngle;
     m_unit = i_physValRectOther.m_unit;
+    m_fRadius = i_physValRectOther.m_fRadius;
+    m_fPhi_rad = i_physValRectOther.m_fPhi_rad;
+    m_arphysValPoints = i_physValRectOther.m_arphysValPoints;
+    m_arbPointsCalculated = i_physValRectOther.m_arbPointsCalculated;
     return *this;
 }
 
@@ -207,9 +237,10 @@ CPhysValRect& CPhysValRect::operator = ( const QRectF& i_rect )
 {
     m_ptCenter = i_rect.center();
     m_size = i_rect.size();
+    m_physValAngle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
-    m_physValAngle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    initSelectionPoints();
     return *this;
 }
 
@@ -339,19 +370,23 @@ CPhysValPoint CPhysValRect::topLeft() const
 {
     #pragma message(__TODO__"Implement class Unit pixel converter derived from QObject instantiated in drawing scene and groups")
     #pragma message(__TODO__"Add member to point to Unit pixel converter with destroyed signal instead of reference to drawing scene")
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    if (fAngle_rad == 0.0) {
-        fX -= m_size.width() / 2.0;
-        fY -= m_size.height() / 2.0;
+    if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopLeft)]) {
+        double fX = m_ptCenter.x();
+        double fY = m_ptCenter.y();
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        if (fAngle_rad == 0.0) {
+            fX -= m_size.width() / 2.0;
+            fY -= m_size.height() / 2.0;
+        }
+        else {
+            double fPhiTL_rad = Math::c_f180Degrees_rad - m_fPhi_rad;
+            fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+            fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+        }
+        m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+        m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopLeft)] = true;
     }
-    else {
-        double fPhiTL_rad = Math::c_f180Degrees_rad - m_fPhi_rad;
-        fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-        fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
-    }
-    return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+    return m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)];
 }
 
 //------------------------------------------------------------------------------
@@ -365,19 +400,23 @@ CPhysValPoint CPhysValRect::topLeft() const
 CPhysValPoint CPhysValRect::topRight() const
 //------------------------------------------------------------------------------
 {
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    if (fAngle_rad == 0.0) {
-        fX += m_size.width() / 2.0;
-        fY -= m_size.height() / 2.0;
+    if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopRight)]) {
+        double fX = m_ptCenter.x();
+        double fY = m_ptCenter.y();
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        if (fAngle_rad == 0.0) {
+            fX += m_size.width() / 2.0;
+            fY -= m_size.height() / 2.0;
+        }
+        else {
+            double fPhiTL_rad = m_fPhi_rad;
+            fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+            fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+        }
+        m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+        m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopRight)] = true;
     }
-    else {
-        double fPhiTL_rad = m_fPhi_rad;
-        fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-        fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
-    }
-    return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+    return m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)];
 }
 
 //------------------------------------------------------------------------------
@@ -391,19 +430,23 @@ CPhysValPoint CPhysValRect::topRight() const
 CPhysValPoint CPhysValRect::bottomRight() const
 //------------------------------------------------------------------------------
 {
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    if (fAngle_rad == 0.0) {
-        fX += m_size.width() / 2.0;
-        fY += m_size.height() / 2.0;
+    if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomRight)]) {
+        double fX = m_ptCenter.x();
+        double fY = m_ptCenter.y();
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        if (fAngle_rad == 0.0) {
+            fX += m_size.width() / 2.0;
+            fY += m_size.height() / 2.0;
+        }
+        else {
+            double fPhiTL_rad = Math::c_f360Degrees_rad - m_fPhi_rad;
+            fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+            fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+        }
+        m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+        m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomRight)] = true;
     }
-    else {
-        double fPhiTL_rad = Math::c_f360Degrees_rad - m_fPhi_rad;
-        fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-        fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
-    }
-    return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+    return m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)];
 }
 
 //------------------------------------------------------------------------------
@@ -417,19 +460,23 @@ CPhysValPoint CPhysValRect::bottomRight() const
 CPhysValPoint CPhysValRect::bottomLeft() const
 //------------------------------------------------------------------------------
 {
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    if (fAngle_rad == 0.0) {
-        fX -= m_size.width() / 2.0;
-        fY += m_size.height() / 2.0;
+    if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomLeft)]) {
+        double fX = m_ptCenter.x();
+        double fY = m_ptCenter.y();
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        if (fAngle_rad == 0.0) {
+            fX -= m_size.width() / 2.0;
+            fY += m_size.height() / 2.0;
+        }
+        else {
+            double fPhiTL_rad = Math::c_f180Degrees_rad + m_fPhi_rad;
+            fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+            fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+        }
+        m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+        m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomLeft)] = true;
     }
-    else {
-        double fPhiTL_rad = Math::c_f180Degrees_rad + m_fPhi_rad;
-        fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-        fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
-    }
-    return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+    return m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)];
 }
 
 //------------------------------------------------------------------------------
@@ -443,18 +490,22 @@ CPhysValPoint CPhysValRect::bottomLeft() const
 CPhysValPoint CPhysValRect::topCenter() const
 //------------------------------------------------------------------------------
 {
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    if (m_physValAngle.getVal() == 0.0) {
-        fY -= m_size.height() / 2.0;
+    if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopCenter)]) {
+        double fX = m_ptCenter.x();
+        double fY = m_ptCenter.y();
+        if (m_physValAngle.getVal() == 0.0) {
+            fY -= m_size.height() / 2.0;
+        }
+        else {
+            CPhysValPoint physValPtTL = topLeft();
+            CPhysValPoint physValPtTR = topRight();
+            fX = (physValPtTL.x().getVal() + physValPtTR.x().getVal()) / 2.0;
+            fY = (physValPtTL.y().getVal() + physValPtTR.y().getVal()) / 2.0;
+        }
+        m_arphysValPoints[static_cast<int>(ESelectionPoint::TopCenter)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+        m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopCenter)] = true;
     }
-    else {
-        CPhysValPoint physValPtTL = topLeft();
-        CPhysValPoint physValPtTR = topRight();
-        fX = (physValPtTL.x().getVal() + physValPtTR.x().getVal()) / 2.0;
-        fY = (physValPtTL.y().getVal() + physValPtTR.y().getVal()) / 2.0;
-    }
-    return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+    return m_arphysValPoints[static_cast<int>(ESelectionPoint::TopCenter)];
 }
 
 //------------------------------------------------------------------------------
@@ -468,18 +519,22 @@ CPhysValPoint CPhysValRect::topCenter() const
 CPhysValPoint CPhysValRect::rightCenter() const
 //------------------------------------------------------------------------------
 {
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    if (m_physValAngle.getVal() == 0.0) {
-        fX += m_size.width() / 2.0;
+    if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::RightCenter)]) {
+        double fX = m_ptCenter.x();
+        double fY = m_ptCenter.y();
+        if (m_physValAngle.getVal() == 0.0) {
+            fX += m_size.width() / 2.0;
+        }
+        else {
+            CPhysValPoint physValPtTR = topRight();
+            CPhysValPoint physValPtBR = bottomRight();
+            fX = (physValPtTR.x().getVal() + physValPtBR.x().getVal()) / 2.0;
+            fY = (physValPtTR.y().getVal() + physValPtBR.y().getVal()) / 2.0;
+        }
+        m_arphysValPoints[static_cast<int>(ESelectionPoint::RightCenter)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+        m_arbPointsCalculated[static_cast<int>(ESelectionPoint::RightCenter)] = true;
     }
-    else {
-        CPhysValPoint physValPtTR = topRight();
-        CPhysValPoint physValPtBR = bottomRight();
-        fX = (physValPtTR.x().getVal() + physValPtBR.x().getVal()) / 2.0;
-        fY = (physValPtTR.y().getVal() + physValPtBR.y().getVal()) / 2.0;
-    }
-    return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+    return m_arphysValPoints[static_cast<int>(ESelectionPoint::RightCenter)];
 }
 
 //------------------------------------------------------------------------------
@@ -493,18 +548,22 @@ CPhysValPoint CPhysValRect::rightCenter() const
 CPhysValPoint CPhysValRect::bottomCenter() const
 //------------------------------------------------------------------------------
 {
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    if (m_physValAngle.getVal() == 0.0) {
-        fY += m_size.height() / 2.0;
+    if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomCenter)]) {
+        double fX = m_ptCenter.x();
+        double fY = m_ptCenter.y();
+        if (m_physValAngle.getVal() == 0.0) {
+            fY += m_size.height() / 2.0;
+        }
+        else {
+            CPhysValPoint physValPtBR = bottomRight();
+            CPhysValPoint physValPtBL = bottomLeft();
+            fX = (physValPtBR.x().getVal() + physValPtBL.x().getVal()) / 2.0;
+            fY = (physValPtBR.y().getVal() + physValPtBL.y().getVal()) / 2.0;
+        }
+        m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomCenter)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+        m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomCenter)] = true;
     }
-    else {
-        CPhysValPoint physValPtBR = bottomRight();
-        CPhysValPoint physValPtBL = bottomLeft();
-        fX = (physValPtBR.x().getVal() + physValPtBL.x().getVal()) / 2.0;
-        fY = (physValPtBR.y().getVal() + physValPtBL.y().getVal()) / 2.0;
-    }
-    return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+    return m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomCenter)];
 }
 
 //------------------------------------------------------------------------------
@@ -518,18 +577,22 @@ CPhysValPoint CPhysValRect::bottomCenter() const
 CPhysValPoint CPhysValRect::leftCenter() const
 //------------------------------------------------------------------------------
 {
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    if (m_physValAngle.getVal() == 0.0) {
-        fX -= m_size.width() / 2.0;
+    if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::LeftCenter)]) {
+        double fX = m_ptCenter.x();
+        double fY = m_ptCenter.y();
+        if (m_physValAngle.getVal() == 0.0) {
+            fX -= m_size.width() / 2.0;
+        }
+        else {
+            CPhysValPoint physValPtTL = topLeft();
+            CPhysValPoint physValPtBL = bottomLeft();
+            fX = (physValPtTL.x().getVal() + physValPtBL.x().getVal()) / 2.0;
+            fY = (physValPtTL.y().getVal() + physValPtBL.y().getVal()) / 2.0;
+        }
+        m_arphysValPoints[static_cast<int>(ESelectionPoint::LeftCenter)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+        m_arbPointsCalculated[static_cast<int>(ESelectionPoint::LeftCenter)] = true;
     }
-    else {
-        CPhysValPoint physValPtTL = topLeft();
-        CPhysValPoint physValPtBL = bottomLeft();
-        fX = (physValPtTL.x().getVal() + physValPtBL.x().getVal()) / 2.0;
-        fY = (physValPtTL.y().getVal() + physValPtBL.y().getVal()) / 2.0;
-    }
-    return CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
+    return m_arphysValPoints[static_cast<int>(ESelectionPoint::LeftCenter)];
 }
 
 //------------------------------------------------------------------------------
@@ -584,6 +647,7 @@ void CPhysValRect::setCenter(const CPhysValPoint& i_physValPoint)
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
     m_ptCenter = i_physValPoint.toQPointF(m_unit);
+    invalidateSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -640,6 +704,9 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     m_size = sizeF;
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -698,6 +765,11 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
     m_size = sizeF;
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -752,6 +824,11 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
     m_size = rectFNotRotated.size();
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -806,6 +883,11 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
     m_size = rectFNotRotated.size();
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -865,6 +947,11 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
     m_size = sizeF;
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -919,6 +1006,11 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
     m_size = rectFNotRotated.size();
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -973,6 +1065,11 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
     m_size = rectFNotRotated.size();
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -991,6 +1088,7 @@ void CPhysValRect::setAngle( const CPhysVal& i_physValAngle )
 //------------------------------------------------------------------------------
 {
     m_physValAngle = i_physValAngle;
+    invalidateSelectionPoints();
 }
 
 //------------------------------------------------------------------------------
@@ -1027,13 +1125,14 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = bottomRight();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal(m_unit) + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal(m_unit) + physValPtOpposite.y().getVal()) / 2.0));
+    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
     // Diagonale from TopLeft to BottomRight:
     // - TopLeft.x may be right of BottomRight.x (dx < 0) -> Width is negative
     // - TopLeft.y may be below BottomRight.y (dy < 0)  -> Height is negative
-    QLineF lineDiagonale(i_physValPoint.toQPointF(), physValPtOpposite.toQPointF());
+    QLineF lineDiagonale(physValPt.toQPointF(), physValPtOpposite.toQPointF());
     double fDiagonale = lineDiagonale.length();
     double fWidth = 0.0;
     double fHeight = 0.0;
@@ -1053,6 +1152,10 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     m_size.setHeight(fHeight);
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = physValPt;
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -1089,13 +1192,14 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = bottomLeft();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal(m_unit) + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal(m_unit) + physValPtOpposite.y().getVal()) / 2.0));
+    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
     // Diagonale from TopRight to BottomLeft:
     // - TopRight.x may be left of BottomLeft.x (dx > 0) -> Width is negative
     // - TopRight.y may be below BottomLeft.y (dy < 0) -> Height is negative
-    QLineF lineDiagonale(i_physValPoint.toQPointF(), physValPtOpposite.toQPointF());
+    QLineF lineDiagonale(physValPt.toQPointF(), physValPtOpposite.toQPointF());
     double fDiagonale = lineDiagonale.length();
     double fWidth = 0.0;
     double fHeight = 0.0;
@@ -1115,6 +1219,10 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     m_size.setHeight(fHeight);
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = physValPt;
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -1151,13 +1259,14 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = topLeft();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal(m_unit) + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal(m_unit) + physValPtOpposite.y().getVal()) / 2.0));
+    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
     // Diagonale from BottomRight to TopLeft:
     // - BottomRight.x may be left of TopLeft.x (dx > 0) -> Width is negative
     // - BottomRight.y may be above TopLeft.y (dy > 0) -> Height is negative
-    QLineF lineDiagonale(i_physValPoint.toQPointF(), physValPtOpposite.toQPointF());
+    QLineF lineDiagonale(physValPt.toQPointF(), physValPtOpposite.toQPointF());
     double fDiagonale = lineDiagonale.length();
     double fWidth = 0.0;
     double fHeight = 0.0;
@@ -1177,6 +1286,10 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     m_size.setHeight(fHeight);
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = physValPt;
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 //------------------------------------------------------------------------------
@@ -1213,13 +1326,14 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     if (!Units.Length.unitsAreEitherMetricOrNot(i_physValPoint.unit(), i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = topRight();
-    m_ptCenter.setX(fabs((i_physValPoint.x().getVal(m_unit) + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((i_physValPoint.y().getVal(m_unit) + physValPtOpposite.y().getVal()) / 2.0));
+    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
+    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
     // Diagonale from BottomLeft to TopTight:
     // - BottomLeft.x may be right of TopTight.x (dx < 0) -> Width is negative
     // - BottomLeft.y may be above TopTight.y (dy > 0) -> Height is negative
-    QLineF lineDiagonale(i_physValPoint.toQPointF(), physValPtOpposite.toQPointF());
+    QLineF lineDiagonale(physValPt.toQPointF(), physValPtOpposite.toQPointF());
     double fDiagonale = lineDiagonale.length();
     double fWidth = 0.0;
     double fHeight = 0.0;
@@ -1239,6 +1353,10 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     m_size.setHeight(fHeight);
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
+    m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = physValPt;
+    quint16 uSelectionPointsToExclude = 0;
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+    invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
 /*==============================================================================
@@ -1258,7 +1376,6 @@ QRectF CPhysValRect::toNotRotatedQRectF() const
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the physical point as a QPointF instance in the desired unit.
-* 
 */
 QRectF CPhysValRect::toNotRotatedQRectF(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
@@ -1278,6 +1395,13 @@ QRectF CPhysValRect::toNotRotatedQRectF(const CUnit& i_unit) const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Outputs the rectangle as a string in format "TopLeft.x, TopLeft.y, Width, Height".
+
+    @param [in] i_bAddUnit
+        true to add the unit at the end of the string.
+    @param [in] i_strSeparator (default ", ")
+        Separator used to separate the values.
+*/
 QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator) const
 //------------------------------------------------------------------------------
 {
@@ -1293,6 +1417,9 @@ protected: // auxiliary math functions
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Calculates the radius (half of the diagonal line) of a rectangle given
+           by the size (width and height) of the rectangle.
+*/
 double CPhysValRect::radius(const QSizeF& i_size)
 //------------------------------------------------------------------------------
 {
@@ -1304,12 +1431,59 @@ double CPhysValRect::radius(const QSizeF& i_size)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Calculates the angle of the diagonal line of a rectangle given
+           by the size (width and height) of the rectangle in radiant.
+
+    If both width and height are positive the resulting angle is in range [0 .. PI/2.0] (0 .. 90°).
+
+    @param [in] i_size
+*/
 double CPhysValRect::phi_rad(const QSizeF& i_size)
 //------------------------------------------------------------------------------
 {
-    double fAngle_rad = (i_size.height() > 0.0) ? Math::c_f90Degrees_rad : -Math::c_f90Degrees_rad;
+    double fAngle_rad = (i_size.height() > 0.0) ? Math::c_f90Degrees_rad : Math::c_f270Degrees_rad;
     if (i_size.width() != 0.0) {
         fAngle_rad = atan(i_size.height()/i_size.width());
     }
     return fAngle_rad;
 }
+
+//------------------------------------------------------------------------------
+/*! @brief Initializes the array with corner and other selection points and
+           resets the calculated flags for each point.
+*/
+void CPhysValRect::initSelectionPoints()
+//------------------------------------------------------------------------------
+{
+    m_arphysValPoints.clear();
+    m_arbPointsCalculated.clear();
+    // The first element is not used. This doesn't matter but simplifies the code.
+    for (int selPt = 0; selPt <= ESelectionPointRectMax; ++selPt) {
+        m_arphysValPoints.append(CPhysValPoint(*m_pDrawingScene));
+        m_arbPointsCalculated.append(false);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Invalidates the calculated flag of the selection points excluding
+           those for which the corresponding bit is set.
+
+    @param [in] i_uSelectionPointsToExclude
+        Bit set defining which selection points should not be reset.
+        The bit number is defined by the enum ESelectionPoint.
+        To exclude for example the top left corner call the method as follows:
+            quint16 uSelectionPointsToExclude = 0;
+            setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+            invalidateSelectionPoints(uSelectionPointsToExclude);
+*/
+void CPhysValRect::invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude)
+//------------------------------------------------------------------------------
+{
+    for (int selPt = ESelectionPointRectMin; selPt <= ESelectionPointRectMax; ++selPt) {
+        if (!isBitSet(i_uSelectionPointsToExclude, static_cast<quint8>(selPt))) {
+            m_arphysValPoints[selPt] = CPhysValPoint(*m_pDrawingScene);
+            m_arbPointsCalculated[selPt] = false;
+        }
+    }
+}
+

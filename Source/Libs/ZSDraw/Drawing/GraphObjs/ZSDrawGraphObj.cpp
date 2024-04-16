@@ -5254,12 +5254,12 @@ protected: // overridables
 
     Not just hides but also destroys the selection points.
 */
-void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
+void CGraphObj::hideSelectionPoints(TSelectionPointTypes i_selPts)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = selectionPoints2Str(i_selPts);
+        strMthInArgs = selectionPointTypes2Str(i_selPts);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5277,22 +5277,22 @@ void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
             bool bHideSelPt = false;
 
             if (idxSelPt >= ESelectionPointCornerMin && idxSelPt <= ESelectionPointCornerMax) {
-                if (i_selPts & ESelectionPointsBoundingRectCorner) {
+                if (i_selPts & c_uSelectionPointsBoundingRectCorner) {
                     bHideSelPt = true;
                 }
             }
             else if (idxSelPt >= ESelectionPointLineCenterMin && idxSelPt <= ESelectionPointLineCenterMax) {
-                if (i_selPts & ESelectionPointsBoundingRectLineCenter) {
+                if (i_selPts & c_uSelectionPointsBoundingRectLineCenter) {
                     bHideSelPt = true;
                 }
             }
             else if (selPt == ESelectionPoint::Center) {
-                if (i_selPts & ESelectionPointsBoundingRectCenter) {
+                if (i_selPts & c_uSelectionPointsBoundingRectCenter) {
                     bHideSelPt = true;
                 }
             }
             else if (idxSelPt >= ESelectionPointRotateMin && idxSelPt <= ESelectionPointRotateMax) {
-                if (i_selPts & ESelectionPointsBoundingRectRotate) {
+                if (i_selPts & c_uSelectionPointsBoundingRectRotate) {
                     bHideSelPt = true;
                 }
             }
@@ -5310,7 +5310,7 @@ void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
             }
         }
 
-        if (i_selPts & ESelectionPointsPolygonShapePoints) {
+        if (i_selPts & c_uSelectionPointsPolygonShapePoints) {
             if (m_arpSelPtsPolygon.size() > 0) {
                 for (int idxSelPt = m_arpSelPtsPolygon.size()-1; idxSelPt >= 0; idxSelPt--) {
                     // Deleting child objects leads to itemChange and an updateToolTip call
@@ -5333,7 +5333,7 @@ void CGraphObj::hideSelectionPoints( ESelectionPoints i_selPts )
 //{
 //    QString strMthInArgs;
 //    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-//        strMthInArgs = selectionPoints2Str(i_selPts);
+//        strMthInArgs = "{" + selectionPointTypes2Str(i_selPts) + "}";
 //    }
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5405,12 +5405,12 @@ protected: // overridables
 /*! @brief Creates the selection points if not yet created and adds them to
            the graphics scene.
 */
-void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned char i_selPts )
+void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectionPointTypes i_selPts)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Rect {" + qRect2Str(i_rct) + "}";
+        strMthInArgs = "Rect {" + qRect2Str(i_rct) + "}" + ", SelPts {" + selectionPointTypes2Str(i_selPts) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -5426,22 +5426,22 @@ void CGraphObj::showSelectionPointsOfBoundingRect( const QRectF& i_rct, unsigned
             ESelectionPoint selPt = static_cast<ESelectionPoint>(idxSelPt);
             bool bShowSelPt = false;
             if (idxSelPt >= ESelectionPointCornerMin && idxSelPt <= ESelectionPointCornerMax) {
-                if (i_selPts & ESelectionPointsBoundingRectCorner) {
+                if (i_selPts & c_uSelectionPointsBoundingRectCorner) {
                     bShowSelPt = true;
                 }
             }
             else if (idxSelPt >= ESelectionPointLineCenterMin && idxSelPt <= ESelectionPointLineCenterMax) {
-                if (i_selPts & ESelectionPointsBoundingRectLineCenter) {
+                if (i_selPts & c_uSelectionPointsBoundingRectLineCenter) {
                     bShowSelPt = true;
                 }
             }
             else if (selPt == ESelectionPoint::Center) {
-                if (i_selPts & ESelectionPointsBoundingRectCenter) {
+                if (i_selPts & c_uSelectionPointsBoundingRectCenter) {
                     bShowSelPt = true;
                 }
             }
             else if (idxSelPt >= ESelectionPointRotateMin && idxSelPt <= ESelectionPointRotateMax) {
-                if (i_selPts & ESelectionPointsBoundingRectRotate) {
+                if (i_selPts & c_uSelectionPointsBoundingRectRotate) {
                     bShowSelPt = true;
                 }
             }

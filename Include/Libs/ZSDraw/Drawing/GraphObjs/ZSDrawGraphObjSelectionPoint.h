@@ -96,7 +96,7 @@ public: // reimplementing methods of base class QGraphicItem
 public: // overridables of base class QGraphicsItem
     virtual bool contains(const QPointF& i_pt) const override;
 protected: // must overridables of base class CGraphObj
-    virtual void showSelectionPoints( unsigned char i_selPts = ESelectionPointsAll ) override {}
+    virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {}
 protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
 public: // must overridables of base class QGraphicsItem

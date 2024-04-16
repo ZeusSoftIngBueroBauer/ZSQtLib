@@ -967,14 +967,14 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
 
     /* setWidth
     -----------
-        200   250   300   350   400          200   250   300  BottomUp
-     250 +-----+-----+-----+-----+        250 +-----+-----+      350
-         |                       |            |           |
-     300 +           X           +   =>   300 +     X     +      300
-         |                       |            |           |
-     350 +-----+-----+-----+-----+        350 +-----+-----+      250
+        200   250   300   350   400          200   250   300   350   400   450   500    BottomUp
+     250 +-----+-----+-----+-----+        250 +-----+-----+-----+-----+-----+-----+       350
+         |                       |            |                                   |
+     300 +           X           +   =>   300 x                 X                 x       300
+         |                       |            |                                   |
+     350 +-----+-----+-----+-----+        350 +-----+-----+-----+-----+-----+-----+       250
     */
-    CPhysVal physValWidth(100.0, unit, i_drawingSize.imageCoorsResolution());
+    CPhysVal physValWidth(300.0, unit, i_drawingSize.imageCoorsResolution());
     double fxCenterSetWidthAngle0 = fxCenterSetAngle0 + (physValWidth.getVal() - fWidthSetAngle0) / 2.0;
     double fyCenterSetWidthAngle0 = fyCenterSetAngle0;
     double fWidthSetWidthAngle0 = physValWidth.getVal();
@@ -1174,16 +1174,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
 
     /* setHeight
     ------------
-        200   250   300   350   400          200   250   300   350   400   BottomUp
-     250 +-----+-----+-----+-----+        250 +-----+-----+-----+-----+      350
-         |                       |   =>       |           X           |
-     300 +           X           +        300 +-----+-----+-----+-----+      300
-         |                       |
-     350 +-----+-----+-----+-----+
+        200   250   300   350   400         200   250   300   350   400   BottomUp
+     250 +-----+-----+-----+-----+       250 +-----+-----x-----+-----+      350
+         |                       |           |                       |
+     300 +           X           +       300 +                       +      300
+         |                       |           |                       |
+     350 +-----+-----+-----+-----+   =>  350 x           X           x      250
+                                             |                       |
+                                         400 +                       +      200
+                                             |                       |
+                                         450 +-----+-----x-----+-----+      150
     */
-    CPhysVal physValHeight(50.0, i_drawingSize.unit(), i_drawingSize.imageCoorsResolution());
+    CPhysVal physValHeight(200.0, i_drawingSize.unit(), i_drawingSize.imageCoorsResolution());
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        physValHeight.setVal(-50.0);
+        physValHeight.setVal(-200.0);
     }
     double fxCenterSetHeightAngle0 = fxCenterSetAngle0;
     double fyCenterSetHeightAngle0 = fyCenterSetAngle0 + (physValHeight.getVal() - fHeightSetAngle0) / 2.0;
@@ -1911,20 +1915,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
 
     /* setWidth
     -----------
-        200   250   300   350   400          200   250   300    BottomUp
-     250 +-----+-----+-----+-----+        250 +-----x-----+       350
-         |                       |            |           |
-     300 +           X           +   =>   300 x     X     x       300
-         |                       |            |           |
-     350 +-----+-----+-----+-----+        350 +-----x-----+       250
+        200   250   300   350   400          200   250   300   350   400   450   500    BottomUp
+     250 +-----+-----+-----+-----+        250 +-----+-----+-----+-----+-----+-----+       350
+         |                       |            |                                   |
+     300 +           X           +   =>   300 x                 X                 x       300
+         |                       |            |                                   |
+     350 +-----+-----+-----+-----+        350 +-----+-----+-----+-----+-----+-----+       250
     */
-    physValWidth.setVal(100.0);
+    physValWidth.setVal(300.0);
     double fWidthSetWidthAngle30 = physValWidth.getVal();
     double fHeightSetWidthAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetWidthAngle30(256.7, 275.0);
+    QPointF ptCenterSetWidthAngle30(343.3, 325.0);
     QPointF ptTopLeftSetWidthAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetWidthAngle30(325.0, 256.7);
-    QPointF ptBottomRightSetWidthAngle30(275.0, 343.3);
+    QPointF ptTopRightSetWidthAngle30(498.2, 356.7);
+    QPointF ptBottomRightSetWidthAngle30(448.2, 443.3);
     QPointF ptBottomLeftSetWidthAngle30 = ptBottomLeftSetAngle30;
     QPointF ptTopCenterSetWidthAngle30 = QPointF((ptTopRightSetWidthAngle30.x() + ptTopLeftSetWidthAngle30.x()) / 2.0,
                                                  (ptTopRightSetWidthAngle30.y() + ptTopLeftSetWidthAngle30.y()) / 2.0);
@@ -1986,13 +1990,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     */
     // Same width chosen by moving left center as with setWidth call above.
     ptLeftCenter = QPointF(300.0, 250.0); // y doesn't matter
-    double fWidthMoveLeftCenterAngle30 = fWidthSetWidthAngle30;
+    double fWidthMoveLeftCenterAngle30 = 50.0;
     double fHeightMoveLeftCenterAngle30 = fHeightSetAngle30;
     QPointF ptCenterMoveLeftCenterAngle30(363, 343);
-    QPointF ptTopLeftMoveLeftCenterAngle30 = ptTopCenterSetWidthAngle30;
+    QPointF ptTopLeftMoveLeftCenterAngle30(363, 343);
     QPointF ptTopRightMoveLeftCenterAngle30 = ptTopRightSetAngle30;
     QPointF ptBottomRightMoveLeftCenterAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftMoveLeftCenterAngle30 = ptBottomCenterSetWidthAngle30;
+    QPointF ptBottomLeftMoveLeftCenterAngle30(363, 343);
     QPointF ptTopCenterMoveLeftCenterAngle30 = QPointF((ptTopRightMoveLeftCenterAngle30.x() + ptTopLeftMoveLeftCenterAngle30.x()) / 2.0,
                                                        (ptTopRightMoveLeftCenterAngle30.y() + ptTopLeftMoveLeftCenterAngle30.y()) / 2.0);
     QPointF ptRightCenterMoveLeftCenterAngle30 = ptRightCenterSetAngle30;
@@ -2053,17 +2057,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     */
     // Same width chosen by moving right center as with setWidth call above.
     ptRightCenter = QPointF(300.0, 350.0); // y doesn't matter
-    double fWidthMoveRightCenterAngle30 = fWidthSetWidthAngle30;
+    double fWidthMoveRightCenterAngle30 = 50.0;
     double fHeightMoveRightCenterAngle30 = fHeightSetAngle30;
-    QPointF ptCenterMoveRightCenterAngle30 = ptCenterSetWidthAngle30;
-    QPointF ptTopLeftMoveRightCenterAngle30 = ptTopLeftSetWidthAngle30;
-    QPointF ptTopRightMoveRightCenterAngle30 = ptTopRightSetWidthAngle30;
-    QPointF ptBottomRightMoveRightCenterAngle30 = ptBottomRightSetWidthAngle30;
-    QPointF ptBottomLeftMoveRightCenterAngle30 = ptBottomLeftSetWidthAngle30;
-    QPointF ptTopCenterMoveRightCenterAngle30 = ptTopCenterSetWidthAngle30;
-    QPointF ptRightCenterMoveRightCenterAngle30 = ptRightCenterSetWidthAngle30;
-    QPointF ptBottomCenterMoveRightCenterAngle30 = ptBottomCenterSetWidthAngle30;
-    QPointF ptLeftCenterMoveRightCenterAngle30 = ptLeftCenterSetWidthAngle30;
+    QPointF ptCenterMoveRightCenterAngle30(363, 343);
+    QPointF ptTopLeftMoveRightCenterAngle30 = ptTopLeftSetAngle30;
+    QPointF ptTopRightMoveRightCenterAngle30(363, 343);
+    QPointF ptBottomRightMoveRightCenterAngle30(363, 343);
+    QPointF ptBottomLeftMoveRightCenterAngle30 = ptBottomLeftSetAngle30;
+    QPointF ptTopCenterMoveRightCenterAngle30 = QPointF((ptTopRightMoveRightCenterAngle30.x() + ptTopLeftMoveRightCenterAngle30.x()) / 2.0,
+                                                        (ptTopRightMoveRightCenterAngle30.y() + ptTopLeftMoveRightCenterAngle30.y()) / 2.0);
+    QPointF ptRightCenterMoveRightCenterAngle30 = QPointF((ptTopRightMoveRightCenterAngle30.x() + ptBottomRightMoveRightCenterAngle30.x()) / 2.0,
+                                                          (ptTopRightMoveRightCenterAngle30.y() + ptBottomRightMoveRightCenterAngle30.y()) / 2.0);
+    QPointF ptBottomCenterMoveRightCenterAngle30 = QPointF((ptBottomRightMoveRightCenterAngle30.x() + ptBottomLeftMoveRightCenterAngle30.x()) / 2.0,
+                                                           (ptBottomRightMoveRightCenterAngle30.y() + ptBottomLeftMoveRightCenterAngle30.y()) / 2.0);
+    QPointF ptLeftCenterMoveRightCenterAngle30 = ptLeftCenterSetAngle30;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(" + qPoint2Str(ptRightCenter) + " " + unit.symbol() + ")",
@@ -2120,6 +2127,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                                          450 +-----+-----x-----+-----+      150
     */
     physValHeight.setVal(200.0);
+    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        physValHeight.setVal(-200.0);
+    }
     double fWidthSetHeightAngle30 = fWidthSetAngle30;
     double fHeightSetHeightAngle30 = physValHeight.getVal();
     QPointF ptCenterSetHeightAngle30(275.0, 343.3);
@@ -2134,9 +2144,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                                                      (ptBottomRightSetHeightAngle30.y() + ptBottomLeftSetHeightAngle30.y()) / 2.0);
     QPointF ptLeftCenterSetHeightAngle30 = QPointF((ptTopLeftSetHeightAngle30.x() + ptBottomLeftSetHeightAngle30.x()) / 2.0,
                                                    (ptBottomLeftSetHeightAngle30.y() + ptTopLeftSetHeightAngle30.y()) / 2.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        physValHeight.setVal(-200.0);
-    }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight.toString() + ")",

@@ -461,14 +461,14 @@ protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjPoint::showSelectionPoints( unsigned char i_selPts )
+void CGraphObjPoint::showSelectionPoints(TSelectionPointTypes i_selPts)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
 
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal))
     {
-        strMthInArgs = "SelectionPoints:" + selectionPoints2Str(i_selPts);
+        strMthInArgs = "{" + selectionPointTypes2Str(i_selPts) + "}";
     }
 
     CMethodTracer mthTracer(
@@ -482,7 +482,7 @@ void CGraphObjPoint::showSelectionPoints( unsigned char i_selPts )
     {
         QRectF rct = ZS::Draw::boundingRect( QPointF(0.0,0.0), 1.0 );
 
-        showSelectionPointsOfBoundingRect(rct, ESelectionPointsBoundingRectCenter);
+        showSelectionPointsOfBoundingRect(rct, c_uSelectionPointsBoundingRectCenter);
     }
 } // showSelectionPoints
 

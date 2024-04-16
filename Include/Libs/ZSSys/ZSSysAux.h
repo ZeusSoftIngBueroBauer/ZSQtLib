@@ -243,6 +243,14 @@ ZSSYSDLL_API QString encodeForHtml( const QString& i_str );
 ZSSYSDLL_API QString decodeFromHtml( const QString& i_str );
 
 /*******************************************************************************
+Bit Sets
+*******************************************************************************/
+
+ZSSYSDLL_API bool isBitSet(quint16 i_uBitSet, quint8 i_uBitNr);
+ZSSYSDLL_API quint16 setBit(quint16 i_uBitSet, quint8 i_uBitNr);
+ZSSYSDLL_API quint16 unsetBit(quint16 i_uBitSet, quint8 i_uBitNr);
+
+/*******************************************************************************
 Parsing strings
 *******************************************************************************/
 

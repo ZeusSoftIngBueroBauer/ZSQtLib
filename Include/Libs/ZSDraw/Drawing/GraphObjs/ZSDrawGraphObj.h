@@ -273,7 +273,7 @@ public: // struct members
 
     - void setSize(const CPhysValSizeF& i_physValSize);
 
-    - void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll);
+    - void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll);
       Also creates the selection points if not yet created.
 
     Pixel and world coordinates
@@ -793,11 +793,11 @@ public: // must overridables
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, int i_idxPt) const;
 protected: // must overridables
-    virtual void showSelectionPoints(unsigned char i_selPts = ESelectionPointsAll) = 0;
+    virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) = 0;
 protected: // overridables
-    virtual void hideSelectionPoints(ESelectionPoints i_selPts = ESelectionPointsAll);
+    virtual void hideSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll);
 protected: // overridables
-    virtual void showSelectionPointsOfBoundingRect(const QRectF& i_rct, unsigned char i_selPts = ESelectionPointsBoundingRectAll);
+    virtual void showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectionPointTypes i_selPts = c_uSelectionPointsBoundingRectAll);
     virtual void showSelectionPointsOfPolygon(const QPolygonF& i_plg);
 public: // overridables (text labels)
     QString findUniqueLabelName(const QString& i_strPrefix = "") const;

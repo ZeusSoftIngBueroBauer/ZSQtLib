@@ -479,12 +479,12 @@ protected: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-void CGraphObjText::showSelectionPoints( unsigned char i_selPts )
+void CGraphObjText::showSelectionPoints(TSelectionPointTypes i_selPts)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "SelectionPoints:" + selectionPoints2Str(i_selPts);
+        strMthInArgs = "{" + selectionPointTypes2Str(i_selPts) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -494,7 +494,7 @@ void CGraphObjText::showSelectionPoints( unsigned char i_selPts )
         /* strAddInfo   */ strMthInArgs );
 
     if (QGraphicsObject::parent() == nullptr) {
-        unsigned char selPts = i_selPts & ESelectionPointsBoundingRectRotate;
+        unsigned char selPts = i_selPts & c_uSelectionPointsBoundingRectRotate;
         showSelectionPointsOfBoundingRect( rect(), selPts );
     }
 }

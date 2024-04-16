@@ -397,22 +397,22 @@ typedef ::CEnum<ESelectionPointType> CEnumSelectionPointType;
 namespace ZS {
 namespace Draw {
 //==============================================================================
-/*! enum ESelectionPoints
+/*! TSelectionPoints
 */
 //==============================================================================
 
-typedef enum {
-    ESelectionPointsNone                   = 0x00,
-    ESelectionPointsBoundingRectCorner     = 0x01,
-    ESelectionPointsBoundingRectLineCenter = 0x02,  // Center points of surrounding frame lines
-    ESelectionPointsBoundingRectCenter     = 0x04,
-    ESelectionPointsBoundingRectRotate     = 0x10,
-    ESelectionPointsBoundingRectAll        = 0x1f,
-    ESelectionPointsPolygonShapePoints     = 0x20,  // Lines, polylines, polygons and connection lines have additional selection points
-    ESelectionPointsAll                    = 0x3f,
-}   ESelectionPoints;
+typedef uint16_t TSelectionPointTypes;
 
-ZSDRAWDLL_API QString selectionPoints2Str( int i_selPts );
+const TSelectionPointTypes c_uSelectionPointsNone = 0x00;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectCorner     = 0x01;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectLineCenter = 0x02;  // Center points of surrounding frame lines
+const TSelectionPointTypes c_uSelectionPointsBoundingRectCenter     = 0x04;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectRotate     = 0x10;
+const TSelectionPointTypes c_uSelectionPointsBoundingRectAll        = 0x1f;
+const TSelectionPointTypes c_uSelectionPointsPolygonShapePoints     = 0x20;  // Lines, polylines, polygons and connection lines have additional selection points
+const TSelectionPointTypes c_uSelectionPointsAll                    = 0x3f;
+
+ZSDRAWDLL_API QString selectionPointTypes2Str( TSelectionPointTypes i_selPts );
 } }
 
 
