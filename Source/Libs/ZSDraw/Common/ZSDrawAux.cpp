@@ -1703,8 +1703,8 @@ bool ZS::Draw::isPolygonHit(
 //------------------------------------------------------------------------------
 /*! @brief Returns the shortest distance from the given point to the given line.
 */
-//------------------------------------------------------------------------------
 double ZS::Draw::getDistance( const QPointF& i_pt, const QLineF& i_line )
+//------------------------------------------------------------------------------
 {
     // Get a parallel line to the line to which the distance has to be
     // calculated with the given point as the start point.

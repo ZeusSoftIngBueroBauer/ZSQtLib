@@ -686,6 +686,9 @@ void CPhysValRect::setSize(const QSizeF& i_size)
 void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
 //------------------------------------------------------------------------------
 {
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValSize.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
     // Before taken over the new size, get current top left corner.
     CPhysValPoint physValPtTL = topLeft();
     double fX = physValPtTL.x().getVal();
@@ -746,23 +749,21 @@ void CPhysValRect::setWidth(double i_fWidth)
 void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
 //------------------------------------------------------------------------------
 {
-    // Before taken over the new size, get current top left corner.
-    CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal();
-    double fY = physValPtTL.y().getVal();
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    CPhysVal physValHeight = height();
-    QSizeF sizeF(i_physValWidth.getVal(m_unit), physValHeight.getVal());
-    if (fAngle_rad == 0.0) {
-        fX += sizeF.width() / 2.0;
-        fY += sizeF.height() / 2.0;
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValWidth.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    if (m_physValAngle.getVal() == 0.0) {
+        QRectF rectFNotRotated = toNotRotatedQRectF();
+        rectFNotRotated.setWidth(i_physValWidth.getVal(m_unit));
+        m_ptCenter = rectFNotRotated.center();
+        m_size = rectFNotRotated.size();
     }
     else {
-        fX += radius(sizeF) * cos(phi_rad(sizeF) + fAngle_rad);
-        fY += radius(sizeF) * sin(phi_rad(sizeF) + fAngle_rad);
+        QLineF lineWidth(leftCenter().toQPointF(), rightCenter().toQPointF());
+        lineWidth.setLength(i_physValWidth.getVal(m_unit));
+        m_ptCenter = lineWidth.center();
+        m_size.setWidth(lineWidth.length());
     }
-    m_ptCenter = QPointF(fX, fY);
-    m_size = sizeF;
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
     quint16 uSelectionPointsToExclude = 0;
@@ -804,7 +805,7 @@ void CPhysValRect::setWidthByMovingLeftCenter(const QPointF& i_pt)
     Therefore the width and the center point of the rectangle are adjusted.
 
     As the rectangle may be rotated the new size must be calculated using trigonometric
-    functions applied to the distance (radius) of the corner point to the center point.
+    functions applied to the distance (radius) of the selection point to the center point.
 */
 void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoint)
 //------------------------------------------------------------------------------
@@ -812,22 +813,32 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    QRectF rectFNotRotated = toNotRotatedQRectF();
-    QPointF ptNew = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() != 0.0) {
-        // Rotate the given point around the center to fit the unrotated rectangle.
-        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-        ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
+    QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
+    if (m_physValAngle.getVal() == 0.0) {
+        QRectF rectFNotRotated = toNotRotatedQRectF();
+        rectFNotRotated.setLeft(ptMoved.x());
+        m_ptCenter = rectFNotRotated.center();
+        m_size = rectFNotRotated.size();
     }
-    rectFNotRotated.setLeft(ptNew.x());
-    m_ptCenter = rectFNotRotated.center();
-    m_size = rectFNotRotated.size();
+    else {
+        QPointF ptLeftCenter = leftCenter().toQPointF();
+        QLineF lineWidth(rightCenter().toQPointF(), ptLeftCenter);
+        QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
+        if (lineWidth.intersects(linePerpendicular, &ptLeftCenter) != QLineF::NoIntersection) {
+            lineWidth.setP2(ptLeftCenter);
+            m_ptCenter = lineWidth.center();
+            m_size.setWidth(lineWidth.length());
+            m_arphysValPoints[static_cast<int>(ESelectionPoint::LeftCenter)] =
+                CPhysValPoint(*m_pDrawingScene, ptLeftCenter, m_unit);
+        }
+    }
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -871,16 +882,25 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    QRectF rectFNotRotated = toNotRotatedQRectF();
-    QPointF ptNew = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() != 0.0) {
-        // Rotate the given point around the center to fit the unrotated rectangle.
-        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-        ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
+    QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
+    if (m_physValAngle.getVal() == 0.0) {
+        QRectF rectFNotRotated = toNotRotatedQRectF();
+        rectFNotRotated.setRight(ptMoved.x());
+        m_ptCenter = rectFNotRotated.center();
+        m_size = rectFNotRotated.size();
     }
-    rectFNotRotated.setRight(ptNew.x());
-    m_ptCenter = rectFNotRotated.center();
-    m_size = rectFNotRotated.size();
+    else {
+        QPointF ptRightCenter = rightCenter().toQPointF();
+        QLineF lineWidth(leftCenter().toQPointF(), ptRightCenter);
+        QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
+        if (lineWidth.intersects(linePerpendicular, &ptRightCenter) != QLineF::NoIntersection) {
+            lineWidth.setP2(ptRightCenter);
+            m_ptCenter = lineWidth.center();
+            m_size.setWidth(lineWidth.length());
+            m_arphysValPoints[static_cast<int>(ESelectionPoint::RightCenter)] =
+                CPhysValPoint(*m_pDrawingScene, ptRightCenter, m_unit);
+        }
+    }
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
     quint16 uSelectionPointsToExclude = 0;
@@ -928,23 +948,21 @@ void CPhysValRect::setHeight(double i_fHeight)
 void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
 //------------------------------------------------------------------------------
 {
-    // Before taken over the new size, get current top left corner.
-    CPhysValPoint physValPtTL = topLeft();
-    double fX = physValPtTL.x().getVal();
-    double fY = physValPtTL.y().getVal();
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    CPhysVal physValWidth = width();
-    QSizeF sizeF(physValWidth.getVal(m_unit), i_physValHeight.getVal());
-    if (fAngle_rad == 0.0) {
-        fX += sizeF.width() / 2.0;
-        fY += sizeF.height() / 2.0;
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValHeight.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
+    }
+    if (m_physValAngle.getVal() == 0.0) {
+        QRectF rectFNotRotated = toNotRotatedQRectF();
+        rectFNotRotated.setHeight(i_physValHeight.getVal(m_unit));
+        m_ptCenter = rectFNotRotated.center();
+        m_size = rectFNotRotated.size();
     }
     else {
-        fX += radius(sizeF) * cos(phi_rad(sizeF) + fAngle_rad);
-        fY += radius(sizeF) * sin(phi_rad(sizeF) + fAngle_rad);
+        QLineF lineHeight(topCenter().toQPointF(), bottomCenter().toQPointF());
+        lineHeight.setLength(i_physValHeight.getVal(m_unit));
+        m_ptCenter = lineHeight.center();
+        m_size.setHeight(lineHeight.length());
     }
-    m_ptCenter = QPointF(fX, fY);
-    m_size = sizeF;
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
     quint16 uSelectionPointsToExclude = 0;
@@ -994,16 +1012,28 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    QRectF rectFNotRotated = toNotRotatedQRectF();
-    QPointF ptNew = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() != 0.0) {
-        // Rotate the given point around the center to fit the unrotated rectangle.
-        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-        ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
+    if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
+        throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    rectFNotRotated.setTop(ptNew.y());
-    m_ptCenter = rectFNotRotated.center();
-    m_size = rectFNotRotated.size();
+    QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
+    if (m_physValAngle.getVal() == 0.0) {
+        QRectF rectFNotRotated = toNotRotatedQRectF();
+        rectFNotRotated.setTop(ptMoved.y());
+        m_ptCenter = rectFNotRotated.center();
+        m_size = rectFNotRotated.size();
+    }
+    else {
+        QPointF ptTopCenter = topCenter().toQPointF();
+        QLineF lineHeight(bottomCenter().toQPointF(), ptTopCenter);
+        QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
+        if (lineHeight.intersects(linePerpendicular, &ptTopCenter) != QLineF::NoIntersection) {
+            lineHeight.setP2(ptTopCenter);
+            m_ptCenter = lineHeight.center();
+            m_size.setHeight(lineHeight.length());
+            m_arphysValPoints[static_cast<int>(ESelectionPoint::TopCenter)] =
+                CPhysValPoint(*m_pDrawingScene, ptTopCenter, m_unit);
+        }
+    }
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
     quint16 uSelectionPointsToExclude = 0;
@@ -1053,16 +1083,25 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
-    QRectF rectFNotRotated = toNotRotatedQRectF();
-    QPointF ptNew = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() != 0.0) {
-        // Rotate the given point around the center to fit the unrotated rectangle.
-        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-        ptNew = ZS::Draw::rotatePoint(m_ptCenter, ptNew, -fAngle_rad);
+    QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
+    if (m_physValAngle.getVal() == 0.0) {
+        QRectF rectFNotRotated = toNotRotatedQRectF();
+        rectFNotRotated.setBottom(ptMoved.y());
+        m_ptCenter = rectFNotRotated.center();
+        m_size = rectFNotRotated.size();
     }
-    rectFNotRotated.setBottom(ptNew.y());
-    m_ptCenter = rectFNotRotated.center();
-    m_size = rectFNotRotated.size();
+    else {
+        QPointF ptBottomCenter = bottomCenter().toQPointF();
+        QLineF lineHeight(topCenter().toQPointF(), ptBottomCenter);
+        QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
+        if (lineHeight.intersects(linePerpendicular, &ptBottomCenter) != QLineF::NoIntersection) {
+            lineHeight.setP2(ptBottomCenter);
+            m_ptCenter = lineHeight.center();
+            m_size.setHeight(lineHeight.length());
+            m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomCenter)] =
+                CPhysValPoint(*m_pDrawingScene, ptBottomCenter, m_unit);
+        }
+    }
     m_fRadius = radius(m_size);
     m_fPhi_rad = fabs(phi_rad(m_size));
     quint16 uSelectionPointsToExclude = 0;
@@ -1127,8 +1166,6 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = bottomRight();
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
     // Diagonale from TopLeft to BottomRight:
     // - TopLeft.x may be right of BottomRight.x (dx < 0) -> Width is negative
     // - TopLeft.y may be below BottomRight.y (dy < 0)  -> Height is negative
@@ -1148,6 +1185,7 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
             fHeight *= -1.0;
         }
     }
+    m_ptCenter = lineDiagonale.center();
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
     m_fRadius = radius(m_size);
@@ -1194,8 +1232,6 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = bottomLeft();
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
     // Diagonale from TopRight to BottomLeft:
     // - TopRight.x may be left of BottomLeft.x (dx > 0) -> Width is negative
     // - TopRight.y may be below BottomLeft.y (dy < 0) -> Height is negative
@@ -1215,6 +1251,7 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
             fHeight *= -1.0;
         }
     }
+    m_ptCenter = lineDiagonale.center();
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
     m_fRadius = radius(m_size);
@@ -1261,8 +1298,6 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = topLeft();
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
     // Diagonale from BottomRight to TopLeft:
     // - BottomRight.x may be left of TopLeft.x (dx > 0) -> Width is negative
     // - BottomRight.y may be above TopLeft.y (dy > 0) -> Height is negative
@@ -1282,6 +1317,7 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
             fHeight *= -1.0;
         }
     }
+    m_ptCenter = lineDiagonale.center();
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
     m_fRadius = radius(m_size);
@@ -1328,8 +1364,6 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = topRight();
-    m_ptCenter.setX(fabs((physValPt.x().getVal() + physValPtOpposite.x().getVal()) / 2.0));
-    m_ptCenter.setY(fabs((physValPt.y().getVal() + physValPtOpposite.y().getVal()) / 2.0));
     // Diagonale from BottomLeft to TopTight:
     // - BottomLeft.x may be right of TopTight.x (dx < 0) -> Width is negative
     // - BottomLeft.y may be above TopTight.y (dy > 0) -> Height is negative
@@ -1349,6 +1383,7 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
             fHeight *= -1.0;
         }
     }
+    m_ptCenter = lineDiagonale.center();
     m_size.setWidth(fWidth);
     m_size.setHeight(fHeight);
     m_fRadius = radius(m_size);
