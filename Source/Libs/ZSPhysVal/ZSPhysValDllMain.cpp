@@ -564,6 +564,10 @@ TFormatResult ZS::PhysVal::formatValue(
         if( formatResult == FormatResult::Ok )
         {
             // .. determine the number of accuracy digits for the mantissa.
+            if( i_resType == EResType::Resolution )
+            {
+                fValAbs = Math::round2Resolution(fValAbs, fResAbs);
+            }
 
             // Determine position of first valid digit of the value ..
             Math::normalize(fValAbs, nullptr, nullptr, &iValExp);
@@ -579,10 +583,6 @@ TFormatResult ZS::PhysVal::formatValue(
                     // ... the value will be indicated with two insecure digits.
                     iResExp--;
                 }
-            }
-            else if( i_resType == EResType::Resolution )
-            {
-                fValAbs = Math::round2Resolution(fValAbs, fResAbs);
             }
 
             // If the value is greater than the resolution ...

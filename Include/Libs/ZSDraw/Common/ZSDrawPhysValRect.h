@@ -120,7 +120,7 @@ public: // instance methods (to convert the values into another unit)
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // auxiliary math functions
     static double radius(const QSizeF& i_size);
-    static double phi_rad(const QSizeF& i_size);
+    static double angle_rad(const QSizeF& i_size);
     void initSelectionPoints();
     void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);
 protected: // instance members
