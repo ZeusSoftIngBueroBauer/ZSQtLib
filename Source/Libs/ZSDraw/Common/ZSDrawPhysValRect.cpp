@@ -285,12 +285,16 @@ public: // instance methods
 //------------------------------------------------------------------------------
 /*! @brief Returns true if the rectangle is valid, otherwise returns false.
 
-    A valid rectangle has a width() > 0 and height() > 0.
+    A valid rectangle has a width() != 0.0 or height() != 0.0.
 */
 bool CPhysValRect::isValid() const
 //------------------------------------------------------------------------------
 {
-    return m_size.isValid();
+    // QSizeF::isValid cannot be used as the method returns false if either width
+    // or height is less than 0.0. For metric units with YAxisScaleOrientation
+    // BottomUp the top edge has lower values than the bottom edge and the height
+    // is negative. Also negative widths are allowed.
+    return (fabs(m_size.width()) > 0.0 || fabs(m_size.height()) > 0.0);
 }
 
 /*==============================================================================
@@ -1435,7 +1439,11 @@ double CPhysValRect::radius(const QSizeF& i_size)
 //------------------------------------------------------------------------------
 {
     double fRadius = 0.0;
-    if (i_size.isValid()) {
+    // QSizeF::isValid cannot be used as the method returns false if either width
+    // or height is less than 0.0. For metric units with YAxisScaleOrientation
+    // BottomUp the top edge has lower values than the bottom edge and the height
+    // is negative. Also negative widths are allowed.
+    if (fabs(i_size.width()) > 0.0 || fabs(i_size.height()) > 0.0) {
         fRadius = Math::sqrt(Math::sqr(i_size.width()/2.0) + Math::sqr(i_size.height()/2.0));
     }
     return fRadius;
