@@ -285,7 +285,7 @@ public: // instance methods
 //------------------------------------------------------------------------------
 /*! @brief Returns true if the rectangle is valid, otherwise returns false.
 
-    A valid rectangle has a width() != 0.0 or height() != 0.0.
+    A valid rectangle has both width and height greater than 0.0.
 */
 bool CPhysValRect::isValid() const
 //------------------------------------------------------------------------------
@@ -294,7 +294,7 @@ bool CPhysValRect::isValid() const
     // or height is less than 0.0. For metric units with YAxisScaleOrientation
     // BottomUp the top edge has lower values than the bottom edge and the height
     // is negative. Also negative widths are allowed.
-    return (fabs(m_size.width()) > 0.0 || fabs(m_size.height()) > 0.0);
+    return m_size.isValid();
 }
 
 /*==============================================================================
