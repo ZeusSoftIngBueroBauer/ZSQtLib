@@ -75,11 +75,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i
     m_size(QRectF(i_ptTL, i_ptBR).size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_drawingScene.drawingSize().unit()),
-    m_fRadius(radius(m_size)),
-    m_fPhi_rad(fabs(angle_rad(m_size))),
+    m_fRadius(getRadius(m_size)),
+    m_fPhi_rad(0.0),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (m_size.isValid()) {
+        m_fPhi_rad = fabs(getAngleRad(m_size));
+    }
     initSelectionPoints();
 }
 
@@ -91,11 +94,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i
     m_size(QRectF(i_ptTL, i_ptBR).size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_unit),
-    m_fRadius(radius(m_size)),
-    m_fPhi_rad(fabs(angle_rad(m_size))),
+    m_fRadius(getRadius(m_size)),
+    m_fPhi_rad(0.0),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (m_size.isValid()) {
+        m_fPhi_rad = fabs(getAngleRad(m_size));
+    }
     initSelectionPoints();
 }
 
@@ -107,11 +113,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
     m_size(i_rect.size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_drawingScene.drawingSize().unit()),
-    m_fRadius(radius(m_size)),
-    m_fPhi_rad(fabs(angle_rad(m_size))),
+    m_fRadius(getRadius(m_size)),
+    m_fPhi_rad(0.0),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (m_size.isValid()) {
+        m_fPhi_rad = fabs(getAngleRad(m_size));
+    }
     initSelectionPoints();
 }
 
@@ -123,11 +132,14 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
     m_size(i_rect.size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_unit),
-    m_fRadius(radius(m_size)),
-    m_fPhi_rad(fabs(angle_rad(m_size))),
+    m_fRadius(getRadius(m_size)),
+    m_fPhi_rad(0.0),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (m_size.isValid()) {
+        m_fPhi_rad = fabs(getAngleRad(m_size));
+    }
     initSelectionPoints();
 }
 
@@ -142,8 +154,8 @@ CPhysValRect::CPhysValRect(
     m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_physValTopLeft.unit()),
-    m_fRadius(radius(m_size)),
-    m_fPhi_rad(fabs(angle_rad(m_size))),
+    m_fRadius(getRadius(m_size)),
+    m_fPhi_rad(0.0),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
@@ -152,6 +164,9 @@ CPhysValRect::CPhysValRect(
     }
     if (i_physValTopLeft.resolution() != i_physValBottomRight.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (m_size.isValid()) {
+        m_fPhi_rad = fabs(getAngleRad(m_size));
     }
     initSelectionPoints();
 }
@@ -167,8 +182,8 @@ CPhysValRect::CPhysValRect(
     m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()).size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_physValTopLeft.unit()),
-    m_fRadius(radius(m_size)),
-    m_fPhi_rad(fabs(angle_rad(m_size))),
+    m_fRadius(getRadius(m_size)),
+    m_fPhi_rad(0.0),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
@@ -177,6 +192,9 @@ CPhysValRect::CPhysValRect(
     }
     if (i_physValTopLeft.resolution() != i_physValSize.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (m_size.isValid()) {
+        m_fPhi_rad = fabs(getAngleRad(m_size));
     }
     initSelectionPoints();
 }
@@ -238,8 +256,13 @@ CPhysValRect& CPhysValRect::operator = ( const QRectF& i_rect )
     m_ptCenter = i_rect.center();
     m_size = i_rect.size();
     m_physValAngle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
-    m_fRadius = radius(m_size);
-    m_fPhi_rad = fabs(angle_rad(m_size));
+    m_fRadius = getRadius(m_size);
+    if (m_size.isValid()) {
+        m_fPhi_rad = fabs(getAngleRad(m_size));
+    }
+    else {
+        m_fPhi_rad = 0.0;
+    }
     initSelectionPoints();
     return *this;
 }
@@ -366,8 +389,6 @@ CPhysVal CPhysValRect::angle() const
 
     As the rectangle may be rotated the point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
-
-    @see protected auxiliary math functions radius and angle_rad.
 */
 CPhysValPoint CPhysValRect::topLeft() const
 //------------------------------------------------------------------------------
@@ -384,8 +405,23 @@ CPhysValPoint CPhysValRect::topLeft() const
         }
         else {
             double fPhiTL_rad = Math::c_f180Degrees_rad - m_fPhi_rad;
-            fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-            fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            int iQuadrant = getQuadrant(m_size);
+            if (iQuadrant == 1) {
+                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 2) {
+                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 3) {
+                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 4) {
+                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopLeft)] = true;
@@ -398,8 +434,6 @@ CPhysValPoint CPhysValRect::topLeft() const
 
     As the rectangle may be rotated the point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
-
-    @see protected auxiliary math functions radius and angle_rad.
 */
 CPhysValPoint CPhysValRect::topRight() const
 //------------------------------------------------------------------------------
@@ -414,8 +448,23 @@ CPhysValPoint CPhysValRect::topRight() const
         }
         else {
             double fPhiTL_rad = m_fPhi_rad;
-            fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-            fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            int iQuadrant = getQuadrant(m_size);
+            if (iQuadrant == 1) {
+                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 2) {
+                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 3) {
+                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 4) {
+                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopRight)] = true;
@@ -428,8 +477,6 @@ CPhysValPoint CPhysValRect::topRight() const
 
     As the rectangle may be rotated the point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
-
-    @see protected auxiliary math functions radius and angle_rad.
 */
 CPhysValPoint CPhysValRect::bottomRight() const
 //------------------------------------------------------------------------------
@@ -444,8 +491,23 @@ CPhysValPoint CPhysValRect::bottomRight() const
         }
         else {
             double fPhiTL_rad = Math::c_f360Degrees_rad - m_fPhi_rad;
-            fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-            fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            int iQuadrant = getQuadrant(m_size);
+            if (iQuadrant == 1) {
+                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 2) {
+                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 3) {
+                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 4) {
+                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomRight)] = true;
@@ -458,8 +520,6 @@ CPhysValPoint CPhysValRect::bottomRight() const
 
     As the rectangle may be rotated the point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
-
-    @see protected auxiliary math functions radius and angle_rad.
 */
 CPhysValPoint CPhysValRect::bottomLeft() const
 //------------------------------------------------------------------------------
@@ -474,8 +534,23 @@ CPhysValPoint CPhysValRect::bottomLeft() const
         }
         else {
             double fPhiTL_rad = Math::c_f180Degrees_rad + m_fPhi_rad;
-            fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-            fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            int iQuadrant = getQuadrant(m_size);
+            if (iQuadrant == 1) {
+                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 2) {
+                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 3) {
+                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
+            else if (iQuadrant == 4) {
+                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
+                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            }
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomLeft)] = true;
@@ -488,8 +563,6 @@ CPhysValPoint CPhysValRect::bottomLeft() const
 
     As the rectangle may be rotated the point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
-
-    @see protected auxiliary math functions radius and angle_rad.
 */
 CPhysValPoint CPhysValRect::topCenter() const
 //------------------------------------------------------------------------------
@@ -517,8 +590,6 @@ CPhysValPoint CPhysValRect::topCenter() const
 
     As the rectangle may be rotated the point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
-
-    @see protected auxiliary math functions radius and angle_rad.
 */
 CPhysValPoint CPhysValRect::rightCenter() const
 //------------------------------------------------------------------------------
@@ -546,8 +617,6 @@ CPhysValPoint CPhysValRect::rightCenter() const
 
     As the rectangle may be rotated the point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
-
-    @see protected auxiliary math functions radius and angle_rad.
 */
 CPhysValPoint CPhysValRect::bottomCenter() const
 //------------------------------------------------------------------------------
@@ -575,8 +644,6 @@ CPhysValPoint CPhysValRect::bottomCenter() const
 
     As the rectangle may be rotated the point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
-
-    @see protected auxiliary math functions radius and angle_rad.
 */
 CPhysValPoint CPhysValRect::leftCenter() const
 //------------------------------------------------------------------------------
@@ -699,18 +766,31 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     double fY = physValPtTL.y().getVal();
     double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
     QSizeF sizeF = i_physValSize.toQSizeF(m_unit);
+    int iQuadrant = -1;
+    m_fRadius = getRadius(sizeF);
+    m_fPhi_rad = getAngleRad(sizeF, &iQuadrant);
     if (fAngle_rad == 0.0) {
         fX += sizeF.width() / 2.0;
         fY += sizeF.height() / 2.0;
     }
-    else {
-        fX += radius(sizeF) * cos(angle_rad(sizeF) + fAngle_rad);
-        fY += radius(sizeF) * sin(angle_rad(sizeF) + fAngle_rad);
+    else if (iQuadrant == 1) {
+        fX += m_fRadius * cos(m_fPhi_rad + fAngle_rad);
+        fY += m_fRadius * sin(m_fPhi_rad + fAngle_rad);
+    }
+    else if (iQuadrant == 2) {
+        fX -= m_fRadius * cos(m_fPhi_rad + fAngle_rad);
+        fY += m_fRadius * sin(m_fPhi_rad + fAngle_rad);
+    }
+    else if (iQuadrant == 3) {
+        fX -= m_fRadius * cos(m_fPhi_rad + fAngle_rad);
+        fY -= m_fRadius * sin(m_fPhi_rad + fAngle_rad);
+    }
+    else if (iQuadrant == 4) {
+        fX += m_fRadius * cos(m_fPhi_rad + fAngle_rad);
+        fY -= m_fRadius * sin(m_fPhi_rad + fAngle_rad);
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
-    m_fRadius = radius(m_size);
-    m_fPhi_rad = fabs(angle_rad(m_size));
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     invalidateSelectionPoints(uSelectionPointsToExclude);
@@ -768,8 +848,8 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
         m_ptCenter = lineWidth.center();
         m_size.setWidth(lineWidth.length());
     }
-    m_fRadius = radius(m_size);
-    m_fPhi_rad = fabs(angle_rad(m_size));
+    m_fRadius = getRadius(m_size);
+    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
@@ -836,8 +916,8 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
                 CPhysValPoint(*m_pDrawingScene, ptLeftCenter, m_unit);
         }
     }
-    m_fRadius = radius(m_size);
-    m_fPhi_rad = fabs(angle_rad(m_size));
+    m_fRadius = getRadius(m_size);
+    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
@@ -905,8 +985,8 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
                 CPhysValPoint(*m_pDrawingScene, ptRightCenter, m_unit);
         }
     }
-    m_fRadius = radius(m_size);
-    m_fPhi_rad = fabs(angle_rad(m_size));
+    m_fRadius = getRadius(m_size);
+    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
@@ -967,8 +1047,8 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
         m_ptCenter = lineHeight.center();
         m_size.setHeight(lineHeight.length());
     }
-    m_fRadius = radius(m_size);
-    m_fPhi_rad = fabs(angle_rad(m_size));
+    m_fRadius = getRadius(m_size);
+    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
@@ -1038,8 +1118,8 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
                 CPhysValPoint(*m_pDrawingScene, ptTopCenter, m_unit);
         }
     }
-    m_fRadius = radius(m_size);
-    m_fPhi_rad = fabs(angle_rad(m_size));
+    m_fRadius = getRadius(m_size);
+    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
@@ -1106,8 +1186,8 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
                 CPhysValPoint(*m_pDrawingScene, ptBottomCenter, m_unit);
         }
     }
-    m_fRadius = radius(m_size);
-    m_fPhi_rad = fabs(angle_rad(m_size));
+    m_fRadius = getRadius(m_size);
+    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
@@ -1179,10 +1259,11 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     if (m_physValAngle.getVal() == 0.0) {
         m_size.setWidth(lineDiagonale.dx());
         m_size.setHeight(lineDiagonale.dy());
-        m_fPhi_rad = fabs(angle_rad(m_size));
+        m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     }
     else {
-        double fBeta = fabs(angle_rad(QSizeF(lineDiagonale.dx(), lineDiagonale.dy())));
+        QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
+        double fBeta = sizeF.isValid() ? getAngleRad(sizeF) : 0.0;
         m_fPhi_rad = fBeta - m_physValAngle.getVal(Units.Angle.Rad);
         m_size.setWidth(2.0 * m_fRadius * cos(m_fPhi_rad));
         m_size.setHeight(2.0 * m_fRadius * sin(m_fPhi_rad));
@@ -1239,10 +1320,11 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     if (m_physValAngle.getVal() == 0.0) {
         m_size.setWidth(-lineDiagonale.dx());
         m_size.setHeight(lineDiagonale.dy());
-        m_fPhi_rad = fabs(angle_rad(m_size));
+        m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     }
     else {
-        double fBeta = fabs(angle_rad(QSizeF(lineDiagonale.dx(), lineDiagonale.dy())));
+        QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
+        double fBeta = sizeF.isValid() ? getAngleRad(sizeF) : 0.0;
         m_fPhi_rad = fBeta + m_physValAngle.getVal(Units.Angle.Rad);
         m_size.setWidth(2.0 * m_fRadius * cos(m_fPhi_rad));
         m_size.setHeight(2.0 * m_fRadius * sin(m_fPhi_rad));
@@ -1299,10 +1381,11 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     if (m_physValAngle.getVal() == 0.0) {
         m_size.setWidth(-lineDiagonale.dx());
         m_size.setHeight(-lineDiagonale.dy());
-        m_fPhi_rad = fabs(angle_rad(m_size));
+        m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     }
     else {
-        double fBeta = fabs(angle_rad(QSizeF(lineDiagonale.dx(), lineDiagonale.dy())));
+        QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
+        double fBeta = sizeF.isValid() ? getAngleRad(sizeF) : 0.0;
         m_fPhi_rad = fBeta - m_physValAngle.getVal(Units.Angle.Rad);
         m_size.setWidth(2.0 * m_fRadius * cos(m_fPhi_rad));
         m_size.setHeight(2.0 * m_fRadius * sin(m_fPhi_rad));
@@ -1359,10 +1442,11 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     if (m_physValAngle.getVal() == 0.0) {
         m_size.setWidth(lineDiagonale.dx());
         m_size.setHeight(-lineDiagonale.dy());
-        m_fPhi_rad = fabs(angle_rad(m_size));
+        m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
     }
     else {
-        double fBeta = fabs(angle_rad(QSizeF(lineDiagonale.dx(), lineDiagonale.dy())));
+        QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
+        double fBeta = sizeF.isValid() ? getAngleRad(sizeF) : 0.0;
         m_fPhi_rad = fBeta + m_physValAngle.getVal(Units.Angle.Rad);
         m_size.setWidth(2.0 * m_fRadius * cos(m_fPhi_rad));
         m_size.setHeight(2.0 * m_fRadius * sin(m_fPhi_rad));
@@ -1428,44 +1512,8 @@ QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator) c
 }
 
 /*==============================================================================
-protected: // auxiliary math functions
+protected: // auxiliary functions
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Calculates the radius (half of the diagonal line) of a rectangle given
-           by the size (width and height) of the rectangle.
-*/
-double CPhysValRect::radius(const QSizeF& i_size)
-//------------------------------------------------------------------------------
-{
-    double fRadius = 0.0;
-    // QSizeF::isValid cannot be used as the method returns false if either width
-    // or height is less than 0.0. For metric units with YAxisScaleOrientation
-    // BottomUp the top edge has lower values than the bottom edge and the height
-    // is negative. Also negative widths are allowed.
-    if (fabs(i_size.width()) > 0.0 || fabs(i_size.height()) > 0.0) {
-        fRadius = Math::sqrt(Math::sqr(i_size.width()/2.0) + Math::sqr(i_size.height()/2.0));
-    }
-    return fRadius;
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Calculates the angle of the diagonal line of a rectangle given
-           by the size (width and height) of the rectangle in radiant.
-
-    If both width and height are positive the resulting angle is in range [0 .. PI/2.0] (0 .. 90°).
-
-    @param [in] i_size
-*/
-double CPhysValRect::angle_rad(const QSizeF& i_size)
-//------------------------------------------------------------------------------
-{
-    double fAngle_rad = (i_size.height() > 0.0) ? Math::c_f90Degrees_rad : Math::c_f270Degrees_rad;
-    if (i_size.width() != 0.0) {
-        fAngle_rad = atan(i_size.height()/i_size.width());
-    }
-    return fAngle_rad;
-}
 
 //------------------------------------------------------------------------------
 /*! @brief Initializes the array with corner and other selection points and

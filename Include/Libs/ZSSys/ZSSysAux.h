@@ -247,8 +247,8 @@ Bit Sets
 *******************************************************************************/
 
 ZSSYSDLL_API bool isBitSet(quint16 i_uBitSet, quint8 i_uBitNr);
-ZSSYSDLL_API quint16 setBit(quint16 i_uBitSet, quint8 i_uBitNr);
-ZSSYSDLL_API quint16 unsetBit(quint16 i_uBitSet, quint8 i_uBitNr);
+ZSSYSDLL_API void setBit(quint16& io_uBitSet, quint8 i_uBitNr);
+ZSSYSDLL_API void unsetBit(quint16& io_uBitSet, quint8 i_uBitNr);
 
 /*******************************************************************************
 Parsing strings

@@ -3721,6 +3721,15 @@ Bit Sets
 *******************************************************************************/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns true if the bit with the given bit number is set, false otherwise.
+
+                                 5432 1098 7654 3210  <- BitNr
+    quint16 uBitSet = 0x0262; // 0000 0010 0110 0010;
+    isBitSet(uButSet, 0); -> false
+    isBitSet(uButSet, 1); -> true
+    isBitSet(uButSet, 9); -> true
+    isBitSet(uButSet, 15); -> false
+*/
 bool ZS::System::isBitSet(quint16 i_uBitSet, quint8 i_uBitNr)
 //------------------------------------------------------------------------------
 {
@@ -3728,17 +3737,35 @@ bool ZS::System::isBitSet(quint16 i_uBitSet, quint8 i_uBitNr)
 }
 
 //------------------------------------------------------------------------------
-quint16 ZS::System::setBit(quint16 i_uBitSet, quint8 i_uBitNr)
+/*! @brief Sets the bit with the given bit number.
+
+                                       5432 1098 7654 3210  <- BitNr
+    quint16 uBitSet = 0x0262;       // 0000 0010 0110 0010
+    setBit(uButSet, 0);  -> 0x0263; // 0000 0010 0110 0011
+    setBit(uButSet, 1);  -> 0x0262; // 0000 0010 0110 0010 (BitNr 1 was already 1)
+    setBit(uButSet, 9);  -> 0x0262; // 0000 0010 0110 0010 (BitNr 9 was already 1)
+    setBit(uButSet, 15); -> 0x8262; // 1000 0010 0110 0010
+*/
+void ZS::System::setBit(quint16& io_uBitSet, quint8 i_uBitNr)
 //------------------------------------------------------------------------------
 {
-    return i_uBitSet | (static_cast<quint16>(1) << i_uBitNr);
+    io_uBitSet |= (static_cast<quint16>(1) << i_uBitNr);
 }
 
 //------------------------------------------------------------------------------
-quint16 ZS::System::unsetBit(quint16 i_uBitSet, quint8 i_uBitNr)
+/*! @brief Unsets the bit with the given bit number.
+
+                                         5432 1098 7654 3210  <- BitNr
+    quint16 uBitSet = 0x0262;         // 0000 0010 0110 0010
+    unsetBit(uButSet, 0);  -> 0x0262; // 0000 0010 0110 0010 (BitNr 0 was already 0)
+    unsetBit(uButSet, 1);  -> 0x0260; // 0000 0010 0110 0000
+    unsetBit(uButSet, 9);  -> 0x0062; // 0000 0000 0110 0010
+    unsetBit(uButSet, 15); -> 0x8262; // 0000 0010 0110 0010 (BitNr 15 was already 0)
+*/
+void ZS::System::unsetBit(quint16& io_uBitSet, quint8 i_uBitNr)
 //------------------------------------------------------------------------------
 {
-    return i_uBitSet & ~(static_cast<quint16>(1) << i_uBitNr);
+    io_uBitSet &= ~(static_cast<quint16>(1) << i_uBitNr);
 }
 
 /*******************************************************************************

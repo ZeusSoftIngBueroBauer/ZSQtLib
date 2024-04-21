@@ -1719,6 +1719,181 @@ double ZS::Draw::getDistance( const QPointF& i_pt, const QLineF& i_line )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Calculates the radius (half of the diagonal line) of a rectangle given
+           by the size (width and height) of the rectangle.
+
+    @param [in] i_size
+*/
+double ZS::Draw::getRadius(const QSizeF& i_size)
+//------------------------------------------------------------------------------
+{
+    double fRadius = 0.0;
+    // QSizeF::isValid cannot be used as the method returns false if either width
+    // or height is less than 0.0. For metric units with YAxisScaleOrientation
+    // BottomUp the top edge has lower values than the bottom edge and the height
+    // is negative. Also negative widths are allowed.
+    if (fabs(i_size.width()) > 0.0 || fabs(i_size.height()) > 0.0) {
+        fRadius = Math::sqrt(Math::sqr(i_size.width()/2.0) + Math::sqr(i_size.height()/2.0));
+    }
+    return fRadius;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the quadrant of the diagonal lines angle of a rectangle
+           given by the size (width and height).
+
+    - If both width and height are greater than 0 the resulting angle is in quadrant Q1.
+    - If width is less than 0 and height is greater than 0 the resulting angle is in quadrant Q2.
+    - If width is less than 0 and height is less than 0 the resulting angle is in quadrant Q3.
+    - If width is greater than 0 and height is less than 0 the resulting angle is in quadrant Q4.
+    - If width is zero and height is greater than 0 the resulting angle is PI/2 (90°) in quadrant Q1.
+    - If width is zero and height is less than 0 the resulting angle is 3PI/2 (270°) in quadrant Q3.
+    - If height is zero and width is greater than 0 the resulting angle is 0 (0°) in quadrant Q1.
+    - If height is zero and width is less than 0 the resulting angle is PI (180°) in quadrant Q2.
+    - If both width and height are 0 the angle cannot be calculated and -1 (invalid quadrant) is returned.
+
+                        0 --> x
+      +-----------------+-----------------+
+    y |       Q2        |      Q1         |
+    ^ | (PI/2 .. PI)    | (0.0 .. PI/2)   |
+    | | (90° .. 180°)   | (0 .. 90°)      |
+    | |                 |                 |
+    0 +-----------------X-----------------+
+      |                 |                 |
+      | (-180° .. -90°) | (-90 .. 0°)     |
+      | (-PI .. -PI/2)  | (-PI/2 .. 0.0)  |
+      |       Q3        |      Q4         |
+      +-----------------+-----------------+
+
+    @param [in] i_size
+*/
+int ZS::Draw::getQuadrant(const QSizeF& i_size)
+//------------------------------------------------------------------------------
+{
+    int iQuadrant = -1; // invalid as default
+    if (i_size.width() == 0.0 && i_size.height() == 0.0) {
+    }
+    else if (i_size.width() == 0.0) {
+        if (i_size.height() > 0.0) {
+            iQuadrant = 1;
+        }
+        else {
+            iQuadrant = 3;
+        }
+    }
+    else if (i_size.height() == 0.0) {
+        if (i_size.width() > 0.0) {
+            iQuadrant = 1;
+        }
+        else {
+            iQuadrant = 2;
+        }
+    }
+    else {
+        if (i_size.width() > 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 1;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 2;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 3;
+        }
+        else /*if (i_size.width() > 0.0 && i_size.height() < 0.0)*/ {
+            iQuadrant = 4;
+        }
+    }
+    return iQuadrant;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the angle of the diagonal line of a rectangle given
+           by the size (width and height) of the rectangle in radiant.
+
+    - If both width and height are greater than 0 the resulting angle is in quadrant Q1
+      in the range [0 .. PI/2] (0 .. 90°).
+    - If width is less than 0 and height is greater than 0 the resulting angle is in quadrant Q2
+      in the range [PI/2 .. PI] (90 .. 180°).
+    - If width is less than 0 and height is less than 0 the resulting angle is in quadrant Q3
+      in the range [PI .. 3PI/2] (180 .. 270°).
+    - If width is greater than 0 and height is less than 0 the resulting angle is in quadrant Q4
+      in the range [3PI/2 .. 2PI] (270 .. 360°).
+    - If width is zero and height is greater than 0 the resulting angle is PI/2 (90°) in quadrant Q1.
+    - If width is zero and height is less than 0 the resulting angle is 3PI/2 (270°) in quadrant Q3.
+    - If height is zero and width is greater than 0 the resulting angle is 0 (0°) in quadrant Q1.
+    - If height is zero and width is less than 0 the resulting angle is PI (180°) in quadrant Q2.
+    - If both width and height are 0 the angle cannot be calculated. If a valid pointer for the
+      quadrant is passed, the quadrant is set to -1 (invalid). If no valid pointer for the quadrant
+      is passed an exception is thrown.
+
+                        0 --> x
+      +-----------------+-----------------+
+    y |       Q2        |      Q1         |
+    ^ | (PI/2 .. PI)    | (0.0 .. PI/2)   |
+    | | (90° .. 180°)   | (0 .. 90°)      |
+    | |                 |                 |
+    0 +-----------------X-----------------+
+      |                 |                 |
+      | (-180° .. -90°) | (-90 .. 0°)     |
+      | (-PI .. -PI/2)  | (-PI/2 .. 0.0)  |
+      |       Q3        |      Q4         |
+      +-----------------+-----------------+
+
+    @param [in] i_size
+    @param [out] (optional) o_piQuadrant Range [-1, 1, 2, 3, 4]
+*/
+double ZS::Draw::getAngleRad(const QSizeF& i_size, int* o_piQuadrant)
+//------------------------------------------------------------------------------
+{
+    double fAngle_rad = 0.0;
+    int iQuadrant = -1; // invalid as default
+    if (i_size.width() == 0.0 && i_size.height() == 0.0) {
+        if (o_piQuadrant == nullptr) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else if (i_size.width() == 0.0) {
+        if (i_size.height() > 0.0) {
+            fAngle_rad = Math::c_f90Degrees_rad;
+            iQuadrant = 1;
+        }
+        else {
+            fAngle_rad = Math::c_f270Degrees_rad;
+            iQuadrant = 3;
+        }
+    }
+    else if (i_size.height() == 0.0) {
+        if (i_size.width() > 0.0) {
+            fAngle_rad = 0.0;
+            iQuadrant = 1;
+        }
+        else {
+            fAngle_rad = Math::c_f180Degrees_rad;
+            iQuadrant = 2;
+        }
+    }
+    else {
+        fAngle_rad = atan(i_size.height() / i_size.width());
+        if (i_size.width() > 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 1;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 2;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 3;
+        }
+        else /*if (i_size.width() > 0.0 && i_size.height() < 0.0)*/ {
+            iQuadrant = 4;
+        }
+    }
+    if (o_piQuadrant != nullptr) {
+        *o_piQuadrant = iQuadrant;
+    }
+    return fAngle_rad;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Calculates the angle between point 2 and point 1.
 
     Point 1 is considered to be the origin of the coordinate system.
