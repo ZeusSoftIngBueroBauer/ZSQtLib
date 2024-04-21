@@ -22,7 +22,7 @@ that the code is written without faults.
 ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
 may result in using the software modules.
 
-*******************************************************************************/
+************************f*******************************************************/
 
 #include "ZSDraw/Common/ZSDrawPhysValRect.h"
 #include "ZSDraw/Common/ZSDrawAux.h"
