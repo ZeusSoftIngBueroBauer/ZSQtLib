@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/ZSDrawingScene.h"
 #include "ZSPhysVal/ZSPhysValExceptions.h"
 #include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysMath.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
@@ -60,7 +61,7 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_drawingScene.drawingSize().unit()),
     m_fRadius(0.0),
-    m_fPhi_rad(0.0),
+    m_physValAngleDiagLine(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
@@ -76,13 +77,13 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_drawingScene.drawingSize().unit()),
     m_fRadius(getRadius(m_size)),
-    m_fPhi_rad(0.0),
+    m_physValAngleDiagLine(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
-    if (m_size.isValid()) {
-        m_fPhi_rad = fabs(getAngleRad(m_size));
-    }
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     initSelectionPoints();
 }
 
@@ -95,13 +96,13 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_unit),
     m_fRadius(getRadius(m_size)),
-    m_fPhi_rad(0.0),
+    m_physValAngleDiagLine(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
-    if (m_size.isValid()) {
-        m_fPhi_rad = fabs(getAngleRad(m_size));
-    }
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     initSelectionPoints();
 }
 
@@ -114,13 +115,13 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_drawingScene.drawingSize().unit()),
     m_fRadius(getRadius(m_size)),
-    m_fPhi_rad(0.0),
+    m_physValAngleDiagLine(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
-    if (m_size.isValid()) {
-        m_fPhi_rad = fabs(getAngleRad(m_size));
-    }
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     initSelectionPoints();
 }
 
@@ -133,13 +134,13 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_unit),
     m_fRadius(getRadius(m_size)),
-    m_fPhi_rad(0.0),
+    m_physValAngleDiagLine(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
-    if (m_size.isValid()) {
-        m_fPhi_rad = fabs(getAngleRad(m_size));
-    }
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     initSelectionPoints();
 }
 
@@ -155,7 +156,7 @@ CPhysValRect::CPhysValRect(
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_physValTopLeft.unit()),
     m_fRadius(getRadius(m_size)),
-    m_fPhi_rad(0.0),
+    m_physValAngleDiagLine(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
@@ -165,9 +166,9 @@ CPhysValRect::CPhysValRect(
     if (i_physValTopLeft.resolution() != i_physValBottomRight.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    if (m_size.isValid()) {
-        m_fPhi_rad = fabs(getAngleRad(m_size));
-    }
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     initSelectionPoints();
 }
 
@@ -183,7 +184,7 @@ CPhysValRect::CPhysValRect(
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_unit(i_physValTopLeft.unit()),
     m_fRadius(getRadius(m_size)),
-    m_fPhi_rad(0.0),
+    m_physValAngleDiagLine(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
@@ -193,9 +194,9 @@ CPhysValRect::CPhysValRect(
     if (i_physValTopLeft.resolution() != i_physValSize.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    if (m_size.isValid()) {
-        m_fPhi_rad = fabs(getAngleRad(m_size));
-    }
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     initSelectionPoints();
 }
 
@@ -208,7 +209,7 @@ CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
     m_physValAngle(i_physValRectOther.m_physValAngle),
     m_unit(i_physValRectOther.m_unit),
     m_fRadius(i_physValRectOther.m_fRadius),
-    m_fPhi_rad(i_physValRectOther.m_fPhi_rad),
+    m_physValAngleDiagLine(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
@@ -225,7 +226,7 @@ CPhysValRect::~CPhysValRect()
     //m_physValAngle;
     //m_unit;
     m_fRadius = 0.0;
-    m_fPhi_rad = 0.0;
+    //m_physValAngleDiagLine;
     //m_arphysValPoints;
     //m_arbPointsCalculated;
 }
@@ -243,7 +244,7 @@ CPhysValRect& CPhysValRect::operator = ( const CPhysValRect& i_physValRectOther 
     m_physValAngle = i_physValRectOther.m_physValAngle;
     m_unit = i_physValRectOther.m_unit;
     m_fRadius = i_physValRectOther.m_fRadius;
-    m_fPhi_rad = i_physValRectOther.m_fPhi_rad;
+    m_physValAngleDiagLine = i_physValRectOther.m_physValAngleDiagLine;
     m_arphysValPoints = i_physValRectOther.m_arphysValPoints;
     m_arbPointsCalculated = i_physValRectOther.m_arbPointsCalculated;
     return *this;
@@ -257,12 +258,9 @@ CPhysValRect& CPhysValRect::operator = ( const QRectF& i_rect )
     m_size = i_rect.size();
     m_physValAngle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
     m_fRadius = getRadius(m_size);
-    if (m_size.isValid()) {
-        m_fPhi_rad = fabs(getAngleRad(m_size));
-    }
-    else {
-        m_fPhi_rad = 0.0;
-    }
+    int iQuadrant = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadrant), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     initSelectionPoints();
     return *this;
 }
@@ -404,23 +402,30 @@ CPhysValPoint CPhysValRect::topLeft() const
             fY -= m_size.height() / 2.0;
         }
         else {
-            double fPhiTL_rad = Math::c_f180Degrees_rad - m_fPhi_rad;
-            int iQuadrant = getQuadrant(m_size);
-            if (iQuadrant == 1) {
-                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
-            }
-            else if (iQuadrant == 2) {
-                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            int iQuadrant = getQuadrant(m_size, ESelectionPoint::TopLeft);
+            double fPhi_rad = m_physValAngleDiagLine.getVal(Units.Angle.Rad);
+            if (iQuadrant == 2) {
+                fPhi_rad = Math::c_f180Degrees_rad - fPhi_rad;
             }
             else if (iQuadrant == 3) {
-                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+                fPhi_rad = Math::c_f180Degrees_rad + fPhi_rad;
             }
             else if (iQuadrant == 4) {
-                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+                fPhi_rad = Math::c_f360Degrees_rad - fPhi_rad;
+            }
+            fX += m_fRadius * cos(fPhi_rad - fAngle_rad);
+            fY -= m_fRadius * sin(fPhi_rad - fAngle_rad);
+            #pragma message(__TODO__"Remove getCornerPoint test")
+            QSizeF sizeF(m_size.width() > 0.0 ? m_size.width() : -m_size.width(), m_size.height() > 0.0 ? m_size.height() : -m_size.height());
+            QPointF ptCorner = getCornerPoint(m_ptCenter, sizeF, fAngle_rad, iQuadrant);
+            if (Math::round2Nearest(ptCorner.x(), 1) != Math::round2Nearest(fX, 1)
+             || Math::round2Nearest(ptCorner.y(), 1) != Math::round2Nearest(fY, 1)) {
+                if (CErrLog::GetInstance() != nullptr) {
+                    SErrResultInfo errResultInfo(
+                        EResultValuesNotEqual, EResultSeverityError,
+                        "CPhysValRect::topLeft: " + qPoint2Str(ptCorner) + " != " + qPoint2Str(QPointF(fX, fY)));
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
             }
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
@@ -447,23 +452,30 @@ CPhysValPoint CPhysValRect::topRight() const
             fY -= m_size.height() / 2.0;
         }
         else {
-            double fPhiTL_rad = m_fPhi_rad;
-            int iQuadrant = getQuadrant(m_size);
-            if (iQuadrant == 1) {
-                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
-            }
-            else if (iQuadrant == 2) {
-                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            int iQuadrant = getQuadrant(m_size, ESelectionPoint::TopRight);
+            double fPhi_rad = m_physValAngleDiagLine.getVal(Units.Angle.Rad);
+            if (iQuadrant == 2) {
+                fPhi_rad = Math::c_f180Degrees_rad - fPhi_rad;
             }
             else if (iQuadrant == 3) {
-                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+                fPhi_rad = Math::c_f180Degrees_rad + fPhi_rad;
             }
             else if (iQuadrant == 4) {
-                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+                fPhi_rad = Math::c_f360Degrees_rad - fPhi_rad;
+            }
+            fX += m_fRadius * cos(fPhi_rad - fAngle_rad);
+            fY -= m_fRadius * sin(fPhi_rad - fAngle_rad);
+            #pragma message(__TODO__"Remove getCornerPoint test")
+            QSizeF sizeF(m_size.width() > 0.0 ? m_size.width() : -m_size.width(), m_size.height() > 0.0 ? m_size.height() : -m_size.height());
+            QPointF ptCorner = getCornerPoint(m_ptCenter, sizeF, fAngle_rad, iQuadrant);
+            if (Math::round2Nearest(ptCorner.x(), 1) != Math::round2Nearest(fX, 1)
+             || Math::round2Nearest(ptCorner.y(), 1) != Math::round2Nearest(fY, 1)) {
+                if (CErrLog::GetInstance() != nullptr) {
+                    SErrResultInfo errResultInfo(
+                        EResultValuesNotEqual, EResultSeverityError,
+                        "CPhysValRect::topRight: " + qPoint2Str(ptCorner) + " != " + qPoint2Str(QPointF(fX, fY)));
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
             }
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
@@ -490,23 +502,30 @@ CPhysValPoint CPhysValRect::bottomRight() const
             fY += m_size.height() / 2.0;
         }
         else {
-            double fPhiTL_rad = Math::c_f360Degrees_rad - m_fPhi_rad;
-            int iQuadrant = getQuadrant(m_size);
-            if (iQuadrant == 1) {
-                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
-            }
-            else if (iQuadrant == 2) {
-                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            int iQuadrant = getQuadrant(m_size, ESelectionPoint::BottomRight);
+            double fPhi_rad = m_physValAngleDiagLine.getVal(Units.Angle.Rad);
+            if (iQuadrant == 2) {
+                fPhi_rad = Math::c_f180Degrees_rad - fPhi_rad;
             }
             else if (iQuadrant == 3) {
-                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+                fPhi_rad = Math::c_f180Degrees_rad + fPhi_rad;
             }
             else if (iQuadrant == 4) {
-                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+                fPhi_rad = Math::c_f360Degrees_rad - fPhi_rad;
+            }
+            fX += m_fRadius * cos(fPhi_rad - fAngle_rad);
+            fY -= m_fRadius * sin(fPhi_rad - fAngle_rad);
+            #pragma message(__TODO__"Remove getCornerPoint test")
+            QSizeF sizeF(m_size.width() > 0.0 ? m_size.width() : -m_size.width(), m_size.height() > 0.0 ? m_size.height() : -m_size.height());
+            QPointF ptCorner = getCornerPoint(m_ptCenter, sizeF, fAngle_rad, iQuadrant);
+            if (Math::round2Nearest(ptCorner.x(), 1) != Math::round2Nearest(fX, 1)
+             || Math::round2Nearest(ptCorner.y(), 1) != Math::round2Nearest(fY, 1)) {
+                if (CErrLog::GetInstance() != nullptr) {
+                    SErrResultInfo errResultInfo(
+                        EResultValuesNotEqual, EResultSeverityError,
+                        "CPhysValRect::bottomRight: " + qPoint2Str(ptCorner) + " != " + qPoint2Str(QPointF(fX, fY)));
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
             }
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
@@ -533,23 +552,30 @@ CPhysValPoint CPhysValRect::bottomLeft() const
             fY += m_size.height() / 2.0;
         }
         else {
-            double fPhiTL_rad = Math::c_f180Degrees_rad + m_fPhi_rad;
-            int iQuadrant = getQuadrant(m_size);
-            if (iQuadrant == 1) {
-                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
-            }
-            else if (iQuadrant == 2) {
-                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY -= m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+            int iQuadrant = getQuadrant(m_size, ESelectionPoint::BottomLeft);
+            double fPhi_rad = m_physValAngleDiagLine.getVal(Units.Angle.Rad);
+            if (iQuadrant == 2) {
+                fPhi_rad = Math::c_f180Degrees_rad - fPhi_rad;
             }
             else if (iQuadrant == 3) {
-                fX -= m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+                fPhi_rad = Math::c_f180Degrees_rad + fPhi_rad;
             }
             else if (iQuadrant == 4) {
-                fX += m_fRadius * cos(fPhiTL_rad - fAngle_rad);
-                fY += m_fRadius * sin(fPhiTL_rad - fAngle_rad);
+                fPhi_rad = Math::c_f360Degrees_rad - fPhi_rad;
+            }
+            fX += m_fRadius * cos(fPhi_rad - fAngle_rad);
+            fY -= m_fRadius * sin(fPhi_rad - fAngle_rad);
+            #pragma message(__TODO__"Remove getCornerPoint test")
+            QSizeF sizeF(m_size.width() > 0.0 ? m_size.width() : -m_size.width(), m_size.height() > 0.0 ? m_size.height() : -m_size.height());
+            QPointF ptCorner = getCornerPoint(m_ptCenter, sizeF, fAngle_rad, iQuadrant);
+            if (Math::round2Nearest(ptCorner.x(), 1) != Math::round2Nearest(fX, 1)
+             || Math::round2Nearest(ptCorner.y(), 1) != Math::round2Nearest(fY, 1)) {
+                if (CErrLog::GetInstance() != nullptr) {
+                    SErrResultInfo errResultInfo(
+                        EResultValuesNotEqual, EResultSeverityError,
+                        "CPhysValRect::bottomLeft: " + qPoint2Str(ptCorner) + " != " + qPoint2Str(QPointF(fX, fY)));
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
             }
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = CPhysValPoint(*m_pDrawingScene, fX, fY, m_unit);
@@ -766,28 +792,30 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     double fY = physValPtTL.y().getVal();
     double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
     QSizeF sizeF = i_physValSize.toQSizeF(m_unit);
-    int iQuadrant = -1;
     m_fRadius = getRadius(sizeF);
-    m_fPhi_rad = getAngleRad(sizeF, &iQuadrant);
+    int iQuadrant = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(sizeF, &iQuadrant), Units.Angle.Rad);
+    double fPhi_rad = m_physValAngleDiagLine.getVal();
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     if (fAngle_rad == 0.0) {
         fX += sizeF.width() / 2.0;
         fY += sizeF.height() / 2.0;
     }
     else if (iQuadrant == 1) {
-        fX += m_fRadius * cos(m_fPhi_rad + fAngle_rad);
-        fY += m_fRadius * sin(m_fPhi_rad + fAngle_rad);
+        fX += m_fRadius * cos(fPhi_rad + fAngle_rad);
+        fY += m_fRadius * sin(fPhi_rad + fAngle_rad);
     }
     else if (iQuadrant == 2) {
-        fX -= m_fRadius * cos(m_fPhi_rad + fAngle_rad);
-        fY += m_fRadius * sin(m_fPhi_rad + fAngle_rad);
+        fX -= m_fRadius * cos(fPhi_rad + fAngle_rad);
+        fY += m_fRadius * sin(fPhi_rad + fAngle_rad);
     }
     else if (iQuadrant == 3) {
-        fX -= m_fRadius * cos(m_fPhi_rad + fAngle_rad);
-        fY -= m_fRadius * sin(m_fPhi_rad + fAngle_rad);
+        fX -= m_fRadius * cos(fPhi_rad + fAngle_rad);
+        fY -= m_fRadius * sin(fPhi_rad + fAngle_rad);
     }
     else if (iQuadrant == 4) {
-        fX += m_fRadius * cos(m_fPhi_rad + fAngle_rad);
-        fY -= m_fRadius * sin(m_fPhi_rad + fAngle_rad);
+        fX += m_fRadius * cos(fPhi_rad + fAngle_rad);
+        fY -= m_fRadius * sin(fPhi_rad + fAngle_rad);
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
@@ -836,20 +864,23 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValWidth.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    double fWidth = i_physValWidth.getVal(m_unit);
     if (m_physValAngle.getVal() == 0.0) {
         QRectF rectFNotRotated = toNotRotatedQRectF();
-        rectFNotRotated.setWidth(i_physValWidth.getVal(m_unit));
+        rectFNotRotated.setWidth(fWidth);
         m_ptCenter = rectFNotRotated.center();
         m_size = rectFNotRotated.size();
     }
     else {
         QLineF lineWidth(leftCenter().toQPointF(), rightCenter().toQPointF());
-        lineWidth.setLength(i_physValWidth.getVal(m_unit));
+        lineWidth.setLength(fWidth);
         m_ptCenter = lineWidth.center();
-        m_size.setWidth(lineWidth.length());
+        m_size.setWidth(fWidth);
     }
     m_fRadius = getRadius(m_size);
-    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
@@ -906,18 +937,51 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
     }
     else {
         QPointF ptLeftCenter = leftCenter().toQPointF();
-        QLineF lineWidth(rightCenter().toQPointF(), ptLeftCenter);
+        QLineF lineWidth(ptLeftCenter, rightCenter().toQPointF());
+        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree, 0.1);
+        #pragma message(__TODO__"Remove comparison check")
+        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
+            if (CErrLog::GetInstance() != nullptr) {
+                SErrResultInfo errResultInfo(
+                    EResultValuesNotEqual, EResultSeverityError,
+                    "CPhysValRect::setWidthByMovingLeftCenter_Angle1(" + i_physValPoint.toString() + "): " +
+                    m_physValAngle.toString() + " != " + physValAngle1.toString());
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
         QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
         if (lineWidth.intersects(linePerpendicular, &ptLeftCenter) != QLineF::NoIntersection) {
-            lineWidth.setP2(ptLeftCenter);
+            lineWidth.setP1(ptLeftCenter);
+            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
+            // If the angle of the horizontal line of the not rotated rectangle is not at 0°, the left center
+            // point has been moved right of the rectangles right edge and the resulting width is negative.
+            double fWidth = lineWidth.length();
+            double fAngleHorLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            if (fAngleHorLine_deg > 179.0 && fAngleHorLine_deg < 181.0) {
+                fWidth *= -1.0;
+                #pragma message(__TODO__"Remove comparison check")
+                physValAngle2.setVal(Math::normalizeAngleInDegree(physValAngle2.getVal() + 180.0));
+            }
+            #pragma message(__TODO__"Remove comparison check")
+            if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
+                if (CErrLog::GetInstance() != nullptr) {
+                    SErrResultInfo errResultInfo(
+                        EResultValuesNotEqual, EResultSeverityError,
+                        "CPhysValRect::setWidthByMovingLeftCenter_Angle2(" + i_physValPoint.toString() + "): " +
+                        m_physValAngle.toString() + " != " + physValAngle2.toString());
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
+            }
             m_ptCenter = lineWidth.center();
-            m_size.setWidth(lineWidth.length());
+            m_size.setWidth(fWidth);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::LeftCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptLeftCenter, m_unit);
         }
     }
     m_fRadius = getRadius(m_size);
-    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
@@ -976,17 +1040,50 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
     else {
         QPointF ptRightCenter = rightCenter().toQPointF();
         QLineF lineWidth(leftCenter().toQPointF(), ptRightCenter);
+        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
+        #pragma message(__TODO__"Remove comparison check")
+        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
+            if (CErrLog::GetInstance() != nullptr) {
+                SErrResultInfo errResultInfo(
+                    EResultValuesNotEqual, EResultSeverityError,
+                    "CPhysValRect::setWidthByMovingRightCenter_Angle1(" + i_physValPoint.toString() + "): " +
+                    m_physValAngle.toString() + " != " + physValAngle1.toString());
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
         QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
         if (lineWidth.intersects(linePerpendicular, &ptRightCenter) != QLineF::NoIntersection) {
             lineWidth.setP2(ptRightCenter);
+            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
+            #pragma message(__TODO__"Remove comparison check")
+            // If the angle of the horizontal line of the not rotated rectangle is not at 0°, the left center
+            // point has been moved right of the rectangles right edge and the resulting width is negative.
+            double fWidth = lineWidth.length();
+            double fAngleHorLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            if (fAngleHorLine_deg > 179.0 && fAngleHorLine_deg < 181.0) {
+                fWidth *= -1.0;
+                #pragma message(__TODO__"Remove comparison check")
+                physValAngle2.setVal(Math::normalizeAngleInDegree(physValAngle2.getVal() + 180.0));
+            }
+            if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
+                if (CErrLog::GetInstance() != nullptr) {
+                    SErrResultInfo errResultInfo(
+                        EResultValuesNotEqual, EResultSeverityError,
+                        "CPhysValRect::setWidthByMovingRightCenter_Angle2(" + i_physValPoint.toString() + "): " +
+                        m_physValAngle.toString() + " != " + physValAngle2.toString());
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
+            }
             m_ptCenter = lineWidth.center();
-            m_size.setWidth(lineWidth.length());
+            m_size.setWidth(fWidth);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::RightCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptRightCenter, m_unit);
         }
     }
     m_fRadius = getRadius(m_size);
-    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
@@ -1035,20 +1132,34 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValHeight.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    double fHeight = i_physValHeight.getVal(m_unit);
     if (m_physValAngle.getVal() == 0.0) {
         QRectF rectFNotRotated = toNotRotatedQRectF();
-        rectFNotRotated.setHeight(i_physValHeight.getVal(m_unit));
+        rectFNotRotated.setHeight(fHeight);
         m_ptCenter = rectFNotRotated.center();
         m_size = rectFNotRotated.size();
     }
     else {
         QLineF lineHeight(topCenter().toQPointF(), bottomCenter().toQPointF());
-        lineHeight.setLength(i_physValHeight.getVal(m_unit));
+        lineHeight.setLength(fHeight);
+        #pragma message(__TODO__"Remove comparison check")
+        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineHeight.normalVector().angle()), Units.Angle.Degree);
+        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
+            if (CErrLog::GetInstance() != nullptr) {
+                SErrResultInfo errResultInfo(
+                    EResultValuesNotEqual, EResultSeverityError,
+                    "CPhysValRect::setHeight(" + i_physValHeight.toString() + "): " +
+                    m_physValAngle.toString() + " != " + physValAngle1.toString());
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
         m_ptCenter = lineHeight.center();
-        m_size.setHeight(lineHeight.length());
+        m_size.setHeight(fHeight);
     }
     m_fRadius = getRadius(m_size);
-    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
@@ -1109,9 +1220,31 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
     else {
         QPointF ptTopCenter = topCenter().toQPointF();
         QLineF lineHeight(bottomCenter().toQPointF(), ptTopCenter);
+        #pragma message(__TODO__"Remove comparison check")
+        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineHeight.normalVector().angle()), Units.Angle.Degree);
+        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
+            if (CErrLog::GetInstance() != nullptr) {
+                SErrResultInfo errResultInfo(
+                    EResultValuesNotEqual, EResultSeverityError,
+                    "CPhysValRect::setHeightByMovingTopCenter_Angle1(" + i_physValPoint.toString() + "): " +
+                    m_physValAngle.toString() + " != " + physValAngle1.toString());
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
         QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
         if (lineHeight.intersects(linePerpendicular, &ptTopCenter) != QLineF::NoIntersection) {
             lineHeight.setP2(ptTopCenter);
+            #pragma message(__TODO__"Remove comparison check")
+            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.normalVector().angle()), Units.Angle.Degree);
+            if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
+                if (CErrLog::GetInstance() != nullptr) {
+                    SErrResultInfo errResultInfo(
+                        EResultValuesNotEqual, EResultSeverityError,
+                        "CPhysValRect::setHeightByMovingTopCenter_Angle2(" + i_physValPoint.toString() + "): " +
+                        m_physValAngle.toString() + " != " + physValAngle2.toString());
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
+            }
             m_ptCenter = lineHeight.center();
             m_size.setHeight(lineHeight.length());
             m_arphysValPoints[static_cast<int>(ESelectionPoint::TopCenter)] =
@@ -1119,7 +1252,9 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         }
     }
     m_fRadius = getRadius(m_size);
-    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
@@ -1177,9 +1312,31 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
     else {
         QPointF ptBottomCenter = bottomCenter().toQPointF();
         QLineF lineHeight(topCenter().toQPointF(), ptBottomCenter);
+        #pragma message(__TODO__"Remove comparison check")
+        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineHeight.normalVector().angle()), Units.Angle.Degree);
+        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
+            if (CErrLog::GetInstance() != nullptr) {
+                SErrResultInfo errResultInfo(
+                    EResultValuesNotEqual, EResultSeverityError,
+                    "CPhysValRect::setHeightByMovingBottomCenter_Angle1(" + i_physValPoint.toString() + "): " +
+                    m_physValAngle.toString() + " != " + physValAngle1.toString());
+                CErrLog::GetInstance()->addEntry(errResultInfo);
+            }
+        }
         QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
         if (lineHeight.intersects(linePerpendicular, &ptBottomCenter) != QLineF::NoIntersection) {
             lineHeight.setP2(ptBottomCenter);
+            #pragma message(__TODO__"Remove comparison check")
+            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.normalVector().angle()), Units.Angle.Degree);
+            if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
+                if (CErrLog::GetInstance() != nullptr) {
+                    SErrResultInfo errResultInfo(
+                        EResultValuesNotEqual, EResultSeverityError,
+                        "CPhysValRect::setHeightByMovingBottomCenter_Angle2(" + i_physValPoint.toString() + "): " +
+                        m_physValAngle.toString() + " != " + physValAngle2.toString());
+                    CErrLog::GetInstance()->addEntry(errResultInfo);
+                }
+            }
             m_ptCenter = lineHeight.center();
             m_size.setHeight(lineHeight.length());
             m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomCenter)] =
@@ -1187,7 +1344,9 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         }
     }
     m_fRadius = getRadius(m_size);
-    m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+    int iQuadTmp = -1;
+    m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+    m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     quint16 uSelectionPointsToExclude = 0;
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
@@ -1259,14 +1418,19 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     if (m_physValAngle.getVal() == 0.0) {
         m_size.setWidth(lineDiagonale.dx());
         m_size.setHeight(lineDiagonale.dy());
-        m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+        int iQuadTmp = -1;
+        m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+        m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     }
     else {
         QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
-        double fBeta = sizeF.isValid() ? getAngleRad(sizeF) : 0.0;
-        m_fPhi_rad = fBeta - m_physValAngle.getVal(Units.Angle.Rad);
-        m_size.setWidth(2.0 * m_fRadius * cos(m_fPhi_rad));
-        m_size.setHeight(2.0 * m_fRadius * sin(m_fPhi_rad));
+        int iQuadTmp = -1;
+        CPhysVal physValAngleBeta(getAngleRad(sizeF, &iQuadTmp), Units.Angle.Rad);
+        double fPhi_rad = physValAngleBeta.getVal() - m_physValAngle.getVal(Units.Angle.Rad);
+        m_physValAngleDiagLine = CPhysVal(fPhi_rad, Units.Angle.Rad);
+        m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
+        m_size.setWidth(2.0 * m_fRadius * cos(fPhi_rad));
+        m_size.setHeight(2.0 * m_fRadius * sin(fPhi_rad));
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
@@ -1320,14 +1484,19 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     if (m_physValAngle.getVal() == 0.0) {
         m_size.setWidth(-lineDiagonale.dx());
         m_size.setHeight(lineDiagonale.dy());
-        m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+        int iQuadTmp = -1;
+        m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+        m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     }
     else {
         QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
-        double fBeta = sizeF.isValid() ? getAngleRad(sizeF) : 0.0;
-        m_fPhi_rad = fBeta + m_physValAngle.getVal(Units.Angle.Rad);
-        m_size.setWidth(2.0 * m_fRadius * cos(m_fPhi_rad));
-        m_size.setHeight(2.0 * m_fRadius * sin(m_fPhi_rad));
+        int iQuadTmp = -1;
+        CPhysVal physValAngleBeta(getAngleRad(sizeF, &iQuadTmp), Units.Angle.Rad);
+        double fPhi_rad = physValAngleBeta.getVal() - m_physValAngle.getVal(Units.Angle.Rad);
+        m_physValAngleDiagLine = CPhysVal(fPhi_rad, Units.Angle.Rad);
+        m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
+        m_size.setWidth(2.0 * m_fRadius * cos(fPhi_rad));
+        m_size.setHeight(2.0 * m_fRadius * sin(fPhi_rad));
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
@@ -1381,14 +1550,19 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     if (m_physValAngle.getVal() == 0.0) {
         m_size.setWidth(-lineDiagonale.dx());
         m_size.setHeight(-lineDiagonale.dy());
-        m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+        int iQuadTmp = -1;
+        m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+        m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     }
     else {
         QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
-        double fBeta = sizeF.isValid() ? getAngleRad(sizeF) : 0.0;
-        m_fPhi_rad = fBeta - m_physValAngle.getVal(Units.Angle.Rad);
-        m_size.setWidth(2.0 * m_fRadius * cos(m_fPhi_rad));
-        m_size.setHeight(2.0 * m_fRadius * sin(m_fPhi_rad));
+        int iQuadTmp = -1;
+        CPhysVal physValAngleBeta(getAngleRad(sizeF, &iQuadTmp), Units.Angle.Rad);
+        double fPhi_rad = physValAngleBeta.getVal() - m_physValAngle.getVal(Units.Angle.Rad);
+        m_physValAngleDiagLine = CPhysVal(fPhi_rad, Units.Angle.Rad);
+        m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
+        m_size.setWidth(2.0 * m_fRadius * cos(fPhi_rad));
+        m_size.setHeight(2.0 * m_fRadius * sin(fPhi_rad));
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
@@ -1442,14 +1616,19 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     if (m_physValAngle.getVal() == 0.0) {
         m_size.setWidth(lineDiagonale.dx());
         m_size.setHeight(-lineDiagonale.dy());
-        m_fPhi_rad = m_size.isValid() ? getAngleRad(m_size) : 0.0;
+        int iQuadTmp = -1;
+        m_physValAngleDiagLine = CPhysVal(getAngleRad(m_size, &iQuadTmp), Units.Angle.Rad);
+        m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
     }
     else {
         QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
-        double fBeta = sizeF.isValid() ? getAngleRad(sizeF) : 0.0;
-        m_fPhi_rad = fBeta + m_physValAngle.getVal(Units.Angle.Rad);
-        m_size.setWidth(2.0 * m_fRadius * cos(m_fPhi_rad));
-        m_size.setHeight(2.0 * m_fRadius * sin(m_fPhi_rad));
+        int iQuadTmp = -1;
+        CPhysVal physValAngleBeta(getAngleRad(sizeF, &iQuadTmp), Units.Angle.Rad);
+        double fPhi_rad = physValAngleBeta.getVal() - m_physValAngle.getVal(Units.Angle.Rad);
+        m_physValAngleDiagLine = CPhysVal(fPhi_rad, Units.Angle.Rad);
+        m_physValAngleDiagLine.convertValue(Units.Angle.Degree);
+        m_size.setWidth(2.0 * m_fRadius * cos(fPhi_rad));
+        m_size.setHeight(2.0 * m_fRadius * sin(fPhi_rad));
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
@@ -1516,6 +1695,98 @@ protected: // auxiliary functions
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Returns the quadrant of the selection point depending on the given size.
+
+    Width and height may both be set (at least temporarily) to values less than 0.
+    If either width and/or height is less than 0, the quadrants of the corner points
+    have to be corrected.
+
+    Example: rect(100, 100, 100, 100);
+             rect.setSize(-100, -100);
+
+        BR----+----BL
+        | 2Q     1Q |
+        |     X     |
+        | 3Q     4Q |
+        TR----+-----TL----+----TR
+                    | 2Q     1Q |
+                    |  rectOrig |
+                    | 3Q     4Q |
+                    BL----+----BR
+
+    If setting both width and height to values less than 0 the top left corner
+    is no longer in the 2nd quadrant but in the 4th quadrant.
+
+    @param [in] i_size
+    @param [in] i_selPt Range [TopRight, TopLeft, BottomLeft, BottomRight]
+
+    @return Quadrant of the selection point. 1 (1st quadrant) is also returned if
+            the size was invalid (either width or height = 0).
+*/
+int CPhysValRect::getQuadrant(const QSizeF& i_size, ESelectionPoint i_selPt)
+//------------------------------------------------------------------------------
+{
+    int iQuadrant = 1;
+    if (i_selPt == ESelectionPoint::TopRight) {
+        if (i_size.width() > 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 1;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 2;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 3;
+        }
+        else if (i_size.width() > 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 4;
+        }
+    }
+    else if (i_selPt == ESelectionPoint::TopLeft) {
+        if (i_size.width() > 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 2;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 1;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 4;
+        }
+        else if (i_size.width() > 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 3;
+        }
+    }
+    else if (i_selPt == ESelectionPoint::BottomLeft) {
+        if (i_size.width() > 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 3;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 4;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 1;
+        }
+        else if (i_size.width() > 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 2;
+        }
+    }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        if (i_size.width() > 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 4;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
+            iQuadrant = 3;
+        }
+        else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 2;
+        }
+        else if (i_size.width() > 0.0 && i_size.height() < 0.0) {
+            iQuadrant = 1;
+        }
+    }
+    return iQuadrant;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Initializes the array with corner and other selection points and
            resets the calculated flags for each point.
 */
@@ -1553,4 +1824,3 @@ void CPhysValRect::invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude
         }
     }
 }
-

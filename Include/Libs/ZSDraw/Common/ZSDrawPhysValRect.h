@@ -119,6 +119,7 @@ public: // instance methods (to convert the values into another unit)
     QRectF toNotRotatedQRectF(const ZS::PhysVal::CUnit& i_unit) const;
     QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // auxiliary functions
+    static int getQuadrant(const QSizeF& i_size, ESelectionPoint i_selPt);
     void initSelectionPoints();
     void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);
 protected: // instance members
@@ -143,7 +144,7 @@ protected: // instance members
          To calculate the rotated corner points the rotation angle is
          added to the original angle.
          Value is cached to speed up calculation of resulting corner points. */
-    double m_fPhi_rad;
+    ZS::PhysVal::CPhysVal m_physValAngleDiagLine;
     /*!< Corner and other selection points of a rotated rectangle can be calculated from the
          center point, the size (width and height) and the rotation angle.
          As time consuming trigonometric functions and the mathematical root function must be

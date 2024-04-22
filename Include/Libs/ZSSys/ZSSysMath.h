@@ -106,42 +106,46 @@ const QString c_strSymbolPhi(c_chSymbolPhi);
 const QChar   c_chSymbolMicro(0x00B5);
 const QString c_strSymbolMicro(c_chSymbolMicro);
 
-double ZSSYSDLL_API sqr( double i_fVal );
-double ZSSYSDLL_API sqrt( double i_fVal );
-double ZSSYSDLL_API abs( double i_fVal );
-double ZSSYSDLL_API normalizeAngleInRad( double i_fAngle_rad );
-double ZSSYSDLL_API normalizeAngleInDegree( double i_fAngle_degree );
-double ZSSYSDLL_API rad2Degree( double i_fAngle_rad, bool i_bNormalize = true );
-double ZSSYSDLL_API degree2Rad( double i_fAngle_degree, bool i_bNormalize = true );
-double ZSSYSDLL_API round2Nearest( double i_fVal, int i_iTrailingDigits = -1 ); // -1 means c_iCalculationAccuracyTrailingDigits
-double ZSSYSDLL_API round2Lower( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
-double ZSSYSDLL_API round2Upper( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
-double ZSSYSDLL_API round2Resolution( double i_fVal, double i_fRes );
-double ZSSYSDLL_API round2LowerDecade( double i_fVal );
-double ZSSYSDLL_API round2UpperDecade( double i_fVal );
-double ZSSYSDLL_API round2LowerIntMultOfTen( double i_fVal );
-double ZSSYSDLL_API round2UpperIntMultOfTen( double i_fVal );
-int    ZSSYSDLL_API minVal( int i_iValCount, int    i_iVal1 ... );
-double ZSSYSDLL_API minVal( int i_iValCount, double i_fVal1 ... );
-int    ZSSYSDLL_API maxVal( int i_iValCount, int    i_iVal1 ... );
-double ZSSYSDLL_API maxVal( int i_iValCount, double i_fVal1 ... );
-std::tuple<double, double> ZSSYSDLL_API getAbsMinMax( const QVector<double>& i_arVals );
-int ZSSYSDLL_API getFirstSignificantDigit( double i_fVal );
-void ZSSYSDLL_API normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp );
+ZSSYSDLL_API double sqr( double i_fVal );
+ZSSYSDLL_API double sqrt( double i_fVal );
+ZSSYSDLL_API double abs( double i_fVal );
+ZSSYSDLL_API double normalizeAngleInRad( double i_fAngle_rad );
+ZSSYSDLL_API double normalizeAngleInDegree( double i_fAngle_degree );
+ZSSYSDLL_API double rad2Degree( double i_fAngle_rad, bool i_bNormalize = true );
+ZSSYSDLL_API double degree2Rad( double i_fAngle_degree, bool i_bNormalize = true );
+ZSSYSDLL_API double toClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize = true );
+ZSSYSDLL_API double toCounterClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize = true );
+ZSSYSDLL_API double toClockWiseAngleDegree( double i_fAngle_degree, bool i_bNormalize = true );
+ZSSYSDLL_API double toCounterClockWiseAngleDegree( double i_fAngle_degree, bool i_bNormalize = true );
+ZSSYSDLL_API double round2Nearest( double i_fVal, int i_iTrailingDigits = -1 ); // -1 means c_iCalculationAccuracyTrailingDigits
+ZSSYSDLL_API double round2Lower( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
+ZSSYSDLL_API double round2Upper( double i_fVal, int i_iTrailingDigits = -1 );   // -1 means c_iCalculationAccuracyTrailingDigits
+ZSSYSDLL_API double round2Resolution( double i_fVal, double i_fRes );
+ZSSYSDLL_API double round2LowerDecade( double i_fVal );
+ZSSYSDLL_API double round2UpperDecade( double i_fVal );
+ZSSYSDLL_API double round2LowerIntMultOfTen( double i_fVal );
+ZSSYSDLL_API double round2UpperIntMultOfTen( double i_fVal );
+ZSSYSDLL_API int    minVal( int i_iValCount, int    i_iVal1 ... );
+ZSSYSDLL_API double minVal( int i_iValCount, double i_fVal1 ... );
+ZSSYSDLL_API int    maxVal( int i_iValCount, int    i_iVal1 ... );
+ZSSYSDLL_API double maxVal( int i_iValCount, double i_fVal1 ... );
+ZSSYSDLL_API std::tuple<double, double> getAbsMinMax( const QVector<double>& i_arVals );
+ZSSYSDLL_API int getFirstSignificantDigit( double i_fVal );
+ZSSYSDLL_API void normalize( double i_fVal, int* o_piSign, int* o_piMant, int* o_piExp );
 
 typedef double (*TFctFFTWindow)( double i_fVal, int i_iFFTSegementLen );
 
-double ZSSYSDLL_API fctFFTWindowRect( double i_fVal, int i_iFFTSegmentLen );
-double ZSSYSDLL_API fctFFTWindowHanning( double i_fVal, int i_iFFTSegmentLen );
-double ZSSYSDLL_API fctFFTWindowFlatTop( double i_fVal, int i_iFFTSegmentLen );
-double ZSSYSDLL_API fctFFTWindowBlackman( double i_fVal, int i_iFFTSegmentLen );
-double ZSSYSDLL_API fctFFTWindowWelch( double i_fVal, int i_iFFTSegmentLen );
+ZSSYSDLL_API double fctFFTWindowRect( double i_fVal, int i_iFFTSegmentLen );
+ZSSYSDLL_API double fctFFTWindowHanning( double i_fVal, int i_iFFTSegmentLen );
+ZSSYSDLL_API double fctFFTWindowFlatTop( double i_fVal, int i_iFFTSegmentLen );
+ZSSYSDLL_API double fctFFTWindowBlackman( double i_fVal, int i_iFFTSegmentLen );
+ZSSYSDLL_API double fctFFTWindowWelch( double i_fVal, int i_iFFTSegmentLen );
 
-double ZSSYSDLL_API logRes2LinRes( double i_fResLog, double i_fValLin );
+ZSSYSDLL_API double logRes2LinRes( double i_fResLog, double i_fValLin );
 
-QRect ZSSYSDLL_API calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd );
+ZSSYSDLL_API QRect calcRect( const QPoint& i_ptStart, const QPoint& i_ptEnd );
 
-QVector<double> ZSSYSDLL_API merge(const QVector<double>& i_arfVals1, const QVector<double>& i_arfVals2);
+ZSSYSDLL_API QVector<double> merge(const QVector<double>& i_arfVals1, const QVector<double>& i_arfVals2);
 
 } // namespace Math
 

@@ -219,6 +219,106 @@ double Math::degree2Rad( double i_fAngle_degree, bool i_bNormalize )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Converts the given angle counted counterclockwise into an angle
+           counted clock wise.
+
+    The clockwise counted angle of 45° is in 4th Quadrant and will become the
+    angle 315° if counted counterclockwise.
+    The clockwise counted angle of 225° is in 2nd Quadrant and will become the
+    angle 135° if counted counterclockwise.
+
+    @param i_fAngle_rad [in]
+        Angle in rad counted clockwise.
+    @param i_bNormalize [in]
+        Set to true to normalize the result to angles starting from 0.0 rad to 2PI.
+        2PI (360.0 degrees) will be normalized to 0.0 rad (0.0 degrees).
+*/
+double Math::toClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize )
+//------------------------------------------------------------------------------
+{
+    double fAngle_rad = i_fAngle_rad;
+    if (i_bNormalize) {
+        fAngle_rad = normalizeAngleInRad(fAngle_rad);
+    }
+    return c_f2PI - fAngle_rad;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given angle counted clockwise into an angle
+           counted counterclock wise.
+
+    The counterclockwise counted angle of 45° is in 1st Quadrant and will become the
+    angle 315° if counted clockwise.
+    The counterclockwise counted angle of 225° is in 3rd Quadrant and will become the
+    angle 135° if counted counterclockwise.
+
+    @param i_fAngle_rad [in]
+        Angle in rad counted counterclockwise.
+    @param i_bNormalize [in]
+        Set to true to normalize the result to angles starting from 0.0 rad to 2PI.
+        2PI (360.0 degrees) will be normalized to 0.0 rad (0.0 degrees).
+*/
+double Math::toCounterClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize )
+//------------------------------------------------------------------------------
+{
+    double fAngle_rad = i_fAngle_rad;
+    if (i_bNormalize) {
+        fAngle_rad = normalizeAngleInRad(fAngle_rad);
+    }
+    return c_f2PI - fAngle_rad;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given angle counted counterclockwise into an angle
+           counted clock wise.
+
+    The clockwise counted angle of 45° is in 4th Quadrant and will become the
+    angle 315° if counted counterclockwise.
+    The clockwise counted angle of 225° is in 2nd Quadrant and will become the
+    angle 135° if counted counterclockwise.
+
+    @param i_fAngle_rad [in]
+        Angle in rad counted clockwise.
+    @param i_bNormalize [in]
+        Set to true to normalize the result to angles starting from 0.0 rad to 2PI.
+        2PI (360.0 degrees) will be normalized to 0.0 rad (0.0 degrees).
+*/
+double Math::toClockWiseAngleDegree( double i_fAngle_degree, bool i_bNormalize )
+//------------------------------------------------------------------------------
+{
+    double fAngle_degree = i_fAngle_degree;
+    if (i_bNormalize) {
+        fAngle_degree = normalizeAngleInDegree(i_fAngle_degree);
+    }
+    return 360.0 - fAngle_degree;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Converts the given angle counted clockwise into an angle
+           counted counterclock wise.
+
+    The counterclockwise counted angle of 45° is in 1st Quadrant and will become the
+    angle 315° if counted clockwise.
+    The counterclockwise counted angle of 225° is in 3rd Quadrant and will become the
+    angle 135° if counted counterclockwise.
+
+    @param i_fAngle_rad [in]
+        Angle in rad counted counterclockwise.
+    @param i_bNormalize [in]
+        Set to true to normalize the result to angles starting from 0.0 rad to 2PI.
+        2PI (360.0 degrees) will be normalized to 0.0 rad (0.0 degrees).
+*/
+double Math::toCounterClockWiseAngleDegree( double i_fAngle_degree, bool i_bNormalize )
+//------------------------------------------------------------------------------
+{
+    double fAngle_degree = i_fAngle_degree;
+    if (i_bNormalize) {
+        fAngle_degree = normalizeAngleInDegree(i_fAngle_degree);
+    }
+    return 360.0 - fAngle_degree;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Rounds the given value to the nearest absolute value at the given trailing digit.
 
     @param i_fVal [in]

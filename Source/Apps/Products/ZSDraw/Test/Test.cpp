@@ -2800,10 +2800,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     */
     double fWidthSetInvalidWidthAngle30 = physValWidth_100.getVal();
     double fHeightSetInvalidWidthAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetInvalidWidthAngle30(343.3, 325.0);
+    QPointF ptCenterSetInvalidWidthAngle30(170.1, 225.0);
     QPointF ptTopLeftSetInvalidWidthAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetInvalidWidthAngle30(498.2, 356.7);
-    QPointF ptBottomRightSetInvalidWidthAngle30(448.2, 443.3);
+    QPointF ptTopRightSetInvalidWidthAngle30(151.8, 156.7);
+    QPointF ptBottomRightSetInvalidWidthAngle30(101.8, 243.3);
     QPointF ptBottomLeftSetInvalidWidthAngle30 = ptBottomLeftSetAngle30;
     QPointF ptTopCenterSetInvalidWidthAngle30 = QPointF((ptTopRightSetInvalidWidthAngle30.x() + ptTopLeftSetInvalidWidthAngle30.x()) / 2.0,
                                                  (ptTopRightSetInvalidWidthAngle30.y() + ptTopLeftSetInvalidWidthAngle30.y()) / 2.0);
@@ -2854,7 +2854,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setWidthByMovingLeftCenter(300, 250)
+    /* setWidthByMovingLeftCenter(100)
     ---------------------------------------
     */
     // Set width to half of original width. Thats been done by moving to the top center point of the original rectangle.
@@ -2917,20 +2917,21 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setWidthByMovingLeftCenter(500, 250)
+    /* setWidthByMovingLeftCenter(-100)
     ---------------------------------------
     */
     // Set width to half of original width. Thats been done by moving to the top center point of the original rectangle.
     // The resulting center point, when resizing the rectangle by moving the left edge to a new width of 100.0, is the
     // same as setting the width to 300.0 by moving the right edge of the rectangle. But only in this special case.
-    ptMoved = QPointF(500, 250);
-    double fWidthSetInvalidWidthMoveLeftCenterAngle30 = fWidthSetAngle30 / 2.0;
+    ptMoved = QPointF(ptTopRightSetAngle30.x() + (ptTopRightSetAngle30.x() - ptTopLeftSetAngle30.x()) / 2.0,
+                      ptTopRightSetAngle30.y() + (ptTopRightSetAngle30.y() - ptTopLeftSetAngle30.y()) / 2.0);
+    double fWidthSetInvalidWidthMoveLeftCenterAngle30 = -(fWidthSetAngle30 / 2.0);
     double fHeightSetInvalidWidthMoveLeftCenterAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetInvalidWidthMoveLeftCenterAngle30 = ptCenterSetValidWidthAngle30;
-    QPointF ptTopLeftSetInvalidWidthMoveLeftCenterAngle30 = ptTopCenterSetAngle30;
+    QPointF ptCenterSetInvalidWidthMoveLeftCenterAngle30(429.9, 375.0);
+    QPointF ptTopLeftSetInvalidWidthMoveLeftCenterAngle30 = ptMoved;
     QPointF ptTopRightSetInvalidWidthMoveLeftCenterAngle30 = ptTopRightSetAngle30;
     QPointF ptBottomRightSetInvalidWidthMoveLeftCenterAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetInvalidWidthMoveLeftCenterAngle30 = ptBottomCenterSetAngle30;
+    QPointF ptBottomLeftSetInvalidWidthMoveLeftCenterAngle30(448.2, 443.3);
     QPointF ptTopCenterSetInvalidWidthMoveLeftCenterAngle30 = QPointF((ptTopRightSetInvalidWidthMoveLeftCenterAngle30.x() + ptTopLeftSetInvalidWidthMoveLeftCenterAngle30.x()) / 2.0,
                                                        (ptTopRightSetInvalidWidthMoveLeftCenterAngle30.y() + ptTopLeftSetInvalidWidthMoveLeftCenterAngle30.y()) / 2.0);
     QPointF ptRightCenterSetInvalidWidthMoveLeftCenterAngle30 = ptRightCenterSetAngle30;
@@ -2980,7 +2981,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setWidthByMovingRightCenter(300, 250)
+    /* setWidthByMovingRightCenter(100)
     ----------------------------------------
     */
     // Same width chosen by moving right center as with setWidth call above.
@@ -3041,16 +3042,17 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setWidthByMovingRightCenter(100, 250)
+    /* setWidthByMovingRightCenter(-100)
     ----------------------------------------
     */
-    ptMoved = QPointF(100.0, 250.0);
-    double fWidthSetInvalidWidthMoveRightCenterAngle30 = fWidthSetAngle30 / 2.0;
+    ptMoved = QPointF(ptTopLeftSetAngle30.x() - (ptTopRightSetAngle30.x() - ptTopLeftSetAngle30.x()) / 2.0,
+                      ptTopLeftSetAngle30.y() - (ptTopRightSetAngle30.y() - ptTopLeftSetAngle30.y()) / 2.0);
+    double fWidthSetInvalidWidthMoveRightCenterAngle30 = -(fWidthSetAngle30 / 2.0);
     double fHeightSetInvalidWidthMoveRightCenterAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetInvalidWidthMoveRightCenterAngle30(256.7, 275.0);
+    QPointF ptCenterSetInvalidWidthMoveRightCenterAngle30(170.1, 225.0);
     QPointF ptTopLeftSetInvalidWidthMoveRightCenterAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetInvalidWidthMoveRightCenterAngle30 = ptTopCenterSetAngle30;
-    QPointF ptBottomRightSetInvalidWidthMoveRightCenterAngle30 = ptBottomCenterSetAngle30;
+    QPointF ptTopRightSetInvalidWidthMoveRightCenterAngle30 = ptMoved;
+    QPointF ptBottomRightSetInvalidWidthMoveRightCenterAngle30(101.8, 243.3);
     QPointF ptBottomLeftSetInvalidWidthMoveRightCenterAngle30 = ptBottomLeftSetAngle30;
     QPointF ptTopCenterSetInvalidWidthMoveRightCenterAngle30 = QPointF((ptTopRightSetInvalidWidthMoveRightCenterAngle30.x() + ptTopLeftSetInvalidWidthMoveRightCenterAngle30.x()) / 2.0,
                                                         (ptTopRightSetInvalidWidthMoveRightCenterAngle30.y() + ptTopLeftSetInvalidWidthMoveRightCenterAngle30.y()) / 2.0);
@@ -3179,14 +3181,14 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                                                    (ptBottomLeftSetInvalidHeightAngle30.y() + ptTopLeftSetInvalidHeightAngle30.y()) / 2.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
-        /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight_100.toString() + ")",
+        /* strOperation    */ "setHeight(" + physValHeight_100.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("create", rectFOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
-    pTestStep->setConfigValue("setHeight", physValHeight200.toString());
+    pTestStep->setConfigValue("setHeight", physValHeight_100.toString());
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     strlstExpectedValues.clear();
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
