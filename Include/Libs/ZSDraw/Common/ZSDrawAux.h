@@ -125,9 +125,11 @@ ZSDRAWDLL_API bool isEllipseHit(const QRectF& i_rct, const CEnumFillStyle& i_fil
 ZSDRAWDLL_API bool isPolygonHit(const QPolygonF& i_rct, const CEnumFillStyle& i_fillStyle, const QPointF& i_pt, double i_fTolerance, SGraphObjHitInfo* o_pHitInfo);
 ZSDRAWDLL_API double getDistance(const QPointF& i_pt, const QLineF& i_line);
 ZSDRAWDLL_API double getRadius(const QSizeF& i_size);
-ZSDRAWDLL_API QPointF getCornerPoint(const QPointF& i_ptCenter, const QSizeF& i_size, double i_fAngle_rad, int i_iQuadrant);
+ZSDRAWDLL_API QPointF getCornerPoint(const QPointF& i_ptCenter, const QSizeF& i_size, double i_fAngle_rad, ESelectionPoint i_selPt);
 ZSDRAWDLL_API double getAngleRad(const QSizeF& i_size, int* o_piQuadrant = nullptr);
+ZSDRAWDLL_API double getAngleDegree(const QSizeF& i_size, int* o_piQuadrant = nullptr);
 ZSDRAWDLL_API double getAngleRad(const QPointF& i_pt1, const QPointF& i_pt2);
+ZSDRAWDLL_API double getAngleDegree(const QPointF& i_pt1, const QPointF& i_pt2);
 ZSDRAWDLL_API QPointF rotatePoint(const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad);
 ZSDRAWDLL_API QPolygonF rotateRect(const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad);
 ZSDRAWDLL_API QPolygonF rotatePolygon(const QPointF& i_ptCenter, const QPolygonF& i_plg, double i_fAngle_rad);

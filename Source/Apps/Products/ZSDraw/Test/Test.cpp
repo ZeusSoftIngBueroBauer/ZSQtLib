@@ -3167,11 +3167,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     */
     double fWidthSetInvalidHeightAngle30 = fWidthSetAngle30;
     double fHeightSetInvalidHeightAngle30 = physValHeight_100.getVal();
-    QPointF ptCenterSetInvalidHeightAngle30(275.0, 343.3);
+    QPointF ptCenterSetInvalidHeightAngle30(350.0, 213.4);
     QPointF ptTopLeftSetInvalidHeightAngle30 = ptTopLeftSetAngle30;
     QPointF ptTopRightSetInvalidHeightAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetInvalidHeightAngle30(311.6, 479.9);
-    QPointF ptBottomLeftSetInvalidHeightAngle30(138.4, 379.9);
+    QPointF ptBottomRightSetInvalidHeightAngle30(461.6, 220.1);
+    QPointF ptBottomLeftSetInvalidHeightAngle30(288.4, 120.1);
     QPointF ptTopCenterSetInvalidHeightAngle30 = ptTopCenterSetAngle30;
     QPointF ptRightCenterSetInvalidHeightAngle30 = QPointF((ptTopRightSetInvalidHeightAngle30.x() + ptBottomRightSetInvalidHeightAngle30.x()) / 2.0,
                                                     (ptBottomRightSetInvalidHeightAngle30.y() + ptTopRightSetInvalidHeightAngle30.y()) / 2.0);
@@ -3221,7 +3221,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeightByMovingTopCenter(400, 300)
+    /* setHeightByMovingTopCenter(50)
     ---------------------------------------
     */
     ptMoved = ptRightCenterSetAngle30;
@@ -3281,24 +3281,23 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeightByMovingTopCenter(400, 400)
+    /* setHeightByMovingTopCenter(-50)
     ---------------------------------------
     */
-    ptMoved = QPointF(400, 400);
+    ptMoved = QPointF(ptBottomRightSetAngle30.x() - (ptTopRightSetAngle30.x() - ptBottomRightSetAngle30.x()) / 2.0,
+                      ptBottomRightSetAngle30.y() + (ptBottomRightSetAngle30.y() - ptTopRightSetAngle30.y()) / 2.0);
     double fWidthSetInvalidHeightMoveTopCenterAngle30 = fWidthSetAngle30;
-    double fHeightSetInvalidHeightMoveTopCenterAngle30 = fHeightSetAngle30 / 2.0;
-    QPointF ptCenterSetInvalidHeightMoveTopCenterAngle30(287.49, 321.7);
-    QPointF ptTopLeftSetInvalidHeightMoveTopCenterAngle30 = ptLeftCenterSetAngle30;
-    QPointF ptTopRightSetInvalidHeightMoveTopCenterAngle30 = ptRightCenterSetAngle30;
+    double fHeightSetInvalidHeightMoveTopCenterAngle30 = -(fHeightSetAngle30 / 2.0);
+    QPointF ptCenterSetInvalidHeightMoveTopCenterAngle30(262.5, 365.0);
+    QPointF ptTopLeftSetInvalidHeightMoveTopCenterAngle30(163.4, 336.6);
+    QPointF ptTopRightSetInvalidHeightMoveTopCenterAngle30 = ptMoved;
     QPointF ptBottomRightSetInvalidHeightMoveTopCenterAngle30 = ptBottomRightSetAngle30;
     QPointF ptBottomLeftSetInvalidHeightMoveTopCenterAngle30 = ptBottomLeftSetAngle30;
     QPointF ptTopCenterSetInvalidHeightMoveTopCenterAngle30 = QPointF((ptTopRightSetInvalidHeightMoveTopCenterAngle30.x() + ptTopLeftSetInvalidHeightMoveTopCenterAngle30.x()) / 2.0,
                                                       (ptTopRightSetInvalidHeightMoveTopCenterAngle30.y() + ptTopLeftSetInvalidHeightMoveTopCenterAngle30.y()) / 2.0);
-    QPointF ptRightCenterSetInvalidHeightMoveTopCenterAngle30 = QPointF((ptTopRightSetInvalidHeightMoveTopCenterAngle30.x() + ptBottomRightSetInvalidHeightMoveTopCenterAngle30.x()) / 2.0,
-                                                        (ptTopRightSetInvalidHeightMoveTopCenterAngle30.y() + ptBottomRightSetInvalidHeightMoveTopCenterAngle30.y()) / 2.0);
+    QPointF ptRightCenterSetInvalidHeightMoveTopCenterAngle30(349.1, 415.0); // not calculated because of inaccuracies
     QPointF ptBottomCenterSetInvalidHeightMoveTopCenterAngle30 = ptBottomCenterSetAngle30;
-    QPointF ptLeftCenterSetInvalidHeightMoveTopCenterAngle30 = QPointF((ptTopLeftSetInvalidHeightMoveTopCenterAngle30.x() + ptBottomLeftSetInvalidHeightMoveTopCenterAngle30.x()) / 2.0,
-                                                       (ptBottomLeftSetInvalidHeightMoveTopCenterAngle30.y() + ptTopLeftSetInvalidHeightMoveTopCenterAngle30.y()) / 2.0);
+    QPointF ptLeftCenterSetInvalidHeightMoveTopCenterAngle30(175.9, 315.0);  // not calculated because of inaccuracies
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
@@ -3341,7 +3340,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeightByMovingBottomCenter(400, 300)
+    /* setHeightByMovingBottomCenter(50)
     ------------------------------------------
     */
     ptMoved = ptRightCenterSetAngle30;
@@ -3401,17 +3400,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeightByMovingBottomCenter(400, 200)
+    /* setHeightByMovingBottomCenter(-50)
     ------------------------------------------
     */
-    ptMoved = QPointF(400, 200);
+    ptMoved = QPointF(ptTopRightSetAngle30.x() + (ptTopRightSetAngle30.x() - ptBottomRightSetAngle30.x()) / 2.0,
+                      ptTopRightSetAngle30.y() - (ptBottomRightSetAngle30.y() - ptTopRightSetAngle30.y()) / 2.0);
     double fWidthSetInvalidHeightMoveBottomCenter30 = fWidthSetValidHeightAngle30;
-    double fHeightSetInvalidHeightMoveBottomCenter30 = fHeightSetAngle30 / 2.0;
-    QPointF ptCenterSetInvalidHeightMoveBottomCenter30(312.49, 278.4);
+    double fHeightSetInvalidHeightMoveBottomCenter30 = -(fHeightSetAngle30 / 2.0);
+    QPointF ptCenterSetInvalidHeightMoveBottomCenter30(337.5, 235.1);
     QPointF ptTopLeftSetInvalidHeightMoveBottomCenter30 = ptTopLeftSetAngle30;
     QPointF ptTopRightSetInvalidHeightMoveBottomCenter30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetInvalidHeightMoveBottomCenter30 = ptRightCenterSetAngle30;
-    QPointF ptBottomLeftSetInvalidHeightMoveBottomCenter30 = ptLeftCenterSetAngle30;
+    QPointF ptBottomRightSetInvalidHeightMoveBottomCenter30(436.6, 263.4);
+    QPointF ptBottomLeftSetInvalidHeightMoveBottomCenter30(263.4, 163.4);
     QPointF ptTopCenterSetInvalidHeightMoveBottomCenter30 = ptTopCenterSetAngle30;
     QPointF ptRightCenterSetInvalidHeightMoveBottomCenter30 = QPointF((ptTopRightSetInvalidHeightMoveBottomCenter30.x() + ptBottomRightSetInvalidHeightMoveBottomCenter30.x()) / 2.0,
                                                            (ptTopRightSetInvalidHeightMoveBottomCenter30.y() + ptBottomRightSetInvalidHeightMoveBottomCenter30.y()) / 2.0);
@@ -3461,12 +3461,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setTopLeft(300, 200)
+    /* setTopLeft(200, 100)
     -----------------------
     */
-    QPointF ptTopLeftValidSizeAngle30 = QPointF(300.0, 200.0);
+    QPointF ptTopLeftValidSizeAngle30 = QPointF(200.0, 100.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptTopLeftValidSizeAngle30.setY(400.0);
+        ptTopLeftValidSizeAngle30.setY(500.0);
     }
     double fWidthSetTopLeftValidSizeAngle30 = 286.6;
     double fHeightSetTopLeftValidSizeAngle30 = 173.2;
@@ -3524,27 +3524,24 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setTopLeft(500, 400)
+    /* setTopLeft(450, 550)
     -----------------------
     */
-    QPointF ptTopLeftInvalidSizeAngle30 = QPointF(500.0, 400.0);
+    QPointF ptTopLeftInvalidSizeAngle30 = QPointF(450.0, 550.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptTopLeftInvalidSizeAngle30.setY(200.0);
+        ptTopLeftInvalidSizeAngle30.setY(50.0);
     }
-    double fWidthSetTopLeftInvalidSizeAngle30 = 286.6;
-    double fHeightSetTopLeftInvalidSizeAngle30 = 173.2;
-    QPointF ptCenterSetTopLeftInvalidSizeAngle30(280.8, 246.7);
+    double fWidthSetTopLeftInvalidSizeAngle30 = -154.9;;
+    double fHeightSetTopLeftInvalidSizeAngle30 = -91.5;
+    QPointF ptCenterSetTopLeftInvalidSizeAngle30(405.8, 471.7);
     QPointF ptTopLeftSetTopLeftInvalidSizeAngle30 = ptTopLeftInvalidSizeAngle30;
-    QPointF ptTopRightSetTopLeftInvalidSizeAngle30(448.2, 243.3);
+    QPointF ptTopRightSetTopLeftInvalidSizeAngle30(315.9, 472.5);
     QPointF ptBottomRightSetTopLeftInvalidSizeAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftInvalidSizeAngle30(113.4, 250.0);
-    QPointF ptTopCenterSetTopLeftInvalidSizeAngle30 = QPointF((ptTopRightSetTopLeftInvalidSizeAngle30.x() + ptTopLeftSetTopLeftInvalidSizeAngle30.x()) / 2.0,
-                                                (ptTopRightSetTopLeftInvalidSizeAngle30.y() + ptTopLeftSetTopLeftInvalidSizeAngle30.y()) / 2.0);
-    QPointF ptRightCenterSetTopLeftInvalidSizeAngle30 = QPointF((ptTopRightSetTopLeftInvalidSizeAngle30.x() + ptBottomRightSetTopLeftInvalidSizeAngle30.x()) / 2.0,
-                                                  (ptBottomRightSetTopLeftInvalidSizeAngle30.y() + ptTopRightSetTopLeftInvalidSizeAngle30.y()) / 2.0);
-    QPointF ptBottomCenterSetTopLeftInvalidSizeAngle30(237.49, 321.7); // not calucated because of inaccuracy
-    QPointF ptLeftCenterSetTopLeftInvalidSizeAngle30 = QPointF((ptTopLeftSetTopLeftInvalidSizeAngle30.x() + ptBottomLeftSetTopLeftInvalidSizeAngle30.x()) / 2.0,
-                                                 (ptBottomLeftSetTopLeftInvalidSizeAngle30.y() + ptTopLeftSetTopLeftInvalidSizeAngle30.y()) / 2.0);
+    QPointF ptBottomLeftSetTopLeftInvalidSizeAngle30(495.8, 470.8);
+    QPointF ptTopCenterSetTopLeftInvalidSizeAngle30 = QPointF(382.9, 511.3);
+    QPointF ptRightCenterSetTopLeftInvalidSizeAngle30 = QPointF(338.7, 432.9);
+    QPointF ptBottomCenterSetTopLeftInvalidSizeAngle30 = QPointF(428.7, 432.0);
+    QPointF ptLeftCenterSetTopLeftInvalidSizeAngle30 = QPointF(472.9, 510.4);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(" + qPoint2Str(ptTopLeftInvalidSizeAngle30) + " " + unit.symbol() + ")",
@@ -3587,10 +3584,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setTopRight(300, 200)
+    /* setTopRight(550, 250)
     ------------------------
     */
-    QPointF ptTopRightValidSizeAngle30 = QPointF(300.0, 200.0);
+    QPointF ptTopRightValidSizeAngle30 = QPointF(550.0, 250.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         ptTopRightValidSizeAngle30.setY(350.0);
     }
@@ -3709,8 +3706,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setBottomRight
-    -----------------
+    /* setBottomRight(400, 500)
+    ---------------------------
     */
     QPointF ptBottomRightValidSizeAngle30 = QPointF(400.0, 500.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
@@ -3773,12 +3770,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setBottomRight()
-    -------------------
+    /* setBottomRight(250, 50)
+    ---------------------------
     */
-    QPointF ptBottomRightInvalidSizeAngle30 = QPointF(400.0, 500.0);
+    QPointF ptBottomRightInvalidSizeAngle30 = QPointF(250.0, 50.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptBottomRightInvalidSizeAngle30.setY(100.0);
+        ptBottomRightInvalidSizeAngle30.setY(550.0);
     }
     double fWidthSetBottomRightInvalidSizeAngle30 = 286.6;
     double fHeightSetBottomRightInvalidSizeAngle30 = 173.2;
@@ -3837,8 +3834,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setBottomLeft
-    ----------------
+    /* setBottomLeft(100, 350)
+    --------------------------
     */
     QPointF ptBottomLeftValidSizeAngle30 = QPointF(100.0, 350.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
@@ -3898,10 +3895,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setBottomLeft
-    ----------------
+    /* setBottomLeft(700, 350)
+    --------------------------
     */
-    QPointF ptBottomLeftSizeInvalidSizeAngle30 = QPointF(100.0, 350.0);
+    QPointF ptBottomLeftSizeInvalidSizeAngle30 = QPointF(700.0, 350.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         ptBottomLeftSizeInvalidSizeAngle30.setY(250.0);
     }

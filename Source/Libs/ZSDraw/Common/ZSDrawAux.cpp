@@ -1739,101 +1739,108 @@ double ZS::Draw::getRadius(const QSizeF& i_size)
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates the coordinates of the corner point in the given quadrant of the
-           rectangle rotated by the given angle.
+/*! @brief Calculates the coordinates of the corner point of the rectangle
+           rotated clockwise by the given angle.
 
     If both width and height are 0.0, the center point is returned.
+    Width and height may both be zero. If either width and height are zero
+    the corner points are transformed as shown in the figure below.
 
-      +---------------------+
-      |    Q2         Q1    |
-      |                     |
-      |          X          |
-      |                     |
-      |    Q3         Q4    |
-      +---------------------+
+                                  height
+                                    ^
+          TR-------------------TL   |   TL-------------------TR
+          |    Q2         Q1    |   |   |    Q2         Q1    |
+          |                     |   |   |                     |
+          |          X          |   |   |          X          |
+          |                     |   |   |                     |
+          |    Q3         Q4    |   |   |    Q3         Q4    |
+          BR-------------------BL   |   BL-------------------BR
+                                    |
+          ------------------------- 0 ------------------------> width
+                                    |
+          BR-------------------BL   |   BL-------------------BR
+          |    Q2         Q1    |   |   |    Q2         Q1    |
+          |                     |   |   |                     |
+          |          X          |   |   |          X          |
+          |                     |   |   |                     |
+          |    Q3         Q4    |   |   |    Q3         Q4    |
+          TR-------------------TL   |   TL-------------------TR
 
     @param [in] i_ptCenter
         Center point of the rectangle.
     @param [in] i_size
-        Size of the rectangle. Width and height must be greater than or equal to 0.0.
+        Size of the rectangle. Width and height may be less than 0.
     @param [in] i_fAngle_rad Range [0.0 .. 2PI]
-        Rotation angle of the rectangle.
-    @param [in] i_iQuadrant Range [1, 2, 3, 4]
-        Quadrant for which the corner point has to be returned.
+        Rotation angle (clockwise counted) of the rectangle.
+    @param [in] i_eSelPt Range [TopRight, TopLeft, BottomLeft, BottomRight]
+        Selection point for which the corner point has to be returned.
 */
 QPointF ZS::Draw::getCornerPoint(
-    const QPointF& i_ptCenter, const QSizeF& i_size, double i_fAngle_rad, int i_iQuadrant)
+    const QPointF& i_ptCenter, const QSizeF& i_size, double i_fAngle_rad, ESelectionPoint i_selPt)
 //------------------------------------------------------------------------------
 {
-    if (i_size.width() < 0.0 || i_size.height() < 0.0) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
     double fX = i_ptCenter.x();
     double fY = i_ptCenter.y();
+    double dx = i_size.width() / 2.0;
+    double dy = i_size.height() / 2.0;
     double fRadius = getRadius(i_size);
-    int iQuadTmp; // don't want an exception to the thrown.
-    double fPhi_rad = getAngleRad(i_size, &iQuadTmp);
-    if (i_iQuadrant == 2) {
-        fPhi_rad = Math::c_f180Degrees_rad - fPhi_rad;
+    QPointF ptCorner;
+    if (i_selPt == ESelectionPoint::TopRight) {
+        ptCorner = QPointF(fX + dx, fY - dy);
     }
-    else if (i_iQuadrant == 3) {
-        fPhi_rad = Math::c_f180Degrees_rad + fPhi_rad;
+    else if (i_selPt == ESelectionPoint::TopLeft) {
+        ptCorner = QPointF(fX - dx, fY - dy);
     }
-    else if (i_iQuadrant == 4) {
-        fPhi_rad = Math::c_f360Degrees_rad - fPhi_rad;
+    else if (i_selPt == ESelectionPoint::BottomLeft) {
+        ptCorner = QPointF(fX - dx, fY + dy);
     }
+    else if (i_selPt == ESelectionPoint::BottomRight) {
+        ptCorner = QPointF(fX + dx, fY + dy);
+    }
+    QLineF lineDiag(i_ptCenter, ptCorner);
+    double fPhi_degree = lineDiag.angle(); // counterclockwise
+    double fPhi_rad = Math::degree2Rad(fPhi_degree);
     fX += fRadius * cos(fPhi_rad - i_fAngle_rad);
     fY -= fRadius * sin(fPhi_rad - i_fAngle_rad);
     return QPointF(fX, fY);
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates the angle of the diagonal line of a rectangle given
-           by the size (width and height) of the rectangle in radiant.
+/*! @brief Calculates the angle in radiant of the diagonal line of a rectangle
+           from the bottom left corner to the top right corner.
 
-    - The returned angle is always in the range [0 .. PI/2].
+    The returned angle is counted counterclockwise.
+    In addition to the angle in radiant the quadrant of the angle is returned.
+
+    The rectangle is defined by its size (width and height). Width and height
+    may both be less than 0.
+
     - If both width and height are greater than 0 the resulting angle is in quadrant Q1.
     - If width is less than 0 and height is greater than 0 the resulting angle is in quadrant Q2.
     - If width is less than 0 and height is less than 0 the resulting angle is in quadrant Q3.
     - If width is greater than 0 and height is less than 0 the resulting angle is in quadrant Q4.
     - If width is zero and height is greater than 0 the resulting angle is PI/2 (90°) in quadrant Q1.
-    - If width is zero and height is less than 0 the resulting angle is PI/2 (90°) in quadrant Q3.
+    - If width is zero and height is less than 0 the resulting angle is 3PI/2 (270°) in quadrant Q3.
     - If height is zero and width is greater than 0 the resulting angle is 0 (0°) in quadrant Q1.
-    - If height is zero and width is less than 0 the resulting angle is 0 (0°) in quadrant Q2.
+    - If height is zero and width is less than 0 the resulting angle is PI (180°) in quadrant Q2.
     - If both width and height are 0 the angle cannot be calculated. If a valid pointer for the
       quadrant is passed, the quadrant is set to -1 (invalid). If no valid pointer for the quadrant
       is passed an exception is thrown.
 
-    The calculation is done using arctan function which can only return angles in the range from
-    -PI/2 .. PI/2 (-90° .. 90°). To get the final resulting angle the caller must use the returned
-    quadrant together with the angle:
-
-        if (quadrant == 1) {
-            fPhi_rad = fPhi_rad;
-        }
-        else if (quadrant == 2) {
-            fPhi_rad = PI - fPhi_rad;
-        }
-        else if (quadrant == 3) {
-            fPhi_rad = PI + fPhi_rad;
-        }
-        else if (quadrant == 4) {
-            fPhi_rad = 2PI - fPhi_rad;
-        }
-
-                        0 --> x
-      +-----------------+-----------------+
-    y |       Q2        |      Q1         |
-    ^ |                 | (0.0 .. PI/2)   |
-    | |                 | (0 .. 90°)      |
-    0 +-----------------X-----------------+
-      |                 |                 |
-      |                 |                 |
-      |       Q3        |      Q4         |
-      +-----------------+-----------------+
+                      (w < 0)  <-- 0 -->  (w > 0)
+                +-----------------+-----------------+
+        (h > 0) |       Q2        |      Q1         |
+              ^ |                 | (0.0 .. PI/2)   |
+              | |                 | (0 .. 90°)      |
+              0 +-----------------X-----------------+
+              | |                 |                 |
+              + |                 |                 |
+        (h < 0) |       Q3        |      Q4         |
+                +-----------------+-----------------+
 
     @param [in] i_size
     @param [out] (optional) o_piQuadrant Range [-1, 1, 2, 3, 4]
+        -1 indicates that the angle could not be converted.
 */
 double ZS::Draw::getAngleRad(const QSizeF& i_size, int* o_piQuadrant)
 //------------------------------------------------------------------------------
@@ -1872,12 +1879,15 @@ double ZS::Draw::getAngleRad(const QSizeF& i_size, int* o_piQuadrant)
         }
         else if (i_size.width() < 0.0 && i_size.height() > 0.0) {
             iQuadrant = 2;
+            fAngle_rad = Math::c_f180Degrees_rad - fAngle_rad;
         }
         else if (i_size.width() < 0.0 && i_size.height() < 0.0) {
             iQuadrant = 3;
+            fAngle_rad = Math::c_f180Degrees_rad + fAngle_rad;
         }
         else /*if (i_size.width() > 0.0 && i_size.height() < 0.0)*/ {
             iQuadrant = 4;
+            fAngle_rad = Math::c_f360Degrees_rad - fAngle_rad;
         }
     }
     if (o_piQuadrant != nullptr) {
@@ -1887,9 +1897,20 @@ double ZS::Draw::getAngleRad(const QSizeF& i_size, int* o_piQuadrant)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Same as method getAngleRad but returns the angle in degrees.
+*/
+double ZS::Draw::getAngleDegree(const QSizeF& i_size, int* o_piQuadrant)
+//------------------------------------------------------------------------------
+{
+    double fAngle_rad = getAngleRad(i_size, o_piQuadrant);
+    return Math::rad2Degree(fAngle_rad);
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Calculates the angle between point 2 and point 1.
 
     Point 1 is considered to be the origin of the coordinate system.
+    The returned angle is counted counterclockwise.
 
             Q2        |      Q1        
       (PI/2 .. PI)    | (0.0 .. PI/2)  
@@ -1922,6 +1943,16 @@ double ZS::Draw::getAngleRad( const QPointF& i_pt1, const QPointF& i_pt2 )
         }
     }
     return fAngle_rad;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Same as method getAngleRad but returns the angle in degrees.
+*/
+double ZS::Draw::getAngleDegree(const QPointF& i_pt1, const QPointF& i_pt2)
+//------------------------------------------------------------------------------
+{
+    double fAngle_rad = getAngleRad(i_pt1, i_pt2);
+    return Math::rad2Degree(fAngle_rad);
 }
 
 //------------------------------------------------------------------------------
