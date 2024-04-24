@@ -961,77 +961,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setSize(-100, -50)
-    ---------------------
-        000   050   100   150   200   250   300   350   400   BottomUp
-    200             BR-----+-----BL                              400
-                     |     X     |          <=
-    250             TR-----+-----TL----+-----+-----+-----TR      350
-                                 |                       |
-    300                          +           X           +       300
-                                 |                       |
-    350                         BL-----+-----+-----+-----BR      250
-    */
-    QSize size_100x_50(-100.0, -50.0);
-    double fxCenterSetInvalidSizeAngle0 = fLeftSetAngle0 + size_100x_50.width() / 2.0;
-    double fyCenterSetInvalidSizeAngle0 = fTopSetAngle0 + size_100x_50.height() / 2.0;
-    double fWidthSetInvalidSizeAngle0 = size_100x_50.width();
-    double fHeightSetInvalidSizeAngle0 = size_100x_50.height();
-    double fLeftSetInvalidSizeAngle0 = fxCenterSetInvalidSizeAngle0 - fWidthSetInvalidSizeAngle0 / 2.0;
-    double fRightSetInvalidSizeAngle0 = fxCenterSetInvalidSizeAngle0 + fWidthSetInvalidSizeAngle0 / 2.0;
-    double fTopSetInvalidSizeAngle0 = fyCenterSetInvalidSizeAngle0 - fHeightSetInvalidSizeAngle0 / 2.0;
-    double fBottomSetInvalidSizeAngle0 = fyCenterSetInvalidSizeAngle0 + fHeightSetInvalidSizeAngle0 / 2.0;
-    QPointF ptCenterSetInvalidSizeAngle0(fxCenterSetInvalidSizeAngle0, fyCenterSetInvalidSizeAngle0);
-    QPointF ptTopLeftSetInvalidSizeAngle0(fLeftSetInvalidSizeAngle0, fTopSetInvalidSizeAngle0);
-    QPointF ptTopRightSetInvalidSizeAngle0(fRightSetInvalidSizeAngle0, fTopSetInvalidSizeAngle0);
-    QPointF ptBottomRightSetInvalidSizeAngle0(fRightSetInvalidSizeAngle0, fBottomSetInvalidSizeAngle0);
-    QPointF ptBottomLeftSetInvalidSizeAngle0(fLeftSetInvalidSizeAngle0, fBottomSetInvalidSizeAngle0);
-    QPointF ptTopCenterSetInvalidSizeAngle0(fxCenterSetInvalidSizeAngle0, fTopSetInvalidSizeAngle0);
-    QPointF ptRightCenterSetInvalidSizeAngle0(fRightSetInvalidSizeAngle0, fyCenterSetInvalidSizeAngle0);
-    QPointF ptBottomCenterSetInvalidSizeAngle0(fxCenterSetInvalidSizeAngle0, fBottomSetInvalidSizeAngle0);
-    QPointF ptLeftCenterSetInvalidSizeAngle0(fLeftSetInvalidSizeAngle0, fyCenterSetInvalidSizeAngle0);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size_100x_50) + " " + unit.symbol() + ")",
-        /* strOperation    */ "setSize(" + qSize2Str(size_100x_50) + " " + unit.symbol() + ")",
-        /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectFOrig);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setAngle", physValAngle.toString());
-    pTestStep->setConfigValue("setSize", size_100x_50);
-    pTestStep->setConfigValue("setSize.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidSizeAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidSizeAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidSizeAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidSizeAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidSizeAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidSizeAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidSizeAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidSizeAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidSizeAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidSizeAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidSizeAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidSizeAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidSizeAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidSizeAngle0) + "} mm");
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
     /* setWidth(300)
     ----------------
         200   250   300   350   400          200   250   300   350   400   450   500    BottomUp
@@ -1101,77 +1030,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setWidth(-100)
-    -----------------
-        200   250   300   350   400          100   150   200    BottomUp
-     250 TL----+-----+-----+----TR        250 TR----+----TL       350
-         |                       |            |           |
-     300 +           X           +   =>   300 x     X     x       300
-         |                       |            |           |
-     350 BL----+-----+-----+----BR        350 BR----+----BL       250
-    */
-    CPhysVal physValWidth_100(-100.0, unit, i_drawingSize.imageCoorsResolution());
-    double fxCenterSetInvalidWidthAngle0 = fLeftSetAngle0 + physValWidth_100.getVal() / 2.0;
-    double fyCenterSetInvalidWidthAngle0 = fyCenterSetAngle0;
-    double fWidthSetInvalidWidthAngle0 = physValWidth_100.getVal();
-    double fHeightSetInvalidWidthAngle0 = fHeightSetAngle0;
-    double fLeftSetInvalidWidthAngle0 = fxCenterSetInvalidWidthAngle0 - fWidthSetInvalidWidthAngle0 / 2.0;
-    double fRightSetInvalidWidthAngle0 = fxCenterSetInvalidWidthAngle0 + fWidthSetInvalidWidthAngle0 / 2.0;
-    double fTopSetInvalidWidthAngle0 = fyCenterSetInvalidWidthAngle0 - fHeightSetInvalidWidthAngle0 / 2.0;
-    double fBottomSetInvalidWidthAngle0 = fyCenterSetInvalidWidthAngle0 + fHeightSetInvalidWidthAngle0 / 2.0;
-    QPointF ptCenterSetInvalidWidthAngle0(fxCenterSetInvalidWidthAngle0, fyCenterSetInvalidWidthAngle0);
-    QPointF ptTopLeftSetInvalidWidthAngle0(fLeftSetInvalidWidthAngle0, fTopSetInvalidWidthAngle0);
-    QPointF ptTopRightSetInvalidWidthAngle0(fRightSetInvalidWidthAngle0, fTopSetInvalidWidthAngle0);
-    QPointF ptBottomRightSetInvalidWidthAngle0(fRightSetInvalidWidthAngle0, fBottomSetInvalidWidthAngle0);
-    QPointF ptBottomLeftSetInvalidWidthAngle0(fLeftSetInvalidWidthAngle0, fBottomSetInvalidWidthAngle0);
-    QPointF ptTopCenterSetInvalidWidthAngle0(fxCenterSetInvalidWidthAngle0, fTopSetInvalidWidthAngle0);
-    QPointF ptRightCenterSetInvalidWidthAngle0(fRightSetInvalidWidthAngle0, fyCenterSetInvalidWidthAngle0);
-    QPointF ptBottomCenterSetInvalidWidthAngle0(fxCenterSetInvalidWidthAngle0, fBottomSetInvalidWidthAngle0);
-    QPointF ptLeftCenterSetInvalidWidthAngle0(fLeftSetInvalidWidthAngle0, fyCenterSetInvalidWidthAngle0);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth_100.toString() + ")",
-        /* strOperation    */ "setWidth(" + physValWidth_100.toString() + ")",
-        /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectFOrig);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setAngle", physValAngle.toString());
-    pTestStep->setConfigValue("setWidth", physValWidth_100.toString());
-    pTestStep->setConfigValue("setWidth.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidWidthAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidWidthAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidWidthAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidWidthAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidWidthAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidWidthAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidWidthAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidWidthAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidWidthAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidWidthAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidWidthAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidWidthAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidWidthAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidWidthAngle0) + "} mm");
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    /* setWidthByMovingLeftCenter(300, 250)
-    ---------------------------------------
+    /* setWidthByMovingLeftCenter(100)
+    ----------------------------------
         200   250   300   350   400          300   350   400  BottomUp
      250 +-----+-----+-----+-----+        250 +-----+-----+      350
          |                       |            |           |
@@ -1251,7 +1111,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     ptMoved = QPointF(500, 250);
     double fxCenterSetInvalidWidthMoveLeftCenterAngle0 = fRightSetAngle0 + (ptMoved.x()- fRightSetAngle0) / 2.0;
     double fyCenterSetInvalidWidthMoveLeftCenterAngle0 = fyCenterSetAngle0;
-    double fWidthSetInvalidWidthMoveLeftCenterAngle0 = fRightSetAngle0 - ptMoved.x();
+    double fWidthSetInvalidWidthMoveLeftCenterAngle0 = fabs(fRightSetAngle0 - ptMoved.x());
     double fHeightSetInvalidWidthMoveLeftCenterAngle0 = fHeightSetAngle0;
     double fLeftSetInvalidWidthMoveLeftCenterAngle0 = fxCenterSetInvalidWidthMoveLeftCenterAngle0 - fWidthSetInvalidWidthMoveLeftCenterAngle0 / 2.0;
     double fRightSetInvalidWidthMoveLeftCenterAngle0 = fxCenterSetInvalidWidthMoveLeftCenterAngle0 + fWidthSetInvalidWidthMoveLeftCenterAngle0 / 2.0;
@@ -1308,8 +1168,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setWidthByMovingRightCenter(300, 250)
-    ----------------------------------------
+    /* setWidthByMovingRightCenter(100)
+    -----------------------------------
         200   250   300   350   400          200   250   300  BottomUp
      250 +-----+-----+-----+-----+        250 +-----+-----+      350
          |                       |            |           |
@@ -1389,7 +1249,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     ptMoved = QPointF(100.0, 250.0);
     double fxCenterSetInvalidWidthMoveRightCenterAngle0 = fLeftSetAngle0 + (ptMoved.x() - fLeftSetAngle0) / 2.0;
     double fyCenterSetInvalidWidthMoveRightCenterAngle0 = fyCenterSetAngle0;
-    double fWidthSetInvalidWidthMoveRightCenterAngle0 = ptMoved.x() - fLeftSetAngle0;
+    double fWidthSetInvalidWidthMoveRightCenterAngle0 = fabs(ptMoved.x() - fLeftSetAngle0);
     double fHeightSetInvalidWidthMoveRightCenterAngle0 = fHeightSetAngle0;
     double fLeftSetInvalidWidthMoveRightCenterAngle0 = fxCenterSetInvalidWidthMoveRightCenterAngle0 - fWidthSetInvalidWidthMoveRightCenterAngle0 / 2.0;
     double fRightSetInvalidWidthMoveRightCenterAngle0 = fxCenterSetInvalidWidthMoveRightCenterAngle0 + fWidthSetInvalidWidthMoveRightCenterAngle0 / 2.0;
@@ -1519,80 +1379,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeight(-100)
-    -----------------
-        200   250   300   350   400         200   250   300   350   400   BottomUp
-                                         150 +-----+-----x-----+-----+      450
-                                             |                       |
-                                         200 |           X           |      400
-                                             |                       |
-     250 +-----+-----+-----+-----+       250 +-----+-----x-----+-----+      350
-         |                       |
-     300 +           X           +
-         |                       |
-     350 +-----+-----+-----+-----+
-    */
-    CPhysVal physValHeight_100(-100.0, i_drawingSize.unit(), i_drawingSize.imageCoorsResolution());
-    double fxCenterSetInvalidHeightAngle0 = fxCenterSetAngle0;
-    double fyCenterSetInvalidHeightAngle0 = fyCenterSetAngle0 + (physValHeight_100.getVal() - fHeightSetAngle0) / 2.0;
-    double fWidthSetInvalidHeightAngle0 = fWidthSetAngle0;
-    double fHeightSetInvalidHeightAngle0 = physValHeight_100.getVal();
-    double fLeftSetInvalidHeightAngle0 = fxCenterSetInvalidHeightAngle0 - fWidthSetInvalidHeightAngle0 / 2.0;
-    double fRightSetInvalidHeightAngle0 = fxCenterSetInvalidHeightAngle0 + fWidthSetInvalidHeightAngle0 / 2.0;
-    double fTopSetInvalidHeightAngle0 = fyCenterSetInvalidHeightAngle0 - fHeightSetInvalidHeightAngle0 / 2.0;
-    double fBottomSetInvalidHeightAngle0 = fyCenterSetInvalidHeightAngle0 + fHeightSetInvalidHeightAngle0 / 2.0;
-    QPointF ptCenterSetInvalidHeightAngle0(fxCenterSetInvalidHeightAngle0, fyCenterSetInvalidHeightAngle0);
-    QPointF ptTopLeftSetInvalidHeightAngle0(fLeftSetInvalidHeightAngle0, fTopSetInvalidHeightAngle0);
-    QPointF ptTopRightSetInvalidHeightAngle0(fRightSetInvalidHeightAngle0, fTopSetInvalidHeightAngle0);
-    QPointF ptBottomRightSetInvalidHeightAngle0(fRightSetInvalidHeightAngle0, fBottomSetInvalidHeightAngle0);
-    QPointF ptBottomLeftSetInvalidHeightAngle0(fLeftSetInvalidHeightAngle0, fBottomSetInvalidHeightAngle0);
-    QPointF ptTopCenterSetInvalidHeightAngle0(fxCenterSetInvalidHeightAngle0, fTopSetInvalidHeightAngle0);
-    QPointF ptRightCenterSetInvalidHeightAngle0(fRightSetInvalidHeightAngle0, fyCenterSetInvalidHeightAngle0);
-    QPointF ptBottomCenterSetInvalidHeightAngle0(fxCenterSetInvalidHeightAngle0, fBottomSetInvalidHeightAngle0);
-    QPointF ptLeftCenterSetInvalidHeightAngle0(fLeftSetInvalidHeightAngle0, fyCenterSetInvalidHeightAngle0);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight_100.toString() + ")",
-        /* strOperation    */ "setHeight(" + physValHeight_100.toString() + ")",
-        /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectFOrig);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setAngle", physValAngle.toString());
-    pTestStep->setConfigValue("setHeight", physValHeight_100.toString());
-    pTestStep->setConfigValue("setHeight.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidHeightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidHeightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidHeightAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidHeightAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidHeightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidHeightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidHeightAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidHeightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidHeightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidHeightAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidHeightAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidHeightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidHeightAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidHeightAngle0) + "} mm");
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    /* setHeightByMovingTopCenter(400, 300)
+    /* setHeightByMovingTopCenter(50)
     ---------------------------------------
         200   250   300   350   400          200   250   300   350   400   BottomUp
      250 +-----+-----+-----+-----+        250                                350
@@ -1676,7 +1463,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     double fxCenterSetInvalidHeightMoveTopCenterAngle0 = fxCenterSetAngle0;
     double fyCenterSetInvalidHeightMoveTopCenterAngle0 = fBottomSetAngle0 - (fBottomSetAngle0 - ptMoved.y()) / 2.0;
     double fWidthSetInvalidHeightMoveTopCenterAngle0 = fWidthSetAngle0;
-    double fHeightSetInvalidHeightMoveTopCenterAngle0 = fBottomSetAngle0 - ptMoved.y();
+    double fHeightSetInvalidHeightMoveTopCenterAngle0 = fabs(fBottomSetAngle0 - ptMoved.y());
     double fLeftSetInvalidHeightMoveTopCenterAngle0 = fxCenterSetInvalidHeightMoveTopCenterAngle0 - fWidthSetInvalidHeightMoveTopCenterAngle0 / 2.0;
     double fRightSetInvalidHeightMoveTopCenterAngle0 = fxCenterSetInvalidHeightMoveTopCenterAngle0 + fWidthSetInvalidHeightMoveTopCenterAngle0 / 2.0;
     double fTopSetInvalidHeightMoveTopCenterAngle0 = fyCenterSetInvalidHeightMoveTopCenterAngle0 - fHeightSetInvalidHeightMoveTopCenterAngle0 / 2.0;
@@ -1732,7 +1519,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeightByMovingBottomCenter(400, 300)
+    /* setHeightByMovingBottomCenter(50)
     ------------------------------------------
         200   250   300   350   400          200   250   300   350   400   BottomUp
      250 +-----+-----+-----+-----+        250 +-----+-----+-----+-----+      350
@@ -1818,7 +1605,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     double fxCenterSetInvalidHeightMoveBottomCenterAngle0 = fxCenterSetAngle0;
     double fyCenterSetInvalidHeightMoveBottomCenterAngle0 = fTopSetAngle0 + (ptMoved.y() - fTopSetAngle0) / 2.0;
     double fWidthSetInvalidHeightMoveBottomCenterAngle0 = fWidthSetAngle0;
-    double fHeightSetInvalidHeightMoveBottomCenterAngle0 = ptMoved.y() - fTopSetAngle0;
+    double fHeightSetInvalidHeightMoveBottomCenterAngle0 = fabs(ptMoved.y() - fTopSetAngle0);
     double fLeftSetInvalidHeightMoveBottomCenterAngle0 = fxCenterSetInvalidHeightMoveBottomCenterAngle0 - fWidthSetInvalidHeightMoveBottomCenterAngle0 / 2.0;
     double fRightSetInvalidHeightMoveBottomCenterAngle0 = fxCenterSetInvalidHeightMoveBottomCenterAngle0 + fWidthSetInvalidHeightMoveBottomCenterAngle0 / 2.0;
     double fTopSetInvalidHeightMoveBottomCenterAngle0 = fyCenterSetInvalidHeightMoveBottomCenterAngle0 - fHeightSetInvalidHeightMoveBottomCenterAngle0 / 2.0;
@@ -1965,8 +1752,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     double fxCenterSetTopLeftInvalidSizeAngle0 = ptTopLeftInvalidSizeAngle0.x() + (fRightSetAngle0 - ptTopLeftInvalidSizeAngle0.x()) / 2.0;
     double fyCenterSetTopLeftInvalidSizeAngle0 = ptTopLeftInvalidSizeAngle0.y() + (fBottomSetAngle0 - ptTopLeftInvalidSizeAngle0.y()) / 2.0;
-    double fWidthSetTopLeftInvalidSizeAngle0 = fRightSetAngle0 - ptTopLeftInvalidSizeAngle0.x();
-    double fHeightSetTopLeftInvalidSizeAngle0 = fBottomSetAngle0 - ptTopLeftInvalidSizeAngle0.y();
+    double fWidthSetTopLeftInvalidSizeAngle0 = fabs(fRightSetAngle0 - ptTopLeftInvalidSizeAngle0.x());
+    double fHeightSetTopLeftInvalidSizeAngle0 = fabs(fBottomSetAngle0 - ptTopLeftInvalidSizeAngle0.y());
     double fLeftSetTopLeftInvalidSizeAngle0 = fxCenterSetTopLeftInvalidSizeAngle0 - fWidthSetTopLeftInvalidSizeAngle0 / 2.0;
     double fRightSetTopLeftInvalidSizeAngle0 = fxCenterSetTopLeftInvalidSizeAngle0 + fWidthSetTopLeftInvalidSizeAngle0 / 2.0;
     double fTopSetTopLeftInvalidSizeAngle0 = fyCenterSetTopLeftInvalidSizeAngle0 - fHeightSetTopLeftInvalidSizeAngle0 / 2.0;
@@ -2113,8 +1900,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     double fxCenterSetTopRightInvalidSizeAngle0 = fLeftSetAngle0 + (ptTopRightInvalidSizeAngle0.x() - fLeftSetAngle0) / 2.0;
     double fyCenterSetTopRightInvalidSizeAngle0 = ptTopRightInvalidSizeAngle0.y() + (fBottomSetAngle0 - ptTopRightInvalidSizeAngle0.y()) / 2.0;
-    double fWidthSetTopRightInvalidSizeAngle0 = ptTopRightInvalidSizeAngle0.x() - fLeftSetAngle0;
-    double fHeightSetTopRightInvalidSizeAngle0 = fBottomSetAngle0 - ptTopRightInvalidSizeAngle0.y();
+    double fWidthSetTopRightInvalidSizeAngle0 = fabs(ptTopRightInvalidSizeAngle0.x() - fLeftSetAngle0);
+    double fHeightSetTopRightInvalidSizeAngle0 = fabs(fBottomSetAngle0 - ptTopRightInvalidSizeAngle0.y());
     double fLeftSetTopRightInvalidSizeAngle0 = fxCenterSetTopRightInvalidSizeAngle0 - fWidthSetTopRightInvalidSizeAngle0 / 2.0;
     double fRightSetTopRightInvalidSizeAngle0 = fxCenterSetTopRightInvalidSizeAngle0 + fWidthSetTopRightInvalidSizeAngle0 / 2.0;
     double fTopSetTopRightInvalidSizeAngle0 = fyCenterSetTopRightInvalidSizeAngle0 - fHeightSetTopRightInvalidSizeAngle0 / 2.0;
@@ -2262,8 +2049,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     double fxCenterSetBottomRightInvalidSizeAngle0 = fLeftSetAngle0 + (ptBottomRightInvalidSize.x() - fLeftSetAngle0) / 2.0;
     double fyCenterSetBottomRightInvalidSizeAngle0 = fTopSetAngle0 + (ptBottomRightInvalidSize.y() - fTopSetAngle0) / 2.0;
-    double fWidthSetBottomRightInvalidSizeAngle0 = ptBottomRightInvalidSize.x() - fLeftSetAngle0;
-    double fHeightSetBottomRightInvalidSizeAngle0 = ptBottomRightInvalidSize.y() - fTopSetAngle0;
+    double fWidthSetBottomRightInvalidSizeAngle0 = fabs(ptBottomRightInvalidSize.x() - fLeftSetAngle0);
+    double fHeightSetBottomRightInvalidSizeAngle0 = fabs(ptBottomRightInvalidSize.y() - fTopSetAngle0);
     double fLeftSetBottomRightInvalidSizeAngle0 = fxCenterSetBottomRightInvalidSizeAngle0 - fWidthSetBottomRightInvalidSizeAngle0 / 2.0;
     double fRightSetBottomRightInvalidSizeAngle0 = fxCenterSetBottomRightInvalidSizeAngle0 + fWidthSetBottomRightInvalidSizeAngle0 / 2.0;
     double fTopSetBottomRightInvalidSizeAngle0 = fyCenterSetBottomRightInvalidSizeAngle0 - fHeightSetBottomRightInvalidSizeAngle0 / 2.0;
@@ -2410,8 +2197,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     double fxCenterSetBottomLeftInvalidSizeAngle0 = ptBottomLeftInvalidSize.x() + (fRightSetAngle0 - ptBottomLeftInvalidSize.x()) / 2.0;
     double fyCenterSetBottomLeftInvalidSizeAngle0 = fTopSetAngle0 + (ptBottomLeftInvalidSize.y() - fTopSetAngle0) / 2.0;
-    double fWidthSetBottomLeftInvalidSizeAngle0 = fRightSetAngle0 - ptBottomLeftInvalidSize.x();
-    double fHeightSetBottomLeftInvalidSizeAngle0 = ptBottomLeftInvalidSize.y() - fTopSetAngle0;
+    double fWidthSetBottomLeftInvalidSizeAngle0 = fabs(fRightSetAngle0 - ptBottomLeftInvalidSize.x());
+    double fHeightSetBottomLeftInvalidSizeAngle0 = fabs(ptBottomLeftInvalidSize.y() - fTopSetAngle0);
     double fLeftSetBottomLeftInvalidSizeAngle0 = fxCenterSetBottomLeftInvalidSizeAngle0 - fWidthSetBottomLeftInvalidSizeAngle0 / 2.0;
     double fRightSetBottomLeftInvalidSizeAngle0 = fxCenterSetBottomLeftInvalidSizeAngle0 + fWidthSetBottomLeftInvalidSizeAngle0 / 2.0;
     double fTopSetBottomLeftInvalidSizeAngle0 = fyCenterSetBottomLeftInvalidSizeAngle0 - fHeightSetBottomLeftInvalidSizeAngle0 / 2.0;
@@ -2678,64 +2465,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setSize(-100, -50)
-    ---------------------
-    */
-    double fWidthSetInvalidSizeAngle30 = size_100x_50.width();
-    double fHeightSetInvalidSizeAngle30 = size_100x_50.height();
-    QPointF ptCenterSetInvalidSizeAngle30(207.6, 160.0);
-    QPointF ptTopLeftSetInvalidSizeAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetInvalidSizeAngle30(151.8, 156.7);
-    QPointF ptBottomRightSetInvalidSizeAngle30(176.8, 113.4);
-    QPointF ptBottomLeftSetInvalidSizeAngle30(263.4, 163.4);
-    QPointF ptTopCenterSetInvalidSizeAngle30 = QPointF((ptTopRightSetInvalidSizeAngle30.x() + ptTopLeftSetInvalidSizeAngle30.x()) / 2.0,
-                                                       (ptTopRightSetInvalidSizeAngle30.y() + ptTopLeftSetInvalidSizeAngle30.y()) / 2.0);
-    QPointF ptRightCenterSetInvalidSizeAngle30(164.3, 135.0); // not calculated because of inaccuracy
-    QPointF ptBottomCenterSetInvalidSizeAngle30 = QPointF((ptBottomRightSetInvalidSizeAngle30.x() + ptBottomLeftSetInvalidSizeAngle30.x()) / 2.0,
-                                                          (ptBottomRightSetInvalidSizeAngle30.y() + ptBottomLeftSetInvalidSizeAngle30.y()) / 2.0);
-    QPointF ptLeftCenterSetInvalidSizeAngle30(250.9, 185.0); // not calculated because of inaccuracy
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size_100x_50) + " " + unit.symbol() + ")",
-        /* strOperation    */ "setSize(" + qSize2Str(size_100x_50) + " " + unit.symbol() + ")",
-        /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectFOrig);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setAngle", physValAngle.toString());
-    pTestStep->setConfigValue("setSize", size_100x_50);
-    pTestStep->setConfigValue("setSize.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidSizeAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidSizeAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidSizeAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidSizeAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidSizeAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidSizeAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidSizeAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidSizeAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidSizeAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidSizeAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidSizeAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidSizeAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidSizeAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidSizeAngle30) + "} mm");
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
     /* setWidth(300)
     ----------------
     */
@@ -2792,65 +2521,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetValidWidthAngle30) + "} mm");
         strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetValidWidthAngle30) + "} mm");
         strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetValidWidthAngle30) + "} mm");
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
-    /* setWidth(-100)
-    ----------------
-    */
-    double fWidthSetInvalidWidthAngle30 = physValWidth_100.getVal();
-    double fHeightSetInvalidWidthAngle30 = fHeightSetAngle30;
-    QPointF ptCenterSetInvalidWidthAngle30(170.1, 225.0);
-    QPointF ptTopLeftSetInvalidWidthAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetInvalidWidthAngle30(151.8, 156.7);
-    QPointF ptBottomRightSetInvalidWidthAngle30(101.8, 243.3);
-    QPointF ptBottomLeftSetInvalidWidthAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetInvalidWidthAngle30 = QPointF((ptTopRightSetInvalidWidthAngle30.x() + ptTopLeftSetInvalidWidthAngle30.x()) / 2.0,
-                                                 (ptTopRightSetInvalidWidthAngle30.y() + ptTopLeftSetInvalidWidthAngle30.y()) / 2.0);
-    QPointF ptRightCenterSetInvalidWidthAngle30 = QPointF((ptTopRightSetInvalidWidthAngle30.x() + ptBottomRightSetInvalidWidthAngle30.x()) / 2.0,
-                                                   (ptBottomRightSetInvalidWidthAngle30.y() + ptTopRightSetInvalidWidthAngle30.y()) / 2.0);
-    QPointF ptBottomCenterSetInvalidWidthAngle30 = QPointF((ptBottomRightSetInvalidWidthAngle30.x() + ptBottomLeftSetInvalidWidthAngle30.x()) / 2.0,
-                                                    (ptBottomRightSetInvalidWidthAngle30.y() + ptBottomLeftSetInvalidWidthAngle30.y()) / 2.0);
-    QPointF ptLeftCenterSetInvalidWidthAngle30 = ptLeftCenterSetAngle30;
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth_100.toString() + ")",
-        /* strOperation    */ "setWidth(" + physValWidth_100.toString() + ")",
-        /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectFOrig);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setAngle", physValAngle.toString());
-    pTestStep->setConfigValue("setWidth", physValWidth_100.toString());
-    pTestStep->setConfigValue("setWidth.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidWidthAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidWidthAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidWidthAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidWidthAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidWidthAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidWidthAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidWidthAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidWidthAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidWidthAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidWidthAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidWidthAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidWidthAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidWidthAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidWidthAngle30) + "} mm");
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
@@ -2917,7 +2587,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setWidthByMovingLeftCenter(-100)
+    /* setWidthByMovingLeftCenter(100)
     ---------------------------------------
     */
     // Set width to half of original width. Thats been done by moving to the top center point of the original rectangle.
@@ -2925,7 +2595,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     // same as setting the width to 300.0 by moving the right edge of the rectangle. But only in this special case.
     ptMoved = QPointF(ptTopRightSetAngle30.x() + (ptTopRightSetAngle30.x() - ptTopLeftSetAngle30.x()) / 2.0,
                       ptTopRightSetAngle30.y() + (ptTopRightSetAngle30.y() - ptTopLeftSetAngle30.y()) / 2.0);
-    double fWidthSetInvalidWidthMoveLeftCenterAngle30 = -(fWidthSetAngle30 / 2.0);
+    double fWidthSetInvalidWidthMoveLeftCenterAngle30 = fWidthSetAngle30 / 2.0;
     double fHeightSetInvalidWidthMoveLeftCenterAngle30 = fHeightSetAngle30;
     QPointF ptCenterSetInvalidWidthMoveLeftCenterAngle30(429.9, 375.0);
     QPointF ptTopLeftSetInvalidWidthMoveLeftCenterAngle30 = ptMoved;
@@ -3042,12 +2712,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setWidthByMovingRightCenter(-100)
+    /* setWidthByMovingRightCenter(100)
     ----------------------------------------
     */
     ptMoved = QPointF(ptTopLeftSetAngle30.x() - (ptTopRightSetAngle30.x() - ptTopLeftSetAngle30.x()) / 2.0,
                       ptTopLeftSetAngle30.y() - (ptTopRightSetAngle30.y() - ptTopLeftSetAngle30.y()) / 2.0);
-    double fWidthSetInvalidWidthMoveRightCenterAngle30 = -(fWidthSetAngle30 / 2.0);
+    double fWidthSetInvalidWidthMoveRightCenterAngle30 = fWidthSetAngle30 / 2.0;
     double fHeightSetInvalidWidthMoveRightCenterAngle30 = fHeightSetAngle30;
     QPointF ptCenterSetInvalidWidthMoveRightCenterAngle30(170.1, 225.0);
     QPointF ptTopLeftSetInvalidWidthMoveRightCenterAngle30 = ptTopLeftSetAngle30;
@@ -3162,65 +2832,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeight(-100)
-    -----------------
-    */
-    double fWidthSetInvalidHeightAngle30 = fWidthSetAngle30;
-    double fHeightSetInvalidHeightAngle30 = physValHeight_100.getVal();
-    QPointF ptCenterSetInvalidHeightAngle30(350.0, 213.4);
-    QPointF ptTopLeftSetInvalidHeightAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetInvalidHeightAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetInvalidHeightAngle30(461.6, 220.1);
-    QPointF ptBottomLeftSetInvalidHeightAngle30(288.4, 120.1);
-    QPointF ptTopCenterSetInvalidHeightAngle30 = ptTopCenterSetAngle30;
-    QPointF ptRightCenterSetInvalidHeightAngle30 = QPointF((ptTopRightSetInvalidHeightAngle30.x() + ptBottomRightSetInvalidHeightAngle30.x()) / 2.0,
-                                                    (ptBottomRightSetInvalidHeightAngle30.y() + ptTopRightSetInvalidHeightAngle30.y()) / 2.0);
-    QPointF ptBottomCenterSetInvalidHeightAngle30 = QPointF((ptBottomRightSetInvalidHeightAngle30.x() + ptBottomLeftSetInvalidHeightAngle30.x()) / 2.0,
-                                                     (ptBottomRightSetInvalidHeightAngle30.y() + ptBottomLeftSetInvalidHeightAngle30.y()) / 2.0);
-    QPointF ptLeftCenterSetInvalidHeightAngle30 = QPointF((ptTopLeftSetInvalidHeightAngle30.x() + ptBottomLeftSetInvalidHeightAngle30.x()) / 2.0,
-                                                   (ptBottomLeftSetInvalidHeightAngle30.y() + ptTopLeftSetInvalidHeightAngle30.y()) / 2.0);
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight_100.toString() + ")",
-        /* strOperation    */ "setHeight(" + physValHeight_100.toString() + ")",
-        /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
-        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("create", rectFOrig);
-    pTestStep->setConfigValue("create.unit", unit.symbol());
-    pTestStep->setConfigValue("setAngle", physValAngle.toString());
-    pTestStep->setConfigValue("setHeight", physValHeight_100.toString());
-    pTestStep->setConfigValue("setHeight.unit", unit.symbol());
-    strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidHeightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidHeightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidHeightAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetInvalidHeightAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetInvalidHeightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetInvalidHeightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetInvalidHeightAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetInvalidHeightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetInvalidHeightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetInvalidHeightAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetInvalidHeightAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetInvalidHeightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetInvalidHeightAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetInvalidHeightAngle30) + "} mm");
-    }
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
     /* setHeightByMovingTopCenter(50)
     ---------------------------------------
     */
@@ -3281,13 +2892,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeightByMovingTopCenter(-50)
+    /* setHeightByMovingTopCenter(50)
     ---------------------------------------
     */
     ptMoved = QPointF(ptBottomRightSetAngle30.x() - (ptTopRightSetAngle30.x() - ptBottomRightSetAngle30.x()) / 2.0,
                       ptBottomRightSetAngle30.y() + (ptBottomRightSetAngle30.y() - ptTopRightSetAngle30.y()) / 2.0);
     double fWidthSetInvalidHeightMoveTopCenterAngle30 = fWidthSetAngle30;
-    double fHeightSetInvalidHeightMoveTopCenterAngle30 = -(fHeightSetAngle30 / 2.0);
+    double fHeightSetInvalidHeightMoveTopCenterAngle30 = fHeightSetAngle30 / 2.0;
     QPointF ptCenterSetInvalidHeightMoveTopCenterAngle30(262.5, 365.0);
     QPointF ptTopLeftSetInvalidHeightMoveTopCenterAngle30(163.4, 336.6);
     QPointF ptTopRightSetInvalidHeightMoveTopCenterAngle30 = ptMoved;
@@ -3400,13 +3011,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    /* setHeightByMovingBottomCenter(-50)
+    /* setHeightByMovingBottomCenter(50)
     ------------------------------------------
     */
     ptMoved = QPointF(ptTopRightSetAngle30.x() + (ptTopRightSetAngle30.x() - ptBottomRightSetAngle30.x()) / 2.0,
                       ptTopRightSetAngle30.y() - (ptBottomRightSetAngle30.y() - ptTopRightSetAngle30.y()) / 2.0);
     double fWidthSetInvalidHeightMoveBottomCenter30 = fWidthSetValidHeightAngle30;
-    double fHeightSetInvalidHeightMoveBottomCenter30 = -(fHeightSetAngle30 / 2.0);
+    double fHeightSetInvalidHeightMoveBottomCenter30 = fHeightSetAngle30 / 2.0;
     QPointF ptCenterSetInvalidHeightMoveBottomCenter30(337.5, 235.1);
     QPointF ptTopLeftSetInvalidHeightMoveBottomCenter30 = ptTopLeftSetAngle30;
     QPointF ptTopRightSetInvalidHeightMoveBottomCenter30 = ptTopRightSetAngle30;
@@ -3531,8 +3142,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         ptTopLeftInvalidSizeAngle30.setY(50.0);
     }
-    double fWidthSetTopLeftInvalidSizeAngle30 = -154.9;;
-    double fHeightSetTopLeftInvalidSizeAngle30 = -91.5;
+    double fWidthSetTopLeftInvalidSizeAngle30 = 154.9;;
+    double fHeightSetTopLeftInvalidSizeAngle30 = 91.5;
     QPointF ptCenterSetTopLeftInvalidSizeAngle30(405.8, 471.7);
     QPointF ptTopLeftSetTopLeftInvalidSizeAngle30 = ptTopLeftInvalidSizeAngle30;
     QPointF ptTopRightSetTopLeftInvalidSizeAngle30(315.9, 472.5);

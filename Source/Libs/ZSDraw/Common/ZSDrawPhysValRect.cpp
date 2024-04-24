@@ -661,6 +661,8 @@ void CPhysValRect::setCenter(const CPhysValPoint& i_physValPoint)
 
     The rectangle's right and bottom edges are implicitly changed.
 
+    Width and height must be greater than 0. For an invalid size an exception is thrown.
+
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
 */
@@ -678,8 +680,7 @@ void CPhysValRect::setSize(const QSizeF& i_size)
 
     The rectangle's right and bottom edges are implicitly changed.
 
-    If width is negative, the left edge is right of the right edge.
-    If height is negative, the top edge is below the bottom edge.
+    Width and height must be greater than 0. For an invalid size an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -690,38 +691,29 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValSize.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    QSizeF sizeF = i_physValSize.toQSizeF(m_unit);
+    if (!sizeF.isValid()) {
+        throw CException(__FILE__, __LINE__, EResultInvalidSize);
+    }
     // Before taken over the new size, get current top left corner.
     CPhysValPoint physValPtTL = topLeft();
     double fX = physValPtTL.x().getVal();
     double fY = physValPtTL.y().getVal();
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    QSizeF sizeF = i_physValSize.toQSizeF(m_unit);
-    double fRadius = getRadius(sizeF);
-    int iQuadrant = -1;
-    double fPhi_rad = getAngleRad(sizeF, &iQuadrant);
-    if (fAngle_rad == 0.0) {
+    double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+    if (fAngle_degree == 0.0) {
         fX += sizeF.width() / 2.0;
         fY += sizeF.height() / 2.0;
     }
     else {
-        fX += fRadius * cos(fPhi_rad + fAngle_rad);
-        fY += fRadius * sin(fPhi_rad + fAngle_rad);
-        //if (iQuadrant == 1) {
-        //    fX += m_fRadius * cos(fPhi_rad + fAngle_rad);
-        //    fY += m_fRadius * sin(fPhi_rad + fAngle_rad);
-        //}
-        //else if (iQuadrant == 2) {
-        //    fX -= m_fRadius * cos(fPhi_rad + fAngle_rad);
-        //    fY += m_fRadius * sin(fPhi_rad + fAngle_rad);
-        //}
-        //else if (iQuadrant == 3) {
-        //    fX -= m_fRadius * cos(fPhi_rad + fAngle_rad);
-        //    fY -= m_fRadius * sin(fPhi_rad + fAngle_rad);
-        //}
-        //else if (iQuadrant == 4) {
-        //    fX += m_fRadius * cos(fPhi_rad + fAngle_rad);
-        //    fY -= m_fRadius * sin(fPhi_rad + fAngle_rad);
-        //}
+        QLineF lineDiagonale(QPointF(0.0, 0.0), QPointF(sizeF.width(), sizeF.height()));
+        // Move the angle of the line into 1st quadrant.
+        double fPhi_degree = 360.0 - lineDiagonale.angle();
+        double fBeta_degree = fPhi_degree + fAngle_degree;
+        double fBeta_rad = Math::degree2Rad(fBeta_degree);
+        double fRadius = lineDiagonale.length() / 2.0;
+        // QLine::angle returned the angle counterclockwise, the rotation angle is given clockwise.
+        fX += fRadius * cos(fBeta_rad);
+        fY += fRadius * sin(fBeta_rad);
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
@@ -740,7 +732,7 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
 
     The rectangle's right edge is implicitly changed.
 
-    If width is negative, the left edge is right of the right edge.
+    Width must be greater than 0. For an invalid value an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -759,7 +751,7 @@ void CPhysValRect::setWidth(double i_fWidth)
 
     The rectangle's right edge is implicitly changed.
 
-    If width is negative, the left edge is right of the right edge.
+    Width must be greater than 0. For an invalid value an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -771,6 +763,9 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
     double fWidth = i_physValWidth.getVal(m_unit);
+    if (fWidth <= 0.0) {
+        throw CException(__FILE__, __LINE__, EResultInvalidValue);
+    }
     if (m_physValAngle.getVal() == 0.0) {
         QRectF rectFNotRotated = toNotRotatedQRectF();
         rectFNotRotated.setWidth(fWidth);
@@ -995,7 +990,7 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
 
     The rectangle's bottom edge is implicitly changed.
 
-    If height is negative, the top edge is below the bottom edge.
+    Height must be greater than 0. For an invalid value an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -1015,7 +1010,7 @@ void CPhysValRect::setHeight(double i_fHeight)
 
     The rectangle's bottom edge is implicitly changed.
 
-    If height is negative, the top edge is below the bottom edge.
+    Height must be greater than 0. For an invalid value an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -1027,6 +1022,9 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
     double fHeight = i_physValHeight.getVal(m_unit);
+    if (fHeight <= 0.0) {
+        throw CException(__FILE__, __LINE__, EResultInvalidValue);
+    }
     if (m_physValAngle.getVal() == 0.0) {
         QRectF rectFNotRotated = toNotRotatedQRectF();
         rectFNotRotated.setHeight(fHeight);
@@ -1381,23 +1379,24 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
         m_size.setHeight(lineDiagonale.dy());
     }
     else {
-        QSizeF sizeF(-lineDiagonale.dx(), lineDiagonale.dy());
         double fRadius = lineDiagonale.length() / 2.0;
-        int iQuadrant = -1;
-        double fBeta_rad = getAngleRad(sizeF, &iQuadrant);
-        double fPhi_rad = fBeta_rad - m_physValAngle.getVal(Units.Angle.Rad);
+        // Beta is counterclockwise, the rotation angle is clockwise.
+        // So add those two angles to get the angle of the rectangles diagonale
+        // from center point to the top right corner.
+        double fBeta_degree = lineDiagonale.angle();
+        if (lineDiagonale.dx() > 0.0 && lineDiagonale.dy() > 0.0) { // 1st Quadrant
+            fBeta_degree -= 180.0;
+        }
+        else if (lineDiagonale.dx() < 0.0 && lineDiagonale.dy() > 0.0) { // 2nd Quadrant
+            fBeta_degree -= 90.0;
+        }
+        else if (lineDiagonale.dx() > 0.0 && lineDiagonale.dy() < 0.0) { // 3rd Quadrant
+            fBeta_degree += 90.0;
+        }
+        double fPhi_degree = fBeta_degree + m_physValAngle.getVal(Units.Angle.Degree);
+        double fPhi_rad = Math::degree2Rad(fPhi_degree);
         double fWidth = 2.0 * fRadius * cos(fPhi_rad);
         double fHeight = 2.0 * fRadius * sin(fPhi_rad);
-        //if (iQuadrant == 2) {
-        //    fWidth *= -1.0;
-        //}
-        //else if (iQuadrant == 3) {
-        //    fWidth *= -1.0;
-        //    fHeight *= -1.0;
-        //}
-        //else if (iQuadrant == 4) {
-        //    fHeight *= -1.0;
-        //}
         m_size.setWidth(fWidth);
         m_size.setHeight(fHeight);
     }
