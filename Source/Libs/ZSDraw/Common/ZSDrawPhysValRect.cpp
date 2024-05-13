@@ -1,4 +1,4 @@
-/*******************************************************************************
+ï»¿/*******************************************************************************
 
 Copyright 2004 - 2023 by ZeusSoft, Ing. Buero Bauer
                          Gewerbepark 28
@@ -718,7 +718,7 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
     quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -779,9 +779,9 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
         m_size.setWidth(fWidth);
     }
     quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -812,9 +812,18 @@ void CPhysValRect::setWidthByMovingLeftCenter(const QPointF& i_pt)
     This method is mainly provided to allow resizing a rectangle object on the
     graphics scene by moving the left center selection point with mouse events.
 
-    The rotation angle, the height and the opposite center point (right center)
-    as well as the top right and bottom right corners of the rectangle remain the same.
-    Therefore the width and the center point of the rectangle are adjusted.
+    When moving the left center selection point
+
+    - the opposite corner RC must still remain on the same position,
+    - the corner points should still be in the order TL, TR, BR, BL if counted clockwise,
+    - both the resulting width and height should be greater or equal than 0.
+
+    When moving the left center selection point to a position beyond the right center
+    selection point, the rotation angle Î± must be newly calculated to
+
+    - keep the opposite corner RC' on the same position,
+    - to keep the corner points in the order TL, TR, BR, BL if counted clockwise and
+    - to keep both the resulting width and height greater or equal than 0.
 
     As the rectangle may be rotated the new size must be calculated using trigonometric
     functions applied to the distance (radius) of the selection point to the center point.
@@ -825,16 +834,32 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    quint16 uSelectionPointsToExclude = 0;
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() == 0.0) {
+    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 180.0) {
         QRectF rectFNotRotated = toNotRotatedQRectF();
         rectFNotRotated.setLeft(ptMoved.x());
+        // Width and height must never be less than 0.
+        if (rectFNotRotated.width() < 0.0) {
+            double fLeft = rectFNotRotated.right();
+            double fRight = rectFNotRotated.left();
+            rectFNotRotated.setLeft(fLeft);
+            rectFNotRotated.setRight(fRight);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else {
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+        }
         m_ptCenter = rectFNotRotated.center();
         m_size = rectFNotRotated.size();
     }
     else {
+        // Create the widthLine from LC' to RC' selection points.
         QPointF ptLeftCenter = leftCenter().toQPointF();
-        QLineF lineWidth(ptLeftCenter, rightCenter().toQPointF());
+        QPointF ptRightCenter = rightCenter().toQPointF();
+        QLineF lineWidth(ptLeftCenter, ptRightCenter);
         #pragma message(__TODO__"Remove comparison check")
         CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree, 0.1);
         if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
@@ -846,18 +871,24 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
         }
+        // Determine the perpendicularLine to the widthLine going through ptPosMoved.
         QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
+        // Determine the intersection point LC'' of the perpendicularLine with the widthLine.
         if (lineWidth.intersects(linePerpendicular, &ptLeftCenter) != QLineF::NoIntersection) {
+            // Get length of line from LC'' to RC' and use this as the new width w'' of the rectangle
             lineWidth.setP1(ptLeftCenter);
-            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
-            // If the angle of the horizontal line of the not rotated rectangle is not at 0°, the left center
-            // point has been moved right of the rectangles right edge and the resulting width is negative.
             double fWidth = lineWidth.length();
+            // Get rotation angle Î±'' of the new widthLine'' and use this as the new rotation angle of the rectangle.
+            // If LC has not been moved beyond the right center selection point, the rotation angle Î± remains the same.
+            // Otherwise 180Â° has to be added to the rotation angle.
+            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
             double fAngleHorLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
             if (fAngleHorLine_deg > 179.0 && fAngleHorLine_deg < 181.0) {
-                fWidth *= -1.0;
-                #pragma message(__TODO__"Remove comparison check")
-                physValAngle2.setVal(Math::normalizeAngleInDegree(physValAngle2.getVal() + 180.0));
+                m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+            }
+            else {
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
             }
             #pragma message(__TODO__"Remove comparison check")
             if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
@@ -869,17 +900,14 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
+            // Get center point of line from LC'' to RC' and use this as the new center point of the rectangle.
             m_ptCenter = lineWidth.center();
             m_size.setWidth(fWidth);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::LeftCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptLeftCenter, m_unit);
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
         }
     }
-    quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -910,9 +938,7 @@ void CPhysValRect::setWidthByMovingRightCenter(const QPointF& i_pt)
     This method is mainly provided to allow resizing a rectangle object on the
     graphics scene by moving the right center selection point with mouse events.
 
-    The rotation angle, the height and the opposite center point (left center)
-    as well as the top left and bottom left corners of the rectangle remain the same.
-    Therefore the width and the center point of the rectangle are adjusted.
+    TODO
 
     As the rectangle may be rotated the new size must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -923,10 +949,24 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    quint16 uSelectionPointsToExclude = 0;
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() == 0.0) {
+    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 180.0) {
         QRectF rectFNotRotated = toNotRotatedQRectF();
         rectFNotRotated.setRight(ptMoved.x());
+        // Width and height must never be less than 0.
+        if (rectFNotRotated.width() < 0.0) {
+            double fLeft = rectFNotRotated.right();
+            double fRight = rectFNotRotated.left();
+            rectFNotRotated.setLeft(fLeft);
+            rectFNotRotated.setRight(fRight);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else {
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+        }
         m_ptCenter = rectFNotRotated.center();
         m_size = rectFNotRotated.size();
     }
@@ -948,7 +988,7 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
         if (lineWidth.intersects(linePerpendicular, &ptRightCenter) != QLineF::NoIntersection) {
             lineWidth.setP2(ptRightCenter);
             CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
-            // If the angle of the horizontal line of the not rotated rectangle is not at 0°, the left center
+            // If the angle of the horizontal line of the not rotated rectangle is not at 0Â°, the left center
             // point has been moved right of the rectangles right edge and the resulting width is negative.
             double fWidth = lineWidth.length();
             double fAngleHorLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
@@ -971,12 +1011,9 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
             m_size.setWidth(fWidth);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::RightCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptRightCenter, m_unit);
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
         }
     }
-    quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -1038,9 +1075,9 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
         m_size.setHeight(fHeight);
     }
     quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -1087,10 +1124,24 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    quint16 uSelectionPointsToExclude = 0;
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() == 0.0) {
+    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 180.0) {
         QRectF rectFNotRotated = toNotRotatedQRectF();
         rectFNotRotated.setTop(ptMoved.y());
+        // Width and height must never be less than 0.
+        if (rectFNotRotated.height() < 0.0) {
+            double fTop = rectFNotRotated.bottom();
+            double fBottom = rectFNotRotated.top();
+            rectFNotRotated.setTop(fTop);
+            rectFNotRotated.setBottom(fBottom);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else {
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+        }
         m_ptCenter = rectFNotRotated.center();
         m_size = rectFNotRotated.size();
     }
@@ -1104,7 +1155,7 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
                 SErrResultInfo errResultInfo(
                     EResultValuesNotEqual, EResultSeverityError,
                     "CPhysValRect::setHeightByMovingTopCenter_Angle1(" + i_physValPoint.toString() + "): " +
-                    m_physValAngle.toString() + " + 90° != " + physValAngle1.toString());
+                    m_physValAngle.toString() + " + 90Â° != " + physValAngle1.toString());
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
         }
@@ -1112,7 +1163,7 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         if (lineHeight.intersects(linePerpendicular, &ptTopCenter) != QLineF::NoIntersection) {
             lineHeight.setP1(ptTopCenter);
             CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
-            // If the angle of the vertical line of the not rotated rectangle is not at 90°, the top center
+            // If the angle of the vertical line of the not rotated rectangle is not at 90Â°, the top center
             // point has been moved below of the rectangles bottom edge and the resulting height is negative.
             double fHeight = lineHeight.length();
             double fAngleVerLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
@@ -1121,13 +1172,17 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
                 #pragma message(__TODO__"Remove comparison check")
                 physValAngle2.setVal(Math::normalizeAngleInDegree(physValAngle2.getVal() + 180.0));
             }
+            else {
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+            }
             #pragma message(__TODO__"Remove comparison check")
             if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
                 if (CErrLog::GetInstance() != nullptr) {
                     SErrResultInfo errResultInfo(
                         EResultValuesNotEqual, EResultSeverityError,
                         "CPhysValRect::setHeightByMovingTopCenter_Angle2(" + i_physValPoint.toString() + "): " +
-                        m_physValAngle.toString() + " +90° != " + physValAngle2.toString());
+                        m_physValAngle.toString() + " +90Â° != " + physValAngle2.toString());
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
@@ -1135,12 +1190,9 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
             m_size.setHeight(fHeight);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::TopCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptTopCenter, m_unit);
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
         }
     }
-    quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -1184,10 +1236,24 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
     if (!Units.Length.unitsAreEitherMetricOrNot(m_unit, i_physValPoint.unit())) {
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
+    quint16 uSelectionPointsToExclude = 0;
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() == 0.0) {
+    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 180.0) {
         QRectF rectFNotRotated = toNotRotatedQRectF();
         rectFNotRotated.setBottom(ptMoved.y());
+        // Width and height must never be less than 0.
+        if (rectFNotRotated.height() < 0.0) {
+            double fTop = rectFNotRotated.bottom();
+            double fBottom = rectFNotRotated.top();
+            rectFNotRotated.setTop(fTop);
+            rectFNotRotated.setBottom(fBottom);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else {
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+        }
         m_ptCenter = rectFNotRotated.center();
         m_size = rectFNotRotated.size();
     }
@@ -1201,7 +1267,7 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
                 SErrResultInfo errResultInfo(
                     EResultValuesNotEqual, EResultSeverityError,
                     "CPhysValRect::setHeightByMovingBottomCenter_Angle1(" + i_physValPoint.toString() + "): " +
-                    m_physValAngle.toString() + " + 90° != " + physValAngle1.toString());
+                    m_physValAngle.toString() + " + 90Â° != " + physValAngle1.toString());
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
         }
@@ -1209,7 +1275,7 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         if (lineHeight.intersects(linePerpendicular, &ptBottomCenter) != QLineF::NoIntersection) {
             lineHeight.setP2(ptBottomCenter);
             CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
-            // If the angle of the vertical line of the not rotated rectangle is not at 90°, the top center
+            // If the angle of the vertical line of the not rotated rectangle is not at 90Â°, the top center
             // point has been moved below of the rectangles bottom edge and the resulting height is negative.
             double fHeight = lineHeight.length();
             double fAngleVerLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
@@ -1218,13 +1284,17 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
                 #pragma message(__TODO__"Remove comparison check")
                 physValAngle2.setVal(Math::normalizeAngleInDegree(physValAngle2.getVal() + 180.0));
             }
+            else {
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+            }
             #pragma message(__TODO__"Remove comparison check")
             if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
                 if (CErrLog::GetInstance() != nullptr) {
                     SErrResultInfo errResultInfo(
                         EResultValuesNotEqual, EResultSeverityError,
                         "CPhysValRect::setHeightByMovingBottomCenter_Angle2(" + i_physValPoint.toString() + "): " +
-                        m_physValAngle.toString() + " + 90° != " + physValAngle2.toString());
+                        m_physValAngle.toString() + " + 90Â° != " + physValAngle2.toString());
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
@@ -1232,12 +1302,9 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
             m_size.setHeight(fHeight);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptBottomCenter, m_unit);
+            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
         }
     }
-    quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -1328,8 +1395,8 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -1402,8 +1469,8 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -1475,8 +1542,8 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
@@ -1548,8 +1615,8 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
-    setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+    ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
     invalidateSelectionPoints(uSelectionPointsToExclude);
 }
 
