@@ -1363,14 +1363,25 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     }
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = bottomRight();
-    // Diagonale from TopLeft to BottomRight:
-    // - TopLeft.x may be right of BottomRight.x (dx < 0) -> Width is negative
-    // - TopLeft.y may be below BottomRight.y (dy < 0)  -> Height is negative
+    // Diagonale from TopLeft to BottomRight.
     QLineF lineDiagonale(physValPt.toQPointF(), physValPtOpposite.toQPointF());
     m_ptCenter = lineDiagonale.center();
-    if (m_physValAngle.getVal() == 0.0) {
-        m_size.setWidth(lineDiagonale.dx());
-        m_size.setHeight(lineDiagonale.dy());
+    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
+     || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
+        m_size.setWidth(fabs(lineDiagonale.dx()));
+        m_size.setHeight(fabs(lineDiagonale.dy()));
+        if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_physValAngle.setVal(0.0);
+        }
+        else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_physValAngle.setVal(90.0);
+        }
+        else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_physValAngle.setVal(180.0);
+        }
+        else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
+            m_physValAngle.setVal(270.0);
+        }
     }
     else {
         QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
@@ -1437,13 +1448,24 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = bottomLeft();
     // Diagonale from TopRight to BottomLeft:
-    // - TopRight.x may be left of BottomLeft.x (dx > 0) -> Width is negative
-    // - TopRight.y may be below BottomLeft.y (dy < 0) -> Height is negative
     QLineF lineDiagonale(physValPt.toQPointF(), physValPtOpposite.toQPointF());
     m_ptCenter = lineDiagonale.center();
-    if (m_physValAngle.getVal() == 0.0) {
-        m_size.setWidth(-lineDiagonale.dx());
-        m_size.setHeight(lineDiagonale.dy());
+    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
+     || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
+        m_size.setWidth(fabs(lineDiagonale.dx()));
+        m_size.setHeight(fabs(lineDiagonale.dy()));
+        if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_physValAngle.setVal(0.0);
+        }
+        else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_physValAngle.setVal(90.0);
+        }
+        else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_physValAngle.setVal(180.0);
+        }
+        else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
+            m_physValAngle.setVal(270.0);
+        }
     }
     else {
         double fRadius = lineDiagonale.length() / 2.0;
@@ -1511,13 +1533,24 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     CPhysValPoint physValPt(*m_pDrawingScene, i_physValPoint.toQPointF(m_unit), m_unit);
     CPhysValPoint physValPtOpposite = topLeft();
     // Diagonale from BottomRight to TopLeft:
-    // - BottomRight.x may be left of TopLeft.x (dx > 0) -> Width is negative
-    // - BottomRight.y may be above TopLeft.y (dy > 0) -> Height is negative
     QLineF lineDiagonale(physValPt.toQPointF(), physValPtOpposite.toQPointF());
     m_ptCenter = lineDiagonale.center();
-    if (m_physValAngle.getVal() == 0.0) {
-        m_size.setWidth(-lineDiagonale.dx());
-        m_size.setHeight(-lineDiagonale.dy());
+    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
+     || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
+        m_size.setWidth(fabs(lineDiagonale.dx()));
+        m_size.setHeight(fabs(lineDiagonale.dy()));
+        if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_physValAngle.setVal(0.0);
+        }
+        else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_physValAngle.setVal(90.0);
+        }
+        else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_physValAngle.setVal(180.0);
+        }
+        else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
+            m_physValAngle.setVal(270.0);
+        }
     }
     else {
         QSizeF sizeF(-lineDiagonale.dx(), -lineDiagonale.dy());
@@ -1588,9 +1621,22 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     // - BottomLeft.y may be above TopTight.y (dy > 0) -> Height is negative
     QLineF lineDiagonale(physValPt.toQPointF(), physValPtOpposite.toQPointF());
     m_ptCenter = lineDiagonale.center();
-    if (m_physValAngle.getVal() == 0.0) {
-        m_size.setWidth(lineDiagonale.dx());
-        m_size.setHeight(-lineDiagonale.dy());
+    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
+     || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
+        m_size.setWidth(fabs(lineDiagonale.dx()));
+        m_size.setHeight(fabs(lineDiagonale.dy()));
+        if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_physValAngle.setVal(0.0);
+        }
+        else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_physValAngle.setVal(90.0);
+        }
+        else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_physValAngle.setVal(180.0);
+        }
+        else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
+            m_physValAngle.setVal(270.0);
+        }
     }
     else {
         QSizeF sizeF(lineDiagonale.dx(), -lineDiagonale.dy());
