@@ -27,9 +27,6 @@ may result in using the software modules.
 #include "ZSSys/ZSSysMathScaleDivLines.h"
 #include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysMath.h"
-#include "ZSSys/ZSSysTrcAdminObj.h"
-#include "ZSSys/ZSSysTrcMethod.h"
-#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
@@ -71,35 +68,9 @@ int CScaleDivLines::getPrecision2ShowUniqueNumbers(
     const QVector<double> i_arfVals,
     int i_iExponentDigits,
     int i_iPrecisionMin,
-    int i_iPrecisionMax,
-    CTrcAdminObj* i_pTrcAdminObj)
+    int i_iPrecisionMax)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ExpDigits: " + QString::number(i_iExponentDigits) +
-                       ", PrecMin: " + QString::number(i_iPrecisionMin) +
-                       ", PrecMax: " + QString::number(i_iPrecisionMax) +
-                       ", Vals [" + QString::number(i_arfVals.size()) + "]";
-        if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsDetailed)) {
-            if (i_arfVals.size() > 0) {
-                strMthInArgs += "(";
-                for (int idxVal = 0; idxVal < i_arfVals.size(); ++idxVal) {
-                    if ((idxVal >= 5 && idxVal < i_arfVals.size() - 5) && !areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsVerbose)) {
-                        idxVal = i_arfVals.size() - 5;
-                    }
-                    strMthInArgs += QString::number(i_arfVals[idxVal]);
-                }
-                strMthInArgs += ")";
-            }
-        }
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ i_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "Math::getPrecision2ShowUniqueNumbers",
-        /* strAddInfo   */ strMthInArgs );
-
     int iPrecision = i_iPrecisionMin;
     int idx1 = 0;
     while (idx1 < i_arfVals.size() && iPrecision < i_iPrecisionMax)
@@ -132,10 +103,6 @@ int CScaleDivLines::getPrecision2ShowUniqueNumbers(
             }
         }
         ++idx1;
-    }
-
-    if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(iPrecision);
     }
     return iPrecision;
 }
@@ -183,8 +150,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
     double* o_pfDivLineFirstVal,
     double* o_pfDivLineDistFirstPix,
     double* o_pfDivLineDistVal,
-    double* o_pfDivLineDistPix,
-    CTrcAdminObj* i_pTrcAdminObj )
+    double* o_pfDivLineDistPix)
 //------------------------------------------------------------------------------
 {
     return getDivLines4LinSpacing(
@@ -198,8 +164,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
         /* pfDivLineFirstVal     */ o_pfDivLineFirstVal,
         /* pfDivLineDistFirstPix */ o_pfDivLineDistFirstPix,
         /* pfDivLineDistVal      */ o_pfDivLineDistVal,
-        /* pfDivLineDistPix      */ o_pfDivLineDistPix,
-        /* pTrcAdminObj          */ i_pTrcAdminObj );
+        /* pfDivLineDistPix      */ o_pfDivLineDistPix);
 }
 
 //------------------------------------------------------------------------------
@@ -250,8 +215,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
     double* o_pfDivLineFirstVal,
     double* o_pfDivLineDistFirstPix,
     double* o_pfDivLineDistVal,
-    double* o_pfDivLineDistPix,
-    CTrcAdminObj* i_pTrcAdminObj )
+    double* o_pfDivLineDistPix)
 //------------------------------------------------------------------------------
 {
     return getDivLines4LinSpacing(
@@ -265,8 +229,7 @@ int CScaleDivLines::getDivLines4LinSpacing(
         /* pfDivLineFirstVal     */ o_pfDivLineFirstVal,
         /* pfDivLineDistFirstPix */ o_pfDivLineDistFirstPix,
         /* pfDivLineDistVal      */ o_pfDivLineDistVal,
-        /* pfDivLineDistPix      */ o_pfDivLineDistPix,
-        /* pTrcAdminObj          */ i_pTrcAdminObj );
+        /* pfDivLineDistPix      */ o_pfDivLineDistPix);
 }
 
 /*==============================================================================
@@ -327,27 +290,9 @@ int CScaleDivLines::getDivLines4LinSpacing(
     double* o_pfDivLineFirstVal,
     double* o_pfDivLineDistFirstPix,
     double* o_pfDivLineDistVal,
-    double* o_pfDivLineDistPix,
-    CTrcAdminObj* i_pTrcAdminObj )
+    double* o_pfDivLineDistPix)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs =
-            "UseWorldCoors: " + bool2Str(i_bUseWorldCoordinateTransformation) +
-            ", Scale {Min: " + QString::number(i_fScaleMinVal) +
-            ", Max: " + QString::number(i_fScaleMaxVal) +
-            ", Range: " + QString::number(i_fScaleRangePix) + " px" +
-            ", DivLineDist {MinVal: " + QString::number(i_fDivLineDistMinVal) +
-            ", MinPix: " + QString::number(i_iDivLineDistMinPix) +
-            ", UseDecFactor25: " + bool2Str(i_bUseDivLineDistValDecimalFactor25) + "}";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ i_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "Math::getDivLines4LinSpacing",
-        /* strAddInfo   */ strMthInArgs );
-
     int iDivLineCount = 0;
 
     if (o_pfDivLineFirstVal != nullptr) {
@@ -547,16 +492,6 @@ int CScaleDivLines::getDivLines4LinSpacing(
             *o_pfDivLineDistPix = fDivLineDistPix;
         }
     }
-
-    if (areMethodCallsActive(i_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs =
-            "DivLines {FirstVal: " + QString(o_pfDivLineFirstVal == nullptr ? "null" : QString::number(*o_pfDivLineFirstVal)) +
-            ", FirstPix: " + QString(o_pfDivLineDistFirstPix == nullptr ? "null" : QString::number(*o_pfDivLineDistFirstPix)) +
-            ", DistVal: " + QString(o_pfDivLineDistVal == nullptr ? "null" : QString::number(*o_pfDivLineDistVal)) +
-            ", DistPix: " + QString(o_pfDivLineDistPix == nullptr ? "null" : QString::number(*o_pfDivLineDistPix)) + "}";
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(iDivLineCount);
-    }
     return iDivLineCount;
 }
 
@@ -567,46 +502,15 @@ public: // ctors and dtor
 //------------------------------------------------------------------------------
 /*! @brief Creates an instance of the class.
 
-    @param i_strObjName [in]
-        Name of the object.
     @param i_scaleAxis [in]
         Direction of the scale which could be either X or Y.
         3 dimensional scales with scaleAxis = Z are not supported.
         Please note that the scale direction cannot be changed during runtime.
 */
-CScaleDivLines::CScaleDivLines(const QString& i_strObjName, EScaleAxis i_scaleAxis) :
+CScaleDivLines::CScaleDivLines(EScaleAxis i_scaleAxis) :
 //------------------------------------------------------------------------------
-    CScaleDivLines(ClassName(), NameSpace(), i_strObjName, i_scaleAxis)
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates an instance of the class.
-
-    This constructor should be used by classes derived from this class to adjust
-    the name space and class name of the trace admin object correspondingly.
-
-    @param i_strNameSpace [in]
-        Name space of the derived class.
-    @param i_strClassName [in]
-        Class name of the derived class.
-    @param i_strObjName [in]
-        Name of the object.
-    @param i_scaleAxis [in]
-        Direction of the scale which could be either X or Y.
-        3 dimensional scales with scaleAxis = Z are not supported.
-        Please note that the scale direction cannot be changed during runtime.
-*/
-CScaleDivLines::CScaleDivLines(
-    const QString& i_strNameSpace, const QString& i_strClassName,
-    const QString& i_strObjName, EScaleAxis i_scaleAxis) :
-//------------------------------------------------------------------------------
-    m_strNameSpace(i_strNameSpace),
-    m_strClassName(i_strClassName),
-    m_strObjName(i_strObjName),
     m_scaleAxis(i_scaleAxis),
     m_bUseWorldCoordinateTransformation(true),
-    m_yScaleAxisOrientation(EYScaleAxisOrientation::BottomUp),
     m_spacing(ESpacing::Linear),
     m_fScaleMin(0.0),
     m_fScaleMax(0.0),
@@ -619,22 +523,8 @@ CScaleDivLines::CScaleDivLines(
     m_arfDivLinesDistMinVal(CEnumDivLineLayer::count(), 0.0),
     m_ararfDivLinesVals(CEnumDivLineLayer::count(), QVector<double>()),
     m_arfDivLinesValsSorted(),
-    m_ararfDivLines_px(CEnumDivLineLayer::count(), QVector<double>()),
-    m_pTrcAdminObj(nullptr)
+    m_ararfDivLines_px(CEnumDivLineLayer::count(), QVector<double>())
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
-
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumScaleAxis(i_scaleAxis).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
-
     m_ariDivLinesDistMin_px[EDivLineLayerMain] = 50;
 
     if (s_arfScaleRangeFacPixDivValLog.size() == 0)
@@ -660,14 +550,10 @@ CScaleDivLines::CScaleDivLines(
     @param i_other [in]
         Reference to instance whose current internal data should be taken over.
 */
-CScaleDivLines::CScaleDivLines(const QString& i_strObjName, const CScaleDivLines& i_other) :
+CScaleDivLines::CScaleDivLines(const CScaleDivLines& i_other) :
 //------------------------------------------------------------------------------
-    m_strNameSpace(i_other.m_strNameSpace),
-    m_strClassName(i_other.m_strClassName),
-    m_strObjName(i_strObjName),
     m_scaleAxis(i_other.m_scaleAxis),
     m_bUseWorldCoordinateTransformation(i_other.m_bUseWorldCoordinateTransformation),
-    m_yScaleAxisOrientation(i_other.m_yScaleAxisOrientation),
     m_spacing(i_other.m_spacing),
     m_fScaleMin(i_other.m_fScaleMin),
     m_fScaleMax(i_other.m_fScaleMax),
@@ -680,17 +566,8 @@ CScaleDivLines::CScaleDivLines(const QString& i_strObjName, const CScaleDivLines
     m_arfDivLinesDistMinVal(i_other.m_arfDivLinesDistMinVal),
     m_ararfDivLinesVals(i_other.m_ararfDivLinesVals),
     m_arfDivLinesValsSorted(m_arfDivLinesValsSorted),
-    m_ararfDivLines_px(i_other.m_ararfDivLines_px),
-    m_pTrcAdminObj(nullptr)
+    m_ararfDivLines_px(i_other.m_ararfDivLines_px)
 {
-    m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace(), ClassName(), objectName());
-
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "copy ctor",
-        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
 }
 
 //------------------------------------------------------------------------------
@@ -699,18 +576,8 @@ CScaleDivLines::CScaleDivLines(const QString& i_strObjName, const CScaleDivLines
 CScaleDivLines::~CScaleDivLines()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "dtor",
-        /* strAddInfo   */ "" );
-
-    //m_strNameSpace;
-    //m_strClassName;
-    //m_strObjName;
     m_scaleAxis = static_cast<EScaleAxis>(0);
     m_bUseWorldCoordinateTransformation = false;
-    m_yScaleAxisOrientation = static_cast<EYScaleAxisOrientation>(0);
     m_spacing = static_cast<ESpacing>(0);
     m_fScaleMin = 0.0;
     m_fScaleMax = 0.0;
@@ -724,13 +591,7 @@ CScaleDivLines::~CScaleDivLines()
     //m_ararfDivLinesVals.clear();
     //m_arfDivLinesValsSorted.clear();
     //m_ararfDivLines_px.clear();
-
-    mthTracer.onAdminObjAboutToBeReleased();
-
-    CTrcServer::ReleaseTraceAdminObj(m_pTrcAdminObj);
-    m_pTrcAdminObj = nullptr;
-
-} // dtor
+}
 
 /*==============================================================================
 public: // operators
@@ -745,12 +606,6 @@ public: // operators
 CScaleDivLines& CScaleDivLines::operator = (const CScaleDivLines& i_other)
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "operator =",
-        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + objectName() );
-
     m_scaleAxis = i_other.m_scaleAxis;
     m_bUseWorldCoordinateTransformation = i_other.m_bUseWorldCoordinateTransformation;
     m_spacing = i_other.m_spacing;
@@ -771,71 +626,8 @@ CScaleDivLines& CScaleDivLines::operator = (const CScaleDivLines& i_other)
 }
 
 /*==============================================================================
-public: // instance methods
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Returns the name of the instance.
-
-    @return Name of the instance.
-*/
-QString CScaleDivLines::objectName() const
-//------------------------------------------------------------------------------
-{
-    return m_strObjName;
-}
-
-/*==============================================================================
 public: // instance methods (setting properties)
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Sets the orientation of the Y scale axis.
-
-    Y scales can be either orientated from top to bottom (like in papers)
-    or from bottom to top (e.g. for technical drawings or diagrams).
-
-    The method returns false if the value did not change and true
-    if the value changed and the update method need to be called afterwards
-    to recalculate the division lines.
-
-    @param i_eOrientation [in]
-        Range [TopDown, BottomUp]
-
-    @return true if the value has been changed and the division lines need to
-            be recalculated, false otherwise.
-*/
-bool CScaleDivLines::setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& i_eOrientation)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_eOrientation.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setYScaleAxisOrientation",
-        /* strAddInfo   */ strMthInArgs );
-
-    bool bChanged = false;
-    if (m_yScaleAxisOrientation != i_eOrientation.enumerator()) {
-        m_yScaleAxisOrientation = i_eOrientation.enumerator();
-        if (m_scaleAxis == EScaleAxis::Y && m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp) {
-            if (m_fMax_px < m_fMin_px) {
-                double fMinTmp_px = m_fMin_px;
-                m_fMin_px = m_fMax_px;
-                m_fMax_px = fMinTmp_px;
-            }
-        }
-        bChanged = true;
-        m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
-    }
-    return bChanged;
-}
 
 //------------------------------------------------------------------------------
 /*! @brief Sets the spacing.
@@ -853,24 +645,11 @@ bool CScaleDivLines::setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& 
 bool CScaleDivLines::setSpacing(const CEnumSpacing& i_eSpacing)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_eSpacing.toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setSpacing",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_spacing != i_eSpacing.enumerator()) {
         m_spacing = i_eSpacing.enumerator();
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -897,24 +676,11 @@ bool CScaleDivLines::setSpacing(const CEnumSpacing& i_eSpacing)
 bool CScaleDivLines::setUseWorldCoordinateTransformation(bool i_bUseTransformation)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = bool2Str(i_bUseTransformation);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setUseWorldCoordinateTransformation",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_bUseWorldCoordinateTransformation != i_bUseTransformation) {
         m_bUseWorldCoordinateTransformation = i_bUseTransformation;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -957,18 +723,6 @@ bool CScaleDivLines::setUseWorldCoordinateTransformation(bool i_bUseTransformati
 bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Min: " + QString::number(i_fMin) +
-                     ", Max: " + QString::number(i_fMax) +
-                     ", Res: " + QString::number(i_fRes);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScale",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_bUseWorldCoordinateTransformation) {
         if (m_fScaleMin != i_fMin || m_fScaleMax != i_fMax || m_fScaleRes != i_fRes) {
@@ -982,7 +736,7 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
     else {
         double fMin_px = i_fMin;
         double fMax_px = i_fMax;
-        if (m_scaleAxis == EScaleAxis::Y && m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp) {
+        if (m_scaleAxis == EScaleAxis::Y && yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
             if (fMax_px < fMin_px) {
                 double fMinTmp_px = fMin_px;
                 fMin_px = fMax_px;
@@ -996,9 +750,6 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
             bChanged = true;
             m_bDivLinesCalculated = false;
         }
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -1044,20 +795,6 @@ bool CScaleDivLines::setScale(
     double i_fMin, double i_fMax, double i_fRes, double i_fMin_px, double i_fMax_px)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Min: " + QString::number(i_fMin) +
-                     ", Max: " + QString::number(i_fMax) +
-                     ", Res: " + QString::number(i_fRes) +
-                     ", Min: " + QString::number(i_fMin_px) + " px" +
-                     ", Max: " + QString::number(i_fMax_px) + " px";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScale",
-        /* strAddInfo   */ strMthInArgs );
-
     if (!m_bUseWorldCoordinateTransformation) {
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
@@ -1065,7 +802,7 @@ bool CScaleDivLines::setScale(
     bool bChanged = false;
     double fMin_px = i_fMin_px;
     double fMax_px = i_fMax_px;
-    if (m_scaleAxis == EScaleAxis::Y && m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp) {
+    if (m_scaleAxis == EScaleAxis::Y && yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         if (fMax_px < fMin_px) {
             double fMinTmp_px = fMin_px;
             fMin_px = fMax_px;
@@ -1082,9 +819,6 @@ bool CScaleDivLines::setScale(
         m_fMax_px = i_fMax_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -1116,17 +850,6 @@ bool CScaleDivLines::setScale(
 bool CScaleDivLines::setScaleInPix(double i_fMin_px, double i_fMax_px)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Min: " + QString::number(i_fMin_px) + " px" +
-                     ", Max: " + QString::number(i_fMax_px) + " px";
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScale",
-        /* strAddInfo   */ strMthInArgs );
-
     if (!m_bUseWorldCoordinateTransformation) {
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
@@ -1134,7 +857,7 @@ bool CScaleDivLines::setScaleInPix(double i_fMin_px, double i_fMax_px)
     bool bChanged = false;
     double fMin_px = i_fMin_px;
     double fMax_px = i_fMax_px;
-    if (m_scaleAxis == EScaleAxis::Y && m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp) {
+    if (m_scaleAxis == EScaleAxis::Y && yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         if (fMax_px < fMin_px) {
             double fMinTmp_px = fMin_px;
             fMin_px = fMax_px;
@@ -1147,9 +870,6 @@ bool CScaleDivLines::setScaleInPix(double i_fMin_px, double i_fMax_px)
         m_fMax_px = fMax_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -1176,24 +896,11 @@ bool CScaleDivLines::setScaleInPix(double i_fMin_px, double i_fMax_px)
 bool CScaleDivLines::setScaleRes(double i_fRes)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fRes);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setScaleRes",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_fScaleRes != i_fRes) {
         m_fScaleRes = i_fRes;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -1224,24 +931,11 @@ public: // instance methods (setting properties)
 bool CScaleDivLines::setDivLinesDistMinInPix(const CEnumDivLineLayer& i_eLayer, int i_iDist_px)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_eLayer.toString() + ", " + QString::number(i_iDist_px);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setDivLinesDistMinInPix",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_ariDivLinesDistMin_px[i_eLayer.enumeratorAsInt()] != i_iDist_px) {
         m_ariDivLinesDistMin_px[i_eLayer.enumeratorAsInt()] = i_iDist_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -1303,12 +997,18 @@ EScaleAxis CScaleDivLines::scaleAxis() const
 /*! @brief Returns the orientation of the Y scale axis which could be either
            TopDown or ButtomUp.
 
+    Y scales can be either orientated from top to bottom (like in papers)
+    or from bottom to top (e.g. for technical drawings or diagrams).
+
     @return Spacing.
 */
 EYScaleAxisOrientation CScaleDivLines::yScaleAxisOrientation() const
 //------------------------------------------------------------------------------
 {
-    return m_yScaleAxisOrientation;
+    if (m_scaleAxis == EScaleAxis::X) {
+        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+    }
+    return m_fMin_px < m_fMax_px ? EYScaleAxisOrientation::TopDown : EYScaleAxisOrientation::BottomUp;
 }
 
 //------------------------------------------------------------------------------
@@ -1485,12 +1185,6 @@ bool CScaleDivLines::divLinesCalculated() const
 bool CScaleDivLines::update()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "update",
-        /* strAddInfo   */ "" );
-
     bool bChanged = false;
 
     if (!m_bDivLinesCalculated)
@@ -1550,9 +1244,6 @@ bool CScaleDivLines::update()
 
         m_bDivLinesCalculated = true;
         bChanged = true;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -1735,7 +1426,7 @@ double CScaleDivLines::getValInPix(double i_fVal) const
     {
         // At the minimum scale value ..
         if (i_fVal == m_fScaleMin) {
-            if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
+            if (m_scaleAxis == EScaleAxis::Y && (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)) {
                 fPos_px = m_fMax_px;
             }
             else {
@@ -1744,7 +1435,7 @@ double CScaleDivLines::getValInPix(double i_fVal) const
         }
         // At the maximum scale value ..
         else if (i_fVal == m_fScaleMax) {
-            if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
+            if (m_scaleAxis == EScaleAxis::Y && (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)) {
                 fPos_px = m_fMin_px;
             }
             else {
@@ -1816,7 +1507,7 @@ double CScaleDivLines::getValInPix(double i_fVal) const
                     fPos_px = m_fMin_px + fPixRes * (fVal - fScaleValMin);
                 }
                 else /*if (m_scaleAxis == EScaleAxis::Y)*/ {
-                    if (m_yScaleAxisOrientation == EYScaleAxisOrientation::TopDown) {
+                    if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
                         // Orientation from top to bottom like in pixel drawing:
                         // The origin is at the top left corner.
                         // XScaleMin = XMin_px, XScaleMax = XMax_px
@@ -1865,7 +1556,7 @@ double CScaleDivLines::getVal(double i_fPos_px, bool i_bRoundToResolution ) cons
     {
         // At the minimum scale value ..
         if (i_fPos_px == m_fMin_px) {
-            if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
+            if (m_scaleAxis == EScaleAxis::Y && (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)) {
                 fVal = m_fScaleMax;
             }
             else {
@@ -1874,7 +1565,7 @@ double CScaleDivLines::getVal(double i_fPos_px, bool i_bRoundToResolution ) cons
         }
         // At the maximum scale value ..
         else if (i_fPos_px == m_fMax_px) {
-            if (m_scaleAxis == EScaleAxis::Y && (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)) {
+            if (m_scaleAxis == EScaleAxis::Y && (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)) {
                 fVal = m_fScaleMin;
             }
             else {
@@ -1940,7 +1631,7 @@ double CScaleDivLines::getVal(double i_fPos_px, bool i_bRoundToResolution ) cons
                     fVal = fScaleValMin + fValRes * (i_fPos_px - m_fMin_px);
                 }
                 else /*if (m_scaleAxis == EScaleAxis::Y)*/ {
-                    if (m_yScaleAxisOrientation == EYScaleAxisOrientation::TopDown) {
+                    if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
                         // Orientation from top to bottom like in pixel drawing:
                         // The origin is at the top left corner.
                         // XScaleMin = XMin_px, XScaleMax = XMax_px
@@ -2072,12 +1763,6 @@ protected: // overridable auxiliary instance methods
 void CScaleDivLines::invalidateResults()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "invalidateResults",
-        /* strAddInfo   */ "" );
-
     for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); iLayer++) {
         m_ariDivLinesCount[iLayer] = 0;
         m_arfDivLinesDistMinVal[iLayer] = 0.0;
@@ -2098,12 +1783,6 @@ protected: // auxiliary instance methods (to recalculate division lines after ch
 void CScaleDivLines::updateLinearSpacing()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateLinearSpacing",
-        /* strAddInfo   */ "" );
-
     m_arfDivLinesDistMinVal[EDivLineLayerMain] = scaleRange();
 
     double fDivLineDistValMin = m_fMin_px;
@@ -2141,8 +1820,7 @@ void CScaleDivLines::updateLinearSpacing()
                 /* pfDivLineFirstVal     */ &arfDivLineFirstVal[iLayer],
                 /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[iLayer],
                 /* pfDivLineDistVal      */ &arfDivLineDistVal[iLayer],
-                /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayer],
-                /* pTrcAdminObj          */ m_pTrcAdminObj);
+                /* pfDivLineDistPix      */ &arfDivLineDistPix[iLayer]);
 
             if (m_arfDivLinesDistMinVal[iLayer] > arfDivLineDistVal[iLayer]) {
                 m_arfDivLinesDistMinVal[iLayer] = arfDivLineDistVal[iLayer];
@@ -2241,12 +1919,6 @@ void CScaleDivLines::updateLinearSpacing()
 void CScaleDivLines::updateLogarithmicSpacing()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateLogarithmicSpacing",
-        /* strAddInfo   */ "" );
-
     m_arfDivLinesDistMinVal[EDivLineLayerMain] = scaleRange();
 
     // Sub grid (non equidistant) within main grid (equidistant) NOT including "left" and
@@ -2366,8 +2038,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
             /* pfDivLineFirstVal     */ &arfDivLineFirstValLog[EDivLineLayerMain],
             /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[EDivLineLayerMain],
             /* pfDivLineDistVal      */ &arfDivLineDistValLog[EDivLineLayerMain],
-            /* pfDivLineDistPix      */ &arfDivLineDistPix[EDivLineLayerMain],
-            /* pTrcAdminObj          */ m_pTrcAdminObj);
+            /* pfDivLineDistPix      */ &arfDivLineDistPix[EDivLineLayerMain]);
     }
 
     // Store the calculated results:
@@ -2409,8 +2080,7 @@ void CScaleDivLines::updateLogarithmicSpacing()
                 /* pfDivLineFirstVal     */ &arfDivLineFirstValLog[EDivLineLayerSub],
                 /* pfDivLineDistFirstPix */ &arfDivLineDistFirstPix[EDivLineLayerSub],
                 /* pfDivLineDistVal      */ &arfDivLineDistValLog[EDivLineLayerSub],
-                /* pfDivLineDistPix      */ nullptr,
-                /* pTrcAdminObj          */ m_pTrcAdminObj);
+                /* pfDivLineDistPix      */ nullptr);
 
             // Store the calculated results:
             if (ariDivLineCountTmp[EDivLineLayerSub] > 2)
@@ -2659,12 +2329,6 @@ void CScaleDivLines::updateLogarithmicSpacing()
 void CScaleDivLines::updateDivLinesValsSorted()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateDivLinesValsSorted",
-        /* strAddInfo   */ "" );
-
     QVector<double> arfValsMain;
     int iValCountMain = m_ariDivLinesCount[EDivLineLayerMain];
     for (int idxVal = 0; idxVal < iValCountMain; ++idxVal) {

@@ -565,7 +565,7 @@ void CGraphObjLine::setLine(
         /* strMethod    */ "setLine",
         /* strAddInfo   */ strMthInArgs );
 
-    setLine(CPhysValLine(*m_pDrawingScene, i_physValP1, i_physValP2));
+    setLine(CPhysValLine(i_physValP1, i_physValP2));
 }
 
 //------------------------------------------------------------------------------
@@ -1082,7 +1082,7 @@ void CGraphObjLine::updateOriginalPhysValCoors()
         pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
         CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
         CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
-        setLineOrig(CPhysValLine(*m_pDrawingScene, physValPointP1, physValPointP2));
+        setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
     }
     else {
         // Please note that "mapToScene" maps the local coordinates relative to the
@@ -1092,7 +1092,7 @@ void CGraphObjLine::updateOriginalPhysValCoors()
         QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
         CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
         CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
-        setLineOrig(CPhysValLine(*m_pDrawingScene, physValPointP1, physValPointP2));
+        setLineOrig(CPhysValLine(physValPointP1, physValPointP2));
     }
     QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
 }

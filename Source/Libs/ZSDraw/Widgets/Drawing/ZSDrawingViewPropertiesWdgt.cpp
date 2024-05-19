@@ -98,8 +98,8 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         ClassName(), i_strObjName, i_pWdgtParent),
     m_pDrawingView(i_pDrawingView),
     // Caching values
-    m_drawingSize(i_strObjName),
-    m_gridSettings(i_strObjName),
+    m_drawingSize(),
+    m_gridSettings(),
     // Edit Controls
     // Geometry
     m_pGrpGeometry(nullptr),

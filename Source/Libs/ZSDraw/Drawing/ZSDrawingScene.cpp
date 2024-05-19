@@ -134,10 +134,10 @@ public: // ctors and dtor
 CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
 //------------------------------------------------------------------------------
     QGraphicsScene(i_pObjParent),
-    m_drawingSize("DrawingScene"),
-    m_divLinesMetricsX("DrawingScene", EScaleAxis::X),
-    m_divLinesMetricsY("DrawingScene", EScaleAxis::Y),
-    m_gridSettings("DrawingScene"),
+    m_drawingSize(),
+    m_divLinesMetricsX(EScaleAxis::X),
+    m_divLinesMetricsY(EScaleAxis::Y),
+    m_gridSettings(),
     m_drawSettings(),
     m_pDrawSettingsTmp(nullptr),
     m_mode(EMode::Undefined),
@@ -156,6 +156,8 @@ CDrawingScene::CDrawingScene(const QString& i_strName, QObject* i_pObjParent) :
     m_fHitTolerance_px(3.0),
     m_ptMouseEvScenePosOnMousePressEvent(),
     m_pGraphicsItemSelectionArea(nullptr),
+    m_arpPhysValShapes(),
+    m_arDrawSettingsPhysValShapes(),
     m_pTrcAdminObj(nullptr),
     m_pTrcAdminObjConversions(nullptr),
     m_pTrcAdminObjMouseMoveEvent(nullptr),
@@ -234,7 +236,8 @@ CDrawingScene::~CDrawingScene()
 
     try {
         delete m_pDrawSettingsTmp;
-    } catch (...) {
+    }
+    catch (...) {
     }
     //try {
     //    delete m_pGraphObjsIdxTreeClipboard;
@@ -242,8 +245,20 @@ CDrawingScene::~CDrawingScene()
     //}
     try {
         delete m_pGraphObjsIdxTree;
-    } catch(...) {
     }
+    catch(...) {
+    }
+
+    for (int idxShape = 0; idxShape < m_arpPhysValShapes.size(); ++idxShape) {
+        try {
+            delete m_arpPhysValShapes[idxShape];
+        }
+        catch (...) {
+        }
+        m_arpPhysValShapes[idxShape] = nullptr;
+    }
+    m_arpPhysValShapes.clear();
+    m_arDrawSettingsPhysValShapes.clear();
 
     mthTracer.onAdminObjAboutToBeReleased();
 
@@ -333,7 +348,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels() - 1,
                 /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal());
-            m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
+            //m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
         }
         else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
             // In order to draw division lines at min and max scale the width
@@ -355,13 +370,22 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
                 /* fMin_px      */ 0,
                 /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1);
             m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
-            m_divLinesMetricsY.setScale(
-                /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
-                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
-                /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
-            m_divLinesMetricsY.setYScaleAxisOrientation(m_drawingSize.yScaleAxisOrientation());
+            if (m_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+                m_divLinesMetricsY.setScale(
+                    /* fScaleMinVal */ 0.0,
+                    /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
+                    /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
+                    /* fMin_px      */ 0,
+                    /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
+            }
+            else {
+                m_divLinesMetricsY.setScale(
+                    /* fScaleMinVal */ 0.0,
+                    /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
+                    /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
+                    /* fMin_px      */ m_drawingSize.imageHeightInPixels() - 1,
+                    /* fMax_px      */ 0);
+            }
         }
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();
@@ -703,7 +727,7 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUn
 
     CPhysValPoint physValP1 = convert(i_physValLine.p1(), i_unitDst);
     CPhysValPoint physValP2 = convert(i_physValLine.p2(), i_unitDst);
-    CPhysValLine physValLine(*this, physValP1, physValP2);
+    CPhysValLine physValLine(physValP1, physValP2);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Line {" + physValLine.toString() + "} " + physValLine.unit().symbol());
     }
@@ -780,7 +804,7 @@ CPhysValRect CDrawingScene::convert(const CPhysValRect& i_physValRect, const CUn
 
     CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
     CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    CPhysValRect physValRect(*this, physValTL, physValBR);
+    CPhysValRect physValRect(physValTL, physValBR);
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
     }
@@ -948,7 +972,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                 QString strElemName = xmlStreamReader.name().toString();
                 if (xmlStreamReader.isStartElement()) {
                     if (strElemName == XmlStreamParser::c_strXmlElemNameDrawing) {
-                        CDrawingSize drawingSize("Drawing");
+                        CDrawingSize drawingSize;
                         drawingSize.load(xmlStreamReader);
                         if (!xmlStreamReader.hasError()) {
                             setDrawingSize(drawingSize);
@@ -956,7 +980,7 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                     }
                     else if (strElemName == XmlStreamParser::c_strXmlElemNameGridSettings) {
                         QXmlStreamAttributes xmlStreamAttrs = xmlStreamReader.attributes();
-                        CDrawGridSettings gridSettings("Drawing");
+                        CDrawGridSettings gridSettings;
                         gridSettings.load(xmlStreamReader);
                         if (!xmlStreamReader.hasError()) {
                             setGridSettings(gridSettings);
@@ -1425,6 +1449,110 @@ protected: // instance methods
 //    } // if( i_pGraphicsItem != nullptr )
 //
 //} // addChildItems
+
+/*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+int CDrawingScene::addPhysValShape(CPhysValShape* i_pPhysValShape, const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pPhysValShape == nullptr ? "null" : i_pPhysValShape->toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "addPhysValShape",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_pPhysValShape == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (m_arpPhysValShapes.contains(i_pPhysValShape)) {
+        throw CException(__FILE__, __LINE__, EResultObjAlreadyInList);
+    }
+    if (i_pPhysValShape->indexInDrawingScene() != -1) {
+        throw CException(__FILE__, __LINE__, EResultObjAlreadyInList);
+    }
+    int idxShape = m_arpPhysValShapes.size();
+    i_pPhysValShape->setIndexInDrawingScene(idxShape);
+    m_arpPhysValShapes.append(i_pPhysValShape);
+    m_arDrawSettingsPhysValShapes.append(i_drawSettings);
+    update();
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(idxShape);
+    }
+    return idxShape;
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::removePhysValShape(CPhysValShape* i_pPhysValShape)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pPhysValShape == nullptr ? "null" : i_pPhysValShape->toString());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "removePhysValShape",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_pPhysValShape == nullptr) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (!m_arpPhysValShapes.contains(i_pPhysValShape)) {
+        throw CException(__FILE__, __LINE__, EResultObjNotInList);
+    }
+    int idxShape = i_pPhysValShape->indexInDrawingScene();
+    if (idxShape < 0 || idxShape >= m_arpPhysValShapes.size()) {
+        throw CException(__FILE__, __LINE__, EResultIdxOutOfRange);
+    }
+    if (m_arpPhysValShapes[idxShape] != i_pPhysValShape) {
+        throw CException(__FILE__, __LINE__, EResultIdxOutOfRange);
+    }
+    i_pPhysValShape->setIndexInDrawingScene(-1);
+    m_arpPhysValShapes.removeAt(idxShape);
+    m_arDrawSettingsPhysValShapes.removeAt(idxShape);
+    for (; idxShape < m_arpPhysValShapes.size(); ++idxShape) {
+        m_arpPhysValShapes[idxShape]->setIndexInDrawingScene(idxShape);
+    }
+    update();
+}
+
+//------------------------------------------------------------------------------
+int CDrawingScene::physValShapesCount() const
+//------------------------------------------------------------------------------
+{
+    return m_arpPhysValShapes.size();
+}
+
+//------------------------------------------------------------------------------
+CPhysValShape* CDrawingScene::getPhysValShape(int i_idxShape) const
+//------------------------------------------------------------------------------
+{
+    if (i_idxShape < 0 || i_idxShape >= m_arpPhysValShapes.size()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    return m_arpPhysValShapes[i_idxShape];
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::removeAndDeleteAllPhysValShapes()
+//------------------------------------------------------------------------------
+{
+    for (int idxShape = 0; idxShape < m_arpPhysValShapes.size(); ++idxShape) {
+        delete m_arpPhysValShapes[idxShape];
+        m_arpPhysValShapes[idxShape] = nullptr;
+    }
+    m_arpPhysValShapes.clear();
+    m_arDrawSettingsPhysValShapes.clear();
+    update();
+}
 
 /*==============================================================================
 public: // instance methods
@@ -4425,8 +4553,11 @@ void CDrawingScene::drawBackground( QPainter* i_pPainter, const QRectF& i_rect )
 
     if (m_gridSettings.areLinesVisible() || m_gridSettings.areLabelsVisible()) {
         if (m_gridSettings.areLinesVisible()) {
-            paintGridLines(i_pPainter);
+            drawGridLines(i_pPainter, i_rect);
         }
+    }
+    if (m_arpPhysValShapes.size() > 0) {
+        drawPhysValShapes(i_pPainter, i_rect);
     }
     i_pPainter->restore();
 }
@@ -4469,8 +4600,7 @@ void CDrawingScene::onDrawUnitsScreenResolutionInPxPerMMChanged()
         /* strMethod    */ "onDrawUnitsScreenResolutionInPxPerMMChanged",
         /* strAddInfo   */ "" );
 
-    CDrawingSize drawingSize("TempCopyToForceUpdate");
-    drawingSize = m_drawingSize;
+    CDrawingSize drawingSize = m_drawingSize;
     drawingSize.setScreenResolutionInPxPerMM(Units.Length.screenResolutionInPxPerMM());
     setDrawingSize(drawingSize);
 }
@@ -4490,8 +4620,7 @@ void CDrawingScene::onDrawUnitsScaleFactorChanged()
         /* strMethod    */ "onDrawUnitsScaleFactorChanged",
         /* strAddInfo   */ "" );
 
-    CDrawingSize drawingSize("TempCopyToForceUpdate");
-    drawingSize = m_drawingSize;
+    CDrawingSize drawingSize = m_drawingSize;
     drawingSize.setScaleFactor(Units.Length.scaleFactorDividend(), Units.Length.scaleFactorDivisor());
     setDrawingSize(drawingSize);
 }
@@ -4862,14 +4991,18 @@ protected: // auxiliary methods
 //}
 
 //------------------------------------------------------------------------------
-void CDrawingScene::paintGridLines(QPainter* i_pPainter)
+void CDrawingScene::drawGridLines(QPainter* i_pPainter, const QRectF& i_rect)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}";
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "paintGridLines",
-        /* strAddInfo   */ "" );
+        /* strMethod    */ "drawGridLines",
+        /* strAddInfo   */ strMthInArgs );
 
     #pragma message(__TODO__"m_gridSettings.linesDistMinXInPixels()")
     #pragma message(__TODO__"m_gridSettings.linesDistMinYInPixels()")
@@ -4898,7 +5031,29 @@ void CDrawingScene::paintGridLines(QPainter* i_pPainter)
         }
     }
     i_pPainter->restore();
-} 
+}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::drawPhysValShapes(QPainter* i_pPainter, const QRectF& i_rect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Rect {" + qRect2Str(i_rect) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjPaintEvent,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "drawPhysValShapes",
+        /* strAddInfo   */ strMthInArgs );
+
+    for (int idxShape = 0; idxShape < m_arpPhysValShapes.size(); ++idxShape) {
+        CPhysValShape* pPhysValShape = m_arpPhysValShapes[idxShape];
+        if (pPhysValShape != nullptr) {
+            pPhysValShape->draw(i_pPainter, i_rect, m_arDrawSettingsPhysValShapes[idxShape]);
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the bounding rectangle in scene coordinates of the passed graphics items.

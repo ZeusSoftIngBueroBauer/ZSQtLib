@@ -33,8 +33,6 @@ namespace ZS
 {
 namespace System
 {
-class CTrcAdminObj;
-
 namespace Math
 {
 //******************************************************************************
@@ -241,8 +239,7 @@ public: // class methods
         const QVector<double> i_arfVals,
         int i_iExponentDigits,
         int i_iPrecisionMin = 1,
-        int i_iPrecisionMax = 10,
-        CTrcAdminObj* i_pTrcAdminObj = nullptr);
+        int i_iPrecisionMax = 10);
     static int getDivLines4LinSpacing(
         double  i_fScaleMinVal,
         double  i_fScaleMaxVal,
@@ -252,8 +249,7 @@ public: // class methods
         double* o_pfDivLineFirstVal,
         double* o_pfDivLineDistFirstPix,
         double* o_pfDivLineDistVal,
-        double* o_pfDivLineDistPix,
-        CTrcAdminObj* i_pTrcAdminObj = nullptr);
+        double* o_pfDivLineDistPix);
     static int getDivLines4LinSpacing(
         double  i_fScaleMinVal,
         double  i_fScaleMaxVal,
@@ -264,8 +260,7 @@ public: // class methods
         double* o_pfDivLineFirstVal,
         double* o_pfDivLineDistFirstPix,
         double* o_pfDivLineDistVal,
-        double* o_pfDivLineDistPix,
-        CTrcAdminObj* i_pTrcAdminObj = nullptr);
+        double* o_pfDivLineDistPix);
 protected: // class methods
     static int getDivLines4LinSpacing(
         bool    i_bUseWorldCoordinateTransformation,
@@ -278,22 +273,17 @@ protected: // class methods
         double* o_pfDivLineFirstVal,
         double* o_pfDivLineDistFirstPix,
         double* o_pfDivLineDistVal,
-        double* o_pfDivLineDistPix,
-        CTrcAdminObj* i_pTrcAdminObj = nullptr);
+        double* o_pfDivLineDistPix);
 public: // ctors and dtor
-    CScaleDivLines(const QString& i_strObjName, EScaleAxis i_scaleAxis);
-    CScaleDivLines(
-        const QString& i_strNameSpace, const QString& i_strClassName,
-        const QString& i_strObjName, EScaleAxis i_scaleAxis);
-    CScaleDivLines(const QString& i_strObjName, const CScaleDivLines& i_other);
-    CScaleDivLines(const CScaleDivLines& i_other) = delete;
+    CScaleDivLines(EScaleAxis i_scaleAxis);
+    CScaleDivLines(const CScaleDivLines& i_other);
     ~CScaleDivLines();
 public: // operators
     CScaleDivLines& operator = (const CScaleDivLines& i_other);
 public: // instance methods
     QString objectName() const;
 public: // instance methods (setting properties)
-    bool setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& i_eOrientation);
+    //bool setYScaleAxisOrientation(const CEnumYScaleAxisOrientation& i_eOrientation);
     bool setSpacing(const CEnumSpacing& i_eSpacing);
     bool setUseWorldCoordinateTransformation(bool i_bUseTransformation);
     bool setScale(double i_fMin, double i_fMax, double i_fRes);
@@ -342,23 +332,11 @@ protected: // auxiliary instance methods
 protected:  // class members
     static QVector<double> s_arfScaleRangeFacPixDivValLog;
 protected: // instance members (config values)
-    /*!< If the class is inherited by another class (like CScaleDivLinesMetrics)
-         the name space of the derived class must be passed by the ctor and will
-         be stored here. */
-    QString m_strNameSpace;
-    /*!< If the class is inherited by another class (like CScaleDivLinesMetrics)
-         the class name of the derived class must be passed by the ctor and will
-         be stored here. */
-    QString m_strClassName;
-    /*!< Name of the instance. */
-    QString m_strObjName;
     /*!< Scale axis (X or Y). Set by the constructor. Not changeable during runtime. */
     EScaleAxis m_scaleAxis;
     /*!< Defines whether pixel coordinates need to be converted to world coordinates
          and vice versa. Defaults to true. */
     bool m_bUseWorldCoordinateTransformation;
-    /*!< Y scale axis orientation. Defaults to "BottomUp". */
-    EYScaleAxisOrientation m_yScaleAxisOrientation;
     /*!< Spacing of the scale (either linear or logarithmic). */
     ESpacing m_spacing;
     /*!< Minimum scale value. Only used if the scale is setup for world coordinate transformation. */
@@ -391,8 +369,6 @@ protected: // instance members (calculated results)
     QVector<double> m_arfDivLinesValsSorted;
     /*!< Pixel coordinates of the division lines per layer. */
     QVector<QVector<double>> m_ararfDivLines_px;
-    /*!< Trace admin object to control method tracing. */
-    CTrcAdminObj* m_pTrcAdminObj;
 
 }; // class CScaleDivLines
 

@@ -44,32 +44,97 @@ namespace Draw
     group or scene to take the different Y-Scale-Axis orientation into account.
     But the line does not know about groups.
 */
-class ZSDRAWDLL_API CPhysValLine
+class ZSDRAWDLL_API CPhysValLine : public CPhysValShape
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValLine"; }
-public: // ctors and dtor
+public: // ctors
     CPhysValLine(const CDrawingScene& i_drawingScene);
-    CPhysValLine(const CDrawingScene& i_drawingScene, double i_fX1, double i_fY1, double i_fX2, double i_fY2);
-    CPhysValLine(const CDrawingScene& i_drawingScene, double i_fX1, double i_fY1, double i_fX2, double i_fY2, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValLine(const CDrawingScene& i_drawingScene, const QPointF& i_p1, const QPointF& i_p2);
-    CPhysValLine(const CDrawingScene& i_drawingScene, const QPointF& i_p1, const QPointF& i_p2, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValLine(const CDrawingScene& i_drawingScene, const QLineF& i_line);
-    CPhysValLine(const CDrawingScene& i_drawingScene, const QLineF& i_line, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValLine(const CDrawingScene& i_drawingScene, const CPhysValPoint& i_physValPoint1, const CPhysValPoint& i_physValPoint2);
+    CPhysValLine(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        double i_fX1, double i_fY1, double i_fX2, double i_fY2);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        double i_fX1, double i_fY1, double i_fX2, double i_fY2,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const QPointF& i_p1, const QPointF& i_p2);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const QPointF& i_p1, const QPointF& i_p2,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const QLineF& i_line);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const QLineF& i_line,
+        const ZS::PhysVal::CUnit& i_unit);
+public: // ctors
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        double i_fX1, double i_fY1, double i_fX2, double i_fY2);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        double i_fX1, double i_fY1, double i_fX2, double i_fY2,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QPointF& i_p1, const QPointF& i_p2);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QPointF& i_p1, const QPointF& i_p2,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QLineF& i_line);
+    CPhysValLine(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QLineF& i_line,
+        const ZS::PhysVal::CUnit& i_unit);
+public: // ctors
+    CPhysValLine(const CPhysValPoint& i_physValPoint1, const CPhysValPoint& i_physValPoint2);
+public: // copy ctor
     CPhysValLine(const CPhysValLine& i_physValLineOther);
+public: // dtor
     virtual ~CPhysValLine();
 public: // operators
-    CPhysValLine& operator = (const CPhysValLine& i_physValLineOther);
     CPhysValLine& operator = (const QLineF& i_line);
-public: // operators
-    bool operator == (const CPhysValLine& i_physValLineOther) const;
-    bool operator != (const CPhysValLine& i_physValLineOther) const;
-public: // instance methods
-    bool isValid() const;
-    bool isNull() const;
+public: // must overridable operators of base class CPhysValShape
+    CPhysValShape& operator = (const CPhysValShape& i_physValLineOther) override;
+public: // must overridables of base class CPhysValShape
+    bool operator == (const CPhysValShape& i_physValLineOther) const override;
+    bool operator != (const CPhysValShape& i_physValLineOther) const override;
+public: // must overridables of base class CPhysValShape
+    bool isValid() const override;
+    bool isNull() const override;
+    void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const override;
 public: // instance methods
     CPhysValPoint p1() const;
     CPhysValPoint p2() const;
@@ -105,14 +170,9 @@ public: // instance methods
 public: // instance methods (to convert the values into another unit)
     QLineF toQLineF() const;
     QLineF toQLineF(const ZS::PhysVal::CUnit& i_unit) const;
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
-    /*!< Reference to drawing scene. */
-    const CDrawingScene* m_pDrawingScene;
     /*!< Values of the line stored in "m_unit". */
     QLineF m_line;
-    /*!< Unit the values are store in "m_line". */
-    ZS::PhysVal::CUnit m_unit;
 
 }; // class CPhysValLine
 

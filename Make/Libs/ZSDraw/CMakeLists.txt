@@ -40,6 +40,7 @@ list(APPEND _HeadersCommon
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValLine.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPoint.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValRect.h
+    ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValShape.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawPhysValSize.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawSettings.h
     ${_HeadersPath}/${PROJECT_NAME}/Common/ZSDrawUnits.h
@@ -163,6 +164,7 @@ list(APPEND _SourcesCommon
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValLine.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValPoint.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValRect.cpp
+    ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValShape.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawPhysValSize.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawSettings.cpp
     ${_SourcesPath}/${PROJECT_NAME}/Common/ZSDrawUnits.cpp

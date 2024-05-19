@@ -105,7 +105,7 @@ CDrawingView::CDrawingView( CDrawingScene* i_pDrawingScene, QWidget* i_pWdgtPare
     //setAutoFillBackground(true);
     setStyleSheet("border-style: None");
 
-    CDrawingSize drawingSize("DrawingScene");
+    CDrawingSize drawingSize;
     drawingSize.setImageSize(CPhysVal(800, Units.Length.px), CPhysVal(600, Units.Length.px));
     m_pDrawingScene->setDrawingSize(drawingSize);
 

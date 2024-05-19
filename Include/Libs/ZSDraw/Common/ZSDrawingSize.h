@@ -60,7 +60,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CDrawingSize"; }
 public: // ctors and dtor
-    CDrawingSize(const QString& i_strName);
+    CDrawingSize();
     CDrawingSize(const CDrawingSize& i_other);
     ~CDrawingSize();
 public: // operators

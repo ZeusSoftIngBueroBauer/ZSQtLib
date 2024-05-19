@@ -100,9 +100,9 @@ CGraphObjGroup::CGraphObjGroup(
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeGroup),
         /* strObjName          */ i_strObjName.isEmpty() ? "Group" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsItemGroup(),
-    m_divLinesMetricsX("Group" + i_strObjName, EScaleAxis::X),
-    m_divLinesMetricsY("Group" + i_strObjName, EScaleAxis::Y),
-    m_gridSettings("Group" + i_strObjName),
+    m_divLinesMetricsX(EScaleAxis::X),
+    m_divLinesMetricsY(EScaleAxis::Y),
+    m_gridSettings(),
     m_rectOrig(),
     m_physValRectOrig(*m_pDrawingScene)
 {
@@ -212,9 +212,9 @@ CGraphObjGroup::CGraphObjGroup(
         /* strType             */ i_strType,
         /* strObjName          */ i_strObjName),
     QGraphicsItemGroup(),
-    m_divLinesMetricsX(i_strType + i_strObjName, EScaleAxis::X),
-    m_divLinesMetricsY(i_strType + i_strObjName, EScaleAxis::Y),
-    m_gridSettings(i_strType + i_strObjName),
+    m_divLinesMetricsX(EScaleAxis::X),
+    m_divLinesMetricsY(EScaleAxis::Y),
+    m_gridSettings(),
     m_rectOrig(),
     m_physValRectOrig(*m_pDrawingScene)
 {
@@ -708,7 +708,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
                 /* fScaleMinVal */ 0.0,
                 /* fScaleMaxVal */ rectF.height() - 1.0,
                 /* fScaleResVal */ drawingSize.imageCoorsResolution(Units.Length.px).getVal());
-            m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
+            //m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
         }
         else /*if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
             // In order to draw division lines at min and max scale the width
@@ -730,13 +730,23 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
                 /* fMin_px      */ 0,
                 /* fMax_px      */ rectF.width());
             m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
-            m_divLinesMetricsY.setScale(
-                /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ fabs(i_physValRect.height().getVal()),
-                /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
-                /* fMin_px      */ 0,
-                /* fMax_px      */ rectF.height());
-            m_divLinesMetricsY.setYScaleAxisOrientation(drawingSize.yScaleAxisOrientation());
+            if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+                m_divLinesMetricsY.setScale(
+                    /* fScaleMinVal */ 0.0,
+                    /* fScaleMaxVal */ fabs(i_physValRect.height().getVal()),
+                    /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
+                    /* fMin_px      */ 0,
+                    /* fMax_px      */ rectF.height());
+            }
+            else {
+                m_divLinesMetricsY.setScale(
+                    /* fScaleMinVal */ 0.0,
+                    /* fScaleMaxVal */ fabs(i_physValRect.height().getVal()),
+                    /* fScaleResVal */ drawingSize.imageCoorsResolution(drawingSize.unit()).getVal(),
+                    /* fMin_px      */ rectF.height(),
+                    /* fMax_px      */ 0);
+            }
+            //m_divLinesMetricsY.setYScaleAxisOrientation(drawingSize.yScaleAxisOrientation());
         }
         m_divLinesMetricsX.update();
         m_divLinesMetricsY.update();
@@ -1465,10 +1475,9 @@ CPhysValLine CGraphObjGroup::convert(const CPhysValLine& i_physValLine) const
 CPhysValLine CGraphObjGroup::convert(const CPhysValLine& i_physValLine, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValPoint physValP1 = convert(i_physValLine.p1(), i_unitDst);
     CPhysValPoint physValP2 = convert(i_physValLine.p2(), i_unitDst);
-    return CPhysValLine(*m_pDrawingScene, physValP1, physValP2);
+    return CPhysValLine(physValP1, physValP2);
 }
 
 //------------------------------------------------------------------------------
@@ -1533,7 +1542,7 @@ CPhysValRect CGraphObjGroup::convert(const CPhysValRect& i_physValRect, const CU
 {
     CPhysValPoint physValTL = convert(i_physValRect.topLeft(), i_unitDst);
     CPhysValPoint physValBR = convert(i_physValRect.bottomRight(), i_unitDst);
-    return CPhysValRect(*m_pDrawingScene, physValTL, physValBR);
+    return CPhysValRect(physValTL, physValBR);
 }
 
 /*==============================================================================
@@ -1738,7 +1747,7 @@ void CGraphObjGroup::updateOriginalPhysValCoors()
         ptBR = parentGroup()->mapToTopLeftOfBoundingRect(ptBR);
         CPhysValPoint physValPointTL = parentGroup()->convert(ptTL);
         CPhysValPoint physValPointBR = parentGroup()->convert(ptBR);
-        setRectOrig(CPhysValRect(*m_pDrawingScene, physValPointTL, physValPointBR));
+        setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
     }
     else {
         // Please note that "mapToScene" maps the local coordinates relative to the
@@ -1748,7 +1757,7 @@ void CGraphObjGroup::updateOriginalPhysValCoors()
         QPointF ptBR = pGraphicsItemThis->mapToScene(rectF.bottomRight());
         CPhysValPoint physValPointTL = m_pDrawingScene->convert(ptTL);
         CPhysValPoint physValPointBR = m_pDrawingScene->convert(ptBR);
-        setRectOrig(CPhysValRect(*m_pDrawingScene, physValPointTL, physValPointBR));
+        setRectOrig(CPhysValRect(physValPointTL, physValPointBR));
     }
     QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
 }

@@ -27,7 +27,6 @@ may result in using the software modules.
 #ifndef ZSDraw_DrawingScene_h
 #define ZSDraw_DrawingScene_h
 
-#include "ZSDraw/Common/ZSDrawDllMain.h"
 #include "ZSDraw/Common/ZSDrawCommon.h"
 #include "ZSDraw/Common/ZSDrawGridSettings.h"
 #include "ZSDraw/Common/ZSDrawingSize.h"
@@ -35,8 +34,8 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
 #include "ZSDraw/Common/ZSDrawSettings.h"
 #include "ZSDraw/Common/ZSDrawUnits.h"
-#include "ZSSys/ZSSysCommon.h"
 #include "ZSSysGUI/ZSSysGUIMathScaleDivLinesMetrics.h"
+#include "ZSSys/ZSSysCommon.h"
 
 #include <QtCore/qglobal.h>
 
@@ -147,6 +146,12 @@ public: // instance methods
 public: // instance methods (replacing methods of QGraphicScene)
     void removeItem(QGraphicsItem* i_pGraphicsItem);
 public: // instance methods
+    int addPhysValShape(CPhysValShape* i_pPhysValShape, const CDrawSettings& i_drawSettings = CDrawSettings());
+    void removePhysValShape(CPhysValShape* i_pPhysValShape);
+    int physValShapesCount() const;
+    CPhysValShape* getPhysValShape(int i_idxShape) const;
+    void removeAndDeleteAllPhysValShapes();
+public: // instance methods
     void setMode(const ZS::System::CEnumMode& i_mode);
         //const CEnumEditTool&         i_editTool = EEditTool::Undefined,
         //const CEnumEditMode&         i_editMode = EEditMode::Undefined,
@@ -229,21 +234,21 @@ public: // instance methods
     void setTextEffect( const CEnumTextEffect& i_textEffect, bool i_bImmediatelyApplySetting = true );
     CEnumTextEffect getTextEffect() const { return m_drawSettings.getTextEffect(); }
 public: // overridables of base class QGraphicsScene
-    virtual void dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv );
-    virtual void dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv );
-    virtual void dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv );
-    virtual void dropEvent( QGraphicsSceneDragDropEvent* i_pEv );
+    virtual void dragEnterEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
+    virtual void dragMoveEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
+    virtual void dragLeaveEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
+    virtual void dropEvent( QGraphicsSceneDragDropEvent* i_pEv ) override;
 public: // overridables of base class QGraphicsScene
-    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv );
-    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv );
+    virtual void mousePressEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
+    virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 public: // overridables of base class QGraphicsScene
-    virtual void keyPressEvent( QKeyEvent* i_pEv );
-    virtual void keyReleaseEvent( QKeyEvent* i_pEv );
+    virtual void keyPressEvent( QKeyEvent* i_pEv ) override;
+    virtual void keyReleaseEvent( QKeyEvent* i_pEv ) override;
 protected: // overridables of base class QGraphicsScene
-    virtual void drawBackground( QPainter* i_pPainter, const QRectF& i_rect );
-    virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect );
+    virtual void drawBackground( QPainter* i_pPainter, const QRectF& i_rect ) override;
+    virtual void drawForeground( QPainter* i_pPainter, const QRectF& i_rect ) override;
 protected slots:
     void onDrawUnitsScreenResolutionInPxPerMMChanged();
     void onDrawUnitsScaleFactorChanged();
@@ -255,7 +260,8 @@ protected: // auxiliary instance methods
     //void forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv);
     //void invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem);
     //void invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem);
-    void paintGridLines(QPainter* i_pPainter);
+    void drawGridLines(QPainter* i_pPainter, const QRectF& i_rect);
+    void drawPhysValShapes(QPainter* i_pPainter, const QRectF& i_rect);
     QRectF getBoundingRect(const QList<QGraphicsItem*>& i_arpGraphicsItems) const;
     void unselectGraphicsItems(const QList<QGraphicsItem*>& i_arpGraphicsItems) const;
 protected: // auxiliary instance methods (trace emitting signals)
@@ -329,6 +335,9 @@ protected: // instance members
     /*!< If the user clicks on an empty area and moves the mouse a selection area is created
          which is a graphics rectangle item. */
     QGraphicsRectItem* m_pGraphicsItemSelectionArea;
+    /*!< List with physical shapes to be drawing in the background or foreground layer of the drawing scene. */
+    QVector<CPhysValShape*> m_arpPhysValShapes;
+    QVector<CDrawSettings> m_arDrawSettingsPhysValShapes;
     /*!< Objects to control method tracing. */
     ZS::System::CTrcAdminObj* m_pTrcAdminObj;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjConversions;

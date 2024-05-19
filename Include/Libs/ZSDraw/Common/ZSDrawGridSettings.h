@@ -53,8 +53,8 @@ public: // class methods
     /*! Returns the class name. */
     static QString ClassName() { return "CDrawGridSettings"; }
 public: // ctors and dtor
-    CDrawGridSettings(const QString& i_strName);
-    CDrawGridSettings(const QString& i_strName, const CDrawGridSettings& i_other);
+    CDrawGridSettings();
+    CDrawGridSettings(const CDrawGridSettings& i_other);
     ~CDrawGridSettings();
 public: // operators
     bool operator == (const CDrawGridSettings& i_other) const;

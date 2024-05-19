@@ -27,20 +27,13 @@ may result in using the software modules.
 #ifndef ZSDraw_PhysValSize_h
 #define ZSDraw_PhysValSize_h
 
-#include "ZSDrawDllMain.h"
-#include "ZSPhysVal/ZSPhysVal.h"
+#include "ZSDraw/Common/ZSDrawPhysValShape.h"
 #include "QtCore/qsize.h"
 
 namespace ZS
 {
-namespace PhysVal
-{
-class CPhysVal;
-}
 namespace Draw
 {
-class CDrawingScene;
-
 //******************************************************************************
 /*! @brief Corresponds to QSizeF but providing a physical unit and a resolution.
 
@@ -53,30 +46,86 @@ class CDrawingScene;
     the screen resolution and the scale factor must be known. Both are properties
     of the physical size "Length" within the ZS::Draw library.
 */
-class ZSDRAWDLL_API CPhysValSize
+class ZSDRAWDLL_API CPhysValSize : public CPhysValShape
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValSize"; }
-public: // ctors and dtor
+public: // ctors
     CPhysValSize(const CDrawingScene& i_drawingScene);
-    CPhysValSize(const CDrawingScene& i_drawingScene, double i_fWidth, double i_fHeight);
-    CPhysValSize(const CDrawingScene& i_drawingScene, double i_fWidth, double i_fHeight, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValSize(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
-    CPhysValSize(const CDrawingScene& i_drawingScene, const QSizeF& i_size);
-    CPhysValSize(const CDrawingScene& i_drawingScene, const QSizeF& i_size, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        double i_fWidth, double i_fHeight);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        double i_fWidth, double i_fHeight,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const QSizeF& i_size);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const QSizeF& i_size,
+        const ZS::PhysVal::CUnit& i_unit);
+public: // ctors
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        double i_fWidth, double i_fHeight);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        double i_fWidth, double i_fHeight,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QSizeF& i_size);
+    CPhysValSize(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QSizeF& i_size,
+        const ZS::PhysVal::CUnit& i_unit);
+public: // copy ctor
     CPhysValSize(const CPhysValSize& i_physValSizeOther);
+public: // dtor
     virtual ~CPhysValSize();
 public: // operators
-    CPhysValSize& operator = (const CPhysValSize& i_physValSizeOther);
     CPhysValSize& operator = (const QSizeF& i_size);
-public: // operators
-    bool operator == (const CPhysValSize& i_physValSizeOther) const;
-    bool operator != (const CPhysValSize& i_physValSizeOther) const;
-    CPhysValSize& operator = ( const QString& i_strValOther );
-public: // instance methods
-    bool isValid() const;
+    CPhysValSize& operator = (const QString& i_strValOther);
+public: // must overridable operators of base class CPhysValShape
+    CPhysValShape& operator = (const CPhysValShape& i_physValSizeOther) override;
+public: // must overridables of base class CPhysValShape
+    bool operator == (const CPhysValShape& i_physValSizeOther) const override;
+    bool operator != (const CPhysValShape& i_physValSizeOther) const override;
+public: // must overridables of base class CPhysValShape
+    bool isValid() const override;
+    bool isNull() const override;
+    void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const override;
 public: // instance methods
     ZS::PhysVal::CPhysVal width() const;
     ZS::PhysVal::CPhysVal height() const;
@@ -88,14 +137,9 @@ public: // instance methods
 public: // instance methods (to convert the values into another unit)
     QSizeF toQSizeF() const;
     QSizeF toQSizeF(const ZS::PhysVal::CUnit& i_unit) const;
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // instance members
-    /*!< Reference to drawing scene. */
-    const CDrawingScene* m_pDrawingScene;
     /*!< The size in width and height in the unit 'm_unit'. */
     QSizeF m_size;
-    /*!< Unit (either metric or pixels) in which the size values are in 'm_size'. */
-    ZS::PhysVal::CUnit m_unit;
 
 }; // class CPhysValSize
 

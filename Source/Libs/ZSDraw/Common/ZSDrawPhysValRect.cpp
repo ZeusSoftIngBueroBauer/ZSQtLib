@@ -33,6 +33,8 @@ may result in using the software modules.
 #include "ZSSys/ZSSysErrLog.h"
 #include "ZSSys/ZSSysMath.h"
 
+#include <QtGui/qpainter.h>
+
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 
@@ -46,7 +48,7 @@ class CPhysValRect
 *******************************************************************************/
 
 /*==============================================================================
-public: // ctors and dtor
+public: // ctors
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -55,11 +57,10 @@ public: // ctors and dtor
 */
 CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
+    CPhysValShape(i_drawingScene),
     m_ptCenter(),
     m_size(),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_drawingScene.drawingSize().unit()),
     //m_fRadius(0.0),
     //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
@@ -69,67 +70,32 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 }
 
 //------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i_ptTL, const QPointF& i_ptBR) :
+/*! @brief Creates a physical rectangle on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
+    CPhysValShape(i_drawingScene, i_unit),
+    m_ptCenter(),
+    m_size(),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(0.0),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const QPointF& i_ptTL, const QPointF& i_ptBR) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene),
     m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
     m_size(QRectF(i_ptTL, i_ptBR).size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_drawingScene.drawingSize().unit()),
-    //m_fRadius(getRadius(m_size)),
-    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    //int iQuadTmp = -1;
-    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
-    initSelectionPoints();
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i_ptTL, const QPointF& i_ptBR, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
-    m_size(QRectF(i_ptTL, i_ptBR).size()),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_unit),
-    //m_fRadius(getRadius(m_size)),
-    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    //int iQuadTmp = -1;
-    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
-    initSelectionPoints();
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_ptCenter(i_rect.center()),
-    m_size(i_rect.size()),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_drawingScene.drawingSize().unit()),
-    //m_fRadius(getRadius(m_size)),
-    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    //int iQuadTmp = -1;
-    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
-    initSelectionPoints();
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_ptCenter(i_rect.center()),
-    m_size(i_rect.size()),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_unit),
     //m_fRadius(getRadius(m_size)),
     //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
@@ -143,19 +109,222 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(
     const CDrawingScene& i_drawingScene,
-    const CPhysValPoint& i_physValTopLeft,
-    const CPhysValPoint& i_physValBottomRight) :
+    const QPointF& i_ptTL, const QPointF& i_ptBR,
+    const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_ptCenter(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).center()),
-    m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).size()),
+    CPhysValShape(i_drawingScene, i_unit),
+    m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
+    m_size(QRectF(i_ptTL, i_ptBR).size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_physValTopLeft.unit()),
     //m_fRadius(getRadius(m_size)),
     //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    //int iQuadTmp = -1;
+    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const QRectF& i_rect) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene),
+    m_ptCenter(i_rect.center()),
+    m_size(i_rect.size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(getRadius(m_size)),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    //int iQuadTmp = -1;
+    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const QRectF& i_rect,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_unit),
+    m_ptCenter(i_rect.center()),
+    m_size(i_rect.size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(getRadius(m_size)),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    //int iQuadTmp = -1;
+    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
+    initSelectionPoints();
+}
+
+/*==============================================================================
+public: // ctors
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a physical rectangle on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+    m_ptCenter(),
+    m_size(),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(0.0),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a physical rectangle on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+    m_ptCenter(),
+    m_size(),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(0.0),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const QPointF& i_ptTL, const QPointF& i_ptBR) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+    m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
+    m_size(QRectF(i_ptTL, i_ptBR).size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(getRadius(m_size)),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    //int iQuadTmp = -1;
+    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const QPointF& i_ptTL, const QPointF& i_ptBR,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+    m_ptCenter(QRectF(i_ptTL, i_ptBR).center()),
+    m_size(QRectF(i_ptTL, i_ptBR).size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(getRadius(m_size)),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    //int iQuadTmp = -1;
+    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const QRectF& i_rect) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+    m_ptCenter(i_rect.center()),
+    m_size(i_rect.size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(getRadius(m_size)),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    //int iQuadTmp = -1;
+    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const QRectF& i_rect,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+    m_ptCenter(i_rect.center()),
+    m_size(i_rect.size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(getRadius(m_size)),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    //int iQuadTmp = -1;
+    //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
+    initSelectionPoints();
+}
+
+/*==============================================================================
+public: // ctors
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CPhysValPoint& i_physValTopLeft,
+    const CPhysValPoint& i_physValBottomRight) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_physValTopLeft.drawingScene(), i_physValTopLeft.divLinesMetricsX(), i_physValTopLeft.divLinesMetricsY(), i_physValTopLeft.unit()),
+    m_ptCenter(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).center()),
+    m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).size()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    //m_fRadius(getRadius(m_size)),
+    //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    if (&i_physValTopLeft.drawingScene() != &i_physValBottomRight.drawingScene()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (&i_physValTopLeft.divLinesMetricsX() != &i_physValBottomRight.divLinesMetricsX()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (&i_physValTopLeft.divLinesMetricsY() != &i_physValBottomRight.divLinesMetricsY()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
     if (i_physValTopLeft.unit() != i_physValBottomRight.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
@@ -169,20 +338,27 @@ CPhysValRect::CPhysValRect(
 
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(
-    const CDrawingScene& i_drawingScene,
     const CPhysValPoint& i_physValTopLeft,
     const CPhysValSize& i_physValSize) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
+    CPhysValShape(i_physValTopLeft.drawingScene(), i_physValTopLeft.divLinesMetricsX(), i_physValTopLeft.divLinesMetricsY(), i_physValTopLeft.unit()),
     m_ptCenter(QRectF(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()).center()),
     m_size(QRectF(i_physValTopLeft.toQPointF(), i_physValSize.toQSizeF()).size()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_unit(i_physValTopLeft.unit()),
     //m_fRadius(getRadius(m_size)),
     //m_physValAngleDiagLineCounterClockwise(0.0, Units.Angle.Degree),
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (&i_physValTopLeft.drawingScene() != &i_physValSize.drawingScene()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (&i_physValTopLeft.divLinesMetricsX() != &i_physValSize.divLinesMetricsX()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (&i_physValTopLeft.divLinesMetricsY() != &i_physValSize.divLinesMetricsY()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
     if (i_physValTopLeft.unit() != i_physValSize.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
@@ -194,14 +370,17 @@ CPhysValRect::CPhysValRect(
     initSelectionPoints();
 }
 
+/*==============================================================================
+public: // copy ctor
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(i_physValRectOther.m_pDrawingScene),
+    CPhysValShape(i_physValRectOther),
     m_ptCenter(i_physValRectOther.m_ptCenter),
     m_size(i_physValRectOther.m_size),
     m_physValAngle(i_physValRectOther.m_physValAngle),
-    m_unit(i_physValRectOther.m_unit),
     //m_fRadius(i_physValRectOther.m_fRadius),
     //m_physValAngleDiagLineCounterClockwise(i_physValRectOther.m_physValAngleDiagLineCounterClockwise),
     m_arphysValPoints(i_physValRectOther.m_arphysValPoints),
@@ -209,15 +388,17 @@ CPhysValRect::CPhysValRect(const CPhysValRect& i_physValRectOther) :
 {
 }
 
+/*==============================================================================
+public: // dtor
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 CPhysValRect::~CPhysValRect()
 //------------------------------------------------------------------------------
 {
-    m_pDrawingScene = nullptr;
     //m_ptCenter;
     //m_size;
     //m_physValAngle;
-    //m_unit;
     //m_fRadius = 0.0;
     ////m_physValAngleDiagLine;
     //m_arphysValPoints;
@@ -227,21 +408,6 @@ CPhysValRect::~CPhysValRect()
 /*==============================================================================
 public: // operators
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysValRect& CPhysValRect::operator = ( const CPhysValRect& i_physValRectOther )
-//------------------------------------------------------------------------------
-{
-    m_ptCenter = i_physValRectOther.m_ptCenter;
-    m_size = i_physValRectOther.m_size;
-    m_physValAngle = i_physValRectOther.m_physValAngle;
-    m_unit = i_physValRectOther.m_unit;
-    //m_fRadius = i_physValRectOther.m_fRadius;
-    //m_physValAngleDiagLineCounterClockwise = i_physValRectOther.m_physValAngleDiagLineCounterClockwise;
-    m_arphysValPoints = i_physValRectOther.m_arphysValPoints;
-    m_arbPointsCalculated = i_physValRectOther.m_arbPointsCalculated;
-    return *this;
-}
 
 //------------------------------------------------------------------------------
 CPhysValRect& CPhysValRect::operator = ( const QRectF& i_rect )
@@ -258,41 +424,62 @@ CPhysValRect& CPhysValRect::operator = ( const QRectF& i_rect )
 }
 
 /*==============================================================================
-public: // operators
+public: // must overridable operators of base class CPhysValShape
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CPhysValRect::operator == ( const CPhysValRect& i_physValRectOther ) const
+CPhysValShape& CPhysValRect::operator = ( const CPhysValShape& i_physValRectOther )
+//------------------------------------------------------------------------------
+{
+    const CPhysValRect& physValRectOther = dynamic_cast<const CPhysValRect&>(i_physValRectOther);
+    m_ptCenter = physValRectOther.m_ptCenter;
+    m_size = physValRectOther.m_size;
+    m_physValAngle = physValRectOther.m_physValAngle;
+    m_unit = physValRectOther.m_unit;
+    //m_fRadius = physValRectOther.m_fRadius;
+    //m_physValAngleDiagLineCounterClockwise = physValRectOther.m_physValAngleDiagLineCounterClockwise;
+    m_arphysValPoints = physValRectOther.m_arphysValPoints;
+    m_arbPointsCalculated = physValRectOther.m_arbPointsCalculated;
+    return *this;
+}
+
+/*==============================================================================
+public: // must overridable operators of base class CPhysValShape
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CPhysValRect::operator == ( const CPhysValShape& i_physValRectOther ) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-    if (!areOfSameUnitGroup(m_unit, i_physValRectOther.m_unit)) {
+    const CPhysValRect& physValRectOther = dynamic_cast<const CPhysValRect&>(i_physValRectOther);
+    if (!areOfSameUnitGroup(m_unit, physValRectOther.m_unit)) {
         bEqual = false;
     }
-    else if (m_unit != i_physValRectOther.m_unit) {
+    else if (m_unit != physValRectOther.m_unit) {
         bEqual = false;
     }
-    else if (m_ptCenter != i_physValRectOther.m_ptCenter) {
+    else if (m_ptCenter != physValRectOther.m_ptCenter) {
         bEqual = false;
     }
-    else if (m_size != i_physValRectOther.m_size) {
+    else if (m_size != physValRectOther.m_size) {
         bEqual = false;
     }
-    else if (m_physValAngle != i_physValRectOther.m_physValAngle) {
+    else if (m_physValAngle != physValRectOther.m_physValAngle) {
         bEqual = false;
     }
     return bEqual;
 }
 
 //------------------------------------------------------------------------------
-bool CPhysValRect::operator != ( const CPhysValRect& i_physValRectOther ) const
+bool CPhysValRect::operator != ( const CPhysValShape& i_physValRectOther ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_physValRectOther);
 }
 
 /*==============================================================================
-public: // instance methods
+public: // must overridables of base class CPhysValShape
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -303,11 +490,79 @@ public: // instance methods
 bool CPhysValRect::isValid() const
 //------------------------------------------------------------------------------
 {
-    // QSizeF::isValid cannot be used as the method returns false if either width
-    // or height is less than 0.0. For metric units with YAxisScaleOrientation
-    // BottomUp the top edge has lower values than the bottom edge and the height
-    // is negative. Also negative widths are allowed.
     return m_size.isValid();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns true if the rectangle is null, otherwise returns false.
+
+    A null rectangle has both width and height equal to 0.0.
+*/
+bool CPhysValRect::isNull() const
+//------------------------------------------------------------------------------
+{
+    return m_size.isNull();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Draws the shape on the drawing scene.
+*/
+void CPhysValRect::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+    i_pPainter->save();
+    QPen pen(i_drawSettings.getPenColor());
+    QPointF ptCenter = m_pDrawingScene->convert(center()).toQPointF();
+    QPointF ptTL = m_pDrawingScene->convert(topLeft()).toQPointF();
+    QPointF ptTR = m_pDrawingScene->convert(topRight()).toQPointF();
+    QPointF ptBR = m_pDrawingScene->convert(bottomRight()).toQPointF();
+    QPointF ptBL = m_pDrawingScene->convert(bottomLeft()).toQPointF();
+    QPointF ptTC = m_pDrawingScene->convert(topCenter()).toQPointF();
+    QPointF ptRC = m_pDrawingScene->convert(rightCenter()).toQPointF();
+    QPointF ptBC = m_pDrawingScene->convert(bottomCenter()).toQPointF();
+    QPointF ptLC = m_pDrawingScene->convert(leftCenter()).toQPointF();
+    pen.setStyle(Qt::SolidLine);
+    i_pPainter->setPen(pen);
+    i_pPainter->drawLine(ptTL, ptTR);
+    i_pPainter->drawLine(ptTR, ptBR);
+    i_pPainter->drawLine(ptBR, ptBL);
+    i_pPainter->drawLine(ptBL, ptTL);
+    pen.setStyle(Qt::DashDotDotLine);
+    i_pPainter->setPen(pen);
+    i_pPainter->drawLine(ptTL, ptBR);
+    i_pPainter->drawLine(ptTR, ptBL);
+    pen.setStyle(Qt::DashLine);
+    i_pPainter->setPen(pen);
+    i_pPainter->drawLine(ptLC, ptRC);
+    i_pPainter->drawLine(ptTC, ptBC);
+    i_pPainter->drawText(ptCenter, "X");
+    i_pPainter->drawText(ptTL, "TL");
+    i_pPainter->drawText(ptTR, "TR");
+    i_pPainter->drawText(ptBR, "BR");
+    i_pPainter->drawText(ptBL, "BL");
+    i_pPainter->drawText(ptTC, "TC");
+    i_pPainter->drawText(ptRC, "RC");
+    i_pPainter->drawText(ptBC, "BC");
+    i_pPainter->drawText(ptLC, "LC");
+    i_pPainter->restore();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Outputs the rectangle as a string in format "TopLeft.x, TopLeft.y, Width, Height".
+
+    @param [in] i_bAddUnit
+        true to add the unit at the end of the string.
+    @param [in] i_strSeparator (default ", ")
+        Separator used to separate the values.
+*/
+QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator) const
+//------------------------------------------------------------------------------
+{
+    QString str = topLeft().toString() + i_strSeparator + size().toString();
+    if (i_bAddUnit) {
+        str += " " + m_unit.symbol();
+    }
+    return str;
 }
 
 /*==============================================================================
@@ -1699,24 +1954,6 @@ QRectF CPhysValRect::toNotRotatedQRectF(const CUnit& i_unit) const
         sizeF.setHeight(CPhysVal(m_size.height(), m_unit).getVal(i_unit));
     }
     return QRectF(ptTopLeft, sizeF);
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Outputs the rectangle as a string in format "TopLeft.x, TopLeft.y, Width, Height".
-
-    @param [in] i_bAddUnit
-        true to add the unit at the end of the string.
-    @param [in] i_strSeparator (default ", ")
-        Separator used to separate the values.
-*/
-QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator) const
-//------------------------------------------------------------------------------
-{
-    QString str = topLeft().toString() + i_strSeparator + size().toString();
-    if (i_bAddUnit) {
-        str += " " + m_unit.symbol();
-    }
-    return str;
 }
 
 /*==============================================================================

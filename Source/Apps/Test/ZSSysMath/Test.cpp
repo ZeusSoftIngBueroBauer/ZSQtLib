@@ -1684,11 +1684,11 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
             }
         }
 
-        ZS::System::Math::CScaleDivLines divLines(NameSpace(), eScaleAxis.enumerator());
+        ZS::System::Math::CScaleDivLines divLines(eScaleAxis.enumerator());
 
-        if (eYScaleAxisOrientation.isValid()) {
-            divLines.setYScaleAxisOrientation(eYScaleAxisOrientation);
-        }
+        //if (eYScaleAxisOrientation.isValid()) {
+        //    divLines.setYScaleAxisOrientation(eYScaleAxisOrientation);
+        //}
         divLines.setSpacing(eSpacing);
         divLines.setUseWorldCoordinateTransformation(bUseWorldTransformation);
         if (bUseWorldTransformation) {

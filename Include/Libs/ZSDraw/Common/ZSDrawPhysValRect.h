@@ -30,7 +30,6 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
 #include "ZSDraw/Common/ZSDrawPhysValLine.h"
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
-#include "ZSDraw/Common/ZSDrawCommon.h"
 #include "QtCore/qrect.h"
 
 namespace ZS
@@ -48,30 +47,80 @@ namespace Draw
     group or scene to take the different Y-Scale-Axis orientation into account.
     But the line does not know about groups.
 */
-class ZSDRAWDLL_API CPhysValRect
+class ZSDRAWDLL_API CPhysValRect : public CPhysValShape
 //******************************************************************************
 {
 public: // class methods
     static QString NameSpace() { return "ZS::Draw"; }
     static QString ClassName() { return "CPhysValRect"; }
-public: // ctors and dtor
+public: // ctors
     CPhysValRect(const CDrawingScene& i_drawingScene);
-    CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i_ptTL, const QPointF& i_ptBR);
-    CPhysValRect(const CDrawingScene& i_drawingScene, const QPointF& i_ptTL, const QPointF& i_ptBR, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect);
-    CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unit);
-    CPhysValRect(const CDrawingScene& i_drawingScene, const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
-    CPhysValRect(const CDrawingScene& i_drawingScene, const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const QPointF& i_ptTL, const QPointF& i_ptBR);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const QPointF& i_ptTL, const QPointF& i_ptBR,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const QRectF& i_rect);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const QRectF& i_rect,
+        const ZS::PhysVal::CUnit& i_unit);
+public: // ctors
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QPointF& i_ptTL, const QPointF& i_ptBR);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QPointF& i_ptTL, const QPointF& i_ptBR,
+        const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QRectF& i_rect);
+    CPhysValRect(
+        const CDrawingScene& i_drawingScene,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+        const QRectF& i_rect,
+        const ZS::PhysVal::CUnit& i_unit);
+public: // ctors
+    CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
+    CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize);
+public: // copy ctor
     CPhysValRect(const CPhysValRect& i_physValRectOther);
+public: // dtor
     virtual ~CPhysValRect();
 public: // operators
-    CPhysValRect& operator = (const CPhysValRect& i_physValRectOther);
     CPhysValRect& operator = (const QRectF& i_rect);
-public: // operators
-    bool operator == (const CPhysValRect& i_physValRectOther) const;
-    bool operator != (const CPhysValRect& i_physValRectOther) const;
-public: // instance methods
-    bool isValid() const;
+public: // must overridable operators of base class CPhysValShape
+    CPhysValShape& operator = (const CPhysValShape& i_physValRectOther) override;
+public: // must overridables of base class CPhysValShape
+    bool operator == (const CPhysValShape& i_physValRectOther) const override;
+    bool operator != (const CPhysValShape& i_physValRectOther) const override;
+public: // must overridables of base class CPhysValShape
+    bool isValid() const override;
+    bool isNull() const override;
+    void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;
+    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const override;
 public: // instance methods
     CPhysValPoint center() const;
     CPhysValSize size() const;
@@ -117,21 +166,16 @@ public: // instance methods
 public: // instance methods (to convert the values into another unit)
     QRectF toNotRotatedQRectF() const;
     QRectF toNotRotatedQRectF(const ZS::PhysVal::CUnit& i_unit) const;
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const;
 protected: // auxiliary functions
     void initSelectionPoints();
     void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);
 protected: // instance members
-    /*!< Reference to drawing scene. */
-    const CDrawingScene* m_pDrawingScene;
     /*!< The rectangles center coordinates in the unit 'm_unit'. */
     QPointF m_ptCenter;
     /*!< The rectangles width and height in the unit 'm_unit'. */
     QSizeF m_size;
     /*!< The rotation angle (counted clockwise). */
     ZS::PhysVal::CPhysVal m_physValAngle;
-    /*!< Unit (either metric or pixels) in which the rectangle coordinates are in 'm_rect'. */
-    ZS::PhysVal::CUnit m_unit;
     ///*!< To rotate a point around another point by angle alpha, the distance (radius)
     //     between the points is needed. For the the corners of a rectangle (TL, TR, BR, BL)
     //     the distance (radius) is the same and is calculated as follows:

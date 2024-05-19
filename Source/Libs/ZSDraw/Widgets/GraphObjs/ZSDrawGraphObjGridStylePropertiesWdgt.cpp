@@ -93,7 +93,7 @@ CWdgtGraphObjGridStyleProperties::CWdgtGraphObjGridStyleProperties(
         i_strNameSpace, i_strGraphObjType,
         ClassName(), i_strObjName, i_pWdgtParent),
     // Caching values
-    m_gridSettings(i_strObjName),
+    m_gridSettings(),
     // Edit Controls
     m_pWdgtHeadline(nullptr),
     m_pLytWdgtHeadline(nullptr),

@@ -58,9 +58,9 @@ public: // ctors and dtor
 
     @param i_strName [in] Name of the instance.
 */
-CDrawingSize::CDrawingSize(const QString& i_strName) :
+CDrawingSize::CDrawingSize() :
 //------------------------------------------------------------------------------
-    m_strName(i_strName),
+    m_strName(),
     m_eDimensionUnit(EScaleDimensionUnit::Pixels),
     m_metricUnit(Units.Length.mm),
     m_fScreenResolution_px_mm(Units.Length.screenResolutionInPxPerMM()), // reasonable value close to what many monitors are using
@@ -78,7 +78,7 @@ CDrawingSize::CDrawingSize(const QString& i_strName) :
     m_pTrcAdminObj(nullptr)
 {
     m_pTrcAdminObj = CTrcServer::GetTraceAdminObj(
-        NameSpace() + "::Drawing", ClassName(), m_strName);
+        NameSpace() + "::Drawing", ClassName());
 
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1205,8 +1205,9 @@ public: // instance methods
 QString CDrawingSize::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str = m_strName +
-        ", IsValid: " + bool2Str(isValid()) +
+    QString str;
+    if (!m_strName.isEmpty()) str += m_strName + ", ";
+    str += "IsValid: " + bool2Str(isValid()) +
         ", DimensionUnit: "+ QString(m_eDimensionUnit.isValid() ? m_eDimensionUnit.toString() : "?") +
         ", YScale: " + QString(m_eYScaleAxisOrientation.isValid() ? m_eYScaleAxisOrientation.toString() : "?") +
         ", ScreenResolution: " + QString::number(m_fScreenResolution_px_mm, 'f', 1) + " px/mm" +

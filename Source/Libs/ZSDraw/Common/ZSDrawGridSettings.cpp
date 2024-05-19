@@ -51,9 +51,9 @@ public: // ctors and dtor
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-CDrawGridSettings::CDrawGridSettings(const QString& i_strName) :
+CDrawGridSettings::CDrawGridSettings() :
 //------------------------------------------------------------------------------
-    m_strName(i_strName),
+    m_strName(),
     m_bLinesVisible(false),
     m_iLinesDistMin_px(20),
     m_eLinesStyle(ELineStyle::DotLine),
@@ -69,9 +69,9 @@ CDrawGridSettings::CDrawGridSettings(const QString& i_strName) :
 }
 
 //------------------------------------------------------------------------------
-CDrawGridSettings::CDrawGridSettings(const QString& i_strName, const CDrawGridSettings& i_other) :
+CDrawGridSettings::CDrawGridSettings(const CDrawGridSettings& i_other) :
 //------------------------------------------------------------------------------
-    m_strName(i_strName),
+    m_strName(),
     m_bLinesVisible(i_other.m_bLinesVisible),
     m_iLinesDistMin_px(i_other.m_iLinesDistMin_px),
     m_eLinesStyle(i_other.m_eLinesStyle),
@@ -444,8 +444,9 @@ public: // instance methods
 QString CDrawGridSettings::toString() const
 //------------------------------------------------------------------------------
 {
-    QString str = m_strName
-        + " Lines {Visible: " + bool2Str(m_bLinesVisible)
+    QString str;
+    if (!m_strName.isEmpty()) str += m_strName + ", ";
+    str += "Lines {Visible: " + bool2Str(m_bLinesVisible)
         + ", Style: " + m_eLinesStyle.toString()
         + ", Color: " + m_colorLines.name()
         + ", PenWidth: " + QString::number(m_iLinesWidth_px) + "}"

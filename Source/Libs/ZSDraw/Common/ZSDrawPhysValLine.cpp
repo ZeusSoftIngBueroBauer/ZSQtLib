@@ -43,7 +43,7 @@ class CPhysValLine
 *******************************************************************************/
 
 /*==============================================================================
-public: // ctors and dtor
+public: // ctors
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
@@ -52,80 +52,212 @@ public: // ctors and dtor
 */
 CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_line(),
-    m_unit(i_drawingScene.drawingSize().unit())
+    CPhysValShape(i_drawingScene),
+    m_line()
 {
 }
 
 //------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine(
-    const CDrawingScene& i_drawingScene, double i_fX1, double i_fY1, double i_fX2, double i_fY2) :
+/*! @brief Creates a physical line on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_line(i_fX1, i_fY1, i_fX2, i_fY2),
-    m_unit(i_drawingScene.drawingSize().unit())
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine(
-    const CDrawingScene& i_drawingScene, double i_fX1, double i_fY1, double i_fX2, double i_fY2, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_line(i_fX1, i_fY1, i_fX2, i_fY2),
-    m_unit(i_unit)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine(
-    const CDrawingScene& i_drawingScene, const QPointF& i_p1, const QPointF& i_p2) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_line(i_p1, i_p2),
-    m_unit(i_drawingScene.drawingSize().unit())
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine(
-    const CDrawingScene& i_drawingScene, const QPointF& i_p1, const QPointF& i_p2, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_line(i_p1, i_p2),
-    m_unit(i_unit)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene, const QLineF& i_line) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_line(i_line),
-    m_unit(i_drawingScene.drawingSize().unit())
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValLine::CPhysValLine(const CDrawingScene& i_drawingScene, const QLineF& i_line, const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_line(i_line),
-    m_unit(i_unit)
+    CPhysValShape(i_drawingScene, i_unit),
+    m_line()
 {
 }
 
 //------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(
     const CDrawingScene& i_drawingScene,
-    const CPhysValPoint& i_physValP1,
-    const CPhysValPoint& i_physValP2) :
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_line(i_physValP1.toQPointF(), i_physValP2.toQPointF()),
-    m_unit(i_physValP1.unit())
+    CPhysValShape(i_drawingScene),
+    m_line(i_fX1, i_fY1, i_fX2, i_fY2)
 {
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_unit),
+    m_line(i_fX1, i_fY1, i_fX2, i_fY2)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const QPointF& i_p1, const QPointF& i_p2) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene),
+    m_line(i_p1, i_p2)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const QPointF& i_p1, const QPointF& i_p2,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_unit),
+    m_line(i_p1, i_p2)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const QLineF& i_line) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene),
+    m_line(i_line)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const QLineF& i_line,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_unit),
+    m_line(i_line)
+{
+}
+
+/*==============================================================================
+public: // ctors
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a physical line on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+    m_line()
+{
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Creates a physical line on the drawing scene in the current unit
+           and current resolution of the drawing scene.
+*/
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+    m_line()
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+    m_line(i_fX1, i_fY1, i_fX2, i_fY2)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    double i_fX1, double i_fY1, double i_fX2, double i_fY2,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+    m_line(i_fX1, i_fY1, i_fX2, i_fY2)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const QPointF& i_p1, const QPointF& i_p2) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+    m_line(i_p1, i_p2)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const QPointF& i_p1, const QPointF& i_p2,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+    m_line(i_p1, i_p2)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const QLineF& i_line) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+    m_line(i_line)
+{
+}
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(
+    const CDrawingScene& i_drawingScene,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+    const QLineF& i_line,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+    m_line(i_line)
+{
+}
+
+/*==============================================================================
+public: // ctors
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+CPhysValLine::CPhysValLine(const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_physValP1.drawingScene(), i_physValP1.divLinesMetricsX(), i_physValP1.divLinesMetricsY(), i_physValP1.unit()),
+    m_line(i_physValP1.toQPointF(), i_physValP2.toQPointF())
+{
+    if (&i_physValP1.drawingScene() != &i_physValP2.drawingScene()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (&i_physValP1.divLinesMetricsX() != &i_physValP2.divLinesMetricsX()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (&i_physValP1.divLinesMetricsY() != &i_physValP2.divLinesMetricsY()) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
     if (i_physValP1.unit() != i_physValP2.unit()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
@@ -134,36 +266,32 @@ CPhysValLine::CPhysValLine(
     }
 }
 
+/*==============================================================================
+public: // copy ctor
+==============================================================================*/
+
 //------------------------------------------------------------------------------
 CPhysValLine::CPhysValLine(const CPhysValLine& i_physValLineOther) :
 //------------------------------------------------------------------------------
-    m_pDrawingScene(i_physValLineOther.m_pDrawingScene),
-    m_line(i_physValLineOther.m_line),
-    m_unit(i_physValLineOther.m_unit)
+    CPhysValShape(i_physValLineOther),
+    m_line(i_physValLineOther.m_line)
 {
 }
+
+/*==============================================================================
+public: // dtor
+==============================================================================*/
 
 //------------------------------------------------------------------------------
 CPhysValLine::~CPhysValLine()
 //------------------------------------------------------------------------------
 {
-    m_pDrawingScene = nullptr;
     //m_line;
-    //m_unit;
 }
 
 /*==============================================================================
 public: // operators
 ==============================================================================*/
-
-//------------------------------------------------------------------------------
-CPhysValLine& CPhysValLine::operator = ( const CPhysValLine& i_physValLineOther )
-//------------------------------------------------------------------------------
-{
-    m_line = i_physValLineOther.m_line;
-    m_unit = i_physValLineOther.m_unit;
-    return *this;
-}
 
 //------------------------------------------------------------------------------
 CPhysValLine& CPhysValLine::operator = ( const QLineF& i_line )
@@ -174,28 +302,45 @@ CPhysValLine& CPhysValLine::operator = ( const QLineF& i_line )
 }
 
 /*==============================================================================
-public: // operators
+public: // must overridable operators of base class CPhysValShape
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-bool CPhysValLine::operator == ( const CPhysValLine& i_physValLineOther ) const
+CPhysValShape& CPhysValLine::operator = ( const CPhysValShape& i_physValLineOther )
+//------------------------------------------------------------------------------
+{
+    const CPhysValLine& physValLineOther = dynamic_cast<const CPhysValLine&>(i_physValLineOther);
+    m_pDivLinesMetricsX = physValLineOther.m_pDivLinesMetricsX;
+    m_pDivLinesMetricsY = physValLineOther.m_pDivLinesMetricsY;
+    m_unit = physValLineOther.m_unit;
+    m_line = physValLineOther.m_line;
+    return *this;
+}
+
+/*==============================================================================
+public: // must overridable operators of base class CPhysValShape
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool CPhysValLine::operator == ( const CPhysValShape& i_physValLineOther ) const
 //------------------------------------------------------------------------------
 {
     bool bEqual = true;
-    if (!areOfSameUnitGroup(m_unit, i_physValLineOther.m_unit)) {
+    const CPhysValLine& physValLineOther = dynamic_cast<const CPhysValLine&>(i_physValLineOther);
+    if (!areOfSameUnitGroup(m_unit, physValLineOther.m_unit)) {
         bEqual = false;
     }
-    else if (m_unit == i_physValLineOther.m_unit && m_line != i_physValLineOther.m_line) {
+    else if (m_unit == physValLineOther.m_unit && m_line != physValLineOther.m_line) {
         bEqual = false;
     }
-    else if (m_unit != i_physValLineOther.m_unit && m_line == i_physValLineOther.m_line) {
+    else if (m_unit != physValLineOther.m_unit && m_line == physValLineOther.m_line) {
         bEqual = false;
     }
-    else if (m_unit != i_physValLineOther.m_unit && m_line != i_physValLineOther.m_line) {
-        double fX1 = i_physValLineOther.x1().getVal(m_unit);
-        double fX2 = i_physValLineOther.x2().getVal(m_unit);
-        double fY1 = i_physValLineOther.y1().getVal(m_unit);
-        double fY2 = i_physValLineOther.y2().getVal(m_unit);
+    else if (m_unit != physValLineOther.m_unit && m_line != physValLineOther.m_line) {
+        double fX1 = physValLineOther.x1().getVal(m_unit);
+        double fX2 = physValLineOther.x2().getVal(m_unit);
+        double fY1 = physValLineOther.y1().getVal(m_unit);
+        double fY2 = physValLineOther.y2().getVal(m_unit);
         if (fX1 != m_line.x1() || fX2 != m_line.x2() || fY1 != m_line.y1() || fY2 != m_line.y2()) {
             bEqual = false;
         }
@@ -204,7 +349,7 @@ bool CPhysValLine::operator == ( const CPhysValLine& i_physValLineOther ) const
 }
 
 //------------------------------------------------------------------------------
-bool CPhysValLine::operator != ( const CPhysValLine& i_physValLineOther ) const
+bool CPhysValLine::operator != ( const CPhysValShape& i_physValLineOther ) const
 //------------------------------------------------------------------------------
 {
     return !(*this == i_physValLineOther);
@@ -230,6 +375,31 @@ bool CPhysValLine::isNull() const
 //------------------------------------------------------------------------------
 {
     return m_line.isNull();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Draws the shape on the drawing scene.
+*/
+void CPhysValLine::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings)
+//------------------------------------------------------------------------------
+{
+}
+
+//------------------------------------------------------------------------------
+QString CPhysValLine::toString(bool i_bAddUnit, const QString& i_strSeparator) const
+//------------------------------------------------------------------------------
+{
+    QString str = x1().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + y1().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + x2().toString(EUnitFind::None, PhysValSubStr::Val)
+                + i_strSeparator
+                + y2().toString(EUnitFind::None, PhysValSubStr::Val);
+    if (i_bAddUnit) {
+        str += " " + m_unit.symbol();
+    }
+    return str;
 }
 
 /*==============================================================================
@@ -602,21 +772,4 @@ QLineF CPhysValLine::toQLineF(const CUnit& i_unit) const
         lineF.setP2(pt2);
     }
     return lineF;
-}
-
-//------------------------------------------------------------------------------
-QString CPhysValLine::toString(bool i_bAddUnit, const QString& i_strSeparator) const
-//------------------------------------------------------------------------------
-{
-    QString str = x1().toString(EUnitFind::None, PhysValSubStr::Val)
-                + i_strSeparator
-                + y1().toString(EUnitFind::None, PhysValSubStr::Val)
-                + i_strSeparator
-                + x2().toString(EUnitFind::None, PhysValSubStr::Val)
-                + i_strSeparator
-                + y2().toString(EUnitFind::None, PhysValSubStr::Val);
-    if (i_bAddUnit) {
-        str += " " + m_unit.symbol();
-    }
-    return str;
 }

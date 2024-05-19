@@ -103,7 +103,7 @@ CDiagObjAxisLabel::CDiagObjAxisLabel(
     m_colUnitAtDivLines(Qt::black),
     m_fntUnitAtDivLines(),
     m_bShowUnitAtAxisLabel(false),
-    m_divLinesMetrics(i_strObjName, EScaleAxis::X),
+    m_divLinesMetrics(EScaleAxis::X),
     // calculated
     m_sizeDivLineLabelsMaxTextExtent(),
     m_rectAxisLabel(),

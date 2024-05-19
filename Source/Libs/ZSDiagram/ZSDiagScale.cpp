@@ -406,7 +406,7 @@ CDiagScale::CDiagScale(
     m_strObjName(i_strObjName),
     m_pDiagram(nullptr),
     m_scale(i_scale),
-    m_divLines("DiagScale"+ i_strObjName, i_scaleAxis),
+    m_divLines(i_scaleAxis),
     m_iZoomCount(0),
     m_pZoomStackFirst(nullptr),
     m_pZoomStackLast(nullptr),

@@ -54,9 +54,9 @@ public: // ctors and dtor
     @param i_scaleAxis [in]
         Range [X, Y]
 */
-CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScaleAxis i_scaleAxis) :
+CScaleDivLinesMetrics::CScaleDivLinesMetrics(EScaleAxis i_scaleAxis) :
 //------------------------------------------------------------------------------
-    CScaleDivLines(NameSpace(), ClassName(), i_strObjName, i_scaleAxis),
+    CScaleDivLines(i_scaleAxis),
     // config values
     m_fnt(),
     m_iDigitsCountMax(0),
@@ -73,17 +73,7 @@ CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScale
     m_arstrScaleMinMaxVal(2),
     m_arrectScaleMinMaxVal(2)
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = CEnumScaleAxis(i_scaleAxis).toString();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "ctor",
-        /* strAddInfo   */ strMthInArgs );
-
-} // ctor
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Assignment operator.
@@ -91,9 +81,9 @@ CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, EScale
     @param i_other [in]
         Reference to base class object whose current internal data should be taken over.
 */
-CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, const CScaleDivLinesMetrics& i_other) :
+CScaleDivLinesMetrics::CScaleDivLinesMetrics(const CScaleDivLinesMetrics& i_other) :
 //------------------------------------------------------------------------------
-    CScaleDivLines(i_strObjName, i_other),
+    CScaleDivLines(i_other),
     // config values
     m_fnt(i_other.m_fnt),
     m_iDigitsCountMax(i_other.m_iDigitsCountMax),
@@ -110,17 +100,7 @@ CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, const 
     m_arstrScaleMinMaxVal(i_other.m_arstrScaleMinMaxVal),
     m_arrectScaleMinMaxVal(i_other.m_arrectScaleMinMaxVal)
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_other.objectName();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "=",
-        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
-
-} // copy ctor
+}
 
 //------------------------------------------------------------------------------
 /*! @brief Destructor.
@@ -128,12 +108,6 @@ CScaleDivLinesMetrics::CScaleDivLinesMetrics(const QString& i_strObjName, const 
 CScaleDivLinesMetrics::~CScaleDivLinesMetrics()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "dtor",
-        /* strAddInfo   */ "" );
-
     // config values
     //m_fnt;
     m_iDigitsCountMax = 0;
@@ -149,8 +123,7 @@ CScaleDivLinesMetrics::~CScaleDivLinesMetrics()
     //m_ararbLabelsVisible.clear();
     //m_arstrScaleMinMaxVal.clear();
     //m_arrectScaleMinMaxVal.clear();
-
-} // dtor
+}
 
 /*==============================================================================
 public: // operators
@@ -165,22 +138,10 @@ public: // operators
 CScaleDivLinesMetrics& CScaleDivLinesMetrics::operator = (const ZS::System::Math::CScaleDivLines& i_other)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_other.objectName();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "=",
-        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
-
     static_cast<CScaleDivLines&>(*this) = i_other;
-
     // Further data processing is necessary to calculate the bounding
     // rectangles of the division line labels depending on the used font.
     m_bDivLinesCalculated = false;
-
     return *this;
 }
 
@@ -193,16 +154,6 @@ CScaleDivLinesMetrics& CScaleDivLinesMetrics::operator = (const ZS::System::Math
 CScaleDivLinesMetrics& CScaleDivLinesMetrics::operator = (const CScaleDivLinesMetrics& i_other)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_other.objectName();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "=",
-        /* strAddInfo   */ i_other.NameSpace() + "::" + i_other.ClassName() + "::" + i_other.objectName() );
-
     m_scaleAxis = i_other.m_scaleAxis;
     m_spacing = i_other.m_spacing;
     m_fScaleMin = i_other.m_fScaleMin;
@@ -259,24 +210,11 @@ public: // instance methods (setting properties)
 bool CScaleDivLinesMetrics::setFont(const QFont& i_fnt)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_fnt.family();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setFont",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_fnt != i_fnt) {
         m_fnt = i_fnt;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -297,24 +235,11 @@ bool CScaleDivLinesMetrics::setFont(const QFont& i_fnt)
 bool CScaleDivLinesMetrics::setDigitsCountMax(int i_iDigitsCountMax)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_iDigitsCountMax);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setDigitsCountMax",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_iDigitsCountMax != i_iDigitsCountMax) {
         m_iDigitsCountMax = i_iDigitsCountMax;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -335,24 +260,11 @@ bool CScaleDivLinesMetrics::setDigitsCountMax(int i_iDigitsCountMax)
 bool CScaleDivLinesMetrics::setUseEngineeringFormat(bool i_bUseEngineeringFormat)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = bool2Str(i_bUseEngineeringFormat);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setUseEngineeringFormat",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_bUseEngineeringFormat != i_bUseEngineeringFormat) {
         m_bUseEngineeringFormat = i_bUseEngineeringFormat;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -380,24 +292,11 @@ bool CScaleDivLinesMetrics::setUseEngineeringFormat(bool i_bUseEngineeringFormat
 bool CScaleDivLinesMetrics::setDivLineLabelsMinTextExtent(const QSize& i_sizeMin)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = qSize2Str(i_sizeMin);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "setDivLineLabelsMinTextExtent",
-        /* strAddInfo   */ strMthInArgs );
-
     bool bChanged = false;
     if (m_sizeMinTextExtent != i_sizeMin) {
         m_sizeMinTextExtent = i_sizeMin;
         bChanged = true;
         m_bDivLinesCalculated = false;
-    }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(bChanged);
     }
     return bChanged;
 }
@@ -466,12 +365,6 @@ public: // overridables of base class CScaleDivLines (to recalculate division li
 bool CScaleDivLinesMetrics::update()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "update",
-        /* strAddInfo   */ "" );
-
     // The base class will set the flag to true. But to calculate the metrics
     // also font changes etc. need to be taken into account.
     if (!m_bDivLinesCalculated)
@@ -498,13 +391,8 @@ bool CScaleDivLinesMetrics::update()
         m_bDivLinesCalculated = true;
 
     } // if (!m_bDivLinesCalculated)
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(m_bDivLinesCalculated);
-    }
     return m_bDivLinesCalculated;
-
-} // update
+}
 
 /*==============================================================================
 public: // instance methods (returning calculated values)
@@ -666,16 +554,6 @@ QRect CScaleDivLinesMetrics::getScaleMaxValBoundingRect() const
 QString CScaleDivLinesMetrics::formatValue(double i_fVal) const
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = QString::number(i_fVal);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "formatValue",
-        /* strAddInfo   */ strMthInArgs );
-
     QString strVal;
     if( m_iExponentDigits <= 0 ) {
         strVal = QString::number(i_fVal, 'f', m_iTrailingDigits);
@@ -683,12 +561,8 @@ QString CScaleDivLinesMetrics::formatValue(double i_fVal) const
     else {
         strVal = QString::number(i_fVal, 'e', m_iTrailingDigits);
     }
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(strVal);
-    }
     return strVal;
-
-} // formatValue
+}
 
 /*==============================================================================
 protected: // overridable auxiliary instance methods of base class
@@ -702,12 +576,6 @@ protected: // overridable auxiliary instance methods of base class
 void CScaleDivLinesMetrics::invalidateResults()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "invalidateResults",
-        /* strAddInfo   */ "" );
-
     CScaleDivLines::invalidateResults();
 
     m_iTrailingDigits = 0;
@@ -744,12 +612,6 @@ protected: // auxiliary instance methods
 int CScaleDivLinesMetrics::updateNumberFormatting()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateNumberFormatting",
-        /* strAddInfo   */ "" );
-
     int iLeadingDigits = 1;
 
     // The number of trailing digits is defined by the mimimum distance between two
@@ -840,16 +702,7 @@ int CScaleDivLinesMetrics::updateNumberFormatting()
             iPrecisionMax = m_iDigitsCountMax - iLeadingDigits;
         }
         m_iTrailingDigits = getPrecision2ShowUniqueNumbers(
-            m_arfDivLinesValsSorted, m_iExponentDigits,
-            m_iTrailingDigits, iPrecisionMax, m_pTrcAdminObj);
-    }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs =
-            "Leading: " + QString::number(iLeadingDigits) +
-            ", Trailing: " + QString::number(m_iTrailingDigits) +
-            ", Exponent: " + QString::number(m_iExponentDigits);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
+            m_arfDivLinesValsSorted, m_iExponentDigits, m_iTrailingDigits, iPrecisionMax);
     }
     return iLeadingDigits;
 
@@ -870,16 +723,6 @@ int CScaleDivLinesMetrics::updateNumberFormatting()
 void CScaleDivLinesMetrics::updateMaxTextExtentAndSpacing(int i_iLeadingDigits)
 //------------------------------------------------------------------------------
 {
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "LeadingDigits: " + QString::number(i_iLeadingDigits);
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateMaxTextExtentAndSpacing",
-        /* strAddInfo   */ strMthInArgs );
-
     // Build string with maximum count of necessary digits and calculate
     // the maximum extent of the division line labels:
     QString strDivLineLabel("+");
@@ -915,12 +758,6 @@ void CScaleDivLinesMetrics::updateMaxTextExtentAndSpacing(int i_iLeadingDigits)
     m_iSpacing_px = fntmtr.boundingRect("0").width();
     m_iSpacing_px += m_iSpacing_px/2;
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs =
-            "MaxTextExtent {" + qSize2Str(m_sizeMaxTextExtent) + "}" +
-            ", Spacing: " + QString::number(m_iSpacing_px);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
 } // updateMaxTextExtentAndSpacing
 
 //------------------------------------------------------------------------------
@@ -930,12 +767,6 @@ void CScaleDivLinesMetrics::updateMaxTextExtentAndSpacing(int i_iLeadingDigits)
 void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateDivLineLabelsBoundingRects",
-        /* strAddInfo   */ "" );
-
     for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); ++iLayer) {
         if (m_ariDivLinesCount[iLayer] > 0) {
             m_ararrectLabels[iLayer] = QVector<QRect>(m_ariDivLinesCount[iLayer]);
@@ -1025,12 +856,6 @@ void CScaleDivLinesMetrics::updateDivLineLabelsBoundingRects()
 void CScaleDivLinesMetrics::updateDivLineLabelsVisibilities()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateDivLineLabelsVisibilities",
-        /* strAddInfo   */ "" );
-    
     for (int iLayer = 0; iLayer < CEnumDivLineLayer::count(); ++iLayer) {
         if (m_ariDivLinesCount[iLayer] > 0) {
             m_ararbLabelsVisible[iLayer] = QVector<bool>(m_ariDivLinesCount[iLayer], true);
@@ -1063,22 +888,6 @@ void CScaleDivLinesMetrics::updateDivLineLabelsVisibilities()
         }
     }
 
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        for( int iLayer = 1; iLayer < CEnumDivLineLayer::count(); ++iLayer) {
-            QString strMthAddInfo =
-                "LabelsVisible[" + CEnumDivLineLayer(iLayer).toString() + "][" +
-                QString::number(m_ararbLabelsVisible[iLayer].size()) + "]";
-            if (m_ararbLabelsVisible[iLayer].size() > 0) {
-                strMthAddInfo += "(";
-                for (int idxDivLine = 0; idxDivLine < m_ararbLabelsVisible[iLayer].size(); ++idxDivLine) {
-                    if (strMthAddInfo.endsWith("(")) strMthAddInfo += ", ";
-                    strMthAddInfo += QString(m_ararbLabelsVisible[iLayer][idxDivLine] ? "1" : "0");
-                }
-                strMthAddInfo += ")";
-            }
-            mthTracer.trace(strMthAddInfo);
-        }
-    }
 } // updateDivLineLabelsVisibilities
 
 //------------------------------------------------------------------------------
@@ -1088,12 +897,6 @@ void CScaleDivLinesMetrics::updateDivLineLabelsVisibilities()
 void CScaleDivLinesMetrics::updateScaleMinMaxBoundingRects()
 //------------------------------------------------------------------------------
 {
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDatailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "updateScaleMinMaxBoundingRects",
-        /* strAddInfo   */ "" );
-
     for (int idxMinMax = 0; idxMinMax < 2; ++idxMinMax) {
         m_arstrScaleMinMaxVal[idxMinMax] = "";
         m_arrectScaleMinMaxVal[idxMinMax] = QRect();
