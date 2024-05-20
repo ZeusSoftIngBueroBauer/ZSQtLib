@@ -1226,8 +1226,10 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
         m_size = rectFNotRotated.size();
     }
     else {
+        // Create the widthLine from LC' to RC' selection points.
+        QPointF ptLeftCenter = leftCenter().toQPointF();
         QPointF ptRightCenter = rightCenter().toQPointF();
-        QLineF lineWidth(leftCenter().toQPointF(), ptRightCenter);
+        QLineF lineWidth(ptLeftCenter, ptRightCenter);
         #pragma message(__TODO__"Remove comparison check")
         CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
         if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
@@ -1239,18 +1241,24 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
         }
+        // Determine the perpendicularLine to the widthLine going through ptPosMoved.
         QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
+        // Determine the intersection point LC'' of the perpendicularLine with the widthLine.
         if (lineWidth.intersects(linePerpendicular, &ptRightCenter) != QLineF::NoIntersection) {
+            // Get length of line from LC'' to RC' and use this as the new width w'' of the rectangle
             lineWidth.setP2(ptRightCenter);
-            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
-            // If the angle of the horizontal line of the not rotated rectangle is not at 0°, the left center
-            // point has been moved right of the rectangles right edge and the resulting width is negative.
             double fWidth = lineWidth.length();
+            // Get rotation angle α'' of the new widthLine'' and use this as the new rotation angle of the rectangle.
+            // If RC has not been moved beyond the left center selection point, the rotation angle α remains the same.
+            // Otherwise 180° has to be added to the rotation angle.
+            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
             double fAngleHorLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
             if (fAngleHorLine_deg > 179.0 && fAngleHorLine_deg < 181.0) {
-                fWidth *= -1.0;
-                #pragma message(__TODO__"Remove comparison check")
-                physValAngle2.setVal(Math::normalizeAngleInDegree(physValAngle2.getVal() + 180.0));
+                m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+            }
+            else {
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
             }
             #pragma message(__TODO__"Remove comparison check")
             if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
@@ -1401,8 +1409,10 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         m_size = rectFNotRotated.size();
     }
     else {
+        // Create the heightLine from TC' to BC' selection points.
         QPointF ptTopCenter = topCenter().toQPointF();
-        QLineF lineHeight(ptTopCenter, bottomCenter().toQPointF());
+        QPointF ptBottomCenter = bottomCenter().toQPointF();
+        QLineF lineHeight(ptTopCenter, ptBottomCenter);
         #pragma message(__TODO__"Remove comparison check")
         CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
         if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
@@ -1414,18 +1424,19 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
         }
+        // Determine the perpendicularLine to the heightLine going through ptPosMoved.
         QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
+        // Determine the intersection point TC'' of the perpendicularLine with the heightLine.
         if (lineHeight.intersects(linePerpendicular, &ptTopCenter) != QLineF::NoIntersection) {
             lineHeight.setP1(ptTopCenter);
-            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
-            // If the angle of the vertical line of the not rotated rectangle is not at 90°, the top center
-            // point has been moved below of the rectangles bottom edge and the resulting height is negative.
             double fHeight = lineHeight.length();
+            // Get rotation angle α'' of the new heightLine'', add 90° and use this as the new rotation angle of the rectangle.
+            // If TC has not been moved beyond the bottom center selection point, the rotation angle α remains the same.
+            // Otherwise 180° has to be added to the rotation angle.
+            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
             double fAngleVerLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
             if (fAngleVerLine_deg > 269.0 && fAngleVerLine_deg < 271.0) {
-                fHeight *= -1.0;
-                #pragma message(__TODO__"Remove comparison check")
-                physValAngle2.setVal(Math::normalizeAngleInDegree(physValAngle2.getVal() + 180.0));
+                m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
             else {
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
@@ -1513,8 +1524,10 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         m_size = rectFNotRotated.size();
     }
     else {
+        // Create the heightLine from TC' to BC' selection points.
+        QPointF ptTopCenter = topCenter().toQPointF();
         QPointF ptBottomCenter = bottomCenter().toQPointF();
-        QLineF lineHeight(topCenter().toQPointF(), ptBottomCenter);
+        QLineF lineHeight(ptTopCenter, ptBottomCenter);
         #pragma message(__TODO__"Remove comparison check")
         CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
         if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
@@ -1526,18 +1539,19 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
                 CErrLog::GetInstance()->addEntry(errResultInfo);
             }
         }
+        // Determine the perpendicularLine to the heightLine going through ptPosMoved.
         QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
+        // Determine the intersection point BC'' of the perpendicularLine with the heightLine.
         if (lineHeight.intersects(linePerpendicular, &ptBottomCenter) != QLineF::NoIntersection) {
             lineHeight.setP2(ptBottomCenter);
-            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
-            // If the angle of the vertical line of the not rotated rectangle is not at 90°, the top center
-            // point has been moved below of the rectangles bottom edge and the resulting height is negative.
             double fHeight = lineHeight.length();
+            // Get rotation angle α'' of the new heightLine'', add 90° and use this as the new rotation angle of the rectangle.
+            // If BC has not been moved beyond the top center selection point, the rotation angle α remains the same.
+            // Otherwise 180° has to be added to the rotation angle.
+            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
             double fAngleVerLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
             if (fAngleVerLine_deg > 269.0 && fAngleVerLine_deg < 271.0) {
-                fHeight *= -1.0;
-                #pragma message(__TODO__"Remove comparison check")
-                physValAngle2.setVal(Math::normalizeAngleInDegree(physValAngle2.getVal() + 180.0));
+                m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
             else {
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
@@ -1623,18 +1637,24 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        m_size.setWidth(fabs(lineDiagonale.dx()));
-        m_size.setHeight(fabs(lineDiagonale.dy()));
         if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dx()));
+            m_size.setHeight(fabs(lineDiagonale.dy()));
             m_physValAngle.setVal(0.0);
         }
         else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dy()));
+            m_size.setHeight(fabs(lineDiagonale.dx()));
             m_physValAngle.setVal(90.0);
         }
         else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dx()));
+            m_size.setHeight(fabs(lineDiagonale.dy()));
             m_physValAngle.setVal(180.0);
         }
         else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
+            m_size.setWidth(fabs(lineDiagonale.dy()));
+            m_size.setHeight(fabs(lineDiagonale.dx()));
             m_physValAngle.setVal(270.0);
         }
     }
@@ -1707,18 +1727,24 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        m_size.setWidth(fabs(lineDiagonale.dx()));
-        m_size.setHeight(fabs(lineDiagonale.dy()));
         if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dx()));
+            m_size.setHeight(fabs(lineDiagonale.dy()));
             m_physValAngle.setVal(0.0);
         }
         else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dy()));
+            m_size.setHeight(fabs(lineDiagonale.dx()));
             m_physValAngle.setVal(90.0);
         }
         else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dx()));
+            m_size.setHeight(fabs(lineDiagonale.dy()));
             m_physValAngle.setVal(180.0);
         }
         else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
+            m_size.setWidth(fabs(lineDiagonale.dy()));
+            m_size.setHeight(fabs(lineDiagonale.dx()));
             m_physValAngle.setVal(270.0);
         }
     }
@@ -1792,18 +1818,24 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        m_size.setWidth(fabs(lineDiagonale.dx()));
-        m_size.setHeight(fabs(lineDiagonale.dy()));
         if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dx()));
+            m_size.setHeight(fabs(lineDiagonale.dy()));
             m_physValAngle.setVal(0.0);
         }
         else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dy()));
+            m_size.setHeight(fabs(lineDiagonale.dx()));
             m_physValAngle.setVal(90.0);
         }
         else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dx()));
+            m_size.setHeight(fabs(lineDiagonale.dy()));
             m_physValAngle.setVal(180.0);
         }
         else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
+            m_size.setWidth(fabs(lineDiagonale.dy()));
+            m_size.setHeight(fabs(lineDiagonale.dx()));
             m_physValAngle.setVal(270.0);
         }
     }
@@ -1878,18 +1910,24 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        m_size.setWidth(fabs(lineDiagonale.dx()));
-        m_size.setHeight(fabs(lineDiagonale.dy()));
         if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dx()));
+            m_size.setHeight(fabs(lineDiagonale.dy()));
             m_physValAngle.setVal(0.0);
         }
         else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dy()));
+            m_size.setHeight(fabs(lineDiagonale.dx()));
             m_physValAngle.setVal(90.0);
         }
         else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+            m_size.setWidth(fabs(lineDiagonale.dx()));
+            m_size.setHeight(fabs(lineDiagonale.dy()));
             m_physValAngle.setVal(180.0);
         }
         else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
+            m_size.setWidth(fabs(lineDiagonale.dy()));
+            m_size.setHeight(fabs(lineDiagonale.dx()));
             m_physValAngle.setVal(270.0);
         }
     }
