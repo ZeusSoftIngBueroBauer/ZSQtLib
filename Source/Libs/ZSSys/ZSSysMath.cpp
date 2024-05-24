@@ -91,31 +91,61 @@ double Math::abs( double i_fVal )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns an angle in the range between 0° and 360° (0.0 <= angle < 2PI).
+
+    @param i_fAngle_rad [in]
+        Angle in radiants.
+    @return Normalized angle value radiant.
+*/
 double Math::normalizeAngleInRad( double i_fAngle_rad )
 //------------------------------------------------------------------------------
 {
-    double fAbsAngle_rad = fabs(i_fAngle_rad);
-    if (fAbsAngle_rad >= c_f2PI) {
-        int iFullCircles = static_cast<int>(fAbsAngle_rad / c_f2PI);
+    double fAngle_rad = i_fAngle_rad;
+    if (fAngle_rad >= c_f2PI) {
+        int iFullCircles = static_cast<int>(fAngle_rad / c_f2PI);
         if (iFullCircles > 0) {
-            fAbsAngle_rad -= (static_cast<double>(iFullCircles) * c_f2PI);
+            fAngle_rad -= (static_cast<double>(iFullCircles) * c_f2PI);
         }
     }
-    return fAbsAngle_rad;
+    else if (fAngle_rad < 0.0) {
+        int iFullCircles = static_cast<int>(fabs(fAngle_rad) / c_f2PI);
+        if (iFullCircles > 0) {
+            fAngle_rad += (static_cast<double>(iFullCircles) * c_f2PI);
+        }
+        if (fAngle_rad < 0.0) {
+            fAngle_rad += c_f2PI;
+        }
+    }
+    return fAngle_rad;
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns an angle in the range between 0° and 360°.
+
+    @param i_fAngle_degree [in]
+        Angle in degrees.
+    @return Normalized angle in degrees.
+*/
 double Math::normalizeAngleInDegree( double i_fAngle_degree )
 //------------------------------------------------------------------------------
 {
-    double fAbsAngle_degree = fabs(i_fAngle_degree);
-    if (fAbsAngle_degree >= 360.0) {
-        int iFullCircles = static_cast<int>(fAbsAngle_degree) / 360;
+    double fAngle_degree = i_fAngle_degree;
+    if (fAngle_degree >= 360.0) {
+        int iFullCircles = static_cast<int>(fAngle_degree) / 360;
         if (iFullCircles > 0) {
-            fAbsAngle_degree -= (static_cast<double>(iFullCircles) * 360.0);
+            fAngle_degree -= (static_cast<double>(iFullCircles) * 360.0);
         }
     }
-    return fAbsAngle_degree;
+    else if (fAngle_degree < 0.0) {
+        int iFullCircles = static_cast<int>(fabs(fAngle_degree)) / 360;
+        if (iFullCircles > 0) {
+            fAngle_degree += (static_cast<double>(iFullCircles) * 360.0);
+        }
+        if (fAngle_degree < 0.0) {
+            fAngle_degree += 360.0;
+        }
+    }
+    return fAngle_degree;
 }
 
 //------------------------------------------------------------------------------
@@ -159,11 +189,7 @@ double Math::rad2Degree( double i_fAngle_rad, bool i_bNormalize )
 {
     double fAngle_degree = 360.0 * i_fAngle_rad / Math::c_f2PI;
     if (i_bNormalize) {
-        double fAbsAngle_degree = normalizeAngleInDegree(fAngle_degree);
-        fAngle_degree = fAbsAngle_degree;
-        if (i_fAngle_rad < 0.0 && fAbsAngle_degree > 0.0) {
-            fAngle_degree = 360.0 - fAbsAngle_degree;
-        }
+        fAngle_degree = normalizeAngleInDegree(fAngle_degree);
     }
     return fAngle_degree;
 }
@@ -209,11 +235,7 @@ double Math::degree2Rad( double i_fAngle_degree, bool i_bNormalize )
 {
     double fAngle_rad = Math::c_f2PI * i_fAngle_degree / 360.0;
     if (i_bNormalize) {
-        double fAbsAngle_rad = normalizeAngleInRad(fAngle_rad);
-        fAngle_rad = fAbsAngle_rad;
-        if (i_fAngle_degree < 0.0 && fAbsAngle_rad > 0.0) {
-            fAngle_rad = c_f2PI - fAbsAngle_rad;
-        }
+        fAngle_rad = normalizeAngleInRad(fAngle_rad);
     }
     return fAngle_rad;
 }

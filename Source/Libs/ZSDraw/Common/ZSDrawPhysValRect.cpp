@@ -1659,25 +1659,34 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
         }
     }
     else {
-        QSizeF sizeF(lineDiagonale.dx(), lineDiagonale.dy());
-        double fRadius = lineDiagonale.length() / 2.0;
-        int iQuadrant = -1;
-        double fBeta_rad = getAngleRad(sizeF, &iQuadrant);
-        double fPhi_rad = fBeta_rad - m_physValAngle.getVal(Units.Angle.Rad);
-        double fWidth = 2.0 * fRadius * cos(fPhi_rad);
-        double fHeight = 2.0 * fRadius * sin(fPhi_rad);
-        //if (iQuadrant == 2) {
-        //    fWidth *= -1.0;
-        //}
-        //else if (iQuadrant == 3) {
-        //    fWidth *= -1.0;
-        //    fHeight *= -1.0;
-        //}
-        //else if (iQuadrant == 4) {
-        //    fHeight *= -1.0;
-        //}
-        m_size.setWidth(fWidth);
-        m_size.setHeight(fHeight);
+        double fDiameter = lineDiagonale.length();
+        // QLineF::angle returns the angle counter clockwise (3 o'cock = 0°, 12 o'clock = 90°).
+        // The grapics libaries angles are measure clockwise (3 o'clock = 0°, 6 o'clock = 90°, 12 o'clock = 270°).
+        double fBeta_degree = Math::toClockWiseAngleDegree(lineDiagonale.angle());
+        double fPhi_degree = Math::normalizeAngleInDegree(fBeta_degree - m_physValAngle.getVal(Units.Angle.Degree));
+        // The trigonometric functions of the stdlib are using counter clockwise angles in radiant.
+        double fPhi_rad = Math::degree2Rad(Math::toCounterClockWiseAngleDegree(fPhi_degree));
+        double fWidth = fabs(fDiameter * cos(fPhi_rad));
+        double fHeight = fabs(fDiameter * sin(fPhi_rad));
+        if (fPhi_degree >= 0.0 && fPhi_degree < 90.0) {
+            m_size.setWidth(fWidth);
+            m_size.setHeight(fHeight);
+        }
+        else if (fPhi_degree >= 90.0 && fPhi_degree < 180.0) {
+            m_size.setWidth(fHeight);
+            m_size.setHeight(fWidth);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 90.0));
+        }
+        else if (fPhi_degree >= 180.0 && fPhi_degree < 270.0) {
+            m_size.setWidth(fWidth);
+            m_size.setHeight(fHeight);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else /*if (fPhi_degree >= 270.0 && fPhi_degree < 360.0)*/ {
+            m_size.setWidth(fHeight);
+            m_size.setHeight(fWidth);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 270.0));
+        }
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
@@ -1749,26 +1758,34 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
         }
     }
     else {
-        double fRadius = lineDiagonale.length() / 2.0;
-        // Beta is counterclockwise, the rotation angle is clockwise.
-        // So add those two angles to get the angle of the rectangles diagonale
-        // from center point to the top right corner.
-        double fBeta_degree = lineDiagonale.angle();
-        if (lineDiagonale.dx() > 0.0 && lineDiagonale.dy() > 0.0) { // 1st Quadrant
-            fBeta_degree -= 180.0;
+        double fDiameter = lineDiagonale.length();
+        // QLineF::angle returns the angle counter clockwise (3 o'cock = 0°, 12 o'clock = 90°).
+        // The grapics libaries angles are measure clockwise (3 o'clock = 0°, 6 o'clock = 90°, 12 o'clock = 270°).
+        double fBeta_degree = Math::toClockWiseAngleDegree(lineDiagonale.angle());
+        double fPhi_degree = Math::normalizeAngleInDegree(fBeta_degree - m_physValAngle.getVal(Units.Angle.Degree));
+        // The trigonometric functions of the stdlib are using counter clockwise angles in radiant.
+        double fPhi_rad = Math::degree2Rad(Math::toCounterClockWiseAngleDegree(fPhi_degree));
+        double fWidth = fabs(fDiameter * cos(fPhi_rad));
+        double fHeight = fabs(fDiameter * sin(fPhi_rad));
+        if (fPhi_degree >= 0.0 && fPhi_degree < 90.0) {
+            m_size.setWidth(fHeight);
+            m_size.setHeight(fWidth);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 270.0));
         }
-        else if (lineDiagonale.dx() < 0.0 && lineDiagonale.dy() > 0.0) { // 2nd Quadrant
-            fBeta_degree -= 90.0;
+        else if (fPhi_degree >= 90.0 && fPhi_degree < 180.0) {
+            m_size.setWidth(fWidth);
+            m_size.setHeight(fHeight);
         }
-        else if (lineDiagonale.dx() > 0.0 && lineDiagonale.dy() < 0.0) { // 3rd Quadrant
-            fBeta_degree += 90.0;
+        else if (fPhi_degree >= 180.0 && fPhi_degree < 270.0) {
+            m_size.setWidth(fHeight);
+            m_size.setHeight(fWidth);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 90.0));
         }
-        double fPhi_degree = fBeta_degree + m_physValAngle.getVal(Units.Angle.Degree);
-        double fPhi_rad = Math::degree2Rad(fPhi_degree);
-        double fWidth = 2.0 * fRadius * cos(fPhi_rad);
-        double fHeight = 2.0 * fRadius * sin(fPhi_rad);
-        m_size.setWidth(fWidth);
-        m_size.setHeight(fHeight);
+        else /*if (fPhi_degree >= 270.0 && fPhi_degree < 360.0)*/ {
+            m_size.setWidth(fWidth);
+            m_size.setHeight(fHeight);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
@@ -1840,25 +1857,34 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
         }
     }
     else {
-        QSizeF sizeF(-lineDiagonale.dx(), -lineDiagonale.dy());
-        double fRadius = lineDiagonale.length() / 2.0;
-        int iQuadrant = -1;
-        double fBeta_rad = getAngleRad(sizeF, &iQuadrant);
-        double fPhi_rad = fBeta_rad - m_physValAngle.getVal(Units.Angle.Rad);
-        double fWidth = 2.0 * fRadius * cos(fPhi_rad);
-        double fHeight = 2.0 * fRadius * sin(fPhi_rad);
-        //if (iQuadrant == 2) {
-        //    fWidth *= -1.0;
-        //}
-        //else if (iQuadrant == 3) {
-        //    fWidth *= -1.0;
-        //    fHeight *= -1.0;
-        //}
-        //else if (iQuadrant == 4) {
-        //    fHeight *= -1.0;
-        //}
-        m_size.setWidth(fWidth);
-        m_size.setHeight(fHeight);
+        double fDiameter = lineDiagonale.length();
+        // QLineF::angle returns the angle counter clockwise (3 o'cock = 0°, 12 o'clock = 90°).
+        // The grapics libaries angles are measure clockwise (3 o'clock = 0°, 6 o'clock = 90°, 12 o'clock = 270°).
+        double fBeta_degree = Math::toClockWiseAngleDegree(lineDiagonale.angle());
+        double fPhi_degree = Math::normalizeAngleInDegree(fBeta_degree - m_physValAngle.getVal(Units.Angle.Degree));
+        // The trigonometric functions of the stdlib are using counter clockwise angles in radiant.
+        double fPhi_rad = Math::degree2Rad(Math::toCounterClockWiseAngleDegree(fPhi_degree));
+        double fWidth = fabs(fDiameter * cos(fPhi_rad));
+        double fHeight = fabs(fDiameter * sin(fPhi_rad));
+        if (fPhi_degree >= 0.0 && fPhi_degree < 90.0) {
+            m_size.setWidth(fWidth);
+            m_size.setHeight(fHeight);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else if (fPhi_degree >= 90.0 && fPhi_degree < 180.0) {
+            m_size.setWidth(fHeight);
+            m_size.setHeight(fWidth);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 270.0));
+        }
+        else if (fPhi_degree >= 180.0 && fPhi_degree < 270.0) {
+            m_size.setWidth(fWidth);
+            m_size.setHeight(fHeight);
+        }
+        else /*if (fPhi_degree >= 270.0 && fPhi_degree < 360.0)*/ {
+            m_size.setWidth(fHeight);
+            m_size.setHeight(fWidth);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 90.0));
+        }
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;
@@ -1932,25 +1958,34 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
         }
     }
     else {
-        QSizeF sizeF(lineDiagonale.dx(), -lineDiagonale.dy());
-        double fRadius = lineDiagonale.length() / 2.0;
-        int iQuadrant = -1;
-        double fBeta_rad = getAngleRad(sizeF, &iQuadrant);
-        double fPhi_rad = fBeta_rad - m_physValAngle.getVal(Units.Angle.Rad);
-        double fWidth = 2.0 * fRadius * cos(fPhi_rad);
-        double fHeight = 2.0 * fRadius * sin(fPhi_rad);
-        //if (iQuadrant == 2) {
-        //    fWidth *= -1.0;
-        //}
-        //else if (iQuadrant == 3) {
-        //    fWidth *= -1.0;
-        //    fHeight *= -1.0;
-        //}
-        //else if (iQuadrant == 4) {
-        //    fHeight *= -1.0;
-        //}
-        m_size.setWidth(fWidth);
-        m_size.setHeight(fHeight);
+        double fDiameter = lineDiagonale.length();
+        // QLineF::angle returns the angle counter clockwise (3 o'cock = 0°, 12 o'clock = 90°).
+        // The grapics libaries angles are measure clockwise (3 o'clock = 0°, 6 o'clock = 90°, 12 o'clock = 270°).
+        double fBeta_degree = Math::toClockWiseAngleDegree(lineDiagonale.angle());
+        double fPhi_degree = Math::normalizeAngleInDegree(fBeta_degree - m_physValAngle.getVal(Units.Angle.Degree));
+        // The trigonometric functions of the stdlib are using counter clockwise angles in radiant.
+        double fPhi_rad = Math::degree2Rad(Math::toCounterClockWiseAngleDegree(fPhi_degree));
+        double fWidth = fabs(fDiameter * cos(fPhi_rad));
+        double fHeight = fabs(fDiameter * sin(fPhi_rad));
+        if (fPhi_degree >= 0.0 && fPhi_degree < 90.0) {
+            m_size.setWidth(fHeight);
+            m_size.setHeight(fWidth);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 90.0));
+        }
+        else if (fPhi_degree >= 90.0 && fPhi_degree < 180.0) {
+            m_size.setWidth(fWidth);
+            m_size.setHeight(fHeight);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else if (fPhi_degree >= 180.0 && fPhi_degree < 270.0) {
+            m_size.setWidth(fHeight);
+            m_size.setHeight(fWidth);
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 270.0));
+        }
+        else /*if (fPhi_degree >= 270.0 && fPhi_degree < 360.0)*/ {
+            m_size.setWidth(fWidth);
+            m_size.setHeight(fHeight);
+        }
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = physValPt;
     quint16 uSelectionPointsToExclude = 0;

@@ -731,7 +731,7 @@ CTest::CTest() :
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "DivisionLineValues-WorldCoors",
+        /* strName         */ "DivisionLineValues-WorldCoors-XScale",
         /* strOperation    */ "getValues",
         /* pGrpParent      */ pGrpDivLines,
         /* szDoTestStepFct */ SLOT(doTestStepDivLinesGetVal(ZS::Test::CTestStep*)) );
@@ -810,13 +810,19 @@ CTest::CTest() :
         {"ValInPix", 10.0}, {"ValExpected", 5.0},
         {"Val", 10.0}, {"ValInPixExpected", 20.0}});
 
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "DivisionLineValues-WorldCoors-YScale-BottomUp",
+        /* strOperation    */ "getValues",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestStepDivLinesGetVal(ZS::Test::CTestStep*)) );
+
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
-        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"ScaleMinInPix", 19.0}, {"ScaleMaxInPix", 0.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
         {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
         {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 19},
@@ -825,11 +831,10 @@ CTest::CTest() :
         {"Val", 0.0}, {"ValInPixExpected", 19.0}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
-        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"ScaleMinInPix", 19.0}, {"ScaleMaxInPix", 0.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
         {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
         {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 0},
@@ -838,11 +843,10 @@ CTest::CTest() :
         {"Val", 5.0}, {"ValInPixExpected", 9.5}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
-        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 19.0}, {"DivLineDistMinPix", 10},
+        {"ScaleMinInPix", 19.0}, {"ScaleMaxInPix", 0.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
         {"DivLinesCount", 2}, {"DivLinesDistMin", 10},
         {"IdxDivLine", 1}, {"DivLineVal", 10.0}, {"DivLineInPix", 0},
@@ -852,11 +856,10 @@ CTest::CTest() :
 
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
-        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"ScaleMinInPix", 20.0}, {"ScaleMaxInPix", 0.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
         {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
         {"IdxDivLine", 0}, {"DivLineVal", 0}, {"DivLineInPix", 20},
@@ -865,11 +868,10 @@ CTest::CTest() :
         {"Val", 0.0}, {"ValInPixExpected", 20.0}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
-        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"ScaleMinInPix", 20.0}, {"ScaleMaxInPix", 0.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
         {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
         {"IdxDivLine", 1}, {"DivLineVal", 5.0}, {"DivLineInPix", 10},
@@ -878,11 +880,10 @@ CTest::CTest() :
         {"Val", 5.0}, {"ValInPixExpected", 10.0}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
-        {"ScaleMinInPix", 0.0}, {"ScaleMaxInPix", 20.0}, {"DivLineDistMinPix", 10},
+        {"ScaleMinInPix", 20.0}, {"ScaleMaxInPix", 0.0}, {"DivLineDistMinPix", 10},
         {"DivLineLayer", CEnumDivLineLayer(EDivLineLayer::Main).toString()},
         {"DivLinesCount", 3}, {"DivLinesDistMin", 5},
         {"IdxDivLine", 2}, {"DivLineVal", 10.0}, {"DivLineInPix", 0},
@@ -890,9 +891,15 @@ CTest::CTest() :
         {"ValInPix", 10.0}, {"ValExpected", 5.0},
         {"Val", 10.0}, {"ValInPixExpected", 0.0}});
 
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "DivisionLineValues-WorldCoors-YScale-TopDown",
+        /* strOperation    */ "getValues",
+        /* pGrpParent      */ pGrpDivLines,
+        /* szDoTestStepFct */ SLOT(doTestStepDivLinesGetVal(ZS::Test::CTestStep*)) );
+
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
@@ -905,7 +912,6 @@ CTest::CTest() :
         {"Val", 0.0}, {"ValInPixExpected", 0.0}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
@@ -918,7 +924,6 @@ CTest::CTest() :
         {"Val", 5.0}, {"ValInPixExpected", 9.5}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
@@ -932,7 +937,6 @@ CTest::CTest() :
 
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
@@ -945,7 +949,6 @@ CTest::CTest() :
         {"Val", 0.0}, {"ValInPixExpected", 0.0}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
@@ -958,7 +961,6 @@ CTest::CTest() :
         {"Val", 5.0}, {"ValInPixExpected", 10.0}});
     pTestStep->addDataRow({
         {"ScaleAxis", CEnumScaleAxis(EScaleAxis::Y).toString()},
-        {"YScaleAxisOrientation", CEnumYScaleAxisOrientation(EYScaleAxisOrientation::TopDown).toString()},
         {"Spacing", CEnumSpacing(ESpacing::Linear).toString()},
         {"UseWorldTransformation", true},
         {"ScaleMinVal", 0.0}, {"ScaleMaxVal", 10.0}, {"ScaleRes", 0.1},
@@ -1570,7 +1572,6 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
     for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
     {
         CEnumScaleAxis eScaleAxis = EScaleAxis::X;
-        CEnumYScaleAxisOrientation eYScaleAxisOrientation;
         CEnumSpacing eSpacing = ESpacing::Linear;
         bool bUseWorldTransformation = false;
         double fScaleMinVal = 0.0;
@@ -1604,9 +1605,6 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
         {
             if (strKey == "ScaleAxis") {
                 eScaleAxis = dataRow["ScaleAxis"].toString();
-            }
-            else if (strKey == "YScaleAxisOrientation") {
-                eYScaleAxisOrientation = dataRow["YScaleAxisOrientation"].toString();
             }
             else if (strKey == "Spacing") {
                 eSpacing = dataRow["Spacing"].toString();
@@ -1686,9 +1684,6 @@ void CTest::doTestStepDivLinesGetVal( ZS::Test::CTestStep* i_pTestStep )
 
         ZS::System::Math::CScaleDivLines divLines(eScaleAxis.enumerator());
 
-        //if (eYScaleAxisOrientation.isValid()) {
-        //    divLines.setYScaleAxisOrientation(eYScaleAxisOrientation);
-        //}
         divLines.setSpacing(eSpacing);
         divLines.setUseWorldCoordinateTransformation(bUseWorldTransformation);
         if (bUseWorldTransformation) {
