@@ -65,10 +65,10 @@ public: // ctors
         const ZS::PhysVal::CUnit& i_unit);
     CPhysValRect(
         const CDrawingScene& i_drawingScene,
-        const QRectF& i_rect);
+        const QPointF& i_ptTL, const QSizeF& i_size);
     CPhysValRect(
         const CDrawingScene& i_drawingScene,
-        const QRectF& i_rect,
+        const QPointF& i_ptTL, const QSizeF& i_size,
         const ZS::PhysVal::CUnit& i_unit);
 public: // ctors
     CPhysValRect(
@@ -95,12 +95,12 @@ public: // ctors
         const CDrawingScene& i_drawingScene,
         const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
         const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QRectF& i_rect);
+        const QPointF& i_ptTL, const QSizeF& i_size);
     CPhysValRect(
         const CDrawingScene& i_drawingScene,
         const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
         const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QRectF& i_rect,
+        const QPointF& i_ptTL, const QSizeF& i_size,
         const ZS::PhysVal::CUnit& i_unit);
 public: // ctors
     CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);

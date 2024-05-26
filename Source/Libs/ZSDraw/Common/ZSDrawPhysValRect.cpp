@@ -101,6 +101,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -121,6 +132,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -140,6 +162,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -160,6 +193,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -228,6 +272,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -250,6 +305,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -271,6 +337,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -293,6 +370,17 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -331,6 +419,17 @@ CPhysValRect::CPhysValRect(
     if (i_physValTopLeft.resolution() != i_physValBottomRight.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
+    }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);
     initSelectionPoints();
@@ -364,6 +463,17 @@ CPhysValRect::CPhysValRect(
     }
     if (i_physValTopLeft.resolution() != i_physValSize.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
+    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (i_ptTL.y() > i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else /*if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)*/ {
+        if (i_ptTL.y() < i_ptBR.y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+        m_size.setHeight(-m_size.height());
     }
     //int iQuadTmp = -1;
     //m_physValAngleDiagLineCounterClockwise = CPhysVal(getAngleDegree(m_size, &iQuadTmp), Units.Angle.Degree);

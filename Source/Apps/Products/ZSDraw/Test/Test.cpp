@@ -724,14 +724,17 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
          |                       |
      350 +-----+-----+-----+-----+         250
     */
-    QRectF rectFOrig(QPointF(200.0, 250.0), QSizeF(200.0, 100.0));
+    QPointF ptTLOrig(200.0, 250.0);
+    QPointF ptBROrig(400.0, 350.0);
+    QSizeF sizeOrig(200.0, 100.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        rectFOrig.setTop(350.0);
+        ptTLOrig.setY(350.0);
+        ptBROrig.setY(250.0);
     }
 
     ZS::Test::CTestStepGroup* pGrpTransformRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " PhysValRect(" + qRect2Str(rectFOrig) + " " + unit.symbol() + ")",
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " PhysValRect(" + qPoint2Str(ptTLOrig) + ", " + qSize2Str(sizeOrig) + " " + unit.symbol() + ")",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     //--------------------------------------------------------------------------
@@ -762,7 +765,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
@@ -10098,15 +10102,31 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         /* strAddInfo   */ strMthInArgs );
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    CUnit unit = drawingSize.unit();
+    CPhysValRect physValRectResult(*m_pDrawingScene);
 
-    QRectF rectF = i_pTestStep->getConfigValue("create").toRectF();
-    if (i_pTestStep->hasConfigValue("create.unit")) {
-        QString strUnitPoint = i_pTestStep->getConfigValue("create.unit").toString();
-        unit = strUnitPoint;
+    QPointF ptTL = i_pTestStep->getConfigValue("create.topLeft").toPointF();
+    if (i_pTestStep->hasConfigValue("create.bottomRight")) {
+        QPointF ptBR = i_pTestStep->getConfigValue("create.bottomRight").toPointF();
+        if (i_pTestStep->hasConfigValue("create.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("create.unit").toString();
+            CUnit unit = strUnitPoint;
+            physValRectResult = CPhysValRect(*m_pDrawingScene, ptTL, ptBR, unit);
+        }
+        else {
+            physValRectResult = CPhysValRect(*m_pDrawingScene, ptTL, ptBR);
+        }
     }
-
-    CPhysValRect physValRectResult(*m_pDrawingScene, rectF, unit);
+    else if (i_pTestStep->hasConfigValue("create.size")) {
+        QSizeF size = i_pTestStep->getConfigValue("create.size").toSizeF();
+        if (i_pTestStep->hasConfigValue("create.unit")) {
+            QString strUnitPoint = i_pTestStep->getConfigValue("create.unit").toString();
+            CUnit unit = strUnitPoint;
+            physValRectResult = CPhysValRect(*m_pDrawingScene, ptTL, size, unit);
+        }
+        else {
+            physValRectResult = CPhysValRect(*m_pDrawingScene, ptTL, size);
+        }
+    }
 
     if (i_pTestStep->hasConfigValue("removeAndDeleteAllPhysValShapes")) {
         m_pDrawingScene->removeAndDeleteAllPhysValShapes();
@@ -10134,7 +10154,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setCenter").toPointF();
         if (i_pTestStep->hasConfigValue("setCenter.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setCenter.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setCenter(physValPt);
         }
@@ -10147,7 +10167,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QSizeF sizeF = i_pTestStep->getConfigValue("setSize").toSizeF();
         if (i_pTestStep->hasConfigValue("setSize.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setSize.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValSize physValSize(*m_pDrawingScene, sizeF, unit);
             physValRectResult.setSize(physValSize);
         }
@@ -10164,7 +10184,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setWidthByMovingLeftCenter").toPointF();
         if (i_pTestStep->hasConfigValue("setWidthByMovingLeftCenter.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setWidthByMovingLeftCenter.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setWidthByMovingLeftCenter(physValPt);
         }
@@ -10177,7 +10197,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setWidthByMovingRightCenter").toPointF();
         if (i_pTestStep->hasConfigValue("setWidthByMovingRightCenter.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setWidthByMovingRightCenter.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setWidthByMovingRightCenter(physValPt);
         }
@@ -10194,7 +10214,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setHeightByMovingTopCenter").toPointF();
         if (i_pTestStep->hasConfigValue("setTopCenter.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setHeightByMovingTopCenter.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setHeightByMovingTopCenter(physValPt);
         }
@@ -10207,7 +10227,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setHeightByMovingBottomCenter").toPointF();
         if (i_pTestStep->hasConfigValue("setHeightByMovingBottomCenter.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setHeightByMovingBottomCenter.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setHeightByMovingBottomCenter(physValPt);
         }
@@ -10220,7 +10240,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setTopLeft").toPointF();
         if (i_pTestStep->hasConfigValue("setTopLeft.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setTopLeft.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setTopLeft(physValPt);
         }
@@ -10233,7 +10253,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setTopRight").toPointF();
         if (i_pTestStep->hasConfigValue("setTopRight.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setTopRight.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setTopRight(physValPt);
         }
@@ -10246,7 +10266,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setBottomRight").toPointF();
         if (i_pTestStep->hasConfigValue("setBottomRight.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setBottomRight.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setBottomRight(physValPt);
         }
@@ -10259,7 +10279,7 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
         QPointF pt = i_pTestStep->getConfigValue("setBottomLeft").toPointF();
         if (i_pTestStep->hasConfigValue("setBottomLeft.unit")) {
             QString strUnitPoint = i_pTestStep->getConfigValue("setBottomLeft.unit").toString();
-            unit = strUnitPoint;
+            CUnit unit = strUnitPoint;
             CPhysValPoint physValPt(*m_pDrawingScene, pt, unit);
             physValRectResult.setBottomLeft(physValPt);
         }

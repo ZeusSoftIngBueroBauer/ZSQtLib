@@ -80,9 +80,9 @@ namespace Math
                 Max_px:        19 px
                 ScaleRange_px: Max/px - Min/px + 1 = 20 px
                 DistMinPix:    10 px
-    
+
             Result:
-    
+
                   |<-                                 Range: 20 px                          ->|
                   |<-           DistMinPix: 10 px       ->|
                 | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19 | px
@@ -123,8 +123,12 @@ namespace Math
     Scalings with world transformation (screen coordinate system in pixels, resulting scale in another unit)
 
         For example used by drawings in metric system or by diagrams.
+        The Y Axis Scale orientation may be setup from top to bottom or bottom to top depending on whether
+        the max value of the scale is assigned to a pixel value less than the minimum value.
+        Or in other words:
+        If Min_px > Max_px the Y Axis Scale Orientation is from BottomToTop.
 
-        Example 1:
+        Example 1 (X-Scale or Y-Scale with orientation from TopToBottom):
 
             Input:
 
@@ -133,7 +137,7 @@ namespace Math
                 ScaleRange:  10.0 mm
                 Min_px:         0 px
                 Max_px:        19 px
-                ScaleRange_px: Max/px - Min/px + 1 = 20 px
+                ScaleRange_px: abs(Max/px - Min/px) + 1 = 20 px
                 DistMinPix:    10 px
 
             Result:
@@ -176,7 +180,7 @@ namespace Math
                 Val_mm |  0.0 | 1.05 | 2.11 | 2.63 | 4.21 | 5.26 | 5,79 | 6.84 | 7.89 | 8.95 | 10.0 |
                 -------+------+------+------+------+------+------+------+------+------+------+------+
 
-        Example 2:
+        Example 2 (X-Scale or Y-Scale with orientation from TopToBottom):
 
             Input:
 
@@ -185,7 +189,7 @@ namespace Math
                 ScaleRange:  10.0 mm
                 Min_px:         0 px
                 Max_px:        20 px
-                ScaleRange_px: Max/px - Min/px + 1 = 21 px
+                ScaleRange_px: abs(Max/px - Min/px) + 1 = 21 px
                 DistMinPix:    10 px
 
             Result:
@@ -221,11 +225,72 @@ namespace Math
 
             Transformation from pixel coordinates into world coordinates:
 
-                Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Min_px) = 0 mm + (10 mm / 19 px) * (Val_px - 0)
+                Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Min_px) = 0 mm + (10 mm / 20 px) * (Val_px - 0)
 
                 Val_px |   0  |   2  |   4  |   6  |   8  |  10  |  12  |  14  |  16  |  18  |  20  |
                 -------+------+------+------+------+------+------+------+------+------+------+------+
                 Val_mm |  0.0 |  1.0 |  2.0 |  3.0 |  4.0 |  5.0 |  6.0 |  7.0 |  8.0 |  9.0 | 10.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+
+        Example 3 (Y-Scale with orientation from BottomToTop):
+
+            Input:
+
+                ScaleMinVal:       0.0 mm (or any other unit like Hz)
+                ScaleMaxVal:      10.0 mm
+                ScaleRange:       10.0 mm
+                Min_px:           20 px
+                Max_px:            0 px
+                ScaleOrientation: BottomToTop
+                ScaleRange_px:    abs(Max/px - Min/px) + 1 = 21 px
+                DistMinPix:       10 px
+
+            Result:
+
+                !! Since it is difficult to display vertically, please mentally rotate the graphic by 90 degrees !!
+
+                  |<-                                   Range: 21 px                              ->|
+                  |<-           DistMinPix: 10 px       ->|
+                | 0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20 |
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                | X |   |   |   |   |   |   |   |   |   | X |   |   |   |   |   |   |   |   |   | X |
+                +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
+                10.0     9.0     8.0     7.0     6.0     5.0     4.0     3.0     2.0     1.0      0.0 mm
+                  |<-                               DistPix: 10.0 px                            ->|
+                  |<-                               DistVal:  5.0 mm                            ->|
+                DivLineCount: 3
+
+            Lines can only be drawn on whole number pixel positions but not between two pixels.
+            One pixel must be truncated from the available pixel range to calculate the world coordinate.
+            Pixel positions will be rounded to a whole number.
+
+            Transformation from world coordinates into pixel coordinates:
+
+                !! For Y Axis Scale Orientation BottomToTop the algorithm starts with Min_px !!
+                !! and the calculated pixel distance value got to be subtracted.             !!
+
+                Val_px = Min_px - ((Range_px - 1 px) / ScaleRange_mm) * (Val_mm - ScaleMin_mm) = 20 px - (20 px / 10.0 mm) * (Val_mm - 0.0)
+
+                Val_mm |  0.0 |  1.0 |  2.0 |  3.0 |  4.0 |  5.0 |  6.0 |  7.0 |  8.0 |  9.0 | 10.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_px |  0.0 |  2.0 |  4.0 |  6.0 |  8.0 | 10.0 | 12.0 | 14.0 | 16.0 | 18.0 | 20.0 |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_px |  20  |  18  |  16  |  14  |  12  |  10  |   8  |   6  |   4  |   2  |   0  |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+
+            Transformation from pixel coordinates into world coordinates:
+
+                !! For Y Axis Scale Orientation BottomToTop the algorithm starts with Max_mm !!
+                !! and the calculated metric distance value got to be subtracted.            !!
+
+                Val_mm = Max_mm - (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Max_px) = 10 mm - (10 mm / 20 px) * (Val_px - 0)
+
+                Val_px |   0  |   2  |   4  |   6  |   8  |  10  |  12  |  14  |  16  |  18  |  20  |
+                -------+------+------+------+------+------+------+------+------+------+------+------+
+                Val_mm | 10.0 |  9.0 |  8.0 |  7.0 |  6.0 |  5.0 |  4.0 |  3.0 |  2.0 |  1.0 |  0.0 |
                 -------+------+------+------+------+------+------+------+------+------+------+------+
 */
 class ZSSYSDLL_API CScaleDivLines

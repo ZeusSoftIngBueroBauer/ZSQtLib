@@ -733,19 +733,13 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
             m_bDivLinesCalculated = false;
         }
     }
+    else if (i_fMin >= i_fMax) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+    }
     else {
-        double fMin_px = i_fMin;
-        double fMax_px = i_fMax;
-        if (m_scaleAxis == EScaleAxis::Y && yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-            if (fMax_px < fMin_px) {
-                double fMinTmp_px = fMin_px;
-                fMin_px = fMax_px;
-                fMax_px = fMinTmp_px;
-            }
-        }
-        if (m_fMin_px != fMin_px || m_fMax_px != fMax_px || m_fScaleRes != i_fRes) {
-            m_fMin_px = fMin_px;
-            m_fMax_px = fMax_px;
+        if (m_fMin_px != i_fMin || m_fMax_px != i_fMax || m_fScaleRes != i_fRes) {
+            m_fMin_px = i_fMin;
+            m_fMax_px = i_fMax;
             m_fScaleRes = i_fRes;
             bChanged = true;
             m_bDivLinesCalculated = false;
@@ -798,19 +792,9 @@ bool CScaleDivLines::setScale(
     if (!m_bUseWorldCoordinateTransformation) {
         throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
     }
-
     bool bChanged = false;
-    double fMin_px = i_fMin_px;
-    double fMax_px = i_fMax_px;
-    if (m_scaleAxis == EScaleAxis::Y && yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        if (fMax_px < fMin_px) {
-            double fMinTmp_px = fMin_px;
-            fMin_px = fMax_px;
-            fMax_px = fMinTmp_px;
-        }
-    }
     if (m_fScaleMin != i_fMin || m_fScaleMax != i_fMax || m_fScaleRes != i_fRes
-     || m_fMin_px != fMin_px || m_fMax_px != fMax_px)
+     || m_fMin_px != i_fMin_px || m_fMax_px != i_fMax_px)
     {
         m_fScaleMin = i_fMin;
         m_fScaleMax = i_fMax;
@@ -850,24 +834,14 @@ bool CScaleDivLines::setScale(
 bool CScaleDivLines::setScaleInPix(double i_fMin_px, double i_fMax_px)
 //------------------------------------------------------------------------------
 {
-    if (!m_bUseWorldCoordinateTransformation) {
-        throw CException(__FILE__, __LINE__, EResultInvalidMethodCall);
+    if (!m_bUseWorldCoordinateTransformation && i_fMin_px >= i_fMax_px) {
+        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-
     bool bChanged = false;
-    double fMin_px = i_fMin_px;
-    double fMax_px = i_fMax_px;
-    if (m_scaleAxis == EScaleAxis::Y && yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        if (fMax_px < fMin_px) {
-            double fMinTmp_px = fMin_px;
-            fMin_px = fMax_px;
-            fMax_px = fMinTmp_px;
-        }
-    }
-    if (m_fMin_px != fMin_px || m_fMax_px != fMax_px)
+    if (m_fMin_px != i_fMin_px || m_fMax_px != i_fMax_px)
     {
-        m_fMin_px = fMin_px;
-        m_fMax_px = fMax_px;
+        m_fMin_px = i_fMin_px;
+        m_fMax_px = i_fMax_px;
         bChanged = true;
         m_bDivLinesCalculated = false;
     }
@@ -967,10 +941,7 @@ bool CScaleDivLines::isValid() const
         bScaleValid = false;
     }
     else if (m_bUseWorldCoordinateTransformation) {
-        if (m_fScaleMax <= m_fScaleMin) {
-            bScaleValid = false;
-        }
-        else if (m_spacing == ESpacing::Logarithmic) {
+        if (m_spacing == ESpacing::Logarithmic) {
             if (m_fScaleMin <= 0.0 || m_fScaleMax <= 0.0) {
                 bScaleValid = false;
             }
@@ -1132,7 +1103,7 @@ double CScaleDivLines::scaleMaxInPix() const
 double CScaleDivLines::scaleRangeInPix() const
 //------------------------------------------------------------------------------
 {
-    return fabs(m_fMax_px - m_fMin_px + 1);
+    return fabs(m_fMax_px - m_fMin_px) + 1.0;
 }
 
 /*==============================================================================
@@ -1365,8 +1336,10 @@ double CScaleDivLines::getDivLineDistVal(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const
 //------------------------------------------------------------------------------
 {
-    if (i_idxDivLine1 < 0 && i_idxDivLine1 >= m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()].size()
-     && i_idxDivLine2 < 0 && i_idxDivLine2 >= m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()].size()) {
+    if (i_idxDivLine1 < 0 || i_idxDivLine1 >= m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()].size()) {
+        throw CException(__FILE__, __LINE__, EResultIdxOutOfRange);
+    }
+    else if (i_idxDivLine2 < 0 || i_idxDivLine2 >= m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()].size()) {
         throw CException(__FILE__, __LINE__, EResultIdxOutOfRange);
     }
     return m_ararfDivLinesVals[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
@@ -1394,8 +1367,10 @@ double CScaleDivLines::getDivLineDistInPix(
     const CEnumDivLineLayer& i_eLayer, int i_idxDivLine1, int i_idxDivLine2) const
 //------------------------------------------------------------------------------
 {
-    if (i_idxDivLine1 < 0 && i_idxDivLine1 >= m_ararfDivLines_px[i_eLayer.enumeratorAsInt()].size()
-     && i_idxDivLine2 < 0 && i_idxDivLine2 >= m_ararfDivLines_px[i_eLayer.enumeratorAsInt()].size()) {
+    if (i_idxDivLine1 < 0 || i_idxDivLine1 >= m_ararfDivLines_px[i_eLayer.enumeratorAsInt()].size()) {
+        throw CException(__FILE__, __LINE__, EResultIdxOutOfRange);
+    }
+    else if (i_idxDivLine2 < 0 || i_idxDivLine2 >= m_ararfDivLines_px[i_eLayer.enumeratorAsInt()].size()) {
         throw CException(__FILE__, __LINE__, EResultIdxOutOfRange);
     }
     double fVal = m_ararfDivLines_px[i_eLayer.enumeratorAsInt()][i_idxDivLine2]
@@ -1426,21 +1401,11 @@ double CScaleDivLines::getValInPix(double i_fVal) const
     {
         // At the minimum scale value ..
         if (i_fVal == m_fScaleMin) {
-            if (m_scaleAxis == EScaleAxis::Y && (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)) {
-                fPos_px = m_fMax_px;
-            }
-            else {
-                fPos_px = m_fMin_px;
-            }
+            fPos_px = m_fMin_px;
         }
         // At the maximum scale value ..
         else if (i_fVal == m_fScaleMax) {
-            if (m_scaleAxis == EScaleAxis::Y && (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)) {
-                fPos_px = m_fMin_px;
-            }
-            else {
-                fPos_px = m_fMax_px;
-            }
+            fPos_px = m_fMax_px;
         }
         // Somewhere between minimum and maximum scale ..
         else {
@@ -1492,8 +1457,6 @@ double CScaleDivLines::getValInPix(double i_fVal) const
                     fScaleValMax = log10(fScaleValMax);
                 }
 
-                // Transformation from world coordinates into pixel coordinates:
-                // Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * (Val_mm - ScaleMin_mm)
                 double fScaleRangeVal = fabs(fScaleValMax - fScaleValMin);
                 double fScaleRangePix = scaleRangeInPix();
                 double fPixRes = (fScaleRangePix - 1.0) / fScaleRangeVal;
@@ -1504,6 +1467,8 @@ double CScaleDivLines::getValInPix(double i_fVal) const
                 }
                 // Calculate value as distance to left grid line:
                 if (m_scaleAxis == EScaleAxis::X) {
+                    // Transformation from world coordinates into pixel coordinates:
+                    // Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * (Val_mm - ScaleMin_mm)
                     fPos_px = m_fMin_px + fPixRes * (fVal - fScaleValMin);
                 }
                 else /*if (m_scaleAxis == EScaleAxis::Y)*/ {
@@ -1513,6 +1478,8 @@ double CScaleDivLines::getValInPix(double i_fVal) const
                         // XScaleMin = XMin_px, XScaleMax = XMax_px
                         // YScaleMin = XMin_px, YScaleMax = XMax_px
                         // The greater the value, the greater the pixel coordinate on the screen.
+                        // Transformation from world coordinates into pixel coordinates:
+                        // Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * (Val_mm - ScaleMin_mm)
                         fPos_px = m_fMin_px + fPixRes * (fVal - fScaleValMin);
                     }
                     else /*if (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)*/ {
@@ -1522,7 +1489,9 @@ double CScaleDivLines::getValInPix(double i_fVal) const
                         // XScaleMin = XMin_px, XScaleMax = XMax_px
                         // YScaleMin = XMax_px, YScaleMax = XMin_px
                         // The greater the value, the less the pixel coordinate on the screen.
-                        fPos_px = m_fMax_px - fPixRes * (fVal - fScaleValMin);
+                        // Transformation from world coordinates into pixel coordinates:
+                        // Val_px = Min_px + ((Range_px - 1 px) / ScaleRange_mm) * (Val_mm - ScaleMin_mm)
+                        fPos_px = m_fMin_px - fPixRes * (fVal - fScaleValMin);
                     }
                 }
             }
@@ -1556,21 +1525,11 @@ double CScaleDivLines::getVal(double i_fPos_px, bool i_bRoundToResolution ) cons
     {
         // At the minimum scale value ..
         if (i_fPos_px == m_fMin_px) {
-            if (m_scaleAxis == EScaleAxis::Y && (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)) {
-                fVal = m_fScaleMax;
-            }
-            else {
-                fVal = m_fScaleMin;
-            }
+            fVal = m_fScaleMin;
         }
         // At the maximum scale value ..
         else if (i_fPos_px == m_fMax_px) {
-            if (m_scaleAxis == EScaleAxis::Y && (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp)) {
-                fVal = m_fScaleMin;
-            }
-            else {
-                fVal = m_fScaleMax;
-            }
+            fVal = m_fScaleMax;
         }
         // Somewhere between minimum and maximum scale ..
         else {
@@ -1620,14 +1579,14 @@ double CScaleDivLines::getVal(double i_fPos_px, bool i_bRoundToResolution ) cons
                     fScaleValMax = log10(fScaleValMax);
                 }
 
-                // Transformation from pixel coordinates into world coordinates:
-                // Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Min_px)
                 double fScaleValRange = fabs(fScaleValMax-fScaleValMin);
                 double fScaleRangePix = scaleRangeInPix();
                 double fValRes = (fScaleValRange / (fScaleRangePix - 1.0));
 
                 // Calculate value as distance to left grid line:
                 if (m_scaleAxis == EScaleAxis::X) {
+                    // Transformation from pixel coordinates into world coordinates:
+                    // Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Min_px)
                     fVal = fScaleValMin + fValRes * (i_fPos_px - m_fMin_px);
                 }
                 else /*if (m_scaleAxis == EScaleAxis::Y)*/ {
@@ -1637,16 +1596,20 @@ double CScaleDivLines::getVal(double i_fPos_px, bool i_bRoundToResolution ) cons
                         // XScaleMin = XMin_px, XScaleMax = XMax_px
                         // YScaleMin = XMin_px, YScaleMax = XMax_px
                         // The greater the value, the greater the pixel coordinate on the screen.
-                        fVal = fScaleValMin + fValRes * (m_fMin_px + i_fPos_px);
+                        // Transformation from pixel coordinates into world coordinates:
+                        // Val_mm = Min_mm + (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Min_px)
+                        fVal = fScaleValMin + fValRes * (i_fPos_px - m_fMin_px);
                     }
                     else /*if (m_yScaleAxisOrientation == EYScaleAxisOrientation::BottomUp)*/ {
                         // Orientation from bottom to top like in diagrams or in technical drawings
                         // based on metric units:
                         // The origin is at the bottom left corner.
                         // XScaleMin = XMin_px, XScaleMax = XMax_px
-                        // YScaleMin = XMax_px, YScaleMax = XMin_px
+                        // YScaleMin = XMax_px, YScaleMax = XMax_px
                         // The greater the value, the less the pixel coordinate on the screen.
-                        fVal = fScaleValMin + fValRes * (m_fMax_px - i_fPos_px);
+                        // Transformation from pixel coordinates into world coordinates:
+                        // Val_mm = Max_mm + (ScaleRange_mm / (Range_px - 1 px)) * (Val_px - Max_px)
+                        fVal = fScaleValMax - fValRes * (i_fPos_px - m_fMax_px);
                     }
                 }
                 if (m_spacing == ESpacing::Logarithmic) {
