@@ -1743,33 +1743,19 @@ double ZS::Draw::getRadius(const QSizeF& i_size)
            rotated clockwise by the given angle.
 
     If both width and height are 0.0, the center point is returned.
-    Width and height may both be zero. If either width and height are zero
-    the corner points are transformed as shown in the figure below.
 
-                                  height
-                                    ^
-          TR-------------------TL   |   TL-------------------TR
-          |    Q2         Q1    |   |   |    Q2         Q1    |
-          |                     |   |   |                     |
-          |          X          |   |   |          X          |
-          |                     |   |   |                     |
-          |    Q3         Q4    |   |   |    Q3         Q4    |
-          BR-------------------BL   |   BL-------------------BR
-                                    |
-          ------------------------- 0 ------------------------> width
-                                    |
-          BR-------------------BL   |   BL-------------------BR
-          |    Q2         Q1    |   |   |    Q2         Q1    |
-          |                     |   |   |                     |
-          |          X          |   |   |          X          |
-          |                     |   |   |                     |
-          |    Q3         Q4    |   |   |    Q3         Q4    |
-          TR-------------------TL   |   TL-------------------TR
+            TL-------------------TR
+            |    Q2         Q1    |
+            |                     |
+            |          X          |
+            |                     |
+            |    Q3         Q4    |
+            BL-------------------BR
 
     @param [in] i_ptCenter
         Center point of the rectangle.
     @param [in] i_size
-        Size of the rectangle. Width and height may be less than 0.
+        Size of the rectangle. Width and height must be greater or equal than 0.
     @param [in] i_fAngle_rad Range [0.0 .. 2PI]
         Rotation angle (clockwise counted) of the rectangle.
     @param [in] i_eSelPt Range [TopRight, TopLeft, BottomLeft, BottomRight]

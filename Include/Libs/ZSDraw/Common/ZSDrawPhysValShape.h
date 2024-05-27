@@ -82,6 +82,7 @@ public: // instance methods
     const CDrawingScene& drawingScene() const { return *m_pDrawingScene; }
     const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX() const { return *m_pDivLinesMetricsX; }
     const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY() const { return *m_pDivLinesMetricsY; }
+    ZS::System::EYScaleAxisOrientation yScaleAxisOrientation() const;
 public: // instance methods
     void setIndexInDrawingScene(int i_idx);
     int indexInDrawingScene() const;

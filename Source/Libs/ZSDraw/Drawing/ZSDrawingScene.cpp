@@ -744,7 +744,7 @@ CPhysValLine CDrawingScene::convert(const CPhysValLine& i_physValLine, const CUn
 CPhysValRect CDrawingScene::convert(const QRectF& i_rect) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValRect(*this, i_rect, Units.Length.px), m_drawingSize.unit());
+    return convert(CPhysValRect(*this, i_rect.topLeft(), i_rect.size(), Units.Length.px), m_drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
@@ -758,7 +758,7 @@ CPhysValRect CDrawingScene::convert(const QRectF& i_rect) const
 CPhysValRect CDrawingScene::convert(const QRectF& i_rect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
-    return convert(CPhysValRect(*this, i_rect, Units.Length.px), i_unitDst);
+    return convert(CPhysValRect(*this, i_rect.topLeft(), i_rect.size(), Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------

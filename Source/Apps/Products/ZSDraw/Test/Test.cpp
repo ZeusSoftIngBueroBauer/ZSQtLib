@@ -714,6 +714,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     int idxStep = 0;
 
     CUnit unit = i_drawingSize.unit();
+    bool bYAxisTopDown = (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
 
     /* create
     ---------
@@ -724,13 +725,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
          |                       |
      350 +-----+-----+-----+-----+         250
     */
-    QPointF ptTLOrig(200.0, 250.0);
-    QPointF ptBROrig(400.0, 350.0);
+    QPointF ptTLOrig(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBROrig(400.0, bYAxisTopDown ? 350.0 : 250.0);
     QSizeF sizeOrig(200.0, 100.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptTLOrig.setY(350.0);
-        ptBROrig.setY(250.0);
-    }
 
     ZS::Test::CTestStepGroup* pGrpTransformRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -773,13 +770,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     double fWidthSetAngle0 = 200.0;
     double fHeightSetAngle0 = 100.0;
     QPointF ptCenterSetAngle0(300.0, 300.0);
-    QPointF ptTopLeftSetAngle0(200.0, 250.0);
-    QPointF ptTopRightSetAngle0(400.0, 250.0);
-    QPointF ptBottomRightSetAngle0(400.0, 350.0);
-    QPointF ptBottomLeftSetAngle0(200.0, 350.0);
-    QPointF ptTopCenterSetAngle0(300.0, 250.0);
+    QPointF ptTopLeftSetAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
     QPointF ptRightCenterSetAngle0(400.0, 300.0);
-    QPointF ptBottomCenterSetAngle0(300.0, 350.0);
+    QPointF ptBottomCenterSetAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
     QPointF ptLeftCenterSetAngle0(200.0, 300.0);
     strlstExpectedValues.clear();
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
@@ -825,21 +822,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                      |                       |
      450             +-----+-----x-----+-----+       150
     */
-    QPointF ptCenter(400.0, 400.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptCenter.setY(200.0);
-    }
+    QPointF ptCenter(400.0, bYAxisTopDown ? 400.0 : 200.0);
     double fWidthSetCenterAngle0 = 200.0;
     double fHeightSetCenterAngle0 = 100.0;
     QPointF ptCenterSetCenterAngle0 = ptCenter;
-    QPointF ptTopLeftSetCenterAngle0(300.0, 350.0);
-    QPointF ptTopRightSetCenterAngle0(500.0, 350.0);
-    QPointF ptBottomRightSetCenterAngle0(500.0, 450.0);
-    QPointF ptBottomLeftSetCenterAngle0(300.0, 450.0);
-    QPointF ptTopCenterSetCenterAngle0(400.0, 350.0);
-    QPointF ptRightCenterSetCenterAngle0(500.0, 400.0);
-    QPointF ptBottomCenterSetCenterAngle0(400.0, 450.0);
-    QPointF ptLeftCenterSetCenterAngle0(300.0, 400.0);
+    QPointF ptTopLeftSetCenterAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopRightSetCenterAngle0(500.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomRightSetCenterAngle0(500.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptBottomLeftSetCenterAngle0(300.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptTopCenterSetCenterAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptRightCenterSetCenterAngle0(500.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptBottomCenterSetCenterAngle0(400.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptLeftCenterSetCenterAngle0(300.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
@@ -847,7 +841,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.bottomRight", ptBROrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setCenter", ptCenter);
@@ -900,15 +895,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QSizeF size300x200(300.0, 200.0);
     double fWidthSetSizeAngle0 = size300x200.width();
     double fHeightSetSizeAngle0 = size300x200.height();
-    QPointF ptCenterSetSizeAngle0(350.0, 350.0);
-    QPointF ptTopLeftSetSizeAngle0(200.0, 250.0);
-    QPointF ptTopRightSetSizeAngle0(500.0, 250.0);
-    QPointF ptBottomRightSetSizeAngle0(500.0, 450.0);
-    QPointF ptBottomLeftSetSizeAngle0(200.0, 450.0);
-    QPointF ptTopCenterSetSizeAngle0(350.0, 250.0);
-    QPointF ptRightCenterSetSizeAngle0(500.0, 350.0);
-    QPointF ptBottomCenterSetSizeAngle0(350.0, 450.0);
-    QPointF ptLeftCenterSetSizeAngle0(200.0, 350.0);
+    QPointF ptCenterSetSizeAngle0(350.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopLeftSetSizeAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetSizeAngle0(500.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetSizeAngle0(500.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptBottomLeftSetSizeAngle0(200.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptTopCenterSetSizeAngle0(350.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetSizeAngle0(500.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomCenterSetSizeAngle0(350.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptLeftCenterSetSizeAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
@@ -916,7 +911,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setSize", size300x200);
@@ -965,15 +961,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     CPhysVal physValWidth300(300.0, unit, i_drawingSize.imageCoorsResolution());
     double fWidthSetWidthAngle0 = physValWidth300.getVal();
     double fHeightSetWidthAngle0 = fHeightSetAngle0;
-    QPointF ptCenterSetWidthAngle0(350.0, 300.0);
-    QPointF ptTopLeftSetWidthAngle0(200.0, 250.0);
-    QPointF ptTopRightSetWidthAngle0(500.0, 250.0);
-    QPointF ptBottomRightSetWidthAngle0(500.0, 350.0);
-    QPointF ptBottomLeftSetWidthAngle0(200.0, 350.0);
-    QPointF ptTopCenterSetWidthAngle0(350.0, 250.0);
-    QPointF ptRightCenterSetWidthAngle0(500.0, 300.0);
-    QPointF ptBottomCenterSetWidthAngle0(350.0, 350.0);
-    QPointF ptLeftCenterSetWidthAngle0(200.0, 300.0);
+    QPointF ptCenterSetWidthAngle0(350.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopLeftSetWidthAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetWidthAngle0(500.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetWidthAngle0(500.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetWidthAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetWidthAngle0(350.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetWidthAngle0(500.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomCenterSetWidthAngle0(350.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetWidthAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
@@ -981,7 +977,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
@@ -1030,15 +1027,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptMoved = ptTopCenterSetAngle0;
     double fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle0 = 100.0;
     double fHeightSetWidthMoveLeftCenterBeforeRightBorderAngle0 = fHeightSetAngle0;
-    QPointF ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(350.0, 300.0);
-    QPointF ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle0(300.0, 250.0);
-    QPointF ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle0(400.0, 250.0);
-    QPointF ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle0(400.0, 350.0);
-    QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle0(300.0, 350.0);
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(350.0, 250.0);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(400.0, 300.0);
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(350.0, 350.0);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(300.0, 300.0);
+    QPointF ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(350.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(350.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(400.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(350.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
@@ -1046,7 +1043,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
@@ -1096,15 +1094,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(180.0);
     double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle0 = 100.0;
     double fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle0 = fHeightSetAngle0;
-    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(450.0, 300.0);
-    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle0(500.0, 350.0);
-    QPointF ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle0(400.0, 350.0);
-    QPointF ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle0(400.0, 250.0);
-    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle0(500.0, 250.0);
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(450.0, 350.0);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(400.0, 300.0);
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(450.0, 250.0);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(500.0, 300.0);
+    QPointF ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
@@ -1112,7 +1110,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
@@ -1161,15 +1160,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     ptMoved = ptTopCenterSetAngle0;
     double fWidthSetWidthMoveLeftCenterBeforeLeftBorderAngle0 = 100.0;
     double fHeightSetWidthMoveLeftCenterBeforeLeftBorderAngle0 = fHeightSetAngle0;
-    QPointF ptCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(250.0, 300.0);
-    QPointF ptTopLeftSetWidthMoveLeftCenterBeforeLeftBorderAngle0(200.0, 250.0);
-    QPointF ptTopRightSetWidthMoveLeftCenterBeforeLeftBorderAngle0(300.0, 250.0);
-    QPointF ptBottomRightSetWidthMoveLeftCenterBeforeLeftBorderAngle0(300.0, 350.0);
-    QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeLeftBorderAngle0(200.0, 350.0);
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(250.0, 250.0);
-    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(300.0, 300.0);
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(250.0, 350.0);
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(200.0, 300.0);
+    QPointF ptCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(250.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopLeftSetWidthMoveLeftCenterBeforeLeftBorderAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetWidthMoveLeftCenterBeforeLeftBorderAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetWidthMoveLeftCenterBeforeLeftBorderAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeLeftBorderAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(250.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(250.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
@@ -1177,7 +1176,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
@@ -1227,15 +1227,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(180.0);
     double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle0 = 100;
     double fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle0 = fHeightSetAngle0;
-    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(150.0, 300.0);
-    QPointF ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle0(200.0, 350.0);
-    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle0(100.0, 350.0);
-    QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle0(100.0, 250.0);
-    QPointF ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle0(200.0, 250.0);
-    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(150.0, 350.0);
-    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(100.0, 300.0);
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(150.0, 250.0);
-    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(200.0, 300.0);
+    QPointF ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
@@ -1243,7 +1243,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
@@ -1312,7 +1313,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
@@ -1377,7 +1379,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
@@ -1445,7 +1448,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
@@ -1510,7 +1514,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
@@ -1580,7 +1585,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
@@ -1651,7 +1657,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle0);
@@ -1723,7 +1730,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle0);
@@ -1797,7 +1805,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle0);
@@ -1870,7 +1879,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopLeft", ptTopLeftBeyondBottomRightAngle0);
@@ -1941,7 +1951,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle0);
@@ -2011,7 +2022,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle0);
@@ -2083,7 +2095,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle0);
@@ -2157,7 +2170,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle0);
@@ -2228,7 +2242,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeforeTopLeftAngle0);
@@ -2300,7 +2315,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle0);
@@ -2370,7 +2386,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle0);
@@ -2444,7 +2461,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle0);
@@ -2515,7 +2533,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle0);
@@ -2587,7 +2606,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle0);
@@ -2657,7 +2677,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle0);
@@ -2731,7 +2752,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle0);
@@ -2801,7 +2823,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
@@ -2877,7 +2900,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
@@ -2957,7 +2981,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
@@ -3026,7 +3051,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("addPhysValShape", "");
@@ -3107,7 +3133,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setCenter", ptCenter);
@@ -3169,7 +3196,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setSize", size300x200);
@@ -3230,7 +3258,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidth", physValWidth300.toString());
@@ -3295,7 +3324,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
@@ -3364,7 +3394,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidthByMovingLeftCenter", ptMoved);
@@ -3430,7 +3461,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
@@ -3496,7 +3528,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setWidthByMovingRightCenter", ptMoved);
@@ -3560,7 +3593,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeight", physValHeight200.toString());
@@ -3625,7 +3659,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
@@ -3687,7 +3722,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeightByMovingTopCenter", ptMoved);
@@ -3752,7 +3788,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
@@ -3818,7 +3855,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setHeightByMovingBottomCenter", ptMoved);
@@ -3880,7 +3918,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeforeBottomRightAngle30);
@@ -3942,7 +3981,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondRightBorderAngle30);
@@ -4004,7 +4044,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomBorderAngle30);
@@ -4066,7 +4107,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopLeft", ptSetTopLeftBeyondBottomRightAngle30);
@@ -4127,7 +4169,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeforeBottomLeftAngle30);
@@ -4189,7 +4232,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondLeftBorderAngle30);
@@ -4251,7 +4295,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomBorderAngle30);
@@ -4313,7 +4358,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setTopRight", ptSetTopRightBeyondBottomLeftAngle30);
@@ -4374,7 +4420,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomRight", ptSetSetBottomRightBeforeTopLeftAngle30);
@@ -4436,7 +4483,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopBorderAngle30);
@@ -4498,7 +4546,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondLeftBorderAngle30);
@@ -4560,7 +4609,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomRight", ptSetBottomRightBeyondTopLeftAngle30);
@@ -4621,7 +4671,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeforeTopRightAngle30);
@@ -4683,7 +4734,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopBorderAngle30);
@@ -4745,7 +4797,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondRightBorderAngle30);
@@ -4808,7 +4861,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
-    pTestStep->setConfigValue("create", rectFOrig);
+    pTestStep->setConfigValue("create.topLeft", ptTLOrig);
+    pTestStep->setConfigValue("create.size", sizeOrig);
     pTestStep->setConfigValue("create.unit", unit.symbol());
     pTestStep->setConfigValue("setAngle", physValAngle.toString());
     pTestStep->setConfigValue("setBottomLeft", ptSetBottomLeftBeyondTopRightAngle30);
@@ -6171,7 +6225,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strOperation    */ "DrawingScene.convert(Rect((0, 0), (350, 350)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(QPointF(0.0, 0.0), QPointF(350.0, 350.0)));
+    pTestStep->setConfigValue("Rect.topLeft", QPointF(0.0, 0.0));
+    pTestStep->setConfigValue("Rect.size", QSizeF(350.0, 350.0));
     pTestStep->setConfigValue("Rect.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
@@ -6201,7 +6256,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strOperation    */ "DrawingScene.convert(Rect((70, 180), (130, 320)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)));
-    pTestStep->setConfigValue("Rect", QRectF(QPointF(70.0, 180.0), QPointF(130.0, 320.0)));
+    pTestStep->setConfigValue("Rect.topLeft", QPointF(70.0, 180.0));
+    pTestStep->setConfigValue("Rect.size", QSizeF(60.0, 140.0));
     pTestStep->setConfigValue("Rect.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
@@ -6249,7 +6305,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strOperation    */ "DrawingScene.convert(Rect((0, " + strTLYPos + "), (100, " + strBRYPos + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect", QRectF(QPointF(0.0, fTLYPos_mm), QPointF(100.0, fBRYPos_mm)));
+    pTestStep->setConfigValue("Rect.topLeft", QPointF(0.0, fTLYPos_mm));
+    pTestStep->setConfigValue("Rect.size", QSizeF(100.0, fabs(fBRYPos_mm-fTLYPos_mm)/2.0));
     pTestStep->setConfigValue("Rect.Unit", "mm");
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
@@ -6276,7 +6333,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strOperation    */ "DrawingScene.convert(Rect((20.0, " + strTLYPos + "), (37.1, " + strBRYPos + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)));
-    pTestStep->setConfigValue("Rect", QRectF(QPointF(20.0, fTLYPos_mm), QPointF(37.1, fBRYPos_mm)));
+    pTestStep->setConfigValue("Rect.topLeft", QPointF(20.0, fTLYPos_mm));
+    pTestStep->setConfigValue("Rect.size", QSizeF(17.1, fabs(fBRYPos_mm-fTLYPos_mm)/2.0));
     pTestStep->setConfigValue("Rect.Unit", "mm");
     pTestStep->setConfigValue("UnitDest", "px");
     strlstExpectedValues.clear();
@@ -10458,14 +10516,15 @@ void CTest::doTestStepDrawingSceneConvertToPhysValRect( ZS::Test::CTestStep* i_p
         QString strUnitDest = i_pTestStep->getConfigValue("UnitDest").toString();
         unitDest = strUnitDest;
     }
-    QRectF rectF = i_pTestStep->getConfigValue("Rect").toRectF();
+    QPointF ptTL = i_pTestStep->getConfigValue("Rect.topLeft").toPointF();
+    QSizeF size = i_pTestStep->getConfigValue("Rect.size").toSizeF();
     CPhysValRect physValRectResult(*m_pDrawingScene);
     if (Units.Length.isMetricUnit(unitSource)) {
-        CPhysValRect physValRect(*m_pDrawingScene, rectF, unitSource);
+        CPhysValRect physValRect(*m_pDrawingScene, ptTL, size, unitSource);
         physValRectResult = m_pDrawingScene->convert(physValRect, unitDest);
     }
     else {
-        physValRectResult = m_pDrawingScene->convert(rectF, unitDest);
+        physValRectResult = m_pDrawingScene->convert(QRectF(ptTL, size), unitDest);
     }
     QStringList strlstResultValues;
     strlstResultValues.append("TopLeft {" + physValRectResult.topLeft().toString() + "} " + physValRectResult.unit().symbol());

@@ -658,13 +658,15 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
     //QRectF rectF = physValRect.toQRectF();
 
     // First determine the position of the item in the parent's (scene or group) coordinate system.
-    QRectF rectF;
+    CPhysValRect physValRect(i_physValRect);
+    physValRect.setAngle(0.0);
     if (parentGroup() != nullptr) {
-        rectF = parentGroup()->convert(i_physValRect, Units.Length.px).toNotRotatedQRectF();
+        physValRect = parentGroup()->convert(physValRect, Units.Length.px);
     }
     else {
-        rectF = m_pDrawingScene->convert(i_physValRect, Units.Length.px).toNotRotatedQRectF();
+        physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
     }
+    QRectF rectF(physValRect.topLeft().toQPointF(), physValRect.size().toQSizeF());
 
     // Transform the parent coordinates into local coordinate system.
     // The origin is the center point of the rectangle.
@@ -1491,7 +1493,7 @@ CPhysValRect CGraphObjGroup::convert(const QRectF& i_rect) const
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    return convert(CPhysValRect(*m_pDrawingScene, i_rect, Units.Length.px), drawingSize.unit());
+    return convert(CPhysValRect(*m_pDrawingScene, i_rect.topLeft(), i_rect.size(), Units.Length.px), drawingSize.unit());
 }
 
 //------------------------------------------------------------------------------
@@ -1506,7 +1508,7 @@ CPhysValRect CGraphObjGroup::convert(const QRectF& i_rect, const CUnit& i_unitDs
 //------------------------------------------------------------------------------
 {
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
-    return convert(CPhysValRect(*m_pDrawingScene, i_rect, Units.Length.px), i_unitDst);
+    return convert(CPhysValRect(*m_pDrawingScene, i_rect.topLeft(), i_rect.size(), Units.Length.px), i_unitDst);
 }
 
 //------------------------------------------------------------------------------
@@ -1672,10 +1674,14 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const
         /* strAddInfo   */ strMthInArgs );
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
-    QRectF rectF = convert(i_physValRect, Units.Length.px).toNotRotatedQRectF();
+    CPhysValRect physValRect(i_physValRect);
+    physValRect.setAngle(0.0);
+    physValRect = convert(physValRect, Units.Length.px);
+    QRectF rectF(physValRect.topLeft().toQPointF(), physValRect.size().toQSizeF());
     rectF = pGraphicsItemThis->mapRectToScene(rectF);
     rectF = mapFromTopLeftOfBoundingRect(rectF);
-    CPhysValRect physValRect = m_pDrawingScene->convert(rectF, i_unitDst);
+    physValRect.setTopLeft(rectF.topLeft());
+    physValRect.setSize(rectF.size());
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("Rect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
     }
@@ -2390,9 +2396,9 @@ void CGraphObjGroup::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
     QRectF rectF = getBoundingRect();
 
     // Depending on the Y scale orientation of the drawing scene the item coordinates must
-    // be either returned relative to the top left corner or relative to the bottom right
+    // be either returned relative to the top left corner or relative to the bottom left
     // corner of the parent's bounding rectangle.
-    CPhysValRect physValRect(*m_pDrawingScene, rectF, Units.Length.px);
+    CPhysValRect physValRect(*m_pDrawingScene, rectF.topLeft(), rectF.size(), Units.Length.px);
     CGraphObjGroup* pGraphObjGroup = parentGroup();
     // If the item belongs to a group ...
     if (pGraphObjGroup != nullptr) {
@@ -3499,13 +3505,15 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
     }
 
     QRectF rectCurr = getBoundingRect();
-    QRectF rectOrig;
+    CPhysValRect physValRect(m_physValRectOrig);
+    physValRect.setAngle(0.0);
     if (parentGroup() != nullptr) {
-        rectOrig = parentGroup()->convert(m_physValRectOrig, Units.Length.px).toNotRotatedQRectF();
+        physValRect = parentGroup()->convert(physValRect, Units.Length.px);
     }
     else {
-        rectOrig = m_pDrawingScene->convert(m_physValRectOrig, Units.Length.px).toNotRotatedQRectF();
+        physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
     }
+    QRectF rectOrig(physValRect.topLeft().toQPointF(), physValRect.size().toQSizeF());
     double fScaleX = rectCurr.width() / rectOrig.width();
     double fScaleY = rectCurr.height() / rectOrig.height();
 

@@ -30,6 +30,7 @@ may result in using the software modules.
 #include "ZSDraw/Common/ZSDrawPhysValPoint.h"
 #include "ZSDraw/Common/ZSDrawPhysValLine.h"
 #include "ZSDraw/Common/ZSDrawPhysValSize.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
 #include "QtCore/qrect.h"
 
 namespace ZS
@@ -109,8 +110,6 @@ public: // copy ctor
     CPhysValRect(const CPhysValRect& i_physValRectOther);
 public: // dtor
     virtual ~CPhysValRect();
-public: // operators
-    CPhysValRect& operator = (const QRectF& i_rect);
 public: // must overridable operators of base class CPhysValShape
     CPhysValShape& operator = (const CPhysValShape& i_physValRectOther) override;
 public: // must overridables of base class CPhysValShape
@@ -163,12 +162,10 @@ public: // instance methods
     void setBottomRight(const CPhysValPoint& i_physValPoint);
     void setBottomLeft(const QPointF& i_pt);
     void setBottomLeft(const CPhysValPoint& i_physValPoint);
-public: // instance methods (to convert the values into another unit)
-    QRectF toNotRotatedQRectF() const;
-    QRectF toNotRotatedQRectF(const ZS::PhysVal::CUnit& i_unit) const;
 protected: // auxiliary functions
     void initSelectionPoints();
     void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);
+    QPointF getCornerPoint(ESelectionPoint i_selPt) const;
 protected: // instance members
     /*!< The rectangles center coordinates in the unit 'm_unit'. */
     QPointF m_ptCenter;
@@ -176,20 +173,6 @@ protected: // instance members
     QSizeF m_size;
     /*!< The rotation angle (counted clockwise). */
     ZS::PhysVal::CPhysVal m_physValAngle;
-    ///*!< To rotate a point around another point by angle alpha, the distance (radius)
-    //     between the points is needed. For the the corners of a rectangle (TL, TR, BR, BL)
-    //     the distance (radius) is the same and is calculated as follows:
-    //     r = sqrt(sqr(width/2) + sqr(height/2))
-    //     Value is cached to speed up calculation of resulting corner points. */
-    //double m_fRadius;
-    ///*!< Angle of the top right corner point to the center point. The value is cached and only
-    //     calculated if needed to speed up calculation of the resulting corner points.
-    //     As width and height may be less than 0 this angle may be in all 4 possible quadrants.
-    //     As opposed to the rotation angle the DiagLine angle is counted counterclockwise as
-    //     also the trigonmetric function of the math library are expecting angles counterclockwise.
-    //     To calculate the rotated corner points the rotation angle, first transformed into
-    //     counterclockwise angle, is added to the DiagLine angle. */
-    //ZS::PhysVal::CPhysVal m_physValAngleDiagLineCounterClockwise;
     /*!< Corner and other selection points of a rotated rectangle can be calculated from the
          center point, the size (width and height) and the rotation angle.
          As time consuming trigonometric functions and the mathematical root function must be
