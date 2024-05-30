@@ -50,8 +50,8 @@ public: // ctors and dtor
 CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
     m_pDrawingScene(&i_drawingScene),
-    m_pDivLinesMetricsX(&i_drawingScene.divLinesMetricsX()),
-    m_pDivLinesMetricsY(&i_drawingScene.divLinesMetricsY()),
+    //m_pDivLinesMetricsX(&i_drawingScene.divLinesMetricsX()),
+    //m_pDivLinesMetricsY(&i_drawingScene.divLinesMetricsY()),
     m_unit(i_drawingScene.drawingSize().unit()),
     m_idxInDrawingScene(-1)
 {
@@ -64,54 +64,54 @@ CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene) :
 CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     m_pDrawingScene(&i_drawingScene),
-    m_pDivLinesMetricsX(&i_drawingScene.divLinesMetricsX()),
-    m_pDivLinesMetricsY(&i_drawingScene.divLinesMetricsY()),
+    //m_pDivLinesMetricsX(&i_drawingScene.divLinesMetricsX()),
+    //m_pDivLinesMetricsY(&i_drawingScene.divLinesMetricsY()),
     m_unit(i_unit),
     m_idxInDrawingScene(-1)
 {
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical line on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValShape::CPhysValShape(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY ) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_pDivLinesMetricsX(&i_divLinesMetricsX),
-    m_pDivLinesMetricsY(&i_divLinesMetricsY),
-    m_unit(i_drawingScene.drawingSize().unit()),
-    m_idxInDrawingScene(-1)
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical line on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValShape::CPhysValShape(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    m_pDrawingScene(&i_drawingScene),
-    m_pDivLinesMetricsX(&i_divLinesMetricsX),
-    m_pDivLinesMetricsY(&i_divLinesMetricsY),
-    m_unit(i_unit),
-    m_idxInDrawingScene(-1)
-{
-}
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical line on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValShape::CPhysValShape(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY ) :
+////------------------------------------------------------------------------------
+//    m_pDrawingScene(&i_drawingScene),
+//    m_pDivLinesMetricsX(&i_divLinesMetricsX),
+//    m_pDivLinesMetricsY(&i_divLinesMetricsY),
+//    m_unit(i_drawingScene.drawingSize().unit()),
+//    m_idxInDrawingScene(-1)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical line on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValShape::CPhysValShape(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    m_pDrawingScene(&i_drawingScene),
+//    m_pDivLinesMetricsX(&i_divLinesMetricsX),
+//    m_pDivLinesMetricsY(&i_divLinesMetricsY),
+//    m_unit(i_unit),
+//    m_idxInDrawingScene(-1)
+//{
+//}
 
 //------------------------------------------------------------------------------
 CPhysValShape::CPhysValShape(const CPhysValShape& i_physValShapeOther) :
 //------------------------------------------------------------------------------
     m_pDrawingScene(i_physValShapeOther.m_pDrawingScene),
-    m_pDivLinesMetricsX(i_physValShapeOther.m_pDivLinesMetricsX),
-    m_pDivLinesMetricsY(i_physValShapeOther.m_pDivLinesMetricsY),
+    //m_pDivLinesMetricsX(i_physValShapeOther.m_pDivLinesMetricsX),
+    //m_pDivLinesMetricsY(i_physValShapeOther.m_pDivLinesMetricsY),
     m_unit(i_physValShapeOther.m_unit),
     m_idxInDrawingScene(-1)
 {
@@ -122,8 +122,8 @@ CPhysValShape::~CPhysValShape()
 //------------------------------------------------------------------------------
 {
     m_pDrawingScene = nullptr;
-    m_pDivLinesMetricsX = nullptr;
-    m_pDivLinesMetricsY = nullptr;
+    //m_pDivLinesMetricsX = nullptr;
+    //m_pDivLinesMetricsY = nullptr;
     //m_unit;
     m_idxInDrawingScene = 0;
 }
@@ -137,8 +137,8 @@ CPhysValShape& CPhysValShape::operator = ( const CPhysValShape& i_physValShapeOt
 //------------------------------------------------------------------------------
 {
     m_pDrawingScene = i_physValShapeOther.m_pDrawingScene;
-    m_pDivLinesMetricsX = i_physValShapeOther.m_pDivLinesMetricsX;
-    m_pDivLinesMetricsY = i_physValShapeOther.m_pDivLinesMetricsY;
+    //m_pDivLinesMetricsX = i_physValShapeOther.m_pDivLinesMetricsX;
+    //m_pDivLinesMetricsY = i_physValShapeOther.m_pDivLinesMetricsY;
     m_unit = i_physValShapeOther.m_unit;
     return *this;
 }
@@ -158,12 +158,12 @@ bool CPhysValShape::operator == ( const CPhysValShape& i_physValShapeOther ) con
     else if (m_pDrawingScene != i_physValShapeOther.m_pDrawingScene) {
         bEqual = false;
     }
-    else if (m_pDivLinesMetricsX != i_physValShapeOther.m_pDivLinesMetricsX) {
-        bEqual = false;
-    }
-    else if (m_pDivLinesMetricsY != i_physValShapeOther.m_pDivLinesMetricsY) {
-        bEqual = false;
-    }
+    //else if (m_pDivLinesMetricsX != i_physValShapeOther.m_pDivLinesMetricsX) {
+    //    bEqual = false;
+    //}
+    //else if (m_pDivLinesMetricsY != i_physValShapeOther.m_pDivLinesMetricsY) {
+    //    bEqual = false;
+    //}
     return bEqual;
 }
 
@@ -182,7 +182,7 @@ public: // instance methods
 EYScaleAxisOrientation CPhysValShape::yScaleAxisOrientation() const
 //------------------------------------------------------------------------------
 {
-    return m_pDivLinesMetricsY->yScaleAxisOrientation();
+    return m_pDrawingScene->drawingSize().yScaleAxisOrientation().enumerator();
 }
 
 //------------------------------------------------------------------------------

@@ -71,38 +71,38 @@ public: // ctors
         const CDrawingScene& i_drawingScene,
         const QPointF& i_ptTL, const QSizeF& i_size,
         const ZS::PhysVal::CUnit& i_unit);
-public: // ctors
-    CPhysValRect(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
-    CPhysValRect(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const ZS::PhysVal::CUnit& i_unit);
-    CPhysValRect(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QPointF& i_ptTL, const QPointF& i_ptBR);
-    CPhysValRect(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QPointF& i_ptTL, const QPointF& i_ptBR,
-        const ZS::PhysVal::CUnit& i_unit);
-    CPhysValRect(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QPointF& i_ptTL, const QSizeF& i_size);
-    CPhysValRect(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QPointF& i_ptTL, const QSizeF& i_size,
-        const ZS::PhysVal::CUnit& i_unit);
+//public: // ctors
+//    CPhysValRect(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
+//    CPhysValRect(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const ZS::PhysVal::CUnit& i_unit);
+//    CPhysValRect(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const QPointF& i_ptTL, const QPointF& i_ptBR);
+//    CPhysValRect(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const QPointF& i_ptTL, const QPointF& i_ptBR,
+//        const ZS::PhysVal::CUnit& i_unit);
+//    CPhysValRect(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const QPointF& i_ptTL, const QSizeF& i_size);
+//    CPhysValRect(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const QPointF& i_ptTL, const QSizeF& i_size,
+//        const ZS::PhysVal::CUnit& i_unit);
 public: // ctors
     CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValPoint& i_physValBottomRight);
     CPhysValRect(const CPhysValPoint& i_physValTopLeft, const CPhysValSize& i_physValSize);
@@ -165,7 +165,6 @@ public: // instance methods
 protected: // auxiliary functions
     void initSelectionPoints();
     void invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude = 0x0000);
-    QPointF getCornerPoint(ESelectionPoint i_selPt) const;
 protected: // instance members
     /*!< The rectangles center coordinates in the unit 'm_unit'. */
     QPointF m_ptCenter;

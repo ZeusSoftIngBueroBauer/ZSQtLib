@@ -74,49 +74,49 @@ public: // ctors
         const CDrawingScene& i_drawingScene,
         const QLineF& i_line,
         const ZS::PhysVal::CUnit& i_unit);
-public: // ctors
-    CPhysValLine(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
-    CPhysValLine(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const ZS::PhysVal::CUnit& i_unit);
-    CPhysValLine(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        double i_fX1, double i_fY1, double i_fX2, double i_fY2);
-    CPhysValLine(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        double i_fX1, double i_fY1, double i_fX2, double i_fY2,
-        const ZS::PhysVal::CUnit& i_unit);
-    CPhysValLine(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QPointF& i_p1, const QPointF& i_p2);
-    CPhysValLine(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QPointF& i_p1, const QPointF& i_p2,
-        const ZS::PhysVal::CUnit& i_unit);
-    CPhysValLine(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QLineF& i_line);
-    CPhysValLine(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const QLineF& i_line,
-        const ZS::PhysVal::CUnit& i_unit);
+//public: // ctors
+//    CPhysValLine(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
+//    CPhysValLine(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const ZS::PhysVal::CUnit& i_unit);
+//    CPhysValLine(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        double i_fX1, double i_fY1, double i_fX2, double i_fY2);
+//    CPhysValLine(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        double i_fX1, double i_fY1, double i_fX2, double i_fY2,
+//        const ZS::PhysVal::CUnit& i_unit);
+//    CPhysValLine(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const QPointF& i_p1, const QPointF& i_p2);
+//    CPhysValLine(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const QPointF& i_p1, const QPointF& i_p2,
+//        const ZS::PhysVal::CUnit& i_unit);
+//    CPhysValLine(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const QLineF& i_line);
+//    CPhysValLine(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const QLineF& i_line,
+//        const ZS::PhysVal::CUnit& i_unit);
 public: // ctors
     CPhysValLine(const CPhysValPoint& i_physValPoint1, const CPhysValPoint& i_physValPoint2);
 public: // copy ctor

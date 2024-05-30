@@ -54,16 +54,16 @@ public: // class methods
 public: // ctors
     CPhysValShape(const CDrawingScene& i_drawingScene);
     CPhysValShape(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
-public: // ctors
-    CPhysValShape(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
-    CPhysValShape(
-        const CDrawingScene& i_drawingScene,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-        const ZS::PhysVal::CUnit& i_unit);
+//public: // ctors
+//    CPhysValShape(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY);
+//    CPhysValShape(
+//        const CDrawingScene& i_drawingScene,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//        const ZS::System::GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//        const ZS::PhysVal::CUnit& i_unit);
 public: // copy ctor
     CPhysValShape(const CPhysValShape& i_physValShapeOther);
 public: // dtor
@@ -80,8 +80,8 @@ public: // must overridables
     virtual QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const = 0;
 public: // instance methods
     const CDrawingScene& drawingScene() const { return *m_pDrawingScene; }
-    const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX() const { return *m_pDivLinesMetricsX; }
-    const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY() const { return *m_pDivLinesMetricsY; }
+    //const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX() const { return *m_pDivLinesMetricsX; }
+    //const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsY() const { return *m_pDivLinesMetricsY; }
     ZS::System::EYScaleAxisOrientation yScaleAxisOrientation() const;
 public: // instance methods
     void setIndexInDrawingScene(int i_idx);
@@ -89,12 +89,12 @@ public: // instance methods
 protected: // instance members
     /*!< Reference to drawing scene. */
     const CDrawingScene* m_pDrawingScene;
-    /*!< Mathematic component to calculate the division lines of the X-Scale.
-         Also used to convert pixel values into metric values and vice versa. */
-    const ZS::System::GUI::Math::CScaleDivLinesMetrics* m_pDivLinesMetricsX;
-    /*!< Mathematic component to calculate the division lines of the Y-Scale.
-         Also used to convert pixel values into metric values and vice versa. */
-    const ZS::System::GUI::Math::CScaleDivLinesMetrics* m_pDivLinesMetricsY;
+    ///*!< Mathematic component to calculate the division lines of the X-Scale.
+    //     Also used to convert pixel values into metric values and vice versa. */
+    //const ZS::System::GUI::Math::CScaleDivLinesMetrics* m_pDivLinesMetricsX;
+    ///*!< Mathematic component to calculate the division lines of the Y-Scale.
+    //     Also used to convert pixel values into metric values and vice versa. */
+    //const ZS::System::GUI::Math::CScaleDivLinesMetrics* m_pDivLinesMetricsY;
     /*!< Unit (either metric or pixels) in which the coordinates are stored. */
     ZS::PhysVal::CUnit m_unit;
     /*!< PhysVal shapes may be added to the drawing scene to be drawn in the background or foreground.

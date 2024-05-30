@@ -125,106 +125,106 @@ CPhysValSize::CPhysValSize(
 {
 }
 
-/*==============================================================================
-public: // ctors
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical size on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValSize::CPhysValSize(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_size()
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical size on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValSize::CPhysValSize(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_size()
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    double i_fWidth, double i_fHeight) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_size(i_fWidth, i_fHeight)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    double i_fWidth, double i_fHeight,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_size(i_fWidth, i_fHeight)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_physValWidth.unit()),
-    m_size(i_physValWidth.getVal(), i_physValHeight.getVal())
-{
-    if (i_physValWidth.unit() != i_physValHeight.unit()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    if (i_physValWidth.getRes() != i_physValHeight.getRes()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const QSizeF& i_size) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_size(i_size)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValSize::CPhysValSize(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const QSizeF& i_size,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_size(i_size)
-{
-}
+///*==============================================================================
+//public: // ctors
+//==============================================================================*/
+//
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical size on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValSize::CPhysValSize(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_size()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical size on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValSize::CPhysValSize(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_size()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValSize::CPhysValSize(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    double i_fWidth, double i_fHeight) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_size(i_fWidth, i_fHeight)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValSize::CPhysValSize(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    double i_fWidth, double i_fHeight,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_size(i_fWidth, i_fHeight)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValSize::CPhysValSize(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const CPhysVal& i_physValWidth, const CPhysVal& i_physValHeight) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_physValWidth.unit()),
+//    m_size(i_physValWidth.getVal(), i_physValHeight.getVal())
+//{
+//    if (i_physValWidth.unit() != i_physValHeight.unit()) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//    }
+//    if (i_physValWidth.getRes() != i_physValHeight.getRes()) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//    }
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValSize::CPhysValSize(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const QSizeF& i_size) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_size(i_size)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValSize::CPhysValSize(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const QSizeF& i_size,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_size(i_size)
+//{
+//}
 
 /*==============================================================================
 public: // copy ctor
@@ -309,8 +309,8 @@ CPhysValShape& CPhysValSize::operator = ( const CPhysValShape& i_physValSizeOthe
 //------------------------------------------------------------------------------
 {
     const CPhysValSize& physValSizeOther = dynamic_cast<const CPhysValSize&>(i_physValSizeOther);
-    m_pDivLinesMetricsX = physValSizeOther.m_pDivLinesMetricsX;
-    m_pDivLinesMetricsY = physValSizeOther.m_pDivLinesMetricsY;
+    //m_pDivLinesMetricsX = physValSizeOther.m_pDivLinesMetricsX;
+    //m_pDivLinesMetricsY = physValSizeOther.m_pDivLinesMetricsY;
     m_unit = physValSizeOther.m_unit;
     m_size = physValSizeOther.m_size;
     m_unit = physValSizeOther.m_unit;

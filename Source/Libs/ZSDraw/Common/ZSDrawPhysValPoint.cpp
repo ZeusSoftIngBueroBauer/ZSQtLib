@@ -153,134 +153,134 @@ CPhysValPoint::CPhysValPoint(
     }
 }
 
-/*==============================================================================
-public: // ctors and dtor
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical point on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValPoint::CPhysValPoint(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_pt()
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical point on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValPoint::CPhysValPoint(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const CUnit& i_unit ) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_pt()
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief
-
-    @param [in] i_pt
-        Point whose coordinates are in the given unit.
-    @param [in] i_unit
-        Unit the coordinates are passed.
-*/
-CPhysValPoint::CPhysValPoint(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    double i_fX, double i_fY) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_pt(i_fX, i_fY)
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief
-
-    @param [in] i_pt
-        Point whose coordinates are in the given unit.
-    @param [in] i_unit
-        Unit the coordinates are passed.
-*/
-CPhysValPoint::CPhysValPoint(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    double i_fX, double i_fY,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_pt(i_fX, i_fY)
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief
-
-    @param [in] i_pt
-        Point whose coordinates are in the given unit.
-    @param [in] i_unit
-        Unit the coordinates are passed.
-*/
-CPhysValPoint::CPhysValPoint(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const QPointF& i_pt) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_pt(i_pt)
-{
-}
-
-//------------------------------------------------------------------------------
-/*! @brief
-
-    @param [in] i_pt
-        Point whose coordinates are in the given unit.
-    @param [in] i_unit
-        Unit the coordinates are passed.
-*/
-CPhysValPoint::CPhysValPoint(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const QPointF& i_pt,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_pt(i_pt)
-{
-}
-
-//------------------------------------------------------------------------------
-CPhysValPoint::CPhysValPoint(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const CPhysVal& i_physValX, const CPhysVal& i_physValY) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_physValX.unit()),
-    m_pt(i_physValX.getVal(), i_physValY.getVal())
-{
-    if (i_physValX.unit() != i_physValY.unit()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    if (i_physValX.getRes() != i_physValY.getRes()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-}
+///*==============================================================================
+//public: // ctors and dtor
+//==============================================================================*/
+//
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical point on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValPoint::CPhysValPoint(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_pt()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical point on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValPoint::CPhysValPoint(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const CUnit& i_unit ) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_pt()
+//{
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief
+//
+//    @param [in] i_pt
+//        Point whose coordinates are in the given unit.
+//    @param [in] i_unit
+//        Unit the coordinates are passed.
+//*/
+//CPhysValPoint::CPhysValPoint(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    double i_fX, double i_fY) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_pt(i_fX, i_fY)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief
+//
+//    @param [in] i_pt
+//        Point whose coordinates are in the given unit.
+//    @param [in] i_unit
+//        Unit the coordinates are passed.
+//*/
+//CPhysValPoint::CPhysValPoint(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    double i_fX, double i_fY,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_pt(i_fX, i_fY)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief
+//
+//    @param [in] i_pt
+//        Point whose coordinates are in the given unit.
+//    @param [in] i_unit
+//        Unit the coordinates are passed.
+//*/
+//CPhysValPoint::CPhysValPoint(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const QPointF& i_pt) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_pt(i_pt)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief
+//
+//    @param [in] i_pt
+//        Point whose coordinates are in the given unit.
+//    @param [in] i_unit
+//        Unit the coordinates are passed.
+//*/
+//CPhysValPoint::CPhysValPoint(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const QPointF& i_pt,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_pt(i_pt)
+//{
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValPoint::CPhysValPoint(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const CPhysVal& i_physValX, const CPhysVal& i_physValY) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_physValX.unit()),
+//    m_pt(i_physValX.getVal(), i_physValY.getVal())
+//{
+//    if (i_physValX.unit() != i_physValY.unit()) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//    }
+//    if (i_physValX.getRes() != i_physValY.getRes()) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//    }
+//}
 
 /*==============================================================================
 public: // copy ctor
@@ -365,8 +365,8 @@ CPhysValShape& CPhysValPoint::operator = ( const CPhysValShape& i_physValPointOt
 //------------------------------------------------------------------------------
 {
     const CPhysValPoint& physValPointOther = dynamic_cast<const CPhysValPoint&>(i_physValPointOther);
-    m_pDivLinesMetricsX = physValPointOther.m_pDivLinesMetricsX;
-    m_pDivLinesMetricsY = physValPointOther.m_pDivLinesMetricsY;
+    //m_pDivLinesMetricsX = physValPointOther.m_pDivLinesMetricsX;
+    //m_pDivLinesMetricsY = physValPointOther.m_pDivLinesMetricsY;
     m_unit = physValPointOther.m_unit;
     m_pt = physValPointOther.m_pt;
     m_unit = physValPointOther.m_unit;

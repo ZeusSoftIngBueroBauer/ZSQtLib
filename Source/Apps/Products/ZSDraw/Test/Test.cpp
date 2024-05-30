@@ -715,6 +715,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
 
     CUnit unit = i_drawingSize.unit();
     bool bYAxisTopDown = (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    bool bUnitPixel = (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
+    int iDigits = bUnitPixel ? 0 : i_drawingSize.metricImageCoorsDecimals();
 
     /* create
     ---------
@@ -779,34 +782,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptBottomCenterSetAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
     QPointF ptLeftCenterSetAngle0(200.0, 300.0);
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setCenter(400, 400)
@@ -849,34 +836,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetCenterAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetCenterAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetCenterAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetCenterAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetCenterAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetCenterAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetCenterAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetCenterAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetCenterAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetCenterAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetCenterAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetCenterAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetCenterAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetCenterAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetCenterAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetCenterAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetCenterAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetCenterAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setSize(300, 200)
@@ -919,34 +890,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetSizeAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetSizeAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetSizeAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetSizeAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetSizeAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetSizeAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetSizeAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetSizeAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetSizeAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetSizeAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetSizeAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetSizeAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidth(300)
@@ -985,34 +940,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidthByMovingLeftCenter(BeforeRightBorder)
@@ -1051,34 +990,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeforeRightBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeforeRightBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidthByMovingLeftCenter(BeyondRightBorder)
@@ -1090,7 +1013,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
          |                       |            |           |
      350 BL----+-----+-----+----BR        350 TR----+----TL      250
     */
-    ptMoved = QPointF(500, 250);
+    ptMoved = QPointF(500, bYAxisTopDown ? 250 : 350.0);
     physValAngleCorrected.setVal(180.0);
     double fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle0 = 100.0;
     double fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle0 = fHeightSetAngle0;
@@ -1118,34 +1041,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidthByMovingRightCenter(BeforeLeftBorder)
@@ -1184,34 +1091,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeLeftBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeforeLeftBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeLeftBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeforeLeftBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeforeLeftBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidthByMovingRightCenter(BeyondLeftBorder)
@@ -1223,7 +1114,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
          |                       |            |           |
      350 BL----+-----+-----+----BR        350 TR----+----TL      250
     */
-    ptMoved = QPointF(100.0, 250.0);
+    ptMoved = QPointF(100.0, bYAxisTopDown ? 250.0 : 350.0);
     physValAngleCorrected.setVal(180.0);
     double fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle0 = 100;
     double fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle0 = fHeightSetAngle0;
@@ -1251,34 +1142,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeight(200)
@@ -1297,15 +1172,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     CPhysVal physValHeight200(200.0, i_drawingSize.unit(), i_drawingSize.imageCoorsResolution());
     double fWidthSetHeightAngle0 = fWidthSetAngle0;
     double fHeightSetHeightAngle0 = physValHeight200.getVal();
-    QPointF ptCenterSetHeightAngle0(300.0, 350.0);
-    QPointF ptTopLeftSetHeightAngle0(200.0, 250.0);
-    QPointF ptTopRightSetHeightAngle0(400.0, 250.0);
-    QPointF ptBottomRightSetHeightAngle0(400.0, 450.0);
-    QPointF ptBottomLeftSetHeightAngle0(200.0, 450.0);
-    QPointF ptTopCenterSetHeightAngle0(300.0, 250.0);
-    QPointF ptRightCenterSetHeightAngle0(400.0, 350.0);
-    QPointF ptBottomCenterSetHeightAngle0(300.0, 450.0);
-    QPointF ptLeftCenterSetHeightAngle0(200.0, 350.0);
+    QPointF ptCenterSetHeightAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopLeftSetHeightAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetHeightAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetHeightAngle0(400.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptBottomLeftSetHeightAngle0(200.0, bYAxisTopDown ? 450.0: 150.0);
+    QPointF ptTopCenterSetHeightAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetHeightAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomCenterSetHeightAngle0(300.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptLeftCenterSetHeightAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
@@ -1321,34 +1196,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeightByMovingTopCenter(BeforeBottomBorder)
@@ -1358,20 +1217,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
          |                       |
      300 +           X           +        300 +-----+-----+-----+-----+      300
          |                       |   =>       |           X           |
-     350 +-----+-----+-----+-----+        350 +-----+-----+-----+-----+
+     350 +-----+-----+-----+-----+        350 +-----+-----+-----+-----+      250
     */
     ptMoved = ptRightCenterSetAngle0;
     double fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle0 = fWidthSetAngle0;
     double fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle0 = 50.0;
-    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(300.0, 325.0);
-    QPointF ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle0(200.0, 300.0);
-    QPointF ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle0(400.0, 300.0);
-    QPointF ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle0(400.0, 350.0);
-    QPointF ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle0(200.0, 350.0);
-    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(300.0, 300.0);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0 (400.0, 325.0);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(300.0, 350.0);
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(200.0, 325.0);
+    QPointF ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(300.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle0(400.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0 (400.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(200.0, bYAxisTopDown ? 325.0 : 275.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
@@ -1387,34 +1246,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeightByMovingTopCenter(BeyondBottomBorder)
@@ -1428,19 +1271,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                                               |           X           |
                                           400 TR----+-----+-----+----TL      200
     */
-    ptMoved = QPointF(400, 400);
+    ptMoved = QPointF(400, bYAxisTopDown ? 400.0 : 200.0);
     physValAngleCorrected.setVal(180.0);
     double fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle0 = fWidthSetAngle0;
     double fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle0 = 50.0;
-    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(300.0, 375.0);
-    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle0(400.0, 400.0);
-    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle0(200.0, 400.0);
-    QPointF ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle0(200.0, 350.0);
-    QPointF ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle0(400.0, 350.0);
-    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(300.0, 400.0);
-    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(200.0, 375.0);
-    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(300.0, 350.0);
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(400.0, 375.0);
+    QPointF ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 375.0 : 225.0);
+    QPointF ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle0(400.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle0(200.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(200.0, bYAxisTopDown ? 375.0 : 225.0);
+    QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(400.0, bYAxisTopDown ? 375.0 : 225.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
@@ -1456,34 +1299,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeightByMovingBottomCenter(BeforeTopBorder)
@@ -1498,15 +1325,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     ptMoved = ptRightCenterSetAngle0;
     double fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle0 = fWidthSetAngle0;
     double fHeightSetHeightMoveBottomCenterBeforeTopBorderAngle0 = 50.0;
-    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(300.0, 275.0);
-    QPointF ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle0(200.0, 250.0);
-    QPointF ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle0(400.0, 250.0);
-    QPointF ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle0(400.0, 300.0);
-    QPointF ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle0(200.0, 300.0);
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(300.0, 250.0);
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(400.0, 275.0);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(300.0, 300.0);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(200.0, 275.0);
+    QPointF ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(300.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle0(400.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(400.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(200.0, bYAxisTopDown ? 275.0 : 325.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
@@ -1522,34 +1349,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveBottomCenterBeforeTopBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveBottomCenterBeforeTopBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeightByMovingBottomCenter(BeyondTopBorder)
@@ -1565,19 +1376,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
          |                       |
      350 +-----+-----+-----+-----+
     */
-    ptMoved = QPointF(400.0, 200.0);
+    ptMoved = QPointF(400.0, bYAxisTopDown ? 200.0 : 400);
     physValAngleCorrected.setVal(180.0);
     double fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle0 = fWidthSetAngle0;
     double fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle0 = 50.0;
-    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(300.0, 225.0);
-    QPointF ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle0(400.0, 250.0);
-    QPointF ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle0(200.0, 250.0);
-    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle0(200.0, 200.0);
-    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle0(400.0, 200.0);
-    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(300.0, 250.0);
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(200.0, 225.0);
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(300.0, 200.0);
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(400.0, 225.0);
+    QPointF ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 225.0 : 375.0);
+    QPointF ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle0(200.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle0(400.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(200.0, bYAxisTopDown ? 225.0 : 375.0);
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(400.0, bYAxisTopDown ? 225.0 : 375.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
@@ -1593,34 +1404,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveBottomCenterBeyondTopBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopLeft(BeforeBottomRight)
@@ -1635,21 +1430,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |           |           |
       350    BL---------BL'---------BR     250
     */
-    QPointF ptSetTopLeftBeforeBottomRightAngle0(300.0, 200.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetTopLeftBeforeBottomRightAngle0.setY(400.0);
-    }
+    QPointF ptSetTopLeftBeforeBottomRightAngle0(300.0, bYAxisTopDown ? 200.0 : 400);
     double fWidthSetTopLeftBeforeBottomRightAngle0 = 100.0;
     double fHeightSetTopLeftBeforeBottomRightAngle0 = 150.0;
-    QPointF ptCenterSetTopLeftBeforeBottomRightAngle0(350.0, 275.0);
+    QPointF ptCenterSetTopLeftBeforeBottomRightAngle0(350.0, bYAxisTopDown ? 275.0 : 325.0);
     QPointF ptTopLeftSetTopLeftBeforeBottomRightAngle0 = ptSetTopLeftBeforeBottomRightAngle0;
-    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle0(400.0, 200.0);
-    QPointF ptBottomRightSetTopLeftBeforeBottomRightAngle0(400.0, 350.0);
-    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle0(300.0, 350.0);
-    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle0(350.0, 200.0);
-    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle0(400.0, 275.0);
-    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle0(350.0, 350.0);
-    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle0(300.0, 275.0);
+    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle0(400.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptBottomRightSetTopLeftBeforeBottomRightAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle0(350.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle0(400.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle0(350.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle0(300.0, bYAxisTopDown ? 275.0 : 325.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
@@ -1665,34 +1457,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeforeBottomRightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeforeBottomRightAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeforeBottomRightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeforeBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeforeBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeforeBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeforeBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeforeBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeforeBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeforeBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeforeBottomRightAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopLeft(BeyondRightBorder)
@@ -1707,22 +1483,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |                       |     X'    |
       350    BL---------------------BR----------TR'      250
     */
-    QPointF ptSetTopLeftBeyondRightBorderAngle0(500.0, 300.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetTopLeftBeyondRightBorderAngle0.setY(300.0);
-    }
+    QPointF ptSetTopLeftBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 300.0 : 300.0);
     physValAngleCorrected.setVal(90.0);
     double fWidthSetTopLeftBeyondRightBorderAngle0 = 50.0;
     double fHeightSetTopLeftBeyondRightBorderAngle0 = 100.0;
-    QPointF ptCenterSetTopLeftBeyondRightBorderAngle0(450.0, 325.0);
+    QPointF ptCenterSetTopLeftBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 325.0 : 275.0);
     QPointF ptTopLeftSetTopLeftBeyondRightBorderAngle0 = ptSetTopLeftBeyondRightBorderAngle0;
-    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle0(500.0, 350.0);
-    QPointF ptBottomRightSetTopLeftBeyondRightBorderAngle0(400.0, 350.0);
-    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle0(400.0, 300.0);
-    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle0(500.0, 325.0);
-    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle0(450.0, 350.0);
-    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle0(400.0, 325.0);
-    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle0(450.0, 300.0);
+    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomRightSetTopLeftBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
@@ -1738,34 +1511,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondRightBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondRightBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondRightBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopLeft(BeyondBottomBorder)
@@ -1782,22 +1539,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                          |     X'    |
       400               TL'---------BL'                  200
     */
-    QPointF ptSetTopLeftBeyondBottomBorderAngle0(300.0, 400.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetTopLeftBeyondBottomBorderAngle0.setY(300.0);
-    }
+    QPointF ptSetTopLeftBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 400.0 : 200.0);
     physValAngleCorrected.setVal(270.0);
     double fWidthSetTopLeftBeyondBottomBorderAngle0 = 50.0;
     double fHeightSetTopLeftBeyondBottomBorderAngle0 = 100.0;
-    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle0(350.0, 375.0);
+    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle0(350.0, bYAxisTopDown ? 375.0 : 225.0);
     QPointF ptTopLeftSetTopLeftBeyondBottomBorderAngle0 = ptSetTopLeftBeyondBottomBorderAngle0;
-    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle0(300.0, 350.0);
-    QPointF ptBottomRightSetTopLeftBeyondBottomBorderAngle0(400.0, 350.0);
-    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle0(400.0, 400.0);
-    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle0(300.0, 375.0);
-    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle0(350.0, 350.0);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle0(400.0, 375.0);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle0(350.0, 400.0);
+    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomRightSetTopLeftBeyondBottomBorderAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle0(400.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 375.0 : 225.0);
+    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle0(350.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle0(400.0, bYAxisTopDown ? 375.0 : 225.0);
+    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle0(350.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
@@ -1813,34 +1567,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondBottomBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondBottomBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondBottomBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopLeft(BeyondBottomRight)
@@ -1856,22 +1594,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                                  |           |
      450                        TR'---------TL'          150
     */
-    QPointF ptTopLeftBeyondBottomRightAngle0(500.0, 450.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptTopLeftBeyondBottomRightAngle0.setY(150.0);
-    }
+    QPointF ptTopLeftBeyondBottomRightAngle0(500.0, bYAxisTopDown ? 450.0 : 150.0);
     physValAngleCorrected.setVal(180.0);
     double fWidthSetTopLeftBeyondBottomRightAngle0 = 100.0;
     double fHeightSetTopLeftBeyondBottomRightAngle0 = 100.0;
-    QPointF ptCenterSetTopLeftBeyondBottomRightAngle0(450.0, 400.0);
+    QPointF ptCenterSetTopLeftBeyondBottomRightAngle0(450.0, bYAxisTopDown ? 400.0 : 200.0);
     QPointF ptTopLeftSetTopLeftBeyondBottomRightAngle0 = ptTopLeftBeyondBottomRightAngle0;
-    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle0(400.0, 450.0);
-    QPointF ptBottomRightSetTopLeftBeyondBottomRightAngle0(400.0, 350.0);
-    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle0(500.0, 350.0);
-    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle0(450.0, 450.0);
-    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle0(400.0, 400.0);
-    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle0(450.0, 350.0);
-    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle0(500.0, 400.0);
+    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle0(400.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptBottomRightSetTopLeftBeyondBottomRightAngle0(400.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle0(500.0, bYAxisTopDown ? 350.0 : 25.0);
+    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle0(450.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle0(400.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle0(450.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle0(500.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
@@ -1887,34 +1622,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondBottomRightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondBottomRightAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondBottomRightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondBottomRightAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondBottomRightAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopRight(BeforeBottomLeft)
@@ -1929,21 +1648,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |           |           |
       350   BL----------BR'---------BR     250
     */
-    QPointF ptSetTopRightBeforeBottomLeftAngle0(300.0, 200.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetTopRightBeforeBottomLeftAngle0.setY(400.0);
-    }
+    QPointF ptSetTopRightBeforeBottomLeftAngle0(300.0, bYAxisTopDown ? 200.0 : 400.0);
     double fWidthSetTopRightBeforeBottomLeftAngle0 = 100.0;
     double fHeightSetTopRightBeforeBottomLeftAngle0 = 150.0;
-    QPointF ptCenterSetTopRightBeforeBottomLeftAngle0(250.0, 275.0);
-    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle0(200.0, 200.0);
+    QPointF ptCenterSetTopRightBeforeBottomLeftAngle0(250.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle0(200.0, bYAxisTopDown ? 200.0 : 400.0);
     QPointF ptTopRightSetTopRightBeforeBottomLeftAngle0 = ptSetTopRightBeforeBottomLeftAngle0;
-    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle0(300.0, 350.0);
-    QPointF ptBottomLeftSetTopRightBeforeBottomLeftAngle0(200.0, 350.0);
-    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle0(250.0, 200.0);
-    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle0(300.0, 275.0);
-    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle0(250.0, 350.0);
-    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle0(200.0, 275.0);
+    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetTopRightBeforeBottomLeftAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle0(250.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle0(300.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle0(250.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle0(200.0, bYAxisTopDown ? 275.0 : 325.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
@@ -1959,34 +1675,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeforeBottomLeftAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeforeBottomLeftAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeforeBottomLeftAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeforeBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeforeBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeforeBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeforeBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeforeBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeforeBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeforeBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeforeBottomLeftAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopRight(BeyondLeftBorder)
@@ -1999,22 +1699,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |     X'    |                       |
      350    TL'----------BL----------------------BR      250
     */
-    QPointF ptSetTopRightBeyondLeftBorderAngle0(100.0, 300.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetTopRightBeyondLeftBorderAngle0.setY(300.0);
-    }
+    QPointF ptSetTopRightBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 300.0 : 300.0);
     physValAngleCorrected.setVal(270.0);
     double fWidthSetTopRightBeyondLeftBorderAngle0 = 50.0;
     double fHeightSetTopRightBeyondLeftBorderAngle0 = 100.0;
-    QPointF ptCenterSetTopRightBeyondLeftBorderAngle0(150.0, 325.0);
-    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle0(100.0, 350.0);
+    QPointF ptCenterSetTopRightBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 350.0 : 250.0);
     QPointF ptTopRightSetTopRightBeyondLeftBorderAngle0 = ptSetTopRightBeyondLeftBorderAngle0;
-    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle0(200.0, 300.0);
-    QPointF ptBottomLeftSetTopRightBeyondLeftBorderAngle0(200.0, 350.0);
-    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle0(100.0, 325.0);
-    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle0(150.0, 300.0);
-    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle0(200.0, 325.0);
-    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle0(150.0, 350.0);
+    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomLeftSetTopRightBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
@@ -2030,34 +1727,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondLeftBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondLeftBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondLeftBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopRight(BeyondBottomBorder)
@@ -2072,22 +1753,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                          |     X'    |
      400                BR'---------TR'                  200
     */
-    QPointF ptSetTopRightBeyondBottomBorderAngle0(300.0, 400.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetTopRightBeyondBottomBorderAngle0.setY(200.0);
-    }
+    QPointF ptSetTopRightBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 400.0 : 200.0);
     physValAngleCorrected.setVal(90.0);
     double fWidthSetTopRightBeyondBottomBorderAngle0 = 50.0;
     double fHeightSetTopRightBeyondBottomBorderAngle0 = 100.0;
-    QPointF ptCenterSetTopRightBeyondBottomBorderAngle0(250.0, 375.0);
-    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle0(300.0, 350.0);
+    QPointF ptCenterSetTopRightBeyondBottomBorderAngle0(250.0, bYAxisTopDown ? 375.0 : 225.0);
+    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
     QPointF ptTopRightSetTopRightBeyondBottomBorderAngle0 = ptSetTopRightBeyondBottomBorderAngle0;
-    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle0(200.0, 400.0);
-    QPointF ptBottomLeftSetTopRightBeyondBottomBorderAngle0(200.0, 350.0);
-    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle0(300.0, 375.0);
-    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle0(250.0, 400.0);
-    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle0(200.0, 375.0);
-    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle0(250.0, 350.0);
+    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle0(200.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptBottomLeftSetTopRightBeyondBottomBorderAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle0(300.0, bYAxisTopDown ? 375.0 : 225.0);
+    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle0(250.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle0(200.0, bYAxisTopDown ? 375.0 : 225.0);
+    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle0(250.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
@@ -2103,34 +1781,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondBottomBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondBottomBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondBottomBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondBottomBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondBottomBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopRight(BeyondBottomLeft)
@@ -2147,22 +1809,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |           |
      450    TR'---------TL'                              150
     */
-    QPointF ptSetTopRightBeyondBottomLeftAngle0(100.0, 450.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetTopRightBeyondBottomLeftAngle0.setY(150.0);
-    }
+    QPointF ptSetTopRightBeyondBottomLeftAngle0(100.0, bYAxisTopDown ? 450.0 : 150.0);
     physValAngleCorrected.setVal(180.0);
     double fWidthSetTopRightBeyondBottomLeftAngle0 = 100.0;
     double fHeightSetTopRightBeyondBottomLeftAngle0 = 100.0;
-    QPointF ptCenterSetTopRightBeyondBottomLeftAngle0(150.0, 400.0);
-    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle0(200.0, 450.0);
+    QPointF ptCenterSetTopRightBeyondBottomLeftAngle0(150.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle0(200.0, bYAxisTopDown ? 450.0 : 150.0);
     QPointF ptTopRightSetTopRightBeyondBottomLeftAngle0 = ptSetTopRightBeyondBottomLeftAngle0;
-    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle0(100.0, 350.0);
-    QPointF ptBottomLeftSetTopRightBeyondBottomLeftAngle0(200.0, 350.0);
-    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle0(150.0, 450.0);
-    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle0(100.0, 400.0);
-    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle0(150.0, 350.0);
-    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle0(200.0, 400.0);
+    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle0(100.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptBottomLeftSetTopRightBeyondBottomLeftAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle0(150.0, bYAxisTopDown ? 450.0 : 150.0);
+    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle0(100.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle0(150.0, bYAxisTopDown ? 350.0 : 250.0);
+    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle0(200.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft",
@@ -2178,34 +1837,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondBottomLeftAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondBottomLeftAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondBottomLeftAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondBottomLeftAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondBottomLeftAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomRight(BeforeTopLeft)
@@ -2220,21 +1863,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |           |
       400   BL'---------BR'                200
     */
-    QPointF ptSetBottomRightBeforeTopLeftAngle0(300.0, 400.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetBottomRightBeforeTopLeftAngle0.setY(200.0);
-    }
+    QPointF ptSetBottomRightBeforeTopLeftAngle0(300.0, bYAxisTopDown ? 400.0 : 200.0);
     double fWidthSetBottomRightBeforeTopLeftAngle0 = 100.0;
     double fHeightSetBottomRightBeforeTopLeftAngle0 = 150.0;
-    QPointF ptCenterSetBottomRightBeforeTopLeftAngle0(250.0, 325.0);
-    QPointF ptTopLeftSetBottomRightBeforeTopLeftAngle0(200.0, 250.0);
-    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle0(300.0, 250.0);
+    QPointF ptCenterSetBottomRightBeforeTopLeftAngle0(250.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptTopLeftSetBottomRightBeforeTopLeftAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
     QPointF ptBottomRightSetBottomRightBeforeTopLeftAngle0 = ptSetBottomRightBeforeTopLeftAngle0;
-    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle0(200.0, 400.0);
-    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle0(250.0, 250.0);
-    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle0(300.0, 325.0);
-    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle0(250.0, 400.0);
-    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle0(200.0, 325.0);
+    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle0(200.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle0(250.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle0(300.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle0(250.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle0(200.0, bYAxisTopDown ? 325.0 : 275.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
@@ -2250,34 +1890,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeforeTopLeftAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeforeTopLeftAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeforeTopLeftAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeforeTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeforeTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeforeTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeforeTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeforeTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeforeTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeforeTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeforeTopLeftAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomRight(BeyondTopBorder)
@@ -2292,22 +1916,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                          |                       |
      350                BL-----------------------BR      250
     */
-    QPointF ptSetBottomRightBeyondTopBorderAngle0(300.0, 200.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetBottomRightBeyondTopBorderAngle0.setY(400.0);
-    }
+    QPointF ptSetBottomRightBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 200.0 : 400.0);
     physValAngleCorrected.setVal(270.0);
     double fWidthSetBottomRightBeyondTopBorderAngle0 = 50.0;
     double fHeightSetBottomRightBeyondTopBorderAngle0 = 100.0;
-    QPointF ptCenterSetBottomRightBeyondTopBorderAngle0(250.0, 225.0);
-    QPointF ptTopLeftSetBottomRightBeyondTopBorderAngle0(200.0, 250.0);
-    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle0(200.0, 200.0);
+    QPointF ptCenterSetBottomRightBeyondTopBorderAngle0(250.0, bYAxisTopDown ? 225.0 : 375.0);
+    QPointF ptTopLeftSetBottomRightBeyondTopBorderAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle0(200.0, bYAxisTopDown ? 200.0 : 400.0);
     QPointF ptBottomRightSetBottomRightBeyondTopBorderAngle0 = ptSetBottomRightBeyondTopBorderAngle0;
-    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle0(300.0, 250.0);
-    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle0(200.0, 225.0);
-    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle0(250.0, 200.0);
-    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle0(300.0, 225.0);
-    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle0(250.0, 250.0);
+    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle0(200.0, bYAxisTopDown ? 225.0 : 375.0);
+    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle0(250.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 225.0 : 375.0);
+    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle0(250.0, bYAxisTopDown ? 250.0 : 350.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
@@ -2323,34 +1944,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondTopBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondTopBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondTopBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomRight(BeyondLeftBorder)
@@ -2363,22 +1968,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                           |                       |
      350                 BL-----------------------BR      250
     */
-    QPointF ptSetBottomRightBeyondLeftBorderAngle0(100.0, 300.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetBottomRightBeyondLeftBorderAngle0.setY(300.0);
-    }
+    QPointF ptSetBottomRightBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 300.0 : 300.0);
     physValAngleCorrected.setVal(90.0);
     double fWidthSetBottomRightBeyondLeftBorderAngle0 = 50.0;
     double fHeightSetBottomRightBeyondLeftBorderAngle0 = 100.0;
-    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle0(150.0, 275.0);
-    QPointF ptTopLeftSetBottomRightBeyondLeftBorderAngle0(200.0, 250.0);
-    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle0(200.0, 300.0);
+    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptTopLeftSetBottomRightBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
     QPointF ptBottomRightSetBottomRightBeyondLeftBorderAngle0 = ptSetBottomRightBeyondLeftBorderAngle0;
-    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle0(100.0, 250.0);
-    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle0(200.0, 275.0);
-    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle0(150.0, 300.0);
-    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle0(100.0, 275.0);
-    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle0(150.0, 250.0);
+    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle0(100.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 250.0 : 350.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
@@ -2394,34 +1996,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondLeftBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondLeftBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondLeftBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondLeftBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomRight(BeyondTopLeft)
@@ -2438,22 +2024,22 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                           |                       |
      350                 BL-----------------------BR      250
     */
-    QPointF ptSetBottomRightBeyondTopLeftAngle0(100.0, 150.0);
+    QPointF ptSetBottomRightBeyondTopLeftAngle0(100.0, bYAxisTopDown ? 150.0 : 450.0);
     if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         ptSetBottomRightBeyondTopLeftAngle0.setY(450.0);
     }
     physValAngleCorrected.setVal(180.0);
     double fWidthSetBottomRightBeyondTopLeftAngle0 = 100.0;
     double fHeightSetBottomRightBeyondTopLeftAngle0 = 100.0;
-    QPointF ptCenterSetBottomRightBeyondTopLeftAngle0(150.0, 200.0);
-    QPointF ptTopLeftSetBottomRightBeyondTopLeftAngle0(200.0, 250.0);
-    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle0(100.0, 250.0);
+    QPointF ptCenterSetBottomRightBeyondTopLeftAngle0(150.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptTopLeftSetBottomRightBeyondTopLeftAngle0(200.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle0(100.0, bYAxisTopDown ? 250.0 : 350.0);
     QPointF ptBottomRightSetBottomRightBeyondTopLeftAngle0 = ptSetBottomRightBeyondTopLeftAngle0;
-    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle0(200.0, 150.0);
-    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle0(150.0, 250.0);
-    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle0(100.0, 200.0);
-    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle0(150.0, 150.0);
-    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle0(200.0, 200.0);
+    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle0(200.0, bYAxisTopDown ? 150.0 : 450.0);
+    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle0(150.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle0(100.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle0(150.0, bYAxisTopDown ? 150.0 : 450.0);
+    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle0(200.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
@@ -2469,34 +2055,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondTopLeftAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondTopLeftAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondTopLeftAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondTopLeftAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondTopLeftAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeforeTopRight)
@@ -2511,21 +2081,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                          |           |
       400               BL'---------BR'    200
     */
-    QPointF ptSetBottomLeftBeforeTopRightAngle0(300.0, 400.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetBottomLeftBeforeTopRightAngle0.setY(200.0);
-    }
+    QPointF ptSetBottomLeftBeforeTopRightAngle0(300.0, bYAxisTopDown ? 400.0 : 200.0);
     double fWidthSetBottomLeftBeforeTopRightAngle0 = 100.0;
     double fHeightSetBottomLeftBeforeTopRightAngle0 = 150.0;
-    QPointF ptCenterSetBottomLeftBeforeTopRightAngle0(350.0, 325.0);
-    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle0(300.0, 250.0);
-    QPointF ptTopRightSetBottomLeftBeforeTopRightAngle0(400.0, 250.0);
-    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle0(400.0, 400.0);
+    QPointF ptCenterSetBottomLeftBeforeTopRightAngle0(350.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetBottomLeftBeforeTopRightAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle0(400.0, bYAxisTopDown ? 400.0 : 200.0);
     QPointF ptBottomLeftSetBottomLeftBeforeTopRightAngle0 = ptSetBottomLeftBeforeTopRightAngle0;
-    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle0(350.0, 250.0);
-    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle0(400.0, 325.0);
-    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle0(350.0, 400.0);
-    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle0(300.0, 325.0);
+    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle0(350.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle0(400.0, bYAxisTopDown ? 325.0 : 275.0);
+    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle0(350.0, bYAxisTopDown ? 400.0 : 200.0);
+    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle0(300.0, bYAxisTopDown ? 325.0 : 275.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
@@ -2541,34 +2108,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeforeTopRightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeforeTopRightAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeforeTopRightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeforeTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeforeTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeforeTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeforeTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeforeTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeforeTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeforeTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeforeTopRightAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeyondTopBorder)
@@ -2583,22 +2134,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |                       |
       350   BL----------------------BR     250
     */
-    QPointF ptSetBottomLeftBeyondTopBorderAngle0(300.0, 200.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetBottomLeftBeyondTopBorderAngle0.setY(400.0);
-    }
+    QPointF ptSetBottomLeftBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 200.0 : 400.0);
     physValAngleCorrected.setVal(90.0);
     double fWidthSetBottomLeftBeyondTopBorderAngle0 = 50.0;
     double fHeightSetBottomLeftBeyondTopBorderAngle0 = 100.0;
-    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle0(350.0, 225.0);
-    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle0(400.0, 200.0);
-    QPointF ptTopRightSetBottomLeftBeyondTopBorderAngle0(400.0, 250.0);
-    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle0(300.0, 250.0);
+    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle0(350.0, bYAxisTopDown ? 225.0: 375.0);
+    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle0(400.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptTopRightSetBottomLeftBeyondTopBorderAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 250.0 : 350.0);
     QPointF ptBottomLeftSetBottomLeftBeyondTopBorderAngle0 = ptSetBottomLeftBeyondTopBorderAngle0;
-    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle0(400.0, 225.0);
-    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle0(350.0, 250.0);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle0(300.0, 225.0);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle0(350.0, 200.0);
+    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle0(400.0, bYAxisTopDown ? 225.0 : 375.0);
+    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle0(350.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle0(300.0, bYAxisTopDown ? 225.0 : 375.0);
+    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle0(350.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
@@ -2614,34 +2162,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondTopBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondTopBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeyondRightBorder)
@@ -2654,22 +2186,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |                       |
       350   BL----------------------BR                 250
     */
-    QPointF ptSetBottomLeftBeyondRightBorderAngle0(500.0, 300.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetBottomLeftBeyondRightBorderAngle0.setY(300.0);
-    }
+    QPointF ptSetBottomLeftBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 300.0 : 300.0);
     physValAngleCorrected.setVal(270);
     double fWidthSetBottomLeftBeyondRightBorderAngle0 = 50.0;
     double fHeightSetBottomLeftBeyondRightBorderAngle0 = 100.0;
-    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle0(450.0, 275.0);
-    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle0(400.0, 300.0);
-    QPointF ptTopRightSetBottomLeftBeyondRightBorderAngle0(400.0, 250.0);
-    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle0(500.0, 250.0);
+    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptTopRightSetBottomLeftBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 250.0 : 350.0);
     QPointF ptBottomLeftSetBottomLeftBeyondRightBorderAngle0 = ptSetBottomLeftBeyondRightBorderAngle0;
-    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle0(400.0, 275.0);
-    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle0(450.0, 250.0);
-    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle0(500.0, 275.0);
-    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle0(450.0, 300.0);
+    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle0(400.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
@@ -2685,34 +2214,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondRightBorderAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondRightBorderAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondRightBorderAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondRightBorderAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeyondTopRight)
@@ -2729,22 +2242,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
              |                       |              
       350   BL----------------------BR                250
     */
-    QPointF ptSetBottomLeftBeyondTopRightAngle0(500.0, 150.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        ptSetBottomLeftBeyondTopRightAngle0.setY(450.0);
-    }
+    QPointF ptSetBottomLeftBeyondTopRightAngle0(500.0, bYAxisTopDown ? 150.0 : 450.0);
     physValAngleCorrected.setVal(180.0);
     double fWidthSetBottomLeftBeyondTopRightAngle0 = 100.0;
     double fHeightSetBottomLeftBeyondTopRightAngle0 = 100.0;
-    QPointF ptCenterSetBottomLeftBeyondTopRightAngle0(450.0, 200.0);
-    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle0(500.0, 250.0);
-    QPointF ptTopRightSetBottomLeftBeyondTopRightAngle0(400.0, 250.0);
-    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle0(400.0, 150.0);
+    QPointF ptCenterSetBottomLeftBeyondTopRightAngle0(450.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle0(500.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptTopRightSetBottomLeftBeyondTopRightAngle0(400.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle0(400.0, bYAxisTopDown ? 150.0 : 450.0);
     QPointF ptBottomLeftSetBottomLeftBeyondTopRightAngle0 = ptSetBottomLeftBeyondTopRightAngle0;
-    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle0(450.0, 250.0);
-    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle0(400.0, 200.0);
-    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle0(450.0, 150.0);
-    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle0(500.0, 200.0);
+    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle0(450.0, bYAxisTopDown ? 250.0 : 350.0);
+    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle0(400.0, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle0(450.0, bYAxisTopDown ? 150.0 : 450.0);
+    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle0(500.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
@@ -2760,34 +2270,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondTopRightAngle0, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopRightAngle0, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondTopRightAngle0, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopRightAngle0) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopRightAngle0) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
@@ -2841,34 +2335,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptBottomCenterSetAngle90(250.0, 300.0);
     QPointF ptLeftCenterSetAngle90(300.0, 200.0);
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle90, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle90, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle90, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle90, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle90, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle90, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle90, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle90, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle90, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle90, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle90, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle90) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle90, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle90, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle90) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle90) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle90) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle90) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle90) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle90) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle90) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle90) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
@@ -2918,34 +2396,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptBottomCenterSetAngle180(300.0, 250.0);
     QPointF ptLeftCenterSetAngle180(400.0, 300.0);
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle180, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle180, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle180, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle180, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle180, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle180, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle180, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle180, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle180, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle180, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle180, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle180) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle180, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle180, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle180) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle180) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle180) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle180) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle180) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle180) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle180) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle180) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
@@ -2999,34 +2461,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptBottomCenterSetAngle270(350.0, 300.0);
     QPointF ptLeftCenterSetAngle270(300.0, 400.0);
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle270, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle270, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle270, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle270, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle270, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle270, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle270, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle270, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle270, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle270, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle270, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle270) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle270, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle270, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle270) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle270) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle270) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle270) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle270) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle270) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle270) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle270) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
@@ -3072,34 +2518,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptLeftCenterSetAngle30 = QPointF((ptTopLeftSetAngle30.x() + ptBottomLeftSetAngle30.x()) / 2.0,
                                              (ptBottomLeftSetAngle30.y() + ptTopLeftSetAngle30.y()) / 2.0);
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setCenter(400, 400)
@@ -3141,34 +2571,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetCenterAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetCenterAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetCenterAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetCenterAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetCenterAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetCenterAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetCenterAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetCenterAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetCenterAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetCenterAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetCenterAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetCenterAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetCenterAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetCenterAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetCenterAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetCenterAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetCenterAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetCenterAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetCenterAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetCenterAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setSize(300, 200)
@@ -3204,34 +2618,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setSize.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetSizeAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetSizeAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetSizeAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetSizeAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetSizeAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetSizeAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetSizeAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetSizeAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetSizeAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetSizeAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetSizeAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetSizeAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetSizeAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetSizeAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidth(300)
@@ -3266,34 +2664,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidth.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidthByMovingLeftCenter(BeforeRightBorder)
@@ -3332,34 +2714,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeforeRightBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeforeRightBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeforeRightBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidthByMovingLeftCenter(BeyondRightBorder)
@@ -3402,34 +2768,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidthByMovingLeftCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveLeftCenterBeyondRightBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveLeftCenterBeyondRightBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidthByMovingRightCenter(BeforeLeftBorder)
@@ -3469,34 +2819,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveRightCenterBeforeLeftBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeforeLeftBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveRightCenterBeforeLeftBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setWidthByMovingRightCenter(BeyondLeftBorder)
@@ -3536,34 +2870,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setWidthByMovingRightCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetWidthMoveRightCenterBeyondLeftBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetWidthMoveRightCenterBeyondLeftBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeight(200)
@@ -3601,34 +2919,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeightByMovingTopCenter(BeforeBottomBorder)
@@ -3667,34 +2969,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeforeBottomBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveTopCenterBeforeBottomBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeightByMovingTopCenter(BeyondBottomBorder)
@@ -3730,34 +3016,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeightByMovingTopCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveTopCenterBeyondBottomBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveTopCenterBeyondBottomBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeightByMovingBottomCenter(BeforeTopBorder)
@@ -3796,34 +3066,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorder30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveBottomCenterBeforeTopBorder30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorder30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeforeTopBorder30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveBottomCenterBeforeTopBorder30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorder30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setHeightByMovingBottomCenter(BeyondTopBorder)
@@ -3863,34 +3117,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setHeightByMovingBottomCenter.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorder30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveBottomCenterBeyondTopBorder30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorder30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetHeightMoveBottomCenterBeyondTopBorder30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetHeightMoveBottomCenterBeyondTopBorder30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorder30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopLeft(BeforeBottomRight)
@@ -3926,34 +3164,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeforeBottomRightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeforeBottomRightAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeforeBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeforeBottomRightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeforeBottomRightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeforeBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeforeBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeforeBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeforeBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeforeBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeforeBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeforeBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeforeBottomRightAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopLeft(BeyondRightBorder)
@@ -3989,34 +3211,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondRightBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondRightBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondRightBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondRightBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopLeft(BeyondBottomBorder)
@@ -4052,34 +3258,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondBottomBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondBottomBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondBottomBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopLeft(BeyondBottomRight)
@@ -4115,34 +3305,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondBottomRightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondBottomRightAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopLeftBeyondBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopLeftBeyondBottomRightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopLeftBeyondBottomRightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopLeftBeyondBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopLeftBeyondBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopLeftBeyondBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopLeftBeyondBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopLeftBeyondBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopLeftBeyondBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopLeftBeyondBottomRightAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopLeftBeyondBottomRightAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopRight(BeforeBottomLeft)
@@ -4177,34 +3351,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeforeBottomLeftAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeforeBottomLeftAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeforeBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeforeBottomLeftAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeforeBottomLeftAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeforeBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeforeBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeforeBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeforeBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeforeBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeforeBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeforeBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeforeBottomLeftAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopRight(BeyondLeftBorder)
@@ -4240,34 +3398,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondLeftBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondLeftBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondLeftBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondLeftBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopRight(BeyondBottomBorder)
@@ -4303,34 +3445,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondBottomBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondBottomBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondBottomBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondBottomBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondBottomBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setTopRight(BeyondBottomLeft)
@@ -4366,34 +3492,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setTopRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondBottomLeftAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondBottomLeftAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetTopRightBeyondBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetTopRightBeyondBottomLeftAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetTopRightBeyondBottomLeftAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetTopRightBeyondBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetTopRightBeyondBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetTopRightBeyondBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetTopRightBeyondBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetTopRightBeyondBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetTopRightBeyondBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetTopRightBeyondBottomLeftAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetTopRightBeyondBottomLeftAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomRight(BeforeTopLeft)
@@ -4428,34 +3538,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeforeTopLeftAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeforeTopLeftAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeforeTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeforeTopLeftAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeforeTopLeftAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeforeTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeforeTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeforeTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeforeTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeforeTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeforeTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeforeTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeforeTopLeftAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomRight(BeyondTopBorder)
@@ -4491,34 +3585,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondTopBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondTopBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondTopBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomRight(BeyondLeftBorder)
@@ -4554,34 +3632,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondLeftBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondLeftBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondLeftBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondLeftBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondLeftBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomRight(BeyondTopLeft)
@@ -4617,34 +3679,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomRight.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondTopLeftAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondTopLeftAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomRightBeyondTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomRightBeyondTopLeftAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomRightBeyondTopLeftAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomRightBeyondTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomRightBeyondTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomRightBeyondTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomRightBeyondTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomRightBeyondTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomRightBeyondTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomRightBeyondTopLeftAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomRightBeyondTopLeftAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeforeTopRight)
@@ -4679,34 +3725,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeforeTopRightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeforeTopRightAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeforeTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeforeTopRightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeforeTopRightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngle.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeforeTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeforeTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeforeTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeforeTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeforeTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeforeTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeforeTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeforeTopRightAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeyondTopBorder)
@@ -4742,34 +3772,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondTopBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondTopBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeyondRightBorder)
@@ -4805,34 +3819,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondRightBorderAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondRightBorderAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondRightBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondRightBorderAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondRightBorderAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeyondTopRight)
@@ -4869,34 +3867,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setConfigValue("setBottomLeft.unit", unit.symbol());
     pTestStep->setConfigValue("addPhysValShape", "");
     strlstExpectedValues.clear();
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondTopRightAngle30, 0), 'f', 0) + " px");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', 0) + "} px");
-    }
-    else {
-        strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetBottomLeftBeyondTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetBottomLeftBeyondTopRightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetBottomLeftBeyondTopRightAngle30, 1), 'f', 1) + " mm");
-        strlstExpectedValues.append("Angle: " + physValAngleCorrected.toString());
-        strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetBottomLeftBeyondTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetBottomLeftBeyondTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetBottomLeftBeyondTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetBottomLeftBeyondTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetBottomLeftBeyondTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopRightAngle30) + "} mm");
-        strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopRightAngle30) + "} mm");
-    }
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("Width: " + QString::number(Math::round2Nearest(fWidthSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Height: " + QString::number(Math::round2Nearest(fHeightSetxxxAngle0, iDigits), 'f', iDigits) + " " + strUnit);
+    strlstExpectedValues.append("Angle: " + physValAngle.toString());
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTopLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTopRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBottomRightSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBottomLeftSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("TopCenter {" + qPoint2Str(ptTopCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
+    strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetxxxAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {

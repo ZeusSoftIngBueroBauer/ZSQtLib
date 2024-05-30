@@ -1942,22 +1942,30 @@ double ZS::Draw::getAngleDegree(const QPointF& i_pt1, const QPointF& i_pt2)
 }
 
 //------------------------------------------------------------------------------
-QPointF ZS::Draw::rotatePoint( const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad )
+/*! @brief Rotates the given point around the given center point by the given angle.
+
+    @param [in] i_ptCenter
+    @param [in] i_pt Point to be rotated.
+    @param [in] i_fAngle_rad
+        Angle in radiants the point has to be returned around the center. The angle
+        is counted counter clockwise (3 o'clock = 0°, 12 o'clock = 90°).
+*/
+QPointF ZS::Draw::rotatePoint(const QPointF& i_ptCenter, const QPointF& i_pt, double i_fAngle_rad)
 //------------------------------------------------------------------------------
 {
     QPointF ptRes = i_pt;
     if (i_fAngle_rad != 0.0) {
         double fRadius_px = QLineF(i_ptCenter, i_pt).length();
-        double fAnglePt_rad = getAngleRad(i_ptCenter,i_pt);
+        double fAnglePt_rad = getAngleRad(i_ptCenter, i_pt);
         double fAngleRes_rad = fAnglePt_rad + i_fAngle_rad;
-        ptRes.setX( i_ptCenter.x() + fRadius_px * cos(fAngleRes_rad) );
-        ptRes.setY( i_ptCenter.y() - fRadius_px * sin(fAngleRes_rad) );
+        ptRes.setX(i_ptCenter.x() + fRadius_px * cos(fAngleRes_rad));
+        ptRes.setY(i_ptCenter.y() - fRadius_px * sin(fAngleRes_rad));
     }
     return ptRes;
 }
 
 //------------------------------------------------------------------------------
-QPolygonF ZS::Draw::rotateRect( const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad )
+QPolygonF ZS::Draw::rotateRect(const QPointF& i_ptCenter, const QRectF& i_rct, double i_fAngle_rad)
 //------------------------------------------------------------------------------
 {
     QPolygonF polygonRect;
@@ -1970,7 +1978,7 @@ QPolygonF ZS::Draw::rotateRect( const QPointF& i_ptCenter, const QRectF& i_rct, 
 }
 
 //------------------------------------------------------------------------------
-QPolygonF ZS::Draw::rotatePolygon( const QPointF& i_ptCenter, const QPolygonF& i_polygon, double i_fAngle_rad )
+QPolygonF ZS::Draw::rotatePolygon(const QPointF& i_ptCenter, const QPolygonF& i_polygon, double i_fAngle_rad)
 //------------------------------------------------------------------------------
 {
     QPolygonF polygon;
@@ -1989,7 +1997,7 @@ QPolygonF ZS::Draw::rotatePolygon( const QPointF& i_ptCenter, const QPolygonF& i
 }
 
 //------------------------------------------------------------------------------
-QPolygonF ZS::Draw::normalizePolygon( const QPolygonF& i_plg, int i_iPrecision )
+QPolygonF ZS::Draw::normalizePolygon(const QPolygonF& i_plg, int i_iPrecision)
 //------------------------------------------------------------------------------
 {
     QPolygonF plg = i_plg;

@@ -191,164 +191,164 @@ CPhysValRect::CPhysValRect(
     initSelectionPoints();
 }
 
-/*==============================================================================
-public: // ctors
-==============================================================================*/
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical rectangle on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValRect::CPhysValRect(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_ptCenter(),
-    m_size(),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    initSelectionPoints();
-}
-
-//------------------------------------------------------------------------------
-/*! @brief Creates a physical rectangle on the drawing scene in the current unit
-           and current resolution of the drawing scene.
-*/
-CPhysValRect::CPhysValRect(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_ptCenter(),
-    m_size(),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    initSelectionPoints();
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const QPointF& i_ptTL, const QPointF& i_ptBR) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_ptCenter(QLineF(i_ptTL, i_ptBR).center()),
-    m_size(fabs(i_ptTL.x() - i_ptBR.x()), fabs(i_ptTL.y() - i_ptBR.y())),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        if (i_ptTL.y() > i_ptBR.y()) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
-    }
-    else {
-        if (i_ptTL.y() < i_ptBR.y()) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
-    }
-    initSelectionPoints();
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const QPointF& i_ptTL, const QPointF& i_ptBR,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_ptCenter(QLineF(i_ptTL, i_ptBR).center()),
-    m_size(fabs(i_ptTL.x() - i_ptBR.x()), fabs(i_ptTL.y() - i_ptBR.y())),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        if (i_ptTL.y() > i_ptBR.y()) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
-    }
-    else {
-        if (i_ptTL.y() < i_ptBR.y()) {
-            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-        }
-    }
-    initSelectionPoints();
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const QPointF& i_ptTL, const QSizeF& i_size) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
-    m_ptCenter(),
-    m_size(i_size),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    if (i_size.width() < 0) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    else if (i_size.height() < 0) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    m_ptCenter.setX(i_ptTL.x() + i_size.width()/2.0);
-    if (i_divLinesMetricsY.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        m_ptCenter.setY(i_ptTL.y() + i_size.height()/2.0);
-    }
-    else {
-        m_ptCenter.setY(i_ptTL.y() - i_size.height()/2.0);
-    }
-    initSelectionPoints();
-}
-
-//------------------------------------------------------------------------------
-CPhysValRect::CPhysValRect(
-    const CDrawingScene& i_drawingScene,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
-    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
-    const QPointF& i_ptTL, const QSizeF& i_size,
-    const CUnit& i_unit) :
-//------------------------------------------------------------------------------
-    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
-    m_ptCenter(),
-    m_size(i_size),
-    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
-    m_arphysValPoints(),
-    m_arbPointsCalculated()
-{
-    if (i_size.width() < 0) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    else if (i_size.height() < 0) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    m_ptCenter.setX(i_ptTL.x() + i_size.width()/2.0);
-    if (i_divLinesMetricsY.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        m_ptCenter.setY(i_ptTL.y() + i_size.height()/2.0);
-    }
-    else {
-        m_ptCenter.setY(i_ptTL.y() - i_size.height()/2.0);
-    }
-    initSelectionPoints();
-}
+///*==============================================================================
+//public: // ctors
+//==============================================================================*/
+//
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical rectangle on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValRect::CPhysValRect(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_ptCenter(),
+//    m_size(),
+//    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+//    m_arphysValPoints(),
+//    m_arbPointsCalculated()
+//{
+//    initSelectionPoints();
+//}
+//
+////------------------------------------------------------------------------------
+///*! @brief Creates a physical rectangle on the drawing scene in the current unit
+//           and current resolution of the drawing scene.
+//*/
+//CPhysValRect::CPhysValRect(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_ptCenter(),
+//    m_size(),
+//    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+//    m_arphysValPoints(),
+//    m_arbPointsCalculated()
+//{
+//    initSelectionPoints();
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValRect::CPhysValRect(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const QPointF& i_ptTL, const QPointF& i_ptBR) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_ptCenter(QLineF(i_ptTL, i_ptBR).center()),
+//    m_size(fabs(i_ptTL.x() - i_ptBR.x()), fabs(i_ptTL.y() - i_ptBR.y())),
+//    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+//    m_arphysValPoints(),
+//    m_arbPointsCalculated()
+//{
+//    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+//        if (i_ptTL.y() > i_ptBR.y()) {
+//            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//        }
+//    }
+//    else {
+//        if (i_ptTL.y() < i_ptBR.y()) {
+//            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//        }
+//    }
+//    initSelectionPoints();
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValRect::CPhysValRect(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const QPointF& i_ptTL, const QPointF& i_ptBR,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_ptCenter(QLineF(i_ptTL, i_ptBR).center()),
+//    m_size(fabs(i_ptTL.x() - i_ptBR.x()), fabs(i_ptTL.y() - i_ptBR.y())),
+//    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+//    m_arphysValPoints(),
+//    m_arbPointsCalculated()
+//{
+//    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+//        if (i_ptTL.y() > i_ptBR.y()) {
+//            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//        }
+//    }
+//    else {
+//        if (i_ptTL.y() < i_ptBR.y()) {
+//            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//        }
+//    }
+//    initSelectionPoints();
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValRect::CPhysValRect(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const QPointF& i_ptTL, const QSizeF& i_size) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY),
+//    m_ptCenter(),
+//    m_size(i_size),
+//    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+//    m_arphysValPoints(),
+//    m_arbPointsCalculated()
+//{
+//    if (i_size.width() < 0) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//    }
+//    else if (i_size.height() < 0) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//    }
+//    m_ptCenter.setX(i_ptTL.x() + i_size.width()/2.0);
+//    if (i_divLinesMetricsY.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+//        m_ptCenter.setY(i_ptTL.y() + i_size.height()/2.0);
+//    }
+//    else {
+//        m_ptCenter.setY(i_ptTL.y() - i_size.height()/2.0);
+//    }
+//    initSelectionPoints();
+//}
+//
+////------------------------------------------------------------------------------
+//CPhysValRect::CPhysValRect(
+//    const CDrawingScene& i_drawingScene,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsX,
+//    const GUI::Math::CScaleDivLinesMetrics& i_divLinesMetricsY,
+//    const QPointF& i_ptTL, const QSizeF& i_size,
+//    const CUnit& i_unit) :
+////------------------------------------------------------------------------------
+//    CPhysValShape(i_drawingScene, i_divLinesMetricsX, i_divLinesMetricsY, i_unit),
+//    m_ptCenter(),
+//    m_size(i_size),
+//    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+//    m_arphysValPoints(),
+//    m_arbPointsCalculated()
+//{
+//    if (i_size.width() < 0) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//    }
+//    else if (i_size.height() < 0) {
+//        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+//    }
+//    m_ptCenter.setX(i_ptTL.x() + i_size.width()/2.0);
+//    if (i_divLinesMetricsY.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+//        m_ptCenter.setY(i_ptTL.y() + i_size.height()/2.0);
+//    }
+//    else {
+//        m_ptCenter.setY(i_ptTL.y() - i_size.height()/2.0);
+//    }
+//    initSelectionPoints();
+//}
 
 /*==============================================================================
 public: // ctors
@@ -359,7 +359,7 @@ CPhysValRect::CPhysValRect(
     const CPhysValPoint& i_physValTopLeft,
     const CPhysValPoint& i_physValBottomRight) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_physValTopLeft.drawingScene(), i_physValTopLeft.divLinesMetricsX(), i_physValTopLeft.divLinesMetricsY(), i_physValTopLeft.unit()),
+    CPhysValShape(i_physValTopLeft.drawingScene(), i_physValTopLeft.unit()),
     m_ptCenter(QLineF(i_physValTopLeft.toQPointF(), i_physValBottomRight.toQPointF()).center()),
     m_size(fabs(i_physValTopLeft.x().getVal() - i_physValBottomRight.x().getVal()),
            fabs(i_physValTopLeft.y().getVal() - i_physValBottomRight.y().getVal())),
@@ -368,12 +368,6 @@ CPhysValRect::CPhysValRect(
     m_arbPointsCalculated()
 {
     if (&i_physValTopLeft.drawingScene() != &i_physValBottomRight.drawingScene()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    if (&i_physValTopLeft.divLinesMetricsX() != &i_physValBottomRight.divLinesMetricsX()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    if (&i_physValTopLeft.divLinesMetricsY() != &i_physValBottomRight.divLinesMetricsY()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     if (i_physValTopLeft.unit() != i_physValBottomRight.unit()) {
@@ -400,7 +394,7 @@ CPhysValRect::CPhysValRect(
     const CPhysValPoint& i_physValTopLeft,
     const CPhysValSize& i_physValSize) :
 //------------------------------------------------------------------------------
-    CPhysValShape(i_physValTopLeft.drawingScene(), i_physValTopLeft.divLinesMetricsX(), i_physValTopLeft.divLinesMetricsY(), i_physValTopLeft.unit()),
+    CPhysValShape(i_physValTopLeft.drawingScene(), i_physValTopLeft.unit()),
     m_ptCenter(),
     m_size(i_physValSize.toQSizeF()),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
@@ -408,12 +402,6 @@ CPhysValRect::CPhysValRect(
     m_arbPointsCalculated()
 {
     if (&i_physValTopLeft.drawingScene() != &i_physValSize.drawingScene()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    if (&i_physValTopLeft.divLinesMetricsX() != &i_physValSize.divLinesMetricsX()) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
-    if (&i_physValTopLeft.divLinesMetricsY() != &i_physValSize.divLinesMetricsY()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     if (i_physValTopLeft.unit() != i_physValSize.unit()) {
@@ -429,7 +417,7 @@ CPhysValRect::CPhysValRect(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     m_ptCenter.setX(i_physValTopLeft.x().getVal() + i_physValSize.width().getVal()/2.0);
-    if (i_physValTopLeft.divLinesMetricsY().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         m_ptCenter.setY(i_physValTopLeft.y().getVal() + i_physValSize.height().getVal()/2.0);
     }
     else {
@@ -684,7 +672,18 @@ CPhysValPoint CPhysValRect::topLeft() const
 //------------------------------------------------------------------------------
 {
     if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopLeft)]) {
-        QPointF pt = getCornerPoint(ESelectionPoint::TopLeft);
+        QPointF pt;
+        pt.setX(m_ptCenter.x() - m_size.width() / 2.0);
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            pt.setY(m_ptCenter.y() - m_size.height() / 2.0);
+        }
+        else {
+            pt.setY(m_ptCenter.y() + m_size.height() / 2.0);
+        }
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        if (fAngle_rad != 0.0) {
+            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, Math::toCounterClockWiseAngleRad(fAngle_rad));
+        }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = CPhysValPoint(*m_pDrawingScene, pt, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopLeft)] = true;
     }
@@ -701,7 +700,18 @@ CPhysValPoint CPhysValRect::topRight() const
 //------------------------------------------------------------------------------
 {
     if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopRight)]) {
-        QPointF pt = getCornerPoint(ESelectionPoint::TopRight);
+        QPointF pt;
+        pt.setX(m_ptCenter.x() + m_size.width() / 2.0);
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            pt.setY(m_ptCenter.y() - m_size.height() / 2.0);
+        }
+        else {
+            pt.setY(m_ptCenter.y() + m_size.height() / 2.0);
+        }
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        if (fAngle_rad != 0.0) {
+            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, Math::toCounterClockWiseAngleRad(fAngle_rad));
+        }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = CPhysValPoint(*m_pDrawingScene, pt, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopRight)] = true;
     }
@@ -718,7 +728,18 @@ CPhysValPoint CPhysValRect::bottomRight() const
 //------------------------------------------------------------------------------
 {
     if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomRight)]) {
-        QPointF pt = getCornerPoint(ESelectionPoint::BottomRight);
+        QPointF pt;
+        pt.setX(m_ptCenter.x() + m_size.width() / 2.0);
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            pt.setY(m_ptCenter.y() + m_size.height() / 2.0);
+        }
+        else {
+            pt.setY(m_ptCenter.y() - m_size.height() / 2.0);
+        }
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        if (fAngle_rad != 0.0) {
+            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, Math::toCounterClockWiseAngleRad(fAngle_rad));
+        }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = CPhysValPoint(*m_pDrawingScene, pt, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomRight)] = true;
     }
@@ -735,7 +756,18 @@ CPhysValPoint CPhysValRect::bottomLeft() const
 //------------------------------------------------------------------------------
 {
     if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomLeft)]) {
-        QPointF pt = getCornerPoint(ESelectionPoint::BottomLeft);
+        QPointF pt;
+        pt.setX(m_ptCenter.x() - m_size.width() / 2.0);
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            pt.setY(m_ptCenter.y() + m_size.height() / 2.0);
+        }
+        else {
+            pt.setY(m_ptCenter.y() - m_size.height() / 2.0);
+        }
+        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
+        if (fAngle_rad != 0.0) {
+            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, Math::toCounterClockWiseAngleRad(fAngle_rad));
+        }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = CPhysValPoint(*m_pDrawingScene, pt, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomLeft)] = true;
     }
@@ -2025,63 +2057,4 @@ void CPhysValRect::invalidateSelectionPoints(quint16 i_uSelectionPointsToExclude
             m_arbPointsCalculated[selPt] = false;
         }
     }
-}
-
-//------------------------------------------------------------------------------
-QPointF CPhysValRect::getCornerPoint(ESelectionPoint i_selPt) const
-//------------------------------------------------------------------------------
-{
-    QPointF pt;
-    double fX = m_ptCenter.x();
-    double fY = m_ptCenter.y();
-    double dx = m_size.width() / 2.0;
-    double dy = m_size.height() / 2.0;
-    if (i_selPt == ESelectionPoint::TopLeft) {
-        fX -= dx;
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            fY -= dy;
-        }
-        else {
-            fY += dy;
-        }
-    }
-    else if (i_selPt == ESelectionPoint::TopRight) {
-        fX += dx;
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            fY -= dy;
-        }
-        else {
-            fY += dy;
-        }
-    }
-    else if (i_selPt == ESelectionPoint::BottomRight) {
-        fX += dx;
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            fY += dy;
-        }
-        else {
-            fY -= dy;
-        }
-    }
-    else if (i_selPt == ESelectionPoint::BottomLeft) {
-        fX -= dx;
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            fY += dy;
-        }
-        else {
-            fY -= dy;
-        }
-    }
-    double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-    if (fAngle_rad != 0.0) {
-        double fRadius = getRadius(m_size);
-        QLineF lineDiag(m_ptCenter, QPointF(fX, fY));
-        double fPhi_degree = lineDiag.angle(); // counterclockwise
-        double fPhi_rad = Math::degree2Rad(fPhi_degree);
-        fX += fRadius * cos(fPhi_rad - fAngle_rad);
-        fY -= fRadius * sin(fPhi_rad - fAngle_rad);
-    }
-    pt.setX(fX);
-    pt.setY(fY);
-    return pt;
 }
