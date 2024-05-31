@@ -95,6 +95,9 @@ const double c_f360Degrees_rad = 2.0 * acos(-1.0);
 
 const double c_fe = 2.718281828459;
 
+const QChar   c_chSymbolSquare(0x00B2);
+const QString c_strSymbolSquare(c_chSymbolSquare);
+
 const QChar   c_chSymbolSquareRoot(0x221A);
 const QString c_strSymbolSquareRoot(c_chSymbolSquareRoot);
 

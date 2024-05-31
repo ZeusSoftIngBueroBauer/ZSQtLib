@@ -543,7 +543,6 @@ void CPhysValRect::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawS
 //------------------------------------------------------------------------------
 {
     i_pPainter->save();
-    i_pPainter->save();
     QPen pen(i_drawSettings.getPenColor());
     QPointF ptCenter = m_pDrawingScene->convert(center(), Units.Length.px).toQPointF();
     QPointF ptTL = m_pDrawingScene->convert(topLeft(), Units.Length.px).toQPointF();
@@ -672,17 +671,17 @@ CPhysValPoint CPhysValRect::topLeft() const
 //------------------------------------------------------------------------------
 {
     if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopLeft)]) {
-        QPointF pt;
-        pt.setX(m_ptCenter.x() - m_size.width() / 2.0);
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            pt.setY(m_ptCenter.y() - m_size.height() / 2.0);
+        QPointF pt(m_ptCenter.x() - m_size.width() / 2.0, m_ptCenter.y() - m_size.height() / 2.0);
+        double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+        if (fAngle_degree != 0.0) {
+            double fAngle1_degree = Math::toCounterClockWiseAngleDegree(fAngle_degree);
+            double fAngle_rad = Math::degree2Rad(fAngle1_degree);
+            // rotatePoint assumes a y scale from Top to Bottom.
+            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, fAngle_rad);
         }
-        else {
-            pt.setY(m_ptCenter.y() + m_size.height() / 2.0);
-        }
-        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-        if (fAngle_rad != 0.0) {
-            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, Math::toCounterClockWiseAngleRad(fAngle_rad));
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+            double dy = m_ptCenter.y() - pt.y();
+            pt.setY(m_ptCenter.y() + dy);
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = CPhysValPoint(*m_pDrawingScene, pt, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopLeft)] = true;
@@ -700,17 +699,17 @@ CPhysValPoint CPhysValRect::topRight() const
 //------------------------------------------------------------------------------
 {
     if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopRight)]) {
-        QPointF pt;
-        pt.setX(m_ptCenter.x() + m_size.width() / 2.0);
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            pt.setY(m_ptCenter.y() - m_size.height() / 2.0);
+        QPointF pt(m_ptCenter.x() + m_size.width() / 2.0, m_ptCenter.y() - m_size.height() / 2.0);
+        double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+        if (fAngle_degree != 0.0) {
+            double fAngle1_degree = Math::toCounterClockWiseAngleDegree(fAngle_degree);
+            double fAngle_rad = Math::degree2Rad(fAngle1_degree);
+            // rotatePoint assumes a y scale from Top to Bottom.
+            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, fAngle_rad);
         }
-        else {
-            pt.setY(m_ptCenter.y() + m_size.height() / 2.0);
-        }
-        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-        if (fAngle_rad != 0.0) {
-            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, Math::toCounterClockWiseAngleRad(fAngle_rad));
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+            double dy = m_ptCenter.y() - pt.y();
+            pt.setY(m_ptCenter.y() + dy);
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = CPhysValPoint(*m_pDrawingScene, pt, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopRight)] = true;
@@ -728,17 +727,17 @@ CPhysValPoint CPhysValRect::bottomRight() const
 //------------------------------------------------------------------------------
 {
     if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomRight)]) {
-        QPointF pt;
-        pt.setX(m_ptCenter.x() + m_size.width() / 2.0);
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            pt.setY(m_ptCenter.y() + m_size.height() / 2.0);
+        QPointF pt(m_ptCenter.x() + m_size.width() / 2.0, m_ptCenter.y() + m_size.height() / 2.0);
+        double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+        if (fAngle_degree != 0.0) {
+            double fAngle1_degree = Math::toCounterClockWiseAngleDegree(fAngle_degree);
+            double fAngle_rad = Math::degree2Rad(fAngle1_degree);
+            // rotatePoint assumes a y scale from Top to Bottom.
+            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, fAngle_rad);
         }
-        else {
-            pt.setY(m_ptCenter.y() - m_size.height() / 2.0);
-        }
-        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-        if (fAngle_rad != 0.0) {
-            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, Math::toCounterClockWiseAngleRad(fAngle_rad));
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+            double dy = m_ptCenter.y() - pt.y();
+            pt.setY(m_ptCenter.y() + dy);
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = CPhysValPoint(*m_pDrawingScene, pt, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomRight)] = true;
@@ -756,17 +755,17 @@ CPhysValPoint CPhysValRect::bottomLeft() const
 //------------------------------------------------------------------------------
 {
     if (!m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomLeft)]) {
-        QPointF pt;
-        pt.setX(m_ptCenter.x() - m_size.width() / 2.0);
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-            pt.setY(m_ptCenter.y() + m_size.height() / 2.0);
+        QPointF pt(m_ptCenter.x() - m_size.width() / 2.0, m_ptCenter.y() + m_size.height() / 2.0);
+        double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+        if (fAngle_degree != 0.0) {
+            double fAngle1_degree = Math::toCounterClockWiseAngleDegree(fAngle_degree);
+            double fAngle_rad = Math::degree2Rad(fAngle1_degree);
+            // rotatePoint assumes a y scale from Top to Bottom.
+            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, fAngle_rad);
         }
-        else {
-            pt.setY(m_ptCenter.y() - m_size.height() / 2.0);
-        }
-        double fAngle_rad = m_physValAngle.getVal(Units.Angle.Rad);
-        if (fAngle_rad != 0.0) {
-            pt = ZS::Draw::rotatePoint(m_ptCenter, pt, Math::toCounterClockWiseAngleRad(fAngle_rad));
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+            double dy = m_ptCenter.y() - pt.y();
+            pt.setY(m_ptCenter.y() + dy);
         }
         m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = CPhysValPoint(*m_pDrawingScene, pt, m_unit);
         m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomLeft)] = true;
@@ -1007,14 +1006,22 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     }
     else {
         QLineF lineDiagonale(QPointF(0.0, 0.0), QPointF(sizeF.width(), sizeF.height()));
-        // Move the angle of the line into 1st quadrant.
-        double fPhi_degree = 360.0 - lineDiagonale.angle();
-        double fBeta_degree = fPhi_degree + fAngle_degree;
+        double fPhi_degree = lineDiagonale.angle(); // QLine::angle returns the angle counterclockwise
+        double fPhi1_degree = Math::toClockWiseAngleDegree(fPhi_degree);
+        double fBeta_degree = fPhi1_degree + fAngle_degree;
         double fBeta_rad = Math::degree2Rad(fBeta_degree);
         double fRadius = lineDiagonale.length() / 2.0;
-        // QLine::angle returned the angle counterclockwise, the rotation angle is given clockwise.
-        fX += fRadius * cos(fBeta_rad);
-        fY += fRadius * sin(fBeta_rad);
+        // The angle is now clockwise. The stdlib trigonometric functions need the angle counter clockwise.
+        double fBeta1_rad = Math::toCounterClockWiseAngleRad(fBeta_rad);
+        double dx = fRadius * cos(fBeta1_rad);
+        double dy = fRadius * sin(fBeta1_rad);
+        fX += dx;
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            fY -= dy;
+        }
+        else {
+            fY += dy;
+        }
     }
     m_ptCenter = QPointF(fX, fY);
     m_size = sizeF;
@@ -1196,6 +1203,7 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
             m_size.setWidth(fWidth);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::LeftCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptLeftCenter, m_unit);
+            m_arbPointsCalculated[static_cast<int>(ESelectionPoint::LeftCenter)] = true;
             ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
         }
     }
@@ -1308,6 +1316,7 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
             m_size.setWidth(fWidth);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::RightCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptRightCenter, m_unit);
+            m_arbPointsCalculated[static_cast<int>(ESelectionPoint::RightCenter)] = true;
             ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
         }
     }
@@ -1424,7 +1433,10 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         m_ptCenter = lineHeight.center();
         m_size.setHeight(fabs(lineHeight.dy()));
         // Width and height must never be less than 0.
-        if (lineHeight.dy() < 0.0) {
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown && lineHeight.dy() < 0.0) {
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp && lineHeight.dy() > 0.0) {
             m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
         else {
@@ -1480,6 +1492,7 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
             m_size.setHeight(fHeight);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::TopCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptTopCenter, m_unit);
+            m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopCenter)] = true;
             ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
         }
     }
@@ -1537,7 +1550,10 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         m_ptCenter = lineHeight.center();
         m_size.setHeight(fabs(lineHeight.dy()));
         // Width and height must never be less than 0.
-        if (lineHeight.dy() < 0.0) {
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown && lineHeight.dy() < 0.0) {
+            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        }
+        else if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp && lineHeight.dy() > 0.0) {
             m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
         else {
@@ -1593,6 +1609,7 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
             m_size.setHeight(fHeight);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomCenter)] =
                 CPhysValPoint(*m_pDrawingScene, ptBottomCenter, m_unit);
+            m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomCenter)] = true;
             ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
         }
     }
@@ -1659,25 +1676,49 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dx()));
-            m_size.setHeight(fabs(lineDiagonale.dy()));
-            m_physValAngle.setVal(0.0);
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(0.0);
+            }
+            else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(90.0);
+            }
+            else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(180.0);
+            }
+            else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(270.0);
+            }
         }
-        else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dy()));
-            m_size.setHeight(fabs(lineDiagonale.dx()));
-            m_physValAngle.setVal(90.0);
-        }
-        else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dx()));
-            m_size.setHeight(fabs(lineDiagonale.dy()));
-            m_physValAngle.setVal(180.0);
-        }
-        else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
-            m_size.setWidth(fabs(lineDiagonale.dy()));
-            m_size.setHeight(fabs(lineDiagonale.dx()));
-            m_physValAngle.setVal(270.0);
+        else {
+            if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(0.0);
+            }
+            else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(90.0);
+            }
+            else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(180.0);
+            }
+            else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(270.0);
+            }
         }
     }
     else {
@@ -1711,6 +1752,7 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
         }
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::TopLeft)] = physValPt;
+    m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopLeft)] = true;
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
@@ -1758,25 +1800,49 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dx()));
-            m_size.setHeight(fabs(lineDiagonale.dy()));
-            m_physValAngle.setVal(0.0);
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(0.0);
+            }
+            else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(90.0);
+            }
+            else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(180.0);
+            }
+            else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(270.0);
+            }
         }
-        else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dy()));
-            m_size.setHeight(fabs(lineDiagonale.dx()));
-            m_physValAngle.setVal(90.0);
-        }
-        else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dx()));
-            m_size.setHeight(fabs(lineDiagonale.dy()));
-            m_physValAngle.setVal(180.0);
-        }
-        else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
-            m_size.setWidth(fabs(lineDiagonale.dy()));
-            m_size.setHeight(fabs(lineDiagonale.dx()));
-            m_physValAngle.setVal(270.0);
+        else {
+            if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(0.0);
+            }
+            else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(90.0);
+            }
+            else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(180.0);
+            }
+            else /*if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(270.0);
+            }
         }
     }
     else {
@@ -1810,6 +1876,7 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
         }
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::TopRight)] = physValPt;
+    m_arbPointsCalculated[static_cast<int>(ESelectionPoint::TopRight)] = true;
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
@@ -1857,25 +1924,49 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dx()));
-            m_size.setHeight(fabs(lineDiagonale.dy()));
-            m_physValAngle.setVal(0.0);
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(0.0);
+            }
+            else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(90.0);
+            }
+            else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(180.0);
+            }
+            else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(270.0);
+            }
         }
-        else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dy()));
-            m_size.setHeight(fabs(lineDiagonale.dx()));
-            m_physValAngle.setVal(90.0);
-        }
-        else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dx()));
-            m_size.setHeight(fabs(lineDiagonale.dy()));
-            m_physValAngle.setVal(180.0);
-        }
-        else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
-            m_size.setWidth(fabs(lineDiagonale.dy()));
-            m_size.setHeight(fabs(lineDiagonale.dx()));
-            m_physValAngle.setVal(270.0);
+        else {
+            if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(0.0);
+            }
+            else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(90.0);
+            }
+            else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(180.0);
+            }
+            else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(270.0);
+            }
         }
     }
     else {
@@ -1909,6 +2000,7 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
         }
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomRight)] = physValPt;
+    m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomRight)] = true;
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
@@ -1958,25 +2050,49 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dx()));
-            m_size.setHeight(fabs(lineDiagonale.dy()));
-            m_physValAngle.setVal(0.0);
+        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(0.0);
+            }
+            else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(90.0);
+            }
+            else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(180.0);
+            }
+            else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(270.0);
+            }
         }
-        else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dy()));
-            m_size.setHeight(fabs(lineDiagonale.dx()));
-            m_physValAngle.setVal(90.0);
-        }
-        else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
-            m_size.setWidth(fabs(lineDiagonale.dx()));
-            m_size.setHeight(fabs(lineDiagonale.dy()));
-            m_physValAngle.setVal(180.0);
-        }
-        else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0)*/ {
-            m_size.setWidth(fabs(lineDiagonale.dy()));
-            m_size.setHeight(fabs(lineDiagonale.dx()));
-            m_physValAngle.setVal(270.0);
+        else {
+            if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(0.0);
+            }
+            else if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(90.0);
+            }
+            else if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
+                m_size.setWidth(fabs(lineDiagonale.dx()));
+                m_size.setHeight(fabs(lineDiagonale.dy()));
+                m_physValAngle.setVal(180.0);
+            }
+            else /*if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0)*/ {
+                m_size.setWidth(fabs(lineDiagonale.dy()));
+                m_size.setHeight(fabs(lineDiagonale.dx()));
+                m_physValAngle.setVal(270.0);
+            }
         }
     }
     else {
@@ -2010,6 +2126,7 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
         }
     }
     m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomLeft)] = physValPt;
+    m_arbPointsCalculated[static_cast<int>(ESelectionPoint::BottomLeft)] = true;
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
