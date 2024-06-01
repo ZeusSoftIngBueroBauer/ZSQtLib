@@ -95,7 +95,7 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
-    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (m_bYAxisTopDown) {
         if (i_ptTL.y() > i_ptBR.y()) {
             throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
         }
@@ -121,7 +121,7 @@ CPhysValRect::CPhysValRect(
     m_arphysValPoints(),
     m_arbPointsCalculated()
 {
-    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (m_bYAxisTopDown) {
         if (i_ptTL.y() > i_ptBR.y()) {
             throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
         }
@@ -153,7 +153,7 @@ CPhysValRect::CPhysValRect(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     m_ptCenter.setX(i_ptTL.x() + i_size.width()/2.0);
-    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (m_bYAxisTopDown) {
         m_ptCenter.setY(i_ptTL.y() + i_size.height()/2.0);
     }
     else {
@@ -182,7 +182,7 @@ CPhysValRect::CPhysValRect(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     m_ptCenter.setX(i_ptTL.x() + i_size.width()/2.0);
-    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (m_bYAxisTopDown) {
         m_ptCenter.setY(i_ptTL.y() + i_size.height()/2.0);
     }
     else {
@@ -248,7 +248,7 @@ CPhysValRect::CPhysValRect(
 //    m_arphysValPoints(),
 //    m_arbPointsCalculated()
 //{
-//    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+//    if (m_bYAxisTopDown) {
 //        if (i_ptTL.y() > i_ptBR.y()) {
 //            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
 //        }
@@ -276,7 +276,7 @@ CPhysValRect::CPhysValRect(
 //    m_arphysValPoints(),
 //    m_arbPointsCalculated()
 //{
-//    if (i_drawingScene.drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+//    if (m_bYAxisTopDown) {
 //        if (i_ptTL.y() > i_ptBR.y()) {
 //            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
 //        }
@@ -310,7 +310,7 @@ CPhysValRect::CPhysValRect(
 //        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
 //    }
 //    m_ptCenter.setX(i_ptTL.x() + i_size.width()/2.0);
-//    if (i_divLinesMetricsY.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+//    if (m_bYAxisTopDown) {
 //        m_ptCenter.setY(i_ptTL.y() + i_size.height()/2.0);
 //    }
 //    else {
@@ -341,7 +341,7 @@ CPhysValRect::CPhysValRect(
 //        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
 //    }
 //    m_ptCenter.setX(i_ptTL.x() + i_size.width()/2.0);
-//    if (i_divLinesMetricsY.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+//    if (m_bYAxisTopDown) {
 //        m_ptCenter.setY(i_ptTL.y() + i_size.height()/2.0);
 //    }
 //    else {
@@ -376,7 +376,7 @@ CPhysValRect::CPhysValRect(
     if (i_physValTopLeft.resolution() != i_physValBottomRight.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    if (i_physValTopLeft.drawingScene().drawingSize().yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (m_bYAxisTopDown) {
         if (i_physValTopLeft.y().getVal() > i_physValBottomRight.y().getVal()) {
             throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
         }
@@ -417,7 +417,7 @@ CPhysValRect::CPhysValRect(
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     m_ptCenter.setX(i_physValTopLeft.x().getVal() + i_physValSize.width().getVal()/2.0);
-    if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (m_bYAxisTopDown) {
         m_ptCenter.setY(i_physValTopLeft.y().getVal() + i_physValSize.height().getVal()/2.0);
     }
     else {
@@ -679,7 +679,7 @@ CPhysValPoint CPhysValRect::topLeft() const
             // rotatePoint assumes a y scale from Top to Bottom.
             pt = ZS::Draw::rotatePoint(m_ptCenter, pt, fAngle_rad);
         }
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        if (!m_bYAxisTopDown) {
             double dy = m_ptCenter.y() - pt.y();
             pt.setY(m_ptCenter.y() + dy);
         }
@@ -707,7 +707,7 @@ CPhysValPoint CPhysValRect::topRight() const
             // rotatePoint assumes a y scale from Top to Bottom.
             pt = ZS::Draw::rotatePoint(m_ptCenter, pt, fAngle_rad);
         }
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        if (!m_bYAxisTopDown) {
             double dy = m_ptCenter.y() - pt.y();
             pt.setY(m_ptCenter.y() + dy);
         }
@@ -735,7 +735,7 @@ CPhysValPoint CPhysValRect::bottomRight() const
             // rotatePoint assumes a y scale from Top to Bottom.
             pt = ZS::Draw::rotatePoint(m_ptCenter, pt, fAngle_rad);
         }
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        if (!m_bYAxisTopDown) {
             double dy = m_ptCenter.y() - pt.y();
             pt.setY(m_ptCenter.y() + dy);
         }
@@ -763,7 +763,7 @@ CPhysValPoint CPhysValRect::bottomLeft() const
             // rotatePoint assumes a y scale from Top to Bottom.
             pt = ZS::Draw::rotatePoint(m_ptCenter, pt, fAngle_rad);
         }
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+        if (!m_bYAxisTopDown) {
             double dy = m_ptCenter.y() - pt.y();
             pt.setY(m_ptCenter.y() + dy);
         }
@@ -786,7 +786,7 @@ CPhysValPoint CPhysValRect::topCenter() const
         double fX = m_ptCenter.x();
         double fY = m_ptCenter.y();
         if (m_physValAngle.getVal() == 0.0) {
-            if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            if (m_bYAxisTopDown) {
                 fY -= m_size.height() / 2.0;
             }
             else {
@@ -845,7 +845,7 @@ CPhysValPoint CPhysValRect::bottomCenter() const
         double fX = m_ptCenter.x();
         double fY = m_ptCenter.y();
         if (m_physValAngle.getVal() == 0.0) {
-            if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            if (m_bYAxisTopDown) {
                 fY += m_size.height() / 2.0;
             }
             else {
@@ -997,7 +997,7 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
     double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
     if (fAngle_degree == 0.0) {
         fX += sizeF.width() / 2.0;
-         if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+         if (m_bYAxisTopDown) {
             fY += sizeF.height() / 2.0;
         }
         else {
@@ -1016,7 +1016,7 @@ void CPhysValRect::setSize(const CPhysValSize& i_physValSize)
         double dx = fRadius * cos(fBeta1_rad);
         double dy = fRadius * sin(fBeta1_rad);
         fX += dx;
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (m_bYAxisTopDown) {
             fY -= dy;
         }
         else {
@@ -1158,8 +1158,13 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
         QPointF ptLeftCenter = leftCenter().toQPointF();
         QPointF ptRightCenter = rightCenter().toQPointF();
         QLineF lineWidth(ptLeftCenter, ptRightCenter);
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fAngle1_degree = lineWidth.angle();
+        // Correct angle only if not already clockwise counted:
+        fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
         #pragma message(__TODO__"Remove comparison check")
-        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree, 0.1);
+        CPhysVal physValAngle1(fAngle1_degree, Units.Angle.Degree, 0.1);
         if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
             if (CErrLog::GetInstance() != nullptr) {
                 SErrResultInfo errResultInfo(
@@ -1179,9 +1184,14 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
             // Get rotation angle α'' of the new widthLine'' and use this as the new rotation angle of the rectangle.
             // If LC has not been moved beyond the right center selection point, the rotation angle α remains the same.
             // Otherwise 180° has to be added to the rotation angle.
-            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
-            double fAngleHorLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
-            if (fAngleHorLine_deg > 179.0 && fAngleHorLine_deg < 181.0) {
+            // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+            // For BottomUp Y-Scales the angle is returned clockwise counted.
+            double fAngle2_degree = lineWidth.angle();
+            // Correct angle only if not already clockwise counted:
+            fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
+            CPhysVal physValAngle2(fAngle2_degree, Units.Angle.Degree, 0.1);
+            double fAngleHorLine_degree = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            if (fAngleHorLine_degree > 179.0 && fAngleHorLine_degree < 181.0) {
                 m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
             else {
@@ -1272,8 +1282,13 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
         QPointF ptLeftCenter = leftCenter().toQPointF();
         QPointF ptRightCenter = rightCenter().toQPointF();
         QLineF lineWidth(ptLeftCenter, ptRightCenter);
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fAngle1_degree = lineWidth.angle();
+        // Correct angle only if not already clockwise counted:
+        fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
         #pragma message(__TODO__"Remove comparison check")
-        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
+        CPhysVal physValAngle1(fAngle1_degree, Units.Angle.Degree, 0.1);
         if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
             if (CErrLog::GetInstance() != nullptr) {
                 SErrResultInfo errResultInfo(
@@ -1293,9 +1308,14 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
             // Get rotation angle α'' of the new widthLine'' and use this as the new rotation angle of the rectangle.
             // If RC has not been moved beyond the left center selection point, the rotation angle α remains the same.
             // Otherwise 180° has to be added to the rotation angle.
-            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineWidth.angle()), Units.Angle.Degree);
-            double fAngleHorLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
-            if (fAngleHorLine_deg > 179.0 && fAngleHorLine_deg < 181.0) {
+            // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+            // For BottomUp Y-Scales the angle is returned clockwise counted.
+            double fAngle2_degree = lineWidth.angle();
+            // Correct angle only if not already clockwise counted:
+            fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
+            CPhysVal physValAngle2(fAngle2_degree, Units.Angle.Degree, 0.1);
+            double fAngleHorLine_degree = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            if (fAngleHorLine_degree > 179.0 && fAngleHorLine_degree < 181.0) {
                 m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
             else {
@@ -1312,6 +1332,7 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
+            // Get center point of line from LC'' to RC' and use this as the new center point of the rectangle.
             m_ptCenter = lineWidth.center();
             m_size.setWidth(fWidth);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::RightCenter)] =
@@ -1433,10 +1454,10 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         m_ptCenter = lineHeight.center();
         m_size.setHeight(fabs(lineHeight.dy()));
         // Width and height must never be less than 0.
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown && lineHeight.dy() < 0.0) {
+        if (m_bYAxisTopDown && lineHeight.dy() < 0.0) {
             m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
-        else if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp && lineHeight.dy() > 0.0) {
+        else if (!m_bYAxisTopDown && lineHeight.dy() > 0.0) {
             m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
         else {
@@ -1449,8 +1470,13 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         QPointF ptTopCenter = topCenter().toQPointF();
         QPointF ptBottomCenter = bottomCenter().toQPointF();
         QLineF lineHeight(ptTopCenter, ptBottomCenter);
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fAngle1_degree = lineHeight.angle();
+        // Correct angle only if not already clockwise counted:
+        fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
         #pragma message(__TODO__"Remove comparison check")
-        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
+        CPhysVal physValAngle1(fAngle1_degree, Units.Angle.Degree, 0.1);
         if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
             if (CErrLog::GetInstance() != nullptr) {
                 SErrResultInfo errResultInfo(
@@ -1469,9 +1495,14 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
             // Get rotation angle α'' of the new heightLine'', add 90° and use this as the new rotation angle of the rectangle.
             // If TC has not been moved beyond the bottom center selection point, the rotation angle α remains the same.
             // Otherwise 180° has to be added to the rotation angle.
-            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
-            double fAngleVerLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
-            if (fAngleVerLine_deg > 269.0 && fAngleVerLine_deg < 271.0) {
+            // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+            // For BottomUp Y-Scales the angle is returned clockwise counted.
+            double fAngle2_degree = lineHeight.angle();
+            // Correct angle only if not already clockwise counted:
+            fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
+            CPhysVal physValAngle2(fAngle2_degree, Units.Angle.Degree, 0.1);
+            double fAngleVerLine_degree = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            if (fAngleVerLine_degree > 269.0 && fAngleVerLine_degree < 271.0) {
                 m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
             else {
@@ -1488,6 +1519,7 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
+            // Get center point of line from TC'' to BC' and use this as the new center point of the rectangle.
             m_ptCenter = lineHeight.center();
             m_size.setHeight(fHeight);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::TopCenter)] =
@@ -1550,10 +1582,10 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         m_ptCenter = lineHeight.center();
         m_size.setHeight(fabs(lineHeight.dy()));
         // Width and height must never be less than 0.
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown && lineHeight.dy() < 0.0) {
+        if (m_bYAxisTopDown && lineHeight.dy() < 0.0) {
             m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
-        else if (yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp && lineHeight.dy() > 0.0) {
+        else if (!m_bYAxisTopDown && lineHeight.dy() > 0.0) {
             m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
         }
         else {
@@ -1566,8 +1598,13 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         QPointF ptTopCenter = topCenter().toQPointF();
         QPointF ptBottomCenter = bottomCenter().toQPointF();
         QLineF lineHeight(ptTopCenter, ptBottomCenter);
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fAngle1_degree = lineHeight.angle();
+        // Correct angle only if not already clockwise counted:
+        fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
         #pragma message(__TODO__"Remove comparison check")
-        CPhysVal physValAngle1(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
+        CPhysVal physValAngle1(fAngle1_degree, Units.Angle.Degree, 0.1);
         if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
             if (CErrLog::GetInstance() != nullptr) {
                 SErrResultInfo errResultInfo(
@@ -1586,9 +1623,14 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
             // Get rotation angle α'' of the new heightLine'', add 90° and use this as the new rotation angle of the rectangle.
             // If BC has not been moved beyond the top center selection point, the rotation angle α remains the same.
             // Otherwise 180° has to be added to the rotation angle.
-            CPhysVal physValAngle2(Math::toClockWiseAngleDegree(lineHeight.angle()), Units.Angle.Degree);
-            double fAngleVerLine_deg = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
-            if (fAngleVerLine_deg > 269.0 && fAngleVerLine_deg < 271.0) {
+            // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+            // For BottomUp Y-Scales the angle is returned clockwise counted.
+            double fAngle2_degree = lineHeight.angle();
+            // Correct angle only if not already clockwise counted:
+            fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
+            CPhysVal physValAngle2(fAngle2_degree, Units.Angle.Degree, 0.1);
+            double fAngleVerLine_degree = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            if (fAngleVerLine_degree > 269.0 && fAngleVerLine_degree < 271.0) {
                 m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
             else {
@@ -1605,6 +1647,7 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
                     CErrLog::GetInstance()->addEntry(errResultInfo);
                 }
             }
+            // Get center point of line from TC'' to BC' and use this as the new center point of the rectangle.
             m_ptCenter = lineHeight.center();
             m_size.setHeight(fHeight);
             m_arphysValPoints[static_cast<int>(ESelectionPoint::BottomCenter)] =
@@ -1676,7 +1719,7 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (m_bYAxisTopDown) {
             if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() >= 0.0) {
                 m_size.setWidth(fabs(lineDiagonale.dx()));
                 m_size.setHeight(fabs(lineDiagonale.dy()));
@@ -1800,7 +1843,7 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (m_bYAxisTopDown) {
             if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() >= 0.0) {
                 m_size.setWidth(fabs(lineDiagonale.dx()));
                 m_size.setHeight(fabs(lineDiagonale.dy()));
@@ -1924,7 +1967,7 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (m_bYAxisTopDown) {
             if (lineDiagonale.dx() <= 0.0 && lineDiagonale.dy() <= 0.0) {
                 m_size.setWidth(fabs(lineDiagonale.dx()));
                 m_size.setHeight(fabs(lineDiagonale.dy()));
@@ -2050,7 +2093,7 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
     m_ptCenter = lineDiagonale.center();
     if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 90.0
      || m_physValAngle.getVal() == 180.0 || m_physValAngle.getVal() == 270.0) {
-        if (yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+        if (m_bYAxisTopDown) {
             if (lineDiagonale.dx() >= 0.0 && lineDiagonale.dy() <= 0.0) {
                 m_size.setWidth(fabs(lineDiagonale.dx()));
                 m_size.setHeight(fabs(lineDiagonale.dy()));

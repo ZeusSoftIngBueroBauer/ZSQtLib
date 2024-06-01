@@ -89,6 +89,8 @@ public: // instance methods
 protected: // instance members
     /*!< Reference to drawing scene. */
     const CDrawingScene* m_pDrawingScene;
+    /*!< To speed up code and to improve readability a flag is set to define the YAxisScaleOrientation. */
+    bool m_bYAxisTopDown;
     ///*!< Mathematic component to calculate the division lines of the X-Scale.
     //     Also used to convert pixel values into metric values and vice versa. */
     //const ZS::System::GUI::Math::CScaleDivLinesMetrics* m_pDivLinesMetricsX;
