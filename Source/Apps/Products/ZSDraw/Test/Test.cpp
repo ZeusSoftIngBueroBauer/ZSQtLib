@@ -2284,6 +2284,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopRightAngle0, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
+    /* removeAndDeleteAllPhysValShapes
+    ---------------------------------*/
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
+        /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    strlstExpectedValues.clear();
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
     //--------------------------------------------------------------------------
     // Rotation Angle: 90.0°
     //--------------------------------------------------------------------------
@@ -2349,6 +2361,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle90, ", ", 'f', iDigits) + "} " + strUnit);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
+    /* removeAndDeleteAllPhysValShapes
+    ---------------------------------*/
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
+        /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    strlstExpectedValues.clear();
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
     //--------------------------------------------------------------------------
     // Rotation Angle: 180.0°
     //--------------------------------------------------------------------------
@@ -2408,6 +2432,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle180, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle180, ", ", 'f', iDigits) + "} " + strUnit);
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    /* removeAndDeleteAllPhysValShapes
+    ---------------------------------*/
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
+        /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
@@ -2473,6 +2509,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetAngle270, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetAngle270, ", ", 'f', iDigits) + "} " + strUnit);
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    /* removeAndDeleteAllPhysValShapes
+    ---------------------------------*/
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
+        /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     //--------------------------------------------------------------------------
@@ -2674,13 +2722,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle30 = ptTopRightSetAngle30;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle30 = ptBottomRightSetAngle30;
     QPointF ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30 = ptBottomCenterSetAngle30;
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30 =
-        QLineF(ptTopRightSetWidthMoveLeftCenterBeforeRightBorderAngle30, ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30).center();
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30(368.3, bYAxisTopDown ? 281.7 : 318.3);
     QPointF ptRightCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30 = ptRightCenterSetAngle30;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30 =
-        QLineF(ptBottomRightSetWidthMoveLeftCenterBeforeRightBorderAngle30, ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30).center();
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30 =
-        QLineF(ptTopLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30, ptBottomLeftSetWidthMoveLeftCenterBeforeRightBorderAngle30).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30(318.3, bYAxisTopDown ? 368.3 : 231.7);
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
@@ -2726,13 +2771,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle30 = ptBottomRightSetAngle30;
     QPointF ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle30 = ptTopRightSetAngle30;
     QPointF ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30(498.2, bYAxisTopDown ? 356.7 : 243.3);
-    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30 =
-        QLineF(ptTopRightSetWidthMoveLeftCenterBeyondRightBorderAngle30, ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30).center();
+    QPointF ptTopCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(404.9, bYAxisTopDown ? 418.3 : 181.7);
     QPointF ptRightCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30 = ptRightCenterSetAngle30;
-    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30 =
-        QLineF(ptBottomRightSetWidthMoveLeftCenterBeyondRightBorderAngle30, ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30).center();
-    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30 =
-        QLineF(ptTopLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30, ptBottomLeftSetWidthMoveLeftCenterBeyondRightBorderAngle30).center();
+    QPointF ptBottomCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(454.9, bYAxisTopDown ? 331.7 : 268.3);
+    QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(473.2, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
@@ -2774,12 +2816,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptTopCenterSetAngle30;
     QPointF ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptBottomCenterSetAngle30;
     QPointF ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30 =
-        QLineF(ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle30, ptTopLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30).center();
-    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30 =
-        QLineF(ptTopRightSetWidthMoveRightCenterBeforeLeftBorderAngle30, ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle30).center();
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30 =
-        QLineF(ptBottomRightSetWidthMoveRightCenterBeforeLeftBorderAngle30, ptBottomLeftSetWidthMoveRightCenterBeforeLeftBorderAngle30).center();
+    QPointF ptTopCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30(281.7, bYAxisTopDown ? 231.7 : 368.3);
+    QPointF ptRightCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30(231.7, bYAxisTopDown ? 318.3 : 281.7);
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptLeftCenterSetAngle30;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2823,12 +2862,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30(101.8, bYAxisTopDown ? 243.3 : 356.7);
     QPointF ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle30 = ptMoved;
     QPointF ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30 =
-        QLineF(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30, ptTopLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30).center();
-    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30 =
-        QLineF(ptTopRightSetWidthMoveRightCenterBeyondLeftBorderAngle30, ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle30).center();
-    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30 =
-        QLineF(ptBottomRightSetWidthMoveRightCenterBeyondLeftBorderAngle30, ptBottomLeftSetWidthMoveRightCenterBeyondLeftBorderAngle30).center();
+    QPointF ptTopCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30(145.1, bYAxisTopDown ? 268.3 : 331.7);
+    QPointF ptRightCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30(126.8, bYAxisTopDown ? 200.0 : 400.0);
+    QPointF ptBottomCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30(195.1, bYAxisTopDown ? 181.7 : 418.3);
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30 = ptLeftCenterSetAngle30;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2913,13 +2949,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptRightCenterSetAngle30;
     QPointF ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptBottomRightSetAngle30;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30 =
-        QLineF(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30, ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle30).center();
-    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30 =
-        QLineF(ptTopRightSetHeightMoveTopCenterBeforeBottomBorderAngle30, ptBottomRightSetHeightMoveTopCenterBeforeBottomBorderAngle30).center();
+    QPointF ptTopCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptRightCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(374.1, bYAxisTopDown ? 371.7 : 228.3);
     QPointF ptBottomCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30 = ptBottomCenterSetAngle30;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30 =
-        QLineF(ptTopLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30, ptBottomLeftSetHeightMoveTopCenterBeforeBottomBorderAngle30).center();
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(200.9, bYAxisTopDown ? 271.7 : 328.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
@@ -2962,15 +2995,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30(163.4, bYAxisTopDown ? 336.6 : 263.4);
     QPointF ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle30 = ptBottomLeftSetAngle30;
     QPointF ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30 = ptBottomRightSetAngle30;
-    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30 =
-        QLineF(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30, ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30).center();
-    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30 =
-        QLineF(ptTopRightSetHeightMoveTopCenterBeyondBottomBorderAngle30, ptBottomRightSetHeightMoveTopCenterBeyondBottomBorderAngle30).center();
-    //QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30 = QPointF(175.9, bYAxisTopDown ? 315.0 : 285.0);
+    QPointF ptTopCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(250.0, bYAxisTopDown ? 386.6 : 213.4);
+    QPointF ptRightCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(175.9, bYAxisTopDown ? 315.0 : 285.0);
     QPointF ptBottomCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30 = ptBottomCenterSetAngle30;
-    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30 =
-        QLineF(ptTopLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30, ptBottomLeftSetHeightMoveTopCenterBeyondBottomBorderAngle30).center();
-    //QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30 = QPointF(349.1, bYAxisTopDown ? 415.0 : 185.0);
+    QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(349.1, bYAxisTopDown ? 415.0 : 185.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
@@ -3012,12 +3040,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle30 = ptRightCenterSetAngle30;
     QPointF ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30 = ptLeftCenterSetAngle30;
     QPointF ptTopCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30 = ptTopCenterSetAngle30;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30 =
-        QLineF(ptTopRightSetHeightMoveBottomCenterBeforeTopBorderAngle30, ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle30).center();
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30 =
-        QLineF(ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30, ptBottomRightSetHeightMoveBottomCenterBeforeTopBorderAngle30).center();
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30 =
-        QLineF(ptTopLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30, ptBottomLeftSetHeightMoveBottomCenterBeforeTopBorderAngle30).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(399.1, bYAxisTopDown ? 328.4 : 271.7);
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(225.9, bYAxisTopDown ? 228.4 : 371.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
@@ -3061,12 +3086,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle30(263.4, bYAxisTopDown ? 163.4 : 436.6);
     QPointF ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30(436.6, bYAxisTopDown ? 263.4 : 336.6);
     QPointF ptTopCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30 = ptTopCenterSetAngle30;
-    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30 =
-        QLineF(ptTopRightSetHeightMoveBottomCenterBeyondTopBorderAngle30, ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle30).center();
-    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30 =
-        QLineF(ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30, ptBottomRightSetHeightMoveBottomCenterBeyondTopBorderAngle30).center();
-    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30 =
-        QLineF(ptTopLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30, ptBottomLeftSetHeightMoveBottomCenterBeyondTopBorderAngle30).center();
+    QPointF ptRightCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(250.9, bYAxisTopDown ? 185.1 : 415.0);
+    QPointF ptBottomCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(350.0, bYAxisTopDown ? 213.4 : 386.6);
+    QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(424.1, bYAxisTopDown ? 285.1 : 315.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
@@ -3102,19 +3124,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptSetTopLeftBeforeBottomRightAngle30 = QPointF(350.0, bYAxisTopDown ? 210.0 : 390.0);
     double fWidthSetTopLeftBeforeBottomRightAngle30 = 101.7;
     double fHeightSetTopLeftBeforeBottomRightAngle30 = 152.9;
-    QPointF ptCenterSetTopLeftBeforeBottomRightAngle30(355.8, 301.7);
+    QPointF ptCenterSetTopLeftBeforeBottomRightAngle30(355.8, bYAxisTopDown ? 301.7 : 298.4);
     QPointF ptTopLeftSetTopLeftBeforeBottomRightAngle30 = ptSetTopLeftBeforeBottomRightAngle30;
-    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle30(438.1, 260.9);
+    QPointF ptTopRightSetTopLeftBeforeBottomRightAngle30(438.1, bYAxisTopDown ? 260.9 : 339.2);
     QPointF ptBottomRightSetTopLeftBeforeBottomRightAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle30(273.5, 342.499);
-    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle30 =
-        QLineF(ptTopLeftSetTopLeftBeforeBottomRightAngle30, ptTopRightSetTopLeftBeforeBottomRightAngle30).center();
-    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle30 =
-        QLineF(ptTopRightSetTopLeftBeforeBottomRightAngle30, ptBottomRightSetTopLeftBeforeBottomRightAngle30).center();
-    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle30 =
-        QLineF(ptBottomLeftSetTopLeftBeforeBottomRightAngle30, ptBottomRightSetTopLeftBeforeBottomRightAngle30).center();
-    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle30 =
-        QLineF(ptTopLeftSetTopLeftBeforeBottomRightAngle30, ptBottomLeftSetTopLeftBeforeBottomRightAngle30).center();
+    QPointF ptBottomLeftSetTopLeftBeforeBottomRightAngle30(273.5, bYAxisTopDown ? 342.499 : 257.501);
+    QPointF ptTopCenterSetTopLeftBeforeBottomRightAngle30(394.0, bYAxisTopDown ? 235.4 : 364.6);
+    QPointF ptRightCenterSetTopLeftBeforeBottomRightAngle30(399.8, bYAxisTopDown ? 327.1 : 272.9);
+    QPointF ptBottomCenterSetTopLeftBeforeBottomRightAngle30(317.6, bYAxisTopDown ? 367.9 : 232.1);
+    QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle30(311.8, bYAxisTopDown ? 276.2 : 323.8);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
@@ -3150,19 +3168,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(120.0);
     double fWidthSetTopLeftBeyondRightBorderAngle30 = 48.4;
     double fHeightSetTopLeftBeyondRightBorderAngle30 = 97.2;
-    QPointF ptCenterSetTopLeftBeyondRightBorderAngle30(415.8, 396.7);
+    QPointF ptCenterSetTopLeftBeyondRightBorderAngle30(415.8, bYAxisTopDown ? 396.7 : 203.4);
     QPointF ptTopLeftSetTopLeftBeyondRightBorderAngle30 = ptSetTopLeftBeyondRightBorderAngle30;
-    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle30(445.8, 441.9);
+    QPointF ptTopRightSetTopLeftBeyondRightBorderAngle30(445.8, bYAxisTopDown ? 441.9 : 158.1);
     QPointF ptBottomRightSetTopLeftBeyondRightBorderAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle30(385.8, 351.4);
-    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle30 =
-        QLineF(ptTopLeftSetTopLeftBeyondRightBorderAngle30, ptTopRightSetTopLeftBeyondRightBorderAngle30).center();
-    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle30 =
-        QLineF(ptTopRightSetTopLeftBeyondRightBorderAngle30, ptBottomRightSetTopLeftBeyondRightBorderAngle30).center();
-    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle30 =
-        QLineF(ptBottomLeftSetTopLeftBeyondRightBorderAngle30, ptBottomRightSetTopLeftBeyondRightBorderAngle30).center();
-    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle30 =
-        QLineF(ptTopLeftSetTopLeftBeyondRightBorderAngle30, ptBottomLeftSetTopLeftBeyondRightBorderAngle30).center();
+    QPointF ptBottomLeftSetTopLeftBeyondRightBorderAngle30(385.8, bYAxisTopDown ? 351.4 : 248.6);
+    QPointF ptTopCenterSetTopLeftBeyondRightBorderAngle30(457.9, bYAxisTopDown ? 421.0 : 179.0);
+    QPointF ptRightCenterSetTopLeftBeyondRightBorderAngle30(403.7, bYAxisTopDown ? 417.6 : 182.4);
+    QPointF ptBottomCenterSetTopLeftBeyondRightBorderAngle30(373.7, bYAxisTopDown ? 372.3 : 227.7);
+    QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle30(427.9, bYAxisTopDown ? 375.7 : 224.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
@@ -3198,19 +3212,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(300.0);
     double fWidthSetTopLeftBeyondBottomBorderAngle30 = 44.3;
     double fHeightSetTopLeftBeyondBottomBorderAngle30 = 103.3;
-    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle30(305.8, 386.7);
+    QPointF ptCenterSetTopLeftBeyondBottomBorderAngle30(305.8, bYAxisTopDown ? 386.7 : 213.4);
     QPointF ptTopLeftSetTopLeftBeyondBottomBorderAngle30 = ptSetTopLeftBeyondBottomBorderAngle30;
-    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle30(272.1, 341.7);
+    QPointF ptTopRightSetTopLeftBeyondBottomBorderAngle30(272.1, bYAxisTopDown ? 341.7 : 258.4);
     QPointF ptBottomRightSetTopLeftBeyondBottomBorderAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle30(339.499, 431.7);
-    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle30 =
-        QLineF(ptTopLeftSetTopLeftBeyondBottomBorderAngle30, ptTopRightSetTopLeftBeyondBottomBorderAngle30).center();
-    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle30 =
-        QLineF(ptTopRightSetTopLeftBeyondBottomBorderAngle30, ptBottomRightSetTopLeftBeyondBottomBorderAngle30).center();
-    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle30 =
-        QLineF(ptBottomLeftSetTopLeftBeyondBottomBorderAngle30, ptBottomRightSetTopLeftBeyondBottomBorderAngle30).center();
-    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle30 =
-        QLineF(ptTopLeftSetTopLeftBeyondBottomBorderAngle30, ptBottomLeftSetTopLeftBeyondBottomBorderAngle30).center();
+    QPointF ptBottomLeftSetTopLeftBeyondBottomBorderAngle30(339.499, bYAxisTopDown ? 431.7 : 168.4);
+    QPointF ptTopCenterSetTopLeftBeyondBottomBorderAngle30(261.1, bYAxisTopDown ? 360.8 : 239.2);
+    QPointF ptRightCenterSetTopLeftBeyondBottomBorderAngle30(316.9, bYAxisTopDown ? 367.499 : 232.5);
+    QPointF ptBottomCenterSetTopLeftBeyondBottomBorderAngle30(350.5, bYAxisTopDown ? 412.499 : 187.5);
+    QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle30(294.7, bYAxisTopDown ? 405.8 : 194.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
@@ -3242,23 +3252,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
 
     /* setTopLeft(BeyondBottomRight)
     --------------------------------*/
-    QPointF ptSetTopLeftBeyondBottomRightAngle30 = QPointF(400.0, bYAxisTopDown ? 530.0 : 50.0);
+    QPointF ptSetTopLeftBeyondBottomRightAngle30 = QPointF(400.0, bYAxisTopDown ? 530.0 : 70.0);
     physValAngleCorrected.setVal(210.0);
     double fWidthSetTopLeftBeyondBottomRightAngle30 = 101.6;
     double fHeightSetTopLeftBeyondBottomRightAngle30 = 99.2;
-    QPointF ptCenterSetTopLeftBeyondBottomRightAngle30(380.8, 461.7);
+    QPointF ptCenterSetTopLeftBeyondBottomRightAngle30(380.8, bYAxisTopDown ? 461.7 : 138.4);
     QPointF ptTopLeftSetTopLeftBeyondBottomRightAngle30 = ptSetTopLeftBeyondBottomRightAngle30;
-    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle30(312.0, 479.2);
+    QPointF ptTopRightSetTopLeftBeyondBottomRightAngle30(312.0, bYAxisTopDown ? 479.2 : 120.8);
     QPointF ptBottomRightSetTopLeftBeyondBottomRightAngle30 = ptBottomRightSetAngle30;
-    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle30(449.6, 444.1);
-    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle30 =
-        QLineF(ptTopLeftSetTopLeftBeyondBottomRightAngle30, ptTopRightSetTopLeftBeyondBottomRightAngle30).center();
-    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle30 =
-        QLineF(ptTopRightSetTopLeftBeyondBottomRightAngle30, ptBottomRightSetTopLeftBeyondBottomRightAngle30).center();
-    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle30 =
-        QLineF(ptBottomLeftSetTopLeftBeyondBottomRightAngle30, ptBottomRightSetTopLeftBeyondBottomRightAngle30).center();
-    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle30 =
-        QLineF(ptTopLeftSetTopLeftBeyondBottomRightAngle30, ptBottomLeftSetTopLeftBeyondBottomRightAngle30).center();
+    QPointF ptBottomLeftSetTopLeftBeyondBottomRightAngle30(449.6, bYAxisTopDown ? 444.1 : 155.9);
+    QPointF ptTopCenterSetTopLeftBeyondBottomRightAngle30(356.0, bYAxisTopDown ? 504.6 : 95.4);
+    QPointF ptRightCenterSetTopLeftBeyondBottomRightAngle30(336.8, bYAxisTopDown ? 436.3 : 163.8);
+    QPointF ptBottomCenterSetTopLeftBeyondBottomRightAngle30(405.6, bYAxisTopDown ? 418.7 : 181.3);
+    QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle30(424.8, bYAxisTopDown ? 487.1 : 112.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
@@ -3293,19 +3299,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptSetTopRightBeforeBottomLeftAngle30 = QPointF(350.0, bYAxisTopDown ? 200.0 : 400.0);
     double fWidthSetTopRightBeforeBottomLeftAngle30 = 93.3;
     double fHeightSetTopRightBeforeBottomLeftAngle30 = 161.6;
-    QPointF ptCenterSetTopRightBeforeBottomLeftAngle30(269.2, 246.7);
-    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle30(269.2, 153.4);
+    QPointF ptCenterSetTopRightBeforeBottomLeftAngle30(269.2, bYAxisTopDown ? 246.7 : 353.4);
+    QPointF ptTopLeftSetTopRightBeforeBottomLeftAngle30(269.2, bYAxisTopDown ? 153.4 : 446.7);
     QPointF ptTopRightSetTopRightBeforeBottomLeftAngle30 = ptSetTopRightBeforeBottomLeftAngle30;
-    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle30(269.2, 340.0);
+    QPointF ptBottomRightSetTopRightBeforeBottomLeftAngle30(269.2, bYAxisTopDown ? 340.0 : 260.0);
     QPointF ptBottomLeftSetTopRightBeforeBottomLeftAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle30 =
-        QLineF(ptTopLeftSetTopRightBeforeBottomLeftAngle30, ptTopRightSetTopRightBeforeBottomLeftAngle30).center();
-    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle30 =
-        QLineF(ptTopRightSetTopRightBeforeBottomLeftAngle30, ptBottomRightSetTopRightBeforeBottomLeftAngle30).center();
-    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle30 =
-        QLineF(ptBottomLeftSetTopRightBeforeBottomLeftAngle30, ptBottomRightSetTopRightBeforeBottomLeftAngle30).center();
-    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle30 =
-        QLineF(ptTopLeftSetTopRightBeforeBottomLeftAngle30, ptBottomLeftSetTopRightBeforeBottomLeftAngle30).center();
+    QPointF ptTopCenterSetTopRightBeforeBottomLeftAngle30(309.6, bYAxisTopDown ? 176.7 : 423.3);
+    QPointF ptRightCenterSetTopRightBeforeBottomLeftAngle30(309.6, bYAxisTopDown ? 270.0 : 330.0);
+    QPointF ptBottomCenterSetTopRightBeforeBottomLeftAngle30(228.8, bYAxisTopDown ? 316.6 : 283.4);
+    QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle30(228.8, bYAxisTopDown ? 223.3 : 376.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
@@ -3341,19 +3343,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(300.0);
     double fWidthSetTopRightBeyondLeftBorderAngle30 = 61.6;
     double fHeightSetTopRightBeyondLeftBorderAngle30 = 79.9;
-    QPointF ptCenterSetTopRightBeyondLeftBorderAngle30(169.2, 246.7);
-    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle30(119.2, 253.4);
+    QPointF ptCenterSetTopRightBeyondLeftBorderAngle30(169.2, bYAxisTopDown ? 246.7 : 353.4);
+    QPointF ptTopLeftSetTopRightBeyondLeftBorderAngle30(119.2, bYAxisTopDown ? 253.4 : 346.7);
     QPointF ptTopRightSetTopRightBeyondLeftBorderAngle30 = ptSetTopRightBeyondLeftBorderAngle30;
-    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle30(219.2, 240.0);
+    QPointF ptBottomRightSetTopRightBeyondLeftBorderAngle30(219.2, bYAxisTopDown ? 240.0 : 360.0);
     QPointF ptBottomLeftSetTopRightBeyondLeftBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle30 =
-        QLineF(ptTopLeftSetTopRightBeyondLeftBorderAngle30, ptTopRightSetTopRightBeyondLeftBorderAngle30).center();
-    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle30 =
-        QLineF(ptTopRightSetTopRightBeyondLeftBorderAngle30, ptBottomRightSetTopRightBeyondLeftBorderAngle30).center();
-    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle30 =
-        QLineF(ptBottomLeftSetTopRightBeyondLeftBorderAngle30, ptBottomRightSetTopRightBeyondLeftBorderAngle30).center();
-    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle30 =
-        QLineF(ptTopLeftSetTopRightBeyondLeftBorderAngle30, ptBottomLeftSetTopRightBeyondLeftBorderAngle30).center();
+    QPointF ptTopCenterSetTopRightBeyondLeftBorderAngle30(134.6, bYAxisTopDown ? 226.7 : 373.3);
+    QPointF ptRightCenterSetTopRightBeyondLeftBorderAngle30(184.6, bYAxisTopDown ? 220.0 : 380.0);
+    QPointF ptBottomCenterSetTopRightBeyondLeftBorderAngle30(203.8, bYAxisTopDown ? 266.6 : 333.4);
+    QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle30(153.8, bYAxisTopDown ? 273.3 : 326.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
@@ -3389,19 +3387,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(120.0);
     double fWidthSetTopRightBeyondBottomBorderAngle30 = 61.6;
     double fHeightSetTopRightBeyondBottomBorderAngle30 = 106.7;
-    QPointF ptCenterSetTopRightBeyondBottomBorderAngle30(219.2, 346.7);
-    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle30(280.8, 346.7);
+    QPointF ptCenterSetTopRightBeyondBottomBorderAngle30(219.2, bYAxisTopDown ? 346.7 : 253.4);
+    QPointF ptTopLeftSetTopRightBeyondBottomBorderAngle30(280.8, bYAxisTopDown ? 346.7 : 253.4);
     QPointF ptTopRightSetTopRightBeyondBottomBorderAngle30 = ptSetTopRightBeyondBottomBorderAngle30;
-    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle30(157.6, 346.7);
+    QPointF ptBottomRightSetTopRightBeyondBottomBorderAngle30(157.6, bYAxisTopDown ? 346.7 : 253.4);
     QPointF ptBottomLeftSetTopRightBeyondBottomBorderAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle30 =
-        QLineF(ptTopLeftSetTopRightBeyondBottomBorderAngle30, ptTopRightSetTopRightBeyondBottomBorderAngle30).center();
-    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle30 =
-        QLineF(ptTopRightSetTopRightBeyondBottomBorderAngle30, ptBottomRightSetTopRightBeyondBottomBorderAngle30).center();
-    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle30 =
-        QLineF(ptBottomLeftSetTopRightBeyondBottomBorderAngle30, ptBottomRightSetTopRightBeyondBottomBorderAngle30).center();
-    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle30 =
-        QLineF(ptTopLeftSetTopRightBeyondBottomBorderAngle30, ptBottomLeftSetTopRightBeyondBottomBorderAngle30).center();
+    QPointF ptTopCenterSetTopRightBeyondBottomBorderAngle30(265.4, bYAxisTopDown ? 373.3 : 226.7);
+    QPointF ptRightCenterSetTopRightBeyondBottomBorderAngle30(203.8, bYAxisTopDown ? 373.3 : 226.7);
+    QPointF ptBottomCenterSetTopRightBeyondBottomBorderAngle30(173.0, bYAxisTopDown ? 320.0 : 280.0);
+    QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle30(234.6, bYAxisTopDown ? 320.0 : 280.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
@@ -3437,19 +3431,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(210.0);
     double fWidthSetTopRightBeyondBottomLeftAngle30 = 91.5;
     double fHeightSetTopRightBeyondBottomLeftAngle30 = 118.3;
-    QPointF ptCenterSetTopRightBeyondBottomLeftAngle30(119.2, 321.7);
-    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle30(129.2, 395.8);
+    QPointF ptCenterSetTopRightBeyondBottomLeftAngle30(119.2, bYAxisTopDown ? 321.7 : 278.4);
+    QPointF ptTopLeftSetTopRightBeyondBottomLeftAngle30(129.2, bYAxisTopDown ? 395.8 : 204.2);
     QPointF ptTopRightSetTopRightBeyondBottomLeftAngle30 = ptSetTopRightBeyondBottomLeftAngle30;
-    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle30(109.2, 247.5);
+    QPointF ptBottomRightSetTopRightBeyondBottomLeftAngle30(109.2, bYAxisTopDown ? 247.5 : 352.5);
     QPointF ptBottomLeftSetTopRightBeyondBottomLeftAngle30 = ptBottomLeftSetAngle30;
-    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle30 =
-        QLineF(ptTopLeftSetTopRightBeyondBottomLeftAngle30, ptTopRightSetTopRightBeyondBottomLeftAngle30).center();
-    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle30 =
-        QLineF(ptTopRightSetTopRightBeyondBottomLeftAngle30, ptBottomRightSetTopRightBeyondBottomLeftAngle30).center();
-    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle30 =
-        QLineF(ptBottomLeftSetTopRightBeyondBottomLeftAngle30, ptBottomRightSetTopRightBeyondBottomLeftAngle30).center();
-    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle30 =
-        QLineF(ptTopLeftSetTopRightBeyondBottomLeftAngle30, ptBottomLeftSetTopRightBeyondBottomLeftAngle30).center();
+    QPointF ptTopCenterSetTopRightBeyondBottomLeftAngle30(89.6, bYAxisTopDown ? 372.9 : 227.1);
+    QPointF ptRightCenterSetTopRightBeyondBottomLeftAngle30(79.6, bYAxisTopDown ? 298.8 : 301.2);
+    QPointF ptBottomCenterSetTopRightBeyondBottomLeftAngle30(148.8, bYAxisTopDown ? 270.4 : 329.6);
+    QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle30(158.8, bYAxisTopDown ? 344.5 : 255.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft)",
@@ -3484,19 +3474,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptSetSetBottomRightBeforeTopLeftAngle30 = QPointF(250.0, bYAxisTopDown ? 400.0 : 200.0);
     double fWidthSetBottomRightBeforeTopLeftAngle30 = 106.7;
     double fHeightSetBottomRightBeforeTopLeftAngle30 = 161.6;
-    QPointF ptCenterSetBottomRightBeforeTopLeftAngle30 (244.2, 303.4);
+    QPointF ptCenterSetBottomRightBeforeTopLeftAngle30 (244.2, bYAxisTopDown ? 303.4 : 296.7);
     QPointF ptTopLeftSetBottomRightBeforeTopLeftAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle30(330.8, 260.0);
+    QPointF ptTopRightSetBottomRightBeforeTopLeftAngle30(330.8, bYAxisTopDown ? 260.0 : 340.0);
     QPointF ptBottomRightSetBottomRightBeforeTopLeftAngle30 = ptSetSetBottomRightBeforeTopLeftAngle30;
-    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle30(157.6, 346.7);
-    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle30 =
-        QLineF(ptTopLeftSetBottomRightBeforeTopLeftAngle30, ptTopRightSetBottomRightBeforeTopLeftAngle30).center();
-    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle30 =
-        QLineF(ptTopRightSetBottomRightBeforeTopLeftAngle30, ptBottomRightSetBottomRightBeforeTopLeftAngle30).center();
-    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle30 =
-        QLineF(ptBottomLeftSetBottomRightBeforeTopLeftAngle30, ptBottomRightSetBottomRightBeforeTopLeftAngle30).center();
-    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle30 =
-        QLineF(ptTopLeftSetBottomRightBeforeTopLeftAngle30, ptBottomLeftSetBottomRightBeforeTopLeftAngle30).center();
+    QPointF ptBottomLeftSetBottomRightBeforeTopLeftAngle30(157.6, bYAxisTopDown ? 346.7 : 253.4);
+    QPointF ptTopCenterSetBottomRightBeforeTopLeftAngle30(284.6, bYAxisTopDown ? 233.4 : 366.6);
+    QPointF ptRightCenterSetBottomRightBeforeTopLeftAngle30(290.4, bYAxisTopDown ? 330.0 : 270.0);
+    QPointF ptBottomCenterSetBottomRightBeforeTopLeftAngle30(203.8, bYAxisTopDown ? 373.3 : 226.7);
+    QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle30(198.0, bYAxisTopDown ? 276.7 : 323.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
@@ -3532,19 +3518,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(300.0);
     double fWidthSetBottomRightBeyondTopBorderAngle30 = 86.6;
     double fHeightSetBottomRightBeyondTopBorderAngle30 = 136.6;
-    QPointF ptCenterSetBottomRightBeyondTopBorderAngle30(319.2, 203.4);
+    QPointF ptCenterSetBottomRightBeyondTopBorderAngle30(319.2, bYAxisTopDown ? 203.4 : 396.7);
     QPointF ptTopLeftSetBottomRightBeyondTopBorderAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle30(281.7, 131.7);
+    QPointF ptTopRightSetBottomRightBeyondTopBorderAngle30(281.7, bYAxisTopDown ? 131.7 : 468.3);
     QPointF ptBottomRightSetBottomRightBeyondTopBorderAngle30 = ptSetBottomRightBeyondTopBorderAngle30;
-    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle30(356.7, 275.0);
-    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle30 =
-        QLineF(ptTopLeftSetBottomRightBeyondTopBorderAngle30, ptTopRightSetBottomRightBeyondTopBorderAngle30).center();
-    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle30 =
-        QLineF(ptTopRightSetBottomRightBeyondTopBorderAngle30, ptBottomRightSetBottomRightBeyondTopBorderAngle30).center();
-    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle30 =
-        QLineF(ptBottomLeftSetBottomRightBeyondTopBorderAngle30, ptBottomRightSetBottomRightBeyondTopBorderAngle30).center();
-    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle30 =
-        QLineF(ptTopLeftSetBottomRightBeyondTopBorderAngle30, ptBottomLeftSetBottomRightBeyondTopBorderAngle30).center();
+    QPointF ptBottomLeftSetBottomRightBeyondTopBorderAngle30(356.7, bYAxisTopDown ? 275.0 : 325.0);
+    QPointF ptTopCenterSetBottomRightBeyondTopBorderAngle30(260.0, bYAxisTopDown ? 169.2 : 430.8);
+    QPointF ptRightCenterSetBottomRightBeyondTopBorderAngle30(340.9, bYAxisTopDown ? 165.9 : 434.2);
+    QPointF ptBottomCenterSetBottomRightBeyondTopBorderAngle30(378.4, bYAxisTopDown ? 237.499 : 362.5);
+    QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle30(297.5, bYAxisTopDown ? 240.9 : 359.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
@@ -3580,19 +3562,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(120.0);
     double fWidthSetBottomRightBeyondLeftBorderAngle30 = 63.4;
     double fHeightSetBottomRightBeyondLeftBorderAngle30 = 123.2;
-    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle30(169.2, 203.4);
+    QPointF ptCenterSetBottomRightBeyondLeftBorderAngle30(169.2, bYAxisTopDown ? 203.4 : 396.7);
     QPointF ptTopLeftSetBottomRightBeyondLeftBorderAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle30(206.7, 261.6);
+    QPointF ptTopRightSetBottomRightBeyondLeftBorderAngle30(206.7, bYAxisTopDown ? 261.6 : 338.4);
     QPointF ptBottomRightSetBottomRightBeyondLeftBorderAngle30 = ptSetBottomRightBeyondLeftBorderAngle30;
-    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle30(131.7, 145.1);
-    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle30 =
-        QLineF(ptTopLeftSetBottomRightBeyondLeftBorderAngle30, ptTopRightSetBottomRightBeyondLeftBorderAngle30).center();
-    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle30 =
-        QLineF(ptTopRightSetBottomRightBeyondLeftBorderAngle30, ptBottomRightSetBottomRightBeyondLeftBorderAngle30).center();
-    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle30 =
-        QLineF(ptBottomLeftSetBottomRightBeyondLeftBorderAngle30, ptBottomRightSetBottomRightBeyondLeftBorderAngle30).center();
-    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle30 =
-        QLineF(ptTopLeftSetBottomRightBeyondLeftBorderAngle30, ptBottomLeftSetBottomRightBeyondLeftBorderAngle30).center();
+    QPointF ptBottomLeftSetBottomRightBeyondLeftBorderAngle30(131.7, bYAxisTopDown ? 145.1 : 454.9);
+    QPointF ptTopCenterSetBottomRightBeyondLeftBorderAngle30(222.5, bYAxisTopDown ? 234.2 : 365.9);
+    QPointF ptRightCenterSetBottomRightBeyondLeftBorderAngle30(153.4, bYAxisTopDown ? 230.8 : 369.2);
+    QPointF ptBottomCenterSetBottomRightBeyondLeftBorderAngle30(115.9, bYAxisTopDown ? 172.5 : 427.5);
+    QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle30(185.0, bYAxisTopDown ? 175.9 : 424.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
@@ -3628,19 +3606,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(210.0);
     double fWidthSetBottomRightBeyondTopLeftAngle30 = 86.6;
     double fHeightSetBottomRightBeyondTopLeftAngle30 = 73.2;
-    QPointF ptCenterSetBottomRightBeyondTopLeftAngle30(219.2, 153.4);
+    QPointF ptCenterSetBottomRightBeyondTopLeftAngle30(219.2, bYAxisTopDown ? 153.4 : 446.7);
     QPointF ptTopLeftSetBottomRightBeyondTopLeftAngle30 = ptTopLeftSetAngle30;
-    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle30(163.4, 163.4);
+    QPointF ptTopRightSetBottomRightBeyondTopLeftAngle30(163.4, bYAxisTopDown ? 163.4 : 436.6);
     QPointF ptBottomRightSetBottomRightBeyondTopLeftAngle30 = ptSetBottomRightBeyondTopLeftAngle30;
-    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle30(275.0, 143.3);
-    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle30 =
-        QLineF(ptTopLeftSetBottomRightBeyondTopLeftAngle30, ptTopRightSetBottomRightBeyondTopLeftAngle30).center();
-    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle30 =
-        QLineF(ptTopRightSetBottomRightBeyondTopLeftAngle30, ptBottomRightSetBottomRightBeyondTopLeftAngle30).center();
-    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle30 =
-        QLineF(ptBottomLeftSetBottomRightBeyondTopLeftAngle30, ptBottomRightSetBottomRightBeyondTopLeftAngle30).center();
-    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle30 =
-        QLineF(ptTopLeftSetBottomRightBeyondTopLeftAngle30, ptBottomLeftSetBottomRightBeyondTopLeftAngle30).center();
+    QPointF ptBottomLeftSetBottomRightBeyondTopLeftAngle30(275.0, bYAxisTopDown ? 143.3 : 456.7);
+    QPointF ptTopCenterSetBottomRightBeyondTopLeftAngle30(200.9, bYAxisTopDown ? 185.0 : 415.0);
+    QPointF ptRightCenterSetBottomRightBeyondTopLeftAngle30(181.7, bYAxisTopDown ? 131.7 : 468.3);
+    QPointF ptBottomCenterSetBottomRightBeyondTopLeftAngle30(237.5, bYAxisTopDown ? 121.7 : 478.4);
+    QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle30(256.7, bYAxisTopDown ? 175.0 : 425.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
@@ -3675,19 +3649,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     QPointF ptSetBottomLeftBeforeTopRightAngle30 = QPointF(250.0, bYAxisTopDown ? 400.0 : 200.0);
     double fWidthSetBottomLeftBeforeTopRightAngle30 = 93.3;
     double fHeightSetBottomLeftBeforeTopRightAngle30 = 161.6;
-    QPointF ptCenterSetBottomLeftBeforeTopRightAngle30(330.8, 353.4);
-    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle30(330.8, 260.0);
+    QPointF ptCenterSetBottomLeftBeforeTopRightAngle30(330.8, bYAxisTopDown ? 353.4 : 246.7);
+    QPointF ptTopLeftSetBottomLeftBeforeTopRightAngle30(330.8, bYAxisTopDown ? 260.0 : 340.0);
     QPointF ptTopRightSetBottomLeftBeforeTopRightAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle30(330.8, 446.7);
+    QPointF ptBottomRightSetBottomLeftBeforeTopRightAngle30(330.8, bYAxisTopDown ? 446.7 : 153.4);
     QPointF ptBottomLeftSetBottomLeftBeforeTopRightAngle30 = ptSetBottomLeftBeforeTopRightAngle30;
-    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle30 =
-        QLineF(ptTopLeftSetBottomLeftBeforeTopRightAngle30, ptTopRightSetBottomLeftBeforeTopRightAngle30).center();
-    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle30 =
-        QLineF(ptTopRightSetBottomLeftBeforeTopRightAngle30, ptBottomRightSetBottomLeftBeforeTopRightAngle30).center();
-    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle30 =
-        QLineF(ptBottomLeftSetBottomLeftBeforeTopRightAngle30, ptBottomRightSetBottomLeftBeforeTopRightAngle30).center();
-    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle30 =
-        QLineF(ptTopLeftSetBottomLeftBeforeTopRightAngle30, ptBottomLeftSetBottomLeftBeforeTopRightAngle30).center();
+    QPointF ptTopCenterSetBottomLeftBeforeTopRightAngle30(371.2, bYAxisTopDown ? 283.4 : 316.6);
+    QPointF ptRightCenterSetBottomLeftBeforeTopRightAngle30(371.2, bYAxisTopDown ? 376.7 : 223.3);
+    QPointF ptBottomCenterSetBottomLeftBeforeTopRightAngle30(290.4, bYAxisTopDown ? 423.3 : 176.7);
+    QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle30(290.4, bYAxisTopDown ? 330.0 : 270.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
@@ -3723,19 +3693,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(120.0);
     double fWidthSetBottomLeftBeyondTopBorderAngle30 = 61.6;
     double fHeightSetBottomLeftBeyondTopBorderAngle30 = 106.7;
-    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle30(380.8, 253.4);
-    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle30(442.4, 253.4);
+    QPointF ptCenterSetBottomLeftBeyondTopBorderAngle30(380.8, bYAxisTopDown ? 253.4 : 346.7);
+    QPointF ptTopLeftSetBottomLeftBeyondTopBorderAngle30(442.4, bYAxisTopDown ? 253.4 : 346.7);
     QPointF ptTopRightSetBottomLeftBeyondTopBorderAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle30(319.2, 253.4);
+    QPointF ptBottomRightSetBottomLeftBeyondTopBorderAngle30(319.2, bYAxisTopDown ? 253.4 : 346.7);
     QPointF ptBottomLeftSetBottomLeftBeyondTopBorderAngle30 = ptSetBottomLeftBeyondTopBorderAngle30;
-    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle30 =
-        QLineF(ptTopLeftSetBottomLeftBeyondTopBorderAngle30, ptTopRightSetBottomLeftBeyondTopBorderAngle30).center();
-    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle30 =
-        QLineF(ptTopRightSetBottomLeftBeyondTopBorderAngle30, ptBottomRightSetBottomLeftBeyondTopBorderAngle30).center();
-    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle30 =
-        QLineF(ptBottomLeftSetBottomLeftBeyondTopBorderAngle30, ptBottomRightSetBottomLeftBeyondTopBorderAngle30).center();
-    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle30 =
-        QLineF(ptTopLeftSetBottomLeftBeyondTopBorderAngle30, ptBottomLeftSetBottomLeftBeyondTopBorderAngle30).center();
+    QPointF ptTopCenterSetBottomLeftBeyondTopBorderAngle30(427.0, bYAxisTopDown ? 280.0 : 320.0);
+    QPointF ptRightCenterSetBottomLeftBeyondTopBorderAngle30(365.4, bYAxisTopDown ? 280.0 : 320.0);
+    QPointF ptBottomCenterSetBottomLeftBeyondTopBorderAngle30(334.6, bYAxisTopDown ? 226.7 : 373.3);
+    QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle30(396.2, bYAxisTopDown ? 226.7 : 373.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
@@ -3771,19 +3737,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     physValAngleCorrected.setVal(300.0);
     double fWidthSetBottomLeftBeyondRightBorderAngle30 = 61.6;
     double fHeightSetBottomLeftBeyondRightBorderAngle30 = 79.9;
-    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle30(430.8, 353.4);
-    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle30(380.8, 360.0);
+    QPointF ptCenterSetBottomLeftBeyondRightBorderAngle30(430.8, bYAxisTopDown ? 353.4 : 246.7);
+    QPointF ptTopLeftSetBottomLeftBeyondRightBorderAngle30(380.8, bYAxisTopDown ? 360.0 : 240.0);
     QPointF ptTopRightSetBottomLeftBeyondRightBorderAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle30(480.8, 346.7);
+    QPointF ptBottomRightSetBottomLeftBeyondRightBorderAngle30(480.8, bYAxisTopDown ? 346.7 : 253.4);
     QPointF ptBottomLeftSetBottomLeftBeyondRightBorderAngle30 = ptSetBottomLeftBeyondRightBorderAngle30;
-    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle30 =
-        QLineF(ptTopLeftSetBottomLeftBeyondRightBorderAngle30, ptTopRightSetBottomLeftBeyondRightBorderAngle30).center();
-    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle30 =
-        QLineF(ptTopRightSetBottomLeftBeyondRightBorderAngle30, ptBottomRightSetBottomLeftBeyondRightBorderAngle30).center();
-    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle30 =
-        QLineF(ptBottomLeftSetBottomLeftBeyondRightBorderAngle30, ptBottomRightSetBottomLeftBeyondRightBorderAngle30).center();
-    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle30 =
-        QLineF(ptTopLeftSetBottomLeftBeyondRightBorderAngle30, ptBottomLeftSetBottomLeftBeyondRightBorderAngle30).center();
+    QPointF ptTopCenterSetBottomLeftBeyondRightBorderAngle30(396.2, bYAxisTopDown ? 333.4 : 266.6);
+    QPointF ptRightCenterSetBottomLeftBeyondRightBorderAngle30(446.2, bYAxisTopDown ? 326.7 : 273.3);
+    QPointF ptBottomCenterSetBottomLeftBeyondRightBorderAngle30(465.4, bYAxisTopDown ? 373.3 : 226.7);
+    QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle30(415.4, bYAxisTopDown ? 380.0 : 220.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
@@ -3814,25 +3776,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     /* setBottomLeft(BeyondTopRight)
-    --------------------------------
-    */
+    --------------------------------*/
     QPointF ptSetBottomLeftBeyondTopRightAngle30 = QPointF(550.0, bYAxisTopDown ? 300.0 : 300.0);
     physValAngleCorrected.setVal(210.0);
     double fWidthSetBottomLeftBeyondTopRightAngle30 = 116.5;
     double fHeightSetBottomLeftBeyondTopRightAngle30 = 75.0;
-    QPointF ptCenterSetBottomLeftBeyondTopRightAngle30(480.8, 303.4);
-    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle30(512.5, 365.0);
+    QPointF ptCenterSetBottomLeftBeyondTopRightAngle30(480.8, bYAxisTopDown ? 303.4 : 296.7);
+    QPointF ptTopLeftSetBottomLeftBeyondTopRightAngle30(512.5, bYAxisTopDown ? 365.0 : 235.0);
     QPointF ptTopRightSetBottomLeftBeyondTopRightAngle30 = ptTopRightSetAngle30;
-    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle30(449.1, 241.7);
+    QPointF ptBottomRightSetBottomLeftBeyondTopRightAngle30(449.1, bYAxisTopDown ? 241.7 : 358.3);
     QPointF ptBottomLeftSetBottomLeftBeyondTopRightAngle30 = ptSetBottomLeftBeyondTopRightAngle30;
-    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle30 =
-        QLineF(ptTopLeftSetBottomLeftBeyondTopRightAngle30, ptTopRightSetBottomLeftBeyondTopRightAngle30).center();
-    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle30 =
-        QLineF(ptTopRightSetBottomLeftBeyondTopRightAngle30, ptBottomRightSetBottomLeftBeyondTopRightAngle30).center();
-    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle30 =
-        QLineF(ptBottomLeftSetBottomLeftBeyondTopRightAngle30, ptBottomRightSetBottomLeftBeyondTopRightAngle30).center();
-    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle30 =
-        QLineF(ptTopLeftSetBottomLeftBeyondTopRightAngle30, ptBottomLeftSetBottomLeftBeyondTopRightAngle30).center();
+    QPointF ptTopCenterSetBottomLeftBeyondTopRightAngle30(462.1, bYAxisTopDown ? 335.8 : 264.2);
+    QPointF ptRightCenterSetBottomLeftBeyondTopRightAngle30(430.4, bYAxisTopDown ? 274.2 : 325.8);
+    QPointF ptBottomCenterSetBottomLeftBeyondTopRightAngle30(499.6, bYAxisTopDown ? 270.9 : 329.1);
+    QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle30(531.3, bYAxisTopDown ? 332.499 : 267.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
@@ -3860,6 +3817,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     strlstExpectedValues.append("RightCenter {" + qPoint2Str(ptRightCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("BottomCenter {" + qPoint2Str(ptBottomCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', iDigits) + "} " + strUnit);
     strlstExpectedValues.append("LeftCenter {" + qPoint2Str(ptLeftCenterSetBottomLeftBeyondTopRightAngle30, ", ", 'f', iDigits) + "} " + strUnit);
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    /* removeAndDeleteAllPhysValShapes
+    ---------------------------------*/
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
+        /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
+        /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
+    strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -9125,7 +9094,10 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CPhysValRect physValRectResult(*m_pDrawingScene);
 
-    QPointF ptTL = i_pTestStep->getConfigValue("create.topLeft").toPointF();
+    QPointF ptTL;
+    if (i_pTestStep->hasConfigValue("create.topLeft")) {
+        ptTL = i_pTestStep->getConfigValue("create.topLeft").toPointF();
+    }
     if (i_pTestStep->hasConfigValue("create.bottomRight")) {
         QPointF ptBR = i_pTestStep->getConfigValue("create.bottomRight").toPointF();
         if (i_pTestStep->hasConfigValue("create.unit")) {
@@ -9318,18 +9290,20 @@ void CTest::doTestStepTransformPhysValRect( ZS::Test::CTestStep* i_pTestStep )
     }
 
     QStringList strlstResultValues;
-    strlstResultValues.append("Center {" + physValRectResult.center().toString() + "} " + physValRectResult.center().unit().symbol());
-    strlstResultValues.append("Width: " + physValRectResult.width().toString());
-    strlstResultValues.append("Height: " + physValRectResult.height().toString());
-    strlstResultValues.append("Angle: " + physValRectResult.angle().toString());
-    strlstResultValues.append("TopLeft {" + physValRectResult.topLeft().toString() + "} " + physValRectResult.topLeft().unit().symbol());
-    strlstResultValues.append("TopRight {" + physValRectResult.topRight().toString() + "} " + physValRectResult.topRight().unit().symbol());
-    strlstResultValues.append("BottomRight {" + physValRectResult.bottomRight().toString() + "} " + physValRectResult.bottomRight().unit().symbol());
-    strlstResultValues.append("BottomLeft {" + physValRectResult.bottomLeft().toString() + "} " + physValRectResult.bottomLeft().unit().symbol());
-    strlstResultValues.append("TopCenter {" + physValRectResult.topCenter().toString() + "} " + physValRectResult.topCenter().unit().symbol());
-    strlstResultValues.append("RightCenter {" + physValRectResult.rightCenter().toString() + "} " + physValRectResult.rightCenter().unit().symbol());
-    strlstResultValues.append("BottomCenter {" + physValRectResult.bottomCenter().toString() + "} " + physValRectResult.bottomCenter().unit().symbol());
-    strlstResultValues.append("LeftCenter {" + physValRectResult.leftCenter().toString() + "} " + physValRectResult.leftCenter().unit().symbol());
+    if (!ptTL.isNull()) {
+        strlstResultValues.append("Center {" + physValRectResult.center().toString() + "} " + physValRectResult.center().unit().symbol());
+        strlstResultValues.append("Width: " + physValRectResult.width().toString());
+        strlstResultValues.append("Height: " + physValRectResult.height().toString());
+        strlstResultValues.append("Angle: " + physValRectResult.angle().toString());
+        strlstResultValues.append("TopLeft {" + physValRectResult.topLeft().toString() + "} " + physValRectResult.topLeft().unit().symbol());
+        strlstResultValues.append("TopRight {" + physValRectResult.topRight().toString() + "} " + physValRectResult.topRight().unit().symbol());
+        strlstResultValues.append("BottomRight {" + physValRectResult.bottomRight().toString() + "} " + physValRectResult.bottomRight().unit().symbol());
+        strlstResultValues.append("BottomLeft {" + physValRectResult.bottomLeft().toString() + "} " + physValRectResult.bottomLeft().unit().symbol());
+        strlstResultValues.append("TopCenter {" + physValRectResult.topCenter().toString() + "} " + physValRectResult.topCenter().unit().symbol());
+        strlstResultValues.append("RightCenter {" + physValRectResult.rightCenter().toString() + "} " + physValRectResult.rightCenter().unit().symbol());
+        strlstResultValues.append("BottomCenter {" + physValRectResult.bottomCenter().toString() + "} " + physValRectResult.bottomCenter().unit().symbol());
+        strlstResultValues.append("LeftCenter {" + physValRectResult.leftCenter().toString() + "} " + physValRectResult.leftCenter().unit().symbol());
+    }
     i_pTestStep->setResultValues(strlstResultValues);
 }
 

@@ -1163,17 +1163,6 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
         double fAngle1_degree = lineWidth.angle();
         // Correct angle only if not already clockwise counted:
         fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
-        #pragma message(__TODO__"Remove comparison check")
-        CPhysVal physValAngle1(fAngle1_degree, Units.Angle.Degree, 0.1);
-        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
-            if (CErrLog::GetInstance() != nullptr) {
-                SErrResultInfo errResultInfo(
-                    EResultValuesNotEqual, EResultSeverityError,
-                    "CPhysValRect::setWidthByMovingLeftCenter_Angle1(" + i_physValPoint.toString() + "): " +
-                    m_physValAngle.toString() + " != " + physValAngle1.toString());
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
         // Determine the perpendicularLine to the widthLine going through ptPosMoved.
         QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
         // Determine the intersection point LC'' of the perpendicularLine with the widthLine.
@@ -1197,16 +1186,6 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
             else {
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
-            }
-            #pragma message(__TODO__"Remove comparison check")
-            if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
-                if (CErrLog::GetInstance() != nullptr) {
-                    SErrResultInfo errResultInfo(
-                        EResultValuesNotEqual, EResultSeverityError,
-                        "CPhysValRect::setWidthByMovingLeftCenter_Angle2(" + i_physValPoint.toString() + "): " +
-                        m_physValAngle.toString() + " != " + physValAngle2.toString());
-                    CErrLog::GetInstance()->addEntry(errResultInfo);
-                }
             }
             // Get center point of line from LC'' to RC' and use this as the new center point of the rectangle.
             m_ptCenter = lineWidth.center();
@@ -1287,17 +1266,6 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
         double fAngle1_degree = lineWidth.angle();
         // Correct angle only if not already clockwise counted:
         fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
-        #pragma message(__TODO__"Remove comparison check")
-        CPhysVal physValAngle1(fAngle1_degree, Units.Angle.Degree, 0.1);
-        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
-            if (CErrLog::GetInstance() != nullptr) {
-                SErrResultInfo errResultInfo(
-                    EResultValuesNotEqual, EResultSeverityError,
-                    "CPhysValRect::setWidthByMovingRightCenter_Angle1(" + i_physValPoint.toString() + "): " +
-                    m_physValAngle.toString() + " != " + physValAngle1.toString());
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
         // Determine the perpendicularLine to the widthLine going through ptPosMoved.
         QLineF linePerpendicular = getPerpendicularLine(lineWidth, ptMoved, 100.0);
         // Determine the intersection point LC'' of the perpendicularLine with the widthLine.
@@ -1321,16 +1289,6 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
             else {
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
-            }
-            #pragma message(__TODO__"Remove comparison check")
-            if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree), 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
-                if (CErrLog::GetInstance() != nullptr) {
-                    SErrResultInfo errResultInfo(
-                        EResultValuesNotEqual, EResultSeverityError,
-                        "CPhysValRect::setWidthByMovingRightCenter_Angle2(" + i_physValPoint.toString() + "): " +
-                        m_physValAngle.toString() + " != " + physValAngle2.toString());
-                    CErrLog::GetInstance()->addEntry(errResultInfo);
-                }
             }
             // Get center point of line from LC'' to RC' and use this as the new center point of the rectangle.
             m_ptCenter = lineWidth.center();
@@ -1475,17 +1433,6 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         double fAngle1_degree = lineHeight.angle();
         // Correct angle only if not already clockwise counted:
         fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
-        #pragma message(__TODO__"Remove comparison check")
-        CPhysVal physValAngle1(fAngle1_degree, Units.Angle.Degree, 0.1);
-        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
-            if (CErrLog::GetInstance() != nullptr) {
-                SErrResultInfo errResultInfo(
-                    EResultValuesNotEqual, EResultSeverityError,
-                    "CPhysValRect::setHeightByMovingTopCenter_Angle1(" + i_physValPoint.toString() + "): " +
-                    m_physValAngle.toString() + " + 90° != " + physValAngle1.toString());
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
         // Determine the perpendicularLine to the heightLine going through ptPosMoved.
         QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
         // Determine the intersection point TC'' of the perpendicularLine with the heightLine.
@@ -1508,16 +1455,6 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
             else {
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
-            }
-            #pragma message(__TODO__"Remove comparison check")
-            if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle2.getVal(), 1)) {
-                if (CErrLog::GetInstance() != nullptr) {
-                    SErrResultInfo errResultInfo(
-                        EResultValuesNotEqual, EResultSeverityError,
-                        "CPhysValRect::setHeightByMovingTopCenter_Angle2(" + i_physValPoint.toString() + "): " +
-                        m_physValAngle.toString() + " +90° != " + physValAngle2.toString());
-                    CErrLog::GetInstance()->addEntry(errResultInfo);
-                }
             }
             // Get center point of line from TC'' to BC' and use this as the new center point of the rectangle.
             m_ptCenter = lineHeight.center();
@@ -1603,17 +1540,6 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         double fAngle1_degree = lineHeight.angle();
         // Correct angle only if not already clockwise counted:
         fAngle1_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle1_degree) : fAngle1_degree;
-        #pragma message(__TODO__"Remove comparison check")
-        CPhysVal physValAngle1(fAngle1_degree, Units.Angle.Degree, 0.1);
-        if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
-            if (CErrLog::GetInstance() != nullptr) {
-                SErrResultInfo errResultInfo(
-                    EResultValuesNotEqual, EResultSeverityError,
-                    "CPhysValRect::setHeightByMovingBottomCenter_Angle1(" + i_physValPoint.toString() + "): " +
-                    m_physValAngle.toString() + " + 90° != " + physValAngle1.toString());
-                CErrLog::GetInstance()->addEntry(errResultInfo);
-            }
-        }
         // Determine the perpendicularLine to the heightLine going through ptPosMoved.
         QLineF linePerpendicular = getPerpendicularLine(lineHeight, ptMoved, 100.0);
         // Determine the intersection point BC'' of the perpendicularLine with the heightLine.
@@ -1636,16 +1562,6 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
             else {
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
                 ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
-            }
-            #pragma message(__TODO__"Remove comparison check")
-            if (Math::round2Nearest(m_physValAngle.getVal(Units.Angle.Degree) + 90.0, 1) != Math::round2Nearest(physValAngle1.getVal(), 1)) {
-                if (CErrLog::GetInstance() != nullptr) {
-                    SErrResultInfo errResultInfo(
-                        EResultValuesNotEqual, EResultSeverityError,
-                        "CPhysValRect::setHeightByMovingBottomCenter_Angle2(" + i_physValPoint.toString() + "): " +
-                        m_physValAngle.toString() + " + 90° != " + physValAngle2.toString());
-                    CErrLog::GetInstance()->addEntry(errResultInfo);
-                }
             }
             // Get center point of line from TC'' to BC' and use this as the new center point of the rectangle.
             m_ptCenter = lineHeight.center();
@@ -1768,7 +1684,11 @@ void CPhysValRect::setTopLeft(const CPhysValPoint& i_physValPoint)
         double fDiameter = lineDiagonale.length();
         // QLineF::angle returns the angle counter clockwise (3 o'cock = 0°, 12 o'clock = 90°).
         // The grapics libaries angles are measure clockwise (3 o'clock = 0°, 6 o'clock = 90°, 12 o'clock = 270°).
-        double fBeta_degree = Math::toClockWiseAngleDegree(lineDiagonale.angle());
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fBeta_degree = lineDiagonale.angle();
+        // Correct angle only if not already clockwise counted:
+        fBeta_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fBeta_degree) : fBeta_degree;
         double fPhi_degree = Math::normalizeAngleInDegree(fBeta_degree - m_physValAngle.getVal(Units.Angle.Degree));
         // The trigonometric functions of the stdlib are using counter clockwise angles in radiant.
         double fPhi_rad = Math::degree2Rad(Math::toCounterClockWiseAngleDegree(fPhi_degree));
@@ -1892,7 +1812,11 @@ void CPhysValRect::setTopRight(const CPhysValPoint& i_physValPoint)
         double fDiameter = lineDiagonale.length();
         // QLineF::angle returns the angle counter clockwise (3 o'cock = 0°, 12 o'clock = 90°).
         // The grapics libaries angles are measure clockwise (3 o'clock = 0°, 6 o'clock = 90°, 12 o'clock = 270°).
-        double fBeta_degree = Math::toClockWiseAngleDegree(lineDiagonale.angle());
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fBeta_degree = lineDiagonale.angle();
+        // Correct angle only if not already clockwise counted:
+        fBeta_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fBeta_degree) : fBeta_degree;
         double fPhi_degree = Math::normalizeAngleInDegree(fBeta_degree - m_physValAngle.getVal(Units.Angle.Degree));
         // The trigonometric functions of the stdlib are using counter clockwise angles in radiant.
         double fPhi_rad = Math::degree2Rad(Math::toCounterClockWiseAngleDegree(fPhi_degree));
@@ -2016,7 +1940,11 @@ void CPhysValRect::setBottomRight(const CPhysValPoint& i_physValPoint)
         double fDiameter = lineDiagonale.length();
         // QLineF::angle returns the angle counter clockwise (3 o'cock = 0°, 12 o'clock = 90°).
         // The grapics libaries angles are measure clockwise (3 o'clock = 0°, 6 o'clock = 90°, 12 o'clock = 270°).
-        double fBeta_degree = Math::toClockWiseAngleDegree(lineDiagonale.angle());
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fBeta_degree = lineDiagonale.angle();
+        // Correct angle only if not already clockwise counted:
+        fBeta_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fBeta_degree) : fBeta_degree;
         double fPhi_degree = Math::normalizeAngleInDegree(fBeta_degree - m_physValAngle.getVal(Units.Angle.Degree));
         // The trigonometric functions of the stdlib are using counter clockwise angles in radiant.
         double fPhi_rad = Math::degree2Rad(Math::toCounterClockWiseAngleDegree(fPhi_degree));
@@ -2142,7 +2070,11 @@ void CPhysValRect::setBottomLeft(const CPhysValPoint& i_physValPoint)
         double fDiameter = lineDiagonale.length();
         // QLineF::angle returns the angle counter clockwise (3 o'cock = 0°, 12 o'clock = 90°).
         // The grapics libaries angles are measure clockwise (3 o'clock = 0°, 6 o'clock = 90°, 12 o'clock = 270°).
-        double fBeta_degree = Math::toClockWiseAngleDegree(lineDiagonale.angle());
+        // For TopBottom Y-Scales the angle is returned counterclockwise counted.
+        // For BottomUp Y-Scales the angle is returned clockwise counted.
+        double fBeta_degree = lineDiagonale.angle();
+        // Correct angle only if not already clockwise counted:
+        fBeta_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fBeta_degree) : fBeta_degree;
         double fPhi_degree = Math::normalizeAngleInDegree(fBeta_degree - m_physValAngle.getVal(Units.Angle.Degree));
         // The trigonometric functions of the stdlib are using counter clockwise angles in radiant.
         double fPhi_rad = Math::degree2Rad(Math::toCounterClockWiseAngleDegree(fPhi_degree));
