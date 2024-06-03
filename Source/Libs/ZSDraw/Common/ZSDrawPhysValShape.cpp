@@ -65,7 +65,7 @@ CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene) :
 CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     m_pDrawingScene(&i_drawingScene),
-    m_bYAxisTopDown(i_drawingScene.drawingSize().yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
+    m_bYAxisTopDown(!Units.Length.isMetricUnit(i_unit) || i_drawingScene.drawingSize().yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
     //m_pDivLinesMetricsX(&i_drawingScene.divLinesMetricsX()),
     //m_pDivLinesMetricsY(&i_drawingScene.divLinesMetricsY()),
     m_unit(i_unit),
@@ -102,7 +102,7 @@ CPhysValShape::CPhysValShape(const CDrawingScene& i_drawingScene, const CUnit& i
 //    const CUnit& i_unit) :
 ////------------------------------------------------------------------------------
 //    m_pDrawingScene(&i_drawingScene),
-//    m_bYAxisTopDown(i_divLinesMetricsY.yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
+//    m_bYAxisTopDown(!Units.Length.isMetricUnit(i_unit) || i_divLinesMetricsY.yScaleAxisOrientation().enumerator() == EYScaleAxisOrientation::TopDown),
 //    m_pDivLinesMetricsX(&i_divLinesMetricsX),
 //    m_pDivLinesMetricsY(&i_divLinesMetricsY),
 //    m_unit(i_unit),

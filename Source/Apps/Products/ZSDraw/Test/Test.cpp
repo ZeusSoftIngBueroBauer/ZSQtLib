@@ -5134,6 +5134,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strMethod    */ "createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect",
         /* strAddInfo   */ strMthInArgs );
 
+    bool bYAxisTopDown = (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    double fResPxPerMM = i_drawingSize.screenResolutionInPxPerMM();
+    int cyImageHeight_px = i_drawingSize.imageHeightInPixels();
+    double fMetricHeight_mm = i_drawingSize.metricImageHeight(Units.Length.mm).getVal();
+
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(Rect)",
@@ -5151,66 +5156,78 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     int idxStep = 0;
 
+    /*  0.0    35.0    70.0    95.0   135.0   175.0   210.0   245.0   280.0   315.0   350.0  px
+        0.0    10.0    20.0    30.0    40.0    50.0    60.0    70.0    80.0    90.0   100.0  mm   TopDown
+      100.0    90.0    80.0    70.0    60.0    50.0    40.0    30.0    20.0    10.0     0.0  mm   BottomUp
+         +-------------------------------------------------------------------------------+
+    */
+    QPointF ptTL_px(0.0, 0.0);
+    QSizeF size_px(100.0 * fResPxPerMM, 100.0 * fResPxPerMM);
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect((0, 0), (350, 350)) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Rect((0, 0), (350, 350)) px, mm)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect.topLeft", QPointF(0.0, 0.0));
-    pTestStep->setConfigValue("Rect.size", QSizeF(350.0, 350.0));
+    pTestStep->setConfigValue("Rect.topLeft", ptTL_px);
+    pTestStep->setConfigValue("Rect.size", size_px);
     pTestStep->setConfigValue("Rect.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
+    double fTop_px = ptTL_px.y();
+    double fBottom_px = fTop_px + size_px.height();
+    double fTop_mm = bYAxisTopDown ? fTop_px / fResPxPerMM : ((cyImageHeight_px-1) - ptTL_px.y()) / fResPxPerMM;
+    double fBottom_mm = bYAxisTopDown ? fTop_mm + size_px.height() / fResPxPerMM : fTop_mm - size_px.height() / fResPxPerMM;
+    QPointF ptTL_mm(ptTL_px.x() / fResPxPerMM, fTop_mm);
+    QPointF ptTR_mm((ptTL_px.x() + size_px.width()) / fResPxPerMM, fTop_mm);
+    QPointF ptBR_mm((ptTL_px.x() + size_px.width()) / fResPxPerMM, fBottom_mm);
+    QPointF ptBL_mm(ptTL_px.x() / fResPxPerMM, fBottom_mm);
+    QPointF ptCenter_mm(QLineF(ptTL_mm, ptBR_mm).center());
+    QSizeF size_mm(size_px.width() / fResPxPerMM, size_px.height() / fResPxPerMM);
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("TopLeft {0.0, 0.0} mm");
-        strlstExpectedValues.append("TopRight {100.0, 0.0} mm");
-        strlstExpectedValues.append("BottomRight {100.0, 100.0} mm");
-        strlstExpectedValues.append("BottomLeft {0.0, 100.0} mm");
-        strlstExpectedValues.append("Center {50.0, 50.0} mm");
-        strlstExpectedValues.append("Width: 100.0 mm");
-        strlstExpectedValues.append("Height: 100.0 mm");
-    }
-    else {
-        strlstExpectedValues.append("TopLeft {0.0, 100.0} mm");
-        strlstExpectedValues.append("TopRight {100.0, 100.0} mm");
-        strlstExpectedValues.append("BottomRight {100.0, 0.0} mm");
-        strlstExpectedValues.append("BottomLeft {0.0, 0.0} mm");
-        strlstExpectedValues.append("Center {50.0, 50.0} mm");
-        strlstExpectedValues.append("Width: 100.0 mm");
-        strlstExpectedValues.append("Height: -100.0 mm");
-    }
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTL_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTR_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBR_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBL_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenter_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("Width: " + QString::number(size_mm.width(), 'f', 1) + " mm");
+    strlstExpectedValues.append("Height: " + QString::number(size_mm.height(), 'f', 1) + " mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
+    /*  0.0    35.0    70.0    95.0   135.0   175.0   210.0   245.0   280.0   315.0   350.0  px
+        0.0    10.0    20.0    30.0    40.0    50.0    60.0    70.0    80.0    90.0   100.0  mm   TopDown
+      100.0    90.0    80.0    70.0    60.0    50.0    40.0    30.0    20.0    10.0     0.0  mm   BottomUp
+         +-------------------------------------------------------------------------------+
+    */
+    ptTL_px = QPointF(20.0 * fResPxPerMM, 50.0 * fResPxPerMM);
+    size_px = QSizeF(20.0 * fResPxPerMM, 40.0 * fResPxPerMM);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect((70, 180), (130, 320)) px, mm)",
-        /* strOperation    */ "DrawingScene.convert(Rect((70, 180), (130, 320)) px, mm)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
+        /* strOperation    */ "DrawingScene.convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)));
-    pTestStep->setConfigValue("Rect.topLeft", QPointF(70.0, 180.0));
-    pTestStep->setConfigValue("Rect.size", QSizeF(60.0, 140.0));
+    pTestStep->setConfigValue("Rect.topLeft", ptTL_px);
+    pTestStep->setConfigValue("Rect.size", size_px);
     pTestStep->setConfigValue("Rect.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
+    fTop_px = ptTL_px.y();
+    fBottom_px = fTop_px + size_px.height();
+    fTop_mm = bYAxisTopDown ? fTop_px / fResPxPerMM : ((cyImageHeight_px-1) - ptTL_px.y()) / fResPxPerMM;
+    fBottom_mm = bYAxisTopDown ? fTop_mm + size_px.height() / fResPxPerMM : fTop_mm - size_px.height() / fResPxPerMM;
+    ptTL_mm = QPointF(ptTL_px.x() / fResPxPerMM, fTop_mm);
+    ptTR_mm = QPointF((ptTL_px.x() + size_px.width()) / fResPxPerMM, fTop_mm);
+    ptBR_mm = QPointF((ptTL_px.x() + size_px.width()) / fResPxPerMM, fBottom_mm);
+    ptBL_mm = QPointF(ptTL_px.x() / fResPxPerMM, fBottom_mm);
+    ptCenter_mm = QPointF(QLineF(ptTL_mm, ptBR_mm).center());
+    size_mm = QSizeF(size_px.width() / fResPxPerMM, size_px.height() / fResPxPerMM);
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-        strlstExpectedValues.append("TopLeft {20.0, 51.4} mm");
-        strlstExpectedValues.append("TopRight {37.1, 51.4} mm");
-        strlstExpectedValues.append("BottomRight {37.1, 91.4} mm");
-        strlstExpectedValues.append("BottomLeft {20.0, 91.4} mm");
-        strlstExpectedValues.append("Center {28.6, 71.4} mm");
-        strlstExpectedValues.append("Width: 17.1 mm");
-        strlstExpectedValues.append("Height: 40.0 mm");
-    }
-    else {
-        strlstExpectedValues.append("TopLeft {20.0, 48.6} mm");
-        strlstExpectedValues.append("TopRight {37.1, 48.6} mm");
-        strlstExpectedValues.append("BottomRight {37.1, 8.6} mm");
-        strlstExpectedValues.append("BottomLeft {20.0, 8.6} mm");
-        strlstExpectedValues.append("Center {28.6, 28.6} mm");
-        strlstExpectedValues.append("Width: 17.1 mm");
-        strlstExpectedValues.append("Height: -40.0 mm");
-    }
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTL_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTR_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBR_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBL_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenter_mm, ", ", 'f', 1) + "} mm");
+    strlstExpectedValues.append("Width: " + QString::number(size_mm.width(), 'f', 1) + " mm");
+    strlstExpectedValues.append("Height: " + QString::number(size_mm.height(), 'f', 1) + " mm");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // mm -> px
@@ -5223,60 +5240,78 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     idxStep = 0;
 
-    double fTLYPos_mm = 0.0;
-    double fBRYPos_mm = 100.0;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fTLYPos_mm = 100.0;
-        fBRYPos_mm = 0.0;
-    }
-    QString strTLYPos = QString::number(static_cast<int>(fTLYPos_mm));
-    QString strBRYPos = QString::number(static_cast<int>(fBRYPos_mm));
+    /*  0.0    35.0    70.0    95.0   135.0   175.0   210.0   245.0   280.0   315.0   350.0  px
+        0.0    10.0    20.0    30.0    40.0    50.0    60.0    70.0    80.0    90.0   100.0  mm   TopDown
+      100.0    90.0    80.0    70.0    60.0    50.0    40.0    30.0    20.0    10.0     0.0  mm   BottomUp
+         +-------------------------------------------------------------------------------+
+    */
+    ptTL_mm = QPointF(0.0, bYAxisTopDown ? 0.0 : 100.0);
+    size_mm = QSizeF(100.0, 100.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect((0, " + strTLYPos + "), (100, " + strBRYPos + ")) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Rect((0, " + strTLYPos + "), (100, " + strBRYPos + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Rect.topLeft", QPointF(0.0, fTLYPos_mm));
-    pTestStep->setConfigValue("Rect.size", QSizeF(100.0, fabs(fBRYPos_mm-fTLYPos_mm)/2.0));
+    pTestStep->setConfigValue("Rect.topLeft", ptTL_mm);
+    pTestStep->setConfigValue("Rect.size", size_mm);
     pTestStep->setConfigValue("Rect.Unit", "mm");
     pTestStep->setConfigValue("UnitDest", "px");
+    fTop_mm = ptTL_mm.y();
+    fBottom_mm = bYAxisTopDown ? fTop_mm + size_mm.height() : fTop_mm - size_mm.height();
+    fTop_px = bYAxisTopDown ? fTop_mm * fResPxPerMM : (fMetricHeight_mm - fTop_mm) * fResPxPerMM;
+    fBottom_px = fTop_px + size_mm.height() * fResPxPerMM;
+    ptTL_px = QPointF(ptTL_mm.x() * fResPxPerMM, fTop_px);
+    QPointF ptTR_px((ptTL_mm.x() + size_mm.width()) * fResPxPerMM, fTop_px);
+    QPointF ptBR_px((ptTL_mm.x() + size_mm.width()) * fResPxPerMM, fBottom_px);
+    QPointF ptBL_px(ptTL_mm.x() * fResPxPerMM, fBottom_px);
+    QPointF ptCenter_px(QLineF(ptTL_px, ptBR_px).center());
+    size_px = QSizeF(size_mm.width() * fResPxPerMM, size_mm.height() * fResPxPerMM);
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("TopLeft {0, 0} px");
-    strlstExpectedValues.append("TopRight {350, 0} px");
-    strlstExpectedValues.append("BottomRight {350, 350} px");
-    strlstExpectedValues.append("BottomLeft {0, 350} px");
-    strlstExpectedValues.append("Center {175, 175} px");
-    strlstExpectedValues.append("Width: 350 px");
-    strlstExpectedValues.append("Height: 350 px");
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTL_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTR_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBR_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBL_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenter_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("Width: " + QString::number(size_px.width(), 'f', 0) + " px");
+    strlstExpectedValues.append("Height: " + QString::number(size_px.height(), 'f', 0) + " px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    fTLYPos_mm = 51.4;
-    fBRYPos_mm = 91.4;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
-        fTLYPos_mm = 48.6;
-        fBRYPos_mm = 8.6;
-    }
-    strTLYPos = QString::number(static_cast<int>(fTLYPos_mm));
-    strBRYPos = QString::number(static_cast<int>(fBRYPos_mm));
+    /*  0.0    35.0    70.0    95.0   135.0   175.0   210.0   245.0   280.0   315.0   350.0  px
+        0.0    10.0    20.0    30.0    40.0    50.0    60.0    70.0    80.0    90.0   100.0  mm   TopDown
+      100.0    90.0    80.0    70.0    60.0    50.0    40.0    30.0    20.0    10.0     0.0  mm   BottomUp
+         +-------------------------------------------------------------------------------+
+    */
+    ptTL_mm = QPointF(20.0, bYAxisTopDown ? 50.0 : 50.0);
+    size_mm = QSizeF(20.0, 40.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect((20.0, " + strTLYPos + "), (37.1, " + strBRYPos + ")) mm, px)",
-        /* strOperation    */ "DrawingScene.convert(Rect((20.0, " + strTLYPos + "), (37.1, " + strBRYPos + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
+        /* strOperation    */ "DrawingScene.convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)));
-    pTestStep->setConfigValue("Rect.topLeft", QPointF(20.0, fTLYPos_mm));
-    pTestStep->setConfigValue("Rect.size", QSizeF(17.1, fabs(fBRYPos_mm-fTLYPos_mm)/2.0));
+    pTestStep->setConfigValue("Rect.topLeft", ptTL_mm);
+    pTestStep->setConfigValue("Rect.size", size_mm);
     pTestStep->setConfigValue("Rect.Unit", "mm");
     pTestStep->setConfigValue("UnitDest", "px");
+    fTop_mm = ptTL_mm.y();
+    fBottom_mm = bYAxisTopDown ? fTop_mm + size_mm.height() : fTop_mm - size_mm.height();
+    fTop_px = bYAxisTopDown ? fTop_mm * fResPxPerMM : (fMetricHeight_mm - fTop_mm) * fResPxPerMM;
+    fBottom_px = fTop_px + size_mm.height() * fResPxPerMM;
+    ptTL_px = QPointF(ptTL_mm.x() * fResPxPerMM, fTop_px);
+    ptTR_px = QPointF((ptTL_mm.x() + size_mm.width()) * fResPxPerMM, fTop_px);
+    ptBR_px = QPointF((ptTL_mm.x() + size_mm.width()) * fResPxPerMM, fBottom_px);
+    ptBL_px = QPointF(ptTL_mm.x() * fResPxPerMM, fBottom_px);
+    ptCenter_px = QPointF(QLineF(ptTL_px, ptBR_px).center());
+    size_px = QSizeF(size_mm.width() * fResPxPerMM, size_mm.height() * fResPxPerMM);
     strlstExpectedValues.clear();
-    strlstExpectedValues.append("TopLeft {70, 180} px");
-    strlstExpectedValues.append("TopRight {130, 180} px");
-    strlstExpectedValues.append("BottomRight {130, 320} px");
-    strlstExpectedValues.append("BottomLeft {70, 320} px");
-    strlstExpectedValues.append("Center {100, 250} px");
-    strlstExpectedValues.append("Width: 60 px");
-    strlstExpectedValues.append("Height: 140 px");
+    strlstExpectedValues.append("TopLeft {" + qPoint2Str(ptTL_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("TopRight {" + qPoint2Str(ptTR_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("BottomRight {" + qPoint2Str(ptBR_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("BottomLeft {" + qPoint2Str(ptBL_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("Center {" + qPoint2Str(ptCenter_px, ", ", 'f', 0) + "} px");
+    strlstExpectedValues.append("Width: " + QString::number(size_px.width(), 'f', 0) + " px");
+    strlstExpectedValues.append("Height: " + QString::number(size_px.height(), 'f', 0) + " px");
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
