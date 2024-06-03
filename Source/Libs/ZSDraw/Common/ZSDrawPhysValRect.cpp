@@ -567,15 +567,17 @@ void CPhysValRect::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawS
     i_pPainter->setPen(pen);
     i_pPainter->drawLine(ptLC, ptRC);
     i_pPainter->drawLine(ptTC, ptBC);
-    i_pPainter->drawText(ptCenter, "X");
-    i_pPainter->drawText(ptTL, "TL");
-    i_pPainter->drawText(ptTR, "TR");
-    i_pPainter->drawText(ptBR, "BR");
-    i_pPainter->drawText(ptBL, "BL");
-    i_pPainter->drawText(ptTC, "TC");
-    i_pPainter->drawText(ptRC, "RC");
-    i_pPainter->drawText(ptBC, "BC");
-    i_pPainter->drawText(ptLC, "LC");
+    if (pen.color() == Qt::red) {
+        i_pPainter->drawText(ptCenter, "X");
+        i_pPainter->drawText(ptTL, "TL");
+        i_pPainter->drawText(ptTR, "TR");
+        i_pPainter->drawText(ptBR, "BR");
+        i_pPainter->drawText(ptBL, "BL");
+        i_pPainter->drawText(ptTC, "TC");
+        i_pPainter->drawText(ptRC, "RC");
+        i_pPainter->drawText(ptBC, "BC");
+        i_pPainter->drawText(ptLC, "LC");
+    }
     i_pPainter->restore();
 }
 
@@ -1178,8 +1180,7 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
             double fAngle2_degree = lineWidth.angle();
             // Correct angle only if not already clockwise counted:
             fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
-            CPhysVal physValAngle2(fAngle2_degree, Units.Angle.Degree, 0.1);
-            double fAngleHorLine_degree = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            double fAngleHorLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
             if (fAngleHorLine_degree > 179.0 && fAngleHorLine_degree < 181.0) {
                 m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
@@ -1281,8 +1282,7 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
             double fAngle2_degree = lineWidth.angle();
             // Correct angle only if not already clockwise counted:
             fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
-            CPhysVal physValAngle2(fAngle2_degree, Units.Angle.Degree, 0.1);
-            double fAngleHorLine_degree = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            double fAngleHorLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
             if (fAngleHorLine_degree > 179.0 && fAngleHorLine_degree < 181.0) {
                 m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
@@ -1447,8 +1447,7 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
             double fAngle2_degree = lineHeight.angle();
             // Correct angle only if not already clockwise counted:
             fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
-            CPhysVal physValAngle2(fAngle2_degree, Units.Angle.Degree, 0.1);
-            double fAngleVerLine_degree = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            double fAngleVerLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
             if (fAngleVerLine_degree > 269.0 && fAngleVerLine_degree < 271.0) {
                 m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
@@ -1554,8 +1553,7 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
             double fAngle2_degree = lineHeight.angle();
             // Correct angle only if not already clockwise counted:
             fAngle2_degree = m_bYAxisTopDown ? Math::toClockWiseAngleDegree(fAngle2_degree) : fAngle2_degree;
-            CPhysVal physValAngle2(fAngle2_degree, Units.Angle.Degree, 0.1);
-            double fAngleVerLine_degree = physValAngle2.getVal() - m_physValAngle.getVal(Units.Angle.Degree);
+            double fAngleVerLine_degree = Math::normalizeAngleInDegree(fAngle2_degree - m_physValAngle.getVal(Units.Angle.Degree));
             if (fAngleVerLine_degree > 269.0 && fAngleVerLine_degree < 271.0) {
                 m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
             }
