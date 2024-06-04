@@ -1139,7 +1139,8 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::RightCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 180.0) {
+    double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+    if (fAngle_degree == 0.0 || fAngle_degree == 180.0) {
         QPointF ptRightCenter = rightCenter().toQPointF();
         QPointF ptLeftCenter = leftCenter().toQPointF();
         ptLeftCenter.setX(ptMoved.x());
@@ -1147,8 +1148,11 @@ void CPhysValRect::setWidthByMovingLeftCenter(const CPhysValPoint& i_physValPoin
         m_ptCenter = lineWidth.center();
         m_size.setWidth(fabs(lineWidth.dx()));
         // Width and height must never be less than 0.
-        if (lineWidth.dx() < 0.0) {
-            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        if (fAngle_degree == 0.0 && lineWidth.dx() < 0.0) {
+            m_physValAngle.setVal(180.0);
+        }
+        else if (fAngle_degree == 180.0 && lineWidth.dx() > 0.0) {
+            m_physValAngle.setVal(0.0);
         }
         else {
             ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
@@ -1241,7 +1245,8 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::LeftCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 180.0) {
+    double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+    if (fAngle_degree == 0.0 || fAngle_degree == 180.0) {
         QPointF ptLeftCenter = leftCenter().toQPointF();
         QPointF ptRightCenter = rightCenter().toQPointF();
         ptRightCenter.setX(ptMoved.x());
@@ -1249,8 +1254,11 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
         m_ptCenter = lineWidth.center();
         m_size.setWidth(fabs(lineWidth.dx()));
         // Width and height must never be less than 0.
-        if (lineWidth.dx() < 0.0) {
-            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        if (fAngle_degree == 0.0 && lineWidth.dx() < 0.0) {
+            m_physValAngle.setVal(180.0);
+        }
+        else if (fAngle_degree == 180.0 && lineWidth.dx() > 0.0) {
+            m_physValAngle.setVal(0.0);
         }
         else {
             ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
@@ -1404,7 +1412,8 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 180.0) {
+    double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+    if (fAngle_degree == 0.0 || fAngle_degree == 180.0) {
         QPointF ptBottomCenter = bottomCenter().toQPointF();
         QPointF ptTopCenter = topCenter().toQPointF();
         ptTopCenter.setY(ptMoved.y());
@@ -1412,15 +1421,29 @@ void CPhysValRect::setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoin
         m_ptCenter = lineHeight.center();
         m_size.setHeight(fabs(lineHeight.dy()));
         // Width and height must never be less than 0.
-        if (m_bYAxisTopDown && lineHeight.dy() < 0.0) {
-            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
-        }
-        else if (!m_bYAxisTopDown && lineHeight.dy() > 0.0) {
-            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        if (m_bYAxisTopDown) {
+            if (fAngle_degree == 0.0 && lineHeight.dy() < 0.0) {
+                m_physValAngle.setVal(180.0);
+            }
+            else if (fAngle_degree == 180.0 && lineHeight.dy() > 0.0) {
+                m_physValAngle.setVal(0.0);
+            }
+            else {
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+            }
         }
         else {
-            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
-            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+            if (fAngle_degree == 0.0 && lineHeight.dy() > 0.0) {
+                m_physValAngle.setVal(180.0);
+            }
+            else if (fAngle_degree == 180.0 && lineHeight.dy() < 0.0) {
+                m_physValAngle.setVal(0.0);
+            }
+            else {
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomLeft));
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::BottomRight));
+            }
         }
     }
     else {
@@ -1510,7 +1533,8 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopCenter));
     QPointF ptMoved = i_physValPoint.toQPointF(m_unit);
-    if (m_physValAngle.getVal() == 0.0 || m_physValAngle.getVal() == 180.0) {
+    double fAngle_degree = m_physValAngle.getVal(Units.Angle.Degree);
+    if (fAngle_degree == 0.0 || fAngle_degree == 180.0) {
         QPointF ptTopCenter = topCenter().toQPointF();
         QPointF ptBottomCenter = bottomCenter().toQPointF();
         ptBottomCenter.setY(ptMoved.y());
@@ -1518,15 +1542,29 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
         m_ptCenter = lineHeight.center();
         m_size.setHeight(fabs(lineHeight.dy()));
         // Width and height must never be less than 0.
-        if (m_bYAxisTopDown && lineHeight.dy() < 0.0) {
-            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
-        }
-        else if (!m_bYAxisTopDown && lineHeight.dy() > 0.0) {
-            m_physValAngle.setVal(Math::normalizeAngleInDegree(m_physValAngle.getVal() + 180.0));
+        if (m_bYAxisTopDown) {
+            if (fAngle_degree == 0.0 && lineHeight.dy() < 0.0) {
+                m_physValAngle.setVal(180.0);
+            }
+            else if (fAngle_degree == 180.0 && lineHeight.dy() > 0.0) {
+                m_physValAngle.setVal(0.0);
+            }
+            else {
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+            }
         }
         else {
-            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
-            ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+            if (fAngle_degree == 0.0 && lineHeight.dy() > 0.0) {
+                m_physValAngle.setVal(180.0);
+            }
+            else if (fAngle_degree == 180.0 && lineHeight.dy() < 0.0) {
+                m_physValAngle.setVal(0.0);
+            }
+            else {
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
+                ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopRight));
+            }
         }
     }
     else {
