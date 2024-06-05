@@ -1612,13 +1612,29 @@ void CPhysValRect::setHeightByMovingBottomCenter(const CPhysValPoint& i_physValP
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the rotation angle of the rectangle in degrees.
+
+    The center point, width and height of the rectangle remain unchanged.
+    The rectangle's edges are implicitly changed.
+
+    The angles are measured clockwise with 0° at 3 o'clock (90° at 6 o'clock).
+
+    @param [in] i_physValAngle
+        Angle to be set.
+*/
+void CPhysValRect::setAngle( double i_fAngle_degree )
+//------------------------------------------------------------------------------
+{
+    setAngle(CPhysVal(i_fAngle_degree, Units.Angle.Degree, 0.1));
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Sets the rotation angle of the rectangle in the given unit.
 
     The center point, width and height of the rectangle remain unchanged.
     The rectangle's edges are implicitly changed.
 
-    The angles are measured clockwise around the z-Axis through the center
-    point of the rectangle.
+    The angles are measured clockwise with 0° at 3 o'clock (90° at 6 o'clock).
 
     @param [in] i_physValAngle
         Angle to be set.

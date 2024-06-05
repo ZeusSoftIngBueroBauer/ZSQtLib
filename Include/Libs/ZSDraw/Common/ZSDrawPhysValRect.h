@@ -153,6 +153,7 @@ public: // instance methods
     void setHeightByMovingTopCenter(const CPhysValPoint& i_physValPoint);
     void setHeightByMovingBottomCenter(const QPointF& i_pt);
     void setHeightByMovingBottomCenter(const CPhysValPoint& i_physValPoint);
+    void setAngle(double i_fAngle_degree);
     void setAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     void setTopLeft(const QPointF& i_pt);
     void setTopLeft(const CPhysValPoint& i_physValPoint);

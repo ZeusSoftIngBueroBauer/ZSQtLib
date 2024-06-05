@@ -447,6 +447,7 @@ QString CDrawGridSettings::toString() const
     QString str;
     if (!m_strName.isEmpty()) str += m_strName + ", ";
     str += "Lines {Visible: " + bool2Str(m_bLinesVisible)
+        + ", MinDist: " + QString::number(m_iLinesDistMin_px) + " px"
         + ", Style: " + m_eLinesStyle.toString()
         + ", Color: " + m_colorLines.name()
         + ", PenWidth: " + QString::number(m_iLinesWidth_px) + "}"

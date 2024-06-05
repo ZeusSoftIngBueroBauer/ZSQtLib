@@ -733,9 +733,6 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
             m_bDivLinesCalculated = false;
         }
     }
-    else if (i_fMin >= i_fMax) {
-        throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
-    }
     else {
         if (m_fMin_px != i_fMin || m_fMax_px != i_fMax || m_fScaleRes != i_fRes) {
             m_fMin_px = i_fMin;

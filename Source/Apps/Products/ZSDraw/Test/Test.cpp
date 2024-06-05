@@ -182,10 +182,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     int idxGroup = 0;
 
-    createTestGroupDrawingSize(nullptr, idxGroup);
-    createTestGroupImageSizeAndObjectCoordinates(nullptr, idxGroup);
+    //createTestGroupDrawingSize(nullptr, idxGroup);
+    //createTestGroupImageSizeAndObjectCoordinates(nullptr, idxGroup);
     createTestGroupPixelsDrawing(nullptr, idxGroup);
-    createTestGroupMetricsDrawing(nullptr, idxGroup);
+    //createTestGroupMetricsDrawing(nullptr, idxGroup);
 
     // Recall test step settings
     //--------------------------
@@ -307,14 +307,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Prepare Scene",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
+    QSize sizeMainWindow(1800, 840);
+    QString strMainWindowInfo = "{" + qSize2Str(sizeMainWindow) + " px}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SetGeometry",
-        /* strOperation    */ "MainWindow.setGeometry",
+        /* strName         */ "Step " + QString::number(++idxStep) + " MainWindow.SetGeometry(" + strMainWindowInfo + ")",
+        /* strOperation    */ "MainWindow.setGeometry(" + strMainWindowInfo + ")",
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepMainWindowSetGeometry(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("Width", 1800);
-    pTestStep->setConfigValue("Height", 840);
+    pTestStep->setConfigValue("Size", sizeMainWindow);
+    pTestStep->setExpectedValue(qSize2Str(sizeMainWindow));
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -322,11 +324,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         /* strOperation    */ "DrawingScene.clear",
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
+    pTestStep->setExpectedValue("");
 
+    QString strDrawingSizeInfo = i_drawingSize.dimensionUnit().toString() +
+        " {" + qSize2Str(i_drawingSize.imageSizeInPixels()) + " px}";
+    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
+        CPhysValSize physValSize(*m_pDrawingScene, i_drawingSize.metricImageWidth(), i_drawingSize.metricImageHeight());
+        strDrawingSizeInfo += ", " + i_drawingSize.yScaleAxisOrientation().toString() +
+            " {" + physValSize.toString(true) + "}";
+    }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SetDrawingSize",
-        /* strOperation    */ "DrawingScene.setDrawingSize",
+        /* strName         */ "Step " + QString::number(++idxStep) + " SetDrawingSize(" + strDrawingSizeInfo + ")",
+        /* strOperation    */ "DrawingScene.setDrawingSize(" + strDrawingSizeInfo + ")",
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepSetDrawingSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
@@ -351,11 +361,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         pTestStep->setConfigValue(
             XmlStreamParser::c_strXmlAttrYScaleAxisOrientation, i_drawingSize.yScaleAxisOrientation().toString());
     }
+    pTestStep->setExpectedValue(i_drawingSize.toString());
 
+    QString strGridSettingsInfo = "Lines {" + QString(i_gridSettings.areLinesVisible() ? "Visible" : "Invisible") +
+        ", MinDist: " + QString::number(i_gridSettings.linesDistMin()) + " px}" +
+        ", Labels {" + QString(i_gridSettings.areLabelsVisible() ? "Visible" : "Invisible") + "}";
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SetGridSettings",
-        /* strOperation    */ "DrawingScene.setGridSettings",
+        /* strName         */ "Step " + QString::number(++idxStep) + " SetGridSettings(" + strGridSettingsInfo + ")",
+        /* strOperation    */ "DrawingScene.setGridSettings(" + strGridSettingsInfo + ")",
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepSetGridSettings(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
@@ -366,6 +380,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         XmlStreamParser::c_strXmlAttrLabelsVisible, i_gridSettings.areLabelsVisible());
     pTestStep->setConfigValue(
         XmlStreamParser::c_strXmlAttrFont, i_gridSettings.labelsFont().family());
+    pTestStep->setExpectedValue(i_gridSettings.toString());
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -567,21 +582,14 @@ void CTest::doTestStepMainWindowSetGeometry( ZS::Test::CTestStep* i_pTestStep )
         /* strMethod    */ "doTestStepMainWindowSetGeometry",
         /* strAddInfo   */ strMthInArgs );
 
-    int cxWidth = i_pTestStep->getConfigValue("Width").toInt();
-    int cyHeight = i_pTestStep->getConfigValue("Height").toInt();
-
-    QStringList strlstExpectedValues;
-    strlstExpectedValues.append(qSize2Str(QSize(cxWidth, cyHeight)));
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    QSize size = i_pTestStep->getConfigValue("Size").toSize();
 
     QRect rectMainWindow = m_pMainWindow->geometry();
-    rectMainWindow.setWidth(cxWidth);
-    rectMainWindow.setHeight(cyHeight);
+    rectMainWindow.setSize(size);
     m_pMainWindow->setGeometry(rectMainWindow);
 
-    QStringList strlstResultValues;
-    strlstResultValues.append(qSize2Str(m_pMainWindow->size()));
-    i_pTestStep->setResultValues(strlstResultValues);
+    QString strResultValue = qSize2Str(m_pMainWindow->size());
+    i_pTestStep->setResultValue(strResultValue);
 }
 
 //------------------------------------------------------------------------------
@@ -597,8 +605,6 @@ void CTest::doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep )
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "doTestStepClearDrawingScene",
         /* strAddInfo   */ strMthInArgs );
-
-    i_pTestStep->setExpectedValue("");
 
     m_pDrawingScene->clear();
 
@@ -668,11 +674,9 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
         }
     }
 
-    i_pTestStep->setExpectedValue("");
-
     m_pDrawingScene->setDrawingSize(drawingSize);
 
-    i_pTestStep->setResultValue("");
+    i_pTestStep->setResultValue(m_pDrawingScene->drawingSize().toString());
 }
 
 //------------------------------------------------------------------------------
@@ -689,8 +693,6 @@ void CTest::doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep )
         /* strMethod    */ "doTestStepSetGridSettings",
         /* strAddInfo   */ strMthInArgs );
 
-    i_pTestStep->setExpectedValue("");
-
     CDrawGridSettings gridSettings;
     gridSettings.setLinesVisible(
         i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrLinesVisible).toBool());
@@ -703,7 +705,7 @@ void CTest::doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep )
 
     m_pDrawingScene->setGridSettings(gridSettings);
 
-    i_pTestStep->setResultValue("");
+    i_pTestStep->setResultValue(m_pDrawingScene->gridSettings().toString());
 }
 
 //------------------------------------------------------------------------------

@@ -354,6 +354,14 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         Decimals: 2
     -----------------------------------------------------------------------*/
 
+    // Cross with vertical and horizontal line
+    //----------------------------------------
+
+    ZS::Test::CTestStepGroup* pGrpAddBigPlusSign = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Big Plus Sign",
+        /* pTSGrpParent */ pGrpAddLines );
+
     // Line0 (vertical)
     //-----------------
 
@@ -366,7 +374,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
-        /* pGrpParent      */ pGrpAddLines,
+        /* pGrpParent      */ pGrpAddBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
@@ -423,7 +431,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
-        /* pGrpParent      */ pGrpAddLines,
+        /* pGrpParent      */ pGrpAddBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
@@ -459,6 +467,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     strlstExpectedValues.append("rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
+    ZS::Test::CTestStepGroup* pGrpAddSmallRect = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add Small Rect Lines",
+        /* pTSGrpParent */ pGrpAddLines );
+
+    // Big Checkmark
+    //---------------
+
+    ZS::Test::CTestStepGroup* pGrpAddBigCheckMark = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Big Checkmark",
+        /* pTSGrpParent */ pGrpAddLines );
+
     // Line2 (Checkmark line from left to bottom)
     //----------------------------------------------
 
@@ -470,7 +491,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
-        /* pGrpParent      */ pGrpAddLines,
+        /* pGrpParent      */ pGrpAddBigCheckMark,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
@@ -527,7 +548,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
-        /* pGrpParent      */ pGrpAddLines,
+        /* pGrpParent      */ pGrpAddBigCheckMark,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
@@ -573,6 +594,14 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     strlstExpectedValues.append("rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
+    // Small Rectangle
+    //----------------
+
+    ZS::Test::CTestStepGroup* pGrpAddSmallRectangle = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Small Rectangle",
+        /* pTSGrpParent */ pGrpAddLines );
+
     // Line4 (Top line of rectangle in second quadrant)
     //-------------------------------------------------
 
@@ -584,7 +613,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
-        /* pGrpParent      */ pGrpAddLines,
+        /* pGrpParent      */ pGrpAddSmallRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
@@ -641,7 +670,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
-        /* pGrpParent      */ pGrpAddLines,
+        /* pGrpParent      */ pGrpAddSmallRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
@@ -698,7 +727,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
-        /* pGrpParent      */ pGrpAddLines,
+        /* pGrpParent      */ pGrpAddSmallRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
@@ -755,7 +784,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
-        /* pGrpParent      */ pGrpAddLines,
+        /* pGrpParent      */ pGrpAddSmallRectangle,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
@@ -862,7 +891,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Add Small Rectangle(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1019,7 +1048,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Add Big Checkmark(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1126,7 +1155,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(++idxStep) + " Add PlusSign Lines, Checkmark, Rectangle(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1308,17 +1337,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
         /* strMethod    */ "createTestGroupModifyStandardShapesLines",
         /* strAddInfo   */ strMthInArgs );
 
-    ZS::Test::CTestStepGroup* pGrpModifyLines = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Modify Lines",
-        /* pTSGrpParent */ i_pTestStepGroupParent );
-
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
-
-    int idxStep = 0;
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1328,6 +1350,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
         ScreenPixelResolution: 1.0 px/mm
         Decimals: 2
     -----------------------------------------------------------------------*/
+
+    // Modify Checkmark lines
+    //-----------------------
+
+    ZS::Test::CTestStepGroup* pGrpModifyLines = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Modify Checkmark Lines",
+        /* pTSGrpParent */ i_pTestStepGroupParent );
+
+    int idxStep = 0;
 
     // Line2 (Checkmark line from left to bottom) in Group1
     //-----------------------------------------------------
