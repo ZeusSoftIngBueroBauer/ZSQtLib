@@ -25,71 +25,25 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "Test/Test.h"
-//#include "Test/TestConfig.h"
-//#include "MainWindow.h"
-//#include "WidgetCentral.h"
-//
-//#include "Electricity/ZSDrawGraphObjElectricityResistor.h"
-//#include "Electricity/ZSDrawGraphObjElectricityCapacitor.h"
-//#include "Electricity/ZSDrawGraphObjElectricityInductor.h"
-//#include "Electricity/ZSDrawGraphObjElectricitySwitch.h"
-//#include "Electricity/ZSDrawGraphObjElectricityTransistor.h"
-//#include "QtWidgets/ZSDrawGraphObjWdgtCheckBox.h"
-//#include "QtWidgets/ZSDrawGraphObjWdgtComboBox.h"
-//#include "QtWidgets/ZSDrawGraphObjWdgtGroupBox.h"
-//#include "QtWidgets/ZSDrawGraphObjWdgtLabel.h"
-//#include "QtWidgets/ZSDrawGraphObjWdgtLineEdit.h"
-//#include "QtWidgets/ZSDrawGraphObjWdgtPushButton.h"
-//
-//#include "ZSDraw/Common/ZSDrawAux.h"
-//#include "ZSDraw/Drawing/ZSDrawingScene.h"
-//#include "ZSDraw/Widgets/Drawing/ZSDrawingView.h"
-//#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionLine.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjConnectionPoint.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEllipse.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPoint.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolyline.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjRect.h"
-//#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjText.h"
-//#include "ZSTest/ZSTestStepGroup.h"
-//#include "ZSTest/ZSTestStep.h"
-//#include "ZSSys/ZSSysAux.h"
-//#include "ZSSys/ZSSysErrLog.h"
-//#include "ZSSys/ZSSysException.h"
-//#include "ZSSys/ZSSysMath.h"
-//#include "ZSSys/ZSSysTrcAdminObj.h"
-//#include "ZSSys/ZSSysTrcMethod.h"
-//#include "ZSSys/ZSSysTrcServer.h"
-//
-//#include <QtCore/qdir.h>
-//#include <QtCore/qfileinfo.h>
-//#include <QtCore/qfile.h>
-//#include <QtCore/qstandardpaths.h>
-//#include <QtCore/qtextstream.h>
-//#include <QtCore/qtimer.h>
-//
-//#include <QtGui/qevent.h>
-//
-//#if QT_VERSION < 0x050000
-//#include <QtGui/qaction.h>
-//#else
-//#include <QtWidgets/qaction.h>
-//#endif
+
+#include "ZSDraw/Drawing/ZSDrawingScene.h"
+#include "ZSDraw/Drawing/ObjFactories/ZSDrawObjFactory.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
+#include "ZSPhysVal/ZSPhysVal.h"
+#include "ZSTest/ZSTestStepGroup.h"
+#include "ZSTest/ZSTestStep.h"
+#include "ZSSys/ZSSysAux.h"
+#include "ZSSys/ZSSysMath.h"
+#include "ZSSys/ZSSysTrcAdminObj.h"
+#include "ZSSys/ZSSysTrcMethod.h"
+#include "ZSSys/ZSSysTrcServer.h"
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
 using namespace ZS::System;
 using namespace ZS::Draw;
-using namespace ZS::Draw::Electricity;
-using namespace ZS::Draw::QtWidgets;
 using namespace ZS::PhysVal;
 using namespace ZS::Apps::Products::Draw;
-using namespace ZS::Apps::Test::Draw;
 
 
 /*******************************************************************************

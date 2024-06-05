@@ -205,6 +205,8 @@ protected slots:
     void doTestStepMouseMoveEvents( ZS::Test::CTestStep* i_pTestStep );
 protected: // auxiliary instance methods
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
+protected: // class members
+    static QHash<QString, int> s_hshGraphObjsInstCounts;
 protected: // instance members
     CMainWindow* m_pMainWindow;
     ZS::Draw::CDrawingView*  m_pDrawingView;

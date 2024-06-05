@@ -145,6 +145,8 @@ list(APPEND _SourcesQtWidgets
 
 list(APPEND _SourcesTest
     ${_SourcesPath}/ZSDraw/Test/Test.cpp
+    ${_SourcesPath}/ZSDraw/Test/TestCreateGroupDrawings.cpp
+    ${_SourcesPath}/ZSDraw/Test/TestCreateGroupImageSizeAndObjectCoordinates.cpp
 )
 
 list(APPEND _Sources
