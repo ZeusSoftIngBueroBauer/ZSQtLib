@@ -46,20 +46,50 @@ public: // type definitions and constants
 QString CModelGraphObjGroupGeometry::column2Str(int i_clm)
 //------------------------------------------------------------------------------
 {
-    static QHash<int, QByteArray> s_clm2Name {
+    static QHash<int, QString> s_hshClm2Str {
         { EColumnName, "Name"},
         { EColumnXVal, "XVal"},
         { EColumnYVal, "YVal"},
         { EColumnShowVals, "ShowVals"},
         { EColumnShowLine, "ShowLine"}
     };
+    return s_hshClm2Str.value(i_clm, "? (" + QString::number(i_clm) + ")");
+}
 
+//------------------------------------------------------------------------------
+QString CModelGraphObjGroupGeometry::itemDataRole2Str(int i_iRole)
+//------------------------------------------------------------------------------
+{
+    static QHash<int, QString> s_hshRole2Str {
+        { ERoleMinimumValue, "MinimumValue"},
+        { ERoleMaximumValue, "MaximumValue"}
+    };
     QString str;
-    if (i_clm >= 0 && i_clm < EColumnCount) {
-        str = s_clm2Name.value(i_clm);
+    if (s_hshRole2Str.contains(i_iRole)) {
+        str = s_hshRole2Str.value(i_iRole);
     }
     else {
-        str = s_clm2Name.value(i_clm, "? (" + QByteArray::number(i_clm) + ")");
+        str = qItemDataRole2Str(i_iRole);
+    }
+    return str;
+}
+
+//------------------------------------------------------------------------------
+QString CModelGraphObjGroupGeometry::modelIndex2Str(const QModelIndex& i_modelIdx) const
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (!i_modelIdx.isValid()) {
+        str = "Invalid";
+    }
+    else {
+        if (i_modelIdx.row() < m_arLabelSettings.size()) {
+            str = "Row: " + m_arLabelSettings[i_modelIdx.row()].m_strValueName;
+        }
+        else {
+            str = "Row: " + QString::number(i_modelIdx.row());
+        }
+        str += ", Clm: " + column2Str(i_modelIdx.column());
     }
     return str;
 }
@@ -175,7 +205,6 @@ CModelGraphObjGroupGeometry::CModelGraphObjGroupGeometry(
     m_pGraphObjGroup(nullptr),
     m_drawingSize(i_pDrawingScene->drawingSize()),
     m_physValRect(*i_pDrawingScene),
-    m_physValRotationAngle(0.0, Units.Angle.Degree, 0.1),
     m_arLabelSettings(),
     m_strXYValSizeHint("1024 px +-"),
     m_sizeXYValSizeHint(),
@@ -232,7 +261,6 @@ CModelGraphObjGroupGeometry::~CModelGraphObjGroupGeometry()
     m_pGraphObjGroup = nullptr;
     //m_drawingSize;
     //m_physValRect;
-    //m_physValRotationAngle;
     //m_arLabelSettings;
     //m_strXYValSizeHint;
     //m_sizeXYValSizeHint;
@@ -421,9 +449,6 @@ bool CModelGraphObjGroupGeometry::hasChanges() const
         CPhysValRect physValRect = m_pGraphObjGroup->getRect(drawingSize.unit());
         bHasChanges = (m_physValRect != physValRect);
         if (!bHasChanges) {
-            bHasChanges = (m_physValRotationAngle != m_pGraphObjGroup->rotationAngle());
-        }
-        if (!bHasChanges) {
             QList<SLabelSettings> arLabelSettings = getLabelSettings(m_pGraphObjGroup);
             bHasChanges = (arLabelSettings != m_arLabelSettings);
         }
@@ -462,7 +487,6 @@ void CModelGraphObjGroupGeometry::acceptChanges()
 
             if (m_pGraphObjGroup != nullptr) {
                 m_pGraphObjGroup->setRect(m_physValRect);
-                m_pGraphObjGroup->setRotationAngle(m_physValRotationAngle);
                 for (const SLabelSettings& labelSettings : m_arLabelSettings) {
                     labelSettings.m_bVisible ?
                         m_pGraphObjGroup->showGeometryLabel(labelSettings.m_strValueName) :
@@ -569,7 +593,7 @@ int CModelGraphObjGroupGeometry::rowCount(const QModelIndex& i_modelIdxParent) c
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdxParent {" + qModelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + modelIndex2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
@@ -589,7 +613,7 @@ int CModelGraphObjGroupGeometry::columnCount(const QModelIndex& i_modelIdxParent
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdxParent {" + qModelIndex2Str(i_modelIdxParent) + "}";
+        strMthInArgs = "ModelIdxParent {" + modelIndex2Str(i_modelIdxParent) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
@@ -609,8 +633,8 @@ QVariant CModelGraphObjGroupGeometry::data(const QModelIndex& i_modelIdx, int i_
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}" +
-                       ", Role: " + QString::number(i_iRole) + " (" + qItemDataRole2Str(i_iRole) + ")";
+        strMthInArgs = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}" +
+                       ", Role: " + QString::number(i_iRole) + " (" + itemDataRole2Str(i_iRole) + ")";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
@@ -660,7 +684,7 @@ QVariant CModelGraphObjGroupGeometry::data(const QModelIndex& i_modelIdx, int i_
                             varData = m_physValRect.height().toString();
                         }
                         else if (labelSettings.m_strValueName == CGraphObjGroup::c_strGeometryLabelNameAngle) {
-                            varData = m_physValRotationAngle.toString();
+                            varData = m_physValRect.angle().toString();
                         }
                     }
                     else if (i_iRole == Qt::EditRole) {
@@ -686,7 +710,7 @@ QVariant CModelGraphObjGroupGeometry::data(const QModelIndex& i_modelIdx, int i_
                             varData = QVariant::fromValue(m_physValRect.height());
                         }
                         else if (labelSettings.m_strValueName == CGraphObjGroup::c_strGeometryLabelNameAngle) {
-                            varData = QVariant::fromValue(m_physValRotationAngle);
+                            varData = QVariant::fromValue(m_physValRect.angle());
                         }
                     }
                     else if (i_iRole == Qt::TextAlignmentRole) {
@@ -890,8 +914,8 @@ bool CModelGraphObjGroupGeometry::setData(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}" +
-                       ", Role: " + QString::number(i_iRole) + " (" + qItemDataRole2Str(i_iRole) + ")";
+        strMthInArgs = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}" +
+                       ", Role: " + itemDataRole2Str(i_iRole);
         if (i_iRole == Qt::EditRole && (i_modelIdx.column() == EColumnXVal || i_modelIdx.column() == EColumnYVal)) {
             strMthInArgs += ", Data: " + i_varData.value<CPhysVal>().toString();
         }
@@ -914,7 +938,6 @@ bool CModelGraphObjGroupGeometry::setData(
             QVector<bool> arbColumnsChanged(EColumnCount, false);
             SLabelSettings labelSettings = m_arLabelSettings[iRow];
             CPhysValRect physValRect = m_physValRect;
-            CPhysVal physValRotationAngle = m_physValRotationAngle;
             switch (iClm) {
                 case EColumnName: {
                     break;
@@ -974,7 +997,8 @@ bool CModelGraphObjGroupGeometry::setData(
                             arbColumnsChanged[EColumnYVal] = true;
                         }
                         else if (labelSettings.m_strValueName == CGraphObjGroup::c_strGeometryLabelNameAngle) {
-                            physValRotationAngle = i_varData.value<CPhysVal>();
+                            CPhysVal physVal = i_varData.value<CPhysVal>();
+                            physValRect.setAngle(physVal);
                             arbColumnsChanged[EColumnXVal] = true;
                             arbColumnsChanged[EColumnYVal] = true;
                         }
@@ -1051,10 +1075,6 @@ bool CModelGraphObjGroupGeometry::setData(
                 m_physValRect = physValRect;
                 bContentChanged = true;
             }
-            if (m_physValRotationAngle != physValRotationAngle) {
-                m_physValRotationAngle = physValRotationAngle;
-                bContentChanged = true;
-            }
             if (m_arLabelSettings[iRow] != labelSettings) {
                 m_arLabelSettings[iRow] = labelSettings;
                 bContentChanged = true;
@@ -1094,7 +1114,7 @@ QVariant CModelGraphObjGroupGeometry::headerData(int i_iSection, Qt::Orientation
     if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Section: " + column2Str(i_iSection) + "}" +
                        ", Orientation: " + qOrientation2Str(i_orientation) +
-                       ", Role: " + QString::number(i_iRole) + " (" + qItemDataRole2Str(i_iRole) + ")";
+                       ", Role: " + itemDataRole2Str(i_iRole);
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
@@ -1153,7 +1173,7 @@ Qt::ItemFlags CModelGraphObjGroupGeometry::flags(const QModelIndex& i_modelIdx) 
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjNoisyMethods, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ModelIdx {" + qModelIndex2Str(i_modelIdx) + "}";
+        strMthInArgs = "ModelIdx {" + modelIndex2Str(i_modelIdx) + "}";
     }
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObjNoisyMethods,
@@ -1379,13 +1399,9 @@ void CModelGraphObjGroupGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphO
                     m_physValRect = physValRect;
                     bContentChanged = true;
                 }
-                if (physValRotationAngle != m_physValRotationAngle) {
-                    m_physValRotationAngle = physValRotationAngle;
-                    bContentChanged = true;
-                }
                 if (bContentChanged) {
                     QModelIndex modelIdxTL = index(0, EColumnXVal);
-                    QModelIndex modelIdxBR = index(m_arLabelSettings.size(), EColumnYVal);
+                    QModelIndex modelIdxBR = index(m_arLabelSettings.size()-1, EColumnYVal);
                     emit_dataChanged(modelIdxTL, modelIdxBR);
                 }
                 if (m_iContentChangedSignalBlockedCounter > 0) {
@@ -1509,11 +1525,9 @@ void CModelGraphObjGroupGeometry::fillModel()
 
     if (m_pGraphObjGroup == nullptr) {
         m_physValRect = CPhysValRect(*m_pDrawingScene);
-        m_physValRotationAngle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
     }
     else {
         m_physValRect = m_pGraphObjGroup->getRect(drawingSize.unit());
-        m_physValRotationAngle = m_pGraphObjGroup->rotationAngle();
     }
     if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
         if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric) {
@@ -1647,7 +1661,7 @@ void CModelGraphObjGroupGeometry::_beginInsertRows(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent {" + qModelIndex2Str(i_modelIdxParent) + "}" +
+        strMthInArgs = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}" +
                        ", First: " + QString::number(i_iRowFirst) +
                        ", Last: " + QString::number(i_iRowLast);
     }
@@ -1680,7 +1694,7 @@ void CModelGraphObjGroupGeometry::_beginRemoveRows(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent {" + qModelIndex2Str(i_modelIdxParent) + "}" +
+        strMthInArgs = "Parent {" + modelIndex2Str(i_modelIdxParent) + "}" +
                        ", First: " + QString::number(i_iRowFirst) +
                        ", Last: " + QString::number(i_iRowLast);
     }
@@ -1715,14 +1729,14 @@ void CModelGraphObjGroupGeometry::emit_dataChanged(
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "TL {" + qModelIndex2Str(i_modelIdxTL) + "}" +
-                       ", BR {" + qModelIndex2Str(i_modelIdxBR) + "}" +
+        strMthInArgs = "TL {" + modelIndex2Str(i_modelIdxTL) + "}" +
+                       ", BR {" + modelIndex2Str(i_modelIdxBR) + "}" +
                        ", Roles [" + QString::number(i_ariRoles.size()) + "]";
         if (i_ariRoles.size() > 0) {
             strMthInArgs += "(";
             for (int idxRole = 0; idxRole < i_ariRoles.size(); idxRole++) {
                 if (idxRole > 0) strMthInArgs += ", ";
-                strMthInArgs += QString::number(idxRole) + ": " + qItemDataRole2Str(i_ariRoles[idxRole]);
+                strMthInArgs += QString::number(idxRole) + ": " + itemDataRole2Str(i_ariRoles[idxRole]);
             }
             strMthInArgs += ")";
         }

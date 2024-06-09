@@ -803,7 +803,8 @@ CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValRect physValRect = m_physValRectOrig;
-    #pragma message(__TODO__"Take transformation into account")
+    physValRect.setAngle(m_physValRotationAngle);
+    #pragma message(__TODO__"Take scale transformation into account")
     return physValRect;
 }
 
@@ -1743,7 +1744,7 @@ void CGraphObjGroup::updateOriginalPhysValCoors()
     QRectF rectF = getBoundingRect();
     // Before mapping to parent or scene, the rotation will be reset.
     // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryChangds signal ..
+    // And itemChange is called but should not emit the geometryChanged signal ..
     CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryChangedSignalBlockedCounter);
     QGraphicsItem_setRotation(0.0);
     if (parentGroup() != nullptr) {

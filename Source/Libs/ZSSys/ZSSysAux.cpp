@@ -2791,24 +2791,19 @@ QString ZS::System::qModelIndex2Str( const QModelIndex& i_modelIdx )
 //------------------------------------------------------------------------------
 {
     QString str;
-    if( !i_modelIdx.isValid() )
-    {
+    if (!i_modelIdx.isValid()) {
         str = "Invalid";
     }
-    else
-    {
+    else {
         str = "Row: " + QString::number(i_modelIdx.row());
         str += ", Clm: " + QString::number(i_modelIdx.column());
-
         // Endless recursion if called by ::data method.
-        //if( i_modelIdx.data().canConvert(QVariant::String) )
-        //{
+        //if (i_modelIdx.data().canConvert(QVariant::String)) {
         //    str += ", Data: " + i_modelIdx.data().toString();
         //}
     }
     return str;
-
-} // qModelIndex2Str
+}
 
 //------------------------------------------------------------------------------
 QString ZS::System::qMouseButton2Str( Qt::MouseButton i_mouseButton )
