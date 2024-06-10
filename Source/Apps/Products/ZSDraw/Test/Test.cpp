@@ -184,8 +184,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     //createTestGroupDrawingSize(nullptr, idxGroup);
     //createTestGroupImageSizeAndObjectCoordinates(nullptr, idxGroup);
-    createTestGroupPixelsDrawing(nullptr, idxGroup);
-    //createTestGroupMetricsDrawing(nullptr, idxGroup);
+    createTestGroupAddObjects(nullptr, idxGroup);
+    //createTestGroupDrawObjects(nullptr, idxGroup);
 
     // Recall test step settings
     //--------------------------
@@ -1466,15 +1466,17 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
                 strlstResultValues.append(strGraphObjNameChild + ".getLine {" + physValLine.toString() + "} " + physValLine.unit().symbol());
                 CPhysVal physValLength = pGraphObjChildLine->getLength();
                 strlstResultValues.append(strGraphObjNameChild + ".getLength: " + physValLength.toString());
-                CPhysVal physValAngle = pGraphObjChildLine->rotationAngle(Units.Angle.Degree);
+                physValAngle = pGraphObjChildLine->rotationAngle(Units.Angle.Degree);
                 strlstResultValues.append(strGraphObjNameChild + ".rotationAngle: " + physValAngle.toString());
             }
             else if (pGraphObjChild->isGroup()) {
                 CGraphObjGroup* pGraphObjChildGroup = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
                 physValPointPos = pGraphObjChildGroup->position();
                 strlstResultValues.append(strGraphObjNameChild + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-                CPhysValRect physValRect = pGraphObjChildGroup->getRect();
+                physValRect = pGraphObjChildGroup->getRect();
                 strlstResultValues.append(strGraphObjNameChild + ".getRect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
+                physValSize = pGraphObjChildGroup->getSize();
+                strlstResultValues.append(strGraphObjNameChild + ".getSize {" + physValSize.toString() + "} " + physValSize.unit().symbol());
                 physValAngle = pGraphObjChild->rotationAngle(Units.Angle.Degree);
                 strlstResultValues.append(strGraphObjNameChild + ".rotationAngle: " + physValAngle.toString());
             }
@@ -1536,16 +1538,13 @@ void CTest::doTestStepModifyGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
     if (pGraphObjLine != nullptr) {
         QLineF lineF = pGraphObjLine->line();
         strlstResultValues.append(strGraphObjName + ".pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".line.p1 {" + qPoint2Str(lineF.p1()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".line.p2 {" + qPoint2Str(lineF.p2()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".line.length: " + QString::number(lineF.length(), 'f', 1) + " px");
+        strlstResultValues.append(strGraphObjName + ".p1 {" + qPoint2Str(lineF.p1()) + "} px");
+        strlstResultValues.append(strGraphObjName + ".p2 {" + qPoint2Str(lineF.p2()) + "} px");
+        strlstResultValues.append(strGraphObjName + ".length: " + QString::number(lineF.length(), 'f', 1) + " px");
         CPhysValPoint physValPointPos = pGraphObjLine->position();
         strlstResultValues.append(strGraphObjName + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
         CPhysValLine physValLine = pGraphObjLine->getLine();
-        strlstResultValues.append(strGraphObjName + ".getLine.p1.x: " + physValLine.p1().x().toString());
-        strlstResultValues.append(strGraphObjName + ".getLine.p1.y: " + physValLine.p1().y().toString());
-        strlstResultValues.append(strGraphObjName + ".getLine.p2.x: " + physValLine.p2().x().toString());
-        strlstResultValues.append(strGraphObjName + ".getLine.p2.y: " + physValLine.p2().y().toString());
+        strlstResultValues.append(strGraphObjName + ".getLine {" + physValLine.toString() + "} " + physValLine.unit().symbol());
         CPhysVal physValLength = pGraphObjLine->getLength();
         strlstResultValues.append(strGraphObjName + ".getLength: " + physValLength.toString());
         CPhysVal physValAngle = pGraphObjLine->rotationAngle(Units.Angle.Degree);

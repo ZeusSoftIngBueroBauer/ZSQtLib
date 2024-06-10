@@ -1039,6 +1039,15 @@ QRectF CGraphObjLine::getBoundingRect() const
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
+    // Width and height should never be less than 0.0.
+    if (rctBounding.width() < 0.0) {
+        rctBounding.moveLeft(rctBounding.left() + rctBounding.width());
+        rctBounding.setWidth(-rctBounding.width());
+    }
+    if (rctBounding.height() < 0.0) {
+        rctBounding.moveTop(rctBounding.top() + rctBounding.height());
+        rctBounding.setHeight(-rctBounding.height());
+    }
     return rctBounding;
 }
 
