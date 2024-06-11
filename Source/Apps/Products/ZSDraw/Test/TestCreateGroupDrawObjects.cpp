@@ -908,10 +908,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // PlusSignLines, SmallRect, Checkmark
-    //------------------------------------
+    // PlusSign Lines, SmallRect, Checkmark
+    //-------------------------------------
 
-    strGraphObjGroupName = "PlusSignLines-Checkmark-SmallRect";
+    strGraphObjGroupName = "PlusSign-Checkmark-SmallRect";
     //s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
 
     pTestStep = new ZS::Test::CTestStep(

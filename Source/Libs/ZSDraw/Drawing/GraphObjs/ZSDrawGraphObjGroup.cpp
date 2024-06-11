@@ -368,7 +368,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Adds the given item and item's child items to this item group.
+/*! @brief Adds the given item with all it's child items to this item group.
 
     The item and child items will be reparented to this group, but its position
     and transformation relative to the scene will stay intact.
