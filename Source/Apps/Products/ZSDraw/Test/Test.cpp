@@ -50,6 +50,7 @@ may result in using the software modules.
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjEllipse.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjGroup.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjImage.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLabel.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjLine.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPoint.h"
 #include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObjPolygon.h"
@@ -1705,20 +1706,37 @@ void CTest::doTestStepShowGeometryLabel( ZS::Test::CTestStep* i_pTestStep )
         /* strMethod    */ "doTestStepShowGeometryLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
-    QString strLabelName = i_pTestStep->getConfigValue("LabelName").toString();
-
-    QString strKeyInTree = "B:" + strGraphObjName;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
-    if (pGraphObj != nullptr) {
-        //pGraphObj->showGeometryLabel(strLabelName);
-        //pGraphObj->showGeometryLabelAnchorLine(strLabelName);
-    }
-
     QStringList strlstExpectedValues;
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
-
     QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
+    {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QString strGraphObjName = dataRow["GraphObjName"].toString();
+        QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
+        QString strLabelName = dataRow["LabelName"].toString();
+        QPointF pos = dataRow["setPos"].toPointF();
+        QString strExpectedText = dataRow["ExpectedText"].toString();
+        strlstExpectedValues.append(strGraphObjName + ".Label.text: " + strExpectedText);
+        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        if (pGraphObj != nullptr) {
+            pGraphObj->showGeometryLabel(strLabelName);
+            pGraphObj->showGeometryLabelAnchorLine(strLabelName);
+            CGraphObjLabel* pGraphObjLabel = pGraphObj->getGeometryLabel(strLabelName);
+            QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
+            if (pGraphicsItemLabel != nullptr) {
+                pGraphicsItemLabel->setPos(pos);
+                QString strText = pGraphicsItemLabel->text();
+                strlstResultValues.append(strGraphObjName + ".Label.text: " + strText);
+            }
+            else {
+                strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
+            }
+        }
+        else {
+            strlstResultValues.append(strGraphObjName + " not found");
+        }
+    }
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
     i_pTestStep->setResultValues(strlstResultValues);
 }
 

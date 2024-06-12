@@ -67,19 +67,6 @@ class CGraphObjGroup : public CGraphObj, public QGraphicsItemGroup
 *******************************************************************************/
 
 /*==============================================================================
-public: // type definitions and constants
-==============================================================================*/
-
-const QString CGraphObjGroup::c_strGeometryLabelNameTopLeft = "TL";
-const QString CGraphObjGroup::c_strGeometryLabelNameTopRight = "TR";
-const QString CGraphObjGroup::c_strGeometryLabelNameBottomRight = "BR";
-const QString CGraphObjGroup::c_strGeometryLabelNameBottomLeft = "BL";
-const QString CGraphObjGroup::c_strGeometryLabelNameCenter = "Center";
-const QString CGraphObjGroup::c_strGeometryLabelNameWidth = "Width";
-const QString CGraphObjGroup::c_strGeometryLabelNameHeight = "Height";
-const QString CGraphObjGroup::c_strGeometryLabelNameAngle = "Angle";
-
-/*==============================================================================
 protected: // class members
 ==============================================================================*/
 
@@ -119,7 +106,7 @@ CGraphObjGroup::CGraphObjGroup(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
@@ -233,7 +220,7 @@ CGraphObjGroup::~CGraphObjGroup()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "dtor",
         /* strAddInfo   */ "" );
 
@@ -271,7 +258,7 @@ CGraphObj* CGraphObjGroup::clone()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCtorsAndDtor,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "clone",
         /* strAddInfo   */ "" );
 
@@ -383,7 +370,7 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "addToGroup",
         /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
@@ -487,7 +474,7 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "removeFromGroup",
         /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
@@ -523,7 +510,7 @@ void CGraphObjGroup::resizeToContent()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "resizeToContent",
         /* strAddInfo   */ "" );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
@@ -632,7 +619,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setRect",
         /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
@@ -819,7 +806,7 @@ void CGraphObjGroup::setWidth(double i_fWidth)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strMthInArgs );
 
@@ -839,7 +826,7 @@ void CGraphObjGroup::setWidth(const CPhysVal& i_physValWidth)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setWidth",
         /* strAddInfo   */ strMthInArgs );
 
@@ -873,7 +860,7 @@ void CGraphObjGroup::setHeight(double i_fHeight)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strMthInArgs );
 
@@ -893,7 +880,7 @@ void CGraphObjGroup::setHeight(const CPhysVal& i_physValHeight)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setHeight",
         /* strAddInfo   */ strMthInArgs );
 
@@ -927,7 +914,7 @@ void CGraphObjGroup::setSize(const QSizeF& i_size)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strMthInArgs );
 
@@ -947,7 +934,7 @@ void CGraphObjGroup::setSize(const CPhysValSize& i_physValSize)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setSize",
         /* strAddInfo   */ strMthInArgs );
 
@@ -981,7 +968,7 @@ void CGraphObjGroup::setCenter(const QPointF& i_pt)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "moveCenter",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1001,7 +988,7 @@ void CGraphObjGroup::setCenter(const CPhysValPoint& i_physValPoint)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "moveCenter",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1035,7 +1022,7 @@ void CGraphObjGroup::setTopLeft(const QPointF& i_pt)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setTopLeft",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1055,7 +1042,7 @@ void CGraphObjGroup::setTopLeft(const CPhysValPoint& i_physValPoint)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setTopLeft",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1089,7 +1076,7 @@ void CGraphObjGroup::setTopRight(const QPointF& i_pt)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setTopRight",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1109,7 +1096,7 @@ void CGraphObjGroup::setTopRight(const CPhysValPoint& i_physValPoint)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setTopRight",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1143,7 +1130,7 @@ void CGraphObjGroup::setBottomRight(const QPointF& i_pt)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setBottomRight",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1163,7 +1150,7 @@ void CGraphObjGroup::setBottomRight(const CPhysValPoint& i_physValPoint)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setBottomRight",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1197,7 +1184,7 @@ void CGraphObjGroup::setBottomLeft(const QPointF& i_pt)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setBottomLeft",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1217,7 +1204,7 @@ void CGraphObjGroup::setBottomLeft(const CPhysValPoint& i_physValPoint)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setBottomLeft",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1581,7 +1568,7 @@ CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint, co
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1625,7 +1612,7 @@ CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine, const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1670,7 +1657,7 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjCoordinateConversions,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "mapToScene",
         /* strAddInfo   */ strMthInArgs );
 
@@ -1704,7 +1691,7 @@ QRectF CGraphObjGroup::getBoundingRect() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
 
@@ -1736,7 +1723,7 @@ void CGraphObjGroup::updateOriginalPhysValCoors()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "updateOriginalPhysValCoors",
         /* strAddInfo   */ "" );
 
@@ -1787,7 +1774,7 @@ void CGraphObjGroup::updateOriginalPhysValCoors()
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
+//        /* strObjName   */ path(),
 //        /* strMethod    */ "getOriginalBoundingRectInParent",
 //        /* strAddInfo   */ "" );
 //
@@ -1842,7 +1829,7 @@ public: // overridables of base class CGraphObj
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjIsHit,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
+//        /* strObjName   */ path(),
 //        /* strMethod    */ "isHit",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -2084,7 +2071,7 @@ void CGraphObjGroup::showSelectionPoints(TSelectionPointTypes i_selPts)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "showSelectionPoints",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2385,7 +2372,7 @@ void CGraphObjGroup::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "onDrawingSizeChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2425,7 +2412,7 @@ QRectF CGraphObjGroup::boundingRect() const
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjBoundingRect,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "boundingRect",
         /* strAddInfo   */ "" );
 
@@ -2462,7 +2449,7 @@ void CGraphObjGroup::paint(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "paint",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2574,7 +2561,7 @@ bool CGraphObjGroup::sceneEventFilter( QGraphicsItem* i_pGraphicsItemWatched, QE
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjSceneEventFilter,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "sceneEventFilter",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2612,7 +2599,7 @@ void CGraphObjGroup::hoverEnterEvent( QGraphicsSceneHoverEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "hoverEnterEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2632,7 +2619,7 @@ void CGraphObjGroup::hoverMoveEvent( QGraphicsSceneHoverEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "hoverMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2652,7 +2639,7 @@ void CGraphObjGroup::hoverLeaveEvent( QGraphicsSceneHoverEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjHoverEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "hoverLeaveEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2679,7 +2666,7 @@ void CGraphObjGroup::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "mousePressEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2741,7 +2728,7 @@ void CGraphObjGroup::mouseMoveEvent( QGraphicsSceneMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseMoveEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "mouseMoveEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2843,7 +2830,7 @@ void CGraphObjGroup::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "mouseReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2937,7 +2924,7 @@ void CGraphObjGroup::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjMouseClickEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "mouseDoubleClickEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -2977,7 +2964,7 @@ void CGraphObjGroup::keyPressEvent( QKeyEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "keyPressEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3006,7 +2993,7 @@ void CGraphObjGroup::keyReleaseEvent( QKeyEvent* i_pEv )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjKeyEvents,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "keyReleaseEvent",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3043,7 +3030,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3167,7 +3154,7 @@ protected: // overridable slots of base class CGraphObj
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
+//        /* strObjName   */ path(),
 //        /* strMethod    */ "onDrawingSizeChanged",
 //        /* strAddInfo   */ strMthInArgs );
 //
@@ -3190,7 +3177,7 @@ void CGraphObjGroup::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoin
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "onSelectionPointGeometryChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3419,7 +3406,7 @@ CPhysValRect CGraphObjGroup::setRectOrig(const CPhysValRect& i_physValRect)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setRectOrig",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3449,7 +3436,7 @@ QRectF CGraphObjGroup::setRectOrig(const QRectF& i_rect)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "setRectOrig",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3492,7 +3479,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ m_strName,
+        /* strObjName   */ path(),
         /* strMethod    */ "applyGeometryChangeToChildrens",
         /* strAddInfo   */ "" );
     if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
@@ -3615,7 +3602,7 @@ void CGraphObjGroup::applyGeometryChangeToChildrens()
 //    CMethodTracer mthTracer(
 //        /* pAdminObj    */ m_pTrcAdminObjItemChange,
 //        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-//        /* strObjName   */ m_strName,
+//        /* strObjName   */ path(),
 //        /* strMethod    */ "getAlignedChildRect",
 //        /* strAddInfo   */ strMthInArgs );
 //

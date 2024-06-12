@@ -1045,6 +1045,67 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     int idxStep = 0;
 
+    // Show Geometry Labels
+    //---------------------
+
+    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " showGeometryLabels",
+        /* strOperation    */ "showGeometryLabels()",
+        /* pGrpParent      */ pGrpModifyGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabel(ZS::Test::CTestStep*)) );
+    QPointF ptTLPlusSignLinesCheckmarkSmallRect(250.0, bYAxisTopDown ? 250.0 : 350.0);
+    QSizeF sizePlusSignLinesCheckmarkSmallRect(100.0, 100.0);
+    CPhysValRect physValRectPlusSignLinesCheckmarkSmallRect(*m_pDrawingScene, ptTLPlusSignLinesCheckmarkSmallRect, sizePlusSignLinesCheckmarkSmallRect);
+    QPointF ptTLCheckmark(0.0, bYAxisTopDown ? 0.0 : 100.0);
+    QSizeF sizeCheckmark(100.0, 100.0);
+    CPhysValRect physValRectCheckmark(*m_pDrawingScene, ptTLCheckmark, sizeCheckmark);
+    QPointF ptTLSmallRect(70.0, bYAxisTopDown ? 20.0 : 80.0);
+    QSizeF sizeSmallRect(10.0, 10.0);
+    CPhysValRect physValRectSmallRect(*m_pDrawingScene, ptTLSmallRect, sizeSmallRect);
+    pTestStep->addDataRow({
+        {"GraphObjName", "PlusSign-Checkmark-SmallRect"},
+        {"GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, "PlusSign-Checkmark-SmallRect")},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameTopLeft},
+        {"setPos", QPointF(225.0, 235.0)},
+        {"ExpectedText", physValRectPlusSignLinesCheckmarkSmallRect.topLeft().toString()},
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", "PlusSign-Checkmark-SmallRect"},
+        {"GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, "PlusSign-Checkmark-SmallRect")},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
+        {"setPos", QPointF(380.0, 300.0)},
+        {"ExpectedText", physValRectPlusSignLinesCheckmarkSmallRect.angle().toString()}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", "Checkmark"},
+        {"GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, "PlusSign-Checkmark-SmallRect", "Checkmark")},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameTopLeft},
+        {"setPos", QPointF(250.0, 260.0)},
+        {"ExpectedText", physValRectCheckmark.topLeft().toString()}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", "Checkmark"},
+        {"GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, "PlusSign-Checkmark-SmallRect", "Checkmark")},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
+        {"setPos", QPointF(340.0, 300.0)},
+        {"ExpectedText", physValRectCheckmark.angle().toString()}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", "SmallRect"},
+        {"GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, "PlusSign-Checkmark-SmallRect", "SmallRect")},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameTopLeft},
+        {"setPos", QPointF(305.0, 255.0)},
+        {"ExpectedText", physValRectSmallRect.topLeft().toString()}
+    });
+    pTestStep->addDataRow({
+        {"GraphObjName", "SmallRect"},
+        {"GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, "PlusSign-Checkmark-SmallRect", "SmallRect")},
+        {"LabelName", CGraphObj::c_strGeometryLabelNameAngle},
+        {"setPos", QPointF(340.0, 275.0)},
+        {"ExpectedText", physValRectSmallRect.angle().toString()}
+    });
+
     // Checkmark - resizeToContent
     //----------------------------
 
@@ -1055,7 +1116,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
     QString strGraphObjNameCheckmarkLeftLine = "Checkmark-LeftLine";
     QString strGraphObjNameCheckmarkRightLine = "Checkmark-RightLine";
 
-    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
+    pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjName + ".resizeToContent()",
         /* strOperation    */ strGraphObjName + ".resizeToContent()",
@@ -1066,10 +1127,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
     pTestStep->setConfigValue("Method", "resizeToContent");
     // Group
     QPointF ptPosCheckmark(0.0, 0.0);
-    QPointF ptTLCheckmark(25.0, bYAxisTopDown ? 25.0 : 75.0);
-    QSizeF sizeCheckmark(50.0, 50.0);
+    ptTLCheckmark = QPointF(25.0, bYAxisTopDown ? 25.0 : 75.0);
+    sizeCheckmark = QSizeF(50.0, 50.0);
     QRectF rectBoundingCheckmark(QPointF(-25.0, -25.0), sizeCheckmark);
-    CPhysValRect physValRectCheckmark(*m_pDrawingScene, ptTLCheckmark, sizeCheckmark);
+    physValRectCheckmark = CPhysValRect(*m_pDrawingScene, ptTLCheckmark, sizeCheckmark);
     QStringList strlstExpectedValues;
     strlstExpectedValues.append(strGraphObjName + ".pos {" + qPoint2Str(ptPosCheckmark) + "} px");
     strlstExpectedValues.append(strGraphObjName + ".boundingRect {" + qRect2Str(rectBoundingCheckmark) + "} px");
@@ -1185,9 +1246,9 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
     pTestStep->setConfigValue("Method", "setRotationAngle");
     pTestStep->setConfigValue("Angle", physValAngle.toString());
     QPointF ptPosSmallRect(25.0, -25.0);
-    QSizeF sizeSmallRect(10.0, 10.0);
+    sizeSmallRect = QSizeF(10.0, 10.0);
     QRectF rectBoundingSmallRect(QPointF(-5.0, -5.0), sizeSmallRect);
-    CPhysValRect physValRectSmallRect(*m_pDrawingScene, QPointF(70.0, 20.0), sizeSmallRect);
+    physValRectSmallRect = CPhysValRect(*m_pDrawingScene, QPointF(70.0, 20.0), sizeSmallRect);
     physValRectSmallRect.setAngle(physValAngle);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(strGraphObjName + ".pos {" + qPoint2Str(ptPosSmallRect) + "} px");
@@ -1274,10 +1335,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
     pTestStep->setConfigValue("Angle", physValAngle.toString());
     // Group PlusSign-Checkmark-SmallRect
     QPointF ptPosPlusSignLinesCheckmarkSmallRect(300.0, 300.0);
-    QPointF ptTLPlusSignLinesCheckmarkSmallRect(250.0, bYAxisTopDown ? 250.0 : 350.0);
-    QSizeF sizePlusSignLinesCheckmarkSmallRect(100.0, 100.0);
+    ptTLPlusSignLinesCheckmarkSmallRect = QPointF(250.0, bYAxisTopDown ? 250.0 : 350.0);
+    sizePlusSignLinesCheckmarkSmallRect = QSizeF(100.0, 100.0);
     QRectF rectBoundingPlusSignLinesCheckmarkSmallRect(QPointF(-50.0, -50.0), sizePlusSignLinesCheckmarkSmallRect);
-    CPhysValRect physValRectPlusSignLinesCheckmarkSmallRect(*m_pDrawingScene, ptTLPlusSignLinesCheckmarkSmallRect, sizePlusSignLinesCheckmarkSmallRect);
+    physValRectPlusSignLinesCheckmarkSmallRect = CPhysValRect(*m_pDrawingScene, ptTLPlusSignLinesCheckmarkSmallRect, sizePlusSignLinesCheckmarkSmallRect);
     physValRectPlusSignLinesCheckmarkSmallRect.setAngle(physValAngle);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(strGraphObjName + ".pos {" + qPoint2Str(ptPosPlusSignLinesCheckmarkSmallRect) + "} px");

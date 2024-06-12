@@ -105,14 +105,6 @@ namespace Draw
 class ZSDRAWDLL_API CGraphObjLine : public CGraphObj, public QGraphicsLineItem
 //******************************************************************************
 {
-public: // type definitions and constants
-    static const QString c_strGeometryLabelNameP1;
-    static const QString c_strGeometryLabelNameP2;
-    static const QString c_strGeometryLabelNameCenter;
-    static const QString c_strGeometryLabelNameDX;
-    static const QString c_strGeometryLabelNameDY;
-    static const QString c_strGeometryLabelNameLength;
-    static const QString c_strGeometryLabelNameAngle;
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }

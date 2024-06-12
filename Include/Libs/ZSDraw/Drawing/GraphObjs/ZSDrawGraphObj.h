@@ -130,7 +130,6 @@ struct ZSDRAWDLL_API SLabelDscr
 {
 public: // ctors
     SLabelDscr();
-    //SLabelDscr(const QString& i_strKey);
     SLabelDscr(EGraphObjType i_labelType);
     SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey);
     SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
@@ -153,8 +152,9 @@ public: // struct members
          For geometry labels using two selection points like length, width or height,
          selPt2 defines the second selection point the label is linked to. */
     SGraphObjSelectionPoint m_selPt2;
-    /*!< Text to be indicated by text labels.
-         For geometry labels the "text" is calculated during runtime. */
+    /*!< Text to be indicated by text labels. Not set (empty string) for geometry labels.
+         For geometry labels the indicated text is calculated during runtime
+         by the label item and set at the QGraphicsSimpleTextItem. */
     QString m_strText;
     /*!< When modifying the shape of graphical objects the relative position of labels
          linked to the graphical objects should always be the same.
@@ -543,6 +543,20 @@ class ZSDRAWDLL_API CGraphObj : public QObject, public ZS::System::CIdxTreeEntry
     Q_OBJECT
 public: // type definitions and constants
     static const QString c_strLabelName;
+public: // type definitions and constants
+    static const QString c_strGeometryLabelNameP1;
+    static const QString c_strGeometryLabelNameP2;
+    static const QString c_strGeometryLabelNameTopLeft;
+    static const QString c_strGeometryLabelNameTopRight;
+    static const QString c_strGeometryLabelNameBottomRight;
+    static const QString c_strGeometryLabelNameBottomLeft;
+    static const QString c_strGeometryLabelNameCenter;
+    static const QString c_strGeometryLabelNameDX;
+    static const QString c_strGeometryLabelNameDY;
+    static const QString c_strGeometryLabelNameLength;
+    static const QString c_strGeometryLabelNameWidth;
+    static const QString c_strGeometryLabelNameHeight;
+    static const QString c_strGeometryLabelNameAngle;
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
@@ -828,6 +842,7 @@ public: // overridables (text labels)
 public: // overridables (geometry labels)
     virtual QStringList getGeometryLabelNames() const;
     virtual bool isValidGeometryLabelName(const QString& i_strName) const;
+    CGraphObjLabel* getGeometryLabel(const QString& i_strName) const;
     SLabelDscr getGeometryLabelDescriptor(const QString& i_strName) const;
     virtual bool geometryLabelHasDefaultValues(const QString& i_strName) const;
     virtual void showGeometryLabel(const QString& i_strName);

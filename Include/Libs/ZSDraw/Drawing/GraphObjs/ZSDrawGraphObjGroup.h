@@ -87,15 +87,6 @@ class ZSDRAWDLL_API CGraphObjGroup : public CGraphObj, public QGraphicsItemGroup
 //******************************************************************************
 {
     Q_OBJECT
-public: // type definitions and constants
-    static const QString c_strGeometryLabelNameTopLeft;
-    static const QString c_strGeometryLabelNameTopRight;
-    static const QString c_strGeometryLabelNameBottomRight;
-    static const QString c_strGeometryLabelNameBottomLeft;
-    static const QString c_strGeometryLabelNameCenter;
-    static const QString c_strGeometryLabelNameWidth;
-    static const QString c_strGeometryLabelNameHeight;
-    static const QString c_strGeometryLabelNameAngle;
 public: // class methods
     /*! Returns the namespace the class belongs to. */
     static QString NameSpace() { return "ZS::Draw"; }
