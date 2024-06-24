@@ -450,6 +450,8 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         // When mapping local coordinates into parent coordinates and vice versa the parent
         // group must have been set. So the new parent graphical object is set before adding
         // the item to the GraphicsItemGroup.
+        // In addition the signal/slot connection of geometryOnSceneChanged need to be newly set.
+        i_pGraphObj->onParentGroupAboutToBeChanged(i_pGraphObj->parentGroup(), this);
         m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, this);
         QGraphicsItemGroup::addToGroup(pGraphicsItemChild);
     }
@@ -495,6 +497,8 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
         // When mapping local coordinates into parent coordinates and vice versa the parent
         // group must have been updated. So the new parent graphical object is set before
         // removing the item from the GraphicsItemGroup.
+        // In addition the signal/slot connection of geometryOnSceneChanged need to be newly set.
+        i_pGraphObj->onParentGroupAboutToBeChanged(this, nullptr);
         m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, parentBranch());
         QGraphicsItemGroup::removeFromGroup(pGraphicsItemChild);
     }
@@ -760,7 +764,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             // Also note that itemChange must not overwrite the current line value (refCountGuard).
             QGraphicsItem_setPos(ptPos);
         }
-        emit_geometryChanged();
+        emit_geometryOnSceneChanged();
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
 }
@@ -1731,7 +1735,7 @@ void CGraphObjGroup::updateOriginalPhysValCoors()
     QRectF rectF = getBoundingRect();
     // Before mapping to parent or scene, the rotation will be reset.
     // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryChanged signal ..
+    // And itemChange is called but should not emit the geometryOnSceneChanged signal ..
     CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryChangedSignalBlockedCounter);
     QGraphicsItem_setRotation(0.0);
     if (parentGroup() != nullptr) {
@@ -3052,7 +3056,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
             bTreeEntryChanged = true;
         }
     }
-    else if (i_change == ItemParentHasChanged || i_change == ItemPositionHasChanged) {
+    else if (i_change == ItemPositionHasChanged) {
         //traceGraphicsItemStates(mthTracer);
         //traceGraphObjStates(mthTracer);
         tracePositionInfo(mthTracer, EMethodDir::Enter);
@@ -3074,6 +3078,24 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         //tracePositionInfo(mthTracer, EMethodDir::Enter);
         //updateLineEndArrowHeadPolygons();
         //tracePositionInfo(mthTracer, EMethodDir::Leave);
+        bGeometryChanged = true;
+        bTreeEntryChanged = true;
+    }
+    else if (i_change == ItemParentHasChanged) {
+        //traceGraphicsItemStates(mthTracer);
+        //traceGraphObjStates(mthTracer);
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+        // The object may be moved or transformed by several methods.
+        // "itemChange" is a central point to update the coordinates upon those changes.
+        if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
+            // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
+            // For groups the original coordinates are only updated when adding the group to
+            // or removing the group from another group.
+            updateOriginalPhysValCoors();
+            //applyGeometryChangeToChildrens();
+        }
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
@@ -3118,7 +3140,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
 
     if (bGeometryChanged) {
-        emit_geometryChanged();
+        emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {
         emit_selectedChanged(isSelected());
@@ -3167,7 +3189,7 @@ protected: // overridable slots of base class CGraphObj
 //}
 
 //------------------------------------------------------------------------------
-void CGraphObjGroup::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint)
+void CGraphObjGroup::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -3178,7 +3200,7 @@ void CGraphObjGroup::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoin
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onSelectionPointGeometryChanged",
+        /* strMethod    */ "onSelectionPointGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);

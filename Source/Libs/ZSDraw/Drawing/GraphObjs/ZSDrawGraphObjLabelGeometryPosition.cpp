@@ -170,6 +170,10 @@ void CGraphObjLabelGeometryPosition::updatePosition()
     // First set the text at the graphics item so that the bounding rectangle
     // needed in updatePosition includes the new text.
     if (QGraphicsSimpleTextItem::text() != strText) {
+        if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+            QString strRuntimeInfo = "Text: " + strText;
+            mthTracer.trace(strRuntimeInfo, ELogDetailLevel::Debug, ELogDetailLevel::None);
+        }
         QGraphicsSimpleTextItem::setText(strText);
         if (m_pTree != nullptr) {
             m_pTree->onTreeEntryChanged(this);

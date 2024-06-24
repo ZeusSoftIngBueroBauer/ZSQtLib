@@ -707,10 +707,10 @@ public: // overridables of base class CGraphObj
     If a group is moved also the connection points are moved by Qt's graphics scene.
     But not the connection lines which are linked to the connection points. The
     connection points can be considered as parents of connection lines and
-    "onGraphObjParentGeometryChanged" is called by the connection points if their
+    "onGraphObjParentGeometryOnSceneChanged" is called by the connection points if their
     position changes.
 */
-void CGraphObjConnectionLine::onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent )
+void CGraphObjConnectionLine::onGraphObjParentGeometryOnSceneChanged( CGraphObj* i_pGraphObjParent )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -721,7 +721,7 @@ void CGraphObjConnectionLine::onGraphObjParentGeometryChanged( CGraphObj* i_pGra
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryChanged",
+        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -779,7 +779,12 @@ void CGraphObjConnectionLine::onGraphObjParentGeometryChanged( CGraphObj* i_pGra
         //updateEditInfo();
         //updateToolTip();
     }
-} // onGraphObjParentGeometryChanged
+
+    // If the geometry of the parent on the scene of this item changes, also the geometry
+    // on the scene of this item is changed.
+    emit_geometryOnSceneChanged();
+
+} // onGraphObjParentGeometryOnSceneChanged
 
 /*==============================================================================
 public: // overridables of base class QGraphicsItem
@@ -850,12 +855,7 @@ QRectF CGraphObjConnectionLine::boundingRect() const
     //}
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs  = "Rect(x,y,w,h):(";
-        strMthInArgs += QString::number(rctBounding.x(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.y(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.width(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.height(),'f',1) + ")";
-        mthTracer.setMethodReturn(strMthInArgs);
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
 
@@ -2058,7 +2058,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 //                            }
 //                            else
 //                            {
-//                                onGraphObjParentGeometryChanged(pGraphObjCnctPt);
+//                                onGraphObjParentGeometryOnSceneChanged(pGraphObjCnctPt);
 //                            }
 //                        }
 //                        else // if( idxSelPtSelectedPolygon == plg.size()-1 )
@@ -2069,7 +2069,7 @@ void CGraphObjConnectionLine::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 //                            }
 //                            else
 //                            {
-//                                onGraphObjParentGeometryChanged(pGraphObjCnctPt);
+//                                onGraphObjParentGeometryOnSceneChanged(pGraphObjCnctPt);
 //                            }
 //                        }
 //

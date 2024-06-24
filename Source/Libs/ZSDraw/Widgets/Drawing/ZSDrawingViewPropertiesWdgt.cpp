@@ -191,7 +191,7 @@ CWdgtDrawingViewProperties::CWdgtDrawingViewProperties(
         /* strMethod    */ "ctor",
         /* strAddInfo   */ strMthInArgs );
 
-    // We need to fill the edit controls if the graphical object emits the geometryChanged signal.
+    // We need to fill the edit controls if the graphical object emits the geometryOnSceneChanged signal.
     // The flag is checked if "setKeyInTree" is called.
     m_bContentUpdateOnGeometryChanged = true;
 

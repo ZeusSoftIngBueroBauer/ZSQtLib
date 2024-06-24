@@ -276,8 +276,8 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
         if (m_bContentUpdateOnGeometryChanged) {
             if (m_pGraphObj != nullptr) {
                 QObject::disconnect(
-                    m_pGraphObj, &CGraphObj::geometryChanged,
-                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged);
+                    m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryOnSceneChanged);
             }
             if (m_bDrawingSceneDrawingSizeChangedSignalConnected) {
                 QObject::disconnect(
@@ -330,8 +330,8 @@ bool CWdgtGraphObjPropertiesAbstract::setKeyInTree( const QString& i_strKeyInTre
         if (m_bContentUpdateOnGeometryChanged) {
             if (m_pGraphObj != nullptr) {
                 QObject::connect(
-                    m_pGraphObj, &CGraphObj::geometryChanged,
-                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged);
+                    m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+                    this, &CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryOnSceneChanged);
             }
             if (!m_bDrawingSceneDrawingSizeChangedSignalConnected) {
                 QObject::connect(
@@ -858,19 +858,19 @@ void CWdgtGraphObjPropertiesAbstract::onGraphObjSelectedChanged()
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Slot method connected to the geometryChanged signal of the graphical object.
+/*! @brief Slot method connected to the geometryOnSceneChanged signal of the graphical object.
 
     See description of method onGraphObjSelectedChanged on how derived classes
     should handle the content changed flag and the content changed signal blocked
     counter in method fillEditControls.
 */
-void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged()
+void CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryOnSceneChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryChanged",
+        /* strMethod    */ "CWdgtGraphObjPropertiesAbstract::onGraphObjGeometryOnSceneChanged",
         /* strAddInfo   */ "" );
 
     // When applying the changes from the edit controls by invoking "acceptChanges"

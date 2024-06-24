@@ -752,10 +752,10 @@ public: // overridables of base class CGraphObj
     Connection lines don't belong to groups. But their connection points do.
     If a group is moved also the connection points are moved by Qt's graphics scene.
     But not the connection lines which are linked to the connection points.
-    "onGraphObjParentGeometryChanged" is called to inform the connection points in order to
+    "onGraphObjParentGeometryOnSceneChanged" is called to inform the connection points in order to
     forward the call to child groups and the connection points or their connection lines.
 */
-void CGraphObjConnectionPoint::onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent )
+void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged( CGraphObj* i_pGraphObjParent )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -766,17 +766,21 @@ void CGraphObjConnectionPoint::onGraphObjParentGeometryChanged( CGraphObj* i_pGr
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryChanged",
+        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
     for (int idxLine = 0; idxLine < m_lstConnectionLines.count(); idxLine++) {
         CGraphObjConnectionLine* pGraphObjCnctLine = m_lstConnectionLines[idxLine];
         if (pGraphObjCnctLine != nullptr) {
-            pGraphObjCnctLine->onGraphObjParentGeometryChanged(this);
+            pGraphObjCnctLine->onGraphObjParentGeometryOnSceneChanged(this);
         }
     }
     //updateEditInfo();
     //updateToolTip();
+
+    // If the geometry of the parent on the scene of this item changes, also the geometry
+    // on the scene of this item is changed.
+    emit_geometryOnSceneChanged();
 }
 
 /*==============================================================================
@@ -830,14 +834,8 @@ QRectF CGraphObjConnectionPoint::boundingRect() const
     //    }
     //}
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Rect(x,y,w,h):(";
-        strMthInArgs += QString::number(rctBounding.x(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.y(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.width(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.height(),'f',1) + ")";
-        mthTracer.setMethodReturn(strMthInArgs);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
 
     return rctBounding;
@@ -1554,7 +1552,7 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         {
             CGraphObjConnectionLine* pGraphObjCnctLine = m_lstConnectionLines[idxLine];
             if (pGraphObjCnctLine != nullptr) {
-                pGraphObjCnctLine->onGraphObjParentGeometryChanged(this);
+                pGraphObjCnctLine->onGraphObjParentGeometryOnSceneChanged(this);
             }
         }
         //updateEditInfo();

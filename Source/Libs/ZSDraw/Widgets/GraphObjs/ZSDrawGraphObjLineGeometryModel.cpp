@@ -308,11 +308,11 @@ bool CModelGraphObjLineGeometry::setKeyInTree(const QString& i_strKeyInTree)
 
         if (m_pGraphObjLine != nullptr) {
             QObject::disconnect(
-                m_pGraphObjLine, &CGraphObj::geometryChanged,
-                this, &CModelGraphObjLineGeometry::onGraphObjGeometryChanged);
-            QObject::disconnect(
-                m_pGraphObjLine, &CGraphObj::geometryValuesUnitChanged,
-                this, &CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged);
+                m_pGraphObjLine, &CGraphObj::geometryOnSceneChanged,
+                this, &CModelGraphObjLineGeometry::onGraphObjGeometryOnSceneChanged);
+            //QObject::disconnect(
+            //    m_pGraphObjLine, &CGraphObj::geometryValuesUnitChanged,
+            //    this, &CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged);
             QObject::disconnect(
                 m_pGraphObjLine, &CGraphObj::geometryLabelChanged,
                 this, &CModelGraphObjLineGeometry::onGraphObjGeometryLabelChanged);
@@ -332,11 +332,11 @@ bool CModelGraphObjLineGeometry::setKeyInTree(const QString& i_strKeyInTree)
 
         if (m_pGraphObjLine != nullptr) {
             QObject::connect(
-                m_pGraphObjLine, &CGraphObj::geometryChanged,
-                this, &CModelGraphObjLineGeometry::onGraphObjGeometryChanged);
-            QObject::connect(
-                m_pGraphObjLine, &CGraphObj::geometryValuesUnitChanged,
-                this, &CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged);
+                m_pGraphObjLine, &CGraphObj::geometryOnSceneChanged,
+                this, &CModelGraphObjLineGeometry::onGraphObjGeometryOnSceneChanged);
+            //QObject::connect(
+            //    m_pGraphObjLine, &CGraphObj::geometryValuesUnitChanged,
+            //    this, &CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged);
             QObject::connect(
                 m_pGraphObjLine, &CGraphObj::geometryLabelChanged,
                 this, &CModelGraphObjLineGeometry::onGraphObjGeometryLabelChanged);
@@ -1214,8 +1214,71 @@ void CModelGraphObjLineGeometry::onDrawingSceneDrawingSizeChanged(const CDrawing
     }
 }
 
+////------------------------------------------------------------------------------
+//void CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pGraphObj)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_pGraphObj->keyInTree();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pTrcAdminObj       */ m_pTrcAdminObj,
+//        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strMethod          */ "onGraphObjGeometryValuesUnitChanged",
+//        /* strMethodInArgs    */ strMthInArgs );
+//
+//    // When applying the changes from the model by invoking "applySettings"
+//    // the ContentChangedSignalBlockedCounter is incremented to avoid that the
+//    // "onGraphObj<Signal>" slots overwrite settings in the model which haven't been
+//    // applied yet.
+//    if (m_iContentChangedSignalBlockedCounter == 0)
+//    {
+//        bool bContentChanged = false;
+//
+//        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
+//
+//            if (m_pGraphObjLine != nullptr) {
+//                // The strings to indicate pixel values are always the same.
+//                // When changing from pixel to metric dimension or if the metric dimension unit changes,
+//                // the indicated value strings need to be updated to show the values in the new unit.
+//                if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
+//                    CPhysValLine physValLine = m_pGraphObjLine->getLine(Units.Length.px);
+//                    if (physValLine != m_physValLine) {
+//                        bContentChanged = true;
+//                        m_physValLine = physValLine;
+//                    }
+//                }
+//                else {
+//                    CPhysValLine physValLine = m_pGraphObjLine->getLine();
+//                    if (physValLine != m_physValLine) {
+//                        bContentChanged = true;
+//                        m_physValLine = physValLine;
+//                    }
+//                }
+//                if (bContentChanged) {
+//                    QModelIndex modelIdxTL = index(0, EColumnXVal);
+//                    QModelIndex modelIdxBR = index(m_arLabelSettings.size(), EColumnYVal);
+//                    emit_dataChanged(modelIdxTL, modelIdxBR);
+//                }
+//            }
+//        }
+//
+//        // If the "contentChanged" signal is no longer blocked and the content of
+//        // properties widget has been changed ...
+//        if (m_iContentChangedSignalBlockedCounter == 0 && bContentChanged) {
+//            // .. emit the contentChanged signal and update the enabled state
+//            // of the Apply and Reset buttons.
+//            emit_contentChanged();
+//        }
+//        else {
+//            m_bContentChanged = true;
+//        }
+//    }
+//}
+
 //------------------------------------------------------------------------------
-void CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pGraphObj)
+void CModelGraphObjLineGeometry::onGraphObjGeometryOnSceneChanged(CGraphObj* i_pGraphObj)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1225,70 +1288,7 @@ void CModelGraphObjLineGeometry::onGraphObjGeometryValuesUnitChanged(CGraphObj* 
     CMethodTracer mthTracer(
         /* pTrcAdminObj       */ m_pTrcAdminObj,
         /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "onGraphObjGeometryValuesUnitChanged",
-        /* strMethodInArgs    */ strMthInArgs );
-
-    // When applying the changes from the model by invoking "applySettings"
-    // the ContentChangedSignalBlockedCounter is incremented to avoid that the
-    // "onGraphObj<Signal>" slots overwrite settings in the model which haven't been
-    // applied yet.
-    if (m_iContentChangedSignalBlockedCounter == 0)
-    {
-        bool bContentChanged = false;
-
-        {   CRefCountGuard refCountGuard(&m_iContentChangedSignalBlockedCounter);
-
-            if (m_pGraphObjLine != nullptr) {
-                // The strings to indicate pixel values are always the same.
-                // When changing from pixel to metric dimension or if the metric dimension unit changes,
-                // the indicated value strings need to be updated to show the values in the new unit.
-                if (m_eDimensionUnit == EScaleDimensionUnit::Pixels) {
-                    CPhysValLine physValLine = m_pGraphObjLine->getLine(Units.Length.px);
-                    if (physValLine != m_physValLine) {
-                        bContentChanged = true;
-                        m_physValLine = physValLine;
-                    }
-                }
-                else {
-                    CPhysValLine physValLine = m_pGraphObjLine->getLine();
-                    if (physValLine != m_physValLine) {
-                        bContentChanged = true;
-                        m_physValLine = physValLine;
-                    }
-                }
-                if (bContentChanged) {
-                    QModelIndex modelIdxTL = index(0, EColumnXVal);
-                    QModelIndex modelIdxBR = index(m_arLabelSettings.size(), EColumnYVal);
-                    emit_dataChanged(modelIdxTL, modelIdxBR);
-                }
-            }
-        }
-
-        // If the "contentChanged" signal is no longer blocked and the content of
-        // properties widget has been changed ...
-        if (m_iContentChangedSignalBlockedCounter == 0 && bContentChanged) {
-            // .. emit the contentChanged signal and update the enabled state
-            // of the Apply and Reset buttons.
-            emit_contentChanged();
-        }
-        else {
-            m_bContentChanged = true;
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-void CModelGraphObjLineGeometry::onGraphObjGeometryChanged(CGraphObj* i_pGraphObj)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObj->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pTrcAdminObj       */ m_pTrcAdminObj,
-        /* eFilterDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod          */ "onGraphObjGeometryChanged",
+        /* strMethod          */ "onGraphObjGeometryOnSceneChanged",
         /* strMethodInArgs    */ strMthInArgs );
 
     // When applying the changes from the model by invoking "applySettings"

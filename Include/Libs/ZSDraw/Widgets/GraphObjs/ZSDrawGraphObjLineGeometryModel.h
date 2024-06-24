@@ -135,8 +135,8 @@ protected: // type definitions and constants
     };
 protected slots:
     void onDrawingSceneDrawingSizeChanged(const CDrawingSize& i_drawingSize);
-    void onGraphObjGeometryChanged(CGraphObj* i_pGraphObj);
-    void onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pGraphObj);
+    void onGraphObjGeometryOnSceneChanged(CGraphObj* i_pGraphObj);
+    //void onGraphObjGeometryValuesUnitChanged(CGraphObj* i_pGraphObj);
     void onGraphObjGeometryLabelChanged(CGraphObj* i_pGraphObj, const QString& i_strName);
     void onGraphObjAboutToBeDestroyed(CGraphObj* i_pGraphObj);
 protected: // instance methods

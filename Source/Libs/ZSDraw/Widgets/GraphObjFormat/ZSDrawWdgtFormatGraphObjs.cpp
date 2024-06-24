@@ -69,7 +69,7 @@ CWdgtFormatGraphObjs::CWdgtFormatGraphObjs(
             m_pGraphObj, &CGraphObj::selectedChanged,
             this, &CWdgtFormatGraphObjs::onGraphObjChanged );
         QObject::connect(
-            m_pGraphObj, &CGraphObj::geometryChanged,
+            m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
             this, &CWdgtFormatGraphObjs::onGraphObjChanged );
         QObject::connect(
             m_pGraphObj, &CGraphObj::drawSettingsChanged,

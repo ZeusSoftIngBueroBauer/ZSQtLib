@@ -1613,6 +1613,16 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
             pGraphObjGroup->resizeToContent();
         }
     }
+    else if (strMethod.compare("setTopLeft", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
+            QPointF ptTopLeft = i_pTestStep->getConfigValue("TopLeft").toPointF();
+            QString strUnit = i_pTestStep->getConfigValue("TopLeft.unit").toString();
+            CUnit unit(strUnit);
+            CPhysValPoint physValPos(*m_pDrawingScene, ptTopLeft, unit);
+            pGraphObjGroup->setTopLeft(physValPos);
+        }
+    }
 
     QStringList strlstResultValues;
     if (pGraphObj != nullptr) {
@@ -1662,7 +1672,7 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepShowLabels( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1672,7 +1682,7 @@ void CTest::doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepShowLabel",
+        /* strMethod    */ "doTestStepShowLabels",
         /* strAddInfo   */ strMthInArgs );
 
     QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
@@ -1693,7 +1703,7 @@ void CTest::doTestStepShowLabel( ZS::Test::CTestStep* i_pTestStep )
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepShowGeometryLabel( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepHideLabels( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1703,7 +1713,38 @@ void CTest::doTestStepShowGeometryLabel( ZS::Test::CTestStep* i_pTestStep )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepShowGeometryLabel",
+        /* strMethod    */ "doTestStepHideLabels",
+        /* strAddInfo   */ strMthInArgs );
+
+    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
+    QString strLabelName = i_pTestStep->getConfigValue("LabelName").toString();
+
+    QString strKeyInTree = "B:" + strGraphObjName;
+    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
+    if (pGraphObj != nullptr) {
+        //pGraphObj->hideLabel(strLabelName);
+        //pGraphObj->hideLabel(strLabelName);
+    }
+
+    QStringList strlstExpectedValues;
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+
+    QStringList strlstResultValues;
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepShowGeometryLabels( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepShowGeometryLabels",
         /* strAddInfo   */ strMthInArgs );
 
     QStringList strlstExpectedValues;
@@ -1725,6 +1766,51 @@ void CTest::doTestStepShowGeometryLabel( ZS::Test::CTestStep* i_pTestStep )
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
                 pGraphicsItemLabel->setPos(pos);
+                QString strText = pGraphicsItemLabel->text();
+                strlstResultValues.append(strGraphObjName + ".Label.text: " + strText);
+            }
+            else {
+                strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
+            }
+        }
+        else {
+            strlstResultValues.append(strGraphObjName + " not found");
+        }
+    }
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
+    i_pTestStep->setResultValues(strlstResultValues);
+}
+
+//------------------------------------------------------------------------------
+void CTest::doTestStepHideGeometryLabels( ZS::Test::CTestStep* i_pTestStep )
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_pTestStep->path();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "doTestStepHideGeometryLabels",
+        /* strAddInfo   */ strMthInArgs );
+
+    QStringList strlstExpectedValues;
+    QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
+    {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QString strGraphObjName = dataRow["GraphObjName"].toString();
+        QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
+        QString strLabelName = dataRow["LabelName"].toString();
+        strlstExpectedValues.append(dataRow["ExpectedValue"].toString());
+        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        if (pGraphObj != nullptr) {
+            pGraphObj->hideGeometryLabel(strLabelName);
+            pGraphObj->hideGeometryLabelAnchorLine(strLabelName);
+            CGraphObjLabel* pGraphObjLabel = pGraphObj->getGeometryLabel(strLabelName);
+            QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
+            if (pGraphicsItemLabel != nullptr) {
                 QString strText = pGraphicsItemLabel->text();
                 strlstResultValues.append(strGraphObjName + ".Label.text: " + strText);
             }

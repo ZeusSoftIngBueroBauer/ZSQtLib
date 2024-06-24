@@ -659,14 +659,8 @@ QRectF CGraphObjRect::boundingRect() const
     //    }
     //}
 
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal))
-    {
-        strMthInArgs  = "Rect(x,y,w,h):(";
-        strMthInArgs += QString::number(rctBounding.x(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.y(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.width(),'f',1);
-        strMthInArgs += "," + QString::number(rctBounding.height(),'f',1) + ")";
-        mthTracer.setMethodReturn(strMthInArgs);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
 
     return rctBounding;

@@ -414,7 +414,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
                 updateLineEndArrowHeadPolygons();
             }
         }
-        emit_geometryChanged();
+        emit_geometryOnSceneChanged();
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
 }
@@ -1069,7 +1069,7 @@ void CGraphObjLine::updateOriginalPhysValCoors()
     QLineF lineF = line();
     // Before mapping to parent or scene, the rotation will be reset.
     // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryChanged signal ..
+    // And itemChange is called but should not emit the geometryOnSceneChanged signal ..
     CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryChangedSignalBlockedCounter);
     QGraphicsItem_setRotation(0.0);
     if (parentGroup() != nullptr) {
@@ -1234,7 +1234,7 @@ void CGraphObjLine::updateOriginalPhysValCoors()
 //        setPhysValLine(physValLine, ECoordinatesVersion::Transformed);
 //        // The coordinates of the bounding rectangle are passed in local coordinates.
 //        QGraphicsLineItem_setLine(lineF);
-//        emit_geometryChanged();
+//        emit_geometryOnSceneChanged();
 //    }
 //
 //    // If the scene position has been changed, the position of the labels got to be updated.
@@ -2332,7 +2332,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     }
 
     if (bGeometryChanged) {
-        emit_geometryChanged();
+        emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {
         emit_selectedChanged(isSelected());
@@ -2381,7 +2381,7 @@ protected: // overridable slots of base class CGraphObj
 //}
 
 //------------------------------------------------------------------------------
-void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint)
+void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -2392,7 +2392,7 @@ void CGraphObjLine::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onSelectionPointGeometryChanged",
+        /* strMethod    */ "onSelectionPointGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);

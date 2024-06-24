@@ -114,7 +114,7 @@ protected slots: // overridables
     virtual void onDrawingSceneDrawSettingsChanged(const CDrawSettings& i_drawSettings);
 protected slots: // overridables
     virtual void onGraphObjSelectedChanged();
-    virtual void onGraphObjGeometryChanged();
+    virtual void onGraphObjGeometryOnSceneChanged();
     virtual void onGraphObjDrawSettingsChanged();
     //virtual void onGraphObjMoved();
     //virtual void onGraphObjRenamed();
@@ -171,7 +171,7 @@ protected: // instance members
     /*!< Flag to filter the indicated properties to the geometry of the graphical object.
          This flag is set to false as default. If the property widget has to react on
          "selectedChanged" signal the flag has to be set in the constructor of the derived class.
-         If set to true the widget connects to the "geometryChanged" signal of the graphical object. */
+         If set to true the widget connects to the "geometryOnSceneChanged" signal of the graphical object. */
     bool m_bContentUpdateOnGeometryChanged;
     /*!< Flag to filter the indicated properties to the draw settings of the graphical object.
          This flag is set to false as default. If the property widget has to react on

@@ -258,11 +258,11 @@ double Math::degree2Rad( double i_fAngle_degree, bool i_bNormalize )
 double Math::toClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize )
 //------------------------------------------------------------------------------
 {
-    double fAngle_rad = i_fAngle_rad;
+    double fAngle_rad = c_f2PI - i_fAngle_rad;
     if (i_bNormalize) {
         fAngle_rad = normalizeAngleInRad(fAngle_rad);
     }
-    return c_f2PI - fAngle_rad;
+    return fAngle_rad;
 }
 
 //------------------------------------------------------------------------------
@@ -283,11 +283,11 @@ double Math::toClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize )
 double Math::toCounterClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize )
 //------------------------------------------------------------------------------
 {
-    double fAngle_rad = i_fAngle_rad;
+    double fAngle_rad = c_f2PI - i_fAngle_rad;
     if (i_bNormalize) {
         fAngle_rad = normalizeAngleInRad(fAngle_rad);
     }
-    return c_f2PI - fAngle_rad;
+    return fAngle_rad;
 }
 
 //------------------------------------------------------------------------------
@@ -308,11 +308,11 @@ double Math::toCounterClockWiseAngleRad( double i_fAngle_rad, bool i_bNormalize 
 double Math::toClockWiseAngleDegree( double i_fAngle_degree, bool i_bNormalize )
 //------------------------------------------------------------------------------
 {
-    double fAngle_degree = i_fAngle_degree;
+    double fAngle_degree = 360.0 - i_fAngle_degree;
     if (i_bNormalize) {
-        fAngle_degree = normalizeAngleInDegree(i_fAngle_degree);
+        fAngle_degree = normalizeAngleInDegree(fAngle_degree);
     }
-    return 360.0 - fAngle_degree;
+    return fAngle_degree;
 }
 
 //------------------------------------------------------------------------------
@@ -333,11 +333,11 @@ double Math::toClockWiseAngleDegree( double i_fAngle_degree, bool i_bNormalize )
 double Math::toCounterClockWiseAngleDegree( double i_fAngle_degree, bool i_bNormalize )
 //------------------------------------------------------------------------------
 {
-    double fAngle_degree = i_fAngle_degree;
+    double fAngle_degree = 360.0 - i_fAngle_degree;
     if (i_bNormalize) {
-        fAngle_degree = normalizeAngleInDegree(i_fAngle_degree);
+        fAngle_degree = normalizeAngleInDegree(fAngle_degree);
     }
-    return 360.0 - fAngle_degree;
+    return fAngle_degree;
 }
 
 //------------------------------------------------------------------------------

@@ -220,7 +220,7 @@ protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
-    virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
+    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 protected: // auxiliary instance methods
     void paintGridLines(QPainter* i_pPainter);
     void paintGridLabelsDivisionLines(QPainter* i_pPainter);

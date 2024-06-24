@@ -1402,6 +1402,52 @@ CGraphObjGroup* CGraphObj::parentGroup() const
     return dynamic_cast<CGraphObjGroup*>(m_pParentBranch);
 }
 
+//------------------------------------------------------------------------------
+/*! @brief Informs the object that the parent group is about to be changed.
+
+    Items need to inform e.g. labels about geometry changes of their linked
+    objects on the scene. If the parent of the item changes its geometry on the scene,
+    also all children of the group change their geometry on the scene. For this the slot
+    onGeometryOnSceneChanged of the children is connected to the corresponding signal of
+    the groups and the labels onGeometryOnSceneChanged slot is connected to the
+    corresponding signal of their linked objects. If the parent group changes the
+    signal/slot connection to the previous parent group (if any) got to be disconnected
+    before the signal/slot connection to the new parent group is connected.
+
+    @param [in] i_pGraphObjGroupPrev
+        Pointer to group the item will be removed from or nullptr, if the item don't
+        belong to a group yet.
+    @param [in] i_pGraphObjGroupNew
+        Pointer to group the item will be added to or nullptr, if the item will just
+        be removed from the current group but not added to another group.
+*/
+//------------------------------------------------------------------------------
+void CGraphObj::onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "PrevGroup: " + QString(i_pGraphObjGroupPrev == nullptr ? "null" : i_pGraphObjGroupPrev->path()) +
+            ", NewGroup: " + QString(i_pGraphObjGroupNew == nullptr ? "null" : i_pGraphObjGroupNew->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::onParentGroupAboutToBeChanged",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_pGraphObjGroupPrev != nullptr) {
+        QObject::disconnect(
+            i_pGraphObjGroupPrev, &CGraphObj::geometryOnSceneChanged,
+            this, &CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged);
+    }
+    if (i_pGraphObjGroupNew != nullptr) {
+        QObject::connect(
+            i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
+            this, &CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged);
+    }
+}
+
 /*==============================================================================
 public: // instance methods
 ==============================================================================*/
@@ -1432,8 +1478,8 @@ public: // instance methods
 //    if (m_pGraphObjParent != i_pGraphObjParent) {
 //        if (m_pGraphObjParent != nullptr) {
 //            QObject::disconnect(
-//                m_pGraphObjParent, &CGraphObj::geometryChanged,
-//                this, &CGraphObj::onGraphObjParentGeometryChanged);
+//                m_pGraphObjParent, &CGraphObj::geometryOnSceneChanged,
+//                this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
 //            QObject::disconnect(
 //                m_pGraphObjParent, &CGraphObj::zValueChanged,
 //                this, &CGraphObj::onGraphObjParentZValueChanged);
@@ -1441,8 +1487,8 @@ public: // instance methods
 //        m_pGraphObjParent = i_pGraphObjParent;
 //        if (m_pGraphObjParent != nullptr) {
 //            QObject::connect(
-//                m_pGraphObjParent, &CGraphObj::geometryChanged,
-//                this, &CGraphObj::onGraphObjParentGeometryChanged);
+//                m_pGraphObjParent, &CGraphObj::geometryOnSceneChanged,
+//                this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
 //            QObject::connect(
 //                m_pGraphObjParent, &CGraphObj::zValueChanged,
 //                this, &CGraphObj::onGraphObjParentZValueChanged);
@@ -4254,7 +4300,7 @@ void CGraphObj::updateOriginalPhysValCoors()
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     // Before mapping to parent or scene, the rotation will be reset.
     // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryChanged signal ..
+    // And itemChange is called but should not emit the geometryOnSceneChanged signal ..
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryChangedSignalBlockedCounter);
     QGraphicsItem_setRotation(0.0);
@@ -4546,8 +4592,11 @@ void CGraphObj::setRotationAngle(const CPhysVal& i_physValAngle)
         /* strMethod    */ "CGraphObj::setRotationAngle",
         /* strAddInfo   */ strMthInArgs );
 
-    m_physValRotationAngle = i_physValAngle;
-    QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+    if (m_physValRotationAngle != i_physValAngle) {
+        m_physValRotationAngle = i_physValAngle;
+        QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+        emit_geometryOnSceneChanged();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -4562,7 +4611,7 @@ CPhysVal CGraphObj::rotationAngle() const
 //------------------------------------------------------------------------------
 /*! @brief Returns the rotation angle of this item in the desired unit.
 
-    @param [in] i_unit Desired unit which could be eiterh Degree or Rad.
+    @param [in] i_unit Desired unit which could be either Degree or Rad.
 */
 CPhysVal CGraphObj::rotationAngle(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
@@ -4570,6 +4619,40 @@ CPhysVal CGraphObj::rotationAngle(const CUnit& i_unit) const
     CPhysVal physValAngle = m_physValRotationAngle;
     physValAngle.convertValue(i_unit);
     return physValAngle;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the resulting rotation angle of this item on the drawing scene
+           in Degree.
+
+    To get the resulting rotation angle on the scene the rotation angle of all
+    parent groups of this item will be added to the the rotation angle of this item.
+*/
+CPhysVal CGraphObj::rotationAngleMappedToScene() const
+//------------------------------------------------------------------------------
+{
+    return rotationAngleMappedToScene(Units.Angle.Degree);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the resulting rotation angle of this item on the drawing scene
+           in the desired unit.
+
+    To get the resulting rotation angle on the scene the rotation angle of all
+    parent groups of this item will be added to the the rotation angle of this item.
+
+    @param [in] i_unit Desired unit which could be either Degree or Rad.
+*/
+CPhysVal CGraphObj::rotationAngleMappedToScene(const ZS::PhysVal::CUnit& i_unit) const
+//------------------------------------------------------------------------------
+{
+    CPhysVal physValRotationAngle = m_physValRotationAngle;
+    if (parentGroup() != nullptr)
+    {
+        physValRotationAngle += parentGroup()->rotationAngleMappedToScene(i_unit);
+    }
+    physValRotationAngle.convertValue(i_unit);
+    return physValRotationAngle;
 }
 
 /*==============================================================================
@@ -5488,8 +5571,8 @@ void CGraphObj::showSelectionPointsOfBoundingRect(const QRectF& i_rct, TSelectio
                         pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
                         this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
                     QObject::connect(
-                        pGraphObjSelPt, &CGraphObj::geometryChanged,
-                        this, &CGraphObj::onSelectionPointGeometryChanged);
+                        pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
+                        this, &CGraphObj::onSelectionPointGeometryOnSceneChanged);
                 }
             }
         }
@@ -5621,8 +5704,8 @@ void CGraphObj::showSelectionPointsOfPolygon( const QPolygonF& i_plg )
                     pGraphObjSelPt, &CGraphObj::aboutToBeDestroyed,
                     this, &CGraphObj::onSelectionPointAboutToBeDestroyed);
                 QObject::connect(
-                    pGraphObjSelPt, &CGraphObj::geometryChanged,
-                    this, &CGraphObj::onSelectionPointGeometryChanged);
+                    pGraphObjSelPt, &CGraphObj::geometryOnSceneChanged,
+                    this, &CGraphObj::onSelectionPointGeometryOnSceneChanged);
             }
         }
     }
@@ -6224,7 +6307,7 @@ void CGraphObj::showLabel(const QString& i_strName)
         m_pDrawingScene->addItem(pGraphObjLabel);
         pGraphObjLabel->setVisible(true);
         pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(labelDscr.m_polarCoorsToLinkedSelPt);
-        labelDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLine() : pGraphObjLabel->hideAnchorLine();
+        labelDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLines() : pGraphObjLabel->hideAnchorLines();
         // The labels anchor line should be drawn before the object is drawn.
         // Otherwise the anchor lines may cover the painting of this object.
         emit_labelChanged(i_strName);
@@ -6388,7 +6471,7 @@ void CGraphObj::showLabelAnchorLine(const QString& i_strName)
         labelDscr.m_bShowAnchorLine = true;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->showAnchorLine();
+            pGraphObjLabel->showAnchorLines();
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6428,7 +6511,7 @@ void CGraphObj::hideLabelAnchorLine(const QString& i_strName)
         labelDscr.m_bShowAnchorLine = false;
         CGraphObjLabel* pGraphObjLabel = m_hshpLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->hideAnchorLine();
+            pGraphObjLabel->hideAnchorLines();
         }
         emit_labelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6589,7 +6672,7 @@ void CGraphObj::showGeometryLabel(const QString& i_strName)
             labelDscr.m_bLabelIsVisible = true;
             pGraphObjLabel->setVisible(false);
             pGraphObjLabel->setPolarCoorsToLinkedSelectionPoint(labelDscr.m_polarCoorsToLinkedSelPt);
-            labelDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLine() : pGraphObjLabel->hideAnchorLine();
+            labelDscr.m_bShowAnchorLine ? pGraphObjLabel->showAnchorLines() : pGraphObjLabel->hideAnchorLines();
             m_hshpGeometryLabels.insert(i_strName, pGraphObjLabel);
             QObject::connect(
                 pGraphObjLabel, &CGraphObj::aboutToBeDestroyed,
@@ -6773,7 +6856,7 @@ void CGraphObj::showGeometryLabelAnchorLine(const QString& i_strName)
         labelDscr.m_bShowAnchorLine = true;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->showAnchorLine();
+            pGraphObjLabel->showAnchorLines();
         }
         emit_geometryLabelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -6813,7 +6896,7 @@ void CGraphObj::hideGeometryLabelAnchorLine(const QString& i_strName)
         labelDscr.m_bShowAnchorLine = false;
         CGraphObjLabel* pGraphObjLabel = m_hshpGeometryLabels.value(i_strName, nullptr);
         if (pGraphObjLabel != nullptr) {
-            pGraphObjLabel->hideAnchorLine();
+            pGraphObjLabel->hideAnchorLines();
         }
         emit_geometryLabelChanged(i_strName);
         if (m_pTree != nullptr) {
@@ -7307,24 +7390,24 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
     m_bForceConversionToSceneCoors = false;
 }
 
-//------------------------------------------------------------------------------
-void CGraphObj::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onGraphObjParentScenePosChanged",
-        /* strAddInfo   */ strMthInArgs );
-}
+////------------------------------------------------------------------------------
+//void CGraphObj::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_pGraphObjParent->keyInTree();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::onGraphObjParentScenePosChanged",
+//        /* strAddInfo   */ strMthInArgs );
+//}
 
 //------------------------------------------------------------------------------
-void CGraphObj::onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7335,8 +7418,12 @@ void CGraphObj::onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onGraphObjParentGeometryChanged",
+        /* strMethod    */ "CGraphObj::onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
+
+    // If the geometry of the parent on the scene of this item changes, also the geometry
+    // on the scene of this item is changed.
+    emit_geometryOnSceneChanged();
 }
 
 //------------------------------------------------------------------------------
@@ -7356,7 +7443,7 @@ void CGraphObj::onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent)
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint)
+void CGraphObj::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7367,7 +7454,7 @@ void CGraphObj::onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onSelectionPointGeometryChanged",
+        /* strMethod    */ "CGraphObj::onSelectionPointGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 }
 
@@ -7641,25 +7728,25 @@ void CGraphObj::emit_selectedChanged(bool i_bIsSelected)
     emit selectedChanged(this, i_bIsSelected);
 }
 
-//------------------------------------------------------------------------------
-void CGraphObj::emit_scenePosChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_scenePosChanged",
-        /* strAddInfo   */ "" );
-    emit scenePosChanged(this);
-}
+////------------------------------------------------------------------------------
+//void CGraphObj::emit_scenePosChanged()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::emit_scenePosChanged",
+//        /* strAddInfo   */ "" );
+//    emit scenePosChanged(this);
+//}
 
 //------------------------------------------------------------------------------
-/*! @brief Emits the "geometryChanged" signal (with optional trace output).
+/*! @brief Emits the "geometryOnSceneChanged" signal (with optional trace output).
 
     The signal is only emitted if not blocked (BlockedCounter == 0).
 */
-void CGraphObj::emit_geometryChanged()
+void CGraphObj::emit_geometryOnSceneChanged()
 //------------------------------------------------------------------------------
 {
     if (m_iGeometryChangedSignalBlockedCounter > 0) {
@@ -7669,23 +7756,23 @@ void CGraphObj::emit_geometryChanged()
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_geometryChanged",
+        /* strMethod    */ "CGraphObj::emit_geometryOnSceneChanged",
         /* strAddInfo   */ "" );
-    emit geometryChanged(this);
+    emit geometryOnSceneChanged(this);
 }
 
-//------------------------------------------------------------------------------
-void CGraphObj::emit_geometryValuesUnitChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::emit_geometryValuesUnitChanged",
-        /* strAddInfo   */ "" );
-    emit geometryValuesUnitChanged(this);
-}
+////------------------------------------------------------------------------------
+//void CGraphObj::emit_geometryValuesUnitChanged()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "CGraphObj::emit_geometryValuesUnitChanged",
+//        /* strAddInfo   */ "" );
+//    emit geometryValuesUnitChanged(this);
+//}
 
 //------------------------------------------------------------------------------
 void CGraphObj::emit_zValueChanged(double i_fZValue)

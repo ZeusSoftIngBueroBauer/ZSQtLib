@@ -585,13 +585,17 @@ signals:
     /*!< This signal is emitted if the position of the object on the drawing scene is changed.
          Used to update the position of selection points and labels if the object's geometry
          is not changed but has been moved on the drawing scene as a child of a group. */
-    void scenePosChanged(CGraphObj* i_pGraphObj);
-    /*!< This signal is emitted if the geometry of the object has been changed. */
-    void geometryChanged(CGraphObj* i_pGraphObj);
+    //void scenePosChanged(CGraphObj* i_pGraphObj);
+    /*!< This signal is emitted if the geometry of the object on the scene has been changed.
+         If a group item is rotated, resized or moved the group itself and all its children
+         change their geometry on the scene. The signal is emitted for the changed group and
+         also by its children to inform all connected labels and selection points that their
+         parents scene coordinates may have been changed. */
+    void geometryOnSceneChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the physical unit of the drawing scene's size has been changed
          and the geometry values of the graphical object are converted into a new unit and
          viewers need to update the value strings correspondingly. */
-    void geometryValuesUnitChanged(CGraphObj* i_pGraphObj);
+    //void geometryValuesUnitChanged(CGraphObj* i_pGraphObj);
     /*!< This signal is emitted if the Z-value (stacking order) of the object has been changed. */
     void zValueChanged(CGraphObj* i_pGraphObj, double i_fZValue);
     /*!< This signal is emitted if the drawing settings (pen style, etc.) of the object has been changed. */
@@ -631,6 +635,7 @@ public: // instance methods
     CDrawingScene* drawingScene() const;
     //CGraphObj* parentGraphObj() const;
     CGraphObjGroup* parentGroup() const;
+    void onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
     //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
     virtual void rename(const QString& i_strNameNew);
@@ -775,6 +780,8 @@ public: // overridables
     virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     virtual ZS::PhysVal::CPhysVal rotationAngle() const;
     virtual ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const;
+    virtual ZS::PhysVal::CPhysVal rotationAngleMappedToScene() const;
+    virtual ZS::PhysVal::CPhysVal rotationAngleMappedToScene(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
     virtual void setEditMode(const CEnumEditMode& i_eMode);
     CEnumEditMode editMode() const;
@@ -871,10 +878,10 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
-    virtual void onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent);
-    virtual void onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent);
+    //virtual void onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent);
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
-    virtual void onSelectionPointGeometryChanged(CGraphObj* i_pSelectionPoint);
+    virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint);
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
@@ -887,9 +894,9 @@ protected: // auxiliary instance methods
 protected: // auxiliary instance methods (method tracing)
     void emit_editModeChanged(const CEnumEditMode& i_eMode);
     void emit_selectedChanged(bool i_bIsSelected);
-    void emit_scenePosChanged();
-    void emit_geometryChanged();
-    void emit_geometryValuesUnitChanged();
+    //void emit_scenePosChanged();
+    void emit_geometryOnSceneChanged();
+    //void emit_geometryValuesUnitChanged();
     void emit_zValueChanged(double i_fZValue);
     void emit_drawSettingsChanged();
     void emit_labelAdded(const QString& i_strName);

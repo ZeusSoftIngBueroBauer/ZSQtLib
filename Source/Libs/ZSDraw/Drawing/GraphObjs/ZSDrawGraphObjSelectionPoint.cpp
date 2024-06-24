@@ -142,12 +142,12 @@ CGraphObjSelectionPoint::CGraphObjSelectionPoint(
     double fZValueParent = m_selPt.m_pGraphObj->getStackingOrderValue();
     setStackingOrderValue(fZValueParent + 0.1, ERowVersion::Original);
 
+    //QObject::connect(
+    //    m_selPt.m_pGraphObj, &CGraphObj::scenePosChanged,
+    //    this, &CGraphObjSelectionPoint::onGraphObjParentScenePosChanged);
     QObject::connect(
-        m_selPt.m_pGraphObj, &CGraphObj::scenePosChanged,
-        this, &CGraphObjSelectionPoint::onGraphObjParentScenePosChanged);
-    QObject::connect(
-        m_selPt.m_pGraphObj, &CGraphObj::geometryChanged,
-        this, &CGraphObjSelectionPoint::onGraphObjParentGeometryChanged);
+        m_selPt.m_pGraphObj, &CGraphObj::geometryOnSceneChanged,
+        this, &CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged);
     QObject::connect(
         m_selPt.m_pGraphObj, &CGraphObj::zValueChanged,
         this, &CGraphObjSelectionPoint::onGraphObjParentZValueChanged);
@@ -877,8 +877,26 @@ void CGraphObjSelectionPoint::mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i
 protected slots:
 ==============================================================================*/
 
+////------------------------------------------------------------------------------
+//void CGraphObjSelectionPoint::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
+////------------------------------------------------------------------------------
+//{
+//    QString strMthInArgs;
+//    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+//        strMthInArgs = i_pGraphObjParent->keyInTree();
+//    }
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "onGraphObjParentScenePosChanged",
+//        /* strAddInfo   */ strMthInArgs );
+//
+//    updatePosition();
+//}
+
 //------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObjSelectionPoint::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -889,25 +907,7 @@ void CGraphObjSelectionPoint::onGraphObjParentScenePosChanged(CGraphObj* i_pGrap
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentScenePosChanged",
-        /* strAddInfo   */ strMthInArgs );
-
-    updatePosition();
-}
-
-//------------------------------------------------------------------------------
-void CGraphObjSelectionPoint::onGraphObjParentGeometryChanged(CGraphObj* i_pGraphObjParent)
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "onGraphObjParentGeometryChanged",
+        /* strMethod    */ "onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
     updatePosition();
@@ -976,7 +976,7 @@ QVariant CGraphObjSelectionPoint::itemChange( GraphicsItemChange i_change, const
     }
 
     if (bGeometryChanged) {
-        emit_geometryChanged();
+        emit_geometryOnSceneChanged();
     }
     if (bTreeEntryChanged) {
         if (m_pTree != nullptr) {

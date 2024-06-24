@@ -128,8 +128,8 @@ public: // instance methods
     void setPolarCoorsToLinkedSelectionPoint(const SPolarCoors& i_polarCoors);
     SPolarCoors polarCoorsToLinkedSelectionPoint() const;
 public: // instance methods
-    void showAnchorLine();
-    void hideAnchorLine();
+    void showAnchorLines();
+    void hideAnchorLines();
     bool isAnchorLineVisible() const;
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const override; // for subsystem test
@@ -159,8 +159,8 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 public slots: // overridables of base class CGraphObj
-    void onGraphObjParentScenePosChanged( CGraphObj* i_pGraphObjParent ) override;
-    void onGraphObjParentGeometryChanged( CGraphObj* i_pGraphObjParent ) override;
+    //void onGraphObjParentScenePosChanged( CGraphObj* i_pGraphObjParent ) override;
+    void onGraphObjParentGeometryOnSceneChanged( CGraphObj* i_pGraphObjParent ) override;
     void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;

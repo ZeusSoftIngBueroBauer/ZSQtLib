@@ -1256,7 +1256,7 @@ void CIpcTrcServer::traceMethodEnter(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1294,7 +1294,7 @@ void CIpcTrcServer::traceMethodEnter(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1332,7 +1332,7 @@ void CIpcTrcServer::traceMethod(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Fatal) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1371,7 +1371,7 @@ void CIpcTrcServer::traceMethod(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->isRuntimeInfoActive(ELogDetailLevel::Fatal) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1409,7 +1409,7 @@ void CIpcTrcServer::traceMethodLeave(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
@@ -1450,7 +1450,7 @@ void CIpcTrcServer::traceMethodLeave(
 //------------------------------------------------------------------------------
 {
     QMutexLocker mtxLocker(&s_mtx);
-    if (i_pTrcAdminObj != nullptr && i_pTrcAdminObj->areMethodCallsActive(EMethodTraceDetailLevel::EnterLeave) && isActive()) {
+    if (i_pTrcAdminObj != nullptr && isActive()) {
         addEntry(
             /* strThreadName */ currentThreadName(),
             /* dt            */ QDateTime::currentDateTime(),
