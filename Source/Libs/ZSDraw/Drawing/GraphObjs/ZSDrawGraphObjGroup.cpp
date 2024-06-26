@@ -794,8 +794,12 @@ CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     CPhysValRect physValRect = m_physValRectOrig;
+    if (i_unit != physValRect.unit()) {
+        physValRect = convert(physValRect, i_unit);
+    }
     physValRect.setAngle(m_physValRotationAngle);
-    #pragma message(__TODO__"Take scale transformation into account")
+    physValRect.setWidth(m_fGroupScaleX * physValRect.width().getVal());
+    physValRect.setHeight(m_fGroupScaleY * physValRect.height().getVal());
     return physValRect;
 }
 
@@ -3495,123 +3499,123 @@ protected: // overridables
     is taken as the original group size. As long as there is no valid original
     rectangle childrens cannot be resized and the method does nothing.
 */
-void CGraphObjGroup::applyGeometryChangeToChildrens()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "applyGeometryChangeToChildrens",
-        /* strAddInfo   */ "" );
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        tracePositionInfo(mthTracer);
-    }
-
-    // As long as there is no valid original rectangle childrens cannot be
-    // resized and the method does nothing.
-    if (!m_physValRectOrig.isValid()) {
-        return;
-    }
-
-    QRectF rectCurr = getBoundingRect();
-    CPhysValRect physValRect(m_physValRectOrig);
-    physValRect.setAngle(0.0);
-    if (parentGroup() != nullptr) {
-        physValRect = parentGroup()->convert(physValRect, Units.Length.px);
-    }
-    else {
-        physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
-    }
-    QRectF rectOrig(physValRect.topLeft().toQPointF(), physValRect.size().toQSizeF());
-    double fScaleX = rectCurr.width() / rectOrig.width();
-    double fScaleY = rectCurr.height() / rectOrig.height();
-
-    QList<QGraphicsItem*> arpGraphicsItemsChilds = childItems();
-    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-        mthTracer.trace("Childs [" + QString::number(arpGraphicsItemsChilds.size()) + "]");
-    }
-    for (QGraphicsItem* pGraphicsItemChild : arpGraphicsItemsChilds) {
-        CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
-        if (pGraphObjChild != nullptr) {
-            //pGraphObjChild->setGroupScale(fScaleX, fScaleY);
-
-            //QRectF rectChildCurr;
-            //if (pGraphObjChild->getAlignmentCount() == 0) {
-            //    //rectChildCurr = getScaledChildRect(pGraphObjChild);
-
-            //    QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(i_pGraphObjChild);
-
-            //    QRectF rectChildCurr;
-            //    //QRectF rectChildPrev = i_pGraphObjChild->getOriginalBoundingRectInParent();
-
-            //    //const CUnit& unitThis = m_physValRectCurr.unit();
-
-            //    //// Get coordinates of this group relative to the parent group if this group.
-            //    //QRectF rectThisOrig = m_physValRectOrig.toQRectF();
-            //    //QRectF rectThisCurr = m_physValRectCurr.toQRectF();
-            //    //double fScaleWidth = rectThisCurr.width() / rectThisOrig.width();
-            //    //double fScaleHeight = rectThisCurr.height() / rectThisOrig.height();
-
-            //    //// Map the coordinates of this group to the local coordinates of this group.
-            //    ////rectThisOrig = mapRectFromParent(rectThisOrig);
-            //    ////rectThisCurr = mapRectFromParent(rectThisCurr);
-
-            //    //// Get position of child relative to this parent group.
-            //    ////QPointF ptPosChildPrev = pGraphicsItemChild->pos();
-
-            //    //// Default without any alignments assigned is:
-            //    //// - position relative to center point of the group's bounding rectangle
-            //    //// - size relative to size of the group's bounding rectangle
-            //    //rectChildCurr.setLeft(fScaleWidth * rectChildPrev.left());
-            //    //rectChildCurr.setTop(fScaleHeight * rectChildPrev.top());
-            //    //rectChildCurr.setWidth(fScaleWidth * rectChildPrev.width());
-            //    //rectChildCurr.setHeight(fScaleHeight * rectChildPrev.height());
-
-            //    //// If the object has a fixed width or height they also have a
-            //    //// minimum and maximum width or height.
-            //    //// In addition the minimum and maximum width and height is equal.
-            //    //// So it is sufficient to check the minimum and maximum sizes.
-            //    //if (i_pGraphObjChild->hasMinimumWidth()) {
-            //    //    if (rectChildCurr.width() < i_pGraphObjChild->getMinimumWidth(unitThis).getVal()) {
-            //    //        rectChildCurr.setWidth(i_pGraphObjChild->getMinimumWidth(unitThis).getVal());
-            //    //    }
-            //    //}
-            //    //if (i_pGraphObjChild->hasMaximumWidth()) {
-            //    //    if (rectChildCurr.width() > i_pGraphObjChild->getMaximumWidth(unitThis).getVal()) {
-            //    //        rectChildCurr.setWidth(i_pGraphObjChild->getMaximumWidth(unitThis).getVal());
-            //    //    }
-            //    //}
-            //    //if (i_pGraphObjChild->hasMinimumHeight()) {
-            //    //    if (rectChildCurr.height() < i_pGraphObjChild->getMinimumHeight(unitThis).getVal()) {
-            //    //        rectChildCurr.setHeight(i_pGraphObjChild->getMinimumHeight(unitThis).getVal());
-            //    //    }
-            //    //}
-            //    //if (i_pGraphObjChild->hasMaximumHeight()) {
-            //    //    if (rectChildCurr.height() > i_pGraphObjChild->getMaximumHeight(unitThis).getVal()) {
-            //    //        rectChildCurr.setHeight(i_pGraphObjChild->getMaximumHeight(unitThis).getVal());
-            //    //    }
-            //    //}
-            //}
-            //if (rectChildCurr.width() < 0.0) {
-            //    double fXL = rectChildCurr.right();
-            //    double fXR = rectChildCurr.left();
-            //    rectChildCurr.setLeft(fXL);
-            //    rectChildCurr.setRight(fXR);
-            //}
-            //if (rectChildCurr.height() < 0.0) {
-            //    double fYT = rectChildCurr.bottom();
-            //    double fYB = rectChildCurr.top();
-            //    rectChildCurr.setTop(fYT);
-            //    rectChildCurr.setBottom(fYB);
-            //}
-            //pGraphObjChild->setCurrentBoundingRectInParent(rectChildCurr);
-        }
-    }
-
-    //prepareGeometryChange();
-
-} // applyGeometryChangeToChildrens
+//void CGraphObjGroup::applyGeometryChangeToChildrens()
+////------------------------------------------------------------------------------
+//{
+//    CMethodTracer mthTracer(
+//        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+//        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+//        /* strObjName   */ path(),
+//        /* strMethod    */ "applyGeometryChangeToChildrens",
+//        /* strAddInfo   */ "" );
+//    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//        tracePositionInfo(mthTracer);
+//    }
+//
+//    // As long as there is no valid original rectangle childrens cannot be
+//    // resized and the method does nothing.
+//    if (!m_physValRectOrig.isValid()) {
+//        return;
+//    }
+//
+//    QRectF rectCurr = getBoundingRect();
+//    CPhysValRect physValRect(m_physValRectOrig);
+//    physValRect.setAngle(0.0);
+//    if (parentGroup() != nullptr) {
+//        physValRect = parentGroup()->convert(physValRect, Units.Length.px);
+//    }
+//    else {
+//        physValRect = m_pDrawingScene->convert(physValRect, Units.Length.px);
+//    }
+//    QRectF rectOrig(physValRect.topLeft().toQPointF(), physValRect.size().toQSizeF());
+//    double fScaleX = rectCurr.width() / rectOrig.width();
+//    double fScaleY = rectCurr.height() / rectOrig.height();
+//
+//    QList<QGraphicsItem*> arpGraphicsItemsChilds = childItems();
+//    if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+//        mthTracer.trace("Childs [" + QString::number(arpGraphicsItemsChilds.size()) + "]");
+//    }
+//    for (QGraphicsItem* pGraphicsItemChild : arpGraphicsItemsChilds) {
+//        CGraphObj* pGraphObjChild = dynamic_cast<CGraphObj*>(pGraphicsItemChild);
+//        if (pGraphObjChild != nullptr) {
+//            //pGraphObjChild->setGroupScale(fScaleX, fScaleY);
+//
+//            //QRectF rectChildCurr;
+//            //if (pGraphObjChild->getAlignmentCount() == 0) {
+//            //    //rectChildCurr = getScaledChildRect(pGraphObjChild);
+//
+//            //    QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(i_pGraphObjChild);
+//
+//            //    QRectF rectChildCurr;
+//            //    //QRectF rectChildPrev = i_pGraphObjChild->getOriginalBoundingRectInParent();
+//
+//            //    //const CUnit& unitThis = m_physValRectCurr.unit();
+//
+//            //    //// Get coordinates of this group relative to the parent group if this group.
+//            //    //QRectF rectThisOrig = m_physValRectOrig.toQRectF();
+//            //    //QRectF rectThisCurr = m_physValRectCurr.toQRectF();
+//            //    //double fScaleWidth = rectThisCurr.width() / rectThisOrig.width();
+//            //    //double fScaleHeight = rectThisCurr.height() / rectThisOrig.height();
+//
+//            //    //// Map the coordinates of this group to the local coordinates of this group.
+//            //    ////rectThisOrig = mapRectFromParent(rectThisOrig);
+//            //    ////rectThisCurr = mapRectFromParent(rectThisCurr);
+//
+//            //    //// Get position of child relative to this parent group.
+//            //    ////QPointF ptPosChildPrev = pGraphicsItemChild->pos();
+//
+//            //    //// Default without any alignments assigned is:
+//            //    //// - position relative to center point of the group's bounding rectangle
+//            //    //// - size relative to size of the group's bounding rectangle
+//            //    //rectChildCurr.setLeft(fScaleWidth * rectChildPrev.left());
+//            //    //rectChildCurr.setTop(fScaleHeight * rectChildPrev.top());
+//            //    //rectChildCurr.setWidth(fScaleWidth * rectChildPrev.width());
+//            //    //rectChildCurr.setHeight(fScaleHeight * rectChildPrev.height());
+//
+//            //    //// If the object has a fixed width or height they also have a
+//            //    //// minimum and maximum width or height.
+//            //    //// In addition the minimum and maximum width and height is equal.
+//            //    //// So it is sufficient to check the minimum and maximum sizes.
+//            //    //if (i_pGraphObjChild->hasMinimumWidth()) {
+//            //    //    if (rectChildCurr.width() < i_pGraphObjChild->getMinimumWidth(unitThis).getVal()) {
+//            //    //        rectChildCurr.setWidth(i_pGraphObjChild->getMinimumWidth(unitThis).getVal());
+//            //    //    }
+//            //    //}
+//            //    //if (i_pGraphObjChild->hasMaximumWidth()) {
+//            //    //    if (rectChildCurr.width() > i_pGraphObjChild->getMaximumWidth(unitThis).getVal()) {
+//            //    //        rectChildCurr.setWidth(i_pGraphObjChild->getMaximumWidth(unitThis).getVal());
+//            //    //    }
+//            //    //}
+//            //    //if (i_pGraphObjChild->hasMinimumHeight()) {
+//            //    //    if (rectChildCurr.height() < i_pGraphObjChild->getMinimumHeight(unitThis).getVal()) {
+//            //    //        rectChildCurr.setHeight(i_pGraphObjChild->getMinimumHeight(unitThis).getVal());
+//            //    //    }
+//            //    //}
+//            //    //if (i_pGraphObjChild->hasMaximumHeight()) {
+//            //    //    if (rectChildCurr.height() > i_pGraphObjChild->getMaximumHeight(unitThis).getVal()) {
+//            //    //        rectChildCurr.setHeight(i_pGraphObjChild->getMaximumHeight(unitThis).getVal());
+//            //    //    }
+//            //    //}
+//            //}
+//            //if (rectChildCurr.width() < 0.0) {
+//            //    double fXL = rectChildCurr.right();
+//            //    double fXR = rectChildCurr.left();
+//            //    rectChildCurr.setLeft(fXL);
+//            //    rectChildCurr.setRight(fXR);
+//            //}
+//            //if (rectChildCurr.height() < 0.0) {
+//            //    double fYT = rectChildCurr.bottom();
+//            //    double fYB = rectChildCurr.top();
+//            //    rectChildCurr.setTop(fYT);
+//            //    rectChildCurr.setBottom(fYB);
+//            //}
+//            //pGraphObjChild->setCurrentBoundingRectInParent(rectChildCurr);
+//        }
+//    }
+//
+//    //prepareGeometryChange();
+//
+//} // applyGeometryChangeToChildrens
 
 ////------------------------------------------------------------------------------
 //QRectF CGraphObjGroup::getAlignedChildRect(CGraphObj* i_pGraphObjChild) const

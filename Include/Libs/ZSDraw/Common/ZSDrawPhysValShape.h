@@ -74,6 +74,7 @@ public: // must overridable operators
     virtual bool operator == (const CPhysValShape& i_physValShapeOther) const = 0;
     virtual bool operator != (const CPhysValShape& i_physValShapeOther) const = 0;
 public: // must overridables
+    virtual void invalidate() = 0;
     virtual bool isValid() const = 0;
     virtual bool isNull() const = 0;
     virtual void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) = 0;

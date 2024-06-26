@@ -1616,11 +1616,41 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
     else if (strMethod.compare("setTopLeft", Qt::CaseInsensitive) == 0) {
         CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
         if (pGraphObjGroup != nullptr) {
-            QPointF ptTopLeft = i_pTestStep->getConfigValue("TopLeft").toPointF();
+            QPointF pt = i_pTestStep->getConfigValue("TopLeft").toPointF();
             QString strUnit = i_pTestStep->getConfigValue("TopLeft.unit").toString();
             CUnit unit(strUnit);
-            CPhysValPoint physValPos(*m_pDrawingScene, ptTopLeft, unit);
-            pGraphObjGroup->setTopLeft(physValPos);
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setTopLeft(physValPoint);
+        }
+    }
+    else if (strMethod.compare("setTopRight", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
+            QPointF pt = i_pTestStep->getConfigValue("TopRight").toPointF();
+            QString strUnit = i_pTestStep->getConfigValue("TopRight.unit").toString();
+            CUnit unit(strUnit);
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setTopRight(physValPoint);
+        }
+    }
+    else if (strMethod.compare("setBottomRight", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
+            QPointF pt = i_pTestStep->getConfigValue("BottomRight").toPointF();
+            QString strUnit = i_pTestStep->getConfigValue("BottomRight.unit").toString();
+            CUnit unit(strUnit);
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setBottomRight(physValPoint);
+        }
+    }
+    else if (strMethod.compare("setBottomLeft", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
+            QPointF pt = i_pTestStep->getConfigValue("BottomLeft").toPointF();
+            QString strUnit = i_pTestStep->getConfigValue("BottomLeft.unit").toString();
+            CUnit unit(strUnit);
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setBottomLeft(physValPoint);
         }
     }
 

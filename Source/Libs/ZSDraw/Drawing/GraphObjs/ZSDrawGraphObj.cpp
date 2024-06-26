@@ -836,6 +836,9 @@ CGraphObj::CGraphObj(
     //m_editResizeMode(EEditResizeMode::None),
     m_arfZValues(CEnumRowVersion::count(), 0.0),
     m_physValRotationAngle(0.0, Units.Angle.Degree, 0.1),
+    m_physValRectGroupOrig(*i_pDrawingScene),
+    m_fGroupScaleX(1.0),
+    m_fGroupScaleY(1.0),
     //m_transform(),
     //m_transformByGroup(),
     //m_ptScenePos(),
@@ -1068,6 +1071,9 @@ CGraphObj::~CGraphObj()
     //m_editResizeMode = static_cast<EEditResizeMode>(0);
     //m_arfZValues.clear();
     //m_physValRotationAngle;
+    //m_physValRectGroupOrig;
+    m_fGroupScaleX = 0.0;
+    m_fGroupScaleY = 0.0;
     //m_transform;
     //m_transformByGroup;
     //m_ptScenePos;
@@ -1403,16 +1409,34 @@ CGraphObjGroup* CGraphObj::parentGroup() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Informs the object that the parent group is about to be changed.
+/*! @brief Informs the object that the parent item of the item is changed to
+           another parent item.
+           
+    The method connects the slot onGraphObjParentGeometryOnSceneChanged to the
+    geometryOnSceneChanged signal of the parent item. If the item already had
+    a parent the signal/slot connection to the previous parent is removed.
 
-    Items need to inform e.g. labels about geometry changes of their linked
-    objects on the scene. If the parent of the item changes its geometry on the scene,
-    also all children of the group change their geometry on the scene. For this the slot
-    onGeometryOnSceneChanged of the children is connected to the corresponding signal of
-    the groups and the labels onGeometryOnSceneChanged slot is connected to the
-    corresponding signal of their linked objects. If the parent group changes the
-    signal/slot connection to the previous parent group (if any) got to be disconnected
-    before the signal/slot connection to the new parent group is connected.
+    The itemChange method of QGraphicsItem with ItemParentHasChanged cannot be used
+    for this as the previous parent item is not provided with the itemChange method.
+
+    Items need to inform e.g. their labels about the geometry changes of the items
+    the labels are linked to. For this the item emits the geometryOnSceneChanged
+    signal if the geometry of the item changes.
+
+    If the item belongs to a group and the group changes its geometry on the scene,
+    also the child items geometry on the scene is changed and all labels linked to
+    the items must update their geometry information and their position on the scene.
+    The default implementation of the onGraphObjParentGeometryOnSceneChanged slot
+    emits the geometryOnSceneChanged signal to update the labels.
+
+    When resizing a group all children of the group should be resized and positioned so
+    that they keep their relative positions and sizes within the group. If the item
+    is added to a new group the current rectangle of the parent group is stored as
+    the original group rectangle.
+    If the item is removed from a group (but not added to a new group) the original
+    parent group rectangle is invalidated.
+    This allows the default implementation of onGraphObjParentGeometryOnSceneChanged
+    to calculate the current scale factor of the parent group.
 
     @param [in] i_pGraphObjGroupPrev
         Pointer to group the item will be removed from or nullptr, if the item don't
@@ -1421,8 +1445,8 @@ CGraphObjGroup* CGraphObj::parentGroup() const
         Pointer to group the item will be added to or nullptr, if the item will just
         be removed from the current group but not added to another group.
 */
-//------------------------------------------------------------------------------
 void CGraphObj::onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
+//------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
@@ -1439,13 +1463,19 @@ void CGraphObj::onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPr
     if (i_pGraphObjGroupPrev != nullptr) {
         QObject::disconnect(
             i_pGraphObjGroupPrev, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged);
+            this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
     }
     if (i_pGraphObjGroupNew != nullptr) {
         QObject::connect(
             i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
-            this, &CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged);
+            this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
+        m_physValRectGroupOrig = i_pGraphObjGroupNew->getRect();
     }
+    else {
+        m_physValRectGroupOrig.invalidate();
+    }
+    m_fGroupScaleX = 1.0;
+    m_fGroupScaleY = 1.0;
 }
 
 /*==============================================================================
@@ -7407,6 +7437,26 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 //}
 
 //------------------------------------------------------------------------------
+/*! @brief The slot method is called if the parent item of the item changes
+           its geometry on the scene and emits the geometryOnSceneChanged signal.
+
+    When resizing a group all children of the group should be resized and positioned so
+    that they keep their relative positions and sizes within the group. If the item
+    was added to a new group the current rectangle of the parent group was stored as
+    the original group rectangle.
+    If the item is removed from a group (but not added to a new group) the original
+    parent group rectangle is invalidated.
+    This allows the default implementation of onGraphObjParentGeometryOnSceneChanged
+    to calculate the current scale factor of the parent group.
+    
+    The default implementation also emits the signal geometryOnSceneChanged to
+    inform labels about the changes. Labels override this method to udpate their
+    positions on the scene and to update the geometry information of the items
+    they are linked to but do not emit the geometryOnSceneChanged signal.
+
+    @param [in] i_pGraphObjParent
+        Pointer to parent item whose geometry on the scene has been changed.
+*/
 void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
@@ -7420,6 +7470,15 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjPar
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
+
+    if (i_pGraphObjParent->isGroup()) {
+        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
+        CPhysValRect physValRectGroupCurr = pGraphObjGroupParent->getRect(m_physValRectGroupOrig.unit());
+        if (m_physValRectGroupOrig != physValRectGroupCurr) {
+            m_fGroupScaleX = physValRectGroupCurr.width().getVal() / m_physValRectGroupOrig.width().getVal();
+            m_fGroupScaleY = physValRectGroupCurr.height().getVal() / m_physValRectGroupOrig.height().getVal();
+        }
+    }
 
     // If the geometry of the parent on the scene of this item changes, also the geometry
     // on the scene of this item is changed.
@@ -8057,6 +8116,14 @@ void CGraphObj::traceThisPositionInfo(
             else strRuntimeInfo = "   ";
             strRuntimeInfo += "Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
             i_mthTracer.trace(strRuntimeInfo);
+            if (parentGroup() != nullptr) {
+                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+                else strRuntimeInfo = "   ";
+                strRuntimeInfo += "ParentGroup {RectOrig {" + m_physValRectGroupOrig.toString() + " " + m_physValRectGroupOrig.unit().symbol() + "}" +
+                    ", Scale {X: " + QString::number(m_fGroupScaleX) + ", Y: " + QString::number(m_fGroupScaleY) + "}}";
+                i_mthTracer.trace(strRuntimeInfo);
+            }
         }
     }
 }

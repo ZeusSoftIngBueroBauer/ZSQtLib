@@ -131,6 +131,7 @@ public: // must overridables of base class CPhysValShape
     bool operator == (const CPhysValShape& i_physValLineOther) const override;
     bool operator != (const CPhysValShape& i_physValLineOther) const override;
 public: // must overridables of base class CPhysValShape
+    void invalidate() override;
     bool isValid() const override;
     bool isNull() const override;
     void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) override;

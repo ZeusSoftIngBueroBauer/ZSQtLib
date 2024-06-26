@@ -228,7 +228,6 @@ protected: // auxiliary instance methods
 protected: // auxiliary instance methods (method tracing)
     CPhysValRect setRectOrig(const CPhysValRect& i_physValRect);
     QRectF setRectOrig(const QRectF& i_rect);
-    void applyGeometryChangeToChildrens();
     void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 public: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     virtual void traceThisPositionInfo(

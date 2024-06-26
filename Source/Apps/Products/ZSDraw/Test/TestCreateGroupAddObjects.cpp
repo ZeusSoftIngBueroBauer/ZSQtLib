@@ -1030,6 +1030,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
     QString strEntryType = CIdxTreeEntry::entryType2Str(CIdxTreeEntry::EEntryType::Branch, EEnumEntryAliasStrSymbol);
 
+    QString strGraphObjNameSmallRect = "SmallRect";
+    QString strGraphObjNameCheckmark = "Checkmark";
+    QString strGraphObjNamePlusSign = "PlusSign";
+
     /*-----------------------------------------------------------------------
     Pixels Drawing:
         Size: 800 * 600 Pixels
@@ -1312,66 +1316,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
     strlstExpectedValues.append(strGraphObjNamePlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Rotate top group PlusSign-Checkmark-SmallRect
-    //----------------------------------------------
-
-    strGraphObjName = "PlusSign-Checkmark-SmallRect";
-    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
-
-    physValAngle.setVal(45.0);
-
-    QString strGraphObjNameSmallRect = "SmallRect";
-    QString strGraphObjNameCheckmark = "Checkmark";
-    QString strGraphObjNamePlusSign = "PlusSign";
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjName + ".setRotationAngle(" + physValAngle.toString() + ")",
-        /* strOperation    */ strGraphObjName + ".setRotationAngle(" + physValAngle.toString() + ")",
-        /* pGrpParent      */ pGrpModifyGroups,
-        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
-    pTestStep->setConfigValue("Method", "setRotationAngle");
-    pTestStep->setConfigValue("Angle", physValAngle.toString());
-    // Group PlusSign-Checkmark-SmallRect
-    QPointF ptPosPlusSignLinesCheckmarkSmallRect(300.0, 300.0);
-    ptTLPlusSignLinesCheckmarkSmallRect = QPointF(250.0, bYAxisTopDown ? 250.0 : 350.0);
-    sizePlusSignLinesCheckmarkSmallRect = QSizeF(100.0, 100.0);
-    QRectF rectBoundingPlusSignLinesCheckmarkSmallRect(QPointF(-50.0, -50.0), sizePlusSignLinesCheckmarkSmallRect);
-    physValRectPlusSignLinesCheckmarkSmallRect = CPhysValRect(*m_pDrawingScene, ptTLPlusSignLinesCheckmarkSmallRect, sizePlusSignLinesCheckmarkSmallRect);
-    physValRectPlusSignLinesCheckmarkSmallRect.setAngle(physValAngle);
-    strlstExpectedValues.clear();
-    strlstExpectedValues.append(strGraphObjName + ".pos {" + qPoint2Str(ptPosPlusSignLinesCheckmarkSmallRect) + "} px");
-    strlstExpectedValues.append(strGraphObjName + ".boundingRect {" + qRect2Str(rectBoundingPlusSignLinesCheckmarkSmallRect) + "} px");
-    strlstExpectedValues.append(strGraphObjName + ".position {" + physValRectPlusSignLinesCheckmarkSmallRect.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjName + ".getRect {" + physValRectPlusSignLinesCheckmarkSmallRect.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjName + ".getSize {" + physValRectPlusSignLinesCheckmarkSmallRect.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjName + ".rotationAngle: " + physValAngle.toString());
-    // SmallRect
-    strlstExpectedValues.append(strGraphObjNameSmallRect + ".pos {" + qPoint2Str(ptPosSmallRect) + "} px");
-    strlstExpectedValues.append(strGraphObjNameSmallRect + ".boundingRect {" + qRect2Str(rectBoundingSmallRect) + "} px");
-    strlstExpectedValues.append(strGraphObjNameSmallRect + ".position {" + physValRectSmallRect.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameSmallRect + ".getRect {" + physValRectSmallRect.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameSmallRect + ".getSize {" + physValRectSmallRect.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameSmallRect + ".rotationAngle: 45.0 " + Math::c_strSymbolDegree);
-    // Checkmark
-    strlstExpectedValues.append(strGraphObjNameCheckmark + ".pos {" + qPoint2Str(ptPosCheckmark) + "} px");
-    strlstExpectedValues.append(strGraphObjNameCheckmark + ".boundingRect {" + qRect2Str(rectBoundingCheckmark) + "} px");
-    strlstExpectedValues.append(strGraphObjNameCheckmark + ".position {" + physValRectCheckmark.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameCheckmark + ".getRect {" + physValRectCheckmark.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameCheckmark + ".getSize {" + physValRectCheckmark.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameCheckmark + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
-    pTestStep->setExpectedValues(strlstExpectedValues);
-    // PlusSign
-    strlstExpectedValues.append(strGraphObjNamePlusSign + ".pos {" + qPoint2Str(ptPosPlusSign) + "} px");
-    strlstExpectedValues.append(strGraphObjNamePlusSign + ".boundingRect {" + qRect2Str(rectBoundingPlusSign) + "} px");
-    strlstExpectedValues.append(strGraphObjNamePlusSign + ".position {" + physValRectPlusSign.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNamePlusSign + ".getRect {" + physValRectPlusSign.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNamePlusSign + ".getSize {" + physValRectPlusSign.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNamePlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
-    pTestStep->setExpectedValues(strlstExpectedValues);
-
     // Hide Geometry Labels
     //---------------------
 
@@ -1424,8 +1368,119 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
     strGraphObjName = "PlusSign-Checkmark-SmallRect";
     strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
 
+    QPoint ptBR(450.0, bYAxisTopDown ? 450.0 : 150.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjName + ".setBottomRight(" + qPoint2Str(ptBR) + " " + unit.symbol() + ")",
+        /* strOperation    */ strGraphObjName + ".setTopLeft(" + qPoint2Str(ptBR) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpModifyGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("Method", "setBottomRight");
+    pTestStep->setConfigValue("BottomRight", ptBR);
+    pTestStep->setConfigValue("BottomRight.unit", unit.symbol());
+    // Group PlusSign-Checkmark-SmallRect
+    QPointF ptPosPlusSignLinesCheckmarkSmallRect(350.0, 350.0);
+    ptTLPlusSignLinesCheckmarkSmallRect = QPointF(250.0, bYAxisTopDown ? 250.0 : 350.0);
+    sizePlusSignLinesCheckmarkSmallRect = QSizeF(200.0, 200.0);
+    QRectF rectBoundingPlusSignLinesCheckmarkSmallRect(QPointF(-100.0, -100.0), sizePlusSignLinesCheckmarkSmallRect);
+    physValRectPlusSignLinesCheckmarkSmallRect = CPhysValRect(*m_pDrawingScene, ptTLPlusSignLinesCheckmarkSmallRect, sizePlusSignLinesCheckmarkSmallRect);
+    physValRectPlusSignLinesCheckmarkSmallRect.setAngle(physValAngle);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(strGraphObjName + ".pos {" + qPoint2Str(ptPosPlusSignLinesCheckmarkSmallRect) + "} px");
+    strlstExpectedValues.append(strGraphObjName + ".boundingRect {" + qRect2Str(rectBoundingPlusSignLinesCheckmarkSmallRect) + "} px");
+    strlstExpectedValues.append(strGraphObjName + ".position {" + physValRectPlusSignLinesCheckmarkSmallRect.center().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjName + ".getRect {" + physValRectPlusSignLinesCheckmarkSmallRect.toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjName + ".getSize {" + physValRectPlusSignLinesCheckmarkSmallRect.size().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjName + ".rotationAngle: " + physValAngle.toString());
+    // SmallRect
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".pos {" + qPoint2Str(ptPosSmallRect) + "} px");
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".boundingRect {" + qRect2Str(rectBoundingSmallRect) + "} px");
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".position {" + physValRectSmallRect.center().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".getRect {" + physValRectSmallRect.toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".getSize {" + physValRectSmallRect.size().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".rotationAngle: 45.0 " + Math::c_strSymbolDegree);
+    // Checkmark
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".pos {" + qPoint2Str(ptPosCheckmark) + "} px");
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".boundingRect {" + qRect2Str(rectBoundingCheckmark) + "} px");
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".position {" + physValRectCheckmark.center().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".getRect {" + physValRectCheckmark.toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".getSize {" + physValRectCheckmark.size().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    pTestStep->setExpectedValues(strlstExpectedValues);
+    // PlusSign
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".pos {" + qPoint2Str(ptPosPlusSign) + "} px");
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".boundingRect {" + qRect2Str(rectBoundingPlusSign) + "} px");
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".position {" + physValRectPlusSign.center().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".getRect {" + physValRectPlusSign.toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".getSize {" + physValRectPlusSign.size().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Rotate top group PlusSign-Checkmark-SmallRect
+    //----------------------------------------------
+
+    strGraphObjName = "PlusSign-Checkmark-SmallRect";
+    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
+    physValAngle.setVal(45.0);
+
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjName + ".setRotationAngle(" + physValAngle.toString() + ")",
+        /* strOperation    */ strGraphObjName + ".setRotationAngle(" + physValAngle.toString() + ")",
+        /* pGrpParent      */ pGrpModifyGroups,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("Method", "setRotationAngle");
+    pTestStep->setConfigValue("Angle", physValAngle.toString());
+    // Group PlusSign-Checkmark-SmallRect
+    ptPosPlusSignLinesCheckmarkSmallRect = QPointF(300.0, 300.0);
+    ptTLPlusSignLinesCheckmarkSmallRect = QPointF(250.0, bYAxisTopDown ? 250.0 : 350.0);
+    sizePlusSignLinesCheckmarkSmallRect = QSizeF(100.0, 100.0);
+    rectBoundingPlusSignLinesCheckmarkSmallRect = QRectF(QPointF(-50.0, -50.0), sizePlusSignLinesCheckmarkSmallRect);
+    physValRectPlusSignLinesCheckmarkSmallRect = CPhysValRect(*m_pDrawingScene, ptTLPlusSignLinesCheckmarkSmallRect, sizePlusSignLinesCheckmarkSmallRect);
+    physValRectPlusSignLinesCheckmarkSmallRect.setAngle(physValAngle);
+    strlstExpectedValues.clear();
+    strlstExpectedValues.append(strGraphObjName + ".pos {" + qPoint2Str(ptPosPlusSignLinesCheckmarkSmallRect) + "} px");
+    strlstExpectedValues.append(strGraphObjName + ".boundingRect {" + qRect2Str(rectBoundingPlusSignLinesCheckmarkSmallRect) + "} px");
+    strlstExpectedValues.append(strGraphObjName + ".position {" + physValRectPlusSignLinesCheckmarkSmallRect.center().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjName + ".getRect {" + physValRectPlusSignLinesCheckmarkSmallRect.toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjName + ".getSize {" + physValRectPlusSignLinesCheckmarkSmallRect.size().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjName + ".rotationAngle: " + physValAngle.toString());
+    // SmallRect
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".pos {" + qPoint2Str(ptPosSmallRect) + "} px");
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".boundingRect {" + qRect2Str(rectBoundingSmallRect) + "} px");
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".position {" + physValRectSmallRect.center().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".getRect {" + physValRectSmallRect.toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".getSize {" + physValRectSmallRect.size().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameSmallRect + ".rotationAngle: 45.0 " + Math::c_strSymbolDegree);
+    // Checkmark
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".pos {" + qPoint2Str(ptPosCheckmark) + "} px");
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".boundingRect {" + qRect2Str(rectBoundingCheckmark) + "} px");
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".position {" + physValRectCheckmark.center().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".getRect {" + physValRectCheckmark.toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".getSize {" + physValRectCheckmark.size().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNameCheckmark + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    pTestStep->setExpectedValues(strlstExpectedValues);
+    // PlusSign
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".pos {" + qPoint2Str(ptPosPlusSign) + "} px");
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".boundingRect {" + qRect2Str(rectBoundingPlusSign) + "} px");
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".position {" + physValRectPlusSign.center().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".getRect {" + physValRectPlusSign.toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".getSize {" + physValRectPlusSign.size().toString() + "} " + strUnit);
+    strlstExpectedValues.append(strGraphObjNamePlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Resize top group PlusSign-Checkmark-SmallRect
+    //----------------------------------------------
+
+    strGraphObjName = "PlusSign-Checkmark-SmallRect";
+    strGraphObjKeyInTree = pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjName);
+
     QPoint ptTopLeft(300.0, bYAxisTopDown ? 200.0 : 400.0);
-    CPhysValPoint physValPointTopLeft(*m_pDrawingScene, ptTopLeft);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjName + ".setTopLeft(" + qPoint2Str(ptTopLeft) + " " + unit.symbol() + ")",

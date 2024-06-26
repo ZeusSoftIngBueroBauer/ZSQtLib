@@ -515,6 +515,19 @@ public: // must overridables of base class CPhysValShape
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Invalidates the coordinates by setting width and height to 0.0 and by
+           invalidating the calculated selection points.
+*/
+void CPhysValRect::invalidate()
+//------------------------------------------------------------------------------
+{
+    m_ptCenter = QPointF();
+    m_size = QSizeF();
+    m_physValAngle = CPhysVal(0.0, Units.Angle.Degree, 0.1);
+    invalidateSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Returns true if the rectangle is valid, otherwise returns false.
 
     A valid rectangle has both width and height greater than 0.0.
@@ -1061,7 +1074,7 @@ void CPhysValRect::setWidth(double i_fWidth)
 
     The rectangle's right edge is implicitly changed.
 
-    Width must be greater than 0. For an invalid value an exception is thrown.
+    Width must be greater or equal than 0. For an invalid value an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -1073,12 +1086,18 @@ void CPhysValRect::setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth)
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
     double fWidth = i_physValWidth.getVal(m_unit);
-    if (fWidth <= 0.0) {
+    if (fWidth < 0.0) {
         throw CException(__FILE__, __LINE__, EResultInvalidValue);
     }
-    QLineF lineWidth(leftCenter().toQPointF(), rightCenter().toQPointF());
-    lineWidth.setLength(fWidth);
-    m_ptCenter = lineWidth.center();
+    if (fWidth > 0.0) {
+        QLineF lineWidth(leftCenter().toQPointF(), rightCenter().toQPointF());
+        lineWidth.setLength(fWidth);
+        m_ptCenter = lineWidth.center();
+    }
+    else {
+        QLineF lineHeight(topCenter().toQPointF(), bottomCenter().toQPointF());
+        m_ptCenter = lineHeight.center();
+    }
     m_size.setWidth(fWidth);
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));
@@ -1340,7 +1359,7 @@ void CPhysValRect::setHeight(double i_fHeight)
 
     The rectangle's bottom edge is implicitly changed.
 
-    Height must be greater than 0. For an invalid value an exception is thrown.
+    Height must be greater or equal than 0. For an invalid value an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -1352,12 +1371,18 @@ void CPhysValRect::setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight)
         throw CUnitConversionException(__FILE__, __LINE__, EResultDifferentPhysSizes);
     }
     double fHeight = i_physValHeight.getVal(m_unit);
-    if (fHeight <= 0.0) {
+    if (fHeight < 0.0) {
         throw CException(__FILE__, __LINE__, EResultInvalidValue);
     }
-    QLineF lineHeight(topCenter().toQPointF(), bottomCenter().toQPointF());
-    lineHeight.setLength(fHeight);
-    m_ptCenter = lineHeight.center();
+    if (fHeight > 0.0) {
+        QLineF lineHeight(topCenter().toQPointF(), bottomCenter().toQPointF());
+        lineHeight.setLength(fHeight);
+        m_ptCenter = lineHeight.center();
+    }
+    else {
+        QLineF lineWidth(leftCenter().toQPointF(), rightCenter().toQPointF());
+        m_ptCenter = lineWidth.center();
+    }
     m_size.setHeight(fHeight);
     quint16 uSelectionPointsToExclude = 0;
     ZS::System::setBit(uSelectionPointsToExclude, static_cast<quint8>(ESelectionPoint::TopLeft));

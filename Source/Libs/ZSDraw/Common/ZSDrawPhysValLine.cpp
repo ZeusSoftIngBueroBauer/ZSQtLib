@@ -360,9 +360,20 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns true if the rectangle is valid, otherwise returns false.
+/*! @brief Invalidates the coordinates by setting both the start and point to (0.0, 0.0).
+*/
+void CPhysValLine::invalidate()
+//------------------------------------------------------------------------------
+{
+    m_line = QLineF(QPointF(0.0, 0.0), QPointF(0.0, 0.0));
+}
 
-    A valid rectangle has a width() > 0 and height() > 0.
+//------------------------------------------------------------------------------
+/*! @brief Returns true if the line is valid, otherwise returns false.
+
+    A line is invalid if it does not have distinct start and end points.
+    The start and end points are considered distinct if qFuzzyCompare()
+    can distinguish them in at least one coordinate.
 */
 bool CPhysValLine::isValid() const
 //------------------------------------------------------------------------------

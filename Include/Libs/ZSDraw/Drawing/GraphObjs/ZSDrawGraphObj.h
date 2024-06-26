@@ -878,7 +878,6 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
-    //virtual void onGraphObjParentScenePosChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint);
@@ -978,11 +977,11 @@ protected: // instance members
          For the first change to be cached the temporary buffer will be allocated.
          After updating the changes the temporary buffer will be deleted. */
     CDrawSettings* m_pDrawSettingsTmp;
-    /*!< If valid defines the minimum size of the graphical object. */
+    /*!< If valid, defines the minimum size of the graphical object. */
     CPhysValSize m_physValSizeMinimum;
-    /*!< If valid defines the maximum size of the graphical object. */
+    /*!< If valid, defines the maximum size of the graphical object. */
     CPhysValSize m_physValSizeMaximum;
-    /*!< If valid defines the fixed size of the graphical object. */
+    /*!< If valid, defines the fixed size of the graphical object. */
     CPhysValSize m_physValSizeFixed;
     /*!< Alignments of the graphical object to the parent group.. */
     QList<SGraphObjAlignment> m_arAlignments;
@@ -1008,10 +1007,17 @@ protected: // instance members
     QVector<double> m_arfZValues;
     /*!< Rotation angle of this item. */
     ZS::PhysVal::CPhysVal m_physValRotationAngle;
+    /*!< When adding the item to a group the current group rectangle is taken over as the
+         original group rectangle. If the parent group is resized the scale factor is calculated
+         using the original group rectangle and current group rectangle. As long as the item
+         does not have a parent group, the rectangle is invalid. */
+    CPhysValRect m_physValRectGroupOrig;
+    /*!< Current scale factor for width and height of the parent group.
+         Calculated by taking m_physValRectGroupOrig into account. */
+    double m_fGroupScaleX;
+    double m_fGroupScaleY;
     /*!< Transformations as applied by modifying (scaling, rotating, shearing) the object directly. */
     //QTransform m_transform;
-    /*!< Transformations as applied by the parent group. */
-    //QTransform m_transformByGroup;
     ///*!< Current scene position of the object. To keep the relative position of selection points
     //     and labels to their "parent" objects up to date on the scene, the objects need to track
     //     their current scene position. If the objects are childs of groups and the groups are
@@ -1136,6 +1142,7 @@ protected: // instance members
     int m_iGeometryChangedSignalBlockedCounter;
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */
+protected: // instance members (method tracing)
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;

@@ -414,9 +414,20 @@ public: // must overridables of base class CPhysValShape
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns true if the rectangle is valid, otherwise returns false.
+/*! @brief Sets both x and y coordinates to 0.0.
 
-    A valid rectangle has both width and height greater than 0.0.
+    @note The point is still valid after invoking this method as a point is always
+          valid independent of the x and y values.
+*/
+void CPhysValPoint::invalidate()
+//------------------------------------------------------------------------------
+{
+    m_pt = QPointF(0.0, 0.0);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns true as a point as always valid (even if both x and y coordinates
+           are set to 0.0.
 */
 bool CPhysValPoint::isValid() const
 //------------------------------------------------------------------------------
@@ -425,14 +436,13 @@ bool CPhysValPoint::isValid() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns true if the rectangle is null, otherwise returns false.
-
-    A null rectangle has both width and height equal to 0.0.
+/*! @brief Returns true if both the x and y coordinates are set to 0.0 (ignoring the sign);
+           otherwise returns false.
 */
 bool CPhysValPoint::isNull() const
 //------------------------------------------------------------------------------
 {
-    return false;
+    return m_pt.isNull();
 }
 
 //------------------------------------------------------------------------------
