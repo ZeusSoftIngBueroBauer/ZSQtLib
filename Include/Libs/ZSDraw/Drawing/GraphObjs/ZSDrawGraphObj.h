@@ -904,6 +904,7 @@ protected: // auxiliary instance methods (method tracing)
     void emit_labelChanged(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
+    QPointF setPosOrig(const QPointF& i_ptPos);
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
     virtual void QGraphicsItem_setScale(double i_fFactor);
     virtual void QGraphicsItem_setRotation(double i_fAngle_degree);
@@ -1007,15 +1008,21 @@ protected: // instance members
     QVector<double> m_arfZValues;
     /*!< Rotation angle of this item. */
     ZS::PhysVal::CPhysVal m_physValRotationAngle;
+    /*!< The original, untransformed position of the item in pixels.
+         This is the position of the item in parent or scene coordinates at the
+         time the item was added to the group. When resizing the group the
+         parent groups scale factor are applied to the original untransformed
+         position to get the new position of the item. */
+    QPointF m_ptPosOrig;
     /*!< When adding the item to a group the current group rectangle is taken over as the
          original group rectangle. If the parent group is resized the scale factor is calculated
          using the original group rectangle and current group rectangle. As long as the item
          does not have a parent group, the rectangle is invalid. */
-    CPhysValRect m_physValRectGroupOrig;
+    CPhysValRect m_physValRectParentGroupOrig;
     /*!< Current scale factor for width and height of the parent group.
          Calculated by taking m_physValRectGroupOrig into account. */
-    double m_fGroupScaleX;
-    double m_fGroupScaleY;
+    double m_fParentGroupScaleX;
+    double m_fParentGroupScaleY;
     /*!< Transformations as applied by modifying (scaling, rotating, shearing) the object directly. */
     //QTransform m_transform;
     ///*!< Current scene position of the object. To keep the relative position of selection points

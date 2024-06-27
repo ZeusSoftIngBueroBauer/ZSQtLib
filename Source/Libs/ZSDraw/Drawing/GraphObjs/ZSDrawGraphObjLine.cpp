@@ -357,6 +357,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
     // parent item's bounding rectangle.
     // The coordinates need to be transformed into the local coordinate system of the graphical
     // object whose origin point is the center of the objects bounding rectangle.
+
     // First determine the position of the line in the parent's (scene or group) coordinate system.
     QLineF lineF;
     if (parentGroup() != nullptr) {
@@ -368,10 +369,10 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
 
     // Transform the parent coordinates into local coordinate system.
     // The origin is the center point of the line.
-    QPointF ptPos = lineF.center();
+    QPointF ptPos = lineF.center(); // lineF here still in parent or scene coordinates
     QPointF pt1 = lineF.p1() - ptPos;
     QPointF pt2 = lineF.p2() - ptPos;
-    lineF = QLineF(pt1, pt2);
+    lineF = QLineF(pt1, pt2); // lineF now in local coordinates
 
     if (parentGroup() != nullptr) {
         ptPos = parentGroup()->mapFromTopLeftOfBoundingRect(ptPos);

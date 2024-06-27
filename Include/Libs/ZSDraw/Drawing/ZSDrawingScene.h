@@ -260,6 +260,7 @@ protected: // auxiliary instance methods
     //void forwardMouseEventToObjectsHit(QGraphicsSceneMouseEvent* i_pEv);
     //void invalidateItemInAcceptingHoverEventsList(QGraphicsItem* i_pGraphicsItem);
     //void invalidateItemInBroughtToFrontList(QGraphicsItem* i_pGraphicsItem);
+    void updateDivLinesMetrics();
     void drawGridLines(QPainter* i_pPainter, const QRectF& i_rect);
     void drawPhysValShapes(QPainter* i_pPainter, const QRectF& i_rect);
     QRectF getBoundingRect(const QList<QGraphicsItem*>& i_arpGraphicsItems) const;

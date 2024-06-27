@@ -327,69 +327,7 @@ void CDrawingScene::setDrawingSize( const CDrawingSize& i_drawingSize)
         QSizeF sizeF = m_drawingSize.imageSizeInPixels();
         QRectF rect(QPointF(0.0, 0.0), sizeF);
         setSceneRect(rect);
-
-        if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-            // Just a small note about pixel range and min and max values:
-            // If you don't use a metric system like in drawings and define
-            // a 500 pixel range, min is at 0, max is at 499. To have min
-            // and max set to 0 and 500 a range of 501 pixels must be defined.
-            // Pixel drawing: the origin is at the top left corner:
-            // XScaleMin = XMin_px, XScaleMax = XMax_px
-            // YScaleMin = XMin_px, YScaleMax = XMax_px
-            // The greater the value, the greater the pixel coordinate on the screen.
-            m_divLinesMetricsX.setUseWorldCoordinateTransformation(false);
-            m_divLinesMetricsX.setScale(
-                /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ m_drawingSize.imageWidthInPixels() - 1,
-                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal());
-            // The Y scale direction is from top to bottom.
-            m_divLinesMetricsY.setUseWorldCoordinateTransformation(false);
-            m_divLinesMetricsY.setScale(
-                /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels() - 1,
-                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal());
-            //m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
-        }
-        else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
-            // In order to draw division lines at min and max scale the width
-            // in pixels got to be extended by one pixel when using metric scales
-            // (see also documentation at class CScaleDivLines). This must have
-            // been taken into account by the CDrawingSize class when calculating
-            // the width and height of the image size in pixels.
-            // Metric units:
-            // Depending on the YScaleAxisOrientation the origin is either
-            // at the top left or bottom left corner.
-            // XScaleMin = XMin_px, XScaleMax = XMax_px
-            // YScaleMin = XMax_px, YScaleMax = XMin_px
-            // The greater the value, the less the pixel coordinate on the screen.
-            m_divLinesMetricsX.setUseWorldCoordinateTransformation(true);
-            m_divLinesMetricsX.setScale(
-                /* fScaleMinVal */ 0.0,
-                /* fScaleMaxVal */ m_drawingSize.metricImageWidth().getVal(),
-                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
-                /* fMin_px      */ 0,
-                /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1);
-            m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
-            if (m_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
-                m_divLinesMetricsY.setScale(
-                    /* fScaleMinVal */ 0.0,
-                    /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
-                    /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
-                    /* fMin_px      */ 0,
-                    /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
-            }
-            else {
-                m_divLinesMetricsY.setScale(
-                    /* fScaleMinVal */ 0.0,
-                    /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
-                    /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
-                    /* fMin_px      */ m_drawingSize.imageHeightInPixels() - 1,
-                    /* fMax_px      */ 0);
-            }
-        }
-        m_divLinesMetricsX.update();
-        m_divLinesMetricsY.update();
-
+        updateDivLinesMetrics();
         update();
         emit_drawingSizeChanged(m_drawingSize);
     }
@@ -4989,6 +4927,79 @@ protected: // auxiliary methods
 //        }
 //    }
 //}
+
+//------------------------------------------------------------------------------
+void CDrawingScene::updateDivLinesMetrics()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "updateDivLinesMetrics",
+        /* strAddInfo   */ "" );
+
+    if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        // Just a small note about pixel range and min and max values:
+        // If you don't use a metric system like in drawings and define
+        // a 500 pixel range, min is at 0, max is at 499. To have min
+        // and max set to 0 and 500 a range of 501 pixels must be defined.
+        // Pixel drawing: the origin is at the top left corner:
+        // XScaleMin = XMin_px, XScaleMax = XMax_px
+        // YScaleMin = XMin_px, YScaleMax = XMax_px
+        // The greater the value, the greater the pixel coordinate on the screen.
+        m_divLinesMetricsX.setUseWorldCoordinateTransformation(false);
+        m_divLinesMetricsX.setScale(
+            /* fScaleMinVal */ 0.0,
+            /* fScaleMaxVal */ m_drawingSize.imageWidthInPixels() - 1,
+            /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal());
+        // The Y scale direction is from top to bottom.
+        m_divLinesMetricsY.setUseWorldCoordinateTransformation(false);
+        m_divLinesMetricsY.setScale(
+            /* fScaleMinVal */ 0.0,
+            /* fScaleMaxVal */ m_drawingSize.imageHeightInPixels() - 1,
+            /* fScaleResVal */ m_drawingSize.imageCoorsResolution(Units.Length.px).getVal());
+        //m_divLinesMetricsY.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
+    }
+    else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
+        // In order to draw division lines at min and max scale the width
+        // in pixels got to be extended by one pixel when using metric scales
+        // (see also documentation at class CScaleDivLines). This must have
+        // been taken into account by the CDrawingSize class when calculating
+        // the width and height of the image size in pixels.
+        // Metric units:
+        // Depending on the YScaleAxisOrientation the origin is either
+        // at the top left or bottom left corner.
+        // XScaleMin = XMin_px, XScaleMax = XMax_px
+        // YScaleMin = XMax_px, YScaleMax = XMin_px
+        // The greater the value, the less the pixel coordinate on the screen.
+        m_divLinesMetricsX.setUseWorldCoordinateTransformation(true);
+        m_divLinesMetricsX.setScale(
+            /* fScaleMinVal */ 0.0,
+            /* fScaleMaxVal */ m_drawingSize.metricImageWidth().getVal(),
+            /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
+            /* fMin_px      */ 0,
+            /* fMax_px      */ m_drawingSize.imageWidthInPixels() - 1);
+        m_divLinesMetricsY.setUseWorldCoordinateTransformation(true);
+        if (m_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+            m_divLinesMetricsY.setScale(
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
+                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
+                /* fMin_px      */ 0,
+                /* fMax_px      */ m_drawingSize.imageHeightInPixels() - 1);
+        }
+        else {
+            m_divLinesMetricsY.setScale(
+                /* fScaleMinVal */ 0.0,
+                /* fScaleMaxVal */ m_drawingSize.metricImageHeight().getVal(),
+                /* fScaleResVal */ m_drawingSize.imageCoorsResolution(m_drawingSize.unit()).getVal(),
+                /* fMin_px      */ m_drawingSize.imageHeightInPixels() - 1,
+                /* fMax_px      */ 0);
+        }
+    }
+    m_divLinesMetricsX.update();
+    m_divLinesMetricsY.update();
+}
 
 //------------------------------------------------------------------------------
 void CDrawingScene::drawGridLines(QPainter* i_pPainter, const QRectF& i_rect)
