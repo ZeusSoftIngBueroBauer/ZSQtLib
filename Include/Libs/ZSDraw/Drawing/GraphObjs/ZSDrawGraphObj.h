@@ -759,7 +759,6 @@ public: // overridables
     //virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
-    virtual void updateOriginalPhysValCoors();
 public: // overridables
     virtual void setPosition(const CPhysValPoint& i_physValPos);
     virtual CPhysValPoint position() const;
@@ -884,13 +883,17 @@ protected slots: // overridables
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
+public: // instance methods
+    bool setParentGroupIsAboutToAddChild(bool i_bSet);
+public: // overridables
+    virtual void updateOriginalPhysValCoors();
 protected: // overridables
+    virtual void updateOriginalPhysValCoorsInParent();
     //virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
-protected: // auxiliary instance methods
-    void emit_aboutToBeDestroyed();
 protected: // auxiliary instance methods (method tracing)
+    void emit_aboutToBeDestroyed();
     void emit_editModeChanged(const CEnumEditMode& i_eMode);
     void emit_selectedChanged(bool i_bIsSelected);
     //void emit_scenePosChanged();
@@ -1146,10 +1149,16 @@ protected: // instance members
     int m_iItemChangeUpdateOriginalCoorsBlockedCounter;
     /*!< To avoid that a signal is emitted twice for the same reason, the signal blocked counter
          may be set to a value greater than 0 (e.g. using CRefCountGuard). */
-    int m_iGeometryChangedSignalBlockedCounter;
+    int m_iGeometryOnSceneChangedSignalBlockedCounter;
+    /*!< When adding a new child already existing childs should not calculate new positions and must not
+         resize themselves if the geometry of the parent group is changed by adding the new child.
+         The size of the already existing childs does not change. Only their position within the group.
+         But the group will set the new position of the already existing childs. For this the childs
+         must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set. */
+    int m_bParentGroupIsAboutToAddChild;
+protected: // instance members (method tracing)
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */
-protected: // instance members (method tracing)
     ZS::System::CTrcAdminObj* m_pTrcAdminObjCtorsAndDtor;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjItemChange;
     ZS::System::CTrcAdminObj* m_pTrcAdminObjBoundingRect;

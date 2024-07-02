@@ -505,10 +505,24 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+void CPhysValPoint::setX( double i_fX )
+//------------------------------------------------------------------------------
+{
+    setX( CPhysVal(i_fX, m_unit) );
+}
+
+//------------------------------------------------------------------------------
 void CPhysValPoint::setX( const CPhysVal& i_physValX )
 //------------------------------------------------------------------------------
 {
     m_pt.setX(i_physValX.getVal(m_unit));
+}
+
+//------------------------------------------------------------------------------
+void CPhysValPoint::setY( double i_fY )
+//------------------------------------------------------------------------------
+{
+    setY( CPhysVal(i_fY, m_unit) );
 }
 
 //------------------------------------------------------------------------------
@@ -543,8 +557,7 @@ QPointF CPhysValPoint::toQPointF(const CUnit& i_unit) const
     }
     QPointF pt = m_pt;
     if (i_unit != m_unit) {
-        pt.setX(CPhysVal(m_pt.x(), m_unit).getVal(i_unit));
-        pt.setY(CPhysVal(m_pt.y(), m_unit).getVal(i_unit));
+        pt = m_pDrawingScene->convert(*this, i_unit).toQPointF();
     }
     return pt;
 }

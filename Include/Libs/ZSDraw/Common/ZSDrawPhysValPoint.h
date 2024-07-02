@@ -131,7 +131,9 @@ public: // instance methods
     double resolution() const;
     ZS::PhysVal::CUnit unit() const;
 public: // instance methods
+    void setX(double i_fX);
     void setX(const ZS::PhysVal::CPhysVal& i_physValX);
+    void setY(double i_fY);
     void setY(const ZS::PhysVal::CPhysVal& i_physValY);
 public: // instance methods (to convert the values into another unit)
     QPointF toQPointF() const;

@@ -371,17 +371,21 @@ void CPhysValLine::invalidate()
 //------------------------------------------------------------------------------
 /*! @brief Returns true if the line is valid, otherwise returns false.
 
-    A line is invalid if it does not have distinct start and end points.
-    The start and end points are considered distinct if qFuzzyCompare()
-    can distinguish them in at least one coordinate.
+    A line is always valid, even if it does not have distinct start and end points.
 */
 bool CPhysValLine::isValid() const
 //------------------------------------------------------------------------------
 {
-    return !m_line.isNull();
+    return true;
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Returns true if the line is valid, otherwise returns false.
+
+    A line is invalid if it does not have distinct start and end points.
+    The start and end points are considered distinct if qFuzzyCompare()
+    can distinguish them in at least one coordinate.
+*/
 bool CPhysValLine::isNull() const
 //------------------------------------------------------------------------------
 {
@@ -632,6 +636,21 @@ void CPhysValLine::setPoints(
 //------------------------------------------------------------------------------
 /*! @brief Sets the horizontal component of the lines vector by moving p2.
 
+    @param [in] i_fDX The value has to be provided in the current unit of the line.
+
+    |<- DX ->|
+    x--------x
+    p1      p2
+*/
+void CPhysValLine::setDX( double i_fDX )
+//------------------------------------------------------------------------------
+{
+    setDX( CPhysVal(i_fDX, m_unit) );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the horizontal component of the lines vector by moving p2.
+
     |<- DX ->|
     x--------x
     p1      p2
@@ -640,6 +659,23 @@ void CPhysValLine::setDX( const CPhysVal& i_physValDX )
 //------------------------------------------------------------------------------
 {
     m_line.setP2(QPointF(m_line.x1() + i_physValDX.getVal(m_unit), m_line.y2()));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the vertical component of the lines vector by moving p2.
+
+    @param [in] i_fDY The value has to be provided in the current unit of the line.
+
+    x p1 --
+    |     ^
+    |     DY
+    |     
+    x p2 --
+*/
+void CPhysValLine::setDY( double i_fDY )
+//------------------------------------------------------------------------------
+{
+    setDY( CPhysVal(i_fDY, m_unit) );
 }
 
 //------------------------------------------------------------------------------

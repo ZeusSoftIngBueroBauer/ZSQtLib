@@ -161,7 +161,9 @@ public: // instance methods
     void setLine(const QLineF& i_line, const ZS::PhysVal::CUnit& i_unit);
     void setPoints(const QPointF& i_p1, const QPointF& i_p2, const ZS::PhysVal::CUnit& i_unit);
     void setPoints(const CPhysValPoint& i_physValP1, const CPhysValPoint& i_physValP2);
+    void setDX(double i_fDX);
     void setDX(const ZS::PhysVal::CPhysVal& i_physValDX);
+    void setDY(double i_fDY);
     void setDY(const ZS::PhysVal::CPhysVal& i_physValDY);
     void setLength(double i_fLength);
     void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);

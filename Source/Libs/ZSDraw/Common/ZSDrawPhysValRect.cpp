@@ -58,8 +58,8 @@ public: // ctors
 CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene),
-    m_ptCenter(),
-    m_size(),
+    m_ptCenter(0.0, 0.0),
+    m_size(0.0, 0.0),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValPoints(),
     m_arbPointsCalculated()
@@ -74,8 +74,8 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene, i_unit),
-    m_ptCenter(),
-    m_size(),
+    m_ptCenter(0.0, 0.0),
+    m_size(0.0, 0.0),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValPoints(),
     m_arbPointsCalculated()
@@ -410,10 +410,10 @@ CPhysValRect::CPhysValRect(
     if (i_physValTopLeft.resolution() != i_physValSize.resolution()) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    if (i_physValSize.width() < 0.0) {
+    if (i_physValSize.width().getVal() < 0.0) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
-    else if (i_physValSize.height() < 0.0) {
+    else if (i_physValSize.height().getVal() < 0.0) {
         throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
     }
     m_ptCenter.setX(i_physValTopLeft.x().getVal() + i_physValSize.width().getVal()/2.0);
@@ -530,7 +530,7 @@ void CPhysValRect::invalidate()
 //------------------------------------------------------------------------------
 /*! @brief Returns true if the rectangle is valid, otherwise returns false.
 
-    A valid rectangle has both width and height greater than 0.0.
+    A valid rectangle has both width and height greater or equal than 0.0.
 */
 bool CPhysValRect::isValid() const
 //------------------------------------------------------------------------------
@@ -971,7 +971,7 @@ void CPhysValRect::setCenter(const CPhysValPoint& i_physValPoint)
 
     The rectangle's right and bottom edges are implicitly changed.
 
-    Width and height must be greater than 0. For an invalid size an exception is thrown.
+    Width and height must be greater than or equal to 0. For an invalid size an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -990,7 +990,7 @@ void CPhysValRect::setSize(const QSizeF& i_size)
 
     The rectangle's right and bottom edges are implicitly changed.
 
-    Width and height must be greater than 0. For an invalid size an exception is thrown.
+    Width and height must be greater than or equal to 0. For an invalid size an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -1339,7 +1339,7 @@ void CPhysValRect::setWidthByMovingRightCenter(const CPhysValPoint& i_physValPoi
 
     The rectangle's bottom edge is implicitly changed.
 
-    Height must be greater than 0. For an invalid value an exception is thrown.
+    Height must be greater than or equal to 0. For an invalid value an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.
@@ -1359,7 +1359,7 @@ void CPhysValRect::setHeight(double i_fHeight)
 
     The rectangle's bottom edge is implicitly changed.
 
-    Height must be greater or equal than 0. For an invalid value an exception is thrown.
+    Height must be greater than or equal to 0. For an invalid value an exception is thrown.
 
     As the rectangle may be rotated the new center point must be calculated using trigonometric
     functions applied to the distance (radius) of the corner point to the center point.

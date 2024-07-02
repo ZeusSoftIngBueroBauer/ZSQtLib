@@ -185,7 +185,6 @@ public: // instance methods
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
 public: // must overridables of base class CGraphObj
-    virtual void updateOriginalPhysValCoors() override;
     //virtual QRectF getOriginalBoundingRectInParent() const override;
 public: // must overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
@@ -222,6 +221,8 @@ protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+protected: // overridables of base class CGraphObj
+    virtual void updateOriginalPhysValCoors() override;
 protected: // auxiliary instance methods
     void updateDivLinesMetrics(const QSizeF& i_size_px, const QSizeF& i_size_metric);
     QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect) const;
@@ -229,8 +230,11 @@ protected: // auxiliary instance methods
     void paintGridLabelsDivisionLines(QPainter* i_pPainter);
     void paintGridLabels(QPainter* i_pPainter);
 protected: // auxiliary instance methods (method tracing)
-    CPhysValRect setRectOrig(const CPhysValRect& i_physValRect);
-    QRectF setRectOrig(const QRectF& i_rect);
+    CPhysValRect setPhysValRectOrig(const CPhysValRect& i_physValRect);
+    QRectF QGraphicsItemGroup_setRect(const QRectF& i_rect);
+    void QGraphicsItemGroup_addToGroup(QGraphicsItem* i_pGraphicsItemChild);
+    void QGraphicsItemGroup_removeFromGroup(QGraphicsItem* i_pGraphicsItemChild);
+protected: // auxiliary instance methods (method tracing)
     void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 public: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     virtual void traceThisPositionInfo(

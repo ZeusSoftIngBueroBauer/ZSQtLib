@@ -154,7 +154,6 @@ public: // overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
 public: // must overridables of base class CGraphObj
-    virtual void updateOriginalPhysValCoors() override;
     //virtual QRectF getOriginalBoundingRectInParent() const override;
     //virtual void setCurrentBoundingRectInParent(const QRectF& i_rectBounding) override;
     //virtual void setGroupScale(double i_fXScale, double i_fYScale) override;
@@ -195,14 +194,17 @@ protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
+protected: // overridables of base class CGraphObj
+    virtual void updateOriginalPhysValCoors() override;
 protected: // instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
 protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
-    CPhysValLine setLineOrig(const CPhysValLine& i_physValLine);
+    CPhysValLine setPhysValLineOrig(const CPhysValLine& i_physValLine);
     QLineF QGraphicsLineItem_setLine(const QLineF& i_line);
     QLineF QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)

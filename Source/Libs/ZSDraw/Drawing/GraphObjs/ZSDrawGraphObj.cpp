@@ -880,7 +880,8 @@ CGraphObj::CGraphObj(
     //m_arKeyPressEventFunctions(),
     //m_arKeyReleaseEventFunctions(),
     m_iItemChangeUpdateOriginalCoorsBlockedCounter(0),
-    m_iGeometryChangedSignalBlockedCounter(0),
+    m_iGeometryOnSceneChangedSignalBlockedCounter(0),
+    m_bParentGroupIsAboutToAddChild(false),
     m_pTrcAdminObjCtorsAndDtor(nullptr),
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
@@ -1116,7 +1117,8 @@ CGraphObj::~CGraphObj()
     //m_arKeyPressEventFunctions;
     //m_arKeyReleaseEventFunctions;
     m_iItemChangeUpdateOriginalCoorsBlockedCounter = 0;
-    m_iGeometryChangedSignalBlockedCounter = 0;
+    m_iGeometryOnSceneChangedSignalBlockedCounter = 0;
+    m_bParentGroupIsAboutToAddChild = false;
     // Method Tracing
     m_pTrcAdminObjCtorsAndDtor = nullptr;
     m_pTrcAdminObjItemChange = nullptr;
@@ -4312,42 +4314,6 @@ QRectF CGraphObj::getBoundingRect() const
     return rctBounding;
 }
 
-//------------------------------------------------------------------------------
-/*! @brief Called by the parent group if it's bounding rectangle has been changed and
-           the groups physical origin point (top left or bottom left corner) may have
-           been changed.
-
-    The childs must update their original shape point coordinates. This is also necessary
-    if the groups position and also the childs position (in graphics item pixell coordinates)
-    have not been changed.
-*/
-void CGraphObj::updateOriginalPhysValCoors()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::updateOriginalPhysValCoors",
-        /* strAddInfo   */ "" );
-    #pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    // Before mapping to parent or scene, the rotation will be reset.
-    // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryOnSceneChanged signal ..
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryChangedSignalBlockedCounter);
-    QGraphicsItem_setRotation(0.0);
-    if (parentGroup() != nullptr) {
-    }
-    else {
-        // Please note that "mapToScene" maps the local coordinates relative to the
-        // top left corner of the item's bounding rectangle and there is no need to
-        // call "mapToBoundingRectTopLeft" beforehand.
-    }
-    QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
-}
-
 /*==============================================================================
 public: // overridables
 ==============================================================================*/
@@ -7462,12 +7428,19 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
     Other graphical objects must override this method to update their local graphics
     item coordinates and to update their position in the parent group.
 
+    @note For usual standard shapes (not labels or selection points) this method must
+          return immediately if the parent group is about to add another child
+          (see flag m_bParentGroupIsAboutToAddChild).
+
     @param [in] i_pGraphObjParent
         Pointer to parent item whose geometry on the scene has been changed.
 */
 void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
+    if (m_bParentGroupIsAboutToAddChild) {
+        return;
+    }
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = i_pGraphObjParent->keyInTree();
@@ -7481,10 +7454,14 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjPar
 
     if (i_pGraphObjParent->isGroup()) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
-        CPhysValRect physValRectGroupCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
-        if (m_physValRectParentGroupOrig != physValRectGroupCurr) {
-            m_fParentGroupScaleX = physValRectGroupCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal();
-            m_fParentGroupScaleY = physValRectGroupCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
+        CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
+        if (m_physValRectParentGroupOrig != physValRectGroupParentCurr) {
+            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
+                m_fParentGroupScaleX = physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal();
+            }
+            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
+                m_fParentGroupScaleY = physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
+            }
         }
     }
 
@@ -7601,7 +7578,7 @@ void CGraphObj::onLabelAboutToBeDestroyed(CGraphObj* i_pLabel)
 }
 
 //------------------------------------------------------------------------------
-/*! Informs the graphical object that one of its labels is going to be destroyed.
+/*! @brief Informs the graphical object that one of its labels is going to be destroyed.
 
     On clearing the drawing scene all graphical objects will be destroyed.
     Labels may be destroyed before its parent object the labels belong to.
@@ -7632,8 +7609,127 @@ void CGraphObj::onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel)
 }
 
 /*==============================================================================
+public: // instance methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*  @brief Sets the flag that the parent group is about to add another child.
+
+    When adding a new child already existing childs should not calculate new positions
+    and must not resize themselves if the geometry of the parent group is changed by
+    adding the new child. The size of the already existing childs does not change.
+    Only their position within the group. But the group will set the new position of
+    the already existing childs. For this the childs must not react on the
+    "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
+
+    @param [in] i_bSet
+        true, if the parent groups starts adding a child, false if the child has been added.
+
+    @return Previous value of the flag.
+*/
+bool CGraphObj::setParentGroupIsAboutToAddChild(bool i_bSet)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bSet);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setParentGroupIsAboutToAddChild",
+        /* strAddInfo   */ strMthInArgs );
+
+    int iAboutToAddChildPrev = i_bSet;
+    m_bParentGroupIsAboutToAddChild = i_bSet;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(iAboutToAddChildPrev);
+    }
+    return iAboutToAddChildPrev;
+}
+
+/*==============================================================================
 protected: // overridables
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Called by the itemChange method if the position of the item has been changed.
+
+    The graphical object must update their original shape point coordinates.
+
+    @note This method is also if the item is added to a group as on calling "setPos"
+          the position may not have been changed. The group therefore forces the child
+          to update it's original shape points in physical coordinates relative to either
+          the top left or bottom left corner of the parents bounding rectangle.
+*/
+void CGraphObj::updateOriginalPhysValCoors()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::updateOriginalPhysValCoors",
+        /* strAddInfo   */ "" );
+    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    // Before mapping to parent or scene, the rotation will be reset.
+    // Otherwise transformed coordinates will be returned.
+    // And itemChange is called but should not emit the geometryOnSceneChanged signal ..
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+    double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+    if (fRotationAngle_degree != 0.0) {
+        QGraphicsItem_setRotation(0.0);
+    }
+    if (parentGroup() != nullptr) {
+    }
+    else {
+        // Please note that "mapToScene" maps the local coordinates relative to the
+        // top left corner of the item's bounding rectangle and there is no need to
+        // call "mapToBoundingRectTopLeft" beforehand.
+    }
+    if (fRotationAngle_degree != 0.0) {
+        QGraphicsItem_setRotation(fRotationAngle_degree);
+    }
+    updateOriginalPhysValCoorsInParent();
+    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Called by the itemChange method if the parent item has been changed.
+
+    The graphical object must update their original shape point coordinates
+    in parent coordinate. Those are used to rescale and reposition this item
+    if the parent is resized.
+*/
+void CGraphObj::updateOriginalPhysValCoorsInParent()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::updateOriginalPhysValCoorsInParent",
+        /* strAddInfo   */ "" );
+    traceParentGroupPositionInfo(mthTracer, EMethodDir::Enter);
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    CGraphObjGroup* pGraphObjGroupParent = parentGroup();
+    if (pGraphObjGroupParent != nullptr) {
+        m_physValRectParentGroupOrig = pGraphObjGroupParent->getRect();
+    }
+    else {
+        m_physValRectParentGroupOrig.invalidate();
+    }
+    m_ptPosOrig = pGraphicsItemThis->pos();
+    m_fParentGroupScaleX = 1.0;
+    m_fParentGroupScaleY = 1.0;
+
+    traceParentGroupPositionInfo(mthTracer, EMethodDir::Leave);
+}
 
 ////------------------------------------------------------------------------------
 //void CGraphObj::updateTransform()
@@ -7816,7 +7912,7 @@ void CGraphObj::emit_selectedChanged(bool i_bIsSelected)
 void CGraphObj::emit_geometryOnSceneChanged()
 //------------------------------------------------------------------------------
 {
-    if (m_iGeometryChangedSignalBlockedCounter > 0) {
+    if (m_iGeometryOnSceneChangedSignalBlockedCounter > 0) {
         return;
     }
     CMethodTracer mthTracer(
@@ -8158,15 +8254,6 @@ void CGraphObj::traceThisPositionInfo(
             else strRuntimeInfo = "   ";
             strRuntimeInfo += "Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
             i_mthTracer.trace(strRuntimeInfo);
-            if (parentGroup() != nullptr) {
-                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-                else strRuntimeInfo = "   ";
-                strRuntimeInfo += "PosOrig {" + qPoint2Str(m_ptPosOrig) + " px}" +
-                    ", ParentGroup {RectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
-                    ", Scale {X: " + QString::number(m_fParentGroupScaleX) + ", Y: " + QString::number(m_fParentGroupScaleY) + "}}";
-                i_mthTracer.trace(strRuntimeInfo);
-            }
         }
     }
 }
@@ -8180,32 +8267,42 @@ void CGraphObj::traceParentGroupPositionInfo(
         const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
         if (pGraphicsItemThis != nullptr) {
             QGraphicsItem* pGraphicsItemParent = pGraphicsItemThis->parentItem();
-            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParent);
-            if (pGraphicsItemParent != nullptr && pGraphObjGroup != nullptr) {
-                QPointF ptPos = pGraphicsItemParent->pos();
-                QPointF ptScenePos = pGraphicsItemParent->scenePos();
-                QRectF rectBounding = pGraphObjGroup->getBoundingRect();
+            CGraphObjGroup* pGraphObjGroupParent = parentGroup();
+            QString strRuntimeInfo;
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
+            strRuntimeInfo += "ParentGroup: " + QString(pGraphObjGroupParent == nullptr ? "null" : pGraphObjGroupParent->path());
+            if (pGraphicsItemParent == nullptr && pGraphObjGroupParent != nullptr) {
+                strRuntimeInfo += ", !! ParentGraphicsItem: null !!";
+            }
+            i_mthTracer.trace(strRuntimeInfo);
+            if (pGraphicsItemParent != nullptr || pGraphObjGroupParent != nullptr) {
+                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+                else strRuntimeInfo = "   ";
+                strRuntimeInfo += " . ThisInParent PosOrig {" + qPoint2Str(m_ptPosOrig) + " px}" +
+                    ", RectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
+                    ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 1) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 1) + "}";
+                i_mthTracer.trace(strRuntimeInfo);
+                QPointF ptPos = pGraphicsItemParent == nullptr ? QPointF() : pGraphicsItemParent->pos();
+                QPointF ptScenePos = pGraphicsItemParent == nullptr ? QPointF() : pGraphicsItemParent->scenePos();
+                QRectF rectBounding = pGraphObjGroupParent == nullptr ? QRectF() : pGraphObjGroupParent->getBoundingRect();
                 QPointF ptCenterPos = rectBounding.center();
-                QString strRuntimeInfo;
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
                 else strRuntimeInfo = "   ";
-                strRuntimeInfo += "ParentGroup: " + QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path());
+                strRuntimeInfo += " . Parent { PhysValRect {" + QString(pGraphObjGroupParent == nullptr ? "null" : pGraphObjGroupParent->getRect().toString()) + "}";
                 i_mthTracer.trace(strRuntimeInfo);
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
                 else strRuntimeInfo = "   ";
-                strRuntimeInfo += "  PhysValRect {" + pGraphObjGroup->getRect().toString() + "}";
+                strRuntimeInfo += " .. BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
                 i_mthTracer.trace(strRuntimeInfo);
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
                 else strRuntimeInfo = "   ";
-                strRuntimeInfo += "  BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
-                i_mthTracer.trace(strRuntimeInfo);
-                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-                else strRuntimeInfo = "   ";
-                strRuntimeInfo += "  Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}";
+                strRuntimeInfo += " .. Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "} }";
                 i_mthTracer.trace(strRuntimeInfo);
             }
         }
@@ -8264,8 +8361,8 @@ void CGraphObj::traceGraphObjStates(
         else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
         else strRuntimeInfo = "   ";
         strRuntimeInfo +=
-            "ItemChangeUpdateOriginalCoorsBlockedCounter: " + QString::number(m_iItemChangeUpdateOriginalCoorsBlockedCounter) +
-            ", SignalBlockedCounter {GeometryChanged: " + QString::number(m_iGeometryChangedSignalBlockedCounter) + "}";
+            "SignalBlockedCounter {ItemChangeUpdateOriginalCoors: " + QString::number(m_iItemChangeUpdateOriginalCoorsBlockedCounter) +
+            ", GeometryOnSceneChanged: " + QString::number(m_iGeometryOnSceneChangedSignalBlockedCounter) + "}";
         i_mthTracer.trace(strRuntimeInfo);
     }
 }
