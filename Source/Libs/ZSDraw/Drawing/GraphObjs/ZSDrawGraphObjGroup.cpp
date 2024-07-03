@@ -423,7 +423,7 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
                 QPointF ptMove = ptPosThisNew - ptPosThisPrev;
                 QVector<CGraphObj*> arpGraphObjChilds = childs();
                 for (CGraphObj* pGraphObjChildExisting : arpGraphObjChilds) {
-                    pGraphObjChildExisting->setParentGroupIsAboutToAddChild(true);
+                    pGraphObjChildExisting->setIgnoreParentGeometryChange(true);
                 }
             }
 
@@ -457,10 +457,11 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
                     // to update it's original shape points in physical coordinates relative to either
                     // the top left or bottom left corner of the parents bounding rectangle:
                     pGraphObjChildExisting->updateOriginalPhysValCoors();
-                    pGraphObjChildExisting->setParentGroupIsAboutToAddChild(false);
+                    pGraphObjChildExisting->setIgnoreParentGeometryChange(false);
                 }
             }
         }
+
         // The newly added child will be positioned by the graphics system but the positionChange
         // event in the graphics system does not take the current size of the group into account.
         // When mapping local coordinates into parent coordinates and vice versa the parent
@@ -514,8 +515,10 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
         // group must have been updated. So the new parent graphical object is set before
         // removing the item from the GraphicsItemGroup.
         // In addition the signal/slot connection of geometryOnSceneChanged need to be newly set.
-        i_pGraphObj->onParentGroupAboutToBeChanged(this, nullptr);
-        m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, parentBranch());
+        CGraphObjGroup* pGraphObjGroupParent = parentGroup();
+        CIdxTreeEntry* pTreeEntryParent = parentBranch();
+        i_pGraphObj->onParentGroupAboutToBeChanged(this, pGraphObjGroupParent);
+        m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, pTreeEntryParent);
         QGraphicsItemGroup_removeFromGroup(pGraphicsItemChild);
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -539,6 +542,11 @@ void CGraphObjGroup::resizeToContent()
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QPointF ptPosThisPrev = pGraphicsItemThis->pos();
 
+    // Bounding rectangle of this group in local coordinates (relative to this center).
+    QRectF rctBoundingThisPrev = getBoundingRect();
+    // Map the bounding rectangle of this group into the parent coordinates of this group.
+    rctBoundingThisPrev = pGraphicsItemThis->mapRectToParent(rctBoundingThisPrev);
+
     // Resulting, new bounding rectangle of this group in parent coordinates of this group.
     QRectF rctBoundingThisNew;
     if (count() > 0) {
@@ -552,30 +560,52 @@ void CGraphObjGroup::resizeToContent()
     }
     rctBoundingThisNew = mapToTopLeftOfBoundingRect(rctBoundingThisNew);
 
-    // Convert (map) the new bounding rectangle of this group into the coordinate system of
-    // this groups parent in the unit of the drawing scene.
-    CPhysValRect physValRectNew(*m_pDrawingScene);
-    if (parentGroup() != nullptr) {
-        physValRectNew = parentGroup()->convert(rctBoundingThisNew);
-    }
-    else {
-        physValRectNew = m_pDrawingScene->convert(rctBoundingThisNew);
-    }
-    setRect(physValRectNew);
+    if (rctBoundingThisNew != rctBoundingThisPrev) {
+        // When resizing the group to its content the childs should not calculate new positions
+        // and must not resize themselves if the geometry of the parent group is changed.
+        // The size of the already existing childs does not change. Only their position within the group.
+        // But the group will set the new position of the already existing childs. For this the childs
+        // must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
+        if (count() > 0) {
+            QPointF ptPosThisNew = pGraphicsItemThis->pos();
+            QPointF ptMove = ptPosThisNew - ptPosThisPrev;
+            QVector<CGraphObj*> arpGraphObjChilds = childs();
+            for (CGraphObj* pGraphObjChildExisting : arpGraphObjChilds) {
+                pGraphObjChildExisting->setIgnoreParentGeometryChange(true);
+            }
+        }
 
-    if (count() > 0) {
-        QPointF ptPosThisNew = pGraphicsItemThis->pos();
-        QPointF ptMove = ptPosThisNew - ptPosThisPrev;
-        QVector<CGraphObj*> arpGraphObjChilds = childs();
-        for (CGraphObj* pGraphObjChildExisting : arpGraphObjChilds) {
-            QGraphicsItem* pGraphicsItemChildExisting = dynamic_cast<QGraphicsItem*>(pGraphObjChildExisting);
-            QPointF ptPosChildPrev = pGraphicsItemChildExisting->pos();
-            QPointF ptPosChildNew = ptPosChildPrev - ptMove;
-            pGraphicsItemChildExisting->setPos(ptPosChildNew);
-            // As on calling "setPos" the position may not have been changed, force the child
-            // to update it's original shape points in physical coordinates relative to either
-            // the top left or bottom left corner of the parents bounding rectangle:
-            pGraphObjChildExisting->updateOriginalPhysValCoors();
+        // Convert (map) the new bounding rectangle of this group into the coordinate system of
+        // this groups parent in the unit of the drawing scene.
+        CPhysValRect physValRectNew(*m_pDrawingScene);
+        if (parentGroup() != nullptr) {
+            physValRectNew = parentGroup()->convert(rctBoundingThisNew);
+        }
+        else {
+            physValRectNew = m_pDrawingScene->convert(rctBoundingThisNew);
+        }
+        setRect(physValRectNew);
+
+        // If the group's bounding rectangle has been changed, the groups center point (and also
+        // the top left or bottom left corner) may have been changed. The position of the childs
+        // in parent coordinates must be updated in the graphics item coordinates system (whose
+        // center is the center of the parent) but also the physical values whose reference point
+        // is the top left or bottom left corner of the parents bounding rectangle.
+        if (count() > 0) {
+            QPointF ptPosThisNew = pGraphicsItemThis->pos();
+            QPointF ptMove = ptPosThisNew - ptPosThisPrev;
+            QVector<CGraphObj*> arpGraphObjChilds = childs();
+            for (CGraphObj* pGraphObjChildExisting : arpGraphObjChilds) {
+                QGraphicsItem* pGraphicsItemChildExisting = dynamic_cast<QGraphicsItem*>(pGraphObjChildExisting);
+                QPointF ptPosChildPrev = pGraphicsItemChildExisting->pos();
+                QPointF ptPosChildNew = ptPosChildPrev - ptMove;
+                pGraphicsItemChildExisting->setPos(ptPosChildNew);
+                // As on calling "setPos" the position may not have been changed, force the child
+                // to update it's original shape points in physical coordinates relative to either
+                // the top left or bottom left corner of the parents bounding rectangle:
+                pGraphObjChildExisting->updateOriginalPhysValCoors();
+                pGraphObjChildExisting->setIgnoreParentGeometryChange(false);
+            }
         }
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -3100,7 +3130,7 @@ protected: // overridable slots of base class CGraphObj
     item coordinates and to update their position in the parent group.
 
     @note This method must return immediately if the parent group is about to
-          add another child (see flag m_bParentGroupIsAboutToAddChild).
+          add another child (see flag m_bIgnoreParentGeometryChange).
 
     @param [in] i_pGraphObjParent
         Pointer to parent item whose geometry on the scene has been changed.
@@ -3108,7 +3138,7 @@ protected: // overridable slots of base class CGraphObj
 void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
-    if (m_bParentGroupIsAboutToAddChild) {
+    if (m_bIgnoreParentGeometryChange) {
         return;
     }
     QString strMthInArgs;

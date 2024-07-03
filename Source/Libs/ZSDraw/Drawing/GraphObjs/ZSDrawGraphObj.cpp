@@ -881,7 +881,7 @@ CGraphObj::CGraphObj(
     //m_arKeyReleaseEventFunctions(),
     m_iItemChangeUpdateOriginalCoorsBlockedCounter(0),
     m_iGeometryOnSceneChangedSignalBlockedCounter(0),
-    m_bParentGroupIsAboutToAddChild(false),
+    m_bIgnoreParentGeometryChange(false),
     m_pTrcAdminObjCtorsAndDtor(nullptr),
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
@@ -1118,7 +1118,7 @@ CGraphObj::~CGraphObj()
     //m_arKeyReleaseEventFunctions;
     m_iItemChangeUpdateOriginalCoorsBlockedCounter = 0;
     m_iGeometryOnSceneChangedSignalBlockedCounter = 0;
-    m_bParentGroupIsAboutToAddChild = false;
+    m_bIgnoreParentGeometryChange = false;
     // Method Tracing
     m_pTrcAdminObjCtorsAndDtor = nullptr;
     m_pTrcAdminObjItemChange = nullptr;
@@ -7430,7 +7430,7 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 
     @note For usual standard shapes (not labels or selection points) this method must
           return immediately if the parent group is about to add another child
-          (see flag m_bParentGroupIsAboutToAddChild).
+          (see flag m_bIgnoreParentGeometryChange).
 
     @param [in] i_pGraphObjParent
         Pointer to parent item whose geometry on the scene has been changed.
@@ -7438,7 +7438,7 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
-    if (m_bParentGroupIsAboutToAddChild) {
+    if (m_bIgnoreParentGeometryChange) {
         return;
     }
     QString strMthInArgs;
@@ -7613,7 +7613,9 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*  @brief Sets the flag that the parent group is about to add another child.
+/*  @brief Sets the flag that geometry changes of the parent group should be ignored
+           and the item should not try to resposition and rescale itself it the
+           geometry of the parent is changed.
 
     When adding a new child already existing childs should not calculate new positions
     and must not resize themselves if the geometry of the parent group is changed by
@@ -7622,12 +7624,14 @@ public: // instance methods
     the already existing childs. For this the childs must not react on the
     "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
 
+    Same applies if the parent is resized to its content.
+
     @param [in] i_bSet
         true, if the parent groups starts adding a child, false if the child has been added.
 
     @return Previous value of the flag.
 */
-bool CGraphObj::setParentGroupIsAboutToAddChild(bool i_bSet)
+bool CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7638,15 +7642,15 @@ bool CGraphObj::setParentGroupIsAboutToAddChild(bool i_bSet)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::setParentGroupIsAboutToAddChild",
+        /* strMethod    */ "CGraphObj::setIgnoreParentGeometryChange",
         /* strAddInfo   */ strMthInArgs );
 
-    int iAboutToAddChildPrev = i_bSet;
-    m_bParentGroupIsAboutToAddChild = i_bSet;
+    int iIgnorePrev = m_bIgnoreParentGeometryChange;
+    m_bIgnoreParentGeometryChange = i_bSet;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(iAboutToAddChildPrev);
+        mthTracer.setMethodReturn(iIgnorePrev);
     }
-    return iAboutToAddChildPrev;
+    return iIgnorePrev;
 }
 
 /*==============================================================================
@@ -8362,7 +8366,8 @@ void CGraphObj::traceGraphObjStates(
         else strRuntimeInfo = "   ";
         strRuntimeInfo +=
             "SignalBlockedCounter {ItemChangeUpdateOriginalCoors: " + QString::number(m_iItemChangeUpdateOriginalCoorsBlockedCounter) +
-            ", GeometryOnSceneChanged: " + QString::number(m_iGeometryOnSceneChangedSignalBlockedCounter) + "}";
+            ", GeometryOnSceneChanged: " + QString::number(m_iGeometryOnSceneChangedSignalBlockedCounter) +
+            ", IgnoreParentGeometryChange: " + bool2Str(m_bIgnoreParentGeometryChange) + "}";
         i_mthTracer.trace(strRuntimeInfo);
     }
 }

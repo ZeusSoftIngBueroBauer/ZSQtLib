@@ -884,7 +884,7 @@ protected slots: // overridables
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
 public: // instance methods
-    bool setParentGroupIsAboutToAddChild(bool i_bSet);
+    bool setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
     virtual void updateOriginalPhysValCoors();
 protected: // overridables
@@ -1154,8 +1154,9 @@ protected: // instance members
          resize themselves if the geometry of the parent group is changed by adding the new child.
          The size of the already existing childs does not change. Only their position within the group.
          But the group will set the new position of the already existing childs. For this the childs
-         must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set. */
-    int m_bParentGroupIsAboutToAddChild;
+         must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
+         Same applies if the parent resizes itself to its content. */
+    int m_bIgnoreParentGeometryChange;
 protected: // instance members (method tracing)
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */

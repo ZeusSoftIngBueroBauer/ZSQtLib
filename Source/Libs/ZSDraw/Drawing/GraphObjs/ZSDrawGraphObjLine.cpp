@@ -2437,7 +2437,7 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
     item coordinates and to update their position in the parent group.
 
     @note This method must return immediately if the parent group is about to
-          add another child (see flag m_bParentGroupIsAboutToAddChild).
+          add another child (see flag m_bIgnoreParentGeometryChange).
 
     @param [in] i_pGraphObjParent
         Pointer to parent item whose geometry on the scene has been changed.
@@ -2445,7 +2445,7 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
 void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
-    if (m_bParentGroupIsAboutToAddChild) {
+    if (m_bIgnoreParentGeometryChange) {
         return;
     }
     QString strMthInArgs;

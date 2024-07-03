@@ -123,10 +123,7 @@ protected: // instance methods
     ZS::Test::CTestStepGroup* createTestGroupAddStandardShapesGroups(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize);
-    ZS::Test::CTestStepGroup* createTestGroupModifyStandardShapesLines(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
-    ZS::Test::CTestStepGroup* createTestGroupModifyStandardShapesGroups(
+    ZS::Test::CTestStepGroup* createTestGroupModifyStandardShapes(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize);
 

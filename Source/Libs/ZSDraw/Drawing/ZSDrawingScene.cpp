@@ -2338,7 +2338,7 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! Combines the currently selected objects into a group.
+/*! Combines the currently selected objects into a group and returns the newly created group.
 
     A graphical group item is created and the selected objects will be added
     as childs of this group.
@@ -2346,7 +2346,7 @@ public: // instance methods
     The coordinates of the child objects are adjusted so that they are relative
     to their new parent group.
 */
-int CDrawingScene::groupGraphObjsSelected()
+CGraphObjGroup* CDrawingScene::groupGraphObjsSelected()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
@@ -2355,142 +2355,47 @@ int CDrawingScene::groupGraphObjsSelected()
         /* strMethod    */ "groupGraphObjsSelected",
         /* strAddInfo   */ "" );
 
-    int iObjsGroupedCount = 0;
+    CGraphObjGroup* pGraphObjGroup = nullptr;
 
     QList<QGraphicsItem*> arpGraphicsItemsSelected = selectedItems();
 
     if (arpGraphicsItemsSelected.size() > 1) {
-        CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(
-            CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
-        CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
-        if (pObjFactoryGroup != nullptr) {
-            // First unselect all child items which will be added to the group.
-            unselectGraphicsItems(arpGraphicsItemsSelected);
+        // First unselect all child items which will be added to the group.
+        unselectGraphicsItems(arpGraphicsItemsSelected);
 
-            // Selection points, labels and connection lines will not become part of the newly
-            // created group and will be removed from the list of selected items.
-            // In addition items which already belong as childs to a group got to be removed
-            // from the list of selected items as those childs will be added to the new group
-            // as childs of the item.
-            QList<QGraphicsItem*> arpGraphicsItemsToBeRemoved;
-            for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
-                CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
-                if (pGraphObjSelected->isConnectionLine() || pGraphObjSelected->isSelectionPoint() || pGraphObjSelected->isLabel()) {
+        // Selection points, labels and connection lines will not become part of the newly
+        // created group and will be removed from the list of selected items.
+        // In addition items which already belong as childs to a group got to be removed
+        // from the list of selected items as those childs will be added to the new group
+        // as childs of the item.
+        QList<QGraphicsItem*> arpGraphicsItemsToBeRemoved;
+        for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
+            CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
+            if (pGraphObjSelected->isConnectionLine() || pGraphObjSelected->isSelectionPoint() || pGraphObjSelected->isLabel()) {
+                arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
+            }
+            else if (pGraphicsItemSelected->parentItem() != nullptr) {
+                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemSelected->parentItem());
+                if (pGraphObjGroup != nullptr) {
                     arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
                 }
-                else if (pGraphicsItemSelected->parentItem() != nullptr) {
-                    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphicsItemSelected->parentItem());
-                    if (pGraphObjGroup != nullptr) {
-                        arpGraphicsItemsToBeRemoved.append(pGraphicsItemSelected);
-                    }
-                }
             }
-            for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsToBeRemoved) {
-                arpGraphicsItemsSelected.removeOne(pGraphicsItemSelected);
-            }
-
-            // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
-            QRectF rctGroupSceneCoors = getBoundingRect(arpGraphicsItemsSelected);
-
-            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactoryGroup->createGraphObj(
-                /* pDrawingScene */ this,
-                /* ptItemPos     */ CPhysValPoint(*this),
-                /* drawSettings  */ m_drawSettings ));
-            if (pGraphObjGroup == nullptr) {
-                throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
-            }
-            QGraphicsItemGroup* pGraphicsItemGroup = dynamic_cast<QGraphicsItemGroup*>(pGraphObjGroup);
-            if (pGraphicsItemGroup == nullptr) {
-                throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr");
-            }
-
-            // Add new (empty) group to graphics scene.
-            addGraphObj(pGraphObjGroup);
-
-            // A newly created object will be positioned relative to the top left corner of the
-            // drawing scene. On adding an item as a child to a parent item (group) the child
-            // item are positioned relative to the center point of the parent's bounding rectangle.
-
-            // ConnectionLines are treated special. If one of the line's connection points don't
-            // belong to the group, the connection line also does not belong to the group.
-            // If both connection points of a connection line are selected and will be grouped
-            // the connection line may not have been selected.
-            // Should connection lines belong to groups at all?
-            // No, not directly. They are linked to connection points. If a connection point
-            // is part of a group also the connection line is part of the group. And if the
-            // line's connection points belong to different groups the connection line
-            // indirectly belongs to two different groups.
-
-            //SGraphObjAlignment alignmentWidth(
-            //    /* refChild  */ EAlignmentRef::Width,
-            //    /* refParent */ EAlignmentRef::Width,
-            //    /* bAbsolute */ false );
-            //SGraphObjAlignment alignmentHeight(
-            //    /* refChild  */ EAlignmentRef::Height,
-            //    /* refParent */ EAlignmentRef::Height,
-            //    /* bAbsolute */ false );
-            //SGraphObjAlignment alignmentLeft(
-            //    /* refChild  */ EAlignmentRef::Left,
-            //    /* refParent */ EAlignmentRef::Left,
-            //    /* bAbsolute */ false );
-            //SGraphObjAlignment alignmentTop(
-            //    /* refChild  */ EAlignmentRef::Top,
-            //    /* refParent */ EAlignmentRef::Top,
-            //    /* bAbsolute */ false );
-
-            //CPhysValRect physValRect(rctGroupSceneCoors, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
-            //physValRect = convert(physValRect);
-            //pGraphObjGroup->setRect(physValRect);
-
-            // Add child items to group.
-            for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsSelected) {
-                CGraphObj* pGraphObjSelected = dynamic_cast<CGraphObj*>(pGraphicsItemSelected);
-                if (pGraphObjSelected != nullptr) {
-                    pGraphObjGroup->addToGroup(pGraphObjSelected);
-
-                    //alignmentLeft.m_fVal = 0.0;
-                    //alignmentTop.m_fVal = 0.0;
-                    //alignmentWidth.m_fVal = 0.0;
-                    //alignmentHeight.m_fVal = 0.0;
-
-                    //if (rctGroupSceneCoors.width() != 0.0) {
-                    //    alignmentLeft.m_fVal = posItem.x() / rctGroupSceneCoors.width();
-                    //}
-                    //if (rctGroupSceneCoors.height() != 0.0) {
-                    //    alignmentTop.m_fVal = posItem.y() / rctGroupSceneCoors.height();
-                    //}
-                    //if (rctGroupSceneCoors.width() != 0.0) {
-                    //    alignmentWidth.m_fVal = sizItem.width() / rctGroupSceneCoors.width();
-                    //}
-                    //if (rctGroupSceneCoors.height() != 0.0) {
-                    //    alignmentHeight.m_fVal = sizItem.height() / rctGroupSceneCoors.height();
-                    //}
-
-                    //// The alignments will be adjusted in the order they are added. The order
-                    //// takes effect on the result. Usually the size should be adjusted before
-                    //// the positions to get relative adjustments working as expected.
-                    //pGraphObj->addAlignment(alignmentWidth);
-                    //pGraphObj->addAlignment(alignmentHeight);
-                    //pGraphObj->addAlignment(alignmentLeft);
-                    //pGraphObj->addAlignment(alignmentTop);
-
-                    iObjsGroupedCount++;
-                }
-            }
-
-            // Finish creation of group.
-            pGraphObjGroup->setSelected(true);
         }
+        for (QGraphicsItem* pGraphicsItemSelected : arpGraphicsItemsToBeRemoved) {
+            arpGraphicsItemsSelected.removeOne(pGraphicsItemSelected);
+        }
+        pGraphObjGroup = groupGraphObjs(arpGraphicsItemsSelected);
+        // Finish creation of group.
+        pGraphObjGroup->setSelected(true);
     }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn(iObjsGroupedCount);
+        mthTracer.setMethodReturn(QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path()));
     }
-    return iObjsGroupedCount;
-
-} // groupGraphObjsSelected
+    return pGraphObjGroup;
+}
 
 //------------------------------------------------------------------------------
-/*! Dissolves all currently selected group objects.
+/*! Dissolves all currently selected group objects and destroys the group objects.
 
     The child objects are retained and are assigned to the drawing scene as
     immediate child objects. The coordinates of the child objects are adjusted so
@@ -2531,9 +2436,7 @@ int CDrawingScene::ungroupGraphObjsSelected()
                 if (pGraphObjChild == nullptr) {
                     throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjChild == nullptr");
                 }
-                // for debugging purposes also called here before removing the item from the group
                 pGraphObjGroupSelected->removeFromGroup(pGraphObjChild);
-                m_pGraphObjsIdxTree->move(pGraphObjChild, nullptr);
             }
             delete pGraphObjGroupSelected;
             pGraphObjGroupSelected = nullptr;
@@ -2541,14 +2444,241 @@ int CDrawingScene::ungroupGraphObjsSelected()
         }
     }
     //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
-    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
     //}
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(iObjsUngroupedCount);
     }
     return iObjsUngroupedCount;
+}
 
-} // ungroupGraphObjsSelected
+//------------------------------------------------------------------------------
+/*! Combines the passed list of graphical objects into a group and returns the newly created group.
+
+    A graphical group item is created and the objects will be added as childs of this group.
+
+    The coordinates of the child objects are adjusted so that they are relative
+    to their new parent group.
+*/
+CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<QGraphicsItem*> i_arpGraphicsItems)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Items [" + QString::number(i_arpGraphicsItems.size()) + "]";
+        if (i_arpGraphicsItems.size() > 0) {
+            strMthInArgs += "(";
+            for (const QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {
+                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                const CGraphObj* pGraphObj = dynamic_cast<const CGraphObj*>(pGraphicsItem);
+                strMthInArgs += QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+            }
+            strMthInArgs += ")";
+        }
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "groupGraphObjs",
+        /* strAddInfo   */ strMthInArgs );
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
+
+    CGraphObjGroup* pGraphObjGroup = nullptr;
+
+    CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(
+        CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
+    CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
+    if (pObjFactoryGroup != nullptr) {
+        // Calculate resulting bounding rectangle of group (without selection rectangle and selection points).
+        QRectF rctGroupSceneCoors = getBoundingRect(i_arpGraphicsItems);
+
+        pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pObjFactoryGroup->createGraphObj(
+            /* pDrawingScene */ this,
+            /* ptItemPos     */ CPhysValPoint(*this),
+            /* drawSettings  */ m_drawSettings ));
+        if (pGraphObjGroup == nullptr) {
+            throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphObjGroup == nullptr");
+        }
+        QGraphicsItemGroup* pGraphicsItemGroup = dynamic_cast<QGraphicsItemGroup*>(pGraphObjGroup);
+        if (pGraphicsItemGroup == nullptr) {
+            throw CException(__FILE__, __LINE__, EResultInvalidDynamicTypeCast, "pGraphicsItemGroup == nullptr");
+        }
+
+        // Add new (empty) group to graphics scene.
+        addGraphObj(pGraphObjGroup);
+
+        // A newly created object will be positioned relative to the top left corner of the
+        // drawing scene. On adding an item as a child to a parent item (group) the child
+        // item are positioned relative to the center point of the parent's bounding rectangle.
+
+        // ConnectionLines are treated special. If one of the line's connection points don't
+        // belong to the group, the connection line also does not belong to the group.
+        // If both connection points of a connection line are selected and will be grouped
+        // the connection line may not have been selected.
+        // Should connection lines belong to groups at all?
+        // No, not directly. They are linked to connection points. If a connection point
+        // is part of a group also the connection line is part of the group. And if the
+        // line's connection points belong to different groups the connection line
+        // indirectly belongs to two different groups.
+
+        //SGraphObjAlignment alignmentWidth(
+        //    /* refChild  */ EAlignmentRef::Width,
+        //    /* refParent */ EAlignmentRef::Width,
+        //    /* bAbsolute */ false );
+        //SGraphObjAlignment alignmentHeight(
+        //    /* refChild  */ EAlignmentRef::Height,
+        //    /* refParent */ EAlignmentRef::Height,
+        //    /* bAbsolute */ false );
+        //SGraphObjAlignment alignmentLeft(
+        //    /* refChild  */ EAlignmentRef::Left,
+        //    /* refParent */ EAlignmentRef::Left,
+        //    /* bAbsolute */ false );
+        //SGraphObjAlignment alignmentTop(
+        //    /* refChild  */ EAlignmentRef::Top,
+        //    /* refParent */ EAlignmentRef::Top,
+        //    /* bAbsolute */ false );
+
+        //CPhysValRect physValRect(rctGroupSceneCoors, m_drawingSize.imageCoorsResolutionInPx(), Units.Length.px);
+        //physValRect = convert(physValRect);
+        //pGraphObjGroup->setRect(physValRect);
+
+        // Add child items to group.
+        for (QGraphicsItem* pGraphicsItem : i_arpGraphicsItems) {
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pGraphicsItem);
+            if (pGraphObj != nullptr) {
+                pGraphObjGroup->addToGroup(pGraphObj);
+
+                //alignmentLeft.m_fVal = 0.0;
+                //alignmentTop.m_fVal = 0.0;
+                //alignmentWidth.m_fVal = 0.0;
+                //alignmentHeight.m_fVal = 0.0;
+
+                //if (rctGroupSceneCoors.width() != 0.0) {
+                //    alignmentLeft.m_fVal = posItem.x() / rctGroupSceneCoors.width();
+                //}
+                //if (rctGroupSceneCoors.height() != 0.0) {
+                //    alignmentTop.m_fVal = posItem.y() / rctGroupSceneCoors.height();
+                //}
+                //if (rctGroupSceneCoors.width() != 0.0) {
+                //    alignmentWidth.m_fVal = sizItem.width() / rctGroupSceneCoors.width();
+                //}
+                //if (rctGroupSceneCoors.height() != 0.0) {
+                //    alignmentHeight.m_fVal = sizItem.height() / rctGroupSceneCoors.height();
+                //}
+
+                //// The alignments will be adjusted in the order they are added. The order
+                //// takes effect on the result. Usually the size should be adjusted before
+                //// the positions to get relative adjustments working as expected.
+                //pGraphObj->addAlignment(alignmentWidth);
+                //pGraphObj->addAlignment(alignmentHeight);
+                //pGraphObj->addAlignment(alignmentLeft);
+                //pGraphObj->addAlignment(alignmentTop);
+            }
+        }
+    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path()));
+    }
+    return pGraphObjGroup;
+}
+
+//------------------------------------------------------------------------------
+/*! Combines the passed list of graphical objects into a group and returns the newly created group.
+
+    A graphical group item is created and the objects will be added as childs of this group.
+
+    The coordinates of the child objects are adjusted so that they are relative
+    to their new parent group.
+*/
+CGraphObjGroup* CDrawingScene::groupGraphObjs(QList<CGraphObj*> i_arpGraphObjs)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "Items [" + QString::number(i_arpGraphObjs.size()) + "]";
+        if (i_arpGraphObjs.size() > 0) {
+            strMthInArgs += "(";
+            for (const CGraphObj* pGraphObj : i_arpGraphObjs) {
+                if (!strMthInArgs.endsWith("(")) strMthInArgs += ", ";
+                strMthInArgs += QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+            }
+            strMthInArgs += ")";
+        }
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "groupGraphObjs",
+        /* strAddInfo   */ strMthInArgs );
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
+
+    CGraphObjGroup* pGraphObjGroup = nullptr;
+
+    CObjFactory* pObjFactoryTmp = CObjFactory::FindObjFactory(
+        CObjFactory::c_strGroupNameStandardShapes, graphObjType2Str(EGraphObjTypeGroup));
+    CObjFactoryGroup* pObjFactoryGroup = dynamic_cast<CObjFactoryGroup*>(pObjFactoryTmp);
+    if (pObjFactoryGroup != nullptr) {
+        QList<QGraphicsItem*> arpGraphicsItems;
+        for (CGraphObj* pGraphObj : i_arpGraphObjs) {
+            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+            if (pGraphicsItem != nullptr) {
+                arpGraphicsItems.append(pGraphicsItem);
+            }
+        }
+        pGraphObjGroup = groupGraphObjs(arpGraphicsItems);
+    }
+
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path()));
+    }
+    return pGraphObjGroup;
+}
+
+//------------------------------------------------------------------------------
+/*! Removes all items belonging to the passed group from this group and destroys the group object.
+
+    The item's will be reparented to the group's parent item, or to no parent
+    if this group has no parent. Its position and transformation relative to the
+    scene will stay intact.
+*/
+void CDrawingScene::ungroup(CGraphObjGroup* i_pGraphObjGroup)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObjGroup == nullptr ? "null" : i_pGraphObjGroup->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObj,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strMethod    */ "ungroup",
+        /* strAddInfo   */ strMthInArgs );
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Enter);
+    //}
+
+    if (i_pGraphObjGroup != nullptr) {
+        CGraphObjGroup* pGraphObjGroupParent = i_pGraphObjGroup->parentGroup();
+        for (CGraphObj* pGraphObjChild : i_pGraphObjGroup->childs()) {
+            i_pGraphObjGroup->removeFromGroup(pGraphObjChild);
+        }
+        delete i_pGraphObjGroup;
+        i_pGraphObjGroup = nullptr;
+    }
+    //if (mthTracer.isRuntimeInfoActive(ELogDetailLevel::Debug)) {
+    //    traceInternalStates(mthTracer, EMethodDir::Leave);
+    //}
+}
 
 /*==============================================================================
 public: // instance methods

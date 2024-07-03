@@ -64,6 +64,7 @@ namespace Draw
 {
 class CGraphObj;
 class CGraphObjConnectionPoint;
+class CGraphObjGroup;
 class CObjFactory;
 
 //******************************************************************************
@@ -185,8 +186,11 @@ public: // to be called by graphical objects
 public: // instance methods
     QString findUniqueGraphObjName( CGraphObj* i_pGraphObj );
 public: // instance methods
-    int groupGraphObjsSelected();
+    CGraphObjGroup* groupGraphObjsSelected();
     int ungroupGraphObjsSelected();
+    CGraphObjGroup* groupGraphObjs(QList<QGraphicsItem*> i_arpGraphicsItems);
+    CGraphObjGroup* groupGraphObjs(QList<CGraphObj*> i_arpGraphObjs);
+    void ungroup(CGraphObjGroup* i_pGraphObjGroup);
 public: // instance methods
     double getHitToleranceInPx() const { return m_fHitTolerance_px; }
 public: // instance methods

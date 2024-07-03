@@ -1577,8 +1577,21 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
+    QStringList strlstGraphObjsKeyInTreeGetResultValues;
+    if (i_pTestStep->hasConfigValue("GraphObjsKeyInTreeGetResultValues")) {
+        strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
+    }
+
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
-    if (strMethod.compare("addToGroup", Qt::CaseInsensitive) == 0) {
+    if (strMethod.compare("ungroup", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
+            m_pDrawingScene->ungroup(pGraphObjGroup);
+            pGraphObjGroup = nullptr;
+            pGraphObj = nullptr;
+        }
+    }
+    else if (strMethod.compare("addToGroup", Qt::CaseInsensitive) == 0) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGroupNameParentKeyInTree));
         if (pGraphObjGroupParent != nullptr && pGraphObj != nullptr) {
             pGraphObjGroupParent->addToGroup(pGraphObj);
@@ -1654,48 +1667,42 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
         }
     }
 
-    QStringList strlstResultValues;
-    if (pGraphObj != nullptr) {
+    if (pGraphObj != nullptr && strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
         if (pGraphObj->isGroup()) {
             CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-            strlstResultValues.append(pGraphObjGroup->name() + ".pos {" + qPoint2Str(pGraphObjGroup->pos()) + "} px");
-            QRectF rectF = pGraphObjGroup->getBoundingRect();
-            strlstResultValues.append(pGraphObjGroup->name() + ".boundingRect {" + qRect2Str(rectF) + "} px");
-            CPhysValPoint physValPointPos = pGraphObjGroup->position();
-            strlstResultValues.append(pGraphObjGroup->name() + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-            CPhysValRect physValRect = pGraphObjGroup->getRect();
-            strlstResultValues.append(pGraphObjGroup->name() + ".getRect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
-            CPhysValSize physValSize = pGraphObjGroup->getSize();
-            strlstResultValues.append(pGraphObjGroup->name() + ".getSize {" + physValSize.toString() + "} " + physValSize.unit().symbol());
-            CPhysVal physValAngle = pGraphObjGroup->rotationAngle(Units.Angle.Degree);
-            strlstResultValues.append(pGraphObjGroup->name() + ".rotationAngle: " + physValAngle.toString());
+            strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjGroup->keyInTree());
             for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
-                QString strGraphObjNameChild = pGraphObjChild->name();
-                QGraphicsItem* pGraphicsItemChild = dynamic_cast<QGraphicsItem*>(pGraphObjChild);
-                strlstResultValues.append(strGraphObjNameChild + ".pos {" + qPoint2Str(pGraphicsItemChild->pos()) + "} px");
-                QRectF rectF = pGraphObjChild->getBoundingRect();
-                strlstResultValues.append(strGraphObjNameChild + ".boundingRect {" + qRect2Str(rectF) + "} px");
-                physValPointPos = pGraphObjChild->position();
-                strlstResultValues.append(strGraphObjNameChild + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-                if (pGraphObjChild->isLine()) {
-                    CGraphObjLine* pGraphObjChildLine = dynamic_cast<CGraphObjLine*>(pGraphObjChild);
-                    CPhysValLine physValLine = pGraphObjChildLine->getLine();
-                    strlstResultValues.append(strGraphObjNameChild + ".getLine {" + physValLine.toString() + "} " + physValLine.unit().symbol());
-                    CPhysVal physValLength = pGraphObjChildLine->getLength();
-                    strlstResultValues.append(strGraphObjNameChild + ".getLength: " + physValLength.toString());
-                    physValAngle = pGraphObjChild->rotationAngle(Units.Angle.Degree);
-                    strlstResultValues.append(strGraphObjNameChild + ".rotationAngle: " + physValAngle.toString());
-                }
-                else if (pGraphObjChild->isGroup()) {
-                    CGraphObjGroup* pGraphObjChildGroup = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
-                    physValRect = pGraphObjChildGroup->getRect();
-                    strlstResultValues.append(strGraphObjNameChild + ".getRect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
-                    physValSize = pGraphObjChildGroup->getSize();
-                    strlstResultValues.append(strGraphObjNameChild + ".getSize {" + physValSize.toString() + "} " + physValSize.unit().symbol());
-                    physValAngle = pGraphObjChild->rotationAngle(Units.Angle.Degree);
-                    strlstResultValues.append(strGraphObjNameChild + ".rotationAngle: " + physValAngle.toString());
-                }
+                strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
             }
+        }
+    }
+
+    QStringList strlstResultValues;
+    for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
+        pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        if (pGraphObj != nullptr) {
+            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
+            strlstResultValues.append(pGraphObj->name() + ".pos {" + qPoint2Str(pGraphicsItem->pos()) + "} px");
+            QRectF rectF = pGraphObj->getBoundingRect();
+            strlstResultValues.append(pGraphObj->name() + ".boundingRect {" + qRect2Str(rectF) + "} px");
+            CPhysValPoint physValPointPos = pGraphObj->position();
+            strlstResultValues.append(pGraphObj->name() + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
+            if (pGraphObj->isGroup()) {
+                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+                CPhysValRect physValRect = pGraphObjGroup->getRect();
+                strlstResultValues.append(pGraphObj->name() + ".getRect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
+                CPhysValSize physValSize = pGraphObjGroup->getSize();
+                strlstResultValues.append(pGraphObj->name() + ".getSize {" + physValSize.toString() + "} " + physValSize.unit().symbol());
+            }
+            else if (pGraphObj->isLine()) {
+                CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
+                CPhysValLine physValLine = pGraphObjLine->getLine();
+                strlstResultValues.append(pGraphObj->name() + ".getLine {" + physValLine.toString() + "} " + physValLine.unit().symbol());
+                CPhysVal physValLength = pGraphObjLine->getLength();
+                strlstResultValues.append(pGraphObj->name() + ".getLength: " + physValLength.toString());
+            }
+            CPhysVal physValAngle = pGraphObj->rotationAngle(Units.Angle.Degree);
+            strlstResultValues.append(pGraphObj->name() + ".rotationAngle: " + physValAngle.toString());
         }
     }
     i_pTestStep->setResultValues(strlstResultValues);
