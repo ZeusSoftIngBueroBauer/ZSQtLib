@@ -1398,7 +1398,7 @@ QVariant CGraphObjEllipse::itemChange( GraphicsItemChange i_change, const QVaria
         }
     }
     else if (i_change == ItemSelectedHasChanged) {
-        prepareGeometryChange();
+        QGraphicsItem_prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();
             //if (m_editMode == EEditMode::Creating) {

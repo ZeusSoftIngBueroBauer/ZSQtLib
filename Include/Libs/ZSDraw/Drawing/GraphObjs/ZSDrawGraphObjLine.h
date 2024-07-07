@@ -207,6 +207,7 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValLine setPhysValLineOrig(const CPhysValLine& i_physValLine);
     QLineF QGraphicsLineItem_setLine(const QLineF& i_line);
     QLineF QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
+    void QGraphicsItem_prepareGeometryChange() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     virtual void traceThisPositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,

@@ -124,7 +124,7 @@ CWdgtGraphObjGroupProperties::CWdgtGraphObjGroupProperties(
 
     m_pWdgtLabels = new CWdgtGraphObjLabelsProperties(
         i_pDrawingScene, NameSpace() + "::Widgets::GraphObjs",
-        "StandardShapes::Line", i_strObjName);
+        "StandardShapes::Group", i_strObjName);
     m_pLyt->addWidget(m_pWdgtLabels);
     QObject::connect(
         m_pWdgtLabels, &CWdgtGraphObjLabelsProperties::contentChanged,

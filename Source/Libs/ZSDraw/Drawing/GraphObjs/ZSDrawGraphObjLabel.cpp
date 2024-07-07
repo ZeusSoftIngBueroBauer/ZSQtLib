@@ -248,7 +248,7 @@ CGraphObjLabel::~CGraphObjLabel()
     // invoking CDrawingScene::addGraphObj so that they don't appear in the index tree.
     // For this selection points "directly" remove themselves from the graphics scene.
     if (m_pDrawingScene != nullptr) {
-        prepareGeometryChange();
+        QGraphicsItem_prepareGeometryChange();
         m_pDrawingScene->removeItem(this);
     }
 
@@ -525,7 +525,7 @@ void CGraphObjLabel::showAnchorLines()
     if (!m_labelDscr.m_bShowAnchorLine) {
         m_labelDscr.m_bShowAnchorLine = true;
         if (scene() != nullptr) {
-            prepareGeometryChange();
+            QGraphicsItem_prepareGeometryChange();
             QRectF rctBounding = boundingRect();
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             scene()->update(rctBounding);
@@ -554,7 +554,7 @@ void CGraphObjLabel::hideAnchorLines()
             QRectF rctBounding = boundingRect();
             rctBounding = pGraphicsItemThis->mapToScene(rctBounding).boundingRect();
             m_labelDscr.m_bShowAnchorLine = false;
-            prepareGeometryChange();
+            QGraphicsItem_prepareGeometryChange();
             scene()->update(rctBounding);
         }
         else {
@@ -1373,7 +1373,7 @@ void CGraphObjLabel::updateAnchorLines()
     QPointF ptCenterThis = rctBoundingThis.center();
     QLineF anchorLine(ptCenterThis, mapFromScene(ptSelScenePosParent));
 
-    prepareGeometryChange();
+    QGraphicsItem_prepareGeometryChange();
 
     if (m_anchorLines.isEmpty()) {
         m_anchorLines.append(anchorLine);
@@ -1390,6 +1390,26 @@ void CGraphObjLabel::updateAnchorLines()
 /*==============================================================================
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
 ==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method reimplementing the prepareGeometryChange method of
+           graphics item to trace the method call.
+
+    As the prepareGeometryChange method is a protected method of QGraphicsItem
+    this method must be reimplemented by the derived classes.
+*/
+void CGraphObjLabel::QGraphicsItem_prepareGeometryChange()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "QGraphicsItem_prepareGeometryChange",
+        /* strAddInfo   */ "" );
+
+    prepareGeometryChange();
+}
 
 ////------------------------------------------------------------------------------
 //void CGraphObjLabel::traceInternalStates(

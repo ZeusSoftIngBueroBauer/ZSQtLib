@@ -99,8 +99,6 @@ CWdgtGraphObjLineGeometryProperties::CWdgtGraphObjLineGeometryProperties(
         i_pDrawingScene,
         i_strNameSpace, "StandardShapes::Line", ClassName(),
         i_strObjName, i_pWdgtParent),
-    // Caching values
-    m_physValLine(*i_pDrawingScene),
     // Headline with collapse button.
     m_pWdgtHeadline(nullptr),
     m_pLytWdgtHeadline(nullptr),
@@ -280,8 +278,6 @@ CWdgtGraphObjLineGeometryProperties::~CWdgtGraphObjLineGeometryProperties()
     //    }
     //}
 
-    // Cached values
-    //m_physValLine;
     // Headline with collapse button.
     m_pWdgtHeadline = nullptr;
     m_pLytWdgtHeadline = nullptr;

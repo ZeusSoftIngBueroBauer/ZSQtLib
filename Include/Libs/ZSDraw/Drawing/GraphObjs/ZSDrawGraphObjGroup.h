@@ -225,7 +225,7 @@ protected: // overridables of base class CGraphObj
     virtual void updateOriginalPhysValCoors() override;
 protected: // auxiliary instance methods
     void updateDivLinesMetrics(const QSizeF& i_size_px, const QSizeF& i_size_metric);
-    QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect) const;
+    QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;
     void paintGridLines(QPainter* i_pPainter);
     void paintGridLabelsDivisionLines(QPainter* i_pPainter);
     void paintGridLabels(QPainter* i_pPainter);
@@ -234,6 +234,7 @@ protected: // auxiliary instance methods (method tracing)
     QRectF QGraphicsItemGroup_setRect(const QRectF& i_rect);
     void QGraphicsItemGroup_addToGroup(QGraphicsItem* i_pGraphicsItemChild);
     void QGraphicsItemGroup_removeFromGroup(QGraphicsItem* i_pGraphicsItemChild);
+    void QGraphicsItem_prepareGeometryChange() override;
 protected: // auxiliary instance methods (method tracing)
     void emit_gridSettingsChanged(const ZS::Draw::CDrawGridSettings& i_settings);
 public: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
@@ -269,13 +270,11 @@ protected: // instance members
     /*!< The original, untransformed shape point coordinates with unit.
          Those are the values in parent coordinates relative to the top left
          or bottom left corner of the parent.
+         Untransformed means that the rectangles rotation angle is 0.0
+         (separately stored in m_physValRotationAngle of base class CGraphObj)
+         and the parent scale factors are not included.
          @see base class CGraphObj "Current and Original Coordinates". */
     CPhysValRect m_physValRectOrig;
-    /*!< The current, untransformed group coordinates with unit.
-         The coordinates are relative to the top left corner of the parent item's
-         bounding rectange (real shape points only). If the item does not have another
-         graphical object as a  parent, the coordinates are in scene coordinates. */
-    //CPhysValRect m_physValRectTransformed;
 
 }; // class CGraphObjGroup
 

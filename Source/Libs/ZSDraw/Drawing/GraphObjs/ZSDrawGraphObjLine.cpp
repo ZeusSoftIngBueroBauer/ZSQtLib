@@ -378,13 +378,15 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         ptPos = parentGroup()->mapFromTopLeftOfBoundingRect(ptPos);
     }
 
+    bool bGeometryOnSceneChanged = false;
+
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if the coordinates have been changed ...
     if (m_physValLineOrig.isNull() || m_physValLineOrig != i_physValLine/* || m_bForceConversionToSceneCoors*/)
     {
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
-        QGraphicsLineItem::prepareGeometryChange();
+        QGraphicsItem_prepareGeometryChange();
 
         {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
@@ -419,9 +421,15 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
                 updateLineEndArrowHeadPolygons();
             }
         }
-        emit_geometryOnSceneChanged();
+        // If the geometry of the parent on the scene of this item changes, also the geometry
+        // on the scene of this item is changed.
+        bGeometryOnSceneChanged = true;
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
+    // Emit signal after updated position info has been traced.
+    if (bGeometryOnSceneChanged) {
+        emit_geometryOnSceneChanged();
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1049,9 +1057,6 @@ QRectF CGraphObjLine::getBoundingRect() const
     // Line points in local coordinates.
     QLineF lineF = line();
     QRectF rctBounding(lineF.p1(), lineF.p2());
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
-    }
     // Width and height should never be less than 0.0.
     if (rctBounding.width() < 0.0) {
         rctBounding.moveLeft(rctBounding.left() + rctBounding.width());
@@ -1060,6 +1065,9 @@ QRectF CGraphObjLine::getBoundingRect() const
     if (rctBounding.height() < 0.0) {
         rctBounding.moveTop(rctBounding.top() + rctBounding.height());
         rctBounding.setHeight(-rctBounding.height());
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
     return rctBounding;
 }
@@ -2299,7 +2307,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemSelectedHasChanged) {
-        prepareGeometryChange();
+        QGraphicsItem_prepareGeometryChange();
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront(); 
             showSelectionPoints();
@@ -2460,6 +2468,7 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphOb
         /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
+    bool bGeometryOnSceneChanged = false;
     if (i_pGraphObjParent->isGroup()) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
         CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
@@ -2496,7 +2505,7 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphOb
 
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
-        QGraphicsLineItem::prepareGeometryChange();
+        QGraphicsItem_prepareGeometryChange();
 
         {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
@@ -2524,9 +2533,15 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphOb
                 updateLineEndArrowHeadPolygons();
             }
         }
-        emit_geometryOnSceneChanged();
+        // If the geometry of the parent on the scene of this item changes, also the geometry
+        // on the scene of this item is changed.
+        bGeometryOnSceneChanged = true;
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
+    // Emit signal after updated position info has been traced.
+    if (bGeometryOnSceneChanged) {
+        emit_geometryOnSceneChanged();
+    }
 }
 
 /*==============================================================================
@@ -2802,6 +2817,26 @@ QLineF CGraphObjLine::QGraphicsLineItem_setLine(double i_fX1, double i_fY1, doub
         mthTracer.setMethodReturn(qLine2Str(linePrev));
     }
     return linePrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Internal method reimplementing the prepareGeometryChange method of
+           graphics item to trace the method call.
+
+    As the prepareGeometryChange method is a protected method of QGraphicsItem
+    this method must be reimplemented by the derived classes.
+*/
+void CGraphObjLine::QGraphicsItem_prepareGeometryChange()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "QGraphicsItem_prepareGeometryChange",
+        /* strAddInfo   */ "" );
+
+    prepareGeometryChange();
 }
 
 /*==============================================================================

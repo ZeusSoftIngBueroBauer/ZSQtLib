@@ -609,6 +609,7 @@ QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator) c
     if (i_bAddUnit) {
         str += " " + m_unit.symbol();
     }
+    str += ", " + m_physValAngle.toString();
     return str;
 }
 

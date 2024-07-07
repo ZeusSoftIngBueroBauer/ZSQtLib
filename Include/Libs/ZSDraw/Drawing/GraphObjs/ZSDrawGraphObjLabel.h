@@ -169,6 +169,7 @@ protected: // overridable auxiliary instance methods
     virtual void updatePolarCoorsToLinkedSelPt();
     virtual void updateAnchorLines();
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
+    void QGraphicsItem_prepareGeometryChange() override;
     //void traceInternalStates(
     //    ZS::System::CMethodTracer& i_mthTracer,
     //    ZS::System::EMethodDir i_mthDir = ZS::System::EMethodDir::Undefined,

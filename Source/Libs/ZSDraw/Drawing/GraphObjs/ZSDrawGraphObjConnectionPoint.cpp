@@ -1533,7 +1533,7 @@ QVariant CGraphObjConnectionPoint::itemChange( GraphicsItemChange i_change, cons
         }
     }
     else if(i_change == ItemSelectedHasChanged) {
-        prepareGeometryChange();
+        QGraphicsItem_prepareGeometryChange();
         // The connection point does not have selection points but is a selection point itself.
         if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
             bringToFront();

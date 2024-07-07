@@ -1002,7 +1002,7 @@ void CGraphObjText::mousePressEvent( QGraphicsSceneMouseEvent* i_pEv )
 //
 //            //m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Select, m_editMode, m_editResizeMode, true );
 //
-//            ////prepareGeometryChange();
+//            ////QGraphicsItem_prepareGeometryChange();
 //
 //            ////setSelected(true);
 //
@@ -1234,7 +1234,7 @@ void CGraphObjText::mouseReleaseEvent( QGraphicsSceneMouseEvent* i_pEv )
 //            // but there should not be a new text object created by pressing the mouse again.
 //            m_pDrawingScene->setMode( EMode::Undefined, EEditTool::Select, m_editMode, m_editResizeMode, true );
 //
-//            ////prepareGeometryChange();
+//            ////QGraphicsItem_prepareGeometryChange();
 //
 //            ////setSelected(true);
 //
@@ -1412,7 +1412,7 @@ QVariant CGraphObjText::itemChange( GraphicsItemChange i_change, const QVariant&
         }
     }
     else if (i_change == ItemSelectedHasChanged) {
-        prepareGeometryChange();
+        QGraphicsItem_prepareGeometryChange();
         //if (m_pDrawingScene->getMode() == EMode::Edit && isSelected()) {
         //    bringToFront();
         //    if (m_editMode == EEditMode::Creating) {

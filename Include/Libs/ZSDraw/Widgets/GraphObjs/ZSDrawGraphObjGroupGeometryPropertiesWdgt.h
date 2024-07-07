@@ -98,10 +98,6 @@ private: // auxiliary instance methods
 protected: // overridables of base class QObject
     //bool eventFilter(QObject* i_pObjWatched, QEvent* i_pEv) override;
 private: // instance members
-    /*!< Cached coordinates of the graphical object.
-         The values are stored in the unit of the drawing size.
-         If the drawing size changes the coordinates are updated and converted if necessary. */
-    CPhysValLine m_physValLine;
     /*!< Headline with collapse button. */
     QWidget* m_pWdgtHeadline;
     QHBoxLayout* m_pLytWdgtHeadline;

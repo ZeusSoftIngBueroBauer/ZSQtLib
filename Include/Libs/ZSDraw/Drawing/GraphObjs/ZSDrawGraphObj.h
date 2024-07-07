@@ -908,6 +908,7 @@ protected: // auxiliary instance methods (method tracing)
     void emit_geometryLabelChanged(const QString& i_strName);
 protected: // overridable auxiliary instance methods (method tracing)
     QPointF setPosOrig(const QPointF& i_ptPos);
+    virtual void QGraphicsItem_prepareGeometryChange();
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
     virtual void QGraphicsItem_setScale(double i_fFactor);
     virtual void QGraphicsItem_setRotation(double i_fAngle_degree);

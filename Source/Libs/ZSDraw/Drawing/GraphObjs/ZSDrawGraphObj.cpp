@@ -4591,12 +4591,14 @@ void CGraphObj::setRotationAngle(const CPhysVal& i_physValAngle)
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::setRotationAngle",
         /* strAddInfo   */ strMthInArgs );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
 
     if (m_physValRotationAngle != i_physValAngle) {
         m_physValRotationAngle = i_physValAngle;
         QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
         emit_geometryOnSceneChanged();
     }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
 }
 
 //------------------------------------------------------------------------------
@@ -7463,11 +7465,10 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjPar
                 m_fParentGroupScaleY = physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
             }
         }
+        // If the geometry of the parent on the scene of this item changes, also the geometry
+        // on the scene of this item is changed.
+        emit_geometryOnSceneChanged();
     }
-
-    // If the geometry of the parent on the scene of this item changes, also the geometry
-    // on the scene of this item is changed.
-    emit_geometryOnSceneChanged();
 }
 
 //------------------------------------------------------------------------------
@@ -8144,6 +8145,32 @@ QPointF CGraphObj::setPosOrig(const QPointF& i_ptPos)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Internal method reimplementing the prepareGeometryChange method of
+           graphics item to trace the method call.
+
+    As the prepareGeometryChange method is a protected method of QGraphicsItem
+    this method must be reimplemented by the derived classes.
+*/
+void CGraphObj::QGraphicsItem_prepareGeometryChange()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::QGraphicsItem_prepareGeometryChange",
+        /* strAddInfo   */ "" );
+
+#pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+
+    //QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    //if (pGraphicsItemThis != nullptr) {
+    //    pGraphicsItemThis->prepareGeometryChange();
+    //}
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Internal method reimplementing the setPos method of graphics item to
            trace the method call.
 
@@ -8251,6 +8278,11 @@ void CGraphObj::traceThisPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
+            strRuntimeInfo += "RotationAngle: " + m_physValRotationAngle.toString();
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
             strRuntimeInfo += "BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
             i_mthTracer.trace(strRuntimeInfo);
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
@@ -8287,8 +8319,9 @@ void CGraphObj::traceParentGroupPositionInfo(
                 else strRuntimeInfo = "   ";
                 strRuntimeInfo += " . ThisInParent PosOrig {" + qPoint2Str(m_ptPosOrig) + " px}" +
                     ", RectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
-                    ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 1) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 1) + "}";
+                    ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
                 i_mthTracer.trace(strRuntimeInfo);
+                CPhysVal physValAngle = pGraphObjGroupParent == nullptr ? CPhysVal() : pGraphObjGroupParent->rotationAngle();
                 QPointF ptPos = pGraphicsItemParent == nullptr ? QPointF() : pGraphicsItemParent->pos();
                 QPointF ptScenePos = pGraphicsItemParent == nullptr ? QPointF() : pGraphicsItemParent->scenePos();
                 QRectF rectBounding = pGraphObjGroupParent == nullptr ? QRectF() : pGraphObjGroupParent->getBoundingRect();
@@ -8301,12 +8334,17 @@ void CGraphObj::traceParentGroupPositionInfo(
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
                 else strRuntimeInfo = "   ";
+                strRuntimeInfo += " .. RotationAngle: " + physValAngle.toString();
+                i_mthTracer.trace(strRuntimeInfo);
+                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+                else strRuntimeInfo = "   ";
                 strRuntimeInfo += " .. BoundingRect {" + qRect2Str(rectBounding) + "}, Center {" + qPoint2Str(ptCenterPos) + "}";
                 i_mthTracer.trace(strRuntimeInfo);
                 if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
                 else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
                 else strRuntimeInfo = "   ";
-                strRuntimeInfo += " .. Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "} }";
+                strRuntimeInfo += " .. Pos {" + qPoint2Str(ptPos) + "}, ScenePos {" + qPoint2Str(ptScenePos) + "}, RotationAngle: " + physValAngle.toString() + "}";
                 i_mthTracer.trace(strRuntimeInfo);
             }
         }

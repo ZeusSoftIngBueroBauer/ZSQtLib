@@ -34,7 +34,7 @@ using namespace ZS::Draw;
 
 
 /*******************************************************************************
-class ZSDRAWDLL_API CModelGraphObjLabels : public QAbstractTableModel
+class CModelGraphObjLabels : public QAbstractTableModel
 *******************************************************************************/
 
 /*==============================================================================
