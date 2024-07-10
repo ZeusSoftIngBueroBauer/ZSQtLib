@@ -20,7 +20,6 @@ ZeusSoft, Ing. Buero Bauer provides the source code as is without any guarantee
 that the code is written without faults.
 
 ZeusSoft, Ing. Buero Bauer does not assume any liability for any damages which
-may result in using the software modules.
 
 *******************************************************************************/
 
@@ -434,26 +433,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SaveFile",
-        /* strOperation    */ "DrawingScene.save",
+        /* strName         */ "Step " + QString::number(++idxStep) + " SaveLoadFile",
+        /* strOperation    */ "DrawingScene.save, DrawingScene.load",
         /* pGrpParent      */ pGrpSaveLoadFile,
-        /* szDoTestStepFct */ SLOT(doTestStepSaveFile(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("AbsDirPath", strAbsDirPath);
-    pTestStep->setConfigValue("FileName", strFileName);
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Clear Drawing",
-        /* strOperation    */ "DrawingScene.clear",
-        /* pGrpParent      */ pGrpSaveLoadFile,
-        /* szDoTestStepFct */ SLOT(doTestStepClearDrawingScene(ZS::Test::CTestStep*)) );
-
-    pTestStep = new ZS::Test::CTestStep(
-        /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " LoadFile",
-        /* strOperation    */ "DrawingScene.load",
-        /* pGrpParent      */ pGrpSaveLoadFile,
-        /* szDoTestStepFct */ SLOT(doTestStepLoadFile(ZS::Test::CTestStep*)) );
+        /* szDoTestStepFct */ SLOT(doTestStepSaveLoadFile(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("AbsDirPath", strAbsDirPath);
     pTestStep->setConfigValue("FileName", strFileName);
 
@@ -1107,7 +1090,7 @@ void CTest::doTestStepDrawingSceneConvertToPhysValRect( ZS::Test::CTestStep* i_p
 }
 
 //------------------------------------------------------------------------------
-void CTest::doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep )
+void CTest::doTestStepSaveLoadFile( ZS::Test::CTestStep* i_pTestStep )
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1117,7 +1100,7 @@ void CTest::doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep )
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepSaveFile",
+        /* strMethod    */ "doTestStepSaveLoadFile",
         /* strAddInfo   */ strMthInArgs );
 
     QString strAbsDirPath = i_pTestStep->getConfigValue("AbsDirPath").toString();
@@ -1130,111 +1113,48 @@ void CTest::doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep )
         dir.mkpath(dir.absolutePath());
     }
 
-    SErrResultInfo errResultInfo;
-    i_pTestStep->setExpectedValue(errResultInfo.toString());
-
-    errResultInfo = m_pDrawingScene->save(strAbsFilePath);
-    if (errResultInfo.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfo);
+    SErrResultInfo errResultInfoSave = m_pDrawingScene->save(strAbsFilePath);
+    if (errResultInfoSave.isErrorResult()) {
+        CErrLog::GetInstance()->addEntry(errResultInfoSave);
+        i_pTestStep->setExpectedValue(SErrResultInfo().toString());
+        i_pTestStep->setResultValue(errResultInfoSave.toString());
     }
-    i_pTestStep->setResultValue(errResultInfo.toString());
-
-    QStringList strlstResultValues;
-
-    QStringList strlstSavedFile;
-    errResultInfo = readFile(strAbsFilePath, strlstSavedFile);
-    if (errResultInfo.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfo);
-        strlstResultValues.append(errResultInfo.toString());
-    }
-
-    QString strExpectedResultsAbsFilePath = c_strTestExpectedResultFilesAbsDirPath + QDir::separator() + strFileName;
-    if (!strExpectedResultsAbsFilePath.endsWith(".xml")) {
-        strExpectedResultsAbsFilePath += ".xml";
-    }
-    QStringList strlstExpectedFile;
-    errResultInfo = readFile(strExpectedResultsAbsFilePath, strlstExpectedFile);
-    if (errResultInfo.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfo);
-        strlstResultValues.append(errResultInfo.toString());
-    }
-
-    for (int iLine = 0; (iLine < strlstSavedFile.size() && iLine < strlstExpectedFile.size()); ++iLine) {
-        if (strlstSavedFile[iLine] != strlstExpectedFile[iLine]) {
-            strlstResultValues.append("Saved file is different from expected result file");
-            strlstResultValues.append("Saved file: " + strAbsFilePath);
-            strlstResultValues.append("Expected file: " + strExpectedResultsAbsFilePath);
-            strlstResultValues.append("First difference recognized in line " + QString::number(iLine+1));
-            break;
+    else {
+        QStringList strlstExpectedValues;
+        CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+        CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+        while (itIdxTree != pIdxTree->end()) {
+            CIdxTreeEntry* pTreeEntry = *itIdxTree;
+            CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+            if (pGraphObj != nullptr) {
+                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj));
+            }
+            ++itIdxTree;
         }
+        i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
 
-    if (!strlstResultValues.isEmpty()) {
-        i_pTestStep->setResultValues(strlstResultValues);
-    }
-}
-
-//------------------------------------------------------------------------------
-void CTest::doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep )
-//------------------------------------------------------------------------------
-{
-    QString strMthInArgs;
-    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pTestStep->path();
-    }
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObj,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "doTestStepLoadFile",
-        /* strAddInfo   */ strMthInArgs );
-
-    QString strAbsDirPath = i_pTestStep->getConfigValue("AbsDirPath").toString();
-    QString strFileName = i_pTestStep->getConfigValue("FileName").toString();
-    QString strAbsFilePath = strAbsDirPath + QDir::separator() + strFileName;
-
-    SErrResultInfo errResultInfo;
-    i_pTestStep->setExpectedValue(errResultInfo.toString());
-
-    errResultInfo = m_pDrawingScene->load(strAbsFilePath);
-    if (errResultInfo.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfo);
-    }
-    i_pTestStep->setResultValue(errResultInfo.toString());
-
-    QStringList strlstResultValues;
-
-    QStringList strlstLoadedFile;
-    errResultInfo = readFile(strAbsFilePath, strlstLoadedFile);
-    if (errResultInfo.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfo);
-        strlstResultValues.append(errResultInfo.toString());
-    }
-
-    errResultInfo = m_pDrawingScene->save(strAbsFilePath + ".bak");
-    if (errResultInfo.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfo);
-        strlstResultValues.append(errResultInfo.toString());
-    }
-
-    QStringList strlstSavedFile;
-    errResultInfo = readFile(strAbsFilePath + ".bak", strlstSavedFile);
-    if (errResultInfo.isErrorResult()) {
-        CErrLog::GetInstance()->addEntry(errResultInfo);
-        strlstResultValues.append(errResultInfo.toString());
-    }
-
-    for (int iLine = 0; (iLine < strlstLoadedFile.size() && iLine < strlstSavedFile.size()); ++iLine) {
-        if (strlstLoadedFile[iLine] != strlstSavedFile[iLine]) {
-            strlstResultValues.append("Saved file is different from loaded file");
-            strlstResultValues.append("Loaded file: " + strAbsFilePath);
-            strlstResultValues.append("Saved file: " + strAbsFilePath + ".bak");
-            strlstResultValues.append("First difference recognized in line " + QString::number(iLine+1));
-            break;
+    if (!errResultInfoSave.isErrorResult()) {
+        SErrResultInfo errResultInfoLoad = m_pDrawingScene->load(strAbsFilePath);
+        if (errResultInfoLoad.isErrorResult()) {
+            CErrLog::GetInstance()->addEntry(errResultInfoLoad);
+            i_pTestStep->setExpectedValue(SErrResultInfo().toString());
+            i_pTestStep->setResultValue(errResultInfoLoad.toString());
         }
-    }
-
-    if (!strlstResultValues.isEmpty()) {
-        i_pTestStep->setResultValues(strlstResultValues);
+        else {
+            QStringList strlstResultValues;
+            CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
+            CIdxTree::iterator itIdxTree = pIdxTree->begin(CIdxTree::iterator::ETraversalOrder::PreOrder);
+            while (itIdxTree != pIdxTree->end()) {
+                CIdxTreeEntry* pTreeEntry = *itIdxTree;
+                CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
+                if (pGraphObj != nullptr) {
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
+                }
+                ++itIdxTree;
+            }
+            i_pTestStep->setResultValues(strlstResultValues);
+        }
     }
 }
 
@@ -1659,6 +1579,22 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
             CUnit unit(strUnit);
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setBottomLeft(physValPoint);
+        }
+    }
+    else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
+            QString strVal = i_pTestStep->getConfigValue("Width").toString();
+            CPhysVal physVal = strVal;
+            pGraphObjGroup->setWidth(physVal);
+        }
+    }
+    else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr) {
+            QString strVal = i_pTestStep->getConfigValue("Height").toString();
+            CPhysVal physVal = strVal;
+            pGraphObjGroup->setWidth(physVal);
         }
     }
 
@@ -2107,4 +2043,64 @@ SErrResultInfo CTest::readFile(const QString& i_strAbsFilePath, QStringList& o_s
         }
     }
     return errResultInfo;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj) const
+//------------------------------------------------------------------------------
+{
+    QStringList strlstResultValues;
+    if (i_pGraphObj != nullptr) {
+        const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(i_pGraphObj);
+        if (i_pGraphObj->isGroup()) {
+            const CGraphObjGroup* pGraphObjGroup = dynamic_cast<const CGraphObjGroup*>(i_pGraphObj);
+            if (pGraphObjGroup != nullptr) {
+                strlstResultValues = resultValuesForGroup(
+                    pGraphObjGroup->name(), pGraphicsItem->pos(), pGraphObjGroup->getBoundingRect(),
+                    pGraphObjGroup->getRect());
+            }
+        }
+        else if (i_pGraphObj->isLine()) {
+            const CGraphObjLine* pGraphObjLine = dynamic_cast<const CGraphObjLine*>(i_pGraphObj);
+            if (pGraphObjLine != nullptr) {
+                strlstResultValues = resultValuesForLine(
+                    pGraphObjLine->name(), pGraphicsItem->pos(), pGraphObjLine->getBoundingRect(),
+                    pGraphObjLine->line(), pGraphObjLine->getLine());
+            }
+        }
+    }
+    return strlstResultValues;
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForGroup(
+    const QString& strGraphObjName, const QPointF& i_pos, const QRectF& i_rctBounding,
+    const CPhysValRect& i_physValRect) const
+//------------------------------------------------------------------------------
+{
+    return QStringList({
+        strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+        strGraphObjName + ".boundingRect {" + qRect2Str(i_rctBounding) + "} px",
+        strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
+        strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
+        strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
+        strGraphObjName + ".rotationAngle: " + i_physValRect.angle().toString()
+    });
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForLine(
+    const QString& strGraphObjName, const QPointF& i_pos, const QRectF& i_rctBounding,
+    const QLineF& i_line, const CPhysValLine& i_physValLine) const
+//------------------------------------------------------------------------------
+{
+    return QStringList({
+        strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
+        strGraphObjName + ".boundingRect {" + qRect2Str(i_rctBounding) + "} px",
+        strGraphObjName + ".line {" + qLine2Str(i_line) + "} px",
+        strGraphObjName + ".position {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
+        strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),
+        strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "} " + i_physValLine.unit().symbol(),
+        strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
+    });
 }

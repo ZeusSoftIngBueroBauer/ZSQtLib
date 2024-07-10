@@ -1903,6 +1903,7 @@ void CGraphObjLine::paint(
     // This will draw the bounding rectangle with dashed lines. I don't want this.
     //QGraphicsLineItem::paint(i_pPainter, i_pStyleOption, i_pWdgt);
 
+    i_pPainter->setRenderHint(QPainter::Antialiasing);
     i_pPainter->drawLine(lineF);
 
     ////#pragma message(__TODO__"To be removed")
@@ -1917,7 +1918,7 @@ void CGraphObjLine::paint(
     CEnumLineEndStyle lineEndStyleP2 = m_drawSettings.getLineEndStyle(ELinePoint::End);
     if (lineEndStyleP1 != ELineEndStyle::Normal || lineEndStyleP2 != ELineEndStyle::Normal) {
         i_pPainter->setPen(pn);
-        i_pPainter->setRenderHint(QPainter::Antialiasing);
+        //i_pPainter->setRenderHint(QPainter::Antialiasing);
         CEnumArrowHeadBaseLineType baseLineTypeP1 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::Start);
         CEnumArrowHeadBaseLineType baseLineTypeP2 = m_drawSettings.getArrowHeadBaseLineType(ELinePoint::End);
         pn.setWidth(1);

@@ -35,6 +35,7 @@ may result in using the software modules.
 
 #include "ZSTest/ZSTest.h"
 #include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
 
 class QGraphicsItem;
 class QPainterPath;
@@ -45,7 +46,10 @@ namespace System
 {
 class CTrcAdminObj;
 }
-
+namespace PhysVal
+{
+class CPhysVal;
+}
 namespace Draw
 {
 class CDrawingScene;
@@ -53,6 +57,10 @@ class CDrawingView;
 class CDrawingSize;
 class CDrawGridSettings;
 class CGraphObj;
+class CPhysValLine;
+class CPhysValPoint;
+class CPhysValRect;
+class CPhysValSize;
 }
 
 namespace Apps
@@ -190,8 +198,7 @@ protected slots:
     void doTestStepDrawingSceneConvertToPhysValSize( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepDrawingSceneConvertToPhysValLine( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepDrawingSceneConvertToPhysValRect( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepSaveFile( ZS::Test::CTestStep* i_pTestStep );
-    void doTestStepLoadFile( ZS::Test::CTestStep* i_pTestStep );
+    void doTestStepSaveLoadFile( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetMode( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepSetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepUnsetCurrentDrawingTool( ZS::Test::CTestStep* i_pTestStep );
@@ -209,6 +216,13 @@ protected slots:
     void doTestStepMouseMoveEvents( ZS::Test::CTestStep* i_pTestStep );
 protected: // auxiliary instance methods
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
+    QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj) const;
+    QStringList resultValuesForGroup(
+        const QString& strGraphObjName, const QPointF& i_pos, const QRectF& i_rctBounding,
+        const ZS::Draw::CPhysValRect& i_physValRect) const;
+    QStringList resultValuesForLine(
+        const QString& strGraphObjName, const QPointF& i_pos, const QRectF& i_rctBounding,
+        const QLineF& i_line, const ZS::Draw::CPhysValLine& i_physValLine) const;
 protected: // class members
     static QHash<QString, int> s_hshGraphObjsInstCounts;
 protected: // instance members

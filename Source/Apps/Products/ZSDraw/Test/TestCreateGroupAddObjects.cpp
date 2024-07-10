@@ -1011,7 +1011,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     QString strGraphObjNameSmallRectBottomLine = "SmallRect-BottomLine";
     QString strGraphObjNameSmallRectLeftLine = "SmallRect-LeftLine";
 
-    CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
+    CPhysVal physValAngleGroupTop(0.0, Units.Angle.Degree, 0.1);
+    CPhysVal physValAngleSmallRect(0.0, Units.Angle.Degree, 0.1);
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -1465,8 +1466,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     ptPosPlusSigns = QPointF(450.0, 350.0);
     rectBoundingPlusSigns = QRectF(QPointF(-200.0, -100.0), sizePlusSigns);
     physValRectPlusSigns = CPhysValRect(*m_pDrawingScene, ptTLPlusSigns, sizePlusSigns);
-    physValAngle.setVal(0.0);
-    physValRectPlusSigns.setAngle(physValAngle);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(strGraphObjGroupNamePlusSigns + ".pos {" + qPoint2Str(ptPosPlusSigns) + "} px");
     strlstExpectedValues.append(strGraphObjGroupNamePlusSigns + ".boundingRect {" + qRect2Str(rectBoundingPlusSigns) + "} px");
@@ -1837,8 +1836,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     ptPosPlusSigns = QPointF(300.0, 300.0);
     rectBoundingPlusSigns = QRectF(QPointF(-50.0, -50.0), sizePlusSigns);
     physValRectPlusSigns = CPhysValRect(*m_pDrawingScene, ptTLPlusSigns, sizePlusSigns);
-    physValAngle.setVal(0.0);
-    physValRectPlusSigns.setAngle(physValAngle);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(strGraphObjGroupNamePlusSigns + ".pos {" + qPoint2Str(ptPosPlusSigns) + "} px");
     strlstExpectedValues.append(strGraphObjGroupNamePlusSigns + ".boundingRect {" + qRect2Str(rectBoundingPlusSigns) + "} px");
@@ -2188,30 +2185,30 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     // Rotate SmallRect
     //-----------------
 
-    physValAngle.setVal(45.0);
+    physValAngleSmallRect.setVal(45.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameSmallRect + ".setRotationAngle(" + physValAngle.toString() + ")",
-        /* strOperation    */ strGraphObjGroupNameSmallRect + ".setRotationAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameSmallRect + ".setRotationAngle(" + physValAngleSmallRect.toString() + ")",
+        /* strOperation    */ strGraphObjGroupNameSmallRect + ".setRotationAngle(" + physValAngleSmallRect.toString() + ")",
         /* pGrpParent      */ pGrpModifySmallRect,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjGroupNameSmallRect);
     pTestStep->setConfigValue("GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(
         strEntryType, strGraphObjGroupNameTop, strGraphObjGroupNameSmallRect));
     pTestStep->setConfigValue("Method", "setRotationAngle");
-    pTestStep->setConfigValue("Angle", physValAngle.toString());
+    pTestStep->setConfigValue("Angle", physValAngleSmallRect.toString());
     QPointF ptPosSmallRect(25.0, -25.0);
     QSizeF sizeSmallRect(10.0, 10.0);
     QRectF rectBoundingSmallRect(QPointF(-5.0, -5.0), sizeSmallRect);
     CPhysValRect physValRectSmallRect(*m_pDrawingScene, QPointF(70.0, 20.0), sizeSmallRect);
-    physValRectSmallRect.setAngle(physValAngle);
+    physValRectSmallRect.setAngle(physValAngleSmallRect);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".pos {" + qPoint2Str(ptPosSmallRect) + "} px");
     strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".boundingRect {" + qRect2Str(rectBoundingSmallRect) + "} px");
     strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".position {" + physValRectSmallRect.center().toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".getRect {" + physValRectSmallRect.toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".getSize {" + physValRectSmallRect.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".rotationAngle: " + physValAngle.toString());
+    strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".rotationAngle: " + physValAngleSmallRect.toString());
     // SmallRect-TopLine
     QPointF ptP1SmallRectTopLine(320.0, bYAxisTopDown ? 270.0 : 330.0);
     QPointF ptP2SmallRectTopLine(330.0, bYAxisTopDown ? 270.0 : 330.0);
@@ -2342,15 +2339,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     QPointF ptPosGroupTop(350.0, 350.0);
     QRectF rectBoundingGroupTop(QPointF(-100.0, -100.0), sizeGroupTop);
     CPhysValRect physValRectGroupTop(*m_pDrawingScene, ptTLGroupTop, sizeGroupTop);
-    physValAngle.setVal(0.0);
-    physValRectGroupTop.setAngle(physValAngle);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".pos {" + qPoint2Str(ptPosGroupTop) + "} px");
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".boundingRect {" + qRect2Str(rectBoundingGroupTop) + "} px");
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".position {" + physValRectGroupTop.center().toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".getRect {" + physValRectGroupTop.toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".getSize {" + physValRectGroupTop.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameTop + ".rotationAngle: " + physValAngle.toString());
+    strlstExpectedValues.append(strGraphObjGroupNameTop + ".rotationAngle: " + physValAngleGroupTop.toString());
     // Checkmark
     ptPosCheckmark = QPointF(0.0, 0.0);
     ptTLCheckmark = QPointF(50.0, 50.0);
@@ -2405,29 +2400,29 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     // Rotate top group
     //-----------------
 
-    physValAngle.setVal(45.0);
+    physValAngleGroupTop.setVal(45.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameTop + ".setRotationAngle(" + physValAngle.toString() + ")",
-        /* strOperation    */ strGraphObjGroupNameTop + ".setRotationAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameTop + ".setRotationAngle(" + physValAngleGroupTop.toString() + ")",
+        /* strOperation    */ strGraphObjGroupNameTop + ".setRotationAngle(" + physValAngleGroupTop.toString() + ")",
         /* pGrpParent      */ pGrpModifyTopGroup,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjGroupNameTop);
     pTestStep->setConfigValue("GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjGroupNameTop));
     pTestStep->setConfigValue("Method", "setRotationAngle");
-    pTestStep->setConfigValue("Angle", physValAngle.toString());
+    pTestStep->setConfigValue("Angle", physValAngleGroupTop.toString());
     // Group Top
     ptPosGroupTop = QPointF(350.0, 350.0);
     rectBoundingGroupTop = QRectF(QPointF(-100.0, -100.0), sizeGroupTop);
     physValRectGroupTop = CPhysValRect(*m_pDrawingScene, ptTLGroupTop, sizeGroupTop);
-    physValRectGroupTop.setAngle(physValAngle);
+    physValRectGroupTop.setAngle(physValAngleGroupTop);
     strlstExpectedValues.clear();
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".pos {" + qPoint2Str(ptPosGroupTop) + "} px");
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".boundingRect {" + qRect2Str(rectBoundingGroupTop) + "} px");
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".position {" + physValRectGroupTop.center().toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".getRect {" + physValRectGroupTop.toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameTop + ".getSize {" + physValRectGroupTop.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameTop + ".rotationAngle: " + physValAngle.toString());
+    strlstExpectedValues.append(strGraphObjGroupNameTop + ".rotationAngle: " + physValAngleGroupTop.toString());
     // Checkmark
     ptPosCheckmark = QPointF(0.0, 0.0);
     ptTLCheckmark = QPointF(50.0, 50.0);
@@ -2479,86 +2474,65 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    // Resize top group
-    //-----------------
-#if 0
-    QPointF ptTLGroupTop(250.0, bYAxisTopDown ? 250.0 : 350.0);
-    QSizeF sizeGroupTop(200.0, 200.0);
-    QPoint ptBR(450.0, bYAxisTopDown ? 450.0 : 150.0);
+    // Resize top group (setWidth)
+    //----------------------------
+
+    CPhysValSize physValSizeGroupTop(*m_pDrawingScene, 300.0, 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameTop + ".setBottomRight(" + qPoint2Str(ptBR) + " " + unit.symbol() + ")",
-        /* strOperation    */ strGraphObjGroupNameTop + ".setBottomRight(" + qPoint2Str(ptBR) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameTop + ".setWidth(" + physValSizeGroupTop.width().toString() + ")",
+        /* strOperation    */ strGraphObjGroupNameTop + ".setWidth(" + physValSizeGroupTop.width().toString() + ")",
         /* pGrpParent      */ pGrpModifyTopGroup,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjGroupNameTop);
     pTestStep->setConfigValue("GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjGroupNameTop));
-    pTestStep->setConfigValue("Method", "setBottomRight");
-    pTestStep->setConfigValue("BottomRight", ptBR);
-    pTestStep->setConfigValue("BottomRight.unit", unit.symbol());
-    // Group Top
-    QPointF ptPosGroupTop(350.0, 350.0);
-    QRectF rectBoundingGroupTop(QPointF(-100.0, -100.0), sizeGroupTop);
-    CPhysValRect physValRectGroupTop(*m_pDrawingScene, ptTLGroupTop, sizeGroupTop);
-    physValAngle.setVal(0.0);
-    physValRectGroupTop.setAngle(physValAngle);
+    pTestStep->setConfigValue("Method", "setWidth");
+    pTestStep->setConfigValue("Width", physValSizeGroupTop.width().toString());
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(strGraphObjGroupNameTop + ".pos {" + qPoint2Str(ptPosGroupTop) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameTop + ".boundingRect {" + qRect2Str(rectBoundingGroupTop) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameTop + ".position {" + physValRectGroupTop.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameTop + ".getRect {" + physValRectGroupTop.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameTop + ".getSize {" + physValRectGroupTop.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameTop + ".rotationAngle: " + physValAngle.toString());
+    // Group Top
+    ptPosGroupTop = QPointF(385.4, 385.4);
+    ptTLGroupTop = QPointF(235.4, 285.4);
+    sizeGroupTop = QSizeF(300.0, 200.0);
+    rectBoundingGroupTop = QRectF(QPointF(-150.0, -100.0), sizeGroupTop);
+    physValRectGroupTop = CPhysValRect(*m_pDrawingScene, ptTLGroupTop, sizeGroupTop);
+    physValRectGroupTop.setAngle(physValAngleGroupTop);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjGroupNameTop, ptPosGroupTop, rectBoundingGroupTop, physValRectGroupTop));
     // Checkmark
     ptPosCheckmark = QPointF(0.0, 0.0);
-    ptTLCheckmark = QPointF(50.0, 50.0);
-    sizeCheckmark = QSizeF(100.0, 100.0);
-    rectBoundingCheckmark = QRectF(QPointF(-50.0, -50.0), sizeCheckmark);
+    ptTLCheckmark = QPointF(75.0, 50.0);
+    sizeCheckmark = QSizeF(150.0, 100.0);
+    rectBoundingCheckmark = QRectF(QPointF(-75.0, -50.0), sizeCheckmark);
     physValRectCheckmark = CPhysValRect(*m_pDrawingScene, ptTLCheckmark, sizeCheckmark);
-    strlstExpectedValues.append(strGraphObjGroupNameCheckmark + ".pos {" + qPoint2Str(ptPosCheckmark) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameCheckmark + ".boundingRect {" + qRect2Str(rectBoundingCheckmark) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameCheckmark + ".position {" + physValRectCheckmark.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameCheckmark + ".getRect {" + physValRectCheckmark.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameCheckmark + ".getSize {" + physValRectCheckmark.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameCheckmark + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjGroupNameCheckmark, ptPosCheckmark, rectBoundingCheckmark, physValRectCheckmark));
     // SmallRect
-    ptPosSmallRect = QPointF(50.0, -50.0);
-    QPointF ptTLSmallRect(150.0, 36.0);
-    sizeSmallRect = QSizeF(20.0, 20.0);
-    rectBoundingSmallRect = QRectF(QPointF(-10.0, -10.0), sizeSmallRect);
+    ptPosSmallRect = QPointF(75.0, -50.0);
+    ptTLSmallRect = QPointF(210.0, 40.0);
+    sizeSmallRect = QSizeF(30.0, 20.0);
+    rectBoundingSmallRect = QRectF(QPointF(-15.0, -10.0), sizeSmallRect);
     physValRectSmallRect = CPhysValRect(*m_pDrawingScene, ptTLSmallRect, sizeSmallRect);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".pos {" + qPoint2Str(ptPosSmallRect) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".boundingRect {" + qRect2Str(rectBoundingSmallRect) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".position {" + physValRectSmallRect.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".getRect {" + physValRectSmallRect.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".getSize {" + physValRectSmallRect.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".rotationAngle: 45.0 " + Math::c_strSymbolDegree);
+    physValRectSmallRect.setAngle(physValAngleSmallRect);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjGroupNameSmallRect, ptPosSmallRect, rectBoundingSmallRect, physValRectSmallRect));
     // SmallPlusSign
-    ptPosSmallPlusSign = QPointF(-50.0, 50.0);
-    ptTLSmallPlusSign = QPointF(20.0, 120.0);
-    sizeSmallPlusSign = QSizeF(60.0, 60.0);
-    rectBoundingSmallPlusSign = QRectF(QPointF(-30.0, -30.0), sizeSmallPlusSign);
+    ptPosSmallPlusSign = QPointF(-75.0, 50.0);
+    ptTLSmallPlusSign = QPointF(30.0, 120.0);
+    sizeSmallPlusSign = QSizeF(90.0, 60.0);
+    rectBoundingSmallPlusSign = QRectF(QPointF(-45.0, -30.0), sizeSmallPlusSign);
     physValRectSmallPlusSign = CPhysValRect(*m_pDrawingScene, ptTLSmallPlusSign, sizeSmallPlusSign);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallPlusSign + ".pos {" + qPoint2Str(ptPosSmallPlusSign) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameSmallPlusSign + ".boundingRect {" + qRect2Str(rectBoundingSmallPlusSign) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameSmallPlusSign + ".position {" + physValRectSmallPlusSign.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallPlusSign + ".getRect {" + physValRectSmallPlusSign.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallPlusSign + ".getSize {" + physValRectSmallPlusSign.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameSmallPlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjGroupNameSmallPlusSign, ptPosSmallPlusSign, rectBoundingSmallPlusSign, physValRectSmallPlusSign));
     // BigPlusSign
     ptPosBigPlusSign = QPointF(0.0, 0.0);
     ptTLBigPlusSign = QPointF(0.0, 0.0);
-    sizeBigPlusSign = QSizeF(200.0, 200.0);
-    rectBoundingBigPlusSign = QRectF(QPointF(-100.0, -100.0), sizeBigPlusSign);
+    sizeBigPlusSign = QSizeF(300.0, 200.0);
+    rectBoundingBigPlusSign = QRectF(QPointF(-150.0, -100.0), sizeBigPlusSign);
     physValRectBigPlusSign = CPhysValRect(*m_pDrawingScene, ptTLBigPlusSign, sizeBigPlusSign);
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".pos {" + qPoint2Str(ptPosBigPlusSign) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".boundingRect {" + qRect2Str(rectBoundingBigPlusSign) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".position {" + physValRectBigPlusSign.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".getRect {" + physValRectBigPlusSign.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".getSize {" + physValRectBigPlusSign.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjGroupNameBigPlusSign, ptPosBigPlusSign, rectBoundingBigPlusSign, physValRectBigPlusSign));
     pTestStep->setExpectedValues(strlstExpectedValues);
-#endif
+
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
