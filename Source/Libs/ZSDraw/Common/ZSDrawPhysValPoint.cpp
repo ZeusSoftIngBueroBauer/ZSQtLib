@@ -454,12 +454,30 @@ void CPhysValPoint::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDraw
 }
 
 //------------------------------------------------------------------------------
-QString CPhysValPoint::toString(bool i_bAddUnit, const QString& i_strSeparator) const
+/*! @brief Writes the point to coordinates into a string in the format "x, y[ unit.symbol]".
+
+    @param [in] i_bAddUnit
+        true to append the unit at the end of the coordinates.
+    @param [in] i_strSeparator
+        String to separate the coordinates
+    @param [in] i_iPrecision
+        If >= 0 overwrites the precision (number of digits after the decimal point)
+        as defined by the internal resolution of the point.
+*/
+QString CPhysValPoint::toString(bool i_bAddUnit, const QString& i_strSeparator, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
-    QString str = x().toString(EUnitFind::None, PhysValSubStr::Val)
-                + i_strSeparator
-                + y().toString(EUnitFind::None, PhysValSubStr::Val);
+    QString str;
+    if (i_iPrecision < 0) {
+        str = x().toString(EUnitFind::None, PhysValSubStr::Val)
+            + i_strSeparator
+            + y().toString(EUnitFind::None, PhysValSubStr::Val);
+    }
+    else {
+        str = QString::number(x().getVal(), 'f', i_iPrecision)
+            + i_strSeparator
+            + QString::number(y().getVal(), 'f', i_iPrecision);
+    }
     if (i_bAddUnit) {
         str += " " + m_unit.symbol();
     }

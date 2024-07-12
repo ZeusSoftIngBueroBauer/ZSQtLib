@@ -78,7 +78,7 @@ public: // must overridables
     virtual bool isValid() const = 0;
     virtual bool isNull() const = 0;
     virtual void draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawSettings& i_drawSettings) = 0;
-    virtual QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ") const = 0;
+    virtual QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = ", ", int i_iPrecision = -1) const = 0;
 public: // instance methods
     const CDrawingScene& drawingScene() const { return *m_pDrawingScene; }
     //const ZS::System::GUI::Math::CScaleDivLinesMetrics& divLinesMetricsX() const { return *m_pDivLinesMetricsX; }

@@ -595,17 +595,39 @@ void CPhysValRect::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawS
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Outputs the rectangle as a string in format "TopLeft.x, TopLeft.y, Width, Height".
+/*! @brief Writes the point to coordinates into a string in the format
+           "Center.x, Center.y, Width, Height[ unit.symbol], angle unit.symbol".
 
     @param [in] i_bAddUnit
-        true to add the unit at the end of the string.
-    @param [in] i_strSeparator (default ", ")
-        Separator used to separate the values.
+        true to append the unit at the end of the coordinates.
+    @param [in] i_strSeparator
+        String to separate the coordinates
+    @param [in] i_iPrecision
+        If >= 0 overwrites the precision (number of digits after the decimal point)
+        as defined by the internal resolution of the point.
 */
-QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator) const
+QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
-    QString str = topLeft().toString() + i_strSeparator + size().toString();
+    QString str;
+    if (i_iPrecision < 0) {
+        str = center().x().toString(EUnitFind::None, PhysValSubStr::Val)
+            + i_strSeparator
+            + center().y().toString(EUnitFind::None, PhysValSubStr::Val)
+            + i_strSeparator
+            + size().width().toString(EUnitFind::None, PhysValSubStr::Val)
+            + i_strSeparator
+            + size().height().toString(EUnitFind::None, PhysValSubStr::Val);
+    }
+    else {
+        str = QString::number(center().x().getVal(), 'f', i_iPrecision)
+            + i_strSeparator
+            + QString::number(center().y().getVal(), 'f', i_iPrecision)
+            + i_strSeparator
+            + QString::number(size().width().getVal(), 'f', i_iPrecision)
+            + i_strSeparator
+            + QString::number(size().height().getVal(), 'f', i_iPrecision);
+    }
     if (i_bAddUnit) {
         str += " " + m_unit.symbol();
     }

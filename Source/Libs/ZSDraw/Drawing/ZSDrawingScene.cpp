@@ -929,29 +929,29 @@ SErrResultInfo CDrawingScene::load( const QString& i_strFileName )
                         QString strGraphObjType;
                         QString strObjName;
                         QXmlStreamAttributes xmlStreamAttrs = xmlStreamReader.attributes();
-                        if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName)) {
-                            strFactoryGroupName = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName).toString();
+                        if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameGraphObjFactoryGroupName)) {
+                            strFactoryGroupName = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameGraphObjFactoryGroupName).toString();
                         }
                         else {
                             XmlStreamParser::raiseErrorAttributeNotDefined(
-                                xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName);
+                                xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameGraphObjFactoryGroupName);
                         }
                         if (!xmlStreamReader.hasError()) {
-                            if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjType)) {
-                                strGraphObjType = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjType).toString();
+                            if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameGraphObjType)) {
+                                strGraphObjType = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameGraphObjType).toString();
                             }
                             else {
                                 XmlStreamParser::raiseErrorAttributeNotDefined(
-                                    xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjType);
+                                    xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameGraphObjType);
                             }
                         }
                         if (!xmlStreamReader.hasError()) {
-                            if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlAttrGraphObjName)) {
-                                strObjName = xmlStreamAttrs.value(XmlStreamParser::c_strXmlAttrGraphObjName).toString();
+                            if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameGraphObjName)) {
+                                strObjName = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameGraphObjName).toString();
                             }
                             else {
                                 XmlStreamParser::raiseErrorAttributeNotDefined(
-                                    xmlStreamReader, strElemName, XmlStreamParser::c_strXmlAttrGraphObjName);
+                                    xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameGraphObjName);
                             }
                         }
                         if (!xmlStreamReader.hasError()) {
@@ -1117,9 +1117,9 @@ SErrResultInfo CDrawingScene::save( CGraphObj* i_pGraphObj, QXmlStreamWriter& i_
     }
     else {
         i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGraphObj);
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjFactoryGroupName, strFactoryGroupName);
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjType, strGraphObjType);
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrGraphObjName, strObjName);
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameGraphObjFactoryGroupName, strFactoryGroupName);
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameGraphObjType, strGraphObjType);
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameGraphObjName, strObjName);
         errResultInfo = pObjFactory->saveGraphObj(i_pGraphObj, i_xmlStreamWriter);
         i_xmlStreamWriter.writeEndElement();
     }

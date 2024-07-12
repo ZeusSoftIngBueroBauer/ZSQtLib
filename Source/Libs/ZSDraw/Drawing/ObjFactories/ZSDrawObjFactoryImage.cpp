@@ -208,7 +208,7 @@ SErrResultInfo CObjFactoryImage::saveGraphObj(
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryImage::loadGraphObj(
     CDrawingScene*    i_pDrawingScene,
-    CGraphObjGroup*   i_pGraphObjGroup,
+    CGraphObjGroup*   i_pGraphObjGroupParent,
     const QString&    i_strObjName,
     QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
@@ -219,7 +219,10 @@ CGraphObj* CObjFactoryImage::loadGraphObj(
     }
 
     QString strMthInArgs;
-
+    if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ParentGroup: " + QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path())
+            + ", ObjName: " + i_strObjName;
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,

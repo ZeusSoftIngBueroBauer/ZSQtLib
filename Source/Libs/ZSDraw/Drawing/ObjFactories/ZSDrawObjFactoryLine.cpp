@@ -144,11 +144,9 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
     CPhysValPoint physValPoint1 = pGraphObj->getP1();
     CPhysValPoint physValPoint2 = pGraphObj->getP2();
     i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameGeometry);
-    i_xmlStreamWriter.writeStartElement(XmlStreamParser::c_strXmlElemNameShapePoints);
-    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameShapePointP1, physValPoint1.toString());
-    i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameShapePointP2, physValPoint2.toString());
-    i_xmlStreamWriter.writeEndElement(); // ShapePoints
-    i_xmlStreamWriter.writeEndElement(); // Geometry
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameShapePointP1, physValPoint1.toString(false, ", ", 3));
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameShapePointP2, physValPoint2.toString(false, ", ", 3));
+    i_xmlStreamWriter.writeEndElement();
 
     i_xmlStreamWriter.writeTextElement(XmlStreamParser::c_strXmlElemNameZValue, QString::number(pGraphObj->getStackingOrderValue()));
 
@@ -173,7 +171,7 @@ SErrResultInfo CObjFactoryLine::saveGraphObj(
 //------------------------------------------------------------------------------
 CGraphObj* CObjFactoryLine::loadGraphObj(
     CDrawingScene* i_pDrawingScene,
-    CGraphObjGroup* i_pGraphObjGroup,
+    CGraphObjGroup* i_pGraphObjGroupParent,
     const QString& i_strObjName,
     QXmlStreamReader& i_xmlStreamReader )
 //------------------------------------------------------------------------------
@@ -184,8 +182,8 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Group: " + QString(i_pGraphObjGroup == nullptr ? "null" : i_pGraphObjGroup->path()) +
-            ", ObjName: " + i_strObjName;
+        strMthInArgs = "ParentGroup: " + QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path())
+            + ", ObjName: " + i_strObjName;
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -199,79 +197,27 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     CDrawSettings drawSettings(EGraphObjTypeLine);
     CPhysValPoint physValPoint1(*i_pDrawingScene);
     CPhysValPoint physValPoint2(*i_pDrawingScene);
-    bool bPt1Valid = false;
-    bool bPt2Valid = false;
     double fZValue = 0.0;
     QList<SLabelDscr> arTextLabels;
     QList<SLabelDscr> arGeometryLabels;
-
-    enum ELevel {
-        ELevelThisGraphObj = 0, // expecting DrawSettings, Geometry, ZValue, Labels
-        ELevelGeometry = 1,     // expecting ShapePoints
-        ELevelShapePoints = 2   // expecting P1, P2
-    };
-    int iLevel = ELevelThisGraphObj;
 
     while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd()) {
         QXmlStreamReader::TokenType xmlStreamTokenType = i_xmlStreamReader.readNext();
         if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
             QString strElemName = i_xmlStreamReader.name().toString();
-            if (iLevel == ELevelThisGraphObj) {
-                if (i_xmlStreamReader.isStartElement()) {
-                    if (strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings) {
-                        drawSettings.load(i_xmlStreamReader);
-                    }
-                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
-                        iLevel++;
-                    }
-                    else if (strElemName == XmlStreamParser::c_strXmlElemNameZValue) {
-                        QString strElemText = i_xmlStreamReader.readElementText();
-                        bool bConverted = false;
-                        double fTmp = strElemText.toDouble(&bConverted);
-                        if (bConverted) {
-                            fZValue = fTmp;
-                        }
-                    }
-                    else if (strElemName == XmlStreamParser::c_strXmlElemNameTextLabels) {
-                        arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
-                    }
-                    else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometryLabels) {
-                        arGeometryLabels = loadGraphObjGeometryLabels(i_xmlStreamReader);
-                    }
-                    else {
-                        i_xmlStreamReader.raiseError(
-                            "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
-                    }
+            QString strElemAttr;
+            if (i_xmlStreamReader.isStartElement()) {
+                if (strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings) {
+                    drawSettings.load(i_xmlStreamReader);
                 }
-                else /*if (i_xmlStreamReader.isEndElement())*/ {
-                    if (strElemName == XmlStreamParser::c_strXmlElemNameGraphObj) {
-                        break;
-                    }
-                }
-            }
-            else if (iLevel == ELevelGeometry) {
-                if (i_xmlStreamReader.isStartElement()) {
-                    if (strElemName == XmlStreamParser::c_strXmlElemNameShapePoints) {
-                        iLevel++;
-                    }
-                    else {
-                        i_xmlStreamReader.raiseError(
-                            "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
-                    }
-                }
-                else /*if (i_xmlStreamReader.isEndElement())*/ {
-                    iLevel--;
-                }
-            }
-            else if (iLevel == ELevelShapePoints) {
-                if (i_xmlStreamReader.isStartElement()) {
-                    if ((strElemName == XmlStreamParser::c_strXmlElemNameShapePointP1) 
-                     || (strElemName == XmlStreamParser::c_strXmlElemNameShapePointP2)) {
-                        QString strElemText = i_xmlStreamReader.readElementText();
+                else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
+                    QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
+                    if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameShapePointP1)) {
+                        strElemAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameShapePointP1).toString();
                         bool bConverted = false;
                         CPhysValPoint physValPointTmp(*i_pDrawingScene);
                         try {
-                            physValPointTmp = strElemText;
+                            physValPointTmp = strElemAttr;
                             bConverted = true;
                         }
                         catch (...) {
@@ -279,48 +225,86 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                         }
                         if (!bConverted) {
                             i_xmlStreamReader.raiseError(
-                                "Element \"" + strElemName + "\" (" + strElemText + ") cannot be converted to Point");
+                                "Element \"" + strElemName + "\" (" + strElemAttr + ") cannot be converted to Point");
                         }
-                        else if (strElemName == XmlStreamParser::c_strXmlElemNameShapePointP1) {
+                        else {
                             physValPoint1 = physValPointTmp;
-                            bPt1Valid = true;
-                        }
-                        else if (strElemName == XmlStreamParser::c_strXmlElemNameShapePointP2) {
-                            physValPoint2 = physValPointTmp;
-                            bPt2Valid = true;
                         }
                     }
                     else {
-                        i_xmlStreamReader.raiseError(
-                            "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
+                        XmlStreamParser::raiseErrorAttributeNotDefined(
+                            i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameShapePointP1);
+                    }
+                    if (xmlStreamAttrs.hasAttribute(XmlStreamParser::c_strXmlElemNameShapePointP2)) {
+                        strElemAttr = xmlStreamAttrs.value(XmlStreamParser::c_strXmlElemNameShapePointP2).toString();
+                        bool bConverted = false;
+                        CPhysValPoint physValPointTmp(*i_pDrawingScene);
+                        try {
+                            physValPointTmp = strElemAttr;
+                            bConverted = true;
+                        }
+                        catch (...) {
+                            bConverted = false;
+                        }
+                        if (!bConverted) {
+                            i_xmlStreamReader.raiseError(
+                                "Element \"" + strElemName + "\" (" + strElemAttr + ") cannot be converted to Point");
+                        }
+                        else {
+                            physValPoint2 = physValPointTmp;
+                        }
+                    }
+                    else {
+                        XmlStreamParser::raiseErrorAttributeNotDefined(
+                            i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameShapePointP2);
                     }
                 }
-                else /*if (i_xmlStreamReader.isEndElement())*/ {
-                    iLevel--;
+                else if (strElemName == XmlStreamParser::c_strXmlElemNameZValue) {
+                    QString strElemText = i_xmlStreamReader.readElementText();
+                    bool bConverted = false;
+                    double fTmp = strElemText.toDouble(&bConverted);
+                    if (bConverted) {
+                        fZValue = fTmp;
+                    }
+                }
+                else if (strElemName == XmlStreamParser::c_strXmlElemNameTextLabels) {
+                    arTextLabels = loadGraphObjTextLabels(i_xmlStreamReader);
+                }
+                else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometryLabels) {
+                    arGeometryLabels = loadGraphObjGeometryLabels(i_xmlStreamReader);
+                }
+                else {
+                    i_xmlStreamReader.raiseError(
+                        "Invalid format in XML object: Element \"" + strElemName + "\" not expected.");
+                }
+            }
+            else /*if (i_xmlStreamReader.isEndElement())*/ {
+                if (strElemName == XmlStreamParser::c_strXmlElemNameGraphObj) {
+                    break;
                 }
             }
         } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement())
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
-    if (!bPt1Valid || !bPt2Valid) {
+    if (!physValPoint1.isValid() || !physValPoint2.isValid()) {
         if (!i_xmlStreamReader.hasError()) {
-            i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
+            i_xmlStreamReader.raiseError("Incomplete geometry.");
         }
     }
 
     if (!i_xmlStreamReader.hasError()) {
         pGraphObj->setDrawSettings(drawSettings);
-        if (i_pGraphObjGroup != nullptr) {
+        if (i_pGraphObjGroupParent != nullptr) {
             // The object has been added to the drawing scene at position (0, 0) right after creating the object.
             // The shape points have not been set yet. When adding the object to the group, the group wants to
             // map the shape point coordinates to the group coordinates in order to resize the group so that the
             // newly added object fits into the group. For this to work, the object to be added must be able to
             // provide its position and shape points in scene coordinates to the group and the group must already
             // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
-            physValPoint1 = i_pGraphObjGroup->mapToScene(physValPoint1);
-            physValPoint2 = i_pGraphObjGroup->mapToScene(physValPoint2);
+            physValPoint1 = i_pGraphObjGroupParent->mapToScene(physValPoint1);
+            physValPoint2 = i_pGraphObjGroupParent->mapToScene(physValPoint2);
             pGraphObj->setLine(physValPoint1, physValPoint2);
-            i_pGraphObjGroup->addToGroup(pGraphObj);
+            i_pGraphObjGroupParent->addToGroup(pGraphObj);
         }
         else {
             pGraphObj->setLine(physValPoint1, physValPoint2);

@@ -933,25 +933,25 @@ void CDrawingSize::save( QXmlStreamWriter& i_xmlStreamWriter )
         /* strMethod    */ "save",
         /* strAddInfo   */ "" );
 
-    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrDimensionUnit, dimensionUnit().toString());
+    i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameDimensionUnit, dimensionUnit().toString());
     if (dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrWidth, QString::number(imageSizeInPixels().width()));
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrHeight, QString::number(imageSizeInPixels().height()));
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameWidth, QString::number(imageSizeInPixels().width()));
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameHeight, QString::number(imageSizeInPixels().height()));
     }
     else /*if (m_drawingSize.dimensionUnit() == EScaleDimensionUnit::Metric)*/ {
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrScreenResolutionPxPerMilliMeter, QString::number(screenResolutionInPxPerMM()));
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrMetricImageCoorsDecimals, QString::number(metricImageCoorsDecimals()));
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrUnit, metricUnit().symbol());
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrWidth, metricImageWidth().toString());
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrHeight, metricImageHeight().toString());
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrYScaleAxisOrientation, yScaleAxisOrientation().toString());
-        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrScaleFactor,
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameScreenResolutionPxPerMilliMeter, QString::number(screenResolutionInPxPerMM()));
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameMetricImageCoorsDecimals, QString::number(metricImageCoorsDecimals()));
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameUnit, metricUnit().symbol());
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameWidth, metricImageWidth().toString());
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameHeight, metricImageHeight().toString());
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameYScaleAxisOrientation, yScaleAxisOrientation().toString());
+        i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNameScaleFactor,
             QString::number(scaleFactorDividend()) + ":" + QString::number(scaleFactorDivisor()));
         if (normedPaperSize().isValid()) {
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrPaperSize, normedPaperSize().toString());
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNamePaperSize, normedPaperSize().toString());
         }
         if (normedPaperOrientation().isValid()) {
-            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlAttrPaperOrientation, normedPaperOrientation().toString());
+            i_xmlStreamWriter.writeAttribute(XmlStreamParser::c_strXmlElemNamePaperOrientation, normedPaperOrientation().toString());
         }
     }
 } // save
@@ -963,67 +963,67 @@ void CDrawingSize::load( QXmlStreamReader& i_xmlStreamReader )
     QString strElemName = i_xmlStreamReader.name().toString();
     QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
     CEnumScaleDimensionUnit dimensionUnit = XmlStreamParser::getDimensionUnit(
-        i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrDimensionUnit);
+        i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameDimensionUnit);
     if (!i_xmlStreamReader.hasError()) {
         setDimensionUnit(dimensionUnit);
         if (dimensionUnit == EScaleDimensionUnit::Pixels) {
             double cxWidth_px = XmlStreamParser::getDoubleVal(
-                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrWidth);
+                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameWidth);
             double cyHeight_px = XmlStreamParser::getDoubleVal(
-                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrHeight);
+                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameHeight);
             if (!i_xmlStreamReader.hasError()) {
                 setImageSize(CPhysVal(cxWidth_px, Units.Length.px), CPhysVal(cyHeight_px, Units.Length.px));
             }
         }
         else if (dimensionUnit == EScaleDimensionUnit::Metric) {
             double fScreenResPxPerMM = XmlStreamParser::getDoubleVal(
-                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrScreenResolutionPxPerMilliMeter);
+                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameScreenResolutionPxPerMilliMeter);
             if (!i_xmlStreamReader.hasError()) {
                 setScreenResolutionInPxPerMM(fScreenResPxPerMM);
             }
             if (!i_xmlStreamReader.hasError()) {
                 int iDecimals = XmlStreamParser::getIntVal(
-                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrMetricImageCoorsDecimals);
+                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameMetricImageCoorsDecimals);
                 if (!i_xmlStreamReader.hasError()) {
                     setMetricImageCoorsDecimals(iDecimals);
                 }
             }
             if (!i_xmlStreamReader.hasError()) {
                 CUnit unit = XmlStreamParser::getUnit(
-                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrUnit);
+                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameUnit);
                 setMetricUnit(unit);
             }
             if (!i_xmlStreamReader.hasError()) {
                 CPhysVal physValWidth = XmlStreamParser::getPhysVal(
-                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrWidth);
+                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameWidth);
                 CPhysVal physValHeight = XmlStreamParser::getPhysVal(
-                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrHeight);
+                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameHeight);
                 if (!i_xmlStreamReader.hasError()) {
                     setImageSize(physValWidth, physValHeight);
                 }
             }
             if (!i_xmlStreamReader.hasError()) {
                 std::pair<int, int> scaleFactor = XmlStreamParser::getIntPair(
-                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrScaleFactor);
+                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameScaleFactor);
                 if (!i_xmlStreamReader.hasError()) {
                     setScaleFactor(scaleFactor.first, scaleFactor.second);
                 }
             }
             CEnumYScaleAxisOrientation yScaleAxisOrientation = XmlStreamParser::getYScaleAxisOrientation(
-                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrYScaleAxisOrientation);
+                i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNameYScaleAxisOrientation);
             if (!i_xmlStreamReader.hasError()) {
                 setYScaleAxisOrientation(yScaleAxisOrientation);
             }
             if (!i_xmlStreamReader.hasError()) {
                 CEnumNormedPaperSize paperSize = XmlStreamParser::getNormedPaperSize(
-                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrPaperSize, false);
+                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNamePaperSize, false);
                 if (!i_xmlStreamReader.hasError() && paperSize.isValid()) {
                     setNormedPaperSize(paperSize);
                 }
             }
             if (!i_xmlStreamReader.hasError()) {
                 CEnumOrientation orientation = XmlStreamParser::getOrientation(
-                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlAttrPaperOrientation, false);
+                    i_xmlStreamReader, xmlStreamAttrs, strElemName, XmlStreamParser::c_strXmlElemNamePaperOrientation, false);
                 if (!i_xmlStreamReader.hasError() && orientation.isValid()) {
                     setNormedPaperOrientation(orientation);
                 }

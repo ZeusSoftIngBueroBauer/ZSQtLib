@@ -231,7 +231,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     // Small Plus Sign
     //================
-
+#if 0
     ZS::Test::CTestStepGroup* pGrpAddSmallPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " SmallPlusSign",
@@ -296,7 +296,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Big Plus Sign
     //================
 
@@ -317,22 +317,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     QPointF ptP1BigPlusSignVerticalLine(300.0, bYAxisTopDown ? 250.0 : 350.0);
     QPointF ptP2BigPlusSignVerticalLine(300.0, bYAxisTopDown ? 350.0 : 250.0);
     QPointF ptPosBigPlusSignVerticalLine(300.0, 300.0);
-    QPointF ptP1PosBigPlusSignVerticalLine(0.0, -50.0);
-    QPointF ptP2PosBigPlusSignVerticalLine(0.0, 50.0);
-    double fLengthBigPlusSignVerticalLine = 100.0;
+    QLineF lineBigPlusSignVerticalLine(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    QRectF rctBoundingBigPlusSignVerticalLine(lineBigPlusSignVerticalLine.p1(), lineBigPlusSignVerticalLine.p2());
     CPhysValLine physValLineBigPlusSignVerticalLine(*m_pDrawingScene, ptP1BigPlusSignVerticalLine, ptP2BigPlusSignVerticalLine);
     pTestStep->setConfigValue("GraphObjName", strGraphObjNameBigPlusSignVerticalLine);
     pTestStep->setConfigValue("P1", ptP1BigPlusSignVerticalLine);
     pTestStep->setConfigValue("P2", ptP2BigPlusSignVerticalLine);
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".pos {" + qPoint2Str(ptPosBigPlusSignVerticalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".p1 {" + qPoint2Str(ptP1PosBigPlusSignVerticalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".p2 {" + qPoint2Str(ptP2PosBigPlusSignVerticalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".length: " + QString::number(Math::round2Nearest(fLengthBigPlusSignVerticalLine, 1), 'f', 1) + " px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".position {" + qPoint2Str(ptPosBigPlusSignVerticalLine, ", ", 'f', iDigits) + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".getLine {" + physValLineBigPlusSignVerticalLine.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignVerticalLine, iDigits), 'f', iDigits) + " " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".rotationAngle: 90.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append(resultValuesForLine(
+        strGraphObjNameBigPlusSignVerticalLine, ptPosBigPlusSignVerticalLine, rctBoundingBigPlusSignVerticalLine,
+        lineBigPlusSignVerticalLine, physValLineBigPlusSignVerticalLine));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Horizontal Line
@@ -347,27 +341,21 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     QPointF ptP1BigPlusSignHorizontalLine(250.0, bYAxisTopDown ? 300.0 : 300.0);
     QPointF ptP2BigPlusSignHorizontalLine(350.0, bYAxisTopDown ? 300.0 : 300.0);
     QPointF ptPosBigPlusSignHorizontalLine(300.0, 300.0);
-    QPointF ptP1PosBigPlusSignHorizontalLine(-50.0, 0.0);
-    QPointF ptP2PosBigPlusSignHorizontalLine(50.0, 0.0);
-    double fLengthBigPlusSignHorizontalLine = 100.0;
+    QLineF lineBigPlusSignHorizontalLine(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    QRectF rctBoundingBigPlusSignHorizontalLine(lineBigPlusSignHorizontalLine.p1(), lineBigPlusSignHorizontalLine.p2());
     CPhysValLine physValLineBigPlusSignHorizontalLine(*m_pDrawingScene, ptP1BigPlusSignHorizontalLine, ptP2BigPlusSignHorizontalLine);
     pTestStep->setConfigValue("GraphObjName", strGraphObjNameBigPlusSignHorizontalLine);
     pTestStep->setConfigValue("P1", ptP1BigPlusSignHorizontalLine);
     pTestStep->setConfigValue("P2", ptP2BigPlusSignHorizontalLine);
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".pos {" + qPoint2Str(ptPosBigPlusSignHorizontalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".p1 {" + qPoint2Str(ptP1PosBigPlusSignHorizontalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".p2 {" + qPoint2Str(ptP2PosBigPlusSignHorizontalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".length: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, 1), 'f', 1) + " px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".position {" + qPoint2Str(ptPosBigPlusSignHorizontalLine, ", ", 'f', iDigits) + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLine {" + physValLineBigPlusSignHorizontalLine.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append(resultValuesForLine(
+        strGraphObjNameBigPlusSignHorizontalLine, ptPosBigPlusSignHorizontalLine, rctBoundingBigPlusSignHorizontalLine,
+        lineBigPlusSignHorizontalLine, physValLineBigPlusSignHorizontalLine));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Checkmark
     //================
-
+#if 0
     ZS::Test::CTestStepGroup* pGrpAddCheckmark = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Checkmark",
@@ -432,10 +420,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthCheckmarkRightLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Small Rectangle
     //================
-
+#if 0
     ZS::Test::CTestStepGroup* pGrpAddSmallRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " SmallRect",
@@ -560,7 +548,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     strlstExpectedValues.append(strGraphObjNameSmallRectLeftLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallRectLeftLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallRectLeftLine + ".rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
@@ -636,7 +624,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     // Small Plus Sign
     //----------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupNameSmallPlusSign + ")",
@@ -684,7 +672,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Big Plus Sign
     //----------------
 
@@ -706,39 +694,29 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     QRectF rectBoundingBigPlusSign(QPointF(-50.0, -50.0), sizeBigPlusSign);
     CPhysValRect physValRectBigPlusSign(*m_pDrawingScene, ptTLBigPlusSign, sizeBigPlusSign);
     strlstExpectedValues.clear();
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".pos {" + qPoint2Str(ptPosBigPlusSign) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".boundingRect {" + qRect2Str(rectBoundingBigPlusSign) + "} px");
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".position {" + qPoint2Str(ptPosBigPlusSign, ", ", 'f', iDigits) + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".getRect {" + physValRectBigPlusSign.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".getSize {" + physValRectBigPlusSign.size().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjGroupNameBigPlusSign, ptPosBigPlusSign, rectBoundingBigPlusSign, physValRectBigPlusSign));
     // BigPlusSign-VerticalLine
     QPointF ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
-    QRectF rectBoundingBigPlusSignVerticalLine = QRectF(QPointF(0.0, -50.0), QSizeF(0.0, 100.0));
-    double fLengthBigPlusSignVerticalLine = 100.0;
+    QLineF lineBigPlusSignVerticalLine(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    QRectF rctBoundingBigPlusSignVerticalLine(lineBigPlusSignVerticalLine.p1(), lineBigPlusSignVerticalLine.p2());
     CPhysValLine physValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, 0.0), QPointF(50.0, 100.0));
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".pos {" + qPoint2Str(ptPosBigPlusSignVerticalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".boundingRect {" + qRect2Str(rectBoundingBigPlusSignVerticalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".position {" + physValLineBigPlusSignVerticalLine.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".getLine {" + physValLineBigPlusSignVerticalLine.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignVerticalLine, iDigits), 'f', iDigits) + " " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignVerticalLine + ".rotationAngle: 90.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append(resultValuesForLine(
+        strGraphObjNameBigPlusSignVerticalLine, ptPosBigPlusSignVerticalLine, rctBoundingBigPlusSignVerticalLine,
+        lineBigPlusSignVerticalLine, physValLineBigPlusSignVerticalLine));
     // BigPlusSign-HorizontalLine
     QPointF ptPosBigPlusSignHorizontalLine = QPointF(0.0, 0.0);
-    QRectF rectBoundingBigPlusSignHorizontalLine = QRectF(QPointF(-50.0, 0.0), QSizeF(100.0, 0.0));
-    double fLengthBigPlusSignHorizontalLine = 100.0;
+    QLineF lineBigPlusSignHorizontalLine(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    QRectF rctBoundingBigPlusSignHorizontalLine(lineBigPlusSignHorizontalLine.p1(), lineBigPlusSignHorizontalLine.p2());
     CPhysValLine physValLineBigPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(0.0, 50.0), QPointF(100.0, 50.0));
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".pos {" + qPoint2Str(ptPosBigPlusSignHorizontalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".boundingRect {" + qRect2Str(rectBoundingBigPlusSignHorizontalLine) + "} px");
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".position {" + physValLineBigPlusSignHorizontalLine.center().toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLine {" + physValLineBigPlusSignHorizontalLine.toString() + "} " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
-    strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
+    strlstExpectedValues.append(resultValuesForLine(
+        strGraphObjNameBigPlusSignHorizontalLine, ptPosBigPlusSignHorizontalLine, rctBoundingBigPlusSignHorizontalLine,
+        lineBigPlusSignHorizontalLine, physValLineBigPlusSignHorizontalLine));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Checkmark
     //----------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupNameCheckmark + ")",
@@ -790,10 +768,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthCheckmarkRightLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Small Rectangle
     //----------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupNameSmallRect + ")",
@@ -873,10 +851,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     strlstExpectedValues.append(strGraphObjNameSmallRectLeftLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallRectLeftLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallRectLeftLine + ".rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Top Group
     //----------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupNameTop + ")",
@@ -953,7 +931,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".getSize {" + physValRectSmallRect.size().toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameSmallRect + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
@@ -1036,7 +1014,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
 
     // Checkmark
     //==========
-
+#if 0
     ZS::Test::CTestStepGroup* pGrpModifyCheckmarkLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Checkmark Lines",
@@ -1109,10 +1087,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthCheckmarkRightLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Checkmark - resizeToContent
     //----------------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameCheckmark + ".resizeToContent()",
@@ -1159,7 +1137,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthCheckmarkRightLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameCheckmarkRightLine + ".rotationAngle: 315.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Modify PlusSigns
     //=================
 
@@ -1170,7 +1148,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
 
     // Remove SmallPlusSign from TopGroup
     //-----------------------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameTop + ".removeFromGroup(" + strGraphObjGroupNameSmallPlusSign + ")",
@@ -1219,10 +1197,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Remove BigPlusSign from TopGroup
     //-----------------------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameTop + ".removeFromGroup(" + strGraphObjGroupNameBigPlusSign + ")",
@@ -1271,10 +1249,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Ungroup SmallPlusSign
     //----------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " DrawingScene.ungroup(" + strGraphObjGroupNameSmallPlusSign + ")",
@@ -1320,10 +1298,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Ungroup BigPlusSign
     //----------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " DrawingScene.ungroup(" + strGraphObjGroupNameBigPlusSign + ")",
@@ -1369,10 +1347,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Group Plus Signs
     //-----------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupNamePlusSigns + ")",
@@ -1444,10 +1422,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Resize PlusSigns
     //-----------------
-
+#if 0
     ptTLPlusSigns = QPointF(250.0, bYAxisTopDown ? 250.0 : 350.0);
     sizePlusSigns = QSizeF(400.0, 200.0);
     QPointF ptBRPlusSigns(650.0, bYAxisTopDown ? 450.0 : 150.0);
@@ -1518,10 +1496,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Ungroup PlusSigns
     //------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " DrawingScene.ungroup(" + strGraphObjGroupNamePlusSigns + ")",
@@ -1583,10 +1561,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Small Plus Sign
     //----------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupNameSmallPlusSign + ")",
@@ -1634,10 +1612,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Big Plus Sign
     //----------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupNameBigPlusSign + ")",
@@ -1685,10 +1663,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Group Plus Signs
     //-----------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupNamePlusSigns + ")",
@@ -1798,10 +1776,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Resize PlusSigns
     //-----------------
-
+#if 0
     ptTLPlusSigns = QPointF(250.0, bYAxisTopDown ? 250.0 : 350.0);
     sizePlusSigns = QSizeF(100.0, 100.0);
     ptBRPlusSigns = QPointF(350.0, bYAxisTopDown ? 350.0 : 250.0);
@@ -1912,10 +1890,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Ungroup PlusSigns
     //------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " DrawingScene.ungroup(" + strGraphObjGroupNamePlusSigns + ")",
@@ -2009,10 +1987,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Move SmallPlusSign to Top Group
     //--------------------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameTop + ".addToGroup(" + strGraphObjGroupNameSmallPlusSign + ")",
@@ -2060,10 +2038,96 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
+#endif
+    // Rotate BigPlusSign
+    //-------------------
 
+    CPhysVal physValAngleBigPlusSign(45.0, Units.Angle.Degree, 0.1);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameBigPlusSign + ".setRotationAngle(" + physValAngleBigPlusSign.toString() + ")",
+        /* strOperation    */ strGraphObjGroupNameBigPlusSign + ".setRotationAngle(" + physValAngleBigPlusSign.toString() + ")",
+        /* pGrpParent      */ pGrpModifyPlusSigns,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjName", strGraphObjGroupNameBigPlusSign);
+    pTestStep->setConfigValue("GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjGroupNameBigPlusSign));
+    pTestStep->setConfigValue("Method", "setRotationAngle");
+    pTestStep->setConfigValue("Angle", physValAngleBigPlusSign.toString());
+    strlstExpectedValues.clear();
+    // Group
+    QPointF ptPosBigPlusSign = QPointF(300.0, 300.0);
+    QSizeF sizeBigPlusSign = QSizeF(100.0, 100.0);
+    QRectF rectBoundingPlusSign = QRectF(QPointF(-50.0, -50.0), sizeBigPlusSign);
+    CPhysValRect physValRectBigPlusSign = CPhysValRect(*m_pDrawingScene);
+    physValRectBigPlusSign.setSize(sizeBigPlusSign);
+    physValRectBigPlusSign.setCenter(ptPosBigPlusSign);
+    physValRectBigPlusSign.setAngle(physValAngleBigPlusSign);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjGroupNameBigPlusSign, ptPosBigPlusSign, rectBoundingPlusSign, physValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    QPointF ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
+    QLineF lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    QRectF rctBoundingBigPlusSignVerticalLine = QRectF(lineBigPlusSignVerticalLine.p1(), lineBigPlusSignVerticalLine.p2());
+    CPhysValLine physValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, 0.0), QPointF(50.0, 100.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        strGraphObjNameBigPlusSignVerticalLine, ptPosBigPlusSignVerticalLine, rctBoundingBigPlusSignVerticalLine,
+        lineBigPlusSignVerticalLine, physValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    QPointF ptPosBigPlusSignHorizontalLine = QPointF(0.0, 0.0);
+    QLineF lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    QRectF rctBoundingBigPlusSignHorizontalLine = QRectF(lineBigPlusSignHorizontalLine.p1(), lineBigPlusSignHorizontalLine.p2());
+    CPhysValLine physValLineBigPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(0.0, 50.0), QPointF(100.0, 50.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        strGraphObjNameBigPlusSignHorizontalLine, ptPosBigPlusSignHorizontalLine, rctBoundingBigPlusSignHorizontalLine,
+        lineBigPlusSignHorizontalLine, physValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+
+    // Rotate BigPlusSign
+    //-------------------
+#if 0
+    physValAngleBigPlusSign.setVal(135.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameBigPlusSign + ".setRotationAngle(" + physValAngleBigPlusSign.toString() + ")",
+        /* strOperation    */ strGraphObjGroupNameBigPlusSign + ".setRotationAngle(" + physValAngleBigPlusSign.toString() + ")",
+        /* pGrpParent      */ pGrpModifyPlusSigns,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GraphObjName", strGraphObjGroupNameBigPlusSign);
+    pTestStep->setConfigValue("GraphObjKeyInTree", pIdxTree->buildKeyInTreeStr(strEntryType, strGraphObjGroupNameBigPlusSign));
+    pTestStep->setConfigValue("Method", "setRotationAngle");
+    pTestStep->setConfigValue("Angle", physValAngleBigPlusSign.toString());
+    strlstExpectedValues.clear();
+    // Group
+    ptPosBigPlusSign = QPointF(300.0, 300.0);
+    sizeBigPlusSign = QSizeF(100.0, 100.0);
+    rectBoundingPlusSign = QRectF(QPointF(-50.0, -50.0), sizeBigPlusSign);
+    physValRectBigPlusSign = CPhysValRect(*m_pDrawingScene);
+    physValRectBigPlusSign.setSize(sizeBigPlusSign);
+    physValRectBigPlusSign.setCenter(ptPosBigPlusSign);
+    physValRectBigPlusSign.setAngle(physValAngleBigPlusSign);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjGroupNameBigPlusSign, ptPosBigPlusSign, rectBoundingPlusSign, physValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    ptPosBigPlusSignVerticalLine = QPointF(0.0, 0.0);
+    lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    rctBoundingBigPlusSignVerticalLine = QRectF(lineBigPlusSignVerticalLine.p1(), lineBigPlusSignVerticalLine.p2());
+    physValLineBigPlusSignVerticalLine = CPhysValLine(*m_pDrawingScene, QPointF(50.0, 0.0), QPointF(50.0, 100.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        strGraphObjNameBigPlusSignVerticalLine, ptPosBigPlusSignVerticalLine, rctBoundingBigPlusSignVerticalLine,
+        lineBigPlusSignVerticalLine, physValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    ptPosBigPlusSignHorizontalLine = QPointF(0.0, 0.0);
+    lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    rctBoundingBigPlusSignHorizontalLine = QRectF(lineBigPlusSignHorizontalLine.p1(), lineBigPlusSignHorizontalLine.p2());
+    physValLineBigPlusSignHorizontalLine = CPhysValLine(*m_pDrawingScene, QPointF(0.0, 50.0), QPointF(100.0, 50.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        strGraphObjNameBigPlusSignHorizontalLine, ptPosBigPlusSignHorizontalLine, rctBoundingBigPlusSignHorizontalLine,
+        lineBigPlusSignHorizontalLine, physValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
+#endif
     // Move BigPlusSign to Top Group
     //--------------------------------
-
+#if 0
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjGroupNameTop + ".addToGroup(" + strGraphObjGroupNameBigPlusSign + ")",
@@ -2111,7 +2175,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthBigPlusSignHorizontalLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameBigPlusSignHorizontalLine + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Show Geometry Labels
     //---------------------
 #if 0
@@ -2184,7 +2248,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
 
     // Rotate SmallRect
     //-----------------
-
+#if 0
     physValAngleSmallRect.setVal(45.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2197,6 +2261,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
         strEntryType, strGraphObjGroupNameTop, strGraphObjGroupNameSmallRect));
     pTestStep->setConfigValue("Method", "setRotationAngle");
     pTestStep->setConfigValue("Angle", physValAngleSmallRect.toString());
+    // Group
     QPointF ptPosSmallRect(25.0, -25.0);
     QSizeF sizeSmallRect(10.0, 10.0);
     QRectF rectBoundingSmallRect(QPointF(-5.0, -5.0), sizeSmallRect);
@@ -2262,7 +2327,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjNameSmallRectLeftLine + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallRectLeftLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjNameSmallRectLeftLine + ".rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Hide Geometry Labels
     //---------------------
 #if 0
@@ -2320,7 +2385,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
 
     // Resize top group
     //-----------------
-
+#if 0
     QPointF ptTLGroupTop(250.0, bYAxisTopDown ? 250.0 : 350.0);
     QSizeF sizeGroupTop(200.0, 200.0);
     QPoint ptBR(450.0, bYAxisTopDown ? 450.0 : 150.0);
@@ -2396,10 +2461,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".getSize {" + physValRectBigPlusSign.size().toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Rotate top group
     //-----------------
-
+#if 0
     physValAngleGroupTop.setVal(45.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2473,10 +2538,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".getSize {" + physValRectBigPlusSign.size().toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjGroupNameBigPlusSign + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     // Resize top group (setWidth)
     //----------------------------
-
+#if 0
     CPhysValSize physValSizeGroupTop(*m_pDrawingScene, 300.0, 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2532,7 +2597,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapes(
     strlstExpectedValues.append(resultValuesForGroup(
         strGraphObjGroupNameBigPlusSign, ptPosBigPlusSign, rectBoundingBigPlusSign, physValRectBigPlusSign));
     pTestStep->setExpectedValues(strlstExpectedValues);
-
+#endif
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);

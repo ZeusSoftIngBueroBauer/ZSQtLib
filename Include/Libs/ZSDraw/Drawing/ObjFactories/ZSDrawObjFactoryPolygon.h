@@ -56,7 +56,7 @@ public: // interface methods of base class CObjFactory
         QXmlStreamWriter& i_xmlStreamWriter ) override;
     virtual CGraphObj* loadGraphObj(
         CDrawingScene* i_pDrawingScene,
-        CGraphObjGroup* i_pGraphObjGroup,
+        CGraphObjGroup* i_pGraphObjGroupParent,
         const QString& i_strObjName,
         QXmlStreamReader& i_xmlStreamReader ) override;
 

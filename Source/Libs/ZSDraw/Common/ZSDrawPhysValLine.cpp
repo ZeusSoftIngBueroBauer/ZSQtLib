@@ -401,16 +401,39 @@ void CPhysValLine::draw(QPainter* i_pPainter, const QRectF& i_rect, const CDrawS
 }
 
 //------------------------------------------------------------------------------
-QString CPhysValLine::toString(bool i_bAddUnit, const QString& i_strSeparator) const
+/*! @brief Writes the point to coordinates into a string in the format
+           "p1.x, p1.y, p2.x, "p2.y"[ unit.symbol].
+
+    @param [in] i_bAddUnit
+        true to append the unit at the end of the coordinates.
+    @param [in] i_strSeparator
+        String to separate the coordinates
+    @param [in] i_iPrecision
+        If >= 0 overwrites the precision (number of digits after the decimal point)
+        as defined by the internal resolution of the point.
+*/
+QString CPhysValLine::toString(bool i_bAddUnit, const QString& i_strSeparator, int i_iPrecision) const
 //------------------------------------------------------------------------------
 {
-    QString str = x1().toString(EUnitFind::None, PhysValSubStr::Val)
-                + i_strSeparator
-                + y1().toString(EUnitFind::None, PhysValSubStr::Val)
-                + i_strSeparator
-                + x2().toString(EUnitFind::None, PhysValSubStr::Val)
-                + i_strSeparator
-                + y2().toString(EUnitFind::None, PhysValSubStr::Val);
+    QString str;
+    if (i_iPrecision < 0) {
+        str = x1().toString(EUnitFind::None, PhysValSubStr::Val)
+            + i_strSeparator
+            + y1().toString(EUnitFind::None, PhysValSubStr::Val)
+            + i_strSeparator
+            + x2().toString(EUnitFind::None, PhysValSubStr::Val)
+            + i_strSeparator
+            + y2().toString(EUnitFind::None, PhysValSubStr::Val);
+    }
+    else {
+        str = QString::number(x1().getVal(), 'f', i_iPrecision)
+            + i_strSeparator
+            + QString::number(y1().getVal(), 'f', i_iPrecision)
+            + i_strSeparator
+            + QString::number(x2().getVal(), 'f', i_iPrecision)
+            + i_strSeparator
+            + QString::number(y2().getVal(), 'f', i_iPrecision);
+    }
     if (i_bAddUnit) {
         str += " " + m_unit.symbol();
     }

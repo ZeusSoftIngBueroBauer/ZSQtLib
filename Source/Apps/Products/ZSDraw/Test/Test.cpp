@@ -340,26 +340,26 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepSetDrawingSize(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
-        XmlStreamParser::c_strXmlAttrDimensionUnit, i_drawingSize.dimensionUnit().toString());
+        XmlStreamParser::c_strXmlElemNameDimensionUnit, i_drawingSize.dimensionUnit().toString());
     pTestStep->setConfigValue(
-        XmlStreamParser::c_strXmlAttrScreenResolutionPxPerMilliMeter, i_drawingSize.screenResolutionInPxPerMM());
+        XmlStreamParser::c_strXmlElemNameScreenResolutionPxPerMilliMeter, i_drawingSize.screenResolutionInPxPerMM());
     if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
         pTestStep->setConfigValue(
-            XmlStreamParser::c_strXmlAttrWidth, i_drawingSize.imageWidthInPixels());
+            XmlStreamParser::c_strXmlElemNameWidth, i_drawingSize.imageWidthInPixels());
         pTestStep->setConfigValue(
-            XmlStreamParser::c_strXmlAttrHeight, i_drawingSize.imageHeightInPixels());
+            XmlStreamParser::c_strXmlElemNameHeight, i_drawingSize.imageHeightInPixels());
     }
     else {
         pTestStep->setConfigValue(
-            XmlStreamParser::c_strXmlAttrUnit, i_drawingSize.metricUnit().symbol());
+            XmlStreamParser::c_strXmlElemNameUnit, i_drawingSize.metricUnit().symbol());
         pTestStep->setConfigValue(
-            XmlStreamParser::c_strXmlAttrMetricImageCoorsDecimals, i_drawingSize.metricImageCoorsDecimals());
+            XmlStreamParser::c_strXmlElemNameMetricImageCoorsDecimals, i_drawingSize.metricImageCoorsDecimals());
         pTestStep->setConfigValue(
-            XmlStreamParser::c_strXmlAttrWidth, i_drawingSize.metricImageWidth().getVal());
+            XmlStreamParser::c_strXmlElemNameWidth, i_drawingSize.metricImageWidth().getVal());
         pTestStep->setConfigValue(
-            XmlStreamParser::c_strXmlAttrHeight, i_drawingSize.metricImageHeight().getVal());
+            XmlStreamParser::c_strXmlElemNameHeight, i_drawingSize.metricImageHeight().getVal());
         pTestStep->setConfigValue(
-            XmlStreamParser::c_strXmlAttrYScaleAxisOrientation, i_drawingSize.yScaleAxisOrientation().toString());
+            XmlStreamParser::c_strXmlElemNameYScaleAxisOrientation, i_drawingSize.yScaleAxisOrientation().toString());
     }
     pTestStep->setExpectedValue(i_drawingSize.toString());
 
@@ -373,13 +373,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
         /* pGrpParent      */ pGrpPrepareScene,
         /* szDoTestStepFct */ SLOT(doTestStepSetGridSettings(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue(
-        XmlStreamParser::c_strXmlAttrLinesVisible, i_gridSettings.areLinesVisible());
+        XmlStreamParser::c_strXmlElemNameLinesVisible, i_gridSettings.areLinesVisible());
     pTestStep->setConfigValue(
-        XmlStreamParser::c_strXmlAttrLinesDistMin, i_gridSettings.linesDistMin());
+        XmlStreamParser::c_strXmlElemNameLinesDistMin, i_gridSettings.linesDistMin());
     pTestStep->setConfigValue(
-        XmlStreamParser::c_strXmlAttrLabelsVisible, i_gridSettings.areLabelsVisible());
+        XmlStreamParser::c_strXmlElemNameLabelsVisible, i_gridSettings.areLabelsVisible());
     pTestStep->setConfigValue(
-        XmlStreamParser::c_strXmlAttrFont, i_gridSettings.labelsFont().family());
+        XmlStreamParser::c_strXmlElemNameFont, i_gridSettings.labelsFont().family());
     pTestStep->setExpectedValue(i_gridSettings.toString());
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
@@ -434,7 +434,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " SaveLoadFile",
-        /* strOperation    */ "DrawingScene.save, DrawingScene.load",
+        /* strOperation    */ "DrawingScene.save.load(" + strAbsDirPath + "/" + strFileName + ")",
         /* pGrpParent      */ pGrpSaveLoadFile,
         /* szDoTestStepFct */ SLOT(doTestStepSaveLoadFile(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("AbsDirPath", strAbsDirPath);
@@ -625,33 +625,33 @@ void CTest::doTestStepSetDrawingSize( ZS::Test::CTestStep* i_pTestStep )
 
     CDrawingSize drawingSize;
     drawingSize.setDimensionUnit(
-        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrDimensionUnit).toString());
-    if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlAttrScreenResolutionPxPerMilliMeter)) {
-        double fResPxPerMM = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrScreenResolutionPxPerMilliMeter).toDouble();
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameDimensionUnit).toString());
+    if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlElemNameScreenResolutionPxPerMilliMeter)) {
+        double fResPxPerMM = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameScreenResolutionPxPerMilliMeter).toDouble();
         drawingSize.setScreenResolutionInPxPerMM(fResPxPerMM);
     }
     if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        int cxWidth = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrWidth).toInt();
-        int cyHeight = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrHeight).toInt();
+        int cxWidth = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameWidth).toInt();
+        int cyHeight = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameHeight).toInt();
         drawingSize.setImageSize(CPhysVal(cxWidth, Units.Length.px), CPhysVal(cyHeight, Units.Length.px));
     }
     else {
         CUnit unit = drawingSize.metricUnit();
-        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlAttrUnit)) {
-            unit = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrUnit).toString();
+        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlElemNameUnit)) {
+            unit = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameUnit).toString();
             drawingSize.setMetricUnit(unit);
         }
-        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlAttrMetricImageCoorsDecimals)) {
-            int iDecimals = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrMetricImageCoorsDecimals).toInt();
+        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlElemNameMetricImageCoorsDecimals)) {
+            int iDecimals = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameMetricImageCoorsDecimals).toInt();
             drawingSize.setMetricImageCoorsDecimals(iDecimals);
         }
-        double fxWidth = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrWidth).toDouble();
-        double fyHeight = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrHeight).toDouble();
+        double fxWidth = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameWidth).toDouble();
+        double fyHeight = i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameHeight).toDouble();
         drawingSize.setImageSize(CPhysVal(fxWidth, unit), CPhysVal(fyHeight, unit));
         bool bOk = false;
-        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlAttrYScaleAxisOrientation)) {
+        if (i_pTestStep->hasConfigValue(XmlStreamParser::c_strXmlElemNameYScaleAxisOrientation)) {
             CEnumYScaleAxisOrientation eYScaleOrientation = CEnumYScaleAxisOrientation::fromString(
-                i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrYScaleAxisOrientation).toString(), &bOk);
+                i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameYScaleAxisOrientation).toString(), &bOk);
             if (bOk) {
                 drawingSize.setYScaleAxisOrientation(eYScaleOrientation);
             }
@@ -679,13 +679,13 @@ void CTest::doTestStepSetGridSettings( ZS::Test::CTestStep* i_pTestStep )
 
     CDrawGridSettings gridSettings;
     gridSettings.setLinesVisible(
-        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrLinesVisible).toBool());
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameLinesVisible).toBool());
     gridSettings.setLinesDistMin(
-        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrLinesDistMin).toInt());
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameLinesDistMin).toInt());
     gridSettings.setLabelsVisible(
-        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrLabelsVisible).toBool());
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameLabelsVisible).toBool());
     gridSettings.setLabelsFont(
-        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlAttrFont).toString());
+        i_pTestStep->getConfigValue(XmlStreamParser::c_strXmlElemNameFont).toString());
 
     m_pDrawingScene->setGridSettings(gridSettings);
 
@@ -1295,21 +1295,8 @@ void CTest::doTestStepAddGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
 
     QStringList strlstResultValues;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
-    CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
-    if (pGraphObjLine != nullptr) {
-        QLineF lineF = pGraphObjLine->line();
-        strlstResultValues.append(strGraphObjName + ".pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".p1 {" + qPoint2Str(lineF.p1()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".p2 {" + qPoint2Str(lineF.p2()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".length: " + QString::number(lineF.length(), 'f', 1) + " px");
-        CPhysValPoint physValPointPos = pGraphObjLine->position();
-        strlstResultValues.append(strGraphObjName + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-        CPhysValLine physValLine = pGraphObjLine->getLine();
-        strlstResultValues.append(strGraphObjName + ".getLine {" + physValLine.toString() + "} " + physValLine.unit().symbol());
-        CPhysVal physValLength = pGraphObjLine->getLength();
-        strlstResultValues.append(strGraphObjName + ".getLength: " + physValLength.toString());
-        CPhysVal physValAngle = pGraphObjLine->rotationAngle(Units.Angle.Degree);
-        strlstResultValues.append(strGraphObjName + ".rotationAngle: " + physValAngle.toString());
+    if (pGraphObj != nullptr) {
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -1374,28 +1361,7 @@ void CTest::doTestStepAddGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
     for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
         CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
-            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-            strlstResultValues.append(pGraphObj->name() + ".pos {" + qPoint2Str(pGraphicsItem->pos()) + "} px");
-            QRectF rectF = pGraphObj->getBoundingRect();
-            strlstResultValues.append(pGraphObj->name() + ".boundingRect {" + qRect2Str(rectF) + "} px");
-            CPhysValPoint physValPointPos = pGraphObj->position();
-            strlstResultValues.append(pGraphObj->name() + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-            if (pGraphObj->isGroup()) {
-                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-                CPhysValRect physValRect = pGraphObjGroup->getRect();
-                strlstResultValues.append(pGraphObj->name() + ".getRect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
-                CPhysValSize physValSize = pGraphObjGroup->getSize();
-                strlstResultValues.append(pGraphObj->name() + ".getSize {" + physValSize.toString() + "} " + physValSize.unit().symbol());
-            }
-            else if (pGraphObj->isLine()) {
-                CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
-                CPhysValLine physValLine = pGraphObjLine->getLine();
-                strlstResultValues.append(pGraphObj->name() + ".getLine {" + physValLine.toString() + "} " + physValLine.unit().symbol());
-                CPhysVal physValLength = pGraphObjLine->getLength();
-                strlstResultValues.append(pGraphObj->name() + ".getLength: " + physValLength.toString());
-            }
-            CPhysVal physValAngle = pGraphObj->rotationAngle(Units.Angle.Degree);
-            strlstResultValues.append(pGraphObj->name() + ".rotationAngle: " + physValAngle.toString());
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
         }
     }
     i_pTestStep->setResultValues(strlstResultValues);
@@ -1452,19 +1418,7 @@ void CTest::doTestStepModifyGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
 
     QStringList strlstResultValues;
     if (pGraphObjLine != nullptr) {
-        QLineF lineF = pGraphObjLine->line();
-        strlstResultValues.append(strGraphObjName + ".pos {" + qPoint2Str(pGraphObjLine->pos()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".p1 {" + qPoint2Str(lineF.p1()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".p2 {" + qPoint2Str(lineF.p2()) + "} px");
-        strlstResultValues.append(strGraphObjName + ".length: " + QString::number(lineF.length(), 'f', 1) + " px");
-        CPhysValPoint physValPointPos = pGraphObjLine->position();
-        strlstResultValues.append(strGraphObjName + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-        CPhysValLine physValLine = pGraphObjLine->getLine();
-        strlstResultValues.append(strGraphObjName + ".getLine {" + physValLine.toString() + "} " + physValLine.unit().symbol());
-        CPhysVal physValLength = pGraphObjLine->getLength();
-        strlstResultValues.append(strGraphObjName + ".getLength: " + physValLength.toString());
-        CPhysVal physValAngle = pGraphObjLine->rotationAngle(Units.Angle.Degree);
-        strlstResultValues.append(strGraphObjName + ".rotationAngle: " + physValAngle.toString());
+        strlstResultValues.append(resultValuesForGraphObj(pGraphObjLine));
     }
     i_pTestStep->setResultValues(strlstResultValues);
 }
@@ -1612,28 +1566,7 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
     for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
         pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
-            QGraphicsItem* pGraphicsItem = dynamic_cast<QGraphicsItem*>(pGraphObj);
-            strlstResultValues.append(pGraphObj->name() + ".pos {" + qPoint2Str(pGraphicsItem->pos()) + "} px");
-            QRectF rectF = pGraphObj->getBoundingRect();
-            strlstResultValues.append(pGraphObj->name() + ".boundingRect {" + qRect2Str(rectF) + "} px");
-            CPhysValPoint physValPointPos = pGraphObj->position();
-            strlstResultValues.append(pGraphObj->name() + ".position {" + physValPointPos.toString() + "} " + physValPointPos.unit().symbol());
-            if (pGraphObj->isGroup()) {
-                CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-                CPhysValRect physValRect = pGraphObjGroup->getRect();
-                strlstResultValues.append(pGraphObj->name() + ".getRect {" + physValRect.toString() + "} " + physValRect.unit().symbol());
-                CPhysValSize physValSize = pGraphObjGroup->getSize();
-                strlstResultValues.append(pGraphObj->name() + ".getSize {" + physValSize.toString() + "} " + physValSize.unit().symbol());
-            }
-            else if (pGraphObj->isLine()) {
-                CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
-                CPhysValLine physValLine = pGraphObjLine->getLine();
-                strlstResultValues.append(pGraphObj->name() + ".getLine {" + physValLine.toString() + "} " + physValLine.unit().symbol());
-                CPhysVal physValLength = pGraphObjLine->getLength();
-                strlstResultValues.append(pGraphObj->name() + ".getLength: " + physValLength.toString());
-            }
-            CPhysVal physValAngle = pGraphObj->rotationAngle(Units.Angle.Degree);
-            strlstResultValues.append(pGraphObj->name() + ".rotationAngle: " + physValAngle.toString());
+            strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
         }
     }
     i_pTestStep->setResultValues(strlstResultValues);
