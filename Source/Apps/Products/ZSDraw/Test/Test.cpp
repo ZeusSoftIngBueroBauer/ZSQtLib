@@ -118,9 +118,7 @@ public: // ctors and dtor
 CTest::CTest() :
 //------------------------------------------------------------------------------
     ZS::Test::CTest(NameSpace(), "theInst"),
-    m_pMainWindow(nullptr),
-    m_pDrawingView(nullptr),
-    m_pDrawingScene(nullptr)
+    m_physValAngleBigPlusSign(0.0, Units.Angle.Degree, 0.1)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -147,9 +145,16 @@ CTest::~CTest()
         }
     }
 
+    delete m_pPhysValRectBigPlusSign;
+    delete m_pPhysValLineBigPlusSignVerticalLine;
+    delete m_pPhysValLineBigPlusSignHorizontalLine;
+
     m_pMainWindow = nullptr;
     m_pDrawingView = nullptr;
     m_pDrawingScene = nullptr;
+    m_pPhysValRectBigPlusSign = nullptr;
+    m_pPhysValLineBigPlusSignVerticalLine = nullptr;
+    m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
 
 } // dtor
 
@@ -174,6 +179,10 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pMainWindow = i_pMainWindow;
     m_pDrawingView = CWidgetCentral::GetInstance()->drawingView();
     m_pDrawingScene = CWidgetCentral::GetInstance()->drawingScene();
+
+    m_pPhysValRectBigPlusSign = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValLineBigPlusSignVerticalLine = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLineBigPlusSignHorizontalLine = new CPhysValLine(*m_pDrawingScene);
 
     // Start with reasonable drawing size
     CDrawingSize drawingSize;
@@ -1133,7 +1142,6 @@ void CTest::doTestStepSaveLoadFile( ZS::Test::CTestStep* i_pTestStep )
         }
         i_pTestStep->setExpectedValues(strlstExpectedValues);
     }
-
     if (!errResultInfoSave.isErrorResult()) {
         SErrResultInfo errResultInfoLoad = m_pDrawingScene->load(strAbsFilePath);
         if (errResultInfoLoad.isErrorResult()) {
@@ -1155,6 +1163,7 @@ void CTest::doTestStepSaveLoadFile( ZS::Test::CTestStep* i_pTestStep )
             }
             i_pTestStep->setResultValues(strlstResultValues);
         }
+
     }
 }
 
@@ -1592,14 +1601,41 @@ void CTest::doTestStepShowLabels( ZS::Test::CTestStep* i_pTestStep )
     QString strKeyInTree = "B:" + strGraphObjName;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        //pGraphObj->showLabel(strLabelName);
-        //pGraphObj->showLabelAnchorLine(strLabelName);
+        pGraphObj->showLabel(strLabelName);
+        pGraphObj->showLabelAnchorLine(strLabelName);
     }
 
     QStringList strlstExpectedValues;
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
-
     QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
+    {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QString strGraphObjName = dataRow["GraphObjName"].toString();
+        QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
+        QString strLabelName = dataRow["LabelName"].toString();
+        QPointF pos = dataRow["setPos"].toPointF();
+        QString strExpectedText = dataRow["ExpectedText"].toString();
+        strlstExpectedValues.append(strGraphObjName + ".Label.text: " + strExpectedText);
+        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        if (pGraphObj != nullptr) {
+            pGraphObj->showLabel(strLabelName);
+            pGraphObj->showLabelAnchorLine(strLabelName);
+            CGraphObjLabel* pGraphObjLabel = pGraphObj->getLabel(strLabelName);
+            QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
+            if (pGraphicsItemLabel != nullptr) {
+                pGraphicsItemLabel->setPos(pos);
+                QString strText = pGraphicsItemLabel->text();
+                strlstResultValues.append(strGraphObjName + ".Label.text: " + strText);
+            }
+            else {
+                strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
+            }
+        }
+        else {
+            strlstResultValues.append(strGraphObjName + " not found");
+        }
+    }
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
     i_pTestStep->setResultValues(strlstResultValues);
 }
 
@@ -1623,8 +1659,8 @@ void CTest::doTestStepHideLabels( ZS::Test::CTestStep* i_pTestStep )
     QString strKeyInTree = "B:" + strGraphObjName;
     CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
     if (pGraphObj != nullptr) {
-        //pGraphObj->hideLabel(strLabelName);
-        //pGraphObj->hideLabel(strLabelName);
+        pGraphObj->hideLabel(strLabelName);
+        pGraphObj->hideLabel(strLabelName);
     }
 
     QStringList strlstExpectedValues;
@@ -1989,15 +2025,14 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj) const
             const CGraphObjGroup* pGraphObjGroup = dynamic_cast<const CGraphObjGroup*>(i_pGraphObj);
             if (pGraphObjGroup != nullptr) {
                 strlstResultValues = resultValuesForGroup(
-                    pGraphObjGroup->name(), pGraphicsItem->pos(), pGraphObjGroup->getBoundingRect(),
-                    pGraphObjGroup->getRect());
+                    pGraphObjGroup->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect());
             }
         }
         else if (i_pGraphObj->isLine()) {
             const CGraphObjLine* pGraphObjLine = dynamic_cast<const CGraphObjLine*>(i_pGraphObj);
             if (pGraphObjLine != nullptr) {
                 strlstResultValues = resultValuesForLine(
-                    pGraphObjLine->name(), pGraphicsItem->pos(), pGraphObjLine->getBoundingRect(),
+                    pGraphObjLine->name(), pGraphicsItem->pos(),
                     pGraphObjLine->line(), pGraphObjLine->getLine());
             }
         }
@@ -2007,13 +2042,15 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj) const
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForGroup(
-    const QString& strGraphObjName, const QPointF& i_pos, const QRectF& i_rctBounding,
+    const QString& strGraphObjName, const QPointF& i_pos,
     const CPhysValRect& i_physValRect) const
 //------------------------------------------------------------------------------
 {
+    QSizeF size = m_pDrawingScene->convert(i_physValRect.size(), Units.Length.px).toQSizeF();
+    QRectF rctBounding(QPointF(-size.width()/2.0, -size.height()/2.0), size);
     return QStringList({
         strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
-        strGraphObjName + ".boundingRect {" + qRect2Str(i_rctBounding) + "} px",
+        strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
         strGraphObjName + ".position {" + i_physValRect.center().toString() + "} " + i_physValRect.unit().symbol(),
         strGraphObjName + ".getRect {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol(),
         strGraphObjName + ".getSize {" + i_physValRect.size().toString() + "} " + i_physValRect.unit().symbol(),
@@ -2023,13 +2060,14 @@ QStringList CTest::resultValuesForGroup(
 
 //------------------------------------------------------------------------------
 QStringList CTest::resultValuesForLine(
-    const QString& strGraphObjName, const QPointF& i_pos, const QRectF& i_rctBounding,
+    const QString& strGraphObjName, const QPointF& i_pos,
     const QLineF& i_line, const CPhysValLine& i_physValLine) const
 //------------------------------------------------------------------------------
 {
+    QRectF rctBounding(i_line.p1(), i_line.p2());
     return QStringList({
         strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px",
-        strGraphObjName + ".boundingRect {" + qRect2Str(i_rctBounding) + "} px",
+        strGraphObjName + ".boundingRect {" + qRect2Str(rctBounding) + "} px",
         strGraphObjName + ".line {" + qLine2Str(i_line) + "} px",
         strGraphObjName + ".position {" + i_physValLine.center().toString() + "} " + i_physValLine.unit().symbol(),
         strGraphObjName + ".getLine {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol(),

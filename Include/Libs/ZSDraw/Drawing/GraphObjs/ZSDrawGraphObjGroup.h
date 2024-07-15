@@ -112,13 +112,13 @@ signals:
 public: // must overridables of base class CGraphObj
     virtual CGraphObj* clone() override;
 public: // instance methods
-    void setGridSettings( const CDrawGridSettings& i_gridSettings);
+    void setGridSettings(const CDrawGridSettings& i_gridSettings);
     const CDrawGridSettings& gridSettings() const;
 public: // instance methods
-    void addToGroup( CGraphObj* i_pGraphObj );
-    void removeFromGroup( CGraphObj* i_pGraphObj );
+    void addToGroup(CGraphObj* i_pGraphObj);
+    void removeFromGroup(CGraphObj* i_pGraphObj);
     void resizeToContent();
-    CGraphObj* findGraphObj( const QString& i_strObjName );
+    CGraphObj* findGraphObj(const QString& i_strObjName);
     QVector<CGraphObj*> childs() const;
 public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const; // for subsystem test

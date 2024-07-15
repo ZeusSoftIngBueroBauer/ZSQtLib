@@ -1413,15 +1413,54 @@ CGraphObjGroup* CGraphObj::parentGroup() const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets this item's parent group.
+
+    The item may not have been added to the scene yet.
+
+    This method is used on loading a scene from an XML file to add childs to
+    their parent groups.
+*/
+void CGraphObj::setParentGroup(CGraphObjGroup* i_pGraphObjGroupParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setParentGroup",
+        /* strAddInfo   */ strMthInArgs );
+
+    if (i_pGraphObjGroupParent != nullptr) {
+        QObject::connect(
+            i_pGraphObjGroupParent, &CGraphObj::geometryOnSceneChanged,
+            this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
+        m_physValRectParentGroupOrig = i_pGraphObjGroupParent->getRect();
+    }
+    else {
+        m_physValRectParentGroupOrig.invalidate();
+    }
+    m_fParentGroupScaleX = 1.0;
+    m_fParentGroupScaleY = 1.0;
+
+    m_pDrawingScene->getGraphObjsIdxTree()->add(this, i_pGraphObjGroupParent);
+    QGraphicsItem_setParentItem(dynamic_cast<QGraphicsItem*>(i_pGraphObjGroupParent));
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Informs the object that the parent item of the item is changed to
            another parent item.
-           
+
     The method connects the slot onGraphObjParentGeometryOnSceneChanged to the
     geometryOnSceneChanged signal of the parent item. If the item already had
     a parent the signal/slot connection to the previous parent is removed.
 
     The itemChange method of QGraphicsItem with ItemParentHasChanged cannot be used
-    for this as the previous parent item is not provided with the itemChange method.
+    for this as item has already been removed for the previous parent if the itemChange
+    method is called.
 
     Items need to inform e.g. their labels about the geometry changes of the items
     the labels are linked to. For this the item emits the geometryOnSceneChanged
@@ -5823,6 +5862,15 @@ bool CGraphObj::isPredefinedLabelName(const QString& i_strName) const
 //------------------------------------------------------------------------------
 /*! @brief Returns the label descriptor for the given label name.
 */
+CGraphObjLabel* CGraphObj::getLabel(const QString& i_strName) const
+//------------------------------------------------------------------------------
+{
+    return m_hshpLabels.value(i_strName, nullptr);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the label descriptor for the given label name.
+*/
 SLabelDscr CGraphObj::getLabelDescriptor(const QString& i_strName) const
 //------------------------------------------------------------------------------
 {
@@ -8246,6 +8294,28 @@ void CGraphObj::QGraphicsItem_setRotation(double i_fAngle_degree)
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
         pGraphicsItemThis->setRotation(i_fAngle_degree);
+    }
+}
+
+//------------------------------------------------------------------------------
+void CGraphObj::QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(i_pGraphicsItemParent);
+        strMthInArgs = "ParentGroup: " + QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::QGraphicsItem_setParentItem",
+        /* strAddInfo   */ strMthInArgs );
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    if (pGraphicsItemThis != nullptr) {
+        pGraphicsItemThis->setParentItem(i_pGraphicsItemParent);
     }
 }
 

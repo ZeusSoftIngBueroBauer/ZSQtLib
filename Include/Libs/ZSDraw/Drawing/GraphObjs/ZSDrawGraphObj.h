@@ -633,8 +633,8 @@ public: // instance methods
     bool isLabel() const;
 public: // instance methods
     CDrawingScene* drawingScene() const;
-    //CGraphObj* parentGraphObj() const;
     CGraphObjGroup* parentGroup() const;
+    void setParentGroup(CGraphObjGroup* i_pGraphObjGroupParent);
     void onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
     //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
@@ -824,6 +824,7 @@ public: // overridables (text labels)
     QStringList getLabelNames() const;
     virtual QStringList getPredefinedLabelNames() const;
     virtual bool isPredefinedLabelName(const QString& i_strName) const;
+    CGraphObjLabel* getLabel(const QString& i_strName) const;
     SLabelDscr getLabelDescriptor(const QString& i_strName) const;
     virtual QList<SGraphObjSelectionPoint> getPossibleLabelAnchorPoints(const QString& i_strName) const;
     virtual bool labelHasDefaultValues(const QString& i_strName) const;
@@ -912,6 +913,7 @@ protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
     virtual void QGraphicsItem_setScale(double i_fFactor);
     virtual void QGraphicsItem_setRotation(double i_fAngle_degree);
+    virtual void QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent);
 public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,

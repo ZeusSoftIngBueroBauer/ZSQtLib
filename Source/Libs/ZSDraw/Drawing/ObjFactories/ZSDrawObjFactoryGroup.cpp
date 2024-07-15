@@ -225,8 +225,8 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ParentGroup: " + QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path())
-            + ", ObjName: " + i_strObjName;
+        strMthInArgs = "ObjName: " + i_strObjName +
+            "ParentGroup: " + QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -234,8 +234,8 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjGroup* pGraphObj = new CGraphObjGroup(i_pDrawingScene, i_strObjName);
-    i_pDrawingScene->addGraphObj(pGraphObj);
+    CGraphObjGroup* pGraphObjGroup = new CGraphObjGroup(i_pDrawingScene, i_strObjName);
+    i_pDrawingScene->addGraphObj(pGraphObjGroup, i_pGraphObjGroupParent);
 
     CDrawSettings drawSettings(EGraphObjTypeGroup);
     CDrawGridSettings gridSettings;
@@ -263,9 +263,11 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                 if (i_xmlStreamReader.isStartElement()) {
                     if (strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings) {
                         drawSettings.load(i_xmlStreamReader);
+                        pGraphObjGroup->setDrawSettings(drawSettings);
                     }
                     else if (strElemName == XmlStreamParser::c_strXmlElemNameGridSettings) {
                         gridSettings.load(i_xmlStreamReader);
+                        pGraphObjGroup->setGridSettings(gridSettings);
                     }
                     else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
                         QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
@@ -338,13 +340,29 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                             XmlStreamParser::raiseErrorAttributeNotDefined(
                                 i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameAngle);
                         }
+                        if (!i_xmlStreamReader.hasError()) {
+                            if (physValPointCenter.isValid() && physValSize.isValid()) {
+                                CPhysValRect physValRect(*i_pDrawingScene);
+                                physValRect.setSize(physValSize);
+                                physValRect.setCenter(physValPointCenter);
+                                pGraphObjGroup->setRect(physValRect);
+                            }
+                            if (physValAngle.isValid()) {
+                                pGraphObjGroup->setRotationAngle(physValAngle);
+                            }
+                        }
                     }
                     else if (strElemName == XmlStreamParser::c_strXmlElemNameZValue) {
                         QString strElemText = i_xmlStreamReader.readElementText();
                         bool bConverted = false;
                         double fTmp = strElemText.toDouble(&bConverted);
-                        if (bConverted) {
+                        if (!bConverted) {
+                            i_xmlStreamReader.raiseError(
+                                "Element \"" + strElemName + "\" (" + strElemText + ") cannot be converted to ZValue");
+                        }
+                        else {
                             fZValue = fTmp;
+                            pGraphObjGroup->setStackingOrderValue(fZValue);
                         }
                     }
                     else if (strElemName == XmlStreamParser::c_strXmlElemNameTextLabels) {
@@ -363,33 +381,33 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                             i_xmlStreamReader.raiseError("Incomplete geometry.");
                         }
                         else {
-                            if (i_pGraphObjGroupParent != nullptr) {
-                                if (!bAddedToParentGroup) {
-                                    // The object has been added to the drawing scene at position (0, 0) right after creating the object.
-                                    // The shape points have not been set yet. When adding the object to the group, the group wants to
-                                    // map the shape point coordinates to the group coordinates in order to resize the group so that the
-                                    // newly added object fits into the group. For this to work, the object to be added must be able to
-                                    // provide its position and shape points in scene coordinates to the group and the group must already
-                                    // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
-                                    physValPointCenter = i_pGraphObjGroupParent->mapToScene(physValPointCenter);
-                                    CPhysValRect physValRect(*i_pDrawingScene);
-                                    physValRect.setSize(physValSize);
-                                    physValRect.setCenter(physValPointCenter);
-                                    physValRect.setAngle(physValAngle);
-                                    pGraphObj->setRect(physValRect);
-                                    bGeometrySet = true;
-                                    i_pGraphObjGroupParent->addToGroup(pGraphObj);
-                                    bAddedToParentGroup = true;
-                                }
-                            }
-                            else if (!bGeometrySet) {
-                                CPhysValRect physValRect(*i_pDrawingScene);
-                                physValRect.setSize(physValSize);
-                                physValRect.setCenter(physValPointCenter);
-                                physValRect.setAngle(physValAngle);
-                                pGraphObj->setRect(physValRect);
-                                bGeometrySet = true;
-                            }
+                            //if (i_pGraphObjGroupParent != nullptr) {
+                            //    if (!bAddedToParentGroup) {
+                            //        // The object has been added to the drawing scene at position (0, 0) right after creating the object.
+                            //        // The shape points have not been set yet. When adding the object to the group, the group wants to
+                            //        // map the shape point coordinates to the group coordinates in order to resize the group so that the
+                            //        // newly added object fits into the group. For this to work, the object to be added must be able to
+                            //        // provide its position and shape points in scene coordinates to the group and the group must already
+                            //        // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
+                            //        physValPointCenter = i_pGraphObjGroupParent->mapToScene(physValPointCenter);
+                            //        CPhysValRect physValRect(*i_pDrawingScene);
+                            //        physValRect.setSize(physValSize);
+                            //        physValRect.setCenter(physValPointCenter);
+                            //        physValRect.setAngle(physValAngle);
+                            //        pGraphObj->setRect(physValRect);
+                            //        bGeometrySet = true;
+                            //        i_pGraphObjGroupParent->addToGroup(pGraphObj);
+                            //        bAddedToParentGroup = true;
+                            //    }
+                            //}
+                            //else if (!bGeometrySet) {
+                            //    CPhysValRect physValRect(*i_pDrawingScene);
+                            //    physValRect.setSize(physValSize);
+                            //    physValRect.setCenter(physValPointCenter);
+                            //    physValRect.setAngle(physValAngle);
+                            //    pGraphObjGroup->setRect(physValRect);
+                            //    bGeometrySet = true;
+                            //}
                             iLevel++;
                             QString strFactoryGroupName;
                             QString strGraphObjType;
@@ -429,7 +447,7 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
                                 else {
                                     pObjFactory->loadGraphObj(
                                         /* pDrawingScene   */ i_pDrawingScene,
-                                        /* pGraphObjGroup  */ pGraphObj,
+                                        /* pGraphObjGroup  */ pGraphObjGroup,
                                         /* strObjName      */ strObjName,
                                         /* xmlStreamReader */ i_xmlStreamReader );
                                 }
@@ -477,102 +495,102 @@ CGraphObj* CObjFactoryGroup::loadGraphObj(
         } // if (i_xmlStreamReader.isStartElement() || i_xmlStreamReader.isEndElement()) {
     } // while (!i_xmlStreamReader.hasError() && !i_xmlStreamReader.atEnd())
 
-    if (!physValPointCenter.isValid() || !physValSize.isValid() || !physValAngle.isValid()) {
-        if (!i_xmlStreamReader.hasError()) {
-            i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
-        }
-    }
+    //if (!physValPointCenter.isValid() || !physValSize.isValid() || !physValAngle.isValid()) {
+    //    if (!i_xmlStreamReader.hasError()) {
+    //        i_xmlStreamReader.raiseError("Incomplete geometry: not all necessary shape points defined.");
+    //    }
+    //}
 
     if (!i_xmlStreamReader.hasError()) {
-        if (i_pGraphObjGroupParent != nullptr) {
-            if (!bAddedToParentGroup) {
-                // The object has been added to the drawing scene at position (0, 0) right after creating the object.
-                // The shape points have not been set yet. When adding the object to the group, the group wants to
-                // map the shape point coordinates to the group coordinates in order to resize the group so that the
-                // newly added object fits into the group. For this to work, the object to be added must be able to
-                // provide its position and shape points in scene coordinates to the group and the group must already
-                // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
-                physValPointCenter = i_pGraphObjGroupParent->mapToScene(physValPointCenter);
-                CPhysValRect physValRect(*i_pDrawingScene);
-                physValRect.setSize(physValSize);
-                physValRect.setCenter(physValPointCenter);
-                physValRect.setAngle(physValAngle);
-                pGraphObj->setRect(physValRect);
-                bGeometrySet = true;
-                i_pGraphObjGroupParent->addToGroup(pGraphObj);
-                bAddedToParentGroup = true;
-            }
-        }
-        else if (!bGeometrySet) {
-            CPhysValRect physValRect(*i_pDrawingScene);
-            physValRect.setSize(physValSize);
-            physValRect.setCenter(physValPointCenter);
-            physValRect.setAngle(physValAngle);
-            pGraphObj->setRect(physValRect);
-            bGeometrySet = true;
-        }
-        pGraphObj->setDrawSettings(drawSettings);
-        pGraphObj->setGridSettings(gridSettings);
-        pGraphObj->setStackingOrderValue(fZValue);
+        //if (i_pGraphObjGroupParent != nullptr) {
+        //    if (!bAddedToParentGroup) {
+        //        // The object has been added to the drawing scene at position (0, 0) right after creating the object.
+        //        // The shape points have not been set yet. When adding the object to the group, the group wants to
+        //        // map the shape point coordinates to the group coordinates in order to resize the group so that the
+        //        // newly added object fits into the group. For this to work, the object to be added must be able to
+        //        // provide its position and shape points in scene coordinates to the group and the group must already
+        //        // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
+        //        physValPointCenter = i_pGraphObjGroupParent->mapToScene(physValPointCenter);
+        //        CPhysValRect physValRect(*i_pDrawingScene);
+        //        physValRect.setSize(physValSize);
+        //        physValRect.setCenter(physValPointCenter);
+        //        physValRect.setAngle(physValAngle);
+        //        pGraphObj->setRect(physValRect);
+        //        bGeometrySet = true;
+        //        i_pGraphObjGroupParent->addToGroup(pGraphObj);
+        //        bAddedToParentGroup = true;
+        //    }
+        //}
+        //else if (!bGeometrySet) {
+        //    CPhysValRect physValRect(*i_pDrawingScene);
+        //    physValRect.setSize(physValSize);
+        //    physValRect.setCenter(physValPointCenter);
+        //    physValRect.setAngle(physValAngle);
+        //    pGraphObj->setRect(physValRect);
+        //    bGeometrySet = true;
+        //}
+        //pGraphObj->setDrawSettings(drawSettings);
+        //pGraphObj->setGridSettings(gridSettings);
+        //pGraphObj->setStackingOrderValue(fZValue);
 
         // Labels can only be added if the graphical object got its final position, size and rotation angle
         // as the labels position themselves depending on the position of the selection points they are linked to.
         for (const SLabelDscr& labelDscr : arTextLabels) {
-            if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
+            if (!pGraphObjGroup->isLabelAdded(labelDscr.m_strKey)) {
                 if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
+                    pGraphObjGroup->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
                 }
                 else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
+                    pGraphObjGroup->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
                 }
             }
             else {
-                pGraphObj->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
+                pGraphObjGroup->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
                 if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
+                    pGraphObjGroup->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
                 }
                 else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
+                    pGraphObjGroup->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
                 }
             }
-            pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
+            pGraphObjGroup->setLabelPolarCoorsToLinkedSelectionPoint(
                 labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
             labelDscr.m_bLabelIsVisible ?
-                pGraphObj->showLabel(labelDscr.m_strKey) :
-                pGraphObj->hideLabel(labelDscr.m_strKey);
+                pGraphObjGroup->showLabel(labelDscr.m_strKey) :
+                pGraphObjGroup->hideLabel(labelDscr.m_strKey);
             labelDscr.m_bShowAnchorLine ?
-                pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
-                pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
+                pGraphObjGroup->showLabelAnchorLine(labelDscr.m_strKey) :
+                pGraphObjGroup->hideLabelAnchorLine(labelDscr.m_strKey);
         }
 
         // Geometry Labels
         for (const SLabelDscr& labelDscr : arGeometryLabels) {
-            if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
+            if (!pGraphObjGroup->isValidGeometryLabelName(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
                     "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
             }
             else {
-                pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
+                pGraphObjGroup->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
                 labelDscr.m_bLabelIsVisible ?
-                    pGraphObj->showGeometryLabel(labelDscr.m_strKey) :
-                    pGraphObj->hideGeometryLabel(labelDscr.m_strKey);
+                    pGraphObjGroup->showGeometryLabel(labelDscr.m_strKey) :
+                    pGraphObjGroup->hideGeometryLabel(labelDscr.m_strKey);
                 labelDscr.m_bShowAnchorLine ?
-                    pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
-                    pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
+                    pGraphObjGroup->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
+                    pGraphObjGroup->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
             }
         }
     }
     else {
-        delete pGraphObj;
-        pGraphObj = nullptr;
+        delete pGraphObjGroup;
+        pGraphObjGroup = nullptr;
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
-        QString strMthRet = QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+        QString strMthRet = QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path());
         mthTracer.setMethodReturn(strMthRet);
     }
-    return pGraphObj;
+    return pGraphObjGroup;
 
 } // loadGraphObj

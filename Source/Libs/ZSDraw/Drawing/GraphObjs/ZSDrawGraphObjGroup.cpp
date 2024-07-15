@@ -517,8 +517,8 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
         // In addition the signal/slot connection of geometryOnSceneChanged need to be newly set.
         CGraphObjGroup* pGraphObjGroupParent = parentGroup();
         CIdxTreeEntry* pTreeEntryParent = parentBranch();
-        i_pGraphObj->onParentGroupAboutToBeChanged(this, pGraphObjGroupParent);
         m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, pTreeEntryParent);
+        i_pGraphObj->onParentGroupAboutToBeChanged(this, pGraphObjGroupParent);
         QGraphicsItemGroup_removeFromGroup(pGraphicsItemChild);
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -711,7 +711,6 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             CPhysValRect physValRect(i_physValRect);
             physValRect.setAngle(0.0);
             setPhysValRectOrig(physValRect);
-            m_physValRotationAngle = physValAngle;
 
             // Set the groups rectangle in local coordinate system.
             QGraphicsItemGroup_setRect(rectF);
@@ -731,7 +730,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             if (ptPos != ptPosPrev) {
                 QGraphicsItem_setPos(ptPos);
             }
-            QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+            setRotationAngle(physValAngle);
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.

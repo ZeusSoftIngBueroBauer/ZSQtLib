@@ -1227,7 +1227,6 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
     // not work as expected as the childs bounding rectangles would be included.
     // In addition selection points and labels must be directly added to the graphics scene as they
     // should not be indicated in the index tree.
-    QGraphicsItem* pGraphicsItemParent = nullptr;
     if (i_pGraphObj->isSelectionPoint()) {
         throw CException(
             __FILE__, __LINE__, EResultInvalidMethodCall, "Selection points must be directly added to the graphics scene");
@@ -1237,13 +1236,17 @@ void CDrawingScene::addGraphObj( CGraphObj* i_pGraphObj, CGraphObj* i_pGraphObjP
             __FILE__, __LINE__, EResultInvalidMethodCall, "Labels must be directly added to the graphics scene");
     }
 
+    QGraphicsItem* pGraphicsItemParent = dynamic_cast<QGraphicsItem*>(i_pGraphObjParent);
+
     // On adding the item to the graphics scene the itemChange method of the graphics
     // item is called with "SceneHasChanged". On initially setting the drawing scene
     // graphical object has to recalculate the position in pixel coordinates.
     if (pGraphicsItemParent != nullptr && pGraphicsItem->parentItem() != pGraphicsItemParent) {
         pGraphicsItem->setParentItem(pGraphicsItemParent);
     }
-    QGraphicsScene::addItem(pGraphicsItem);
+    else {
+        QGraphicsScene::addItem(pGraphicsItem);
+    }
     m_pGraphObjsIdxTree->add(i_pGraphObj, i_pGraphObjParent);
 
     QObject::connect(

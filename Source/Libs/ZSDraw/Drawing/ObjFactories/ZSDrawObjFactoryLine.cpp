@@ -182,8 +182,8 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
 
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "ParentGroup: " + QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path())
-            + ", ObjName: " + i_strObjName;
+        strMthInArgs = "ObjName: " + i_strObjName +
+            ", ParentGroup: " + QString(i_pGraphObjGroupParent == nullptr ? "null" : i_pGraphObjGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -191,8 +191,8 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
         /* strMethod    */ "loadGraphObj",
         /* strAddInfo   */ strMthInArgs );
 
-    CGraphObjLine* pGraphObj = new CGraphObjLine(i_pDrawingScene, i_strObjName);
-    i_pDrawingScene->addGraphObj(pGraphObj);
+    CGraphObjLine* pGraphObjLine = new CGraphObjLine(i_pDrawingScene, i_strObjName);
+    i_pDrawingScene->addGraphObj(pGraphObjLine, i_pGraphObjGroupParent);
 
     CDrawSettings drawSettings(EGraphObjTypeLine);
     CPhysValPoint physValPoint1(*i_pDrawingScene);
@@ -209,6 +209,7 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
             if (i_xmlStreamReader.isStartElement()) {
                 if (strElemName == XmlStreamParser::c_strXmlElemNameDrawSettings) {
                     drawSettings.load(i_xmlStreamReader);
+                    pGraphObjLine->setDrawSettings(drawSettings);
                 }
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameGeometry) {
                     QXmlStreamAttributes xmlStreamAttrs = i_xmlStreamReader.attributes();
@@ -258,13 +259,23 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
                         XmlStreamParser::raiseErrorAttributeNotDefined(
                             i_xmlStreamReader, strElemName, XmlStreamParser::c_strXmlElemNameShapePointP2);
                     }
+                    if (!i_xmlStreamReader.hasError()) {
+                        if (physValPoint1.isValid() && physValPoint2.isValid()) {
+                            pGraphObjLine->setLine(physValPoint1, physValPoint2);
+                        }
+                    }
                 }
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameZValue) {
                     QString strElemText = i_xmlStreamReader.readElementText();
                     bool bConverted = false;
                     double fTmp = strElemText.toDouble(&bConverted);
-                    if (bConverted) {
+                    if (!bConverted) {
+                        i_xmlStreamReader.raiseError(
+                            "Element \"" + strElemName + "\" (" + strElemText + ") cannot be converted to ZValue");
+                    }
+                    else {
                         fZValue = fTmp;
+                        pGraphObjLine->setStackingOrderValue(fZValue);
                     }
                 }
                 else if (strElemName == XmlStreamParser::c_strXmlElemNameTextLabels) {
@@ -293,82 +304,78 @@ CGraphObj* CObjFactoryLine::loadGraphObj(
     }
 
     if (!i_xmlStreamReader.hasError()) {
-        pGraphObj->setDrawSettings(drawSettings);
-        if (i_pGraphObjGroupParent != nullptr) {
-            // The object has been added to the drawing scene at position (0, 0) right after creating the object.
-            // The shape points have not been set yet. When adding the object to the group, the group wants to
-            // map the shape point coordinates to the group coordinates in order to resize the group so that the
-            // newly added object fits into the group. For this to work, the object to be added must be able to
-            // provide its position and shape points in scene coordinates to the group and the group must already
-            // have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
-            physValPoint1 = i_pGraphObjGroupParent->mapToScene(physValPoint1);
-            physValPoint2 = i_pGraphObjGroupParent->mapToScene(physValPoint2);
-            pGraphObj->setLine(physValPoint1, physValPoint2);
-            i_pGraphObjGroupParent->addToGroup(pGraphObj);
-        }
-        else {
-            pGraphObj->setLine(physValPoint1, physValPoint2);
-        }
-        pGraphObj->setStackingOrderValue(fZValue);
+        //if (i_pGraphObjGroupParent != nullptr) {
+        //    //// The object has been added to the drawing scene at position (0, 0) right after creating the object.
+        //    //// The shape points have not been set yet. When adding the object to the group, the group wants to
+        //    //// map the shape point coordinates to the group coordinates in order to resize the group so that the
+        //    //// newly added object fits into the group. For this to work, the object to be added must be able to
+        //    //// provide its position and shape points in scene coordinates to the group and the group must already
+        //    //// have gotten its final size so that the group is able to map the object coordinates to scene coordinates.
+        //    //physValPoint1 = i_pGraphObjGroupParent->mapToScene(physValPoint1);
+        //    //physValPoint2 = i_pGraphObjGroupParent->mapToScene(physValPoint2);
+        //    //pGraphObj->setLine(physValPoint1, physValPoint2);
+        //    //i_pGraphObjGroupParent->addToGroup(pGraphObj);
+        //}
 
+        #pragma message(__TODO__"Check comment")
         // Labels can only be added if the graphical object got its final position, size and rotation angle
         // as the labels position themselves depending on the position of the selection points they are linked to.
         for (const SLabelDscr& labelDscr : arTextLabels) {
-            if (!pGraphObj->isLabelAdded(labelDscr.m_strKey)) {
+            if (!pGraphObjLine->isLabelAdded(labelDscr.m_strKey)) {
                 if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
+                    pGraphObjLine->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_selPt);
                 }
                 else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-                    pGraphObj->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
+                    pGraphObjLine->addLabel(labelDscr.m_strKey, labelDscr.m_strText, labelDscr.m_selPt1.m_idxPt);
                 }
             }
             else {
-                pGraphObj->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
+                pGraphObjLine->setLabelText(labelDscr.m_strKey, labelDscr.m_strText);
                 if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::BoundingRectangle) {
-                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
+                    pGraphObjLine->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_selPt);
                 }
                 else if (labelDscr.m_selPt1.m_selPtType == ESelectionPointType::PolygonShapePoint) {
-                    pGraphObj->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
+                    pGraphObjLine->setLabelAnchorPoint(labelDscr.m_strKey, labelDscr.m_selPt1.m_idxPt);
                 }
             }
-            pGraphObj->setLabelPolarCoorsToLinkedSelectionPoint(
+            pGraphObjLine->setLabelPolarCoorsToLinkedSelectionPoint(
                 labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
             labelDscr.m_bLabelIsVisible ?
-                pGraphObj->showLabel(labelDscr.m_strKey) :
-                pGraphObj->hideLabel(labelDscr.m_strKey);
+                pGraphObjLine->showLabel(labelDscr.m_strKey) :
+                pGraphObjLine->hideLabel(labelDscr.m_strKey);
             labelDscr.m_bShowAnchorLine ?
-                pGraphObj->showLabelAnchorLine(labelDscr.m_strKey) :
-                pGraphObj->hideLabelAnchorLine(labelDscr.m_strKey);
+                pGraphObjLine->showLabelAnchorLine(labelDscr.m_strKey) :
+                pGraphObjLine->hideLabelAnchorLine(labelDscr.m_strKey);
         }
 
         // Geometry Labels
         for (const SLabelDscr& labelDscr : arGeometryLabels) {
-            if (!pGraphObj->isValidGeometryLabelName(labelDscr.m_strKey)) {
+            if (!pGraphObjLine->isValidGeometryLabelName(labelDscr.m_strKey)) {
                 i_xmlStreamReader.raiseError(
                     "Invalid geometry label name \"" + labelDscr.m_strKey + "\".");
             }
             else {
-                pGraphObj->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
+                pGraphObjLine->setGeometryLabelPolarCoorsToLinkedSelectionPoint(
                     labelDscr.m_strKey, labelDscr.m_polarCoorsToLinkedSelPt);
                 labelDscr.m_bLabelIsVisible ?
-                    pGraphObj->showGeometryLabel(labelDscr.m_strKey) :
-                    pGraphObj->hideGeometryLabel(labelDscr.m_strKey);
+                    pGraphObjLine->showGeometryLabel(labelDscr.m_strKey) :
+                    pGraphObjLine->hideGeometryLabel(labelDscr.m_strKey);
                 labelDscr.m_bShowAnchorLine ?
-                    pGraphObj->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
-                    pGraphObj->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
+                    pGraphObjLine->showGeometryLabelAnchorLine(labelDscr.m_strKey) :
+                    pGraphObjLine->hideGeometryLabelAnchorLine(labelDscr.m_strKey);
             }
         }
     }
     else {
-        delete pGraphObj;
-        pGraphObj = nullptr;
+        delete pGraphObjLine;
+        pGraphObjLine = nullptr;
     }
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodOutArgs(i_xmlStreamReader.errorString());
-        QString strMthRet = QString(pGraphObj == nullptr ? "null" : pGraphObj->path());
+        QString strMthRet = QString(pGraphObjLine == nullptr ? "null" : pGraphObjLine->path());
         mthTracer.setMethodReturn(strMthRet);
     }
-    return pGraphObj;
+    return pGraphObjLine;
 
 } // loadGraphObj

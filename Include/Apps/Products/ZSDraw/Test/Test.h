@@ -78,6 +78,22 @@ class CTest : public ZS::Test::CTest
     Q_OBJECT
 public: // class methods
     static QString NameSpace() { return "ZS::Apps::Products::Draw"; }
+public: // type definition and constants
+    const QString c_strGraphObjNameTopGroup = "Top";
+    const QString c_strGraphObjNameSmallPlusSign = "SmallPlusSign";
+    const QString c_strGraphObjNameSmallPlusSignVerticalLine = "SmallPlusSign-VerticalLine";
+    const QString c_strGraphObjNameSmallPlusSignHorizontalLine = "SmallPlusSign-HorizontalLine";
+    const QString c_strGraphObjNameBigPlusSign = "BigPlusSign";
+    const QString c_strGraphObjNameBigPlusSignVerticalLine = "BigPlusSign-VerticalLine";
+    const QString c_strGraphObjNameBigPlusSignHorizontalLine = "BigPlusSign-HorizontalLine";
+    const QString c_strGraphObjNameCheckmark = "Checkmark";
+    const QString c_strGraphObjNameCheckmarkLeftLine = "Checkmark-LeftLine";
+    const QString c_strGraphObjNameCheckmarkRightLine = "Checkmark-RightLine";
+    const QString c_strGraphObjNameSmallRect = "SmallRect";
+    const QString c_strGraphObjNameSmallRectTopLine = "SmallRect-TopLine";
+    const QString c_strGraphObjNameSmallRectRightLine = "SmallRect-RightLine";
+    const QString c_strGraphObjNameSmallRectBottomLine = "SmallRect-BottomLine";
+    const QString c_strGraphObjNameSmallRectLeftLine = "SmallRect-LeftLine";
 public: // ctors and dtor
     CTest();
     ~CTest();
@@ -218,17 +234,27 @@ protected: // auxiliary instance methods
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
     QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj) const;
     QStringList resultValuesForGroup(
-        const QString& strGraphObjName, const QPointF& i_pos, const QRectF& i_rctBounding,
+        const QString& strGraphObjName, const QPointF& i_pos,
         const ZS::Draw::CPhysValRect& i_physValRect) const;
     QStringList resultValuesForLine(
-        const QString& strGraphObjName, const QPointF& i_pos, const QRectF& i_rctBounding,
+        const QString& strGraphObjName, const QPointF& i_pos,
         const QLineF& i_line, const ZS::Draw::CPhysValLine& i_physValLine) const;
 protected: // class members
     static QHash<QString, int> s_hshGraphObjsInstCounts;
 protected: // instance members
-    CMainWindow* m_pMainWindow;
-    ZS::Draw::CDrawingView*  m_pDrawingView;
-    ZS::Draw::CDrawingScene* m_pDrawingScene;
+    CMainWindow* m_pMainWindow = nullptr;
+    ZS::Draw::CDrawingView* m_pDrawingView = nullptr;
+    ZS::Draw::CDrawingScene* m_pDrawingScene = nullptr;
+    QPointF m_ptPosBigPlusSign;
+    QSizeF m_sizeBigPlusSign;
+    ZS::Draw::CPhysValRect* m_pPhysValRectBigPlusSign = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleBigPlusSign;
+    QPointF m_ptPosBigPlusSignVerticalLine;
+    QLineF m_lineBigPlusSignVerticalLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineBigPlusSignVerticalLine = nullptr;
+    QPointF m_ptPosBigPlusSignHorizontalLine;
+    QLineF m_lineBigPlusSignHorizontalLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
 
 }; // class CTest
 
