@@ -232,19 +232,33 @@ protected slots:
     void doTestStepMouseMoveEvents( ZS::Test::CTestStep* i_pTestStep );
 protected: // auxiliary instance methods
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
-    QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj) const;
+    QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false) const;
     QStringList resultValuesForGroup(
         const QString& strGraphObjName, const QPointF& i_pos,
         const ZS::Draw::CPhysValRect& i_physValRect) const;
     QStringList resultValuesForLine(
         const QString& strGraphObjName, const QPointF& i_pos,
         const QLineF& i_line, const ZS::Draw::CPhysValLine& i_physValLine) const;
+    QStringList resultValuesForLabel(
+        const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const;
 protected: // class members
     static QHash<QString, int> s_hshGraphObjsInstCounts;
 protected: // instance members
     CMainWindow* m_pMainWindow = nullptr;
     ZS::Draw::CDrawingView* m_pDrawingView = nullptr;
     ZS::Draw::CDrawingScene* m_pDrawingScene = nullptr;
+    // SmallPlusSign
+    QPointF m_ptPosSmallPlusSign;
+    QSizeF m_sizeSmallPlusSign;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallPlusSign = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallPlusSign;
+    QPointF m_ptPosSmallPlusSignVerticalLine;
+    QLineF m_lineSmallPlusSignVerticalLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineSmallPlusSignVerticalLine = nullptr;
+    QPointF m_ptPosSmallPlusSignHorizontalLine;
+    QLineF m_lineSmallPlusSignHorizontalLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineSmallPlusSignHorizontalLine = nullptr;
+    // BigPlusSign
     QPointF m_ptPosBigPlusSign;
     QSizeF m_sizeBigPlusSign;
     ZS::Draw::CPhysValRect* m_pPhysValRectBigPlusSign = nullptr;
@@ -255,6 +269,39 @@ protected: // instance members
     QPointF m_ptPosBigPlusSignHorizontalLine;
     QLineF m_lineBigPlusSignHorizontalLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
+    // Checkmark
+    QPointF m_ptPosCheckmark;
+    QSizeF m_sizeCheckmark;
+    ZS::Draw::CPhysValRect* m_pPhysValRectCheckmark = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleCheckmark;
+    QPointF m_ptPosCheckmarkLeftLine;
+    QLineF m_lineCheckmarkLeftLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineCheckmarkLeftLine = nullptr;
+    QPointF m_ptPosCheckmarkRightLine;
+    QLineF m_lineCheckmarkRightLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineCheckmarkRightLine = nullptr;
+    // SmallRect
+    QPointF m_ptPosSmallRect;
+    QSizeF m_sizeSmallRect;
+    ZS::Draw::CPhysValRect* m_pPhysValRectSmallRect = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleSmallRect;
+    QPointF m_ptPosSmallRectTopLine;
+    QLineF m_lineSmallRectTopLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineSmallRectTopLine = nullptr;
+    QPointF m_ptPosSmallRectRightLine;
+    QLineF m_lineSmallRectRightLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineSmallRectRightLine = nullptr;
+    QPointF m_ptPosSmallRectBottomLine;
+    QLineF m_lineSmallRectBottomLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineSmallRectBottomLine = nullptr;
+    QPointF m_ptPosSmallRectLeftLine;
+    QLineF m_lineSmallRectLeftLine;
+    ZS::Draw::CPhysValLine* m_pPhysValLineSmallRectLeftLine = nullptr;
+    // TopGroup
+    QPointF m_ptPosTopGroup;
+    QSizeF m_sizeTopGroup;
+    ZS::Draw::CPhysValRect* m_pPhysValRectTopGroup = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAngleTopGroup;
 
 }; // class CTest
 

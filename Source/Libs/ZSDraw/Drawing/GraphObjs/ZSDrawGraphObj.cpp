@@ -6415,7 +6415,7 @@ void CGraphObj::hideLabel(const QString& i_strName)
 }
 
 //------------------------------------------------------------------------------
-/*! @Returns whether the visibility of the label with the given name.
+/*! @brief Returns whether the visibility of the label with the given name.
 
     @param [in] i_strName
         Name of the label. If no label with the name exists an exception is thrown.

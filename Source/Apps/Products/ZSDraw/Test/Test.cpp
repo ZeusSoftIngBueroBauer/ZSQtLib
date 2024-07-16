@@ -145,16 +145,44 @@ CTest::~CTest()
         }
     }
 
+    delete m_pPhysValRectSmallPlusSign;
+    delete m_pPhysValLineSmallPlusSignVerticalLine;
+    delete m_pPhysValLineSmallPlusSignHorizontalLine;
+
     delete m_pPhysValRectBigPlusSign;
     delete m_pPhysValLineBigPlusSignVerticalLine;
     delete m_pPhysValLineBigPlusSignHorizontalLine;
 
+    delete m_pPhysValRectCheckmark;
+    delete m_pPhysValLineCheckmarkLeftLine;
+    delete m_pPhysValLineCheckmarkRightLine;
+
+    delete m_pPhysValRectSmallRect;
+    delete m_pPhysValLineSmallRectTopLine;
+    delete m_pPhysValLineSmallRectRightLine;
+    delete m_pPhysValLineSmallRectBottomLine;
+    delete m_pPhysValLineSmallRectLeftLine;
+
+    delete m_pPhysValRectTopGroup;
+
     m_pMainWindow = nullptr;
     m_pDrawingView = nullptr;
     m_pDrawingScene = nullptr;
+    m_pPhysValRectSmallPlusSign = nullptr;
+    m_pPhysValLineSmallPlusSignVerticalLine = nullptr;
+    m_pPhysValLineSmallPlusSignHorizontalLine = nullptr;
     m_pPhysValRectBigPlusSign = nullptr;
     m_pPhysValLineBigPlusSignVerticalLine = nullptr;
     m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
+    m_pPhysValRectCheckmark = nullptr;
+    m_pPhysValLineCheckmarkLeftLine = nullptr;
+    m_pPhysValLineCheckmarkRightLine = nullptr;
+    m_pPhysValRectSmallRect = nullptr;
+    m_pPhysValLineSmallRectTopLine = nullptr;
+    m_pPhysValLineSmallRectRightLine = nullptr;
+    m_pPhysValLineSmallRectBottomLine = nullptr;
+    m_pPhysValLineSmallRectLeftLine = nullptr;
+    m_pPhysValRectTopGroup = nullptr;
 
 } // dtor
 
@@ -180,9 +208,25 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pDrawingView = CWidgetCentral::GetInstance()->drawingView();
     m_pDrawingScene = CWidgetCentral::GetInstance()->drawingScene();
 
+    m_pPhysValRectSmallPlusSign = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValLineSmallPlusSignVerticalLine = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLineSmallPlusSignHorizontalLine = new CPhysValLine(*m_pDrawingScene);
+
     m_pPhysValRectBigPlusSign = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValLineBigPlusSignVerticalLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineBigPlusSignHorizontalLine = new CPhysValLine(*m_pDrawingScene);
+
+    m_pPhysValRectCheckmark = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValLineCheckmarkLeftLine = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLineCheckmarkRightLine = new CPhysValLine(*m_pDrawingScene);
+
+    m_pPhysValRectSmallRect = new CPhysValRect(*m_pDrawingScene);
+    m_pPhysValLineSmallRectTopLine = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLineSmallRectRightLine = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLineSmallRectBottomLine = new CPhysValLine(*m_pDrawingScene);
+    m_pPhysValLineSmallRectLeftLine = new CPhysValLine(*m_pDrawingScene);
+
+    m_pPhysValRectTopGroup = new CPhysValRect(*m_pDrawingScene);
 
     // Start with reasonable drawing size
     CDrawingSize drawingSize;
@@ -1136,7 +1180,7 @@ void CTest::doTestStepSaveLoadFile( ZS::Test::CTestStep* i_pTestStep )
             CIdxTreeEntry* pTreeEntry = *itIdxTree;
             CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
             if (pGraphObj != nullptr) {
-                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj));
+                strlstExpectedValues.append(resultValuesForGraphObj(pGraphObj, true));
             }
             ++itIdxTree;
         }
@@ -1157,7 +1201,7 @@ void CTest::doTestStepSaveLoadFile( ZS::Test::CTestStep* i_pTestStep )
                 CIdxTreeEntry* pTreeEntry = *itIdxTree;
                 CGraphObj* pGraphObj = dynamic_cast<CGraphObj*>(pTreeEntry);
                 if (pGraphObj != nullptr) {
-                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
+                    strlstResultValues.append(resultValuesForGraphObj(pGraphObj, true));
                 }
                 ++itIdxTree;
             }
@@ -1615,7 +1659,8 @@ void CTest::doTestStepShowLabels( ZS::Test::CTestStep* i_pTestStep )
         QString strLabelName = dataRow["LabelName"].toString();
         QPointF pos = dataRow["setPos"].toPointF();
         QString strExpectedText = dataRow["ExpectedText"].toString();
-        strlstExpectedValues.append(strGraphObjName + ".Label.text: " + strExpectedText);
+        strlstExpectedValues.append(resultValuesForLabel(
+            strGraphObjName + "." + strLabelName, pos, strExpectedText));
         CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->showLabel(strLabelName);
@@ -1625,7 +1670,8 @@ void CTest::doTestStepShowLabels( ZS::Test::CTestStep* i_pTestStep )
             if (pGraphicsItemLabel != nullptr) {
                 pGraphicsItemLabel->setPos(pos);
                 QString strText = pGraphicsItemLabel->text();
-                strlstResultValues.append(strGraphObjName + ".Label.text: " + strText);
+                strlstResultValues.append(resultValuesForLabel(
+                    pGraphObj->name() + "." + pGraphObjLabel->name(), pGraphicsItemLabel->pos(), strText));
             }
             else {
                 strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
@@ -1653,20 +1699,35 @@ void CTest::doTestStepHideLabels( ZS::Test::CTestStep* i_pTestStep )
         /* strMethod    */ "doTestStepHideLabels",
         /* strAddInfo   */ strMthInArgs );
 
-    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
-    QString strLabelName = i_pTestStep->getConfigValue("LabelName").toString();
-
-    QString strKeyInTree = "B:" + strGraphObjName;
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strKeyInTree);
-    if (pGraphObj != nullptr) {
-        pGraphObj->hideLabel(strLabelName);
-        pGraphObj->hideLabel(strLabelName);
-    }
-
     QStringList strlstExpectedValues;
-    i_pTestStep->setExpectedValues(strlstExpectedValues);
-
     QStringList strlstResultValues;
+    for (int idxRow = 0; idxRow < i_pTestStep->getDataRowCount(); ++idxRow)
+    {
+        QHash<QString, QVariant> dataRow = i_pTestStep->getDataRow(idxRow);
+        QString strGraphObjName = dataRow["GraphObjName"].toString();
+        QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
+        QString strLabelName = dataRow["LabelName"].toString();
+        strlstExpectedValues.append(dataRow["ExpectedValue"].toString());
+        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        if (pGraphObj != nullptr) {
+            pGraphObj->hideLabel(strLabelName);
+            pGraphObj->hideLabelAnchorLine(strLabelName);
+            CGraphObjLabel* pGraphObjLabel = pGraphObj->getLabel(strLabelName);
+            QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
+            if (pGraphicsItemLabel != nullptr) {
+                QString strText = pGraphicsItemLabel->text();
+                strlstResultValues.append(resultValuesForLabel(
+                    pGraphObj->name() + "." + pGraphObjLabel->name(), pGraphicsItemLabel->pos(), strText));
+            }
+            else {
+                strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
+            }
+        }
+        else {
+            strlstResultValues.append(strGraphObjName + " not found");
+        }
+    }
+    i_pTestStep->setExpectedValues(strlstExpectedValues);
     i_pTestStep->setResultValues(strlstResultValues);
 }
 
@@ -1692,9 +1753,13 @@ void CTest::doTestStepShowGeometryLabels( ZS::Test::CTestStep* i_pTestStep )
         QString strGraphObjName = dataRow["GraphObjName"].toString();
         QString strGraphObjKeyInTree = dataRow["GraphObjKeyInTree"].toString();
         QString strLabelName = dataRow["LabelName"].toString();
-        QPointF pos = dataRow["setPos"].toPointF();
+        QPointF pos;
+        if (dataRow.contains("setPos")) {
+            pos = dataRow["setPos"].toPointF();
+        }
         QString strExpectedText = dataRow["ExpectedText"].toString();
-        strlstExpectedValues.append(strGraphObjName + ".Label.text: " + strExpectedText);
+        strlstExpectedValues.append(resultValuesForLabel(
+            strGraphObjName + "." + strLabelName, pos, strExpectedText));
         CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             pGraphObj->showGeometryLabel(strLabelName);
@@ -1702,9 +1767,13 @@ void CTest::doTestStepShowGeometryLabels( ZS::Test::CTestStep* i_pTestStep )
             CGraphObjLabel* pGraphObjLabel = pGraphObj->getGeometryLabel(strLabelName);
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
-                pGraphicsItemLabel->setPos(pos);
+                if (!pos.isNull()) {
+                    pGraphicsItemLabel->setPos(pos);
+                    pos = pGraphicsItemLabel->pos();
+                }
                 QString strText = pGraphicsItemLabel->text();
-                strlstResultValues.append(strGraphObjName + ".Label.text: " + strText);
+                strlstResultValues.append(resultValuesForLabel(
+                    pGraphObj->name() + "." + pGraphObjLabel->name(), pos, strText));
             }
             else {
                 strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
@@ -1749,7 +1818,8 @@ void CTest::doTestStepHideGeometryLabels( ZS::Test::CTestStep* i_pTestStep )
             QGraphicsSimpleTextItem* pGraphicsItemLabel = dynamic_cast<QGraphicsSimpleTextItem*>(pGraphObjLabel);
             if (pGraphicsItemLabel != nullptr) {
                 QString strText = pGraphicsItemLabel->text();
-                strlstResultValues.append(strGraphObjName + ".Label.text: " + strText);
+                strlstResultValues.append(resultValuesForLabel(
+                    pGraphObj->name() + "." + pGraphObjLabel->name(), pGraphicsItemLabel->pos(), strText));
             }
             else {
                 strlstResultValues.append(strGraphObjName + "." + strLabelName + " not found");
@@ -2015,7 +2085,7 @@ SErrResultInfo CTest::readFile(const QString& i_strAbsFilePath, QStringList& o_s
 }
 
 //------------------------------------------------------------------------------
-QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj) const
+QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues) const
 //------------------------------------------------------------------------------
 {
     QStringList strlstResultValues;
@@ -2025,15 +2095,37 @@ QStringList CTest::resultValuesForGraphObj(const CGraphObj* i_pGraphObj) const
             const CGraphObjGroup* pGraphObjGroup = dynamic_cast<const CGraphObjGroup*>(i_pGraphObj);
             if (pGraphObjGroup != nullptr) {
                 strlstResultValues = resultValuesForGroup(
-                    pGraphObjGroup->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect());
+                    i_pGraphObj->name(), pGraphicsItem->pos(), pGraphObjGroup->getRect());
             }
         }
         else if (i_pGraphObj->isLine()) {
             const CGraphObjLine* pGraphObjLine = dynamic_cast<const CGraphObjLine*>(i_pGraphObj);
             if (pGraphObjLine != nullptr) {
                 strlstResultValues = resultValuesForLine(
-                    pGraphObjLine->name(), pGraphicsItem->pos(),
+                    i_pGraphObj->name(), pGraphicsItem->pos(),
                     pGraphObjLine->line(), pGraphObjLine->getLine());
+            }
+        }
+        if (i_bAddLabelResultValues) {
+            QStringList strlstLabelNames = i_pGraphObj->getLabelNames();
+            for (const QString& strLabelName : strlstLabelNames) {
+                CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getLabel(strLabelName);
+                if (pGraphObjLabel != nullptr) {
+                    pGraphicsItem = dynamic_cast<const QGraphicsItem*>(pGraphObjLabel);
+                    strlstResultValues += resultValuesForLabel(
+                        i_pGraphObj->name() + "." + pGraphObjLabel->name(),
+                        pGraphicsItem->pos(), pGraphObjLabel->text());
+                }
+            }
+            strlstLabelNames = i_pGraphObj->getGeometryLabelNames();
+            for (const QString& strLabelName : strlstLabelNames) {
+                CGraphObjLabel* pGraphObjLabel = i_pGraphObj->getGeometryLabel(strLabelName);
+                if (pGraphObjLabel != nullptr) {
+                    pGraphicsItem = dynamic_cast<const QGraphicsItem*>(pGraphObjLabel);
+                    strlstResultValues += resultValuesForLabel(
+                        i_pGraphObj->name() + "." + pGraphObjLabel->name(),
+                        pGraphicsItem->pos(), pGraphObjLabel->text());
+                }
             }
         }
     }
@@ -2074,4 +2166,18 @@ QStringList CTest::resultValuesForLine(
         strGraphObjName + ".getLength {" + i_physValLine.length().toString() + "} " + i_physValLine.unit().symbol(),
         strGraphObjName + ".rotationAngle: " + i_physValLine.angle().toString()
     });
+}
+
+//------------------------------------------------------------------------------
+QStringList CTest::resultValuesForLabel(
+    const QString& strGraphObjName, const QPointF& i_pos, const QString& i_strText) const
+//------------------------------------------------------------------------------
+{
+    QStringList strlstResultValues;
+    if (!i_pos.isNull()) {
+        strlstResultValues = QStringList({
+            strGraphObjName + ".pos {" + qPoint2Str(i_pos) + "} px"});
+    }
+    strlstResultValues.append(strGraphObjName + ".text: " + i_strText);
+    return strlstResultValues;
 }
