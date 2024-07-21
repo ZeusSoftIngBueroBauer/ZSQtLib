@@ -81,40 +81,22 @@ ZSDRAWDLL_API bool isGraphicsSceneResizeEvent( QEvent* i_pEv );
 ZSDRAWDLL_API QString qGraphicsSceneResizeEvent2Str( QGraphicsSceneResizeEvent* i_pEv );
 
 ZSDRAWDLL_API void getLineEndPolygons(
-    const QLineF&        i_line,
+    const QLineF& i_line,
     const CDrawSettings& i_drawSettings,
-    QPolygonF*           i_pplgLineStart, // != nullptr to calculate it, may be resized
-    QPolygonF*           i_pplgLineEnd ); // != nullptr to calculate it, may be resized
-
-ZSDRAWDLL_API void getMaxRectArea(
-    double  i_fX1Left,    double  i_fY1Top,
-    double  i_fX1Right,   double  i_fY1Bottom,
-    double  i_fX2Left,    double  i_fY2Top,
-    double  i_fX2Right,   double  i_fY2Bottom,
-    double& o_fXLeftMax,  double& o_fYTopMax,
-    double& o_fXRightMax, double& o_fYBottomMax );
-
-ZSDRAWDLL_API void getMaxRectArea(
-    const ZS::PhysVal::CPhysVal& i_physVal1Left,    const ZS::PhysVal::CPhysVal& i_physVal1Top,
-    const ZS::PhysVal::CPhysVal& i_physVal1Right,   const ZS::PhysVal::CPhysVal& i_physVal1Bottom,
-    const ZS::PhysVal::CPhysVal& i_physVal2Left,    const ZS::PhysVal::CPhysVal& i_physVal2Top,
-    const ZS::PhysVal::CPhysVal& i_physVal2Right,   const ZS::PhysVal::CPhysVal& i_physVal2Bottom,
-    ZS::PhysVal::CPhysVal&       o_physValLeftMin,  ZS::PhysVal::CPhysVal&       o_physValTopMin,
-    ZS::PhysVal::CPhysVal&       o_physValRightMax, ZS::PhysVal::CPhysVal&       o_physValBottomMax );
+    QPolygonF* i_pplgLineStart, // != nullptr to calculate it, may be resized
+    QPolygonF* i_pplgLineEnd ); // != nullptr to calculate it, may be resized
 
 ZSDRAWDLL_API QRectF resizeRect(
-    const QRectF&              i_rect,
+    const QRectF& i_rect,
     const CEnumSelectionPoint& i_selPt,
-    const QPointF&             i_ptSel,
-    CEnumSelectionPoint*       o_pSelPt = nullptr );
+    const QPointF& i_ptSel,
+    CEnumSelectionPoint* o_pSelPt = nullptr );
 
-ZSDRAWDLL_API QPolygonF resizePolygon(
-    const QPolygonF& i_plg,
-    const QRectF&    i_rctBoundingNew,
-    const QRectF&    i_rctBoundingOld = QRectF() );
+ZSDRAWDLL_API QPolygonF resizePolygon(const QPolygonF& i_plg, const QRectF& i_rctBoundingNew, const QRectF& i_rctBoundingOld = QRectF());
 
 ZSDRAWDLL_API QRectF boundingRect(const QPointF& i_pt, double i_fRadius);
 ZSDRAWDLL_API QRectF boundingRect(const QLineF& i_line);
+ZSDRAWDLL_API QRectF boundingRect(const QPolygonF& i_polygon);
 ZSDRAWDLL_API QRectF boundingRect(const QList<QGraphicsItem*>& i_arpGraphicsItems, QGraphicsItem* i_pGrapicsItemParentGroup = nullptr);
 ZSDRAWDLL_API QRectF boundingRect(const QVector<CGraphObj*>& i_arpGraphObjs, CGraphObjGroup* i_pGraphObjGroup = nullptr);
 ZSDRAWDLL_API QPolygonF line2Polygon(const QLineF& i_line);

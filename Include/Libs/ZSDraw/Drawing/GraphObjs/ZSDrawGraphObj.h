@@ -53,184 +53,6 @@ class CGraphObjGroup;
 class CGraphObjLabel;
 class CGraphObjSelectionPoint;
 
-
-//******************************************************************************
-/*!
-*/
-struct ZSDRAWDLL_API SGraphObjSelectionPoint
-//******************************************************************************
-{
-public: // struct methods
-    static SGraphObjSelectionPoint fromString(const QString& i_str, bool* i_pbOk = nullptr);
-    static SGraphObjSelectionPoint fromString(CGraphObj* i_pGraphObj, const QString& i_str, bool* i_pbOk = nullptr);
-public: // ctors
-    SGraphObjSelectionPoint();
-    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj);
-    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPoint i_selPt);
-    SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, int idxPt);
-    SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other);
-public: // operators
-    SGraphObjSelectionPoint& operator = (const SGraphObjSelectionPoint& i_other);
-    bool operator == (const SGraphObjSelectionPoint& i_other) const;
-    bool operator != (const SGraphObjSelectionPoint& i_other) const;
-public: // struct methods
-    QString name() const;
-    QString toString(bool i_bIncludeGraphObj) const;
-public: // struct members
-    /*!< Graphical object the selection point belongs to.
-         nullptr, if the selection point is not used (undefined). */
-    CGraphObj* m_pGraphObj;
-    /*!< Type of the selection point. Selection points are differentiated into
-         selection points on the bounding rectangle around the graphical object
-         or into polygon shape points. */
-    ESelectionPointType m_selPtType;
-    /*!< For selection points on the bounding rectangle specifies the position
-         on (or within) the bounding rectangle.
-         For polygon shape points the enum is set to PolygonPoint. */
-    ESelectionPoint m_selPt;
-    /*!< For selection points on a polygon the index of the polygon point
-         is stored the selection point is assigned to. */
-    int m_idxPt;
-
-}; // struct SGraphObjSelectionPoint
-
-
-//******************************************************************************
-/*! @brief Struct defining a line in polar coordinates.
-*/
-struct ZSDRAWDLL_API SPolarCoors
-//******************************************************************************
-{
-public: // struct methods
-    static SPolarCoors fromString(const QString& i_str, const QString& i_strSeparator = "/", bool* i_pbOk = nullptr);
-public: // ctors
-    SPolarCoors();
-    SPolarCoors(double i_fLength_px, double i_fAngle_degrees);
-    SPolarCoors(const SPolarCoors& i_other);
-public: // operators
-    bool operator == (const SPolarCoors& i_other) const;
-    bool operator != (const SPolarCoors& i_other) const;
-public: // struct methods
-    QString toString(bool i_bAddUnit = false, const QString& i_strSeparator = "/") const;
-public: // struct members
-    double m_fLength_px;
-    double m_fAngle_degrees;
-};
-
-
-//******************************************************************************
-/*! @brief Struct defining the properties of a label.
-
-    As long as a label is not added to the graphics scene the label objects are
-    not created but the descriptors are kept in the parent object so that the
-    labels can be created with the desired properties on demand.
-*/
-struct ZSDRAWDLL_API SLabelDscr
-//******************************************************************************
-{
-public: // ctors
-    SLabelDscr();
-    SLabelDscr(EGraphObjType i_labelType);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt);
-    SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText, const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2);
-    SLabelDscr(const SLabelDscr& i_other);
-public: // struct members
-    /*!< Key of the label within the list of labels of the graphical objects. */
-    QString m_strKey;
-    /*!< Type of the label.
-         Range [EGraphObjTypeLabel, EGraphObjTypeLabelGeometryPosition, ...] */
-    EGraphObjType m_labelType;
-    /*!< For text labels or geometry labels (like position) selPt1 defines the
-         selection point the label is linked to.
-         For geometry labels using two selection points like length, width or height,
-         selPt1 defines the first selection point the label is linked to. */
-    SGraphObjSelectionPoint m_selPt1;
-    /*!< For text labels or geometry labels (like position) selPt2 is not used and set to Undefined.
-         For geometry labels using two selection points like length, width or height,
-         selPt2 defines the second selection point the label is linked to. */
-    SGraphObjSelectionPoint m_selPt2;
-    /*!< Text to be indicated by text labels. Not set (empty string) for geometry labels.
-         For geometry labels the indicated text is calculated during runtime
-         by the label item and set at the QGraphicsSimpleTextItem. */
-    QString m_strText;
-    /*!< When modifying the shape of graphical objects the relative position of labels
-         linked to the graphical objects should always be the same.
-         This can only be managed when keeping the distance and the angle to the selection point
-         after moving the labels (see also method getAnchorLineToSelectionPointFromPolarInSceneCoors). */
-    SPolarCoors m_polarCoorsToLinkedSelPt;
-    /*!< Flag indicating whether the label is visible. */
-    bool m_bLabelIsVisible;
-    /*!< Flag to indicate whether the anchor line (line from label to parent's selection point the
-         label is linked to) should always be visible. */
-    bool m_bShowAnchorLine;
-
-}; // struct SLabelDscr
-
-
-//******************************************************************************
-/*!
-*/
-struct ZSDRAWDLL_API SGraphObjHitInfo
-//******************************************************************************
-{
-public: // ctor
-    SGraphObjHitInfo();
-public: // struct methods
-    bool isBoundingRectSelectionPointHit() const;
-    bool isSelectionPointHit() const;
-    bool isPolygonShapePointHit() const;
-    bool isLineSegmentHit() const;
-public: // struct methods
-    //void setCursor(double i_fGraphObjRotAngle_rad);
-public: // struct methods
-    QString toString() const;
-public: // struct members
-    //CEnumEditMode m_editMode;
-    //CEnumEditResizeMode m_editResizeMode;
-    CEnumSelectionPoint m_selPtBoundingRect;
-    int m_idxPolygonShapePoint;
-    int m_idxLineSegment;
-    QPointF m_ptSelected;
-    QCursor m_cursor;
-
-}; // struct SGraphObjHitInfo
-
-
-//******************************************************************************
-struct ZSDRAWDLL_API SGraphObjAlignment
-//******************************************************************************
-{
-public: // ctor
-    SGraphObjAlignment() :
-        m_alignmentRefChild(EAlignmentRef::None),
-        m_alignmentRefParent(EAlignmentRef::None),
-        m_bAlignAbsolute(true),
-        m_fVal(0.0)
-    {
-    }
-    SGraphObjAlignment(EAlignmentRef i_refChild, EAlignmentRef i_refParent, bool i_bAbsolute, double i_fVal = 0.0) :
-        m_alignmentRefChild(i_refChild),
-        m_alignmentRefParent(i_refParent),
-        m_bAlignAbsolute(i_bAbsolute),
-        m_fVal(i_fVal)
-    {
-    }
-public: // struct methods
-    QString toString() const;
-public: // struct members
-    CEnumAlignmentRef m_alignmentRefChild;
-    CEnumAlignmentRef m_alignmentRefParent;
-    bool m_bAlignAbsolute;
-    /*!< If aligned absolute: value in pixels.
-         If aligned relative: scale factor to width or height of parent (usually ranging from 0..1) */
-    double m_fVal;
-
-}; // struct SGraphObjAlignment
-
-
 //******************************************************************************
 /*! @brief Abstract base class for all graphical objects within ZS::Draw.
 
@@ -759,6 +581,7 @@ public: // overridables
     //virtual CPhysValRect mapToParent(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables
     virtual QRectF getBoundingRect() const;
+    virtual QRectF getEffectiveBoundingRectOnScene() const;
 public: // overridables
     virtual void setPosition(const CPhysValPoint& i_physValPos);
     virtual CPhysValPoint position() const;
@@ -779,8 +602,8 @@ public: // overridables
     virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     virtual ZS::PhysVal::CPhysVal rotationAngle() const;
     virtual ZS::PhysVal::CPhysVal rotationAngle(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual ZS::PhysVal::CPhysVal rotationAngleMappedToScene() const;
-    virtual ZS::PhysVal::CPhysVal rotationAngleMappedToScene(const ZS::PhysVal::CUnit& i_unit) const;
+    virtual ZS::PhysVal::CPhysVal getEffectiveRotationAngleOnScene() const;
+    virtual ZS::PhysVal::CPhysVal getEffectiveRotationAngleOnScene(const ZS::PhysVal::CUnit& i_unit) const;
 public: // overridables
     virtual void setEditMode(const CEnumEditMode& i_eMode);
     CEnumEditMode editMode() const;

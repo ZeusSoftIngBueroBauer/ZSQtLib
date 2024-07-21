@@ -501,7 +501,7 @@ void CGraphObjLabelGeometryAngle::updateAnchorLines()
         // to get the start point of the pie and the span has to be corrected correspondingly.
         CGraphObjGroup* pGraphObjParentGroup = m_labelDscr.m_selPt1.m_pGraphObj->parentGroup();
         if (pGraphObjParentGroup != nullptr) {
-            double fParentGroupSceneRotationAngle_degrees = pGraphObjParentGroup->rotationAngleMappedToScene(Units.Angle.Degree).getVal();
+            double fParentGroupSceneRotationAngle_degrees = pGraphObjParentGroup->getEffectiveRotationAngleOnScene(Units.Angle.Degree).getVal();
             m_fPieStartAngle_degrees = fParentGroupSceneRotationAngle_degrees;
             m_fPieStartAngle_degrees = Math::normalizeAngleInDegree(m_fPieStartAngle_degrees);
             m_fPieSpanAngle_degrees -= fParentGroupSceneRotationAngle_degrees;

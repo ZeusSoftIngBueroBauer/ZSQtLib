@@ -401,8 +401,8 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
         // The parent of the child to be added is either the drawing scene or another group.
         // The bounding rectangle of the new child item need to be mapped into the parent
         // coordinates of this group. The parent of this group may either be the scene or a group.
-        QRectF rctBoundingChild = i_pGraphObj->getBoundingRect();
-        rctBoundingChild = pGraphicsItemChild->mapRectToScene(rctBoundingChild);
+        QRectF rctBoundingChild = i_pGraphObj->getEffectiveBoundingRectOnScene();
+        //rctBoundingChild = pGraphicsItemChild->mapRectToScene(rctBoundingChild);
         QGraphicsItem* pGraphicsItemParentThis = parentItem();
         CGraphObjGroup* pGraphObjGroupParentThis = dynamic_cast<CGraphObjGroup*>(pGraphicsItemParentThis);
         if (pGraphicsItemParentThis != nullptr) {
@@ -1695,6 +1695,56 @@ QRectF CGraphObjGroup::getBoundingRect() const
 
     // Local coordinates, scaled, but not rotated.
     QRectF rctBounding = m_rectOrig;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+    }
+    return rctBounding;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the effective (resulting) bounding rectangle of this item
+           on the drawing scene.
+
+    To get the effective bounding rectangle the left most, the right most
+    as well as the top most and bottom most shape points of the transformed
+    (rotated and scaled) object are are taken into account.
+
+    If the object is rotated the effective bounding rectangle is not the
+    bounding rectangle (in item coordinates) mapped to the scene.
+    Before mapping the points to the scene the TopMost, BottomMost, LeftMost
+    and RightMost points of the rotated object have to be calculated and each
+    point has to be mapped to the scene.
+
+    E.g. rotated trapez on the scene:
+
+                             + TopMost
+                            / \
+                           /   \
+                          /     \
+                LeftMost +       + RightMost
+                          \     /
+                           \   /
+                            \ /
+                             + BottomMost
+*/
+QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getEffectiveBoundingRectOnScene",
+        /* strAddInfo   */ "" );
+
+    CPhysValRect physValRectBounding(*m_pDrawingScene, m_rectOrig, Units.Length.px);
+    physValRectBounding.setAngle(m_physValRotationAngle);
+    QPolygonF plg({
+        mapToScene(physValRectBounding.topLeft()).toQPointF(),
+        mapToScene(physValRectBounding.topRight()).toQPointF(),
+        mapToScene(physValRectBounding.bottomRight()).toQPointF(),
+        mapToScene(physValRectBounding.bottomLeft()).toQPointF()});
+    QRectF rctBounding = plg.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }

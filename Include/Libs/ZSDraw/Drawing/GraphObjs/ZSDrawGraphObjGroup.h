@@ -184,6 +184,7 @@ public: // instance methods
     CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
+    virtual QRectF getEffectiveBoundingRectOnScene() const override;
 public: // must overridables of base class CGraphObj
     //virtual QRectF getOriginalBoundingRectInParent() const override;
 public: // must overridables of base class CGraphObj

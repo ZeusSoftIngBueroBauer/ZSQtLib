@@ -118,7 +118,11 @@ public: // ctors and dtor
 CTest::CTest() :
 //------------------------------------------------------------------------------
     ZS::Test::CTest(NameSpace(), "theInst"),
-    m_physValAngleBigPlusSign(0.0, Units.Angle.Degree, 0.1)
+    m_physValAngleSmallPlusSign(0.0, Units.Angle.Degree, 0.1),
+    m_physValAngleBigPlusSign(0.0, Units.Angle.Degree, 0.1),
+    m_physValAngleCheckmark(0.0, Units.Angle.Degree, 0.1),
+    m_physValAngleSmallRect(0.0, Units.Angle.Degree, 0.1),
+    m_physValAngleTopGroup(0.0, Units.Angle.Degree, 0.1)
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -1441,8 +1445,7 @@ void CTest::doTestStepModifyGraphObjLine( ZS::Test::CTestStep* i_pTestStep )
     QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
-    CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(pGraphObj);
+    CGraphObjLine* pGraphObjLine = dynamic_cast<CGraphObjLine*>(m_pDrawingScene->findGraphObj(strGraphObjKeyInTree));
     if (pGraphObjLine != nullptr) {
         if (strMethod.compare("setLine", Qt::CaseInsensitive) == 0) {
             if (i_pTestStep->hasConfigValue("P1")) {
@@ -1493,10 +1496,16 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
 
-    QString strGroupNameParent = i_pTestStep->getConfigValue("GroupNameParent").toString();
-    QString strGroupNameParentKeyInTree = i_pTestStep->getConfigValue("GroupNameParentKeyInTree").toString();
-    QString strGraphObjName = i_pTestStep->getConfigValue("GraphObjName").toString();
-    QString strGraphObjKeyInTree = i_pTestStep->getConfigValue("GraphObjKeyInTree").toString();
+    QString strGroupName = i_pTestStep->getConfigValue("GroupName").toString();
+    QString strGroupKeyInTree = i_pTestStep->getConfigValue("GroupKeyInTree").toString();
+    QString strGraphObjChildName;
+    if (i_pTestStep->hasConfigValue("GraphObjChildName")) {
+        strGraphObjChildName = i_pTestStep->getConfigValue("GraphObjChildName").toString();
+    }
+    QString strGraphObjChildKeyInTree;
+    if (i_pTestStep->hasConfigValue("GraphObjChildKeyInTree")) {
+        strGraphObjChildKeyInTree = i_pTestStep->getConfigValue("GraphObjChildKeyInTree").toString();
+    }
     QString strMethod = i_pTestStep->getConfigValue("Method").toString();
 
     QStringList strlstGraphObjsKeyInTreeGetResultValues;
@@ -1504,110 +1513,89 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
         strlstGraphObjsKeyInTreeGetResultValues = i_pTestStep->getConfigValue("GraphObjsKeyInTreeGetResultValues").toStringList();
     }
 
-    CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
-    if (strMethod.compare("ungroup", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+    CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGroupKeyInTree));
+    CGraphObj* pGraphObjChild = nullptr;
+    if (!strGraphObjChildKeyInTree.isEmpty()) {
+        pGraphObjChild = m_pDrawingScene->findGraphObj(strGraphObjChildKeyInTree);
+    }
+    if (pGraphObjGroup != nullptr) {
+        if (strMethod.compare("ungroup", Qt::CaseInsensitive) == 0) {
             m_pDrawingScene->ungroup(pGraphObjGroup);
             pGraphObjGroup = nullptr;
-            pGraphObj = nullptr;
         }
-    }
-    else if (strMethod.compare("addToGroup", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGroupNameParentKeyInTree));
-        if (pGraphObjGroupParent != nullptr && pGraphObj != nullptr) {
-            pGraphObjGroupParent->addToGroup(pGraphObj);
+        else if (strMethod.compare("addToGroup", Qt::CaseInsensitive) == 0) {
+            if (pGraphObjChild != nullptr) {
+                pGraphObjGroup->addToGroup(pGraphObjChild);
+            }
         }
-    }
-    else if (strMethod.compare("removeFromGroup", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(m_pDrawingScene->findGraphObj(strGroupNameParentKeyInTree));
-        if (pGraphObjGroupParent != nullptr && pGraphObj != nullptr) {
-            pGraphObjGroupParent->removeFromGroup(pGraphObj);
+        else if (strMethod.compare("removeFromGroup", Qt::CaseInsensitive) == 0) {
+            if (pGraphObjChild != nullptr) {
+                pGraphObjGroup->removeFromGroup(pGraphObjChild);
+                if (strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
+                    strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
+                    if (pGraphObjChild->isGroup()) {
+                        CGraphObjGroup* pGraphObjGroupChild = dynamic_cast<CGraphObjGroup*>(pGraphObjChild);
+                        for (CGraphObj* pGraphObjChildTmp : pGraphObjGroupChild->childs()) {
+                            strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChildTmp->keyInTree());
+                        }
+                    }
+                }
+            }
         }
-    }
-    else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
             CPhysValPoint physValPos(*m_pDrawingScene);
             physValPos = i_pTestStep->getConfigValue("Pos").toPointF();
             pGraphObjGroup->setPosition(physValPos);
         }
-    }
-    else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
             CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
             QString strAngle = i_pTestStep->getConfigValue("Angle").toString();
             physValAngle = strAngle;
             pGraphObjGroup->setRotationAngle(physValAngle);
         }
-    }
-    else if (strMethod.compare("resizeToContent", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("resizeToContent", Qt::CaseInsensitive) == 0) {
             pGraphObjGroup->resizeToContent();
         }
-    }
-    else if (strMethod.compare("setTopLeft", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("setTopLeft", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("TopLeft").toPointF();
             QString strUnit = i_pTestStep->getConfigValue("TopLeft.unit").toString();
             CUnit unit(strUnit);
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setTopLeft(physValPoint);
         }
-    }
-    else if (strMethod.compare("setTopRight", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("setTopRight", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("TopRight").toPointF();
             QString strUnit = i_pTestStep->getConfigValue("TopRight.unit").toString();
             CUnit unit(strUnit);
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setTopRight(physValPoint);
         }
-    }
-    else if (strMethod.compare("setBottomRight", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("setBottomRight", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("BottomRight").toPointF();
             QString strUnit = i_pTestStep->getConfigValue("BottomRight.unit").toString();
             CUnit unit(strUnit);
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setBottomRight(physValPoint);
         }
-    }
-    else if (strMethod.compare("setBottomLeft", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("setBottomLeft", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("BottomLeft").toPointF();
             QString strUnit = i_pTestStep->getConfigValue("BottomLeft.unit").toString();
             CUnit unit(strUnit);
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setBottomLeft(physValPoint);
         }
-    }
-    else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
             QString strVal = i_pTestStep->getConfigValue("Width").toString();
             CPhysVal physVal = strVal;
             pGraphObjGroup->setWidth(physVal);
         }
-    }
-    else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
-        if (pGraphObjGroup != nullptr) {
+        else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
             QString strVal = i_pTestStep->getConfigValue("Height").toString();
             CPhysVal physVal = strVal;
             pGraphObjGroup->setWidth(physVal);
         }
-    }
 
-    if (pGraphObj != nullptr && strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
-        if (pGraphObj->isGroup()) {
-            CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(pGraphObj);
+        if (pGraphObjGroup != nullptr && strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {
             strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjGroup->keyInTree());
             for (CGraphObj* pGraphObjChild : pGraphObjGroup->childs()) {
                 strlstGraphObjsKeyInTreeGetResultValues.append(pGraphObjChild->keyInTree());
@@ -1617,7 +1605,7 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
 
     QStringList strlstResultValues;
     for (const QString& strGraphObjKeyInTree : strlstGraphObjsKeyInTreeGetResultValues) {
-        pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
+        CGraphObj* pGraphObj = m_pDrawingScene->findGraphObj(strGraphObjKeyInTree);
         if (pGraphObj != nullptr) {
             strlstResultValues.append(resultValuesForGraphObj(pGraphObj));
         }

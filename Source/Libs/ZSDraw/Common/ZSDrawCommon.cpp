@@ -25,6 +25,11 @@ may result in using the software modules.
 *******************************************************************************/
 
 #include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Common/ZSDrawCommon.h"
+#include "ZSDraw/Common/ZSDrawUnits.h"
+#include "ZSDraw/Drawing/GraphObjs/ZSDrawGraphObj.h"
+#include "ZSPhysVal/ZSPhysVal.h"
+#include "ZSSys/ZSSysAux.h"
 #include "ZSSys/ZSSysEnumEntry.h"
 
 #include <QtGui/qbitmap.h>
@@ -32,8 +37,9 @@ may result in using the software modules.
 
 #include "ZSSys/ZSSysMemLeakDump.h"
 
-using namespace ZS::System;
 using namespace ZS::Draw;
+using namespace ZS::System;
+using namespace ZS::PhysVal;
 
 
 /*******************************************************************************
@@ -1093,3 +1099,699 @@ template<> const QVector<SEnumEntry> CEnum<EAlignmentRef>::s_arEnumEntries =
     /* 7 */ SEnumEntry( static_cast<int>(EAlignmentRef::Width),     "Width",   "W"  ),
     /* 8 */ SEnumEntry( static_cast<int>(EAlignmentRef::Height),    "Height",  "H"  )
 };
+
+
+namespace ZS
+{
+namespace Draw
+{
+/*******************************************************************************
+struct SGraphObjAlignment
+*******************************************************************************/
+
+//------------------------------------------------------------------------------
+QString SGraphObjAlignment::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str = "RefChild:" + m_alignmentRefChild.toString() +
+                  ", RefParent:" + m_alignmentRefParent.toString() +
+                  ", Absolute:" + bool2Str(m_bAlignAbsolute) +
+                  ", Val:" + QString::number(m_fVal);
+    return str;
+}
+
+
+/*******************************************************************************
+struct SGraphObjSelectionPoint
+*******************************************************************************/
+
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
+    const QString& i_str, bool* i_pbOk)
+//------------------------------------------------------------------------------
+{
+    bool bOk = false;
+    SGraphObjSelectionPoint selPt;
+    QStringList strlst = i_str.split(",");
+    if (strlst.size() == 2) {
+        strlst[0]  = strlst[0].trimmed();
+        strlst[1]  = strlst[1].trimmed();
+        CEnumSelectionPointType selPtType = CEnumSelectionPointType::fromString(strlst[0], &bOk);
+        if (bOk) {
+            selPt.m_selPtType = selPtType.enumerator();
+            if (selPtType == ESelectionPointType::BoundingRectangle) {
+                CEnumSelectionPoint selPtTmp = CEnumSelectionPoint::fromString(strlst[1], &bOk);
+                if (bOk) {
+                    selPt.m_selPt = selPtTmp.enumerator();
+                }
+            }
+            else {
+                int idxPt = strlst[1].toInt(&bOk);
+                if (bOk) {
+                    selPt.m_idxPt = idxPt;
+                }
+            }
+        }
+    }
+    if (i_pbOk != nullptr) {
+        *i_pbOk = bOk;
+    }
+    return selPt;
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint SGraphObjSelectionPoint::fromString(
+    CGraphObj* i_pGraphObj, const QString& i_str, bool* i_pbOk)
+//------------------------------------------------------------------------------
+{
+    bool bOk = false;
+    SGraphObjSelectionPoint selPt = fromString(i_str, &bOk);
+    selPt.m_pGraphObj = i_pGraphObj;
+    if (i_pbOk != nullptr) {
+        *i_pbOk = bOk;
+    }
+    return selPt;
+}
+
+/* public: // ctors
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint() :
+//------------------------------------------------------------------------------
+    m_pGraphObj(nullptr),
+    m_selPtType(ESelectionPointType::Undefined),
+    m_selPt(ESelectionPoint::None),
+    m_idxPt(-1)
+{
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj) :
+//------------------------------------------------------------------------------
+    m_pGraphObj(i_pGraphObj),
+    m_selPtType(ESelectionPointType::Undefined),
+    m_selPt(ESelectionPoint::None),
+    m_idxPt(-1)
+{
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, ESelectionPoint i_selPt) :
+//------------------------------------------------------------------------------
+    m_pGraphObj(i_pGraphObj),
+    m_selPtType(ESelectionPointType::BoundingRectangle),
+    m_selPt(i_selPt),
+    m_idxPt(-1)
+{
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(CGraphObj* i_pGraphObj, int idxPt) :
+//------------------------------------------------------------------------------
+    m_pGraphObj(i_pGraphObj),
+    m_selPtType(ESelectionPointType::PolygonShapePoint),
+    m_selPt(ESelectionPoint::PolygonPoint),
+    m_idxPt(idxPt)
+{
+}
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint::SGraphObjSelectionPoint(const SGraphObjSelectionPoint& i_other) :
+//------------------------------------------------------------------------------
+    m_pGraphObj(i_other.m_pGraphObj),
+    m_selPtType(i_other.m_selPtType),
+    m_selPt(i_other.m_selPt),
+    m_idxPt(i_other.m_idxPt)
+{
+}
+
+/* public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SGraphObjSelectionPoint& SGraphObjSelectionPoint::operator = (const SGraphObjSelectionPoint& i_other)
+//------------------------------------------------------------------------------
+{
+    m_pGraphObj = i_other.m_pGraphObj;
+    m_selPtType = i_other.m_selPtType;
+    m_selPt = i_other.m_selPt;
+    m_idxPt = i_other.m_idxPt;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+bool SGraphObjSelectionPoint::operator == (const SGraphObjSelectionPoint& i_other) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = true;
+    if (m_pGraphObj != i_other.m_pGraphObj) {
+        bEqual = false;
+    }
+    else if (m_selPtType != i_other.m_selPtType) {
+        bEqual = false;
+    }
+    else if (m_selPt != i_other.m_selPt) {
+        bEqual = false;
+    }
+    else if (m_idxPt != i_other.m_idxPt) {
+        bEqual = false;
+    }
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool SGraphObjSelectionPoint::operator != (const SGraphObjSelectionPoint& i_other) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString SGraphObjSelectionPoint::name() const
+//------------------------------------------------------------------------------
+{
+    QString strName;
+    if (m_pGraphObj != nullptr) {
+        strName = m_pGraphObj->path() + ".";
+    }
+    if (m_selPtType == ESelectionPointType::BoundingRectangle) {
+        strName += CEnumSelectionPoint(m_selPt).toString();
+    } else {
+        strName += "ShapePoint" + QString::number(m_idxPt);
+    }
+    return strName;
+}
+
+//------------------------------------------------------------------------------
+QString SGraphObjSelectionPoint::toString(bool i_bIncludeGraphObj) const
+//------------------------------------------------------------------------------
+{
+    QString str;
+    if (i_bIncludeGraphObj && m_pGraphObj != nullptr) {
+        str = m_pGraphObj->path() + ".";
+    }
+    str += CEnumSelectionPointType(m_selPtType).toString();
+    if (m_selPtType == ESelectionPointType::BoundingRectangle) {
+        str += "." + CEnumSelectionPoint(m_selPt).toString();
+    } else if (m_selPtType == ESelectionPointType::PolygonShapePoint) {
+        str += "." + QString::number(m_idxPt);
+    }
+    return str;
+}
+
+
+/*******************************************************************************
+struct SGraphObjHitInfo
+*******************************************************************************/
+
+/* public: // ctor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SGraphObjHitInfo::SGraphObjHitInfo() :
+//------------------------------------------------------------------------------
+    //m_editMode(EEditMode::None),
+    //m_editResizeMode(EEditResizeMode::None),
+    m_selPtBoundingRect(ESelectionPoint::None),
+    m_idxPolygonShapePoint(-1),
+    m_idxLineSegment(-1),
+    m_ptSelected(),
+    m_cursor()
+{
+} // ctor
+
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isBoundingRectSelectionPointHit() const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+    //if (m_editMode == EEditMode::Resize && m_editResizeMode != EEditResizeMode::None) {
+        bIsHit = (m_selPtBoundingRect >= ESelectionPointRectMin) && (m_selPtBoundingRect <= ESelectionPointRectMax);
+    //}
+    return bIsHit;
+}
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isSelectionPointHit() const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+    //if (m_editMode != EEditMode::None) {
+        bIsHit = (m_selPtBoundingRect != ESelectionPoint::None);
+    //}
+    return bIsHit;
+}
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isPolygonShapePointHit() const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+    //if (m_editMode == EEditMode::MoveShapePoint) {
+        bIsHit = (m_idxPolygonShapePoint >= 0);
+    //}
+    return bIsHit;
+}
+
+//------------------------------------------------------------------------------
+bool SGraphObjHitInfo::isLineSegmentHit() const
+//------------------------------------------------------------------------------
+{
+    bool bIsHit = false;
+    //if (m_editMode != EEditMode::None) {
+        bIsHit = (m_idxLineSegment >= 0);
+    //}
+    return bIsHit;
+}
+
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+    Calculated depending on editMode, editResizeMode and selected point
+    (which must have been set before).
+*/
+//void SGraphObjHitInfo::setCursor(double i_fGraphObjRotAngle_rad)
+////------------------------------------------------------------------------------
+//{
+//    //double fCursorAngle_rad = 0.0;
+//    //bool   bSetResizeCursor = false;
+//
+//    //switch (m_editMode.enumerator())
+//    //{
+//    //    case EEditMode::Move:
+//    //    {
+//    //        m_cursor = Qt::SizeAllCursor;
+//    //        break;
+//    //    }
+//    //    case EEditMode::Resize:
+//    //    {
+//    //        switch( m_editResizeMode.enumerator() )
+//    //        {
+//    //            case EEditResizeMode::ResizeAll:
+//    //            {
+//    //                switch( m_selPtBoundingRect.enumerator() )
+//    //                {
+//    //                    case ESelectionPoint::TopLeft:
+//    //                    case ESelectionPoint::BottomRight:
+//    //                    {
+//    //                        fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f135Degrees_rad; // 2nd quadrant: arrow from right/bottom -> top/left
+//    //                        m_cursor = Qt::SizeFDiagCursor; /*  \  */
+//    //                        bSetResizeCursor = true;
+//    //                        break;
+//    //                    }
+//    //                    case ESelectionPoint::TopRight:
+//    //                    case ESelectionPoint::BottomLeft:
+//    //                    {
+//    //                        fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f45Degrees_rad; // 1st quadrant: arrow from bottom/left -> top/right
+//    //                        m_cursor = Qt::SizeBDiagCursor; /*  /  */
+//    //                        bSetResizeCursor = true;
+//    //                        break;
+//    //                    }
+//    //                    case ESelectionPoint::RotateTop:
+//    //                    case ESelectionPoint::RotateBottom:
+//    //                    {
+//    //                        QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+//    //                        m_cursor = QCursor(bmpCursor);
+//    //                        break;
+//    //                    }
+//    //                    case ESelectionPoint::LeftCenter:
+//    //                    case ESelectionPoint::RightCenter:
+//    //                    case ESelectionPoint::TopCenter:
+//    //                    case ESelectionPoint::BottomCenter:
+//    //                    case ESelectionPoint::Center:
+//    //                    default:
+//    //                    {
+//    //                        break;
+//    //                    }
+//    //                }
+//    //                break;
+//    //            }
+//    //            case EEditResizeMode::ResizeHor:
+//    //            {
+//    //                fCursorAngle_rad = i_fGraphObjRotAngle_rad;
+//    //                m_cursor = Qt::SizeHorCursor;
+//    //                bSetResizeCursor = true;
+//    //                break;
+//    //            }
+//    //            case EEditResizeMode::ResizeVer:
+//    //            {
+//    //                fCursorAngle_rad = i_fGraphObjRotAngle_rad + Math::c_f90Degrees_rad;
+//    //                m_cursor = Qt::SizeVerCursor;
+//    //                bSetResizeCursor = true;
+//    //                break;
+//    //            }
+//    //            default:
+//    //            {
+//    //                break;
+//    //            }
+//    //        }
+//    //        break;
+//    //    }
+//    //    case EEditMode::Rotate:
+//    //    {
+//    //        QBitmap bmpCursor(":/ZS/Draw/CursorRotateFree16x16.png");
+//    //        m_cursor = QCursor(bmpCursor);
+//    //        break;
+//    //    }
+//    //    case EEditMode::MoveShapePoint:
+//    //    {
+//    //        m_cursor = Qt::CrossCursor;
+//    //        break;
+//    //    }
+//    //    case EEditMode::EditText:
+//    //    {
+//    //        m_cursor = Qt::IBeamCursor;
+//    //        break;
+//    //    }
+//    //    default:
+//    //    {
+//    //        break;
+//    //    }
+//    //} // switch( editMode )
+//
+//    //if( bSetResizeCursor )
+//    //{
+//    //    // Force resulting cursor rotation angle to 1st or 2nd quadrant (0..180°)
+//    //    while( fCursorAngle_rad >= Math::c_f180Degrees_rad )
+//    //    {
+//    //        fCursorAngle_rad -= Math::c_f180Degrees_rad;
+//    //    }
+//    //    while( fCursorAngle_rad < 0.0 )
+//    //    {
+//    //        fCursorAngle_rad += Math::c_f180Degrees_rad;
+//    //    }
+//    //    if( fCursorAngle_rad >= 0.0 && fCursorAngle_rad < Math::c_f45Degrees_rad/2.0 ) // 0.0 .. 22.5°
+//    //    {
+//    //        m_cursor = Qt::SizeHorCursor;
+//    //    }
+//    //    else if( fCursorAngle_rad >= Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 3.0*Math::c_f45Degrees_rad/2.0 ) // 22.5° .. 67.5°
+//    //    {
+//    //        m_cursor = Qt::SizeBDiagCursor; // 1st quadrant: arrow from bottom/left -> top/right
+//    //    }
+//    //    else if( fCursorAngle_rad >= 3.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 5.0*Math::c_f45Degrees_rad/2.0 ) // 67.5° .. 112.5°
+//    //    {
+//    //        m_cursor = Qt::SizeVerCursor;
+//    //    }
+//    //    else if( fCursorAngle_rad >= 5.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < 7.0*Math::c_f45Degrees_rad/2.0 ) // 112.5° .. 157.5°
+//    //    {
+//    //        m_cursor = Qt::SizeFDiagCursor; // 2nd quadrant: arrow from top/left -> bottom/right
+//    //    }
+//    //    else if( fCursorAngle_rad >= 7.0*Math::c_f45Degrees_rad/2.0 && fCursorAngle_rad < Math::c_f180Degrees_rad ) // 157.5° .. 180.0°
+//    //    {
+//    //        m_cursor = Qt::SizeHorCursor;
+//    //    }
+//    //} // if( bSetResizeCursor )
+//} // setCursor
+
+/* public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief 
+
+*/
+QString SGraphObjHitInfo::toString() const
+//------------------------------------------------------------------------------
+{
+    QString str = //"EditMode:" + m_editMode.toString() +
+        //", ResizeMode:" + m_editResizeMode.toString() +
+        ", SelPtBoundingRect: " + m_selPtBoundingRect.toString() +
+        ", PolygonShapePoint: " + QString::number(m_idxPolygonShapePoint) +
+        ", LineSegment: " + QString::number(m_idxLineSegment) +
+        ", PointSelected {" + qPoint2Str(m_ptSelected) + "}" +
+        ", Cursor:" + qCursorShape2Str(m_cursor.shape());
+    return str;
+}
+
+
+/*******************************************************************************
+struct SPolarCoors
+*******************************************************************************/
+
+/*==============================================================================
+public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SPolarCoors SPolarCoors::fromString(const QString& i_str, const QString& i_strSeparator, bool* i_pbOk)
+//------------------------------------------------------------------------------
+{
+    bool bOk = false;
+    SPolarCoors polarCoors;
+    QStringList strlst = i_str.split(i_strSeparator);
+    if (strlst.size() == 2) {
+        strlst[0]  = strlst[0].trimmed();
+        strlst[1]  = strlst[1].trimmed();
+        double fLength_px = strlst[0].toDouble(&bOk);
+        if (!bOk) {
+            CPhysVal physValLength(Units.Length.px);
+            try {
+                physValLength.setVal(strlst[0]);
+                fLength_px = physValLength.getVal(Units.Length.px);
+                bOk = true;
+            } catch (...) {
+                bOk = false;
+            }
+        }
+        if (bOk) {
+            double fAngle_degrees = strlst[1].toDouble(&bOk);
+            if (!bOk) {
+                CPhysVal physValAngle(Units.Angle.Degree);
+                try {
+                    physValAngle.setVal(strlst[0]);
+                    fAngle_degrees = physValAngle.getVal(Units.Angle.Degree);
+                    bOk = true;
+                } catch (...) {
+                    bOk = false;
+                }
+            }
+            if (bOk) {
+                polarCoors.m_fLength_px = fLength_px;
+                polarCoors.m_fAngle_degrees = fAngle_degrees;
+            }
+        }
+    }
+    if (i_pbOk != nullptr) {
+        *i_pbOk = bOk;
+    }
+    return polarCoors;
+}
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SPolarCoors::SPolarCoors() :
+//------------------------------------------------------------------------------
+    m_fLength_px(0.0),
+    m_fAngle_degrees(0.0)
+{
+}
+
+//------------------------------------------------------------------------------
+SPolarCoors::SPolarCoors(double i_fLength_px, double i_fAngle_degrees) :
+//------------------------------------------------------------------------------
+    m_fLength_px(i_fLength_px),
+    m_fAngle_degrees(i_fAngle_degrees)
+{
+}
+
+//------------------------------------------------------------------------------
+SPolarCoors::SPolarCoors(const SPolarCoors& i_other) :
+//------------------------------------------------------------------------------
+    m_fLength_px(i_other.m_fLength_px),
+    m_fAngle_degrees(i_other.m_fAngle_degrees)
+{
+}
+
+/*==============================================================================
+public: // operators
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+bool SPolarCoors::operator == (const SPolarCoors& i_other) const
+//------------------------------------------------------------------------------
+{
+    bool bEqual = true;
+    if (m_fLength_px != i_other.m_fLength_px) {
+        bEqual = false;
+    }
+    else if (m_fAngle_degrees != i_other.m_fAngle_degrees) {
+        bEqual = false;
+    }
+    return bEqual;
+}
+
+//------------------------------------------------------------------------------
+bool SPolarCoors::operator != (const SPolarCoors& i_other) const
+//------------------------------------------------------------------------------
+{
+    return !(*this == i_other);
+}
+
+/*==============================================================================
+public: // struct methods
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+QString SPolarCoors::toString(bool i_bAddUnit, const QString& i_strSeparator) const
+//------------------------------------------------------------------------------
+{
+    QString str = QString::number(m_fLength_px);
+    if (i_bAddUnit) {
+        str += " " + Units.Length.px.symbol();
+    }
+    str += i_strSeparator + QString::number(m_fAngle_degrees);
+    if (i_bAddUnit) {
+        str += " " + Units.Angle.Degree.symbol();
+    }
+    return str;
+}
+
+
+/*******************************************************************************
+struct SLabelDscr
+*******************************************************************************/
+
+/*==============================================================================
+public: // ctors and dtor
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr() :
+//------------------------------------------------------------------------------
+    m_strKey(),
+    m_labelType(EGraphObjTypeUndefined),
+    m_strText(),
+    m_selPt1(),
+    m_selPt2(),
+    m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
+    m_bShowAnchorLine(false)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr(EGraphObjType i_labelType) :
+//------------------------------------------------------------------------------
+    m_strKey(),
+    m_labelType(i_labelType),
+    m_strText(),
+    m_selPt1(),
+    m_selPt2(),
+    m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
+    m_bShowAnchorLine(false)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr(EGraphObjType i_labelType, const QString& i_strKey) :
+//------------------------------------------------------------------------------
+    m_strKey(i_strKey),
+    m_labelType(i_labelType),
+    m_strText(),
+    m_selPt1(),
+    m_selPt2(),
+    m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
+    m_bShowAnchorLine(false)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr(
+    EGraphObjType i_labelType, const QString& i_strKey,
+    const SGraphObjSelectionPoint& i_selPt) :
+//------------------------------------------------------------------------------
+    m_strKey(i_strKey),
+    m_labelType(i_labelType),
+    m_strText(),
+    m_selPt1(i_selPt),
+    m_selPt2(),
+    m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
+    m_bShowAnchorLine(false)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr(
+    EGraphObjType i_labelType, const QString& i_strKey,
+    const SGraphObjSelectionPoint& i_selPt1,
+    const SGraphObjSelectionPoint& i_selPt2) :
+//------------------------------------------------------------------------------
+    m_strKey(i_strKey),
+    m_labelType(i_labelType),
+    m_strText(),
+    m_selPt1(i_selPt1),
+    m_selPt2(i_selPt2),
+    m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
+    m_bShowAnchorLine(false)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr(
+    EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText,
+    const SGraphObjSelectionPoint& i_selPt) :
+//------------------------------------------------------------------------------
+    m_strKey(i_strKey),
+    m_labelType(i_labelType),
+    m_strText(i_strText),
+    m_selPt1(i_selPt),
+    m_selPt2(),
+    m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
+    m_bShowAnchorLine(false)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr(
+    EGraphObjType i_labelType, const QString& i_strKey, const QString& i_strText,
+    const SGraphObjSelectionPoint& i_selPt1, const SGraphObjSelectionPoint& i_selPt2) :
+//------------------------------------------------------------------------------
+    m_strKey(i_strKey),
+    m_labelType(i_labelType),
+    m_strText(i_strText),
+    m_selPt1(i_selPt1),
+    m_selPt2(i_selPt2),
+    m_polarCoorsToLinkedSelPt(),
+    m_bLabelIsVisible(false),
+    m_bShowAnchorLine(false)
+{
+}
+
+//------------------------------------------------------------------------------
+SLabelDscr::SLabelDscr(const SLabelDscr& i_other) :
+//------------------------------------------------------------------------------
+    m_strKey(i_other.m_strKey),
+    m_labelType(i_other.m_labelType),
+    m_strText(i_other.m_strText),
+    m_selPt1(i_other.m_selPt1),
+    m_selPt2(i_other.m_selPt2),
+    m_polarCoorsToLinkedSelPt(i_other.m_polarCoorsToLinkedSelPt),
+    m_bLabelIsVisible(i_other.m_bLabelIsVisible),
+    m_bShowAnchorLine(i_other.m_bShowAnchorLine)
+{
+}
+
+} // namespace Draw
+
+} // namespace ZS

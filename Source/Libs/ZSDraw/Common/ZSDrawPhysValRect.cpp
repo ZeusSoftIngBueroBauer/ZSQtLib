@@ -85,6 +85,56 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const CUnit& i_u
 
 //------------------------------------------------------------------------------
 CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene, const QRectF& i_rect) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene),
+    m_ptCenter(i_rect.center()),
+    m_size(fabs(i_rect.width()), i_rect.height()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    if (m_bYAxisTopDown) {
+        if (i_rect.topLeft().y() > i_rect.bottomRight().y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else {
+        if (i_rect.topLeft().y() < i_rect.bottomRight().y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
+    const CDrawingScene& i_drawingScene,
+    const QRectF& i_rect,
+    const CUnit& i_unit) :
+//------------------------------------------------------------------------------
+    CPhysValShape(i_drawingScene, i_unit),
+    m_ptCenter(i_rect.center()),
+    m_size(i_rect.width(), i_rect.height()),
+    m_physValAngle(0.0, Units.Angle.Degree, 0.1),
+    m_arphysValPoints(),
+    m_arbPointsCalculated()
+{
+    if (m_bYAxisTopDown) {
+        if (i_rect.topLeft().y() > i_rect.bottomRight().y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    else {
+        if (i_rect.topLeft().y() < i_rect.bottomRight().y()) {
+            throw CException(__FILE__, __LINE__, EResultArgOutOfRange);
+        }
+    }
+    initSelectionPoints();
+}
+
+//------------------------------------------------------------------------------
+CPhysValRect::CPhysValRect(
     const CDrawingScene& i_drawingScene,
     const QPointF& i_ptTL, const QPointF& i_ptBR) :
 //------------------------------------------------------------------------------

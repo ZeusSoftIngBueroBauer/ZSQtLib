@@ -696,64 +696,6 @@ void ZS::Draw::getLineEndPolygons(
 } // getLineEndPolygons
 
 //------------------------------------------------------------------------------
-void ZS::Draw::getMaxRectArea(
-    double  i_fXLeft1,    double  i_fYTop1,
-    double  i_fXRight1,   double  i_fYBottom1,
-    double  i_fXLeft2,    double  i_fYTop2,
-    double  i_fXRight2,   double  i_fYBottom2,
-    double& o_fXLeftMin,  double& o_fYTopMin,
-    double& o_fXRightMax, double& o_fYBottomMax )
-//------------------------------------------------------------------------------
-{
-    o_fXLeftMin = i_fXLeft1;
-    o_fYTopMin = i_fYTop1;
-    o_fXRightMax = i_fXRight1;
-    o_fYBottomMax = i_fYBottom1;
-
-    if (o_fXLeftMin > i_fXLeft2) {
-        o_fXLeftMin = i_fXLeft2;
-    }
-    if (o_fYTopMin > i_fYTop2) {
-        o_fYTopMin = i_fYTop2;
-    }
-    if (o_fXRightMax < i_fXRight2) {
-        o_fXRightMax = i_fXRight2;
-    }
-    if (o_fYBottomMax < i_fYBottom2) {
-        o_fYBottomMax = i_fYBottom2;
-    }
-}
-
-//------------------------------------------------------------------------------
-void ZS::Draw::getMaxRectArea(
-    const CPhysVal& i_physValLeft1, const CPhysVal& i_physValTop1,
-    const CPhysVal& i_physValRight1, const CPhysVal& i_physValBottom1,
-    const CPhysVal& i_physValLeft2, const CPhysVal& i_physValTop2,
-    const CPhysVal& i_physValRight2, const CPhysVal& i_physValBottom2,
-    CPhysVal& o_physValLeftMax, CPhysVal& o_physValTopMax,
-    CPhysVal& o_physValRightMax, CPhysVal& o_physValBottomMax )
-//------------------------------------------------------------------------------
-{
-    o_physValLeftMax = i_physValLeft1;
-    o_physValTopMax = i_physValTop1;
-    o_physValRightMax = i_physValRight1;
-    o_physValBottomMax = i_physValBottom1;
-
-    if (o_physValLeftMax > i_physValLeft2) {
-        o_physValLeftMax = i_physValLeft2;
-    }
-    if (o_physValTopMax > i_physValTop2) {
-        o_physValTopMax = i_physValTop2;
-    }
-    if (o_physValRightMax < i_physValRight2) {
-        o_physValRightMax = i_physValRight2;
-    }
-    if (o_physValBottomMax < i_physValBottom2) {
-        o_physValBottomMax = i_physValBottom2;
-    }
-}
-
-//------------------------------------------------------------------------------
 QRectF ZS::Draw::resizeRect(
     const QRectF& i_rect,
     const CEnumSelectionPoint& i_selPt,
@@ -1014,7 +956,7 @@ QRectF ZS::Draw::boundingRect(const QPointF& i_pt, double i_fRadius)
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the bounding rectangle of the line.
+/*! @brief Returns the bounding rectangle of the given line.
 
     The position of P1 and P2 is not relevant. If P1 would be right or up
     P2 the left top corner of the bounding rectangle is either at P1 or P2.
@@ -1023,12 +965,21 @@ QRectF ZS::Draw::boundingRect(const QLineF& i_line)
 //------------------------------------------------------------------------------
 {
     QPolygonF plg = line2Polygon(i_line);
-    QRectF rectBounding = plg.boundingRect();
-    // Width and height of the bounding rectangle must be corrected by one pixel.
-    //rectBounding.setWidth(rectBounding.width() + 1.0);
-    //rectBounding.setHeight(rectBounding.height() + 1.0);
-    return rectBounding;
+    return plg.boundingRect();
 }
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the bounding rectangle of the given polygon.
+
+    The position of P1 and P2 is not relevant. If P1 would be right or up
+    P2 the left top corner of the bounding rectangle is either at P1 or P2.
+*/
+QRectF ZS::Draw::boundingRect(const QPolygonF& i_polygon)
+//------------------------------------------------------------------------------
+{
+    return i_polygon.boundingRect();
+}
+
 
 //------------------------------------------------------------------------------
 /*! @brief Returns the bounding rectangle of the given graphics items in coordinates

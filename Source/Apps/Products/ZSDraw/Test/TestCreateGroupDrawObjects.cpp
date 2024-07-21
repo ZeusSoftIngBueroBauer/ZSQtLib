@@ -1237,8 +1237,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         /* strOperation    */ strGraphObjPath + ".resizeToContent()",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("GroupName", strGraphObjName);
+    pTestStep->setConfigValue("GroupKeyInTree", strGraphObjKeyInTree);
     pTestStep->setConfigValue("Method", "resizeToContent");
     QStringList strlstExpectedValues;
     strlstExpectedValues.append(strGraphObjName + ".pos {0.0, 0.0} px");
@@ -1343,10 +1343,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         /* strOperation    */ strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("GroupNameParent", strGroupNameParent);
-    pTestStep->setConfigValue("GroupNameParentKeyInTree", strGroupNameParentKeyInTree);
-    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("GroupName", strGroupNameParent);
+    pTestStep->setConfigValue("GroupKeyInTree", strGroupNameParentKeyInTree);
+    pTestStep->setConfigValue("GraphObjChildName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjChildKeyInTree", strGraphObjKeyInTree);
     pTestStep->setConfigValue("Method", "removeFromGroup");
 
     strlstExpectedValues.clear();
@@ -1500,10 +1500,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         /* strOperation    */ strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("GroupNameParent", strGroupNameParent);
-    pTestStep->setConfigValue("GroupNameParentKeyInTree", strGroupNameParentKeyInTree);
-    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("GroupName", strGroupNameParent);
+    pTestStep->setConfigValue("GroupKeyInTree", strGroupNameParentKeyInTree);
+    pTestStep->setConfigValue("GraphObjChildName", strGraphObjName);
+    pTestStep->setConfigValue("GraphObjChildKeyInTree", strGraphObjKeyInTree);
     pTestStep->setConfigValue("Method", "removeFromGroup");
 
     strlstExpectedValues.clear();
@@ -1615,8 +1615,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         /* strOperation    */ strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("GroupName", strGraphObjName);
+    pTestStep->setConfigValue("GroupKeyInTree", strGraphObjKeyInTree);
     pTestStep->setConfigValue("Method", "setPosition");
     pTestStep->setConfigValue("Pos", ptPos);
 
@@ -1776,8 +1776,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         /* strOperation    */ strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("GroupName", strGraphObjName);
+    pTestStep->setConfigValue("GroupKeyInTree", strGraphObjKeyInTree);
     pTestStep->setConfigValue("Method", "setPosition");
     pTestStep->setConfigValue("Pos", ptPos);
 
@@ -1884,8 +1884,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         /* strOperation    */ strGraphObjPath + ".setRotationAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("GroupName", strGraphObjName);
+    pTestStep->setConfigValue("GroupKeyInTree", strGraphObjKeyInTree);
     pTestStep->setConfigValue("Method", "setRotationAngle");
     pTestStep->setConfigValue("Angle", physValAngle.toString());
 
@@ -1992,8 +1992,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         /* strOperation    */ strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
-    pTestStep->setConfigValue("GraphObjName", strGraphObjName);
-    pTestStep->setConfigValue("GraphObjKeyInTree", strGraphObjKeyInTree);
+    pTestStep->setConfigValue("GroupName", strGraphObjName);
+    pTestStep->setConfigValue("GroupKeyInTree", strGraphObjKeyInTree);
     pTestStep->setConfigValue("Method", "setPosition");
     pTestStep->setConfigValue("Pos", ptPos);
 

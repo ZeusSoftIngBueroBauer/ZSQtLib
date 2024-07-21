@@ -57,6 +57,8 @@ public: // class methods
 public: // ctors
     CPhysValRect(const CDrawingScene& i_drawingScene);
     CPhysValRect(const CDrawingScene& i_drawingScene, const ZS::PhysVal::CUnit& i_unit);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect);
+    CPhysValRect(const CDrawingScene& i_drawingScene, const QRectF& i_rect, const ZS::PhysVal::CUnit& i_unit);
     CPhysValRect(
         const CDrawingScene& i_drawingScene,
         const QPointF& i_ptTL, const QPointF& i_ptBR);
