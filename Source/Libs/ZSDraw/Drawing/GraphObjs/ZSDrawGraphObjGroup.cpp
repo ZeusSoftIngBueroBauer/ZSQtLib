@@ -1538,6 +1538,18 @@ public: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Maps the given physical point, which is relative to either the top left
+           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
+           groups bounding rectangle to the physical value on the drawing scene.
+
+    @note The graphics item method "mapToScene" uses the graphics item local coordinate
+          system whose origin is the center point of the bounding rectangle.
+
+    @param [in] i_physValPoint
+        Point to be mapped.
+
+    @return Point in scene coordinates in the unit of the drawing scene.
+*/
 CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint) const
 //------------------------------------------------------------------------------
 {
@@ -1545,9 +1557,12 @@ CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint) co
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
-           Orientation, relative to either the top left or bottom left corner of
-           the parent's bounding rectangle to the physical value in the drawing scene.
+/*! @brief Maps the given physical point, which is relative to either the top left
+           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
+           groups bounding rectangle to the physical value on the drawing scene.
+
+    @note The graphics item method "mapToScene" uses the graphics item local coordinate
+          system whose origin is the center point of the bounding rectangle.
 
     @param [in] i_physValPoint
         Point to be mapped.
@@ -1556,7 +1571,7 @@ CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint) co
 
     @return Point in scene coordinates in the desired unit.
 */
-CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint, const ZS::PhysVal::CUnit& i_unitDst) const
+CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1582,6 +1597,18 @@ CPhysValPoint CGraphObjGroup::mapToScene(const CPhysValPoint& i_physValPoint, co
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Maps the given physical line, whose points are relative to either the top left
+           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
+           groups bounding rectangle to the physical value on the drawing scene.
+
+    @note The graphics item method "mapToScene" uses the graphics item local coordinate
+          system whose origin is the center point of the bounding rectangle.
+
+    @param [in] i_physValLine
+        Line to be mapped.
+
+    @return Line in scene coordinates in the unit of the drawing scene.
+*/
 CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine) const
 //------------------------------------------------------------------------------
 {
@@ -1589,9 +1616,12 @@ CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Maps the given physical line, which is, depending on the Y-Axis-Scale
-           Orientation, relative to either the top left or bottom left corner of
-           the item's bounding rectangle to the physical value in the drawing scene.
+/*! @brief Maps the given physical line, whose points are relative to either the top left
+           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
+           groups bounding rectangle to the physical value on the drawing scene.
+
+    @note The graphics item method "mapToScene" uses the graphics item local coordinate
+          system whose origin is the center point of the bounding rectangle.
 
     @param [in] i_physValLine
         Line to be mapped.
@@ -1600,7 +1630,7 @@ CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine) const
 
     @return Line in scene coordinates in the desired unit.
 */
-CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const
+CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1627,6 +1657,18 @@ CPhysValLine CGraphObjGroup::mapToScene(const CPhysValLine& i_physValLine, const
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Maps the given physical rectangle, whose points are relative to either the top left
+           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
+           groups bounding rectangle to the physical value on the drawing scene.
+
+    @note The graphics item method "mapToScene" uses the graphics item local coordinate
+          system whose origin is the center point of the bounding rectangle.
+
+    @param [in] i_physValRect
+        Rectangle to be mapped.
+
+    @return Rectangle in scene coordinates in the unit of the drawing scene.
+*/
 CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect) const
 //------------------------------------------------------------------------------
 {
@@ -1634,18 +1676,18 @@ CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect) const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Maps the given physical point, which is, depending on the Y-Axis-Scale
-           Orientation, relative to either the top left or bottom left corner of
-           the item's bounding rectangle to the physical value in the drawing scene.
+/*! @brief Maps the given physical rectangle, whose points are relative to either the top left
+           or bottom left corner (depending on the Y-Axis-Scale-Orientation) of the
+           groups bounding rectangle to the physical value on the drawing scene.
 
-    @param [in] i_physValPoint
-        Point to be mapped.
+    @param [in] i_physValRect
+        Rectangle to be mapped.
     @param [in] i_unitDst
         Unit in which the coordinate should be returned.
 
-    @return Point in scene coordinates in the desired unit.
+    @return Rectangle in scene coordinates in the desired unit.
 */
-CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const
+CPhysValRect CGraphObjGroup::mapToScene(const CPhysValRect& i_physValRect, const CUnit& i_unitDst) const
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -1737,13 +1779,12 @@ QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
         /* strMethod    */ "getEffectiveBoundingRectOnScene",
         /* strAddInfo   */ "" );
 
-    CPhysValRect physValRectBounding(*m_pDrawingScene, m_rectOrig, Units.Length.px);
-    physValRectBounding.setAngle(m_physValRotationAngle);
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPolygonF plg({
-        mapToScene(physValRectBounding.topLeft()).toQPointF(),
-        mapToScene(physValRectBounding.topRight()).toQPointF(),
-        mapToScene(physValRectBounding.bottomRight()).toQPointF(),
-        mapToScene(physValRectBounding.bottomLeft()).toQPointF()});
+        pGraphicsItemThis->mapToScene(m_rectOrig.topLeft()),
+        pGraphicsItemThis->mapToScene(m_rectOrig.topRight()),
+        pGraphicsItemThis->mapToScene(m_rectOrig.bottomRight()),
+        pGraphicsItemThis->mapToScene(m_rectOrig.bottomLeft())});
     QRectF rctBounding = plg.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
@@ -3232,13 +3273,11 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphO
     if (i_pGraphObjParent->isGroup()) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
         CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
-        if (m_physValRectParentGroupOrig != physValRectGroupParentCurr) {
-            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
-                m_fParentGroupScaleX = physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal();
-            }
-            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
-                m_fParentGroupScaleY = physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
-            }
+        if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
+            m_fParentGroupScaleX = physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal();
+        }
+        if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
+            m_fParentGroupScaleY = physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
         }
 
         // The relative distance to the top left corner of the parent's bounding rectangle should remain the same.

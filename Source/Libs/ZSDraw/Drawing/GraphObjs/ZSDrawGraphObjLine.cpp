@@ -2519,13 +2519,11 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphOb
     if (i_pGraphObjParent->isGroup()) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
         CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
-        if (m_physValRectParentGroupOrig != physValRectGroupParentCurr) {
-            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
-                m_fParentGroupScaleX = physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal();
-            }
-            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
-                m_fParentGroupScaleY = physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
-            }
+        if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
+            m_fParentGroupScaleX = physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal();
+        }
+        if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
+            m_fParentGroupScaleY = physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
         }
 
         // The relative distance to the top left corner of the parent's bounding rectangle should remain the same.

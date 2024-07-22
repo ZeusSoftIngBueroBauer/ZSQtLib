@@ -80,6 +80,7 @@ public: // class methods
     static QString NameSpace() { return "ZS::Apps::Products::Draw"; }
 public: // type definition and constants
     const QString c_strGraphObjNameTopGroup = "Top";
+    const QString c_strGraphObjNamePlusSigns = "PlusSigns";
     const QString c_strGraphObjNameSmallPlusSign = "SmallPlusSign";
     const QString c_strGraphObjNameSmallPlusSignVerticalLine = "SmallPlusSign-VerticalLine";
     const QString c_strGraphObjNameSmallPlusSignHorizontalLine = "SmallPlusSign-HorizontalLine";
@@ -143,13 +144,13 @@ protected: // instance methods
         const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupAddStandardShapesLines(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
+        const ZS::Draw::CDrawingSize& i_drawingSize, const QStringList& i_strlstGraphObjGroupNames);
     ZS::Test::CTestStepGroup* createTestGroupAddStandardShapesGroups(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
+        const ZS::Draw::CDrawingSize& i_drawingSize, const QStringList& i_strlstGraphObjGroupNames);
     ZS::Test::CTestStepGroup* createTestGroupModifyStandardShapes(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
+        const ZS::Draw::CDrawingSize& i_drawingSize, const QStringList& i_strlstGraphObjGroupNames);
 
     //ZS::Test::CTestStepGroup* createTestGroupDrawObjects(
     //    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
@@ -269,6 +270,11 @@ protected: // instance members
     QPointF m_ptPosBigPlusSignHorizontalLine;
     QLineF m_lineBigPlusSignHorizontalLine;
     ZS::Draw::CPhysValLine* m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
+    // PlusSigns
+    QPointF m_ptPosPlusSigns;
+    QSizeF m_sizePlusSigns;
+    ZS::Draw::CPhysValRect* m_pPhysValRectPlusSigns = nullptr;
+    ZS::PhysVal::CPhysVal m_physValAnglePlusSigns;
     // Checkmark
     QPointF m_ptPosCheckmark;
     QSizeF m_sizeCheckmark;

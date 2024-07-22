@@ -120,6 +120,7 @@ CTest::CTest() :
     ZS::Test::CTest(NameSpace(), "theInst"),
     m_physValAngleSmallPlusSign(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleBigPlusSign(0.0, Units.Angle.Degree, 0.1),
+    m_physValAnglePlusSigns(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleCheckmark(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleSmallRect(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleTopGroup(0.0, Units.Angle.Degree, 0.1)
@@ -157,6 +158,8 @@ CTest::~CTest()
     delete m_pPhysValLineBigPlusSignVerticalLine;
     delete m_pPhysValLineBigPlusSignHorizontalLine;
 
+    delete m_pPhysValRectPlusSigns;
+
     delete m_pPhysValRectCheckmark;
     delete m_pPhysValLineCheckmarkLeftLine;
     delete m_pPhysValLineCheckmarkRightLine;
@@ -178,6 +181,7 @@ CTest::~CTest()
     m_pPhysValRectBigPlusSign = nullptr;
     m_pPhysValLineBigPlusSignVerticalLine = nullptr;
     m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
+    m_pPhysValRectPlusSigns = nullptr;
     m_pPhysValRectCheckmark = nullptr;
     m_pPhysValLineCheckmarkLeftLine = nullptr;
     m_pPhysValLineCheckmarkRightLine = nullptr;
@@ -219,6 +223,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValRectBigPlusSign = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValLineBigPlusSignVerticalLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineBigPlusSignHorizontalLine = new CPhysValLine(*m_pDrawingScene);
+
+    m_pPhysValRectPlusSigns = new CPhysValRect(*m_pDrawingScene);
 
     m_pPhysValRectCheckmark = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValLineCheckmarkLeftLine = new CPhysValLine(*m_pDrawingScene);
