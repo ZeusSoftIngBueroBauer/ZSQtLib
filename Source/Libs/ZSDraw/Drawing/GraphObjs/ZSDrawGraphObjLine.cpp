@@ -382,7 +382,7 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
 
     // If the coordinates MUST be updated (e.g. after the drawing size has been changed)
     // or if the coordinates have been changed ...
-    if (m_physValLineOrig.isNull() || m_physValLineOrig != i_physValLine/* || m_bForceConversionToSceneCoors*/)
+    if (m_physValLineOrig.isNull() || line() != lineF || m_physValLineOrig != i_physValLine/* || m_bForceConversionToSceneCoors*/)
     {
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.

@@ -696,7 +696,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
 
     // If the coordinates MUST be updated
     // (initially set, changed or after the drawing size has been changed)
-    if (m_rectOrig.isNull() || m_rectOrig != rectF || m_physValRotationAngle != i_physValRect.angle() || m_bForceConversionToSceneCoors)
+    if (m_rectOrig.isNull() || m_physValRectOrig.isNull() || m_rectOrig != rectF || m_physValRectOrig != i_physValRect || m_physValRotationAngle != i_physValRect.angle() || m_bForceConversionToSceneCoors)
     {
         updateDivLinesMetrics(rectF.size(), QSizeF(i_physValRect.width().getVal(), i_physValRect.height().getVal()));
 
@@ -3281,17 +3281,19 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphO
         }
 
         // The relative distance to the top left corner of the parent's bounding rectangle should remain the same.
+        CPhysValRect physValRectNew(m_physValRectOrig);
+        physValRectNew.setAngle(m_physValRotationAngle);
         CPhysValPoint physValPointTL(*m_pDrawingScene);
-        physValPointTL.setX(m_fParentGroupScaleX * m_physValRectOrig.topLeft().x().getVal());
-        physValPointTL.setY(m_fParentGroupScaleY * m_physValRectOrig.topLeft().y().getVal());
+        physValPointTL.setX(m_fParentGroupScaleX * physValRectNew.topLeft().x().getVal());
+        physValPointTL.setY(m_fParentGroupScaleY * physValRectNew.topLeft().y().getVal());
         CPhysValPoint physValPointBR(*m_pDrawingScene);
-        physValPointBR.setX(m_fParentGroupScaleX * m_physValRectOrig.bottomRight().x().getVal());
-        physValPointBR.setY(m_fParentGroupScaleY * m_physValRectOrig.bottomRight().y().getVal());
-        CPhysValRect physValRectNew(physValPointTL, physValPointBR);
+        physValPointBR.setX(m_fParentGroupScaleX * physValRectNew.bottomRight().x().getVal());
+        physValPointBR.setY(m_fParentGroupScaleY * physValRectNew.bottomRight().y().getVal());
+        physValRectNew.setTopLeft(physValPointTL);
+        physValRectNew.setBottomRight(physValPointBR);
 
         QPointF ptPosPrev = pos();
 
-        // First determine the position of the line in the parent's coordinate system.
         QRectF rectF;
         CPhysVal physValAngle;
         QPointF ptPos = getItemPosAndLocalCoors(physValRectNew, rectF, physValAngle);

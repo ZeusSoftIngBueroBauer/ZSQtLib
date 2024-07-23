@@ -138,17 +138,21 @@ protected: // instance methods
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize);
     ZS::Test::CTestStepGroup* createTestGroupAddObjects(
-        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup);
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const QStringList& i_strlstGraphObjGroupNames);
     ZS::Test::CTestStepGroup* createTestGroupAddStandardShapes(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-        const ZS::Draw::CDrawingSize& i_drawingSize);
+        const ZS::Draw::CDrawingSize& i_drawingSize, const QStringList& i_strlstGraphObjGroupNames);
     ZS::Test::CTestStepGroup* createTestGroupAddStandardShapesLines(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize, const QStringList& i_strlstGraphObjGroupNames);
     ZS::Test::CTestStepGroup* createTestGroupAddStandardShapesGroups(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize, const QStringList& i_strlstGraphObjGroupNames);
-    ZS::Test::CTestStepGroup* createTestGroupModifyStandardShapes(
+    ZS::Test::CTestStepGroup* createTestGroupModifyStandardShapesBigPlusSign(
+        ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+        const ZS::Draw::CDrawingSize& i_drawingSize);
+    ZS::Test::CTestStepGroup* createTestGroupModifyStandardShapesAll(
         ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
         const ZS::Draw::CDrawingSize& i_drawingSize, const QStringList& i_strlstGraphObjGroupNames);
 
@@ -308,6 +312,9 @@ protected: // instance members
     QSizeF m_sizeTopGroup;
     ZS::Draw::CPhysValRect* m_pPhysValRectTopGroup = nullptr;
     ZS::PhysVal::CPhysVal m_physValAngleTopGroup;
+    // Map with created objects. Key is name, value is current key in tree.
+    // Key in hash is not existing if the object has not been created or has been removed during the test run.
+    QMap<QString, QString> m_hshGraphObjNameToKeys;
 
 }; // class CTest
 

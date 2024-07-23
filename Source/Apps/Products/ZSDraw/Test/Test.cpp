@@ -247,7 +247,8 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     //createTestGroupDrawingSize(nullptr, idxGroup);
     //createTestGroupImageSizeAndObjectCoordinates(nullptr, idxGroup);
-    createTestGroupAddObjects(nullptr, idxGroup);
+    createTestGroupAddObjects(nullptr, idxGroup, QStringList({c_strGraphObjNameBigPlusSign}));
+    //createTestGroupAddObjects(nullptr, idxGroup, QStringList({c_strGraphObjNamePlusSigns}));
     //createTestGroupDrawObjects(nullptr, idxGroup);
 
     // Recall test step settings
@@ -1499,6 +1500,9 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
         /* strMethod    */ "doTestStepModifyGraphObjGroup",
         /* strAddInfo   */ strMthInArgs );
 
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CUnit unit = drawingSize.unit();
+
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
 
@@ -1548,11 +1552,6 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
                 }
             }
         }
-        else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
-            CPhysValPoint physValPos(*m_pDrawingScene);
-            physValPos = i_pTestStep->getConfigValue("Pos").toPointF();
-            pGraphObjGroup->setPosition(physValPos);
-        }
         else if (strMethod.compare("setRotationAngle", Qt::CaseInsensitive) == 0) {
             CPhysVal physValAngle(0.0, Units.Angle.Degree, 0.1);
             QString strAngle = i_pTestStep->getConfigValue("Angle").toString();
@@ -1562,33 +1561,68 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
         else if (strMethod.compare("resizeToContent", Qt::CaseInsensitive) == 0) {
             pGraphObjGroup->resizeToContent();
         }
+        else if (strMethod.compare("setPosition", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("Pos").toPointF();
+            if (i_pTestStep->hasConfigValue("Pos.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Pos.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setPosition(physValPoint);
+        }
+        else if (strMethod.compare("setCenter", Qt::CaseInsensitive) == 0) {
+            QPointF pt = i_pTestStep->getConfigValue("Center").toPointF();
+            if (i_pTestStep->hasConfigValue("Center.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Center.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
+            pGraphObjGroup->setCenter(physValPoint);
+        }
         else if (strMethod.compare("setTopLeft", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("TopLeft").toPointF();
-            QString strUnit = i_pTestStep->getConfigValue("TopLeft.unit").toString();
-            CUnit unit(strUnit);
+            if (i_pTestStep->hasConfigValue("TopLeft.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("TopLeft.unit").toString();
+                unit = strUnit;
+            }
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setTopLeft(physValPoint);
         }
         else if (strMethod.compare("setTopRight", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("TopRight").toPointF();
-            QString strUnit = i_pTestStep->getConfigValue("TopRight.unit").toString();
-            CUnit unit(strUnit);
+            if (i_pTestStep->hasConfigValue("TopRight.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("TopRight.unit").toString();
+                unit = strUnit;
+            }
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setTopRight(physValPoint);
         }
         else if (strMethod.compare("setBottomRight", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("BottomRight").toPointF();
-            QString strUnit = i_pTestStep->getConfigValue("BottomRight.unit").toString();
-            CUnit unit(strUnit);
+            if (i_pTestStep->hasConfigValue("BottomRight.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("BottomRight.unit").toString();
+                unit = strUnit;
+            }
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setBottomRight(physValPoint);
         }
         else if (strMethod.compare("setBottomLeft", Qt::CaseInsensitive) == 0) {
             QPointF pt = i_pTestStep->getConfigValue("BottomLeft").toPointF();
-            QString strUnit = i_pTestStep->getConfigValue("BottomLeft.unit").toString();
-            CUnit unit(strUnit);
+            if (i_pTestStep->hasConfigValue("BottomLeft.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("BottomLeft.unit").toString();
+                unit = strUnit;
+            }
             CPhysValPoint physValPoint(*m_pDrawingScene, pt, unit);
             pGraphObjGroup->setBottomLeft(physValPoint);
+        }
+        else if (strMethod.compare("setSize", Qt::CaseInsensitive) == 0) {
+            QSizeF size = i_pTestStep->getConfigValue("Size").toSizeF();
+            if (i_pTestStep->hasConfigValue("Size.unit")) {
+                QString strUnit = i_pTestStep->getConfigValue("Size.unit").toString();
+                unit = strUnit;
+            }
+            CPhysValSize physValSize(*m_pDrawingScene, size, unit);
+            pGraphObjGroup->setSize(physValSize);
         }
         else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
             QString strVal = i_pTestStep->getConfigValue("Width").toString();
