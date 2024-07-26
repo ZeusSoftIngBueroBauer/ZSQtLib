@@ -91,7 +91,10 @@ CGraphObjGroup::CGraphObjGroup(
     m_divLinesMetricsY(EScaleAxis::Y),
     m_gridSettings(),
     m_rectOrig(),
-    m_physValRectOrig(*m_pDrawingScene)
+    m_rectScaled(),
+    m_physValRectOrig(*m_pDrawingScene),
+    m_physValRectScaled(*m_pDrawingScene),
+    m_physValRectScaledAndRotated(*m_pDrawingScene)
 {
     // Just incremented by the ctor but not decremented by the dtor.
     // Used to create a unique name for newly created objects of this type.
@@ -203,7 +206,10 @@ CGraphObjGroup::CGraphObjGroup(
     m_divLinesMetricsY(EScaleAxis::Y),
     m_gridSettings(),
     m_rectOrig(),
-    m_physValRectOrig(*m_pDrawingScene)
+    m_rectScaled(),
+    m_physValRectOrig(*m_pDrawingScene),
+    m_physValRectScaled(*m_pDrawingScene),
+    m_physValRectScaledAndRotated(*m_pDrawingScene)
 {
 } // ctor
 
@@ -230,7 +236,10 @@ CGraphObjGroup::~CGraphObjGroup()
     //m_divLinesMetricsY;
     //m_gridSettings;
     //m_rectOrig;
+    //m_rectScaled;
     //m_physValRectOrig;
+    //m_physValRectScaled;
+    //m_physValRectScaledAndRotated;
 
 } // dtor
 
@@ -303,6 +312,7 @@ void CGraphObjGroup::setGridSettings( const CDrawGridSettings& i_gridSettings)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
         /* strMethod    */ "setGridSettings",
         /* strAddInfo   */ strMthInArgs );
 
@@ -711,9 +721,12 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             CPhysValRect physValRect(i_physValRect);
             physValRect.setAngle(0.0);
             setPhysValRectOrig(physValRect);
+            setPhysValRectScaled(physValRect);
+            setPhysValRectScaledAndRotated(i_physValRect);
 
             // Set the groups rectangle in local coordinate system.
-            QGraphicsItemGroup_setRect(rectF);
+            setRectOrig(rectF);
+            setRectScaled(rectF);
 
             // Store the current position as original position.
             // If the item belongs to a parent group this original position is needed
@@ -730,7 +743,9 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
             if (ptPos != ptPosPrev) {
                 QGraphicsItem_setPos(ptPos);
             }
-            setRotationAngle(physValAngle);
+            if (physValAngle != m_physValRotationAngle) {
+                setRotationAngle(physValAngle);
+            }
         }
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.
@@ -767,6 +782,10 @@ CPhysValRect CGraphObjGroup::getRect() const
 CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
+    return m_physValRectScaledAndRotated;
+
+setPhysValRectScaledAndRotated();
+
     CPhysValRect physValRect(*m_pDrawingScene, i_unit);
     if (m_physValRectOrig.isValid()) {
         physValRect = m_physValRectOrig;
@@ -1737,6 +1756,9 @@ QRectF CGraphObjGroup::getBoundingRect() const
 
     // Local coordinates, scaled, but not rotated.
     QRectF rctBounding = m_rectOrig;
+    rctBounding.setWidth(m_fParentGroupScaleX * m_rectOrig.width());
+    rctBounding.setHeight(m_fParentGroupScaleY * m_rectOrig.height());
+    rctBounding.moveCenter(QPointF(0.0, 0.0));
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
     }
@@ -3495,6 +3517,7 @@ void CGraphObjGroup::updateDivLinesMetrics(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
         /* strMethod    */ "updateDivLinesMetrics",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3595,6 +3618,7 @@ QPointF CGraphObjGroup::getItemPosAndLocalCoors(
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
         /* strMethod    */ "getItemPosAndLocalCoors",
         /* strAddInfo   */ strMthInArgs );
 
@@ -3638,6 +3662,7 @@ void CGraphObjGroup::paintGridLines(QPainter* i_pPainter)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
         /* strMethod    */ "paintGridLines",
         /* strAddInfo   */ "" );
 
@@ -3676,6 +3701,7 @@ void CGraphObjGroup::paintGridLabelsDivisionLines(QPainter* i_pPainter)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
         /* strMethod    */ "paintGridLabelsDivisionLines",
         /* strAddInfo   */ "" );
 
@@ -3715,6 +3741,7 @@ void CGraphObjGroup::paintGridLabels(QPainter* i_pPainter)
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjPaint,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
         /* strMethod    */ "paintGridLabels",
         /* strAddInfo   */ "" );
 
@@ -6027,6 +6054,7 @@ void CGraphObjGroup::emit_gridSettingsChanged( const CDrawGridSettings& i_settin
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
         /* strMethod    */ "emit_gridSettingsChanged",
         /* strAddInfo   */ strMthInArgs );
 
@@ -6049,19 +6077,21 @@ void CGraphObjGroup::traceThisPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
+            strRuntimeInfo += "ItemRect Orig {" + qRect2Str(m_rectOrig) + "}, Scaled {" + qRect2Str(m_rectScaled) + "}";
+            i_mthTracer.trace(strRuntimeInfo);
+
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
+            strRuntimeInfo += "PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol();
+                + ", Scaled {" + m_physValRectScaled.toString() + "} " + m_physValRectScaled.unit().symbol();
+                + ", ScaledRotated {" + m_physValRectScaledAndRotated.toString() + "} " + m_physValRectScaledAndRotated.unit().symbol();
+            i_mthTracer.trace(strRuntimeInfo);
+
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
             strRuntimeInfo += "getRect {" + getRect().toString() + "} " + getRect().unit().symbol();
-            i_mthTracer.trace(strRuntimeInfo);
-
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "PhysValRectOrig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol();
-            i_mthTracer.trace(strRuntimeInfo);
-
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "ItemRect Orig {" + qRect2Str(m_rectOrig) + "}";
             i_mthTracer.trace(strRuntimeInfo);
 
             CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);

@@ -1288,7 +1288,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesBigPlusSign(
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " " + c_strGraphObjNameBigPlusSign + ".setSize(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
-        /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setBottomRight(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
+        /* strOperation    */ c_strGraphObjNameBigPlusSign + ".setSize(" + qSize2Str(m_sizeBigPlusSign) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpModifyBigPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GroupName", c_strGraphObjNameBigPlusSign);
@@ -1297,7 +1297,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesBigPlusSign(
     pTestStep->setConfigValue("Size", m_sizeBigPlusSign);
     pTestStep->setConfigValue("Size.unit", unit.symbol());
     strlstExpectedValues.clear();
-    // Group PlusSigns
+    // Group BigPlusSigns
     m_ptPosBigPlusSign = QPointF(348.3, 383.7);
     m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
     strlstExpectedValues.append(resultValuesForGroup(
@@ -1490,40 +1490,334 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesBigPlusSign(
         m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
     pTestStep->setExpectedValues(strlstExpectedValues);
 
-    TODO:
+    // Resize BigPlusSignParentGroup
+    //------------------------------
+
+    sizeBigPlusSignParentGroup.setWidth(200.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjNameBigPlusSignParent + ".setWidth(" + QString::number(sizeBigPlusSignParentGroup.width()) + " " + unit.symbol() + ")",
+        /* strOperation    */ strGraphObjNameBigPlusSignParent + ".setWidth(" + QString::number(sizeBigPlusSignParentGroup.width()) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGraphObjNameBigPlusSignParent);
+    pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    pTestStep->setConfigValue("Method", "setWidth");
+    pTestStep->setConfigValue("Width", sizeBigPlusSignParentGroup.width());
+    pTestStep->setConfigValue("Width.unit", unit.symbol());
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // Group BigPlusSignParent
+    ptPosBigPlusSignParentGroup.setX(329.3);
+    physValRectBigPlusSignParent.setSize(sizeBigPlusSignParentGroup);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjNameBigPlusSignParent, ptPosBigPlusSignParentGroup, physValRectBigPlusSignParent));
+    // Group BigPlusSign
+    m_ptPosBigPlusSign = QPointF(0.0, 0.0);
+    m_sizeBigPlusSign.setWidth(Math::sqrt(2.0) * 100.0);
+    m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
+    m_pPhysValRectBigPlusSign->setCenter(QPointF(100.0, Math::sqrt(2.0)/2.0 * 100.0));
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
+        m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
+        m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Resize BigPlusSignParentGroup
     //------------------------------
 
-    sizeBigPlusSignParentGroup = QSizeF(200.0, Math::sqrt(2.0) * 100.0);
-
-    // Resize BigPlusSignParentGroup
-    //------------------------------
-
-    sizeBigPlusSignParentGroup = QSizeF(200.0, 200.0);
+    sizeBigPlusSignParentGroup.setHeight(200.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjNameBigPlusSignParent + ".setHeight(" + QString::number(sizeBigPlusSignParentGroup.height()) + " " + unit.symbol() + ")",
+        /* strOperation    */ strGraphObjNameBigPlusSignParent + ".setHeight(" + QString::number(sizeBigPlusSignParentGroup.height()) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGraphObjNameBigPlusSignParent);
+    pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    pTestStep->setConfigValue("Method", "setHeight");
+    pTestStep->setConfigValue("Height", sizeBigPlusSignParentGroup.height());
+    pTestStep->setConfigValue("Height.unit", unit.symbol());
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // Group BigPlusSignParent
+    ptPosBigPlusSignParentGroup.setY(383.7);
+    physValRectBigPlusSignParent.setSize(sizeBigPlusSignParentGroup);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjNameBigPlusSignParent, ptPosBigPlusSignParentGroup, physValRectBigPlusSignParent));
+    // Group BigPlusSign
+    m_ptPosBigPlusSign = QPointF(348.3, 383.7);
+    m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
+        m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
+        m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Resize BigPlusSignParentGroup
     //------------------------------
 
     sizeBigPlusSignParentGroup = QSizeF(Math::sqrt(2.0) * 100.0, Math::sqrt(2.0) * 100.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjNameBigPlusSignParent + ".setSize(" + qSize2Str(sizeBigPlusSignParentGroup) + " " + unit.symbol() + ")",
+        /* strOperation    */ strGraphObjNameBigPlusSignParent + ".setSize(" + qSize2Str(sizeBigPlusSignParentGroup) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGraphObjNameBigPlusSignParent);
+    pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    pTestStep->setConfigValue("Method", "setSize");
+    pTestStep->setConfigValue("Size", sizeBigPlusSignParentGroup);
+    pTestStep->setConfigValue("Size.unit", unit.symbol());
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // Group BigPlusSignParent
+    ptPosBigPlusSignParentGroup = QPointF(348.3, 383.7);
+    physValRectBigPlusSignParent.setSize(sizeBigPlusSignParentGroup);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjNameBigPlusSignParent, ptPosBigPlusSignParentGroup, physValRectBigPlusSignParent));
+    // Group BigPlusSign
+    m_ptPosBigPlusSign = QPointF(348.3, 383.7);
+    m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
+        m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
+        m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Rotate BigPlusSignParentGroup
     //------------------------------
 
     physValAngleBigPlusSignParent.setVal(45.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjNameBigPlusSignParent + ".setRotationAngle(" + physValAngleBigPlusSignParent.toString() + ")",
+        /* strOperation    */ strGraphObjNameBigPlusSignParent + ".setRotationAngle(" + physValAngleBigPlusSignParent.toString() + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGraphObjNameBigPlusSignParent);
+    pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    pTestStep->setConfigValue("Method", "setRotationAngle");
+    pTestStep->setConfigValue("Angle", physValAngleBigPlusSignParent.toString());
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // BigPlusSignParentGroup
+    ptPosBigPlusSignParentGroup = QPointF(300.0, 300.0);
+    physValRectBigPlusSignParent.setAngle(physValAngleBigPlusSignParent);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjNameBigPlusSignParent, ptPosBigPlusSignParentGroup, physValRectBigPlusSignParent));
+    // BigPlusSign
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
+        m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
+        m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Resize BigPlusSignParentGroup
     //------------------------------
 
-    sizeBigPlusSignParentGroup = QSizeF(200.0, Math::sqrt(2.0) * 100.0);
+    sizeBigPlusSignParentGroup.setWidth(200.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjNameBigPlusSignParent + ".setWidth(" + QString::number(sizeBigPlusSignParentGroup.width()) + " " + unit.symbol() + ")",
+        /* strOperation    */ strGraphObjNameBigPlusSignParent + ".setWidth(" + QString::number(sizeBigPlusSignParentGroup.width()) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGraphObjNameBigPlusSignParent);
+    pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    pTestStep->setConfigValue("Method", "setWidth");
+    pTestStep->setConfigValue("Width", sizeBigPlusSignParentGroup.width());
+    pTestStep->setConfigValue("Width.unit", unit.symbol());
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // Group BigPlusSignParent
+    ptPosBigPlusSignParentGroup = QPointF(348.3, 383.7);
+    physValRectBigPlusSignParent.setSize(sizeBigPlusSignParentGroup);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjNameBigPlusSignParent, ptPosBigPlusSignParentGroup, physValRectBigPlusSignParent));
+    // Group BigPlusSign
+    m_ptPosBigPlusSign = QPointF(348.3, 383.7);
+    m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
+        m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
+        m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Resize BigPlusSignParentGroup
     //------------------------------
 
-    sizeBigPlusSignParentGroup = QSizeF(200.0, 200.0);
+    sizeBigPlusSignParentGroup.setHeight(200.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjNameBigPlusSignParent + ".setHeight(" + QString::number(sizeBigPlusSignParentGroup.height()) + " " + unit.symbol() + ")",
+        /* strOperation    */ strGraphObjNameBigPlusSignParent + ".setHeight(" + QString::number(sizeBigPlusSignParentGroup.height()) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGraphObjNameBigPlusSignParent);
+    pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    pTestStep->setConfigValue("Method", "setHeight");
+    pTestStep->setConfigValue("Height", sizeBigPlusSignParentGroup.height());
+    pTestStep->setConfigValue("Height.unit", unit.symbol());
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // Group BigPlusSignParent
+    ptPosBigPlusSignParentGroup.setY(383.7);
+    physValRectBigPlusSignParent.setSize(sizeBigPlusSignParentGroup);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjNameBigPlusSignParent, ptPosBigPlusSignParentGroup, physValRectBigPlusSignParent));
+    // Group BigPlusSign
+    m_ptPosBigPlusSign = QPointF(348.3, 383.7);
+    m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
+        m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
+        m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Resize BigPlusSignParentGroup
     //------------------------------
+
+    sizeBigPlusSignParentGroup = QSizeF(Math::sqrt(2.0) * 100.0, Math::sqrt(2.0) * 100.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjNameBigPlusSignParent + ".setSize(" + qSize2Str(sizeBigPlusSignParentGroup) + " " + unit.symbol() + ")",
+        /* strOperation    */ strGraphObjNameBigPlusSignParent + ".setSize(" + qSize2Str(sizeBigPlusSignParentGroup) + " " + unit.symbol() + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGraphObjNameBigPlusSignParent);
+    pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    pTestStep->setConfigValue("Method", "setSize");
+    pTestStep->setConfigValue("Size", sizeBigPlusSignParentGroup);
+    pTestStep->setConfigValue("Size.unit", unit.symbol());
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // Group BigPlusSignParent
+    ptPosBigPlusSignParentGroup = QPointF(348.3, 383.7);
+    physValRectBigPlusSignParent.setSize(sizeBigPlusSignParentGroup);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjNameBigPlusSignParent, ptPosBigPlusSignParentGroup, physValRectBigPlusSignParent));
+    // Group BigPlusSign
+    m_ptPosBigPlusSign = QPointF(348.3, 383.7);
+    m_pPhysValRectBigPlusSign->setSize(m_sizeBigPlusSign);
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    m_lineBigPlusSignVerticalLine = QLineF(QPointF(0.0, -50.0), QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP1(QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignVerticalLine->setP2(QPointF(50.0, 100.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
+        m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    m_lineBigPlusSignHorizontalLine = QLineF(QPointF(-50.0, 0.0), QPointF(50.0, 0.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP1(QPointF(0.0, 50.0));
+    m_pPhysValLineBigPlusSignHorizontalLine->setP2(QPointF(100.0, 50.0));
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
+        m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     sizeBigPlusSignParentGroup = QSizeF(Math::sqrt(2.0) * 100.0, Math::sqrt(2.0) * 100.0);
 
@@ -1531,6 +1825,40 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesBigPlusSign(
     //------------------------------
 
     physValAngleBigPlusSignParent.setVal(0.0);
+    pTestStep = new ZS::Test::CTestStep(
+        /* pTest           */ this,
+        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjNameBigPlusSignParent + ".setRotationAngle(" + physValAngleBigPlusSignParent.toString() + ")",
+        /* strOperation    */ strGraphObjNameBigPlusSignParent + ".setRotationAngle(" + physValAngleBigPlusSignParent.toString() + ")",
+        /* pGrpParent      */ pGrpModifyBigPlusSign,
+        /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
+    pTestStep->setConfigValue("GroupName", strGraphObjNameBigPlusSignParent);
+    pTestStep->setConfigValue("GroupKeyInTree", m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    pTestStep->setConfigValue("Method", "setRotationAngle");
+    pTestStep->setConfigValue("Angle", physValAngleBigPlusSignParent.toString());
+    strlstGraphObjsKeyInTreeGetResultValues.clear();
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[strGraphObjNameBigPlusSignParent]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSign]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignVerticalLine]);
+    strlstGraphObjsKeyInTreeGetResultValues.append(m_hshGraphObjNameToKeys[c_strGraphObjNameBigPlusSignHorizontalLine]);
+    pTestStep->setConfigValue("GraphObjsKeyInTreeGetResultValues", strlstGraphObjsKeyInTreeGetResultValues);
+    strlstExpectedValues.clear();
+    // BigPlusSignParentGroup
+    ptPosBigPlusSignParentGroup = QPointF(300.0, 300.0);
+    physValRectBigPlusSignParent.setAngle(physValAngleBigPlusSignParent);
+    strlstExpectedValues.append(resultValuesForGroup(
+        strGraphObjNameBigPlusSignParent, ptPosBigPlusSignParentGroup, physValRectBigPlusSignParent));
+    // BigPlusSign
+    strlstExpectedValues.append(resultValuesForGroup(
+        c_strGraphObjNameBigPlusSign, m_ptPosBigPlusSign, *m_pPhysValRectBigPlusSign));
+    // BigPlusSign-VerticalLine
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignVerticalLine, m_ptPosBigPlusSignVerticalLine,
+        m_lineBigPlusSignVerticalLine, *m_pPhysValLineBigPlusSignVerticalLine));
+    // BigPlusSign-HorizontalLine
+    strlstExpectedValues.append(resultValuesForLine(
+        c_strGraphObjNameBigPlusSignHorizontalLine, m_ptPosBigPlusSignHorizontalLine,
+        m_lineBigPlusSignHorizontalLine, *m_pPhysValLineBigPlusSignHorizontalLine));
+    pTestStep->setExpectedValues(strlstExpectedValues);
 
     // Ungroup BigPlusSignParentGroup
     //-------------------------------

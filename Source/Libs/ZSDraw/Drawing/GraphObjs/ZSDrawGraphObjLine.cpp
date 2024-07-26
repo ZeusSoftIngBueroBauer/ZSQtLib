@@ -2901,18 +2901,21 @@ void CGraphObjLine::traceThisPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "getLine {" + getLine().toString() + "} " + getLine().unit().symbol();
+            strRuntimeInfo += "ItemLine Curr {" + qLine2Str(line()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
+
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
             strRuntimeInfo += "PhysValLineOrig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol();
             i_mthTracer.trace(strRuntimeInfo);
+
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "ItemLine Curr {" + qLine2Str(line()) + "}";
+            strRuntimeInfo += "getLine {" + getLine().toString() + "} " + getLine().unit().symbol();
             i_mthTracer.trace(strRuntimeInfo);
+
             CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
         }
     }

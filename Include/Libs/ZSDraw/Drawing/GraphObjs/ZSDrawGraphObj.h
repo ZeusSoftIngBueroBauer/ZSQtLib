@@ -838,10 +838,10 @@ protected: // instance members
     /*!< Rotation angle of this item. */
     ZS::PhysVal::CPhysVal m_physValRotationAngle;
     /*!< The original, untransformed position of the item in pixels.
-         This is the position of the item in parent or scene coordinates at the
-         time the item was added to the group. When resizing the group the
-         parent groups scale factor are applied to the original untransformed
-         position to get the new position of the item. */
+         This is the position of the item in parent or scene coordinates at the time
+         the item was added to the group. When resizing the group the parent groups
+         scale factor are applied to the original untransformed position to get the
+         new position of the item. */
     QPointF m_ptPosOrig;
     /*!< When adding the item to a group the current group rectangle is taken over as the
          original group rectangle. If the parent group is resized the scale factor is calculated

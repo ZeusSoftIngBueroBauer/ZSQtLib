@@ -1625,14 +1625,32 @@ void CTest::doTestStepModifyGraphObjGroup( ZS::Test::CTestStep* i_pTestStep )
             pGraphObjGroup->setSize(physValSize);
         }
         else if (strMethod.compare("setWidth", Qt::CaseInsensitive) == 0) {
-            QString strVal = i_pTestStep->getConfigValue("Width").toString();
-            CPhysVal physVal = strVal;
+            CPhysVal physVal(unit);
+            if (i_pTestStep->hasConfigValue("Width.unit")) {
+                double fVal = i_pTestStep->getConfigValue("Width").toDouble();
+                QString strUnit = i_pTestStep->getConfigValue("Width.unit").toString();
+                unit = strUnit;
+                physVal = CPhysVal(fVal, unit);
+            }
+            else {
+                QString strVal = i_pTestStep->getConfigValue("Width").toString();
+                physVal = strVal;
+            }
             pGraphObjGroup->setWidth(physVal);
         }
         else if (strMethod.compare("setHeight", Qt::CaseInsensitive) == 0) {
-            QString strVal = i_pTestStep->getConfigValue("Height").toString();
-            CPhysVal physVal = strVal;
-            pGraphObjGroup->setWidth(physVal);
+            CPhysVal physVal(unit);
+            if (i_pTestStep->hasConfigValue("Height.unit")) {
+                double fVal = i_pTestStep->getConfigValue("Height").toDouble();
+                QString strUnit = i_pTestStep->getConfigValue("Height.unit").toString();
+                unit = strUnit;
+                physVal = CPhysVal(fVal, unit);
+            }
+            else {
+                QString strVal = i_pTestStep->getConfigValue("Height").toString();
+                physVal = strVal;
+            }
+            pGraphObjGroup->setHeight(physVal);
         }
 
         if (pGraphObjGroup != nullptr && strlstGraphObjsKeyInTreeGetResultValues.isEmpty()) {

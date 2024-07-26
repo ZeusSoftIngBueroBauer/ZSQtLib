@@ -231,8 +231,11 @@ protected: // auxiliary instance methods
     void paintGridLabelsDivisionLines(QPainter* i_pPainter);
     void paintGridLabels(QPainter* i_pPainter);
 protected: // auxiliary instance methods (method tracing)
+    QRectF setRectOrig(const QRectF& i_rect);
     CPhysValRect setPhysValRectOrig(const CPhysValRect& i_physValRect);
-    QRectF QGraphicsItemGroup_setRect(const QRectF& i_rect);
+    QRectF setRectScaled(const QRectF& i_rect);
+    CPhysValRect setPhysValRectScaled(const CPhysValRect& i_physValRect);
+    CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItemGroup_addToGroup(QGraphicsItem* i_pGraphicsItemChild);
     void QGraphicsItemGroup_removeFromGroup(QGraphicsItem* i_pGraphicsItemChild);
     void QGraphicsItem_prepareGeometryChange() override;
@@ -260,22 +263,44 @@ protected: // instance members
     ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
     /*!< Settings about the grid lines (visibility, colors, font, etc.). */
     CDrawGridSettings m_gridSettings;
-    /*!< The original, untransformed shape point coordinates in pixels.
+    /*!< The original, untransformed (not scaled, not rotated) shape point
+         coordinates in pixels.
          Those are the values in local coordinates relative to the origin of the
-         groups bounding rectangle. Other graphics items, like Line, provide methods
-         to set and retrieve the local coordinates (e.g. "setLine", "line").
+         groups bounding rectangle.
+         This member is set if any shape point is directly set via a the method
+         call "setRect" (which is implicitly called by all other methods modifying
+         shape points) or at the time the item is added to a group.
+         Other graphics items, like Line, provide methods to set and retrieve the
+         local coordinates (e.g. "setLine", "line").
          The group item does not have such methods (e.g. "setRect", "rect").
-         To provide the bounding rectangle of the group in local coordinates
-         this member is maintained. */
+         The rotation angle of the graphics item is separately stored in
+         m_physValRotationAngle of base class CGraphObj.
+         The scale factors are also stored separately in the members
+         m_fParentGroupScaleX and m_fParentGroupScaleY of the base class CGraphObj.
+         @see base class CGraphObj "Current and Original Coordinates". */
     QRectF m_rectOrig;
-    /*!< The original, untransformed shape point coordinates with unit.
+    /*!< The scaled but not rotated shape point coordinates in pixels.
+         The scaled rectangle is returned by the "boundingRect" method of the graphics
+         item to provide the bounding rectangle of the group in local coordinates. */
+    QRectF m_rectScaled;
+    /*!< The original, untransformed (not scaled, not rotated) shape point
+         coordinates with unit.
          Those are the values in parent coordinates relative to the top left
          or bottom left corner of the parent.
-         Untransformed means that the rectangles rotation angle is 0.0
-         (separately stored in m_physValRotationAngle of base class CGraphObj)
-         and the parent scale factors are not included.
+         The rotation angle of the graphics item is separately stored in
+         m_physValRotationAngle of base class CGraphObj.
+         The scale factors are also stored separately in the members
+         m_fParentGroupScaleX and m_fParentGroupScaleY of the base class CGraphObj.
          @see base class CGraphObj "Current and Original Coordinates". */
     CPhysValRect m_physValRectOrig;
+    /*!< The scaled but not rotated shape point coordinates with unit.
+         The scaled rectangle is returned by the "getBoundingRect" method
+         to provide the bounding rectangle of the group in the current unit. */
+    CPhysValRect m_physValRectScaled;
+    /*!< The scaled and rotated shape point coordinates with unit.
+         The scaled and rotated rectangle is returned by the "getRect" method
+         (and all other methods retrieving the resulting coordinates in the current unit). */
+    CPhysValRect m_physValRectScaledAndRotated;
 
 }; // class CGraphObjGroup
 
