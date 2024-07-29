@@ -188,6 +188,8 @@ public: // must overridables of base class CGraphObj
 public: // must overridables of base class CGraphObj
     //virtual QRectF getOriginalBoundingRectInParent() const override;
 public: // must overridables of base class CGraphObj
+    virtual void setRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle) override;
+public: // must overridables of base class CGraphObj
     virtual SPolarCoors getPolarCoorsToSelectionPointFromSceneCoors(const QPointF& i_pt, ESelectionPoint i_selPt) const override;
     virtual QLineF getAnchorLineToSelectionPointFromPolarInSceneCoors(const SPolarCoors& i_polarCoors, ESelectionPoint i_selPt) const override;
 protected: // must overridables of base class CGraphObj
@@ -223,17 +225,19 @@ protected: // overridable slots of base class CGraphObj
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 protected: // overridables of base class CGraphObj
-    virtual void updateOriginalPhysValCoors() override;
+    virtual void updatePhysValCoorsOnPositionChanged() override;
 protected: // auxiliary instance methods
     void updateDivLinesMetrics(const QSizeF& i_size_px, const QSizeF& i_size_metric);
+    CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
+    CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
     QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;
     void paintGridLines(QPainter* i_pPainter);
     void paintGridLabelsDivisionLines(QPainter* i_pPainter);
     void paintGridLabels(QPainter* i_pPainter);
 protected: // auxiliary instance methods (method tracing)
     QRectF setRectOrig(const QRectF& i_rect);
-    CPhysValRect setPhysValRectOrig(const CPhysValRect& i_physValRect);
     QRectF setRectScaled(const QRectF& i_rect);
+    CPhysValRect setPhysValRectOrig(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaled(const CPhysValRect& i_physValRect);
     CPhysValRect setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect);
     void QGraphicsItemGroup_addToGroup(QGraphicsItem* i_pGraphicsItemChild);
@@ -263,41 +267,40 @@ protected: // instance members
     ZS::System::GUI::Math::CScaleDivLinesMetrics m_divLinesMetricsY;
     /*!< Settings about the grid lines (visibility, colors, font, etc.). */
     CDrawGridSettings m_gridSettings;
-    /*!< The original, untransformed (not scaled, not rotated) shape point
-         coordinates in pixels.
-         Those are the values in local coordinates relative to the origin of the
-         groups bounding rectangle.
-         This member is set if any shape point is directly set via a the method
-         call "setRect" (which is implicitly called by all other methods modifying
-         shape points) or at the time the item is added to a group.
-         Other graphics items, like Line, provide methods to set and retrieve the
-         local coordinates (e.g. "setLine", "line").
-         The group item does not have such methods (e.g. "setRect", "rect").
+    /*!< The original, untransformed (not scaled, not rotated) rectangle coordinates in local
+         coordinates relative to the origin of the item's bounding rectangle.
+         This member is set if any shape point is directly set via the method call "setRect"
+         (which is implicitly called by all other methods modifying shape points) or at the
+         time the item is added to a group.
          The rotation angle of the graphics item is separately stored in
          m_physValRotationAngle of base class CGraphObj.
          The scale factors are also stored separately in the members
          m_fParentGroupScaleX and m_fParentGroupScaleY of the base class CGraphObj.
          @see base class CGraphObj "Current and Original Coordinates". */
     QRectF m_rectOrig;
-    /*!< The scaled but not rotated shape point coordinates in pixels.
+    /*!< The scaled but not rotated rectangle coordinates in local coordinates relative
+         to the origin of the item's bounding rectangle.
+         Other graphics items, like Line, provide methods to set and retrieve the
+         local coordinates (e.g. "setLine", "line").
+         The group item does not have such methods (e.g. "setRect", "rect").
          The scaled rectangle is returned by the "boundingRect" method of the graphics
          item to provide the bounding rectangle of the group in local coordinates. */
     QRectF m_rectScaled;
-    /*!< The original, untransformed (not scaled, not rotated) shape point
-         coordinates with unit.
-         Those are the values in parent coordinates relative to the top left
-         or bottom left corner of the parent.
+    /*!< The original, untransformed (not scaled, not rotated) rectangle coordinates with unit
+         in parent coordinates relative to the top left or bottom left corner of the parent.
          The rotation angle of the graphics item is separately stored in
          m_physValRotationAngle of base class CGraphObj.
          The scale factors are also stored separately in the members
          m_fParentGroupScaleX and m_fParentGroupScaleY of the base class CGraphObj.
          @see base class CGraphObj "Current and Original Coordinates". */
     CPhysValRect m_physValRectOrig;
-    /*!< The scaled but not rotated shape point coordinates with unit.
+    /*!< The scaled but not rotated rectangle coordinates with unit in parent coordinates
+         relative to the top left or bottom left corner of the parent.
          The scaled rectangle is returned by the "getBoundingRect" method
          to provide the bounding rectangle of the group in the current unit. */
     CPhysValRect m_physValRectScaled;
-    /*!< The scaled and rotated shape point coordinates with unit.
+    /*!< The scaled and rotated rectangle coordinates with unit in parent coordinates
+         relative to the top left or bottom left corner of the parent.
          The scaled and rotated rectangle is returned by the "getRect" method
          (and all other methods retrieving the resulting coordinates in the current unit). */
     CPhysValRect m_physValRectScaledAndRotated;

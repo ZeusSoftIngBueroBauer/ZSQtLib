@@ -586,15 +586,15 @@ public: // overridables
     virtual void setPosition(const CPhysValPoint& i_physValPos);
     virtual CPhysValPoint position() const;
     virtual CPhysValPoint position(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
-    virtual ZS::PhysVal::CPhysVal length() const;
-    virtual ZS::PhysVal::CPhysVal length(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
-    virtual ZS::PhysVal::CPhysVal width() const;
-    virtual ZS::PhysVal::CPhysVal width(const ZS::PhysVal::CUnit& i_unit) const;
-    virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
-    virtual ZS::PhysVal::CPhysVal height() const;
-    virtual ZS::PhysVal::CPhysVal height(const ZS::PhysVal::CUnit& i_unit) const;
+    //virtual void setLength(const ZS::PhysVal::CPhysVal& i_physValLength);
+    //virtual ZS::PhysVal::CPhysVal length() const;
+    //virtual ZS::PhysVal::CPhysVal length(const ZS::PhysVal::CUnit& i_unit) const;
+    //virtual void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    //virtual ZS::PhysVal::CPhysVal width() const;
+    //virtual ZS::PhysVal::CPhysVal width(const ZS::PhysVal::CUnit& i_unit) const;
+    //virtual void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
+    //virtual ZS::PhysVal::CPhysVal height() const;
+    //virtual ZS::PhysVal::CPhysVal height(const ZS::PhysVal::CUnit& i_unit) const;
     //virtual void setSize(const ZS::PhysVal::CPhysVal& i_physValWidth, const ZS::PhysVal::CPhysVal& i_physValHeight);
     //virtual void setSize(const CPhysValSize& i_physValSize);
     //virtual CPhysValSize getSize(const ZS::PhysVal::CUnit& i_unit, ECoordinatesVersion i_version = ECoordinatesVersion::Transformed) const;
@@ -710,9 +710,9 @@ protected slots: // overridables
 public: // instance methods
     bool setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
-    virtual void updateOriginalPhysValCoors();
+    virtual void updatePhysValCoorsOnPositionChanged();
 protected: // overridables
-    virtual void updateOriginalPhysValCoorsInParent();
+    virtual void updatePhysValCoorsInParent();
     //virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
@@ -972,7 +972,7 @@ protected: // instance members
          the external "setGeometry" updating the position of the item.
          In this case the BlockedCounter will (or has to) be set to a value greater than 0
          (e.g. using CRefCountGuard). */
-    int m_iItemChangeUpdateOriginalCoorsBlockedCounter;
+    int m_iItemChangeUpdatePhysValCoorsBlockedCounter;
     /*!< To avoid that a signal is emitted twice for the same reason, the signal blocked counter
          may be set to a value greater than 0 (e.g. using CRefCountGuard). */
     int m_iGeometryOnSceneChangedSignalBlockedCounter;

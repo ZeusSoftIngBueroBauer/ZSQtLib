@@ -462,6 +462,19 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the width.
+
+    The value must be passed in the current unit of the size.
+*/
+void CPhysValSize::setWidth( double i_fWidth )
+//------------------------------------------------------------------------------
+{
+    setWidth(CPhysVal(i_fWidth, m_unit, m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit)));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the width.
+*/
 void CPhysValSize::setWidth( const CPhysVal& i_physValWidth )
 //------------------------------------------------------------------------------
 {
@@ -469,6 +482,19 @@ void CPhysValSize::setWidth( const CPhysVal& i_physValWidth )
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Sets the height.
+
+    The value must be passed in the current unit of the size.
+*/
+void CPhysValSize::setHeight( double i_fHeight )
+//------------------------------------------------------------------------------
+{
+    setHeight(CPhysVal(i_fHeight, m_unit, m_pDrawingScene->drawingSize().imageCoorsResolution(m_unit)));
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the height.
+*/
 void CPhysValSize::setHeight( const CPhysVal& i_physValHeight )
 //------------------------------------------------------------------------------
 {

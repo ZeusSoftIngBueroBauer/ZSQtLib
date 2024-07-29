@@ -95,7 +95,10 @@ CGraphObjLine::CGraphObjLine(CDrawingScene* i_pDrawingScene, const QString& i_st
         /* strType             */ ZS::Draw::graphObjType2Str(EGraphObjTypeLine),
         /* strObjName          */ i_strObjName.isEmpty() ? "Line" + QString::number(s_iInstCount) : i_strObjName),
     QGraphicsLineItem(),
+    m_lineOrig(),
     m_physValLineOrig(*m_pDrawingScene),
+    m_physValLineScaled(*m_pDrawingScene),
+    m_physValLineScaledAndRotated(*m_pDrawingScene),
     m_plgP1ArrowHead(),
     m_plgP2ArrowHead()
 {
@@ -194,7 +197,10 @@ CGraphObjLine::~CGraphObjLine()
 
     emit_aboutToBeDestroyed();
 
+    //m_lineOrig;
     //m_physValLineOrig;
+    //m_physValLineScaled;
+    //m_physValLineScaledAndRotated;
     //m_plgP1ArrowHead;
     //m_plgP2ArrowHead;
 
@@ -388,14 +394,17 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
 
-        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-            // Store original line coordinates.
+            // Store physical line coordinates.
             setPhysValLineOrig(i_physValLine);
+            setPhysValLineScaled(i_physValLine);
+            setPhysValLineScaledAndRotated(i_physValLine);
 
             // Set the line in local coordinate system.
             // Also note that itemChange must not overwrite the current line value (refCountGuard).
+            setLineOrig(lineF);
             QGraphicsLineItem_setLine(lineF);
 
             // If the item belongs to a parent group this original position is needed
@@ -593,29 +602,7 @@ CPhysValLine CGraphObjLine::getLine() const
 CPhysValLine CGraphObjLine::getLine(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
-    CPhysValLine physValLine(*m_pDrawingScene, i_unit);
-    if (m_physValLineOrig.isValid()) {
-        physValLine = m_physValLineOrig;
-        if (i_unit != physValLine.unit()) {
-            if (parentGroup() != nullptr) {
-                physValLine = parentGroup()->convert(physValLine, i_unit);
-            }
-            else {
-                physValLine = m_pDrawingScene->convert(physValLine, i_unit);
-            }
-        }
-        if (m_fParentGroupScaleX != 1.0 || m_fParentGroupScaleY != 1.0) {
-            // The relative distance to the top left corner of the parent's bounding rectangle should remain the same.
-            CPhysValPoint physValPointP1(*m_pDrawingScene);
-            physValPointP1.setX(m_fParentGroupScaleX * m_physValLineOrig.p1().x().getVal());
-            physValPointP1.setY(m_fParentGroupScaleY * m_physValLineOrig.p1().y().getVal());
-            CPhysValPoint physValPointP2(*m_pDrawingScene);
-            physValPointP2.setX(m_fParentGroupScaleX * m_physValLineOrig.p2().x().getVal());
-            physValPointP2.setY(m_fParentGroupScaleY * m_physValLineOrig.p2().y().getVal());
-            physValLine = CPhysValLine(physValPointP1, physValPointP2);
-        }
-    }
-    return physValLine;
+    return m_physValLineScaledAndRotated;
 }
 
 //------------------------------------------------------------------------------
@@ -2312,14 +2299,14 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
         QLineF lineF = line();
-        if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
             // If the item is a child of a group, the current (transformed) coordinates are only
             // taken over as the original coordinates if initially creating the item or when
             // adding the item to or removing the item from a group.
-            updateOriginalPhysValCoors();
+            updatePhysValCoorsOnPositionChanged();
         }
         updateLineEndArrowHeadPolygons();
         tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -2339,14 +2326,14 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
         QLineF lineF = line();
-        if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
             // If the item is a child of a group, the current (transformed) coordinates are only
             // taken over as the original coordinates if initially creating the item or when
             // adding the item to or removing the item from a group.
-            updateOriginalPhysValCoorsInParent();
+            updatePhysValCoorsInParent();
         }
         updateLineEndArrowHeadPolygons();
         tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -2552,8 +2539,12 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphOb
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
 
-        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+            // Store phyiscal line coordinates.
+            setPhysValLineScaled(physValLineNew);
+            setPhysValLineScaledAndRotated(physValLineNew);
 
             // Set the line in local coordinate system.
             // Also note that itemChange must not overwrite the current line value (refCountGuard).
@@ -2596,16 +2587,22 @@ protected: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Called by the itemChange method if the position of the item has been changed.
 
+    This method is also called by the parent group if the bounding rectangle of the parent
+    group is changed as on calling "setPos" the position may not have been changed if the
+    geometry of the parent group has been changed. The group will force the child
+    to update it's original shape points in physical coordinates relative to either
+    the top left or bottom left corner of the parents bounding rectangle.
+
     The graphical object must update their original shape point coordinates.
 */
-void CGraphObjLine::updateOriginalPhysValCoors()
+void CGraphObjLine::updatePhysValCoorsOnPositionChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updateOriginalPhysValCoors",
+        /* strMethod    */ "updatePhysValCoorsOnPositionChanged",
         /* strAddInfo   */ "" );
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
 
@@ -2626,7 +2623,10 @@ void CGraphObjLine::updateOriginalPhysValCoors()
         pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
         CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
         CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
-        setPhysValLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+        CPhysValLine physValLine(physValPointP1, physValPointP2);
+        setPhysValLineOrig(physValLine);
+        setPhysValLineScaled(physValLine);
+        setPhysValLineScaledAndRotated(physValLine);
     }
     else {
         // Please note that "mapToScene" maps the local coordinates relative to the
@@ -2636,13 +2636,16 @@ void CGraphObjLine::updateOriginalPhysValCoors()
         QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
         CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
         CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
-        setPhysValLineOrig(CPhysValLine(physValPointP1, physValPointP2));
+        CPhysValLine physValLine(physValPointP1, physValPointP2);
+        setPhysValLineOrig(physValLine);
+        setPhysValLineScaled(physValLine);
+        setPhysValLineScaledAndRotated(physValLine);
     }
     if (fRotationAngle_degree != 0.0) {
         QGraphicsItem_setRotation(fRotationAngle_degree);
     }
 
-    updateOriginalPhysValCoorsInParent();
+    updatePhysValCoorsInParent();
 
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
 }
@@ -2775,37 +2778,41 @@ protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the original line coordinates.
+/*! @brief Set the original, untransformed (not scaled, not rotated) line
+           coordinates in local coordinates relative to the origin of the
+           line's bounding rectangle
 
-    @param [in] i_line
-        Line coordinates to be set.
+    @param [in] i_rect
+        Rectangle coordinates in local coordinates to be set.
 
-    @return Previous original line coordinates.
+    @return Previous original rectangle coordinates.
 */
-CPhysValLine CGraphObjLine::setPhysValLineOrig(const CPhysValLine& i_physValLine)
+QLineF CGraphObjLine::setLineOrig(const QLineF& i_line)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
+        strMthInArgs = "New {" + qLine2Str(i_line) + "}";
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "setPhysValLineOrig",
+        /* strMethod    */ "setLineOrig",
         /* strAddInfo   */ strMthInArgs );
 
-    CPhysValLine physValLinePrev = m_physValLineOrig;
-    m_physValLineOrig = i_physValLine;
+    QLineF linePrev = m_lineOrig;
+    m_lineOrig = i_line;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol());
+        mthTracer.setMethodReturn("Prev {" + qLine2Str(linePrev) + "}");
     }
-    return i_physValLine;
+    return linePrev;
 }
 
+
 //------------------------------------------------------------------------------
-/*! @brief Sets the line coordinates at the graphics item.
+/*! @brief Sets the scaled but not rotated line coordinates in local
+           coordinates relative to the origin of the item's bounding rectangle.
 
     @param [in] i_line
         Line coordinates to be set.
@@ -2835,7 +2842,8 @@ QLineF CGraphObjLine::QGraphicsLineItem_setLine(const QLineF& i_line)
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the line coordinates at the graphics item.
+/*! @brief Sets the scaled but not rotated line coordinates in local
+           coordinates relative to the origin of the item's bounding rectangle.
 
     @param [in] i_fX1, i_fY1, i_fX2, i_fY2
         Line coordinates to be set.
@@ -2862,6 +2870,101 @@ QLineF CGraphObjLine::QGraphicsLineItem_setLine(double i_fX1, double i_fY1, doub
         mthTracer.setMethodReturn(qLine2Str(linePrev));
     }
     return linePrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the original, untransformed (not scaled, not rotated) line
+           coordinates with unit in parent coordinates relative to the top left
+           or bottom left corner of the parent.
+
+    @param [in] i_line
+        Line coordinates to be set.
+
+    @return Previous original line coordinates.
+*/
+CPhysValLine CGraphObjLine::setPhysValLineOrig(const CPhysValLine& i_physValLine)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPhysValLineOrig",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValLine physValLinePrev = m_physValLineOrig;
+    m_physValLineOrig = i_physValLine;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + physValLinePrev.toString() + "} " + physValLinePrev.unit().symbol());
+    }
+    return physValLinePrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaled but not rotated line coordinates with unit in
+           parent coordinates relative to the top left or bottom left corner of
+           the parent.
+
+    @param [in] i_physValLine
+        Line coordinates relative to the parent (or scene) to be set.
+
+    @return Previous line coordinates.
+*/
+CPhysValLine CGraphObjLine::setPhysValLineScaled(const CPhysValLine& i_physValLine)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPhysValLineScaled",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValLine physValLinePrev = m_physValLineScaled;
+    m_physValLineScaled = i_physValLine;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + physValLinePrev.toString() + "} " + physValLinePrev.unit().symbol());
+    }
+    return physValLinePrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaled and rotated line coordinates with unit in parent
+           coordinates relative to the top left or bottom left corner of the parent.
+
+    @param [in] i_physValLine
+        Line coordinates relative to the parent (or scene) to be set.
+
+    @return Previous line coordinates.
+*/
+CPhysValLine CGraphObjLine::setPhysValLineScaledAndRotated(const CPhysValLine& i_physValLine)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + i_physValLine.toString() + "} " + i_physValLine.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setPhysValLineScaledAndRotated",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValLine physValLinePrev = m_physValLineScaledAndRotated;
+    m_physValLineScaledAndRotated = i_physValLine;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + physValLinePrev.toString() + "} " + physValLinePrev.unit().symbol());
+    }
+    return physValLinePrev;
 }
 
 //------------------------------------------------------------------------------
@@ -2901,21 +3004,15 @@ void CGraphObjLine::traceThisPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "ItemLine Curr {" + qLine2Str(line()) + "}";
+            strRuntimeInfo += "PhysValLine Orig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol()
+                + ", Scaled {" + m_physValLineScaled.toString() + "} " + m_physValLineScaled.unit().symbol()
+                + ", ScaledRotated {" + m_physValLineScaledAndRotated.toString() + "} " + m_physValLineScaledAndRotated.unit().symbol();
             i_mthTracer.trace(strRuntimeInfo);
-
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "PhysValLineOrig {" + m_physValLineOrig.toString() + "} " + m_physValLineOrig.unit().symbol();
+            strRuntimeInfo += "ItemLine Orig {" + qLine2Str(m_lineOrig) + "}, Scaled {" + qLine2Str(line()) + "}";
             i_mthTracer.trace(strRuntimeInfo);
-
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "getLine {" + getLine().toString() + "} " + getLine().unit().symbol();
-            i_mthTracer.trace(strRuntimeInfo);
-
             CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
         }
     }

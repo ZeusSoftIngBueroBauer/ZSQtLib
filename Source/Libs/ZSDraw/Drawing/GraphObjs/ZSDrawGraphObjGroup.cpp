@@ -466,7 +466,7 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
                     // As on calling "setPos" the position may not have been changed, force the child
                     // to update it's original shape points in physical coordinates relative to either
                     // the top left or bottom left corner of the parents bounding rectangle:
-                    pGraphObjChildExisting->updateOriginalPhysValCoors();
+                    pGraphObjChildExisting->updatePhysValCoorsOnPositionChanged();
                     pGraphObjChildExisting->setIgnoreParentGeometryChange(false);
                 }
             }
@@ -613,7 +613,7 @@ void CGraphObjGroup::resizeToContent()
                 // As on calling "setPos" the position may not have been changed, force the child
                 // to update it's original shape points in physical coordinates relative to either
                 // the top left or bottom left corner of the parents bounding rectangle:
-                pGraphObjChildExisting->updateOriginalPhysValCoors();
+                pGraphObjChildExisting->updatePhysValCoorsOnPositionChanged();
                 pGraphObjChildExisting->setIgnoreParentGeometryChange(false);
             }
         }
@@ -714,7 +714,7 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
 
-        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
             // Store original, untransformed rectangle coordinates.
@@ -783,33 +783,6 @@ CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
 //------------------------------------------------------------------------------
 {
     return m_physValRectScaledAndRotated;
-
-setPhysValRectScaledAndRotated();
-
-    CPhysValRect physValRect(*m_pDrawingScene, i_unit);
-    if (m_physValRectOrig.isValid()) {
-        physValRect = m_physValRectOrig;
-        if (i_unit != physValRect.unit()) {
-            if (parentGroup() != nullptr) {
-                physValRect = parentGroup()->convert(physValRect, i_unit);
-            }
-            else {
-                physValRect = m_pDrawingScene->convert(physValRect, i_unit);
-            }
-        }
-        if (m_fParentGroupScaleX != 1.0 || m_fParentGroupScaleY != 1.0) {
-            // The relative distance to the top left corner of the parent's bounding rectangle should remain the same.
-            CPhysValPoint physValPointTL(*m_pDrawingScene);
-            physValPointTL.setX(m_fParentGroupScaleX * m_physValRectOrig.topLeft().x().getVal());
-            physValPointTL.setY(m_fParentGroupScaleY * m_physValRectOrig.topLeft().y().getVal());
-            CPhysValPoint physValPointBR(*m_pDrawingScene);
-            physValPointBR.setX(m_fParentGroupScaleX * m_physValRectOrig.bottomRight().x().getVal());
-            physValPointBR.setY(m_fParentGroupScaleY * m_physValRectOrig.bottomRight().y().getVal());
-            physValRect = CPhysValRect(physValPointTL, physValPointBR);
-        }
-        physValRect.setAngle(m_physValRotationAngle);
-    }
-    return physValRect;
 }
 
 //------------------------------------------------------------------------------
@@ -986,7 +959,7 @@ void CGraphObjGroup::setCenter(const QPointF& i_pt)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "moveCenter",
+        /* strMethod    */ "setCenter",
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValRect physValRect = getRect();
@@ -1006,7 +979,7 @@ void CGraphObjGroup::setCenter(const CPhysValPoint& i_physValPoint)
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "moveCenter",
+        /* strMethod    */ "setCenter",
         /* strAddInfo   */ strMthInArgs );
 
     CPhysValRect physValRect = getRect();
@@ -1740,7 +1713,8 @@ public: // must overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Returns the current bounding rectangle of the object in local coordinates.
+/*! @brief Returns the scaled but not rotated rectangle coordinates in local
+           coordinates relative to the origin of the groups bounding rectangle.
 
     @return Bounding rectangle in local coordinates.
 */
@@ -1753,16 +1727,10 @@ QRectF CGraphObjGroup::getBoundingRect() const
         /* strObjName   */ path(),
         /* strMethod    */ "getBoundingRect",
         /* strAddInfo   */ "" );
-
-    // Local coordinates, scaled, but not rotated.
-    QRectF rctBounding = m_rectOrig;
-    rctBounding.setWidth(m_fParentGroupScaleX * m_rectOrig.width());
-    rctBounding.setHeight(m_fParentGroupScaleY * m_rectOrig.height());
-    rctBounding.moveCenter(QPointF(0.0, 0.0));
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
+        mthTracer.setMethodReturn("{" + qRect2Str(m_rectScaled) + "}");
     }
-    return rctBounding;
+    return m_rectScaled;
 }
 
 //------------------------------------------------------------------------------
@@ -1803,10 +1771,10 @@ QRectF CGraphObjGroup::getEffectiveBoundingRectOnScene() const
 
     const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
     QPolygonF plg({
-        pGraphicsItemThis->mapToScene(m_rectOrig.topLeft()),
-        pGraphicsItemThis->mapToScene(m_rectOrig.topRight()),
-        pGraphicsItemThis->mapToScene(m_rectOrig.bottomRight()),
-        pGraphicsItemThis->mapToScene(m_rectOrig.bottomLeft())});
+        pGraphicsItemThis->mapToScene(m_rectScaled.topLeft()),
+        pGraphicsItemThis->mapToScene(m_rectScaled.topRight()),
+        pGraphicsItemThis->mapToScene(m_rectScaled.bottomRight()),
+        pGraphicsItemThis->mapToScene(m_rectScaled.bottomLeft())});
     QRectF rctBounding = plg.boundingRect();
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn("{" + qRect2Str(rctBounding) + "}");
@@ -1874,6 +1842,45 @@ public: // must overridables of base class CGraphObj
 //    }
 //    return rctBounding;
 //}
+
+/*==============================================================================
+public: // must overridables of base class CGraphObj
+==============================================================================*/
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the clockwise rotation angle, in degrees, around the Z axis.
+
+    The default value is 0 (i.e., the item is not rotated). Assigning a negative
+    value will rotate the item counter-clockwise.
+    Normally the rotation angle is in the range (-360, 360), but it's also possible
+    to assign values outside of this range (e.g., a rotation of 370 degrees is the
+    same as a rotation of 10 degrees).
+*/
+void CGraphObjGroup::setRotationAngle(const CPhysVal& i_physValAngle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = i_physValAngle.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setRotationAngle",
+        /* strAddInfo   */ strMthInArgs );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+    if (m_physValRotationAngle != i_physValAngle) {
+        m_physValRotationAngle = i_physValAngle;
+        CPhysValRect physValRect = m_physValRectScaledAndRotated;
+        physValRect.setAngle(i_physValAngle);
+        setPhysValRectScaledAndRotated(physValRect);
+        QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+        emit_geometryOnSceneChanged();
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
+}
 
 /*==============================================================================
 public: // overridables of base class CGraphObj
@@ -3121,11 +3128,11 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
-        if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
-            updateOriginalPhysValCoors();
+            updatePhysValCoorsOnPositionChanged();
             //applyGeometryChangeToChildrens();
         }
         tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -3146,11 +3153,11 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
 
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
-        if (m_iItemChangeUpdateOriginalCoorsBlockedCounter == 0) {
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
-            updateOriginalPhysValCoorsInParent();
+            updatePhysValCoorsInParent();
         }
         tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
@@ -3302,35 +3309,30 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphO
             m_fParentGroupScaleY = physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
         }
 
-        // The relative distance to the top left corner of the parent's bounding rectangle should remain the same.
-        CPhysValRect physValRectNew(m_physValRectOrig);
-        physValRectNew.setAngle(m_physValRotationAngle);
-        CPhysValPoint physValPointTL(*m_pDrawingScene);
-        physValPointTL.setX(m_fParentGroupScaleX * physValRectNew.topLeft().x().getVal());
-        physValPointTL.setY(m_fParentGroupScaleY * physValRectNew.topLeft().y().getVal());
-        CPhysValPoint physValPointBR(*m_pDrawingScene);
-        physValPointBR.setX(m_fParentGroupScaleX * physValRectNew.bottomRight().x().getVal());
-        physValPointBR.setY(m_fParentGroupScaleY * physValRectNew.bottomRight().y().getVal());
-        physValRectNew.setTopLeft(physValPointTL);
-        physValRectNew.setBottomRight(physValPointBR);
+        // The relative distance of the center point to the top left or bottom left corner
+        // of the parent's bounding rectangle should remain the same.
+        CPhysValRect physValRect = getPhysValRectScaled(m_physValRectOrig);
+        setPhysValRectScaled(physValRect);
+        physValRect.setAngle(m_physValRotationAngle);
+        setPhysValRectScaledAndRotated(physValRect);
 
         QPointF ptPosPrev = pos();
 
         QRectF rectF;
         CPhysVal physValAngle;
-        QPointF ptPos = getItemPosAndLocalCoors(physValRectNew, rectF, physValAngle);
+        QPointF ptPos = getItemPosAndLocalCoors(physValRect, rectF, physValAngle);
 
-        updateDivLinesMetrics(rectF.size(), QSizeF(physValRectNew.width().getVal(), physValRectNew.height().getVal()));
+        updateDivLinesMetrics(rectF.size(), QSizeF(physValRect.width().getVal(), physValRect.height().getVal()));
 
         // Prepare the item for a geometry change. This function must be called before
         // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
         QGraphicsItem_prepareGeometryChange();
 
-        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdateOriginalCoorsBlockedCounter);
+        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
             CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
             // Set the groups rectangle in local coordinate system.
-            QGraphicsItemGroup_setRect(rectF);
+            setRectScaled(rectF);
 
             // Please note that GraphicsLineItem::setLine did not update the position of the
             // item in the parent. This has to be done "manually" afterwards.
@@ -3447,57 +3449,37 @@ protected: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Called by the itemChange method if the position of the item has been changed.
 
-    The graphical object must update their original shape point coordinates.
+    This method is also called by the parent group if the bounding rectangle of the parent
+    group is changed as on calling "setPos" the position may not have been changed if the
+    geometry of the parent group has been changed. The group will force the child
+    to update it's original shape points in physical coordinates relative to either
+    the top left or bottom left corner of the parents bounding rectangle.
 
-    @note This method is also if the item is added to a group as on calling "setPos"
-          the position may not have been changed. The group therefore forces the child
-          to update it's original shape points in physical coordinates relative to either
-          the top left or bottom left corner of the parents bounding rectangle.
+    The graphical object must update their original shape point coordinates.
 */
-void CGraphObjGroup::updateOriginalPhysValCoors()
+void CGraphObjGroup::updatePhysValCoorsOnPositionChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updateOriginalPhysValCoors",
+        /* strMethod    */ "updatePhysValCoorsOnPositionChanged",
         /* strAddInfo   */ "" );
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    QRectF rectF = getBoundingRect();
     // Before mapping to parent or scene, the rotation will be reset.
     // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryOnSceneChanged signal ..
+    // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
     CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-    double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
-    if (fRotationAngle_degree != 0.0) {
-        QGraphicsItem_setRotation(0.0);
-    }
-    if (parentGroup() != nullptr) {
-        QPointF ptTL = pGraphicsItemThis->mapToParent(rectF.topLeft());
-        QPointF ptBR = pGraphicsItemThis->mapToParent(rectF.bottomRight());
-        ptTL = parentGroup()->mapToTopLeftOfBoundingRect(ptTL);
-        ptBR = parentGroup()->mapToTopLeftOfBoundingRect(ptBR);
-        CPhysValPoint physValPointTL = parentGroup()->convert(ptTL);
-        CPhysValPoint physValPointBR = parentGroup()->convert(ptBR);
-        setPhysValRectOrig(CPhysValRect(physValPointTL, physValPointBR));
-    }
-    else {
-        // Please note that "mapToScene" maps the local coordinates relative to the
-        // top left corner of the item's bounding rectangle and there is no need to
-        // call "mapToBoundingRectTopLeft" beforehand.
-        QPointF ptTL = pGraphicsItemThis->mapToScene(rectF.topLeft());
-        QPointF ptBR = pGraphicsItemThis->mapToScene(rectF.bottomRight());
-        CPhysValPoint physValPointTL = m_pDrawingScene->convert(ptTL);
-        CPhysValPoint physValPointBR = m_pDrawingScene->convert(ptBR);
-        setPhysValRectOrig(CPhysValRect(physValPointTL, physValPointBR));
-    }
-    if (fRotationAngle_degree != 0.0) {
-        QGraphicsItem_setRotation(fRotationAngle_degree);
-    }
-    updateOriginalPhysValCoorsInParent();
+    CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
+    setPhysValRectOrig(physValRect);
+    physValRect = getPhysValRectScaled(m_physValRectOrig);
+    setPhysValRectScaled(physValRect);
+    physValRect.setAngle(m_physValRotationAngle);
+    setPhysValRectScaledAndRotated(physValRect);
+    updatePhysValCoorsInParent();
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
 }
 
@@ -3590,6 +3572,110 @@ void CGraphObjGroup::updateDivLinesMetrics(
     }
     m_divLinesMetricsX.update();
     m_divLinesMetricsY.update();
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the unscaled and not rotated physical rectangle in the
+           current unit of the drawing scene relative to the top left or
+           bottom left corner of the parent's bounding rectangle.
+
+    @param [in] i_rectOrig
+        Unscaled, not rotated rectangle in the item's local coordinates system
+        whose origin is the center point of the item.
+    @return Physical rectangle whose origin is either the top left or bottom
+            left corner of the parent's bounding rectangle.
+*/
+CPhysValRect CGraphObjGroup::getPhysValRectOrig(const QRectF& i_rectOrig) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + qRect2Str(i_rectOrig) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getPhysValRectOrig",
+        /* strAddInfo   */ strMthInArgs );
+
+    const QGraphicsItem* pGraphicsItemThis = dynamic_cast<const QGraphicsItem*>(this);
+    CGraphObjGroup* pVThis = const_cast<CGraphObjGroup*>(this);
+    double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+    if (fRotationAngle_degree != 0.0) {
+        pVThis->QGraphicsItem_setRotation(0.0);
+    }
+    CPhysValPoint physValPointCenter(*m_pDrawingScene);
+    CPhysValSize physValSize(*m_pDrawingScene);
+    if (parentGroup() != nullptr) {
+        QPointF ptCenter = pGraphicsItemThis->mapToParent(i_rectOrig.center());
+        ptCenter = parentGroup()->mapToTopLeftOfBoundingRect(ptCenter);
+        physValPointCenter = parentGroup()->convert(ptCenter);
+        physValSize = parentGroup()->convert(i_rectOrig.size());
+    }
+    else {
+        // Please note that "mapToScene" maps the local coordinates relative to the
+        // top left corner of the item's bounding rectangle and there is no need to
+        // call "mapToBoundingRectTopLeft" beforehand.
+        QPointF ptCenter = pGraphicsItemThis->mapToScene(i_rectOrig.center());
+        physValPointCenter = m_pDrawingScene->convert(ptCenter);
+        physValSize = m_pDrawingScene->convert(i_rectOrig.size());
+    }
+    if (fRotationAngle_degree != 0.0) {
+        pVThis->QGraphicsItem_setRotation(fRotationAngle_degree);
+    }
+
+    CPhysValRect physValRect(*m_pDrawingScene);
+    physValRect.setSize(physValSize);
+    physValRect.setCenter(physValPointCenter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValRect.toString() + "} " + physValRect.unit().symbol());
+    }
+    return physValRect;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Calculates the scaled, not rotated physical rectangle in the current
+           unit of the drawing scene relative to the top left or bottem left
+           corner of the parent's bounding rectangle.
+
+    The relative distance of the center point of the scaled rectangle to the
+    top left or bottom left corner of the parent's bounding rectangle remains the same.
+    The width and height are scaled to the scale factors of the parent group.
+
+    @param [in] i_rectOrig
+        Unscaled rectangle in the item's local coordinates system whose origin
+        is the center point of the item.
+    @return Scaled rectangle.
+*/
+CPhysValRect CGraphObjGroup::getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "{" + i_physValRectOrig.toString() + "} " + i_physValRectOrig.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "getPhysValRectScaled",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValPoint physValPointCenter(*m_pDrawingScene);
+    physValPointCenter.setX(m_fParentGroupScaleX * i_physValRectOrig.center().x().getVal());
+    physValPointCenter.setY(m_fParentGroupScaleY * i_physValRectOrig.center().y().getVal());
+    CPhysValSize physValSize(*m_pDrawingScene);
+    physValSize.setWidth(m_fParentGroupScaleX * i_physValRectOrig.width().getVal());
+    physValSize.setHeight(m_fParentGroupScaleY * i_physValRectOrig.height().getVal());
+
+    CPhysValRect physValRect(*m_pDrawingScene);
+    physValRect.setSize(physValSize);
+    physValRect.setCenter(physValPointCenter);
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("{" + physValRect.toString() + "} " + physValRect.unit().symbol());
+    }
+    return physValRect;
 }
 
 //------------------------------------------------------------------------------
@@ -3796,7 +3882,80 @@ protected: // auxiliary instance methods (method tracing)
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the original rectangle coordinates in parent coordinates.
+/*! @brief Set the original, untransformed (not scaled, not rotated) rectangle
+           coordinates in local coordinates relative to the origin of the
+           groups bounding rectangle
+
+    @param [in] i_rect
+        Rectangle coordinates in local coordinates to be set.
+
+    @return Previous original rectangle coordinates.
+*/
+QRectF CGraphObjGroup::setRectOrig(const QRectF& i_rect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + qRect2Str(i_rect) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRectOrig",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rectPrev = m_rectOrig;
+    m_rectOrig = i_rect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + qRect2Str(rectPrev) + "}");
+    }
+    return rectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaled but not rotated rectangle coordinates in local
+           coordinates relative to the origin of the groups bounding rectangle.
+
+    Other graphics items, like Line, provide methods to set and retrieve the local
+    coordinates (e.g. "setLine", "line"). The group item does not have such methods
+    (e.g. "setRect", "rect"). To provide the bounding rectangle of the group in
+    local coordinates this member is maintained.
+
+    The scaled rectangle is returned by the "boundingRect" method of the graphics
+    item to provide the bounding rectangle of the group in local coordinates.
+
+    @param [in] i_rect
+        Rectangle coordinates in local coordinates to be set.
+
+    @return Previous rectangle coordinates.
+*/
+QRectF CGraphObjGroup::setRectScaled(const QRectF& i_rect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + qRect2Str(i_rect) + "}";
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "setRectScaled",
+        /* strAddInfo   */ strMthInArgs );
+
+    QRectF rectPrev = m_rectScaled;
+    m_rectScaled = i_rect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + qRect2Str(rectPrev) + "}");
+    }
+    return rectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the original, untransformed (not scaled, not rotated) rectangle
+           coordinates with unit in parent coordinates relative to the top left
+           or bottom left corner of the parent.
 
     @param [in] i_physValRect
         Rectangle coordinates relative to the parent (or scene) to be set.
@@ -3826,40 +3985,66 @@ CPhysValRect CGraphObjGroup::setPhysValRectOrig(const CPhysValRect& i_physValRec
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the original rectangle coordinates in local coordinates.
+/*! @brief Sets the scaled but not rotated rectangle coordinates with unit in
+           parent coordinates relative to the top left or bottom left corner of
+           the parent.
 
-    Those are the values in local coordinates relative to the origin of the
-    groups bounding rectangle. Other graphics items, like Line, provide methods
-    to set and retrieve the local coordinates (e.g. "setLine", "line").
-    The group item does not have such methods (e.g. "setRect", "rect").
-    To provide the bounding rectangle of the group in local coordinates
-    this member is maintained.
+    @param [in] i_physValRect
+        Rectangle coordinates relative to the parent (or scene) to be set.
 
-    @param [in] i_rect
-        Rectangle coordinates in local coordinates to be set.
-
-    @return Previous original rectangle coordinates.
+    @return Previous rectangle coordinates.
 */
-QRectF CGraphObjGroup::QGraphicsItemGroup_setRect(const QRectF& i_rect)
+CPhysValRect CGraphObjGroup::setPhysValRectScaled(const CPhysValRect& i_physValRect)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "New {" + qRect2Str(i_rect) + "}";
+        strMthInArgs = "New {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "QGraphicsItemGroup_setRect",
+        /* strMethod    */ "setPhysValRectScaled",
         /* strAddInfo   */ strMthInArgs );
 
-    QRectF rectPrev = m_rectOrig;
-    m_rectOrig = i_rect;
+    CPhysValRect physValRectPrev = m_physValRectScaled;
+    m_physValRectScaled = i_physValRect;
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        mthTracer.setMethodReturn("Prev {" + qRect2Str(rectPrev) + "}");
+        mthTracer.setMethodReturn("Prev {" + physValRectPrev.toString() + "} " + physValRectPrev.unit().symbol());
     }
-    return rectPrev;
+    return physValRectPrev;
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Sets the scaled and rotated rectangle coordinates with unit in parent
+           coordinates relative to the top left or bottom left corner of the parent.
+
+    @param [in] i_physValRect
+        Rectangle coordinates relative to the parent (or scene) to be set.
+
+    @return Previous rectangle coordinates.
+*/
+CPhysValRect CGraphObjGroup::setPhysValRectScaledAndRotated(const CPhysValRect& i_physValRect)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New {" + i_physValRect.toString() + "} " + i_physValRect.unit().symbol();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "m_physValRectScaledAndRotated",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysValRect physValRectPrev = m_physValRectScaledAndRotated;
+    m_physValRectScaledAndRotated = i_physValRect;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + physValRectPrev.toString() + "} " + physValRectPrev.unit().symbol());
+    }
+    return physValRectPrev;
 }
 
 //------------------------------------------------------------------------------
@@ -3869,8 +4054,6 @@ QRectF CGraphObjGroup::QGraphicsItemGroup_setRect(const QRectF& i_rect)
     and transformation relative to the scene will stay intact.
 
     @param [in] i_pGraphicsItemChild
-
-    @return Previous original rectangle coordinates.
 */
 void CGraphObjGroup::QGraphicsItemGroup_addToGroup(QGraphicsItem* i_pGraphicsItemChild)
 //------------------------------------------------------------------------------
@@ -3897,8 +4080,6 @@ void CGraphObjGroup::QGraphicsItemGroup_addToGroup(QGraphicsItem* i_pGraphicsIte
     has no parent. Its position and transformation relative to the scene will stay intact.
 
     @param [in] i_pGraphicsItemChild
-
-    @return Previous original rectangle coordinates.
 */
 void CGraphObjGroup::QGraphicsItemGroup_removeFromGroup(QGraphicsItem* i_pGraphicsItemChild)
 //------------------------------------------------------------------------------
@@ -6077,23 +6258,15 @@ void CGraphObjGroup::traceThisPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "ItemRect Orig {" + qRect2Str(m_rectOrig) + "}, Scaled {" + qRect2Str(m_rectScaled) + "}";
-            i_mthTracer.trace(strRuntimeInfo);
-
-            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-            else strRuntimeInfo = "   ";
-            strRuntimeInfo += "PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol();
+            strRuntimeInfo += "PhysValRect Orig {" + m_physValRectOrig.toString() + "} " + m_physValRectOrig.unit().symbol()
                 + ", Scaled {" + m_physValRectScaled.toString() + "} " + m_physValRectScaled.unit().symbol();
                 + ", ScaledRotated {" + m_physValRectScaledAndRotated.toString() + "} " + m_physValRectScaledAndRotated.unit().symbol();
             i_mthTracer.trace(strRuntimeInfo);
-
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
-            strRuntimeInfo += "getRect {" + getRect().toString() + "} " + getRect().unit().symbol();
+            strRuntimeInfo += "ItemRect Orig {" + qRect2Str(m_rectOrig) + "}, Scaled {" + qRect2Str(m_rectScaled) + "}";
             i_mthTracer.trace(strRuntimeInfo);
-
             CGraphObj::traceThisPositionInfo(i_mthTracer, i_mthDir, i_detailLevel);
         }
     }

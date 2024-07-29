@@ -198,16 +198,19 @@ protected: // overridable slots of base class CGraphObj
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 protected: // overridables of base class CGraphObj
-    virtual void updateOriginalPhysValCoors() override;
+    virtual void updatePhysValCoorsOnPositionChanged() override;
 protected: // instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
 protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
 protected: // auxiliary instance methods (method tracing)
-    CPhysValLine setPhysValLineOrig(const CPhysValLine& i_physValLine);
+    QLineF setLineOrig(const QLineF& i_line);
     QLineF QGraphicsLineItem_setLine(const QLineF& i_line);
     QLineF QGraphicsLineItem_setLine(double i_fX1, double i_fY1, double i_fX2, double i_fY2);
+    CPhysValLine setPhysValLineOrig(const CPhysValLine& i_physValLine);
+    CPhysValLine setPhysValLineScaled(const CPhysValLine& i_physValLine);
+    CPhysValLine setPhysValLineScaledAndRotated(const CPhysValLine& i_physValLine);
     void QGraphicsItem_prepareGeometryChange() override;
 protected: // overridable auxiliary instance methods of base class CGraphObj (method tracing)
     virtual void traceThisPositionInfo(
@@ -221,14 +224,33 @@ public: // class members
          public, so that the test can reset the instance counter to 0. */
     static qint64 s_iInstCount;
 protected: // instance members
-    /*!< The original, untransformed shape point coordinates with unit.
+    /*!< The original, untransformed (not scaled, not rotated) line coordinates in local
+         coordinates relative to the origin of the item's bounding rectangle.
+         This member is set if any shape point is directly set via the method call "setLine"
+         (which is implicitly called by all other methods modifying shape points) or at the
+         time the item is added to a group.
+         The rotation angle of the graphics item is separately stored in
+         m_physValRotationAngle of base class CGraphObj.
+         The scale factors are also stored separately in the members
+         m_fParentGroupScaleX and m_fParentGroupScaleY of the base class CGraphObj.
+         @see base class CGraphObj "Current and Original Coordinates". */
+    QLineF m_lineOrig;
+    /*!< The original, untransformed (not scaled, not rotated) line coordinates with unit
+         in parent coordinates relative to the top left or bottom left corner of the parent.
+         The rotation angle of the graphics item is separately stored in
+         m_physValRotationAngle of base class CGraphObj.
+         The scale factors are also stored separately in the members
+         m_fParentGroupScaleX and m_fParentGroupScaleY of the base class CGraphObj.
          @see base class CGraphObj "Current and Original Coordinates". */
     CPhysValLine m_physValLineOrig;
-    /*!< The current, untransformed line coordinates with unit.
-         The coordinates are relative to the top left corner of the parent item's
-         bounding rectange (real shape points only). If the item does not belong as
-         a child to a group, the coordinates are in scene coordinates. */
-    //CPhysValLine m_physValLineTransformed;
+    /*!< The scaled but not rotated line coordinates with unit in parent coordinates
+         relative to the top left or bottom left corner of the parent. */
+    CPhysValLine m_physValLineScaled;
+    /*!< The scaled and rotated line coordinates with unit in parent coordinates
+         relative to the top left or bottom left corner of the parent.
+         The scaled and rotated rectangle is returned by the "getLine" method
+         (and all other methods retrieving the resulting coordinates in the current unit). */
+    CPhysValLine m_physValLineScaledAndRotated;
     /*!< Polygon points for arrow head at P1 (line start) */
     QPolygonF m_plgP1ArrowHead;
     /*!< Polygon points for arrow head at P2 (line end) */

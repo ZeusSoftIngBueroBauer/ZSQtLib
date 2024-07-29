@@ -133,7 +133,9 @@ public: // instance methods
     double resolution() const;
     ZS::PhysVal::CUnit unit() const;
 public: // instance methods
+    void setWidth(double i_fWidth);
     void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
+    void setHeight(double i_fHeight);
     void setHeight(const ZS::PhysVal::CPhysVal& i_physValHeight);
 public: // instance methods (to convert the values into another unit)
     QSizeF toQSizeF() const;
