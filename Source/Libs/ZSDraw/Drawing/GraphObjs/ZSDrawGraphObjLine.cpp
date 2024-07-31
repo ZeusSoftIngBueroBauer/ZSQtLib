@@ -2333,7 +2333,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // If the item is a child of a group, the current (transformed) coordinates are only
             // taken over as the original coordinates if initially creating the item or when
             // adding the item to or removing the item from a group.
-            updatePhysValCoorsInParent();
+            initParentScaleParameters();
         }
         updateLineEndArrowHeadPolygons();
         tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -2507,10 +2507,10 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphOb
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
         CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
         if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
-            m_fParentGroupScaleX = physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal();
+            setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
         }
         if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
-            m_fParentGroupScaleY = physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal();
+            setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
         }
 
         // The relative distance to the top left corner of the parent's bounding rectangle should remain the same.
@@ -2585,15 +2585,17 @@ protected: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Called by the itemChange method if the position of the item has been changed.
+/*! @brief Updates the physical coordinates of the item depending on the items
+           local coordinates.
 
-    This method is also called by the parent group if the bounding rectangle of the parent
-    group is changed as on calling "setPos" the position may not have been changed if the
-    geometry of the parent group has been changed. The group will force the child
-    to update it's original shape points in physical coordinates relative to either
-    the top left or bottom left corner of the parents bounding rectangle.
+    Called by the itemChange method if the position of the item has been changed.
 
-    The graphical object must update their original shape point coordinates.
+    @note This method is also called by the parent group if the bounding rectangle
+          of the parent group is changed on adding childs or resizing the parent
+          group to its content. If the parent changes its size the position of the
+          childs in pixels may not change. The group will force the child to update
+          it's physical coordinates relative to either the top left or bottom
+          left corner of the parents bounding rectangle.
 */
 void CGraphObjLine::updatePhysValCoorsOnPositionChanged()
 //------------------------------------------------------------------------------
@@ -2644,8 +2646,6 @@ void CGraphObjLine::updatePhysValCoorsOnPositionChanged()
     if (fRotationAngle_degree != 0.0) {
         QGraphicsItem_setRotation(fRotationAngle_degree);
     }
-
-    updatePhysValCoorsInParent();
 
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
 }

@@ -120,7 +120,6 @@ CTest::CTest() :
     ZS::Test::CTest(NameSpace(), "theInst"),
     m_physValAngleSmallPlusSign(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleBigPlusSign(0.0, Units.Angle.Degree, 0.1),
-    m_physValAnglePlusSigns(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleCheckmark(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleSmallRect(0.0, Units.Angle.Degree, 0.1),
     m_physValAngleTopGroup(0.0, Units.Angle.Degree, 0.1)
@@ -158,8 +157,6 @@ CTest::~CTest()
     delete m_pPhysValLineBigPlusSignVerticalLine;
     delete m_pPhysValLineBigPlusSignHorizontalLine;
 
-    delete m_pPhysValRectPlusSigns;
-
     delete m_pPhysValRectCheckmark;
     delete m_pPhysValLineCheckmarkLeftLine;
     delete m_pPhysValLineCheckmarkRightLine;
@@ -181,7 +178,6 @@ CTest::~CTest()
     m_pPhysValRectBigPlusSign = nullptr;
     m_pPhysValLineBigPlusSignVerticalLine = nullptr;
     m_pPhysValLineBigPlusSignHorizontalLine = nullptr;
-    m_pPhysValRectPlusSigns = nullptr;
     m_pPhysValRectCheckmark = nullptr;
     m_pPhysValLineCheckmarkLeftLine = nullptr;
     m_pPhysValLineCheckmarkRightLine = nullptr;
@@ -224,8 +220,6 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     m_pPhysValLineBigPlusSignVerticalLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineBigPlusSignHorizontalLine = new CPhysValLine(*m_pDrawingScene);
 
-    m_pPhysValRectPlusSigns = new CPhysValRect(*m_pDrawingScene);
-
     m_pPhysValRectCheckmark = new CPhysValRect(*m_pDrawingScene);
     m_pPhysValLineCheckmarkLeftLine = new CPhysValLine(*m_pDrawingScene);
     m_pPhysValLineCheckmarkRightLine = new CPhysValLine(*m_pDrawingScene);
@@ -240,16 +234,55 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
 
     // Start with reasonable drawing size
     CDrawingSize drawingSize;
-    drawingSize.setImageSize(CPhysVal(800.0, Units.Length.px, 1.0), CPhysVal(600.0, Units.Length.px, 1.0));
+    drawingSize.setDimensionUnit(EScaleDimensionUnit::Pixels);
+    drawingSize.setScreenResolutionInPxPerMM(1.0);
+    drawingSize.setImageSize(CPhysVal(800, Units.Length.px, 1.0), CPhysVal(600, Units.Length.px, 1.0));
     m_pDrawingScene->setDrawingSize(drawingSize);
+
+    CDrawGridSettings gridSettings;
+    gridSettings.setLinesVisible(true);
+    gridSettings.setLinesDistMin(20);
+    gridSettings.setLabelsVisible(true);
+    gridSettings.setLabelsFont(QFont("Terminal"));
 
     int idxGroup = 0;
 
     //createTestGroupDrawingSize(nullptr, idxGroup);
-    //createTestGroupImageSizeAndObjectCoordinates(nullptr, idxGroup);
-    createTestGroupAddObjects(nullptr, idxGroup, QStringList({c_strGraphObjNameBigPlusSign}));
-    //createTestGroupAddObjects(nullptr, idxGroup, QStringList({c_strGraphObjNamePlusSigns}));
+
+    ZS::Test::CTestStepGroup* pGrpPixelsDrawing = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++idxGroup) + " Pixels Drawing",
+        /* pTSGrpParent */ nullptr );
+
+    //createTestGroupImageSizeAndObjectCoordinates(pGrpPixelsDrawing, idxGroup);
+
+    createTestGroupPrepareScene(pGrpPixelsDrawing, idxGroup, drawingSize, gridSettings);
+    createTestGroupAddObjects(pGrpPixelsDrawing, idxGroup);
     //createTestGroupDrawObjects(nullptr, idxGroup);
+
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++idxGroup) + " Metrics Drawing",
+        /* pTSGrpParent */ nullptr );
+
+    drawingSize.setDimensionUnit(EScaleDimensionUnit::Metric);
+    drawingSize.setImageSize(CPhysVal(800, Units.Length.mm), CPhysVal(600, Units.Length.mm));
+
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++idxGroup) + " Y-Scale TopDown",
+        /* pTSGrpParent */ pGrpMetricsDrawing );
+
+    drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::TopDown);
+    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown, idxGroup, drawingSize, gridSettings);
+
+    ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++idxGroup) + " Y-Scale BottomUp",
+        /* pTSGrpParent */ pGrpMetricsDrawing );
+
+    drawingSize.setYScaleAxisOrientation(EYScaleAxisOrientation::BottomUp);
+    createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp, idxGroup, drawingSize, gridSettings);
 
     // Recall test step settings
     //--------------------------
@@ -457,15 +490,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -473,9 +504,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
         /* strMethod    */ "createTestGroupSaveLoadFile",
         /* strAddInfo   */ strMthInArgs );
 
-    int idxStep = 0;
-
     ZS::Test::CTestStep* pTestStep = nullptr;
+    int idxStep = 0;
 
     ZS::Test::CTestStepGroup* pGrpSaveLoadFile = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -485,14 +515,15 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
     QString strAbsDirPath =
         QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + QDir::separator() + "Test";
     QString strFileName;
-    if (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
-        strFileName = QString::number(i_drawingSize.imageWidthInPixels()) + "x" +
-                      QString::number(i_drawingSize.imageHeightInPixels()) + "px.xml";
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    if (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels) {
+        strFileName = QString::number(drawingSize.imageWidthInPixels()) + "x" +
+                      QString::number(drawingSize.imageHeightInPixels()) + "px.xml";
     }
     else {
-        strFileName = QString::number(static_cast<int>(i_drawingSize.metricImageWidth().getVal())) + "x" +
-                      QString::number(static_cast<int>(i_drawingSize.metricImageHeight().getVal())) +
-                      i_drawingSize.metricUnit().symbol() + "-" + i_drawingSize.yScaleAxisOrientation().toString() + ".xml";
+        strFileName = QString::number(static_cast<int>(drawingSize.metricImageWidth().getVal())) + "x" +
+                      QString::number(static_cast<int>(drawingSize.metricImageHeight().getVal())) +
+                      drawingSize.metricUnit().symbol() + "-" + drawingSize.yScaleAxisOrientation().toString() + ".xml";
     }
 
     pTestStep = new ZS::Test::CTestStep(

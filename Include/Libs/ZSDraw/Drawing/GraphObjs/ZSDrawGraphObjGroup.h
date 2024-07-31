@@ -224,7 +224,7 @@ protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
-protected: // overridables of base class CGraphObj
+public: // overridables of base class CGraphObj
     virtual void updatePhysValCoorsOnPositionChanged() override;
 protected: // auxiliary instance methods
     void updateDivLinesMetrics(const QSizeF& i_size_px, const QSizeF& i_size_metric);

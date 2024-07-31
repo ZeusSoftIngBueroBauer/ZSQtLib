@@ -58,8 +58,8 @@ public: // ctors
 CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene),
-    m_ptCenter(0.0, 0.0),
-    m_size(0.0, 0.0),
+    m_ptCenter(),
+    m_size(),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValPoints(),
     m_arbPointsCalculated()
@@ -74,8 +74,8 @@ CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene) :
 CPhysValRect::CPhysValRect(const CDrawingScene& i_drawingScene, const CUnit& i_unit) :
 //------------------------------------------------------------------------------
     CPhysValShape(i_drawingScene, i_unit),
-    m_ptCenter(0.0, 0.0),
-    m_size(0.0, 0.0),
+    m_ptCenter(),
+    m_size(),
     m_physValAngle(0.0, Units.Angle.Degree, 0.1),
     m_arphysValPoints(),
     m_arbPointsCalculated()
@@ -660,7 +660,13 @@ QString CPhysValRect::toString(bool i_bAddUnit, const QString& i_strSeparator, i
 //------------------------------------------------------------------------------
 {
     QString str;
-    if (i_iPrecision < 0) {
+    if (!isValid()) {
+        str = "Invalid";
+    }
+    else if (isNull()) {
+        str = "Null";
+    }
+    else if (i_iPrecision < 0) {
         str = center().x().toString(EUnitFind::None, PhysValSubStr::Val)
             + i_strSeparator
             + center().y().toString(EUnitFind::None, PhysValSubStr::Val)

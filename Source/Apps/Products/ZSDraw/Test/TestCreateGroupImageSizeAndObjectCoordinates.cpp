@@ -133,7 +133,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinates(
         gridSettings.setLabelsFont(QFont("Terminal"));
 
         createTestGroupPrepareScene(pGrpPixelsDrawing800x600, io_idxGroup, drawingSize, gridSettings);
-        createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600, io_idxGroup, drawingSize);
+        createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600, io_idxGroup);
     }
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
@@ -166,8 +166,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinates(
             gridSettings.setLabelsFont(QFont("Terminal"));
 
             createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown100x100, io_idxGroup, drawingSize, gridSettings);
-            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleTopDown100x100, io_idxGroup, drawingSize);
-            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(pGrpMetricsDrawingYScaleTopDown100x100, io_idxGroup, drawingSize);
+            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleTopDown100x100, io_idxGroup);
+            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(pGrpMetricsDrawingYScaleTopDown100x100, io_idxGroup);
         }
 
         ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600 = new ZS::Test::CTestStepGroup(
@@ -190,7 +190,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinates(
             gridSettings.setLabelsFont(QFont("Terminal"));
 
             createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600, io_idxGroup, drawingSize, gridSettings);
-            createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600, io_idxGroup, drawingSize);
+            createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600, io_idxGroup);
         }
     }
 
@@ -219,8 +219,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinates(
             gridSettings.setLabelsFont(QFont("Terminal"));
 
             createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp100x100, io_idxGroup, drawingSize, gridSettings);
-            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleBottomUp100x100, io_idxGroup, drawingSize);
-            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(pGrpMetricsDrawingYScaleBottomUp100x100, io_idxGroup, drawingSize);
+            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleBottomUp100x100, io_idxGroup);
+            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(pGrpMetricsDrawingYScaleBottomUp100x100, io_idxGroup);
         }
 
         ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600 = new ZS::Test::CTestStepGroup(
@@ -243,7 +243,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinates(
             gridSettings.setLabelsFont(QFont("Terminal"));
 
             createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600, io_idxGroup, drawingSize, gridSettings);
-            createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600, io_idxGroup, drawingSize);
+            createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600, io_idxGroup);
         }
     }
 
@@ -258,15 +258,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinates(
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -279,7 +277,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " PhysValShapeTransformations",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(pGrpPhysValShapes, io_idxGroup, i_drawingSize);
+    createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(pGrpPhysValShapes, io_idxGroup);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -292,15 +290,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -312,11 +308,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
 
     int idxStep = 0;
 
-    CUnit unit = i_drawingSize.unit();
-    bool bYAxisTopDown = (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
-    bool bUnitPixel = (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    CUnit unit = drawingSize.unit();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    bool bUnitPixel = (drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
-    int iDigits = bUnitPixel ? 0 : i_drawingSize.metricImageCoorsDecimals();
+    int iDigits = bUnitPixel ? 0 : drawingSize.metricImageCoorsDecimals();
 
     /* create
     ---------
@@ -512,7 +509,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
          |                       |            |                                   |
      350 +-----+-----+-----+-----+        350 +-----+-----+-----+-----+-----+-----+       250
     */
-    CPhysVal physValWidth300(300.0, unit, i_drawingSize.imageCoorsResolution());
+    CPhysVal physValWidth300(300.0, unit, drawingSize.imageCoorsResolution());
     double fWidthSetWidthAngle0 = physValWidth300.getVal();
     double fHeightSetWidthAngle0 = fHeightSetAngle0;
     QPointF ptCenterSetWidthAngle0(350.0, bYAxisTopDown ? 300.0 : 300.0);
@@ -768,7 +765,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
                                              |                       |
                                          450 +-----+-----x-----+-----+      150
     */
-    CPhysVal physValHeight200(200.0, i_drawingSize.unit(), i_drawingSize.imageCoorsResolution());
+    CPhysVal physValHeight200(200.0, drawingSize.unit(), drawingSize.imageCoorsResolution());
     double fWidthSetHeightAngle0 = fWidthSetAngle0;
     double fHeightSetHeightAngle0 = physValHeight200.getVal();
     QPointF ptCenterSetHeightAngle0(300.0, bYAxisTopDown ? 350.0 : 250.0);
@@ -1624,7 +1621,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
      350                 BL-----------------------BR      250
     */
     QPointF ptSetBottomRightBeyondTopLeftAngle0(100.0, bYAxisTopDown ? 150.0 : 450.0);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         ptSetBottomRightBeyondTopLeftAngle0.setY(450.0);
     }
     physValAngleCorrected.setVal(180.0);
@@ -11240,21 +11237,21 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines",
         /* strAddInfo   */ strMthInArgs );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
     ZS::Test::CTestStepGroup* pGrpAddLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -11289,7 +11286,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         pTestStep->setConfigValue("P1", QPointF(0.0, 0.0));
         pTestStep->setConfigValue("P2", QPointF(100.0, 0.0));
     }
@@ -11302,7 +11299,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("line.p1 {-175.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {175.0, 0.0} px");
     strlstExpectedValues.append("line.length: 350.0 px");
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("position {50.0, 0.0} mm");
         strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
@@ -11335,7 +11332,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         pTestStep->setConfigValue("P1", QPointF(100.0, 0.0));
         pTestStep->setConfigValue("P2", QPointF(100.0, 100.0));
     }
@@ -11349,7 +11346,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("line.p2 {0.0, 175.0} px");
     strlstExpectedValues.append("line.length: 350.0 px");
     strlstExpectedValues.append("position {100.0, 50.0} mm");
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("getLine.p1.x: 100.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 0.0 mm");
         strlstExpectedValues.append("getLine.p2.x: 100.0 mm");
@@ -11380,7 +11377,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         pTestStep->setConfigValue("P1", QPointF(100.0, 100.0));
         pTestStep->setConfigValue("P2", QPointF(0.0, 100.0));
     }
@@ -11393,7 +11390,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("line.p1 {175.0, 0.0} px");
     strlstExpectedValues.append("line.p2 {-175.0, 0.0} px");
     strlstExpectedValues.append("line.length: 350.0 px");
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("position {50.0, 100.0} mm");
         strlstExpectedValues.append("getLine.p1.x: 100.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
@@ -11426,7 +11423,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         pTestStep->setConfigValue("P1", QPointF(0.0, 100.0));
         pTestStep->setConfigValue("P2", QPointF(0.0, 0.0));
     }
@@ -11440,7 +11437,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("line.p2 {0.0, -175.0} px");
     strlstExpectedValues.append("line.length: 350.0 px");
     strlstExpectedValues.append("position {0.0, 50.0} mm");
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("getLine.p1.x: 0.0 mm");
         strlstExpectedValues.append("getLine.p1.y: 100.0 mm");
         strlstExpectedValues.append("getLine.p2.x: 0.0 mm");
@@ -11471,7 +11468,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)));
     pTestStep->setConfigValue("GraphObjName", strGraphObjName);
     pTestStep->setConfigValue("GraphObjKeyInTree", strKeyInTree);
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         pTestStep->setConfigValue("P1", QPointF(28.57143, 28.57143));
         pTestStep->setConfigValue("P2", QPointF(71.42857, 71.42857));
     }
@@ -11485,7 +11482,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("line.p2 {75.0, 75.0} px");
     strlstExpectedValues.append("line.length: 212.1 px");
     strlstExpectedValues.append("position {50.0, 50.0} mm");
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("getLine.p1.x: 28.6 mm");
         strlstExpectedValues.append("getLine.p1.y: 28.6 mm");
         strlstExpectedValues.append("getLine.p2.x: 71.4 mm");
@@ -11512,15 +11509,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -11533,10 +11528,10 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " DrawingScene.Convert",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(pGrpDrawingSceneConvert, io_idxGroup, i_drawingSize);
-    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(pGrpDrawingSceneConvert, io_idxGroup, i_drawingSize);
-    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(pGrpDrawingSceneConvert, io_idxGroup, i_drawingSize);
-    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(pGrpDrawingSceneConvert, io_idxGroup, i_drawingSize);
+    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(pGrpDrawingSceneConvert, io_idxGroup);
+    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(pGrpDrawingSceneConvert, io_idxGroup);
+    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(pGrpDrawingSceneConvert, io_idxGroup);
+    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(pGrpDrawingSceneConvert, io_idxGroup);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -11548,21 +11543,21 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint",
         /* strAddInfo   */ strMthInArgs );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValPoint = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -11591,7 +11586,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("{0.0, 0.0} mm");
     }
     else {
@@ -11609,7 +11604,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("{28.6, 28.6} mm");
     }
     else {
@@ -11627,7 +11622,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("{57.1, 57.1} mm");
     }
     else {
@@ -11645,7 +11640,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Point.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("{100.0, 100.0} mm");
     }
     else {
@@ -11664,7 +11659,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     idxStep = 0;
 
     double fYPos_mm = 0.0;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         fYPos_mm = 100.0;
     }
     QString strYPos = QString::number(static_cast<int>(fYPos_mm));
@@ -11682,7 +11677,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     fYPos_mm = 20.0;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         fYPos_mm = 80.0;
     }
     strYPos = QString::number(static_cast<int>(fYPos_mm));
@@ -11715,7 +11710,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setExpectedValues(strlstExpectedValues);
 
     fYPos_mm = 100.0;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         fYPos_mm = 0.0;
     }
     strYPos = QString::number(static_cast<int>(fYPos_mm));
@@ -11743,15 +11738,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -12005,21 +11998,21 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine",
         /* strAddInfo   */ strMthInArgs );
+
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValLine = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -12048,7 +12041,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("P1 {0.0, 0.0} mm");
         strlstExpectedValues.append("P2 {100.0, 0.0} mm");
         strlstExpectedValues.append("Center {50.0, 0.0} mm");
@@ -12074,7 +12067,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("P1 {100.0, 0.0} mm");
         strlstExpectedValues.append("P2 {100.0, 100.0} mm");
         strlstExpectedValues.append("Center {100.0, 50.0} mm");
@@ -12102,7 +12095,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("P1 {100.0, 100.0} mm");
         strlstExpectedValues.append("P2 {0.0, 100.0} mm");
         strlstExpectedValues.append("Center {50.0, 100.0} mm");
@@ -12128,7 +12121,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("P1 {0.0, 100.0} mm");
         strlstExpectedValues.append("P2 {0.0, 0.0} mm");
         strlstExpectedValues.append("Center {0.0, 50.0} mm");
@@ -12156,7 +12149,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     pTestStep->setConfigValue("Line.Unit", "px");
     pTestStep->setConfigValue("UnitDest", "mm");
     strlstExpectedValues.clear();
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("P1 {28.6, 28.6} mm");
         strlstExpectedValues.append("P2 {71.4, 71.4} mm");
         strlstExpectedValues.append("Center {50.0, 50.0} mm");
@@ -12186,7 +12179,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     double fP1YPos_mm = 0.0;
     double fP2YPos_mm = 0.0;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         fP1YPos_mm = 100.0;
         fP2YPos_mm = 100.0;
     }
@@ -12213,7 +12206,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     fP1YPos_mm = 0.0;
     fP2YPos_mm = 100.0;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         fP1YPos_mm = 100.0;
         fP2YPos_mm = 0.0;
     }
@@ -12235,7 +12228,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("dx: 0 px");
     strlstExpectedValues.append("dy: 350 px");
     strlstExpectedValues.append("Length: 350 px");
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("Angle: 90.0 " + Math::c_strSymbolDegree);
     }
     else {
@@ -12245,7 +12238,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     fP1YPos_mm = 100.0;
     fP2YPos_mm = 100.0;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         fP1YPos_mm = 0.0;
         fP2YPos_mm = 0.0;
     }
@@ -12272,7 +12265,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     fP1YPos_mm = 100.0;
     fP2YPos_mm = 0.0;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         fP1YPos_mm = 0.0;
         fP2YPos_mm = 100.0;
     }
@@ -12294,7 +12287,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("dx: 0 px");
     strlstExpectedValues.append("dy: -350 px");
     strlstExpectedValues.append("Length: 350 px");
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("Angle: 270.0 " + Math::c_strSymbolDegree);
     }
     else {
@@ -12304,7 +12297,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
     fP1YPos_mm = 28.6;
     fP2YPos_mm = 71.4;
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
         fP1YPos_mm = 71.4;
         fP2YPos_mm = 28.6;
     }
@@ -12326,7 +12319,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     strlstExpectedValues.append("dx: 150 px");
     strlstExpectedValues.append("dy: 150 px");
     strlstExpectedValues.append("Length: 212 px");
-    if (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
+    if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown) {
         strlstExpectedValues.append("Angle: 45.0 " + Math::c_strSymbolDegree);
     }
     else {
@@ -12345,15 +12338,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const ZS::Draw::CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
-                       ", DrawingSize {" + i_drawingSize.toString() + "}";
+                       ", IdxGroup:" + QString::number(io_idxGroup);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -12361,10 +12352,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
         /* strMethod    */ "createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect",
         /* strAddInfo   */ strMthInArgs );
 
-    bool bYAxisTopDown = (i_drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
-    double fResPxPerMM = i_drawingSize.screenResolutionInPxPerMM();
-    int cyImageHeight_px = i_drawingSize.imageHeightInPixels();
-    double fMetricHeight_mm = i_drawingSize.metricImageHeight(Units.Length.mm).getVal();
+    const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
+    bool bYAxisTopDown = (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::TopDown);
+    double fResPxPerMM = drawingSize.screenResolutionInPxPerMM();
+    int cyImageHeight_px = drawingSize.imageHeightInPixels();
+    double fMetricHeight_mm = drawingSize.metricImageHeight(Units.Length.mm).getVal();
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,

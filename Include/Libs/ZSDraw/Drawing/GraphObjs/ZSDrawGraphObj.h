@@ -456,7 +456,6 @@ public: // instance methods
 public: // instance methods
     CDrawingScene* drawingScene() const;
     CGraphObjGroup* parentGroup() const;
-    void setParentGroup(CGraphObjGroup* i_pGraphObjGroupParent);
     void onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
     //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
@@ -710,9 +709,9 @@ protected slots: // overridables
 public: // instance methods
     bool setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
+    virtual void initParentScaleParameters();
     virtual void updatePhysValCoorsOnPositionChanged();
 protected: // overridables
-    virtual void updatePhysValCoorsInParent();
     //virtual void updateTransform();
     //virtual void updateToolTip();
     //virtual void updateEditInfo();
@@ -730,9 +729,12 @@ protected: // auxiliary instance methods (method tracing)
     void emit_labelRenamed(const QString& i_strName, const QString& i_strNameNew);
     void emit_labelChanged(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
-protected: // overridable auxiliary instance methods (method tracing)
     QPointF setPosOrig(const QPointF& i_ptPos);
+    CPhysValRect setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect);
+    double setParentGroupScaleX(double i_fScaleX);
+    double setParentGroupScaleY(double i_fScaleY);
     virtual void QGraphicsItem_prepareGeometryChange();
+protected: // overridable auxiliary instance methods (method tracing)
     virtual void QGraphicsItem_setPos(const QPointF& i_pos);
     virtual void QGraphicsItem_setScale(double i_fFactor);
     virtual void QGraphicsItem_setRotation(double i_fAngle_degree);
@@ -837,11 +839,12 @@ protected: // instance members
     QVector<double> m_arfZValues;
     /*!< Rotation angle of this item. */
     ZS::PhysVal::CPhysVal m_physValRotationAngle;
-    /*!< The original, untransformed position of the item in pixels.
-         This is the position of the item in parent or scene coordinates at the time
-         the item was added to the group. When resizing the group the parent groups
-         scale factor are applied to the original untransformed position to get the
-         new position of the item. */
+    /*!< The original, untransformed position of the item in pixels in local coordinates relative
+         to the origin of the parent (center point of the parent's bounding rectangle) or to the
+         top left corner of the scene if the item does not have a parent.
+         The original position is set at the time the item is added to the parent group.
+         When resizing the group the parent groups scale factor are applied to the original
+         untransformed position to get the new position of the item. */
     QPointF m_ptPosOrig;
     /*!< When adding the item to a group the current group rectangle is taken over as the
          original group rectangle. If the parent group is resized the scale factor is calculated
@@ -932,8 +935,6 @@ protected: // !!! OBSOLETE !!! instance members
         - on adding items to groups
         - explicitly calling method "acceptCurrentAsOriginalCoors" */
     bool m_bHasValidOrigCoors;
-    /*!< In parent's coordinate system. */
-    QPointF m_ptPosOrig;
     QSizeF m_sizOrig;
     /*!< Concerning range see "Draw::getAngleRad" */
     double m_fRotAngleOrig_deg;
