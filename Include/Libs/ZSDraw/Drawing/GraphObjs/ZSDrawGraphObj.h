@@ -457,6 +457,7 @@ public: // instance methods
     CDrawingScene* drawingScene() const;
     CGraphObjGroup* parentGroup() const;
     void onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
+    void onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
     //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
     virtual void rename(const QString& i_strNameNew);
@@ -707,10 +708,13 @@ protected slots: // overridables
     virtual void onLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
     virtual void onGeometryLabelAboutToBeDestroyed(CGraphObj* i_pLabel);
 public: // instance methods
-    bool setIgnoreParentGeometryChange(bool i_bSet);
+    int blockItemChangeUpdatePhysValCoors(bool i_bBlock);
+    int blockGeometryOnSceneChangedSignal(bool i_bBlock);
+    int setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
     virtual void initParentScaleParameters();
-    virtual void updatePhysValCoorsOnPositionChanged();
+    virtual void updateTransformedCoorsOnParentChanged();
+    virtual void updateTransformedCoorsOnItemPositionChanged();
 protected: // overridables
     //virtual void updateTransform();
     //virtual void updateToolTip();
@@ -983,7 +987,7 @@ protected: // instance members
          But the group will set the new position of the already existing childs. For this the childs
          must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
          Same applies if the parent resizes itself to its content. */
-    int m_bIgnoreParentGeometryChange;
+    int m_iIgnoreParentGeometryChange;
 protected: // instance members (method tracing)
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */

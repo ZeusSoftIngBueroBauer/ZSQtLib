@@ -2270,6 +2270,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         /* strObjName   */ path(),
         /* strMethod    */ "itemChange",
         /* strAddInfo   */ strMthInArgs );
+    traceGraphObjStates(mthTracer);
 
     CGraphObj* pGraphObjThis = dynamic_cast<CGraphObj*>(this);
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -2284,21 +2285,14 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
-            QLineF lineF = line();
-            QPolygonF plg;
-            plg.append(lineF.p1());
-            plg.append(lineF.p2());
             updateLineEndArrowHeadPolygons();
             bGeometryChanged = true;
             bTreeEntryChanged = true;
         }
     }
-    else if (i_change == ItemPositionHasChanged) {
-        tracePositionInfo(mthTracer, EMethodDir::Enter);
-
+    else if (i_change == ItemParentHasChanged) {
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
-        QLineF lineF = line();
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
@@ -2306,10 +2300,25 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // If the item is a child of a group, the current (transformed) coordinates are only
             // taken over as the original coordinates if initially creating the item or when
             // adding the item to or removing the item from a group.
-            updatePhysValCoorsOnPositionChanged();
+            //initParentScaleParameters();
         }
         updateLineEndArrowHeadPolygons();
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
+        bGeometryChanged = true;
+        bTreeEntryChanged = true;
+    }
+    else if (i_change == ItemPositionHasChanged) {
+        // The object may be moved or transformed by several methods.
+        // "itemChange" is a central point to update the coordinates upon those changes.
+        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+            // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
+            // If the item is not a group and as long as the item is not added as a child to
+            // a group, the current (transformed) and original coordinates are equal.
+            // If the item is a child of a group, the current (transformed) coordinates are only
+            // taken over as the original coordinates if initially creating the item or when
+            // adding the item to or removing the item from a group.
+            updateTransformedCoorsOnItemPositionChanged();
+        }
+        updateLineEndArrowHeadPolygons();
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
@@ -2317,26 +2326,6 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         //tracePositionInfo(mthTracer, EMethodDir::Enter);
         //updateLineEndArrowHeadPolygons();
         //tracePositionInfo(mthTracer, EMethodDir::Leave);
-        bGeometryChanged = true;
-        bTreeEntryChanged = true;
-    }
-    else if (i_change == ItemParentHasChanged) {
-        tracePositionInfo(mthTracer, EMethodDir::Enter);
-
-        // The object may be moved or transformed by several methods.
-        // "itemChange" is a central point to update the coordinates upon those changes.
-        QLineF lineF = line();
-        if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
-            // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
-            // If the item is not a group and as long as the item is not added as a child to
-            // a group, the current (transformed) and original coordinates are equal.
-            // If the item is a child of a group, the current (transformed) coordinates are only
-            // taken over as the original coordinates if initially creating the item or when
-            // adding the item to or removing the item from a group.
-            initParentScaleParameters();
-        }
-        updateLineEndArrowHeadPolygons();
-        tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
@@ -2479,7 +2468,7 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
     item coordinates and to update their position in the parent group.
 
     @note This method must return immediately if the parent group is about to
-          add another child (see flag m_bIgnoreParentGeometryChange).
+          add another child (see flag m_iIgnoreParentGeometryChange).
 
     @param [in] i_pGraphObjParent
         Pointer to parent item whose geometry on the scene has been changed.
@@ -2487,7 +2476,7 @@ void CGraphObjLine::onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelecti
 void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
-    if (m_bIgnoreParentGeometryChange) {
+    if (m_iIgnoreParentGeometryChange > 0) {
         return;
     }
     QString strMthInArgs;
@@ -2585,26 +2574,72 @@ protected: // overridables of base class CGraphObj
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Updates the physical coordinates of the item depending on the items
-           local coordinates.
-
-    Called by the itemChange method if the position of the item has been changed.
-
-    @note This method is also called by the parent group if the bounding rectangle
-          of the parent group is changed on adding childs or resizing the parent
-          group to its content. If the parent changes its size the position of the
-          childs in pixels may not change. The group will force the child to update
-          it's physical coordinates relative to either the top left or bottom
-          left corner of the parents bounding rectangle.
+/*! @brief Overrides the pure virtual method of base class CGraphObj.
 */
-void CGraphObjLine::updatePhysValCoorsOnPositionChanged()
+void CGraphObjLine::updateTransformedCoorsOnParentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updatePhysValCoorsOnPositionChanged",
+        /* strMethod    */ "updateTransformedCoorsOnParentChanged",
+        /* strAddInfo   */ "" );
+    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+
+    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    QLineF lineF = line();
+    // Before mapping to parent or scene, the rotation will be reset.
+    // Otherwise transformed coordinates will be returned.
+    // And itemChange is called but should not emit the geometryOnSceneChanged signal ..
+    CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+    double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+    if (fRotationAngle_degree != 0.0) {
+        QGraphicsItem_setRotation(0.0);
+    }
+    if (parentGroup() != nullptr) {
+        QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
+        QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
+        pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
+        pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
+        CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
+        CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
+        CPhysValLine physValLine(physValPointP1, physValPointP2);
+        setPhysValLineOrig(physValLine);
+        setPhysValLineScaled(physValLine);
+        setPhysValLineScaledAndRotated(physValLine);
+    }
+    else {
+        // Please note that "mapToScene" maps the local coordinates relative to the
+        // top left corner of the item's bounding rectangle and there is no need to
+        // call "mapToBoundingRectTopLeft" beforehand.
+        QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
+        QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
+        CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
+        CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
+        CPhysValLine physValLine(physValPointP1, physValPointP2);
+        setPhysValLineOrig(physValLine);
+        setPhysValLineScaled(physValLine);
+        setPhysValLineScaledAndRotated(physValLine);
+    }
+    if (fRotationAngle_degree != 0.0) {
+        QGraphicsItem_setRotation(fRotationAngle_degree);
+    }
+
+    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the pure virtual method of base class CGraphObj.
+*/
+void CGraphObjLine::updateTransformedCoorsOnItemPositionChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateTransformedCoorsOnItemPositionChanged",
         /* strAddInfo   */ "" );
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
 

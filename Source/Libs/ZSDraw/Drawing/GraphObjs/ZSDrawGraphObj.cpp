@@ -191,7 +191,7 @@ CGraphObj::CGraphObj(
     //m_arKeyReleaseEventFunctions(),
     m_iItemChangeUpdatePhysValCoorsBlockedCounter(0),
     m_iGeometryOnSceneChangedSignalBlockedCounter(0),
-    m_bIgnoreParentGeometryChange(false),
+    m_iIgnoreParentGeometryChange(0),
     m_pTrcAdminObjCtorsAndDtor(nullptr),
     m_pTrcAdminObjItemChange(nullptr),
     m_pTrcAdminObjBoundingRect(nullptr),
@@ -427,7 +427,7 @@ CGraphObj::~CGraphObj()
     //m_arKeyReleaseEventFunctions;
     m_iItemChangeUpdatePhysValCoorsBlockedCounter = 0;
     m_iGeometryOnSceneChangedSignalBlockedCounter = 0;
-    m_bIgnoreParentGeometryChange = false;
+    m_iIgnoreParentGeometryChange = 0;
     // Method Tracing
     m_pTrcAdminObjCtorsAndDtor = nullptr;
     m_pTrcAdminObjItemChange = nullptr;
@@ -722,8 +722,35 @@ CGraphObjGroup* CGraphObj::parentGroup() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Informs the object that the parent item of the item is changed to
+/*! @brief Informs the object that the parent item of the item will be changed to
            another parent item.
+
+    @param [in] i_pGraphObjGroupPrev
+        Pointer to group the item will be removed from or nullptr, if the item don't
+        belong to a group yet.
+    @param [in] i_pGraphObjGroupNew
+        Pointer to group the item will be added to or nullptr, if the item will just
+        be removed from the current group but not added to another group.
+*/
+void CGraphObj::onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "PrevGroup: " + QString(i_pGraphObjGroupPrev == nullptr ? "null" : i_pGraphObjGroupPrev->path()) +
+            ", NewGroup: " + QString(i_pGraphObjGroupNew == nullptr ? "null" : i_pGraphObjGroupNew->path());
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::onParentGroupAboutToBeChanged",
+        /* strAddInfo   */ strMthInArgs );
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Informs the object that the parent item of the item has been changed
+           to another parent item.
 
     The method connects the slot onGraphObjParentGeometryOnSceneChanged to the
     geometryOnSceneChanged signal of the parent item. If the item already had
@@ -759,7 +786,7 @@ CGraphObjGroup* CGraphObj::parentGroup() const
         Pointer to group the item will be added to or nullptr, if the item will just
         be removed from the current group but not added to another group.
 */
-void CGraphObj::onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
+void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -771,7 +798,7 @@ void CGraphObj::onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPr
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::onParentGroupAboutToBeChanged",
+        /* strMethod    */ "CGraphObj::onParentGroupChanged",
         /* strAddInfo   */ strMthInArgs );
 
     if (i_pGraphObjGroupPrev != nullptr) {
@@ -785,6 +812,7 @@ void CGraphObj::onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPr
             this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
     }
     initParentScaleParameters();
+    updateTransformedCoorsOnParentChanged();
 }
 
 /*==============================================================================
@@ -6792,7 +6820,7 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 
     @note For usual standard shapes (not labels or selection points) this method must
           return immediately if the parent group is about to add another child
-          (see flag m_bIgnoreParentGeometryChange).
+          (see flag m_iIgnoreParentGeometryChange).
 
     @param [in] i_pGraphObjParent
         Pointer to parent item whose geometry on the scene has been changed.
@@ -6800,7 +6828,7 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
 //------------------------------------------------------------------------------
 {
-    if (m_bIgnoreParentGeometryChange) {
+    if (m_iIgnoreParentGeometryChange > 0) {
         return;
     }
     QString strMthInArgs;
@@ -6974,6 +7002,70 @@ public: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
+int CGraphObj::blockItemChangeUpdatePhysValCoors(bool i_bBlock)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bBlock);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::blockItemChangeUpdatePhysValCoors",
+        /* strAddInfo   */ strMthInArgs );
+
+    int iCounterPrev = m_iItemChangeUpdatePhysValCoorsBlockedCounter;
+    if (i_bBlock) {
+        ++m_iItemChangeUpdatePhysValCoorsBlockedCounter;
+    }
+    else if (m_iItemChangeUpdatePhysValCoorsBlockedCounter <= 0) {
+        QString strExcAddInfo = "m_iItemChangeUpdatePhysValCoorsBlockedCounter (" + QString::number(m_iItemChangeUpdatePhysValCoorsBlockedCounter) + ") <= 0";
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError, strExcAddInfo);
+    }
+    else {
+        --m_iItemChangeUpdatePhysValCoorsBlockedCounter;
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(iCounterPrev);
+    }
+    return iCounterPrev;
+}
+
+//------------------------------------------------------------------------------
+int CGraphObj::blockGeometryOnSceneChangedSignal(bool i_bBlock)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = bool2Str(i_bBlock);
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::blockGeometryOnSceneChangedSignal",
+        /* strAddInfo   */ strMthInArgs );
+
+    int iCounterPrev = m_iGeometryOnSceneChangedSignalBlockedCounter;
+    if (i_bBlock) {
+        ++m_iGeometryOnSceneChangedSignalBlockedCounter;
+    }
+    else if (m_iGeometryOnSceneChangedSignalBlockedCounter <= 0) {
+        QString strExcAddInfo = "m_iGeometryOnSceneChangedSignalBlockedCounter (" + QString::number(m_iGeometryOnSceneChangedSignalBlockedCounter) + ") <= 0";
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError, strExcAddInfo);
+    }
+    else {
+        --m_iGeometryOnSceneChangedSignalBlockedCounter;
+    }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn(iCounterPrev);
+    }
+    return iCounterPrev;
+}
+
+//------------------------------------------------------------------------------
 /*  @brief Sets the flag that geometry changes of the parent group should be ignored
            and the item should not try to resposition and rescale itself it the
            geometry of the parent is changed.
@@ -6992,7 +7084,7 @@ public: // instance methods
 
     @return Previous value of the flag.
 */
-bool CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
+int CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7006,8 +7098,17 @@ bool CGraphObj::setIgnoreParentGeometryChange(bool i_bSet)
         /* strMethod    */ "CGraphObj::setIgnoreParentGeometryChange",
         /* strAddInfo   */ strMthInArgs );
 
-    int iIgnorePrev = m_bIgnoreParentGeometryChange;
-    m_bIgnoreParentGeometryChange = i_bSet;
+    int iIgnorePrev = m_iIgnoreParentGeometryChange;
+    if (i_bSet) {
+        ++m_iIgnoreParentGeometryChange;
+    }
+    else if (m_iIgnoreParentGeometryChange <= 0) {
+        QString strExcAddInfo = "m_iIgnoreParentGeometryChange (" + QString::number(m_iIgnoreParentGeometryChange) + ") <= 0";
+        throw CException(__FILE__, __LINE__, EResultInternalProgramError, strExcAddInfo);
+    }
+    else {
+        --m_iIgnoreParentGeometryChange;
+    }
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         mthTracer.setMethodReturn(iIgnorePrev);
     }
@@ -7019,35 +7120,6 @@ protected: // overridables
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-/*! @brief Pure virtual method which must be overridden by derived classes to
-           update the physical coordinates of the item depending on the items
-           local coordinates.
-
-    Called by the itemChange method if the position of the item has been changed.
-
-    @note This method is also called by the parent group if the bounding rectangle
-          of the parent group is changed on adding childs or resizing the parent
-          group to its content. If the parent changes its size the position of the
-          childs in pixels may not change. The group will force the child to update
-          it's physical coordinates relative to either the top left or bottom
-          left corner of the parents bounding rectangle.
-*/
-void CGraphObj::updatePhysValCoorsOnPositionChanged()
-//------------------------------------------------------------------------------
-{
-    CMethodTracer mthTracer(
-        /* pAdminObj    */ m_pTrcAdminObjItemChange,
-        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::updatePhysValCoorsOnPositionChanged",
-        /* strAddInfo   */ "" );
-    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
-    #pragma message(__TODO__"Pure virtual")
-    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
-    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
-}
-
-//------------------------------------------------------------------------------
 /*! @brief Initializes (resets) the items scale transformation parameters within its parent.
 
     The method saves the current pyhsical rectangle of the parent group as the parent's
@@ -7055,12 +7127,12 @@ void CGraphObj::updatePhysValCoorsOnPositionChanged()
     is stored as the original position (relative to the origin (center point) of the
     parents bounding). The group scale parameters are reset to 1.0.
 
-    Called by the itemChange method if the parent has been changed.
+    Called by the onParentGroupChanged method if the parent is going to been changed.
 
-    @note This method is also called by the parent group if the bounding rectangle
-          of the parent group is changed on adding childs or resizing the parent
-          group to its content as in this case the parent group is considered to
-          bo no longer scaled but has got a new original size.
+    This method is also called by the parent group if the bounding rectangle
+    of the parent group is changed on adding childs or resizing the parent
+    group to its content as in this case the parent group is considered to
+    bo no longer scaled but has got a new original size.
 */
 void CGraphObj::initParentScaleParameters()
 //------------------------------------------------------------------------------
@@ -7086,6 +7158,55 @@ void CGraphObj::initParentScaleParameters()
     setParentGroupScaleY(1.0);
 
     traceParentGroupPositionInfo(mthTracer, EMethodDir::Leave);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Pure virtual method which must be overridden by derived classes to
+           update the physical coordinates of the item depending on the items
+           local coordinates.
+
+    This method is also called by the parent group if the bounding rectangle
+    of the parent group is changed on adding childs or resizing the parent
+    group to its content. If the parent changes its size the position of the
+    childs in pixels may not change. The group will force the child to update
+    it's physical coordinates relative to either the top left or bottom
+    left corner of the parents bounding rectangle.
+*/
+void CGraphObj::updateTransformedCoorsOnParentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::updateTransformedCoorsOnParentChanged",
+        /* strAddInfo   */ "" );
+    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Pure virtual method which must be overridden by derived classes to
+           update the physical coordinates of the item depending on the items
+           local coordinates.
+
+    Called by the itemChange method if the position of the item has been changed.
+*/
+void CGraphObj::updateTransformedCoorsOnItemPositionChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::updateTransformedCoorsOnItemPositionChanged",
+        /* strAddInfo   */ "" );
+    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
 }
 
 ////------------------------------------------------------------------------------
@@ -7881,7 +8002,7 @@ void CGraphObj::traceGraphObjStates(
         strRuntimeInfo +=
             "SignalBlockedCounter {ItemChangeUpdatePhysValCoors: " + QString::number(m_iItemChangeUpdatePhysValCoorsBlockedCounter) +
             ", GeometryOnSceneChanged: " + QString::number(m_iGeometryOnSceneChangedSignalBlockedCounter) +
-            ", IgnoreParentGeometryChange: " + bool2Str(m_bIgnoreParentGeometryChange) + "}";
+            ", IgnoreParentGeometryChange: " + QString::number(m_iIgnoreParentGeometryChange) + "}";
         i_mthTracer.trace(strRuntimeInfo);
     }
 }

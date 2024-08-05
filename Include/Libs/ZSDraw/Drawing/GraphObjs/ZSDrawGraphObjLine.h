@@ -197,8 +197,9 @@ protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
-protected: // overridables of base class CGraphObj
-    virtual void updatePhysValCoorsOnPositionChanged() override;
+public: // must overridables of base class CGraphObj
+    virtual void updateTransformedCoorsOnParentChanged() override;
+    virtual void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // instance methods
     virtual bool lineEndArrowHeadPolygonsNeedUpdate(const CEnumLinePoint& i_linePoint, const CDrawSettings& i_drawSettingsOld) const;
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());

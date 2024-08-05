@@ -224,10 +224,12 @@ protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
-public: // overridables of base class CGraphObj
-    virtual void updatePhysValCoorsOnPositionChanged() override;
+public: // must overridables of base class CGraphObj
+    virtual void updateTransformedCoorsOnParentChanged() override;
+    virtual void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // auxiliary instance methods
     void updateDivLinesMetrics(const QSizeF& i_size_px, const QSizeF& i_size_metric);
+    QRectF getRectScaled(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectOrig(const QRectF& i_rectOrig) const;
     CPhysValRect getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const;
     QPointF getItemPosAndLocalCoors(const CPhysValRect& i_physValRect, QRectF& o_rect, ZS::PhysVal::CPhysVal& o_physValAngle) const;
