@@ -257,8 +257,13 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     //createTestGroupImageSizeAndObjectCoordinates(pGrpPixelsDrawing, idxGroup);
 
     createTestGroupPrepareScene(pGrpPixelsDrawing, idxGroup, drawingSize, gridSettings);
-    createTestGroupAddObjects(pGrpPixelsDrawing, idxGroup);
-    //createTestGroupDrawObjects(nullptr, idxGroup);
+
+    ZS::Test::CTestStepGroup* pGrpAddObjects = new ZS::Test::CTestStepGroup(
+        /* pTest        */ this,
+        /* strName      */ "Group " + QString::number(++idxGroup) + " Add Objects",
+        /* pTSGrpParent */ pGrpPixelsDrawing );
+    createTestGroupAddObjects(pGrpAddObjects, idxGroup);
+    //createTestGroupDrawObjects(pGrpAddObjects, idxGroup);
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -295,7 +300,7 @@ protected: // instance methods
 ==============================================================================*/
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupDrawingSize(
+void CTest::createTestGroupDrawingSize(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -370,14 +375,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawingSize(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpDrawingSize->path());
     }
-    return pGrpDrawingSize;
 
 } // createTestGroupDrawingSize
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
+void CTest::createTestGroupPrepareScene(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
     const CDrawingSize& i_drawingSize, const CDrawGridSettings& i_gridSettings)
 //------------------------------------------------------------------------------
@@ -482,14 +485,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPrepareScene(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpPrepareScene->path());
     }
-    return pGrpPrepareScene;
 
 } // createTestGroupPrepareScene
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
+void CTest::createTestGroupSaveLoadFile(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -538,9 +539,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupSaveLoadFile(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpSaveLoadFile->path());
     }
-    return pGrpSaveLoadFile;
 
 } // createTestGroupSaveLoadFile
 

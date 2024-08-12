@@ -2285,6 +2285,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
             updateLineEndArrowHeadPolygons();
             bGeometryChanged = true;
             bTreeEntryChanged = true;
@@ -2294,6 +2295,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+            //tracePositionInfo(mthTracer, EMethodDir::Enter);
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
@@ -2301,15 +2303,16 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // taken over as the original coordinates if initially creating the item or when
             // adding the item to or removing the item from a group.
             //initParentScaleParameters();
+            //bGeometryChanged = true;
         }
         updateLineEndArrowHeadPolygons();
-        bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemPositionHasChanged) {
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // If the item is not a group and as long as the item is not added as a child to
             // a group, the current (transformed) and original coordinates are equal.
@@ -2317,15 +2320,14 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
             // taken over as the original coordinates if initially creating the item or when
             // adding the item to or removing the item from a group.
             updateTransformedCoorsOnItemPositionChanged();
+            bGeometryChanged = true;
         }
         updateLineEndArrowHeadPolygons();
-        bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemRotationHasChanged) {
-        //tracePositionInfo(mthTracer, EMethodDir::Enter);
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
         //updateLineEndArrowHeadPolygons();
-        //tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
@@ -2357,6 +2359,7 @@ QVariant CGraphObjLine::itemChange( GraphicsItemChange i_change, const QVariant&
     }
 
     if (bGeometryChanged) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
         emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {
@@ -2586,6 +2589,8 @@ void CGraphObjLine::updateTransformedCoorsOnParentChanged()
         /* strMethod    */ "updateTransformedCoorsOnParentChanged",
         /* strAddInfo   */ "" );
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+
+    initParentScaleParameters();
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QLineF lineF = line();

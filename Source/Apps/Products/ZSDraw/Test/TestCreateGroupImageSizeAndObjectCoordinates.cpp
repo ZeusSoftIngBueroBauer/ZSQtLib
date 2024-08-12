@@ -50,7 +50,7 @@ class CTest : public Test::CTest
 *******************************************************************************/
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinates(
+void CTest::createTestGroupImageSizeAndObjectCoordinates(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -250,14 +250,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinates(
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpImageSizeAndObjectCoordinates->path());
     }
-    return pGrpImageSizeAndObjectCoordinates;
 
 } // createTestGroupImageSizeAndObjectCoordinates
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -282,14 +280,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpPhysValShapes->path());
     }
-    return pGrpPhysValShapes;
 
 } // createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -11058,14 +11054,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesTra
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpTransformRect->path());
     }
-    return pGrpTransformRect;
 
 } // createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -11229,14 +11223,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesPix
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpAddLines->path());
     }
-    return pGrpAddLines;
 
 } // createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -11501,14 +11493,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpAddLines->path());
     }
-    return pGrpAddLines;
 
 } // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -11536,13 +11526,11 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpDrawingSceneConvert->path());
     }
-    return pGrpDrawingSceneConvert;
 }
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -11730,14 +11718,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpConvertToPhysValPoint->path());
     }
-    return pGrpConvertToPhysValPoint;
 
 } // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -11990,14 +11976,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpConvertToPhysValSize->path());
     }
-    return pGrpConvertToPhysValSize;
 
 } // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -12330,14 +12314,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpConvertToPhysValLine->path());
     }
-    return pGrpConvertToPhysValLine;
 
 } // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(
+void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(
     ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
 //------------------------------------------------------------------------------
 {
@@ -12536,9 +12518,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupImageSizeAndObjectCoordinatesMet
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
         mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpConvertToPhysValRect->path());
     }
-    return pGrpConvertToPhysValRect;
 
 } // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect
 

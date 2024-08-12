@@ -463,9 +463,6 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
                     QPointF ptPosChildPrev = pGraphicsItemChildExisting->pos();
                     QPointF ptPosChildNew = ptPosChildPrev - ptMove;
                     pGraphicsItemChildExisting->setPos(ptPosChildNew);
-                    // The childs was not notified about the geometry change (see above) but has to reset
-                    // the scale transformation parameters of the parent.
-                    pGraphObjChildExisting->initParentScaleParameters();
                     // As on calling "setPos" the position may not have been changed, force the child
                     // to update it's original shape points in physical coordinates relative to either
                     // the top left or bottom left corner of the parents bounding rectangle.
@@ -477,17 +474,13 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
 
         // The newly added child will be positioned by the graphics system but the positionChange
         // event in the graphics system does not take the current size of the group into account.
-        // When mapping local coordinates into parent coordinates and vice versa the parent
-        // group must have been set. For this the new CGraphObjParent is set and the graph object is
+        // When mapping local coordinates into parent coordinates and vice versa the new parent
+        // group must have been set. For this the new parent graphical object is set and the graph object is
         // moved to its new position in the tree of objects before adding the item to the GraphicsItemGroup.
         // In addition the signal/slot connection of geometryOnSceneChanged need to be newly set.
         CGraphObjGroup* pGraphObjGroupPrev = i_pGraphObj->parentGroup();
         i_pGraphObj->onParentGroupAboutToBeChanged(pGraphObjGroupPrev, this);
         m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, this);
-        // On adding the item to the graphics item group, the item will get its new position and
-        // itemChange is called with PositionHasChanged. So call this method after onParentGroupChanged
-        // as to update the transformed coordinates on position change the parent and the parent
-        // scale parameters must have already been set.
         i_pGraphObj->blockItemChangeUpdatePhysValCoors(true);
         QGraphicsItemGroup_addToGroup(pGraphicsItemChild);
         i_pGraphObj->blockItemChangeUpdatePhysValCoors(false);
@@ -530,20 +523,18 @@ void CGraphObjGroup::removeFromGroup( CGraphObj* i_pGraphObj )
         throw ZS::System::CException(__FILE__, __LINE__, EResultArgOutOfRange, "Cannot only remove direct childs");
     }
     else {
-        QRectF rctBoundingThis = getBoundingRect(); // Used if the group will have no more childs anymore
         // The removed child will be positioned by the graphics system.
-        // When mapping local coordinates into parent coordinates and vice versa the parent
-        // group must have been updated. So the new parent graphical object is set before
-        // removing the item from the GraphicsItemGroup.
+        // When mapping local coordinates into parent coordinates and vice versa the new parent
+        // group must have been set. So the new parent graphical object is set and the graph object is
+        // moved to its new position in the tree of objects before removing the item from the GraphicsItemGroup.
         // In addition the signal/slot connection of geometryOnSceneChanged need to be newly set.
-        CGraphObjGroup* pGraphObjGroupParent = parentGroup();
-        CIdxTreeEntry* pTreeEntryParent = parentBranch();
+        CGraphObjGroup* pGraphObjGroupNew = parentGroup();
+        i_pGraphObj->onParentGroupAboutToBeChanged(this, pGraphObjGroupNew);
+        m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, pGraphObjGroupNew);
         i_pGraphObj->blockItemChangeUpdatePhysValCoors(true);
-        i_pGraphObj->onParentGroupAboutToBeChanged(this, pGraphObjGroupParent);
-        m_pDrawingScene->getGraphObjsIdxTree()->move(i_pGraphObj, pTreeEntryParent);
         QGraphicsItemGroup_removeFromGroup(pGraphicsItemChild);
         i_pGraphObj->blockItemChangeUpdatePhysValCoors(false);
-        i_pGraphObj->onParentGroupChanged(this, pGraphObjGroupParent);
+        i_pGraphObj->onParentGroupChanged(this, pGraphObjGroupNew);
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
 }
@@ -624,7 +615,7 @@ void CGraphObjGroup::resizeToContent()
                 QPointF ptPosChildPrev = pGraphicsItemChildExisting->pos();
                 QPointF ptPosChildNew = ptPosChildPrev - ptMove;
                 pGraphicsItemChildExisting->setPos(ptPosChildNew);
-                // The childs was not notified about the geometry change (see above) but has to reset
+                // The child was not notified about the geometry change (see above) but has to reset
                 // the scale transformation parameters of the parent.
                 pGraphObjChildExisting->initParentScaleParameters();
                 // As on calling "setPos" the position may not have been changed, force the child
@@ -3134,6 +3125,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     if (i_change == ItemSceneHasChanged) {
         // The item may have been removed from the scene.
         if (scene() != nullptr) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
             //updateInternalScenePos();
             bGeometryChanged = true;
             bTreeEntryChanged = true;
@@ -3143,29 +3135,31 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+            //tracePositionInfo(mthTracer, EMethodDir::Enter);
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
             //initParentScaleParameters();
+            //bGeometryChanged = true;
         }
-        bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemPositionHasChanged) {
         // The object may be moved or transformed by several methods.
         // "itemChange" is a central point to update the coordinates upon those changes.
         if (m_iItemChangeUpdatePhysValCoorsBlockedCounter == 0) {
+            tracePositionInfo(mthTracer, EMethodDir::Enter);
             // Update the object shape point in parent coordinates kept in the unit of the drawing scene.
             // For groups the original coordinates are only updated when adding the group to
             // or removing the group from another group.
             updateTransformedCoorsOnItemPositionChanged();
             //applyGeometryChangeToChildrens();
+            bGeometryChanged = true;
         }
-        bGeometryChanged = true;
         bTreeEntryChanged = true;
     }
     else if (i_change == ItemRotationHasChanged) {
-        //tracePositionInfo(mthTracer, EMethodDir::Enter);
+        tracePositionInfo(mthTracer, EMethodDir::Enter);
         //updateLineEndArrowHeadPolygons();
         //tracePositionInfo(mthTracer, EMethodDir::Leave);
         bGeometryChanged = true;
@@ -3212,6 +3206,7 @@ QVariant CGraphObjGroup::itemChange( GraphicsItemChange i_change, const QVariant
     }
 
     if (bGeometryChanged) {
+        tracePositionInfo(mthTracer, EMethodDir::Leave);
         emit_geometryOnSceneChanged();
     }
     if (bSelectedChanged) {
@@ -3473,8 +3468,12 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged()
     // Otherwise transformed coordinates will be returned.
     // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
     CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-    QRectF rectF = getRectScaled(m_rectOrig);
-    setRectScaled(rectF);
+
+    initParentScaleParameters();
+
+    setRectOrig(m_rectScaled);
+    //QRectF rectF = getRectScaled(m_rectOrig);
+    //setRectScaled(rectF);
     CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
     setPhysValRectOrig(physValRect);
     physValRect = getPhysValRectScaled(m_physValRectOrig);

@@ -811,7 +811,6 @@ void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGrap
             i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
             this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
     }
-    initParentScaleParameters();
     updateTransformedCoorsOnParentChanged();
 }
 
@@ -7184,6 +7183,9 @@ void CGraphObj::updateTransformedCoorsOnParentChanged()
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
     #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+    // The childs were not notified about the geometry change (see above) but has to reset
+    // the scale transformation parameters of the parent.
+    initParentScaleParameters();
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
 }
 
