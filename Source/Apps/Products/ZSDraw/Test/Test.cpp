@@ -245,8 +245,6 @@ void CTest::setMainWindow( CMainWindow* i_pMainWindow )
     gridSettings.setLabelsVisible(true);
     gridSettings.setLabelsFont(QFont("Terminal"));
 
-    int idxGroup = 0;
-
     //createTestGroupDrawingSize(nullptr, idxGroup);
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing = new ZS::Test::CTestStepGroup(
@@ -314,8 +312,6 @@ void CTest::createTestGroupDrawingSize(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawingSize",
         /* strAddInfo   */ strMthInArgs );
-
-    int idxStep = 0;
 
     ZS::Test::CTestStepGroup* pGrpDrawingSize = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -397,8 +393,6 @@ void CTest::createTestGroupPrepareScene(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupPrepareScene",
         /* strAddInfo   */ strMthInArgs );
-
-    int idxStep = 0;
 
     ZS::Test::CTestStep* pTestStep = nullptr;
 
@@ -490,28 +484,20 @@ void CTest::createTestGroupPrepareScene(
 } // createTestGroupPrepareScene
 
 //------------------------------------------------------------------------------
-void CTest::createTestGroupSaveLoadFile(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+void CTest::createTestStepSaveLoadFile(
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+                       ", IdxStep:" + QString::number(io_idxStep);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
-        /* strMethod    */ "createTestGroupSaveLoadFile",
+        /* strMethod    */ "createTestStepSaveLoadFile",
         /* strAddInfo   */ strMthInArgs );
-
-    ZS::Test::CTestStep* pTestStep = nullptr;
-    int idxStep = 0;
-
-    ZS::Test::CTestStepGroup* pGrpSaveLoadFile = new ZS::Test::CTestStepGroup(
-        /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Save/Load File",
-        /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QString strAbsDirPath =
         QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + QDir::separator() + "Test";
@@ -527,21 +513,21 @@ void CTest::createTestGroupSaveLoadFile(
                       drawingSize.metricUnit().symbol() + "-" + drawingSize.yScaleAxisOrientation().toString() + ".xml";
     }
 
-    pTestStep = new ZS::Test::CTestStep(
+    ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SaveLoadFile",
+        /* strName         */ "Step " + QString::number(++io_idxStep) + " SaveLoadFile",
         /* strOperation    */ "DrawingScene.save.load(" + strAbsDirPath + "/" + strFileName + ")",
-        /* pGrpParent      */ pGrpSaveLoadFile,
+        /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepSaveLoadFile(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("AbsDirPath", strAbsDirPath);
     pTestStep->setConfigValue("FileName", strFileName);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
+        QString strMthOutArgs = "IdxStep:" + QString::number(io_idxStep);
         mthTracer.setMethodOutArgs(strMthOutArgs);
     }
 
-} // createTestGroupSaveLoadFile
+} // createTestStepSaveLoadFile
 
 /*==============================================================================
 protected slots:
@@ -697,6 +683,8 @@ void CTest::doTestStepClearDrawingScene( ZS::Test::CTestStep* i_pTestStep )
     CGraphObjConnectionPoint::s_iInstCount = 0;
     CGraphObjConnectionLine::s_iInstCount = 0;
     CGraphObjGroup::s_iInstCount = 0;
+
+    m_hshGraphObjNameToKeys.clear();
 
     i_pTestStep->setResultValue("");
 }

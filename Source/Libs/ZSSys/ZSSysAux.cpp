@@ -3148,8 +3148,8 @@ QString ZS::System::qPoint2Str( const QPointF& i_pt, const QString& i_strSeparat
 {
     QString str;
     if (i_bRound2Nearest && i_iPrecision > 0) {
-        str = QString::number(Math::round2Nearest(i_pt.x(),1), i_cF, i_iPrecision) + i_strSeparator
-            + QString::number(Math::round2Nearest(i_pt.y(),1), i_cF, i_iPrecision);
+        str = QString::number(Math::round2Nearest(i_pt.x(),i_iPrecision), i_cF, i_iPrecision) + i_strSeparator
+            + QString::number(Math::round2Nearest(i_pt.y(),i_iPrecision), i_cF, i_iPrecision);
     }
     else {
         str = QString::number(i_pt.x(), i_cF, i_iPrecision) + i_strSeparator
@@ -3221,8 +3221,8 @@ QString ZS::System::qSize2Str( const QSizeF& i_size, const QString& i_strSeparat
 {
     QString str;
     if (i_bRound2Nearest && i_iPrecision > 0) {
-        str = QString::number(Math::round2Nearest(i_size.width(),1), i_cF, i_iPrecision) + i_strSeparator
-            + QString::number(Math::round2Nearest(i_size.height(),1), i_cF, i_iPrecision);
+        str = QString::number(Math::round2Nearest(i_size.width(),i_iPrecision), i_cF, i_iPrecision) + i_strSeparator
+            + QString::number(Math::round2Nearest(i_size.height(),i_iPrecision), i_cF, i_iPrecision);
     }
     else {
         str = QString::number(i_size.width(), i_cF, i_iPrecision) + i_strSeparator

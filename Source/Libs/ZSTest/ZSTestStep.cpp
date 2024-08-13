@@ -46,6 +46,17 @@ using namespace ZS::Test;
 class CTestStep : public CAbstractTestStepIdxTreeEntry
 *******************************************************************************/
 
+int CTestStep::s_iInstCount = 0;
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the number of test step instances.
+*/
+int CTestStep::testStepCount()
+//------------------------------------------------------------------------------
+{
+    return s_iInstCount;
+}
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -99,6 +110,8 @@ CTestStep::CTestStep(
     m_bBreakpoint(false),
     m_breakpointEnabled(EEnabled::Yes)
 {
+    ++s_iInstCount;
+
     if (!QObject::connect(
         /* pObjSender   */ this,
         /* szSignal     */ SIGNAL(doTestStep(ZS::Test::CTestStep*)),

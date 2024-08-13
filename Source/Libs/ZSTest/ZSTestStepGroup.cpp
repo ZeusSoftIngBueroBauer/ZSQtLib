@@ -45,6 +45,17 @@ using namespace ZS::Test;
 class CTestStepGroup : public CAbstractTestStepIdxTreeEntry
 *******************************************************************************/
 
+int CTestStepGroup::s_iInstCount = 0;
+
+//------------------------------------------------------------------------------
+/*! @brief Returns the number of test group instances.
+*/
+int CTestStepGroup::testGroupCount()
+//------------------------------------------------------------------------------
+{
+    return s_iInstCount;
+}
+
 /*==============================================================================
 public: // ctors and dtor
 ==============================================================================*/
@@ -66,13 +77,14 @@ CTestStepGroup::CTestStepGroup(
     CAbstractTestStepIdxTreeEntry(
         i_pTest, CIdxTreeEntry::EEntryType::Branch, i_strName, i_pTSGrpParent)
 {
-} // ctor
+    ++s_iInstCount;
+}
 
 //------------------------------------------------------------------------------
 CTestStepGroup::~CTestStepGroup()
 //------------------------------------------------------------------------------
 {
-} // dtor
+}
 
 /*==============================================================================
 protected: // ctor for class CTestGroupRoot

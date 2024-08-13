@@ -93,7 +93,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawObjects(
 
     createTestGroupPrepareScene(pGrpDrawObject, io_idxGroup, drawingSize, gridSettings);
     //createTestGroupDrawStandardShapes(pGrpDrawObject, io_idxGroup, drawingSize);
-    createTestGroupSaveLoadFile(pGrpDrawObject, io_idxGroup, drawingSize);
+    createTestStepSaveLoadFile(pGrpDrawObject, ++idxStep);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -143,7 +143,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPixelsDrawing(
     createTestGroupPrepareScene(pGrpPixelsDrawing, io_idxGroup, drawingSize, gridSettings);
     createTestGroupAddStandardShapes(pGrpPixelsDrawing, io_idxGroup, drawingSize);
     createTestGroupDrawStandardShapes(pGrpPixelsDrawing, io_idxGroup, drawingSize);
-    createTestGroupSaveLoadFile(pGrpPixelsDrawing, io_idxGroup, drawingSize);
+    createTestStepSaveLoadFile(pGrpPixelsDrawing, ++idxStep);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -227,7 +227,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleTopDown(
     createTestGroupPrepareScene(pGrpMetricsDrawing, io_idxGroup, drawingSize, gridSettings);
     createTestGroupAddStandardShapes(pGrpMetricsDrawing, io_idxGroup, drawingSize);
     createTestGroupDrawStandardShapes(pGrpMetricsDrawing, io_idxGroup, drawingSize);
-    createTestGroupSaveLoadFile(pGrpMetricsDrawing, io_idxGroup, drawingSize);
+    createTestStepSaveLoadFile(pGrpMetricsDrawing, ++idxStep);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -278,7 +278,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleBottomUp(
     createTestGroupPrepareScene(pGrpMetricsDrawing, io_idxGroup, drawingSize, gridSettings);
     createTestGroupAddStandardShapes(pGrpMetricsDrawing, io_idxGroup, drawingSize);
     createTestGroupDrawStandardShapes(pGrpMetricsDrawing, io_idxGroup, drawingSize);
-    createTestGroupSaveLoadFile(pGrpMetricsDrawing, io_idxGroup, drawingSize);
+    createTestStepSaveLoadFile(pGrpMetricsDrawing, ++idxStep);
 
     if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
         QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
@@ -397,8 +397,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     bool bUnitPixel = (i_drawingSize.dimensionUnit() == EScaleDimensionUnit::Pixels);
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
     int iDigits = bUnitPixel ? 0 : i_drawingSize.metricImageCoorsDecimals();
-
-    int idxStep = 0;
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -741,8 +739,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     QString strUnit = bUnitPixel ? Units.Length.px.symbol() : Units.Length.mm.symbol();
     int iDigits = bUnitPixel ? 0 : i_drawingSize.metricImageCoorsDecimals();
 
-    int idxStep = 0;
-
     /*-----------------------------------------------------------------------
     Pixels Drawing:
         Size: 800 * 600 Pixels
@@ -1044,8 +1040,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Modify Checkmark Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    int idxStep = 0;
-
     // Line2 (Checkmark line from left to bottom) in Group1
     //-----------------------------------------------------
 
@@ -1208,8 +1202,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
-
-    int idxStep = 0;
 
     /*-----------------------------------------------------------------------
     Pixels Drawing:
@@ -2174,8 +2166,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " Resize " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine0 );
 
-    int idxStep = 0;
-
     addTestStepDrawMouseEventsMove(
         pGrpDrawResizeLine0, idxStep, QPoint(90, 140), QPoint(100, 148));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
@@ -2461,8 +2451,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeGroup);
     QString strInstCountKey = strFactoryGroupName + "::" + strGraphObjType;
-
-    int idxStep = 0;
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -2812,8 +2800,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateObject(
         /* strMethod    */ "createTestGroupDrawMouseEventsCreateObject",
         /* strAddInfo   */ strMthInArgs );
 
-    int idxStep = 0;
-
     ZS::Test::CTestStep* pTestStep = nullptr;
 
     ZS::Test::CTestStepGroup* pGrpDrawMouseEventsCreateObject = new ZS::Test::CTestStepGroup(
@@ -2876,8 +2862,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateGroup(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupDrawMouseEventsCreateGroup",
         /* strAddInfo   */ strMthInArgs );
-
-    int idxStep = 0;
 
     ZS::Test::CTestStep* pTestStep = nullptr;
 
@@ -2952,8 +2936,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveTextLabel(
         /* strMethod    */ "createTestGroupShowAndMoveTextLabel",
         /* strAddInfo   */ strMthInArgs );
 
-    int idxStep = 0;
-
     ZS::Test::CTestStepGroup* pGrpShowAndMoveLabel = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + i_strGraphObjName + " Text Label " + i_strLabelName,
@@ -3001,8 +2983,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveGeometryLabel(
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strMethod    */ "createTestGroupShowAndMoveGeometryLabel",
         /* strAddInfo   */ strMthInArgs );
-
-    int idxStep = 0;
 
     ZS::Test::CTestStep* pTestStep = nullptr;
 

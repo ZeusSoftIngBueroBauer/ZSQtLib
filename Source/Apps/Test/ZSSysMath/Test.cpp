@@ -239,15 +239,17 @@ CTest::CTest() :
     /* 39 */ pTestStep->addDataRow({{"Val", 1.15}, {"TrailingDigits", 0}, {"Result", 1.0}});
     /* 40 */ pTestStep->addDataRow({{"Val", 1.14}, {"TrailingDigits", 1}, {"Result", 1.1}});
     /* 41 */ pTestStep->addDataRow({{"Val", 1.16}, {"TrailingDigits", 1}, {"Result", 1.2}});
-    /* 42 */ pTestStep->addDataRow({{"Val", -1.15}, {"TrailingDigits", 0}, {"Result", -1.0}});
-    /* 43 */ pTestStep->addDataRow({{"Val", -1.14}, {"TrailingDigits", 1}, {"Result", -1.1}});
-    /* 44 */ pTestStep->addDataRow({{"Val", -1.16}, {"TrailingDigits", 1}, {"Result", -1.2}});
-    /* 45 */ pTestStep->addDataRow({{"Val", 1.65}, {"TrailingDigits", 0}, {"Result", 2.0}});
-    /* 46 */ pTestStep->addDataRow({{"Val", 1.64}, {"TrailingDigits", 1}, {"Result", 1.6}});
-    /* 47 */ pTestStep->addDataRow({{"Val", 1.66}, {"TrailingDigits", 1}, {"Result", 1.7}});
-    /* 48 */ pTestStep->addDataRow({{"Val", -1.65}, {"TrailingDigits", 0}, {"Result", -2.0}});
-    /* 49 */ pTestStep->addDataRow({{"Val", -1.64}, {"TrailingDigits", 1}, {"Result", -1.6}});
-    /* 50 */ pTestStep->addDataRow({{"Val", -1.66}, {"TrailingDigits", 1}, {"Result", -1.7}});
+    /* 42 */ pTestStep->addDataRow({{"Val", 1.645}, {"TrailingDigits", 1}, {"Result", 1.6}});
+    /* 43 */ pTestStep->addDataRow({{"Val", -1.15}, {"TrailingDigits", 0}, {"Result", -1.0}});
+    /* 44 */ pTestStep->addDataRow({{"Val", -1.14}, {"TrailingDigits", 1}, {"Result", -1.1}});
+    /* 45 */ pTestStep->addDataRow({{"Val", -1.16}, {"TrailingDigits", 1}, {"Result", -1.2}});
+    /* 46 */ pTestStep->addDataRow({{"Val", 1.65}, {"TrailingDigits", 0}, {"Result", 2.0}});
+    /* 47 */ pTestStep->addDataRow({{"Val", 1.64}, {"TrailingDigits", 1}, {"Result", 1.6}});
+    /* 48 */ pTestStep->addDataRow({{"Val", 1.66}, {"TrailingDigits", 1}, {"Result", 1.7}});
+    /* 49 */ pTestStep->addDataRow({{"Val", -1.65}, {"TrailingDigits", 0}, {"Result", -2.0}});
+    /* 50 */ pTestStep->addDataRow({{"Val", -1.64}, {"TrailingDigits", 1}, {"Result", -1.6}});
+    /* 51 */ pTestStep->addDataRow({{"Val", -1.645}, {"TrailingDigits", 1}, {"Result", -1.6}});
+    /* 52 */ pTestStep->addDataRow({{"Val", -1.66}, {"TrailingDigits", 1}, {"Result", -1.7}});
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,

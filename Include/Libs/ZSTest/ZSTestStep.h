@@ -43,6 +43,7 @@ class ZSTESTDLL_API CTestStep : public CAbstractTestStepIdxTreeEntry
 public: // class methods
     static QString NameSpace() { return "ZS::Test"; }
     static QString ClassName() { return "CTestStep"; }
+    static int testStepCount();
 public: // ctors and dtor
     CTestStep(
         CTest*          i_pTest,
@@ -103,27 +104,30 @@ private: // default ctor not allowed
     CTestStep();
 private: // copy ctor not allowed
     CTestStep( const CTestStep& );
+private: // class members
+    /*!< Counter for number of created instances. */
+    static int s_iInstCount;
 protected: // instance members
     /*!< Operation which will be executed (e.g. NameSpace::Class::Inst.method(args)). */
-    QString                  m_strOperation;
+    QString m_strOperation;
     /*!< Description of the test step. */
-    QString                  m_strDescription;
+    QString m_strDescription;
     /*!< Hash with config values assigned to the test step. */
     QHash<QString, QVariant> m_hshConfigValues;
     /*!< List with the expected result values. */
-    QString                  m_strInstruction;
+    QString m_strInstruction;
     /*!< List with the expected result values. */
-    QStringList              m_strlstExpectedValues;
+    QStringList m_strlstExpectedValues;
     /*!< List with the result values. */
-    QStringList              m_strlstResultValues;
+    QStringList m_strlstResultValues;
     /*!< Start time of the test step in seconds since start of the whole test. */
-    double                   m_fTimeTestStart_s;
+    double m_fTimeTestStart_s;
     /*!< End time of the test step in seconds since start of the whole test. */
-    double                   m_fTimeTestEnd_s;
+    double m_fTimeTestEnd_s;
     /*!< True if the test execution should stop before executing the step. */
-    bool                     m_bBreakpoint;
+    bool m_bBreakpoint;
     /*!< True if the breakpoint is enabled. */
-    ZS::System::EEnabled     m_breakpointEnabled;
+    ZS::System::EEnabled m_breakpointEnabled;
 
 }; // class CTestStep
 

@@ -393,43 +393,36 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
 {
     double fVal = 0.0;
 
-    if( i_iTrailingDigits == 0 )
-    {
-        if( i_fVal < 0.0 )
-        {
+    if (i_iTrailingDigits == 0) {
+        if (i_fVal < 0.0) {
             fVal = ceil(i_fVal-0.5);
         }
-        else if( i_fVal > 0.0 )
-        {
+        else if (i_fVal > 0.0) {
             fVal = floor(i_fVal+0.5);
         }
     }
-    else
-    {
+    else {
         int iTrailingDigits = i_iTrailingDigits;
-        if( i_iTrailingDigits == -1 )
-        {
+        if (i_iTrailingDigits == -1) {
             iTrailingDigits = c_iCalculationAccuracyTrailingDigits;
         }
-
         int iDecimalPos = 0;
         int iSign = 0;
-
         #ifdef _MSC_VER
         #pragma warning(disable:4996)
-        char* szFcvt = _fcvt(i_fVal, iTrailingDigits+1, &iDecimalPos, &iSign);
+        char* szFcvt = new char[_CVTBUFSIZE];
+        _fcvt_s(szFcvt, _CVTBUFSIZE, i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
         #pragma warning(default:4996)
         #else
-        char* szFcvt = fcvt(i_fVal, iTrailingDigits+1, &iDecimalPos, &iSign);
+        TODO: thread safe version
+        //char* szFcvt = fcvt(i_fVal, iTrailingDigits+2, &iDecimalPos, &iSign);
         #endif
-
         char* szVal = nullptr;
-
-        if( iDecimalPos > 0 )
-        {
-            szVal = new char[strlen(szFcvt)+2]; // incl. decimal point and '\0'
-            memset(szVal, 0x00, strlen(szFcvt)+2);
-
+        const size_t iStrLenFcvt = strlen(szFcvt);
+        if (iDecimalPos > 0) {
+            const size_t iMemSizeVal = iStrLenFcvt + 2;
+            szVal = new char[iMemSizeVal]; // incl. decimal point and '\0'
+            memset(szVal, 0x00, iMemSizeVal);
             #ifdef _WINDOWS
             #pragma warning(disable:4996)
             #endif
@@ -439,18 +432,17 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
             #ifdef _WINDOWS
             #pragma warning(default:4996)
             #endif
-            if (szVal[strlen(szVal)-1] >= '5')
-            {
-                ++szVal[strlen(szVal)-2];
+            const size_t iStrLenVal = strlen(szVal);
+            if (szVal[iStrLenVal-2] >= '5') {
+                ++szVal[iStrLenVal-3];
             }
-            szVal[strlen(szVal)-1] = 0x00;
+            szVal[iStrLenVal-2] = 0x00;
         }
-        else
-        {
-            szVal = new char[-iDecimalPos+strlen(szFcvt)+3]; // incl. '0.' and '\0'
-            memset(szVal, 0x00, -iDecimalPos+strlen(szFcvt)+3);
-
-            memset(szVal, '0', -iDecimalPos+2); // starting with '0.'
+        else {
+            const size_t iMemSizeVal = -iDecimalPos + iStrLenFcvt + 3;
+            szVal = new char[iMemSizeVal]; // incl. '0.' and '\0'
+            memset(szVal, 0x00, iMemSizeVal);
+            memset(szVal, '0', -iDecimalPos + 2); // starting with '0.'
             szVal[1] = '.';
             #ifdef _WINDOWS
             #pragma warning(disable:4996)
@@ -459,19 +451,21 @@ double Math::round2Nearest( double i_fVal, int i_iTrailingDigits )
             #ifdef _WINDOWS
             #pragma warning(default:4996)
             #endif
-            if (szVal[strlen(szVal)-1] >= '5')
-            {
-                ++szVal[strlen(szVal)-2];
+            const size_t iStrLenVal = strlen(szVal);
+            if (szVal[iStrLenVal-2] >= '5') {
+                ++szVal[iStrLenVal-3];
             }
-            szVal[strlen(szVal)-1] = 0x00;
+            szVal[iStrLenVal-2] = 0x00;
         }
         fVal = atof(szVal);
-        if( i_fVal < 0.0 )
-        {
+        if (i_fVal < 0.0) {
             fVal *= -1.0;
         }
         delete [] szVal;
         szVal = nullptr;
+        #ifdef _MSC_VER
+        delete [] szFcvt;
+        #endif
         szFcvt = nullptr;
     }
     return fVal;

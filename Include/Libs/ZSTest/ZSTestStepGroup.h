@@ -41,6 +41,7 @@ class ZSTESTDLL_API CTestStepGroup : public CAbstractTestStepIdxTreeEntry
 public: // class methods
     static QString NameSpace() { return "ZS::Test"; }
     static QString ClassName() { return "CTestStepGroup"; }
+    static int testGroupCount();
 public: // ctors and dtor
     CTestStepGroup(
         CTest*          i_pTest,
@@ -61,6 +62,9 @@ private: // default ctor not allowed
     CTestStepGroup();
 private: // copy ctor not allowed
     CTestStepGroup( const CTestStepGroup& );
+private: // class members
+    /*!< Counter for number of created instances. */
+    static int s_iInstCount;
 
 }; // class CTestStepGroup
 

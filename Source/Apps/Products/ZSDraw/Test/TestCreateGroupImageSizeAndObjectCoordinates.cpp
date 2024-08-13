@@ -67,7 +67,6 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
 
     QStringList strlstExpectedValues;
     ZS::Test::CTestStep* pTestStep = nullptr;
-    int idxStep = 0;
 
     ZS::Test::CTestStepGroup* pGrpImageSizeAndObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
@@ -301,8 +300,6 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
         /* strAddInfo   */ strMthInArgs );
 
     QStringList strlstExpectedValues;
-
-    int idxStep = 0;
 
     const CDrawingSize& drawingSize = m_pDrawingScene->drawingSize();
     CUnit unit = drawingSize.unit();
@@ -11089,8 +11086,6 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
     QString strInstCountKey = strFactoryGroupName + "::" + strGraphObjType;
 
-    int idxStep = 0;
-
     // Line0 (top)
     //------------
 
@@ -11259,8 +11254,6 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
     QString strInstCountKey = strFactoryGroupName + "::" + strGraphObjType;
-
-    int idxStep = 0;
 
     // Line0 (top)
     //------------
@@ -11562,8 +11555,6 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(px, mm)",
         /* pTSGrpParent */ pGrpConvertToPhysValPoint );
 
-    int idxStep = 0;
-
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
         /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(0, 0) px, mm)",
@@ -11752,8 +11743,6 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(px, mm)",
         /* pTSGrpParent */ pGrpConvertToPhysValSize );
-
-    int idxStep = 0;
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -12012,8 +12001,6 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(px, mm)",
         /* pTSGrpParent */ pGrpConvertToPhysValLine );
-
-    int idxStep = 0;
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
@@ -12354,8 +12341,6 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
         /* pTest        */ this,
         /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(px, mm)",
         /* pTSGrpParent */ pGrpConvertToPhysValRect );
-
-    int idxStep = 0;
 
     /*  0.0    35.0    70.0    95.0   135.0   175.0   210.0   245.0   280.0   315.0   350.0  px
         0.0    10.0    20.0    30.0    40.0    50.0    60.0    70.0    80.0    90.0   100.0  mm   TopDown
