@@ -746,7 +746,7 @@ bool CScaleDivLines::setScale(double i_fMin, double i_fMax, double i_fRes)
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets both the world coordinates (phyiscal values) of the scale and the
+/*! @brief Sets both the world coordinates (physical values) of the scale and the
            pixel range of the scale.
 
     The method throws an exception if the instance is setup to calculate
@@ -847,7 +847,7 @@ bool CScaleDivLines::setScaleInPix(double i_fMin_px, double i_fMax_px)
 
 //------------------------------------------------------------------------------
 /*! @brief Sets the resolution of the minimum and maximu scale values
-           in world coordinates (phyiscal values).
+           in world coordinates (physical values).
 
     The method returns false if the value did not change and true
     if the value changed and the update method need to be called afterwards

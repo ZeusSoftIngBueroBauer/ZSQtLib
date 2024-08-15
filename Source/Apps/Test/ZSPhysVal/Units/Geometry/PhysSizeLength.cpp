@@ -144,7 +144,7 @@ CPhysSizeLength::CPhysSizeLength( CUnitsTreeEntryGrpScienceField* i_pParentBranc
     m_treeEntryMeter.     setNextLowerHigherUnits( &m_treeEntryMilliMeter, &m_treeEntryKiloMeter  );
     m_treeEntryKiloMeter. setNextLowerHigherUnits( &m_treeEntryMeter,      nullptr                );
 
-    // To allow "short" unit strings like "Length.m" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "Length.m" we add a shortcut to this physical size.
     i_pParentBranch->tree()->addShortcut(this, "Length");
 
     // To allow "short" unit strings like "mA" we add shortcuts to each unit.

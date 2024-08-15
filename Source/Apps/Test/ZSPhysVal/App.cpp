@@ -222,7 +222,7 @@ CApplication::~CApplication()
     // !! Please note !!
     // On releasing the index tree the tree together with all its nodes would be deleted.
     // The physical size nodes are created as instance members of the Kinematics global instance.
-    // The phyiscal units are instance members of the physical sizes created by the Kinematics global instance.
+    // The physical units are instance members of the physical sizes created by the Kinematics global instance.
     // The index tree nodes are not created on the heap and cannot be deleted separately with the delete operator.
     // We therefore need to remove (delete) the Kinematics global instance before the index tree.
     // The dtor of the global Kinematics will invoke the dtor of the its instance members (physical sizes) and

@@ -78,7 +78,7 @@ CPhysSizeFrequency::CPhysSizeFrequency( CUnitsTreeEntryGrpScienceField* i_pParen
     // and to create the chained list of Lower/Higher units).
     initialize(true);
 
-    // To allow "short" unit strings like "Frequency.Hz" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "Frequency.Hz" we add a shortcut to this physical size.
     i_pParentBranch->tree()->addShortcut(this, "Frequency");
 
     // To allow "short" unit strings like "Hz" we add shortcuts to each unit.

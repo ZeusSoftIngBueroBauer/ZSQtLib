@@ -755,12 +755,13 @@ public: // overridables of base class CGraphObj
     "onGraphObjParentGeometryOnSceneChanged" is called to inform the connection points in order to
     forward the call to child groups and the connection points or their connection lines.
 */
-void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged( CGraphObj* i_pGraphObjParent )
+void CGraphObjConnectionPoint::onGraphObjParentGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
+        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,

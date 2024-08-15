@@ -92,7 +92,7 @@ public: // reimplementing methods of base class QGraphicItem
 protected: // must overridables of base class CGraphObj
     virtual void showSelectionPoints(TSelectionPointTypes i_selPts = c_uSelectionPointsAll) override {}
 public: // overridables of base class CGraphObj
-    virtual void onGraphObjParentGeometryOnSceneChanged( CGraphObj* i_pGraphObjParent ) override;
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
 public: // must overridables of base class QGraphicsItem
     virtual QRectF boundingRect() const override;
     virtual void paint( QPainter* i_pPainter, const QStyleOptionGraphicsItem* i_pStyleOption, QWidget* i_pWdgt = nullptr ) override;

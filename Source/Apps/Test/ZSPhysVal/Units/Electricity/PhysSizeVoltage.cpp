@@ -139,7 +139,7 @@ CPhysSizeVoltage::CPhysSizeVoltage( CUnitsTreeEntryGrpScienceField* i_pParentBra
     // and to create the chained list of Lower/Higher units).
     initialize(true);
 
-    // To allow "short" unit strings like "Voltage.mV" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "Voltage.mV" we add a shortcut to this physical size.
     i_pParentBranch->tree()->addShortcut(this, "Voltage");
 
     // To allow "short" unit strings like "mA" we add shortcuts to each unit.

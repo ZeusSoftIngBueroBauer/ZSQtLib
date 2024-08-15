@@ -83,7 +83,7 @@ CPhysSizeCurrent::CPhysSizeCurrent( CUnitsTreeEntryGrpScienceField* i_pParentBra
     // and to create the chained list of Lower/Higher units).
     initialize(true);
 
-    // To allow "short" unit strings like "Current.mA" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "Current.mA" we add a shortcut to this physical size.
     i_pParentBranch->tree()->addShortcut(this, "Current");
 
     // To allow "short" unit strings like "mA" we add shortcuts to each unit.

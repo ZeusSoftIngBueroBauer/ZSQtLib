@@ -56,14 +56,12 @@ protected: // instance methods
 
 #if 0
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupDrawObjects(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
+ZS::Test::CTestStepGroup* CTest::createTestGroupDrawObjects(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -73,7 +71,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawObjects(
 
     ZS::Test::CTestStepGroup* pGrpDrawObject = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Draw Objects",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Objects",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     //for (const QString& strKey : s_hshGraphObjsInstCounts.keys()) {
@@ -91,28 +89,18 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawObjects(
     gridSettings.setLabelsVisible(true);
     gridSettings.setLabelsFont(QFont("Terminal"));
 
-    createTestGroupPrepareScene(pGrpDrawObject, io_idxGroup, drawingSize, gridSettings);
-    //createTestGroupDrawStandardShapes(pGrpDrawObject, io_idxGroup, drawingSize);
-    createTestStepSaveLoadFile(pGrpDrawObject, ++idxStep);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpDrawObject->path());
-    }
-    return pGrpDrawObject;
-
-} // createTestGroupDrawObjects
+    createTestGroupPrepareScene(pGrpDrawObject, drawingSize, gridSettings);
+    //createTestGroupDrawStandardShapes(pGrpDrawObject);
+    createTestStepSaveLoadFile(pGrpDrawObject);
+}
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupPixelsDrawing(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
+ZS::Test::CTestStepGroup* CTest::createTestGroupPixelsDrawing(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -122,7 +110,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPixelsDrawing(
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Pixels Drawing",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Pixels Drawing",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     //for (const QString& strKey : s_hshGraphObjsInstCounts.keys()) {
@@ -140,29 +128,19 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupPixelsDrawing(
     gridSettings.setLabelsVisible(true);
     gridSettings.setLabelsFont(QFont("Terminal"));
 
-    createTestGroupPrepareScene(pGrpPixelsDrawing, io_idxGroup, drawingSize, gridSettings);
-    createTestGroupAddStandardShapes(pGrpPixelsDrawing, io_idxGroup, drawingSize);
-    createTestGroupDrawStandardShapes(pGrpPixelsDrawing, io_idxGroup, drawingSize);
-    createTestStepSaveLoadFile(pGrpPixelsDrawing, ++idxStep);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpPixelsDrawing->path());
-    }
-    return pGrpPixelsDrawing;
-
-} // createTestGroupPixelsDrawing
+    createTestGroupPrepareScene(pGrpPixelsDrawing, drawingSize, gridSettings);
+    createTestGroupAddStandardShapes(pGrpPixelsDrawing, drawingSize);
+    createTestGroupDrawStandardShapes(pGrpPixelsDrawing, drawingSize);
+    createTestStepSaveLoadFile(pGrpPixelsDrawing);
+}
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawing(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
+ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawing(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -172,30 +150,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawing(
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Metrics Drawing",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Metrics Drawing",
         /* pTSGrpParent */ nullptr );
 
-    createTestGroupMetricsDrawingYScaleTopDown(pGrpMetricsDrawing, io_idxGroup);
-    createTestGroupMetricsDrawingYScaleBottomUp(pGrpMetricsDrawing, io_idxGroup);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpMetricsDrawing->path());
-    }
-    return pGrpMetricsDrawing;
-
-} // createTestGroupMetricsDrawing
+    createTestGroupMetricsDrawingYScaleTopDown(pGrpMetricsDrawing);
+    createTestGroupMetricsDrawingYScaleBottomUp(pGrpMetricsDrawing);
+}
 
 //------------------------------------------------------------------------------
-ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleTopDown(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
+ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleTopDown(ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -205,7 +173,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleTopDown(
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Metrics Drawing Y Scale TopDown",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Metrics Drawing Y Scale TopDown",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     for (const QString& strKey : s_hshGraphObjsInstCounts.keys()) {
@@ -224,29 +192,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleTopDown(
     gridSettings.setLabelsVisible(true);
     gridSettings.setLabelsFont(QFont("Terminal"));
 
-    createTestGroupPrepareScene(pGrpMetricsDrawing, io_idxGroup, drawingSize, gridSettings);
-    createTestGroupAddStandardShapes(pGrpMetricsDrawing, io_idxGroup, drawingSize);
-    createTestGroupDrawStandardShapes(pGrpMetricsDrawing, io_idxGroup, drawingSize);
-    createTestStepSaveLoadFile(pGrpMetricsDrawing, ++idxStep);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpMetricsDrawing->path());
-    }
-    return pGrpMetricsDrawing;
-
-} // createTestGroupMetricsDrawingYScaleTopDown
+    createTestGroupPrepareScene(pGrpMetricsDrawing, drawingSize, gridSettings);
+    createTestGroupAddStandardShapes(pGrpMetricsDrawing, drawingSize);
+    createTestGroupDrawStandardShapes(pGrpMetricsDrawing, drawingSize);
+    createTestStepSaveLoadFile(pGrpMetricsDrawing);
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleBottomUp(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup )
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -256,7 +215,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleBottomUp(
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Metrics Drawing Y Scale BottomUp",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Metrics Drawing Y Scale BottomUp",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     //for (const QString& strKey : s_hshGraphObjsInstCounts.keys()) {
@@ -275,30 +234,20 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupMetricsDrawingYScaleBottomUp(
     gridSettings.setLabelsVisible(true);
     gridSettings.setLabelsFont(QFont("Terminal"));
 
-    createTestGroupPrepareScene(pGrpMetricsDrawing, io_idxGroup, drawingSize, gridSettings);
-    createTestGroupAddStandardShapes(pGrpMetricsDrawing, io_idxGroup, drawingSize);
-    createTestGroupDrawStandardShapes(pGrpMetricsDrawing, io_idxGroup, drawingSize);
-    createTestStepSaveLoadFile(pGrpMetricsDrawing, ++idxStep);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpMetricsDrawing->path());
-    }
-    return pGrpMetricsDrawing;
-
-} // createTestGroupMetricsDrawingYScaleBottomUp
+    createTestGroupPrepareScene(pGrpMetricsDrawing, drawingSize, gridSettings);
+    createTestGroupAddStandardShapes(pGrpMetricsDrawing, drawingSize);
+    createTestGroupDrawStandardShapes(pGrpMetricsDrawing, drawingSize);
+    createTestStepSaveLoadFile(pGrpMetricsDrawing);
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapes(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", DimensionUnit: " + i_drawingSize.dimensionUnit().toString() +
                        ", YAxisOrientation: " + i_drawingSize.yScaleAxisOrientation().toString();
     }
@@ -310,33 +259,23 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapes(
 
     ZS::Test::CTestStepGroup* pGrpAddStandardShapes = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add " + CObjFactory::c_strGroupNameStandardShapes,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add " + CObjFactory::c_strGroupNameStandardShapes,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    createTestGroupAddStandardShapesLines(pGrpAddStandardShapes, io_idxGroup, i_drawingSize);
-    createTestGroupAddStandardShapesGroups(pGrpAddStandardShapes, io_idxGroup, i_drawingSize);
-    createTestGroupModifyStandardShapesLines(pGrpAddStandardShapes, io_idxGroup, i_drawingSize);
-    createTestGroupModifyStandardShapesGroups(pGrpAddStandardShapes, io_idxGroup, i_drawingSize);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpAddStandardShapes->path());
-    }
-    return pGrpAddStandardShapes;
-
-} // createTestGroupAddStandardShapes
+    createTestGroupAddStandardShapesLines(pGrpAddStandardShapes, i_drawingSize);
+    createTestGroupAddStandardShapesGroups(pGrpAddStandardShapes, i_drawingSize);
+    createTestGroupModifyStandardShapesLines(pGrpAddStandardShapes, i_drawingSize);
+    createTestGroupModifyStandardShapesGroups(pGrpAddStandardShapes, i_drawingSize);
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapes(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", DimensionUnit: " + i_drawingSize.dimensionUnit().toString() +
                        ", YAxisOrientation: " + i_drawingSize.yScaleAxisOrientation().toString();
     }
@@ -348,31 +287,21 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapes(
 
     ZS::Test::CTestStepGroup* pGrpDrawStandardShapes = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Draw " + CObjFactory::c_strGroupNameStandardShapes,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw " + CObjFactory::c_strGroupNameStandardShapes,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    //createTestGroupDrawStandardShapesLines(pGrpDrawStandardShapes, io_idxGroup);
-    //createTestGroupDrawStandardShapesGroups(pGrpDrawStandardShapes, io_idxGroup);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpDrawStandardShapes->path());
-    }
-    return pGrpDrawStandardShapes;
-
-} // createTestGroupDrawStandardShapes
+    //createTestGroupDrawStandardShapesLines(pGrpDrawStandardShapes);
+    //createTestGroupDrawStandardShapesGroups(pGrpDrawStandardShapes);
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", DimensionUnit: " + i_drawingSize.dimensionUnit().toString() +
                        ", YAxisOrientation: " + i_drawingSize.yScaleAxisOrientation().toString();
     }
@@ -384,7 +313,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpAddLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add Lines",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -412,7 +341,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpAddPlusSign = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " PlusSign",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " PlusSign",
         /* pTSGrpParent */ pGrpAddLines );
 
     // Vertical Line
@@ -430,7 +359,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     CPhysValLine physValLinePlusSignVerticalLine(*m_pDrawingScene, ptP1PlusSignVerticalLine, ptP2PlusSignVerticalLine);
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
         /* pGrpParent      */ pGrpAddPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -463,7 +392,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     CPhysValLine physValLinePlusSignHorizontalLine(*m_pDrawingScene, ptP1PlusSignHorizontalLine, ptP2PlusSignHorizontalLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
         /* pGrpParent      */ pGrpAddPlusSign,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -486,7 +415,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpAddCheckmark = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Checkmark",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Checkmark",
         /* pTSGrpParent */ pGrpAddLines );
 
     // Left Line
@@ -504,7 +433,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     CPhysValLine physValLineCheckmarkLeftLine(*m_pDrawingScene, ptP1CheckmarkLeftLine, ptP2CheckmarkLeftLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
         /* pGrpParent      */ pGrpAddCheckmark,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -537,7 +466,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     CPhysValLine physValLineCheckmarkRightLine(*m_pDrawingScene, ptP1CheckmarkRightLine, ptP2CheckmarkRightLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
         /* pGrpParent      */ pGrpAddCheckmark,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -560,7 +489,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpAddSmallRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " SmallRect",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " SmallRect",
         /* pTSGrpParent */ pGrpAddLines );
 
     // Top Line
@@ -578,7 +507,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     CPhysValLine physValLineSmallRectTopLine(*m_pDrawingScene, ptP1SmallRectTopLine, ptP2SmallRectTopLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
         /* pGrpParent      */ pGrpAddSmallRect,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -611,7 +540,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     CPhysValLine physValLineSmallRectRightLine(*m_pDrawingScene, ptP1SmallRectRightLine, ptP2SmallRectRightLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
         /* pGrpParent      */ pGrpAddSmallRect,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -644,7 +573,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     CPhysValLine physValLineSmallRectBottomLine(*m_pDrawingScene, ptP1SmallRectBottomLine, ptP2SmallRectBottomLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
         /* pGrpParent      */ pGrpAddSmallRect,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -677,7 +606,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     CPhysValLine physValLineSmallRectLeftLine(*m_pDrawingScene, ptP1SmallRectLeftLine, ptP2SmallRectLeftLine);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjName + ")",
         /* pGrpParent      */ pGrpAddSmallRect,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -694,26 +623,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesLines(
     strlstExpectedValues.append(strGraphObjName + ".getLength: " + QString::number(Math::round2Nearest(fLengthSmallRectLeftLine, iDigits), 'f', iDigits) + " " + strUnit);
     strlstExpectedValues.append(strGraphObjName + ".rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpAddLines->path());
-    }
-    return pGrpAddLines;
-
-} // createTestGroupAddStandardShapesLines
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", DimensionUnit: " + i_drawingSize.dimensionUnit().toString() +
                        ", YAxisOrientation: " + i_drawingSize.yScaleAxisOrientation().toString();
     }
@@ -725,7 +644,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     ZS::Test::CTestStepGroup* pGrpAddGroups = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add Groups",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Groups",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -756,7 +675,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjGroupName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjGroupName + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -850,7 +769,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjGroupName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjGroupName + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -912,7 +831,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strGraphObjGroupName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strGraphObjGroupName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ", " + strGraphObjGroupName + ")",
         /* pGrpParent      */ pGrpAddGroups,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -989,26 +908,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupAddStandardShapesGroups(
     strlstExpectedValues.append(strGraphObjNameCheckmark + ".getSize {" + physValRectCheckmark.size().toString() + "} " + strUnit);
     strlstExpectedValues.append(strGraphObjNameCheckmark + ".rotationAngle: 0.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpAddGroups->path());
-    }
-    return pGrpAddGroups;
-
-} // createTestGroupAddStandardShapesGroups
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", DimensionUnit: " + i_drawingSize.dimensionUnit().toString() +
                        ", YAxisOrientation: " + i_drawingSize.yScaleAxisOrientation().toString();
     }
@@ -1037,7 +946,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpModifyLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Modify Checkmark Lines",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify Checkmark Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     // Line2 (Checkmark line from left to bottom) in Group1
@@ -1052,7 +961,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjPath + ".setLine()",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjPath + ".setLine()",
         /* strOperation    */ strGraphObjPath + ".setLine()",
         /* pGrpParent      */ pGrpModifyLines,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLine(ZS::Test::CTestStep*)) );
@@ -1115,7 +1024,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjPath + ".setLine()",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjPath + ".setLine()",
         /* strOperation    */ strGraphObjPath + ".setLine()",
         /* pGrpParent      */ pGrpModifyLines,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjLine(ZS::Test::CTestStep*)) );
@@ -1165,25 +1074,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesLines(
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpModifyLines->path());
-    }
-    return pGrpModifyLines;
 }
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", DimensionUnit: " + i_drawingSize.dimensionUnit().toString() +
                        ", YAxisOrientation: " + i_drawingSize.yScaleAxisOrientation().toString();
     }
@@ -1195,7 +1095,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     ZS::Test::CTestStepGroup* pGrpModifyGroups = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Modify Groups",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Modify Groups",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     CIdxTree* pIdxTree = m_pDrawingScene->getGraphObjsIdxTree();
@@ -1225,7 +1125,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjPath + ".resizeToContent()",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjPath + ".resizeToContent()",
         /* strOperation    */ strGraphObjPath + ".resizeToContent()",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1331,7 +1231,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
         /* strOperation    */ strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1488,7 +1388,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
         /* strOperation    */ strGroupNameParent + ".removeFromGroup(" + strGraphObjName + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1603,7 +1503,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* strOperation    */ strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1764,7 +1664,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* strOperation    */ strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1872,7 +1772,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjPath + ".setRotationAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjPath + ".setRotationAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ strGraphObjPath + ".setRotationAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -1980,7 +1880,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* strOperation    */ strGraphObjPath + ".setPosition(" + qPoint2Str(ptPos) + " " + i_drawingSize.unit().symbol() + ")",
         /* pGrpParent      */ pGrpModifyGroups,
         /* szDoTestStepFct */ SLOT(doTestStepModifyGraphObjGroup(ZS::Test::CTestStep*)) );
@@ -2075,25 +1975,16 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupModifyStandardShapesGroups(
         }
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpModifyGroups->path());
-    }
-    return pGrpModifyGroups;
 }
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", DimensionUnit: " + i_drawingSize.dimensionUnit().toString() +
                        ", YAxisOrientation: " + i_drawingSize.yScaleAxisOrientation().toString();
     }
@@ -2108,7 +1999,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpDrawLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Draw Lines",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QString strGraphObjType = graphObjType2Str(EGraphObjTypeLine);
@@ -2123,69 +2014,67 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpDrawLine0 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create, Resize, Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Create, Resize, Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLines );
 
     createTestGroupDrawMouseEventsCreateObject(
-        pGrpDrawLine0, io_idxGroup,
+        pGrpDrawLine0,
         CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypeLine, strGraphObjName,
         QPoint(100, 100), QPoint(100, 150), QPoint(110, 160));
 
     ZS::Test::CTestStepGroup* pGrpLine0ShowAndMoveLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Show and Move Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Show and Move Labels",
         /* pTSGrpParent */ pGrpDrawLine0 );
 
     ZS::Test::CTestStepGroup* pGrpLine0ShowAndMoveTextLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Text Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Text Labels",
         /* pTSGrpParent */ pGrpLine0ShowAndMoveLabels );
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine0ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
+        pGrpLine0ShowAndMoveTextLabels, strGraphObjName, CGraphObj::c_strLabelName,
         QPoint(95, 125), QPoint(60, 100));
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine0ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP1,
+        pGrpLine0ShowAndMoveTextLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP1,
         QPoint(95, 100), QPoint(95, 90));
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine0ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP2,
+        pGrpLine0ShowAndMoveTextLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP2,
         QPoint(95, 150), QPoint(95, 160));
 
     ZS::Test::CTestStepGroup* pGrpLine0ShowAndMoveGeometryLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Geometry Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Geometry Labels",
         /* pTSGrpParent */ pGrpLine0ShowAndMoveLabels );
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine0ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameLength,
+        pGrpLine0ShowAndMoveGeometryLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameLength,
         QPoint(105, 125), QPoint(125, 125));
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine0ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameAngle,
+        pGrpLine0ShowAndMoveGeometryLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameAngle,
         QPoint(90, 125), QPoint(70, 125));
 
     ZS::Test::CTestStepGroup* pGrpDrawResizeLine0 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Resize " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Resize " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine0 );
 
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine0, idxStep, QPoint(90, 140), QPoint(100, 148));
+        pGrpDrawResizeLine0, QPoint(90, 140), QPoint(100, 148));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawResizeLine0, idxStep, QPoint(100, 148), QPoint(200, 200));
+        pGrpDrawResizeLine0, QPoint(100, 148), QPoint(200, 200));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine0, idxStep, QPoint(200, 200), QPoint(210, 210));
+        pGrpDrawResizeLine0, QPoint(200, 200), QPoint(210, 210));
 
     ZS::Test::CTestStepGroup* pGrpDrawMoveLine0 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine0 );
 
-    idxStep = 0;
-
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveLine0, idxStep, QPoint(140, 140), QPoint(150, 150));
+        pGrpDrawMoveLine0, QPoint(140, 140), QPoint(150, 150));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawMoveLine0, idxStep, QPoint(150, 150), QPoint(200, 200));
+        pGrpDrawMoveLine0, QPoint(150, 150), QPoint(200, 200));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveLine0, idxStep, QPoint(200, 200), QPoint(210, 200)); // move sidewards away from line
+        pGrpDrawMoveLine0, QPoint(200, 200), QPoint(210, 200)); // move sidewards away from line
 
     // Line1
     //------
@@ -2195,72 +2084,68 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpDrawLine1 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create, Resize, Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Create, Resize, Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLines );
 
     createTestGroupDrawMouseEventsCreateObject(
-        pGrpDrawLine1, io_idxGroup,
+        pGrpDrawLine1,
         CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypeLine, strGraphObjName,
         QPoint(500, 100), QPoint(500, 150), QPoint(510, 160));
 
     ZS::Test::CTestStepGroup* pGrpLine1ShowAndMoveLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Show and Move Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Show and Move Labels",
         /* pTSGrpParent */ pGrpDrawLine1 );
 
     ZS::Test::CTestStepGroup* pGrpLine1ShowAndMoveTextLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Text Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Text Labels",
         /* pTSGrpParent */ pGrpLine1ShowAndMoveLabels );
 
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine1ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
+        pGrpLine1ShowAndMoveTextLabels, strGraphObjName, CGraphObj::c_strLabelName,
         QPoint(495, 125), QPoint(440, 100));
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine1ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP1,
+        pGrpLine1ShowAndMoveTextLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP1,
         QPoint(495, 100), QPoint(495, 90));
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine1ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP2,
+        pGrpLine1ShowAndMoveTextLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP2,
         QPoint(495, 150), QPoint(495, 160));
 
     ZS::Test::CTestStepGroup* pGrpLine1ShowAndMoveGeometryLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Geometry Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Geometry Labels",
         /* pTSGrpParent */ pGrpLine1ShowAndMoveLabels );
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine1ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameLength,
+        pGrpLine1ShowAndMoveGeometryLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameLength,
         QPoint(505, 125), QPoint(525, 125));
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine1ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameAngle,
+        pGrpLine1ShowAndMoveGeometryLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameAngle,
         QPoint(490, 125), QPoint(470, 125));
 
     ZS::Test::CTestStepGroup* pGrpDrawResizeLine1 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Resize " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Resize " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine1 );
 
-    idxStep = 0;
-
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine1, idxStep, QPoint(490, 140), QPoint(500, 148));
+        pGrpDrawResizeLine1, QPoint(490, 140), QPoint(500, 148));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawResizeLine1, idxStep, QPoint(500, 148), QPoint(400, 200));
+        pGrpDrawResizeLine1, QPoint(500, 148), QPoint(400, 200));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine1, idxStep, QPoint(400, 200), QPoint(390, 210));
+        pGrpDrawResizeLine1, QPoint(400, 200), QPoint(390, 210));
 
     ZS::Test::CTestStepGroup* pGrpDrawMoveLine1 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine1 );
 
-    idxStep = 0;
-
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveLine1, idxStep, QPoint(440, 140), QPoint(450, 150));
+        pGrpDrawMoveLine1, QPoint(440, 140), QPoint(450, 150));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawMoveLine1, idxStep, QPoint(450, 150), QPoint(400, 200));
+        pGrpDrawMoveLine1, QPoint(450, 150), QPoint(400, 200));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveLine1, idxStep, QPoint(400, 200), QPoint(390, 200)); // move sidewards away from line
+        pGrpDrawMoveLine1, QPoint(400, 200), QPoint(390, 200)); // move sidewards away from line
 
     // Line2
     //------
@@ -2270,72 +2155,68 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpDrawLine2 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create, Resize, Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Create, Resize, Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLines );
 
     createTestGroupDrawMouseEventsCreateObject(
-        pGrpDrawLine2, io_idxGroup,
+        pGrpDrawLine2,
         CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypeLine, strGraphObjName,
         QPoint(500, 500), QPoint(500, 450), QPoint(510, 460));
 
     ZS::Test::CTestStepGroup* pGrpLine2ShowAndMoveLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Show and Move Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Show and Move Labels",
         /* pTSGrpParent */ pGrpDrawLine2 );
 
     ZS::Test::CTestStepGroup* pGrpLine2ShowAndMoveTextLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Text Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Text Labels",
         /* pTSGrpParent */ pGrpLine2ShowAndMoveLabels );
 
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine2ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
+        pGrpLine2ShowAndMoveTextLabels, strGraphObjName, CGraphObj::c_strLabelName,
         QPoint(495, 475), QPoint(460, 450));
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine2ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP1,
+        pGrpLine2ShowAndMoveTextLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP1,
         QPoint(495, 500), QPoint(495, 510));
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine2ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP2,
+        pGrpLine2ShowAndMoveTextLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP2,
         QPoint(495, 450), QPoint(495, 440));
 
     ZS::Test::CTestStepGroup* pGrpLine2ShowAndMoveGeometryLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Geometry Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Geometry Labels",
         /* pTSGrpParent */ pGrpLine2ShowAndMoveLabels );
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine2ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameLength,
+        pGrpLine2ShowAndMoveGeometryLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameLength,
         QPoint(505, 475), QPoint(525, 475));
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine2ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameAngle,
+        pGrpLine2ShowAndMoveGeometryLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameAngle,
         QPoint(490, 475), QPoint(470, 475));
 
     ZS::Test::CTestStepGroup* pGrpDrawResizeLine2 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Resize " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Resize " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine2 );
 
-    idxStep = 0;
-
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine2, idxStep, QPoint(490, 440), QPoint(500, 452));
+        pGrpDrawResizeLine2, QPoint(490, 440), QPoint(500, 452));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawResizeLine2, idxStep, QPoint(500, 452), QPoint(400, 400));
+        pGrpDrawResizeLine2, QPoint(500, 452), QPoint(400, 400));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine2, idxStep, QPoint(400, 400), QPoint(390, 390));
+        pGrpDrawResizeLine2, QPoint(400, 400), QPoint(390, 390));
 
     ZS::Test::CTestStepGroup* pGrpDrawMoveLine2 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine2 );
 
-    idxStep = 0;
-
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveLine2, idxStep, QPoint(440, 440), QPoint(450, 450));
+        pGrpDrawMoveLine2, QPoint(440, 440), QPoint(450, 450));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawMoveLine2, idxStep, QPoint(450, 450), QPoint(400, 400));
+        pGrpDrawMoveLine2, QPoint(450, 450), QPoint(400, 400));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveLine2, idxStep, QPoint(400, 400), QPoint(390, 400)); // move sidewards away from line
+        pGrpDrawMoveLine2, QPoint(400, 400), QPoint(390, 400)); // move sidewards away from line
 
     // Line3
     //------
@@ -2345,92 +2226,78 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesLines(
 
     ZS::Test::CTestStepGroup* pGrpDrawLine3 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create, Resize, Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Create, Resize, Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLines );
 
     createTestGroupDrawMouseEventsCreateObject(
-        pGrpDrawLine3, io_idxGroup,
+        pGrpDrawLine3,
         CObjFactory::c_strGroupNameStandardShapes, EGraphObjTypeLine, strGraphObjName,
         QPoint(100, 500), QPoint(100, 450), QPoint(110, 460));
 
     ZS::Test::CTestStepGroup* pGrpLine3ShowAndMoveLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Show and Move Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Show and Move Labels",
         /* pTSGrpParent */ pGrpDrawLine3 );
 
     ZS::Test::CTestStepGroup* pGrpLine3ShowAndMoveTextLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Text Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Text Labels",
         /* pTSGrpParent */ pGrpLine3ShowAndMoveLabels );
 
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine3ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObj::c_strLabelName,
+        pGrpLine3ShowAndMoveTextLabels, strGraphObjName, CGraphObj::c_strLabelName,
         QPoint(95, 475), QPoint(60, 450));
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine3ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP1,
+        pGrpLine3ShowAndMoveTextLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP1,
         QPoint(95, 500), QPoint(95, 510));
     createTestGroupShowAndMoveTextLabel(
-        pGrpLine3ShowAndMoveTextLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP2,
+        pGrpLine3ShowAndMoveTextLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameP2,
         QPoint(95, 450), QPoint(95, 440));
 
     ZS::Test::CTestStepGroup* pGrpLine3ShowAndMoveGeometryLabels = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName + " Geometry Labels",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName + " Geometry Labels",
         /* pTSGrpParent */ pGrpLine3ShowAndMoveLabels );
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine3ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameLength,
+        pGrpLine3ShowAndMoveGeometryLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameLength,
         QPoint(105, 475), QPoint(125, 475));
     createTestGroupShowAndMoveGeometryLabel(
-        pGrpLine3ShowAndMoveGeometryLabels, io_idxGroup, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameAngle,
+        pGrpLine3ShowAndMoveGeometryLabels, strGraphObjName, CGraphObjLine::c_strGeometryLabelNameAngle,
         QPoint(92, 475), QPoint(80, 475));
 
     ZS::Test::CTestStepGroup* pGrpDrawResizeLine3 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Resize " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Resize " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine3 );
 
-    idxStep = 0;
-
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine3, idxStep, QPoint(90, 440), QPoint(100, 452));
+        pGrpDrawResizeLine3, QPoint(90, 440), QPoint(100, 452));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawResizeLine3, idxStep, QPoint(100, 452), QPoint(200, 400));
+        pGrpDrawResizeLine3, QPoint(100, 452), QPoint(200, 400));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawResizeLine3, idxStep, QPoint(200, 400), QPoint(210, 390));
+        pGrpDrawResizeLine3, QPoint(200, 400), QPoint(210, 390));
 
     ZS::Test::CTestStepGroup* pGrpDrawMoveLine3 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Move " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Move " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawLine3 );
 
-    idxStep = 0;
-
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveLine3, idxStep, QPoint(140, 440), QPoint(150, 450));
+        pGrpDrawMoveLine3, QPoint(140, 440), QPoint(150, 450));
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawMoveLine3, idxStep, QPoint(150, 450), QPoint(200, 400));
+        pGrpDrawMoveLine3, QPoint(150, 450), QPoint(200, 400));
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMoveLine3, idxStep, QPoint(200, 400), QPoint(210, 400)); // move sidewards away from line
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpDrawLines->path());
-    }
-    return pGrpDrawLines;
-
-} // createTestGroupDrawStandardShapesLines
+        pGrpDrawMoveLine3, QPoint(200, 400), QPoint(210, 400)); // move sidewards away from line
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
-    const CDrawingSize& i_drawingSize)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,const CDrawingSize& i_drawingSize)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", DimensionUnit: " + i_drawingSize.dimensionUnit().toString() +
                        ", YAxisOrientation: " + i_drawingSize.yScaleAxisOrientation().toString();
     }
@@ -2445,7 +2312,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     ZS::Test::CTestStepGroup* pGrpDrawGroups = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Draw Groups",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Draw Groups",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -2454,7 +2321,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " UnsetCurrentDrawingTool",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " UnsetCurrentDrawingTool",
         /* strOperation    */ "DrawingScene.setCurrentDrawingTool(null)",
         /* pGrpParent      */ pGrpDrawGroups,
         /* szDoTestStepFct */ SLOT(doTestStepUnsetCurrentDrawingTool(ZS::Test::CTestStep*)) );
@@ -2469,15 +2336,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     ZS::Test::CTestStepGroup* pGrpGroup0 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawGroups );
 
     ZS::Test::CTestStepGroup* pGrpDrawGroup0 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add " + strGraphObjName,
         /* pTSGrpParent */ pGrpGroup0 );
-
-    idxStep = 0;
 
     QPoint ptMouseStart = QPoint(325, 265);
     QPoint ptMouseStop = QPoint(325, 270);
@@ -2488,7 +2353,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -2500,7 +2365,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     QPoint ptMousePos = QPoint(ptMouseStop);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
@@ -2508,7 +2373,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
@@ -2521,7 +2386,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -2533,7 +2398,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     ptMousePos = ptMouseStop;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
@@ -2542,7 +2407,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
@@ -2556,7 +2421,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -2568,7 +2433,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     ptMousePos = ptMouseStop;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
@@ -2577,7 +2442,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
@@ -2591,7 +2456,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -2603,7 +2468,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     ptMousePos = ptMouseStop;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
@@ -2612,7 +2477,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
@@ -2626,7 +2491,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -2637,7 +2502,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " GroupSelectedObjects",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " GroupSelectedObjects",
         /* strOperation    */ "DrawingScene.groupGraphObjsSelected()",
         /* pGrpParent      */ pGrpDrawGroup0,
         /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
@@ -2652,15 +2517,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     ZS::Test::CTestStepGroup* pGrpGroup1 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + strGraphObjName,
         /* pTSGrpParent */ pGrpDrawGroups );
 
     ZS::Test::CTestStepGroup* pGrpDrawGroup1 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add " + strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add " + strGraphObjName,
         /* pTSGrpParent */ pGrpGroup1 );
-
-    idxStep = 0;
 
     ptMouseStart = QPoint(280, 300);
     ptMouseStop = QPoint(287, 300);
@@ -2670,7 +2533,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* pGrpParent      */ pGrpDrawGroup1,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -2682,7 +2545,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     ptMousePos = ptMouseStop;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup1,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
@@ -2690,7 +2553,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup1,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
@@ -2703,7 +2566,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* pGrpParent      */ pGrpDrawGroup1,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -2715,7 +2578,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     ptMousePos = ptMouseStop;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MousePressEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mousePressEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup1,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
@@ -2724,7 +2587,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseReleaseEvent(" + qPoint2Str(ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mouseReleaseEvent(" +qPoint2Str(ptMousePos) + ")",
         /* pGrpParent      */ pGrpDrawGroup1,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
@@ -2738,7 +2601,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     }
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseStart) + ", " + qPoint2Str(ptMouseStop) + ")",
         /* pGrpParent      */ pGrpDrawGroup1,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -2749,7 +2612,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " GroupSelectedObjects",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " GroupSelectedObjects",
         /* strOperation    */ "DrawingScene.groupGraphObjsSelected()",
         /* pGrpParent      */ pGrpDrawGroup1,
         /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
@@ -2763,22 +2626,13 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawStandardShapesGroups(
     s_hshGraphObjsInstCounts[strInstCountKey] = s_hshGraphObjsInstCounts[strInstCountKey] + 1;
 
     createTestGroupDrawMouseEventsCreateGroup(
-        pGrpDrawGroups, io_idxGroup,
-        strGraphObjName,
+        pGrpDrawGroups, strGraphObjName,
         QPoint(120, 120), QPoint(480, 480), 10, QPoint(490, 490));
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpDrawGroups->path());
-    }
-    return pGrpDrawGroups;
-
-} // createTestGroupDrawStandardShapesGroups
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateObject(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
     const QString& i_strFactoryGroupName, EGraphObjType i_graphObjType, const QString& i_strGraphObjName,
     const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease, const QPoint& i_ptMouseAfterRelease)
 //------------------------------------------------------------------------------
@@ -2786,7 +2640,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateObject(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", FactoryGroup:" + i_strFactoryGroupName +
                        ", GraphObjType:" + graphObjType2Str(i_graphObjType) +
                        ", GraphObjName: " + i_strGraphObjName +
@@ -2804,12 +2657,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateObject(
 
     ZS::Test::CTestStepGroup* pGrpDrawMouseEventsCreateObject = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create " + i_strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Create " + i_strGraphObjName,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " SetCurrentDrawingTool(" + i_strFactoryGroupName + ", " + graphObjType2Str(i_graphObjType) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " SetCurrentDrawingTool(" + i_strFactoryGroupName + ", " + graphObjType2Str(i_graphObjType) + ")",
         /* strOperation    */ "DrawingScene.setCurrentDrawingTool(" + i_strFactoryGroupName + ", " + graphObjType2Str(i_graphObjType) + ")",
         /* pGrpParent      */ pGrpDrawMouseEventsCreateObject,
         /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
@@ -2817,31 +2670,23 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateObject(
     pTestStep->setConfigValue("GraphObjType", graphObjType2Str(i_graphObjType));
 
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpDrawMouseEventsCreateObject, idxStep, i_ptMousePress, i_ptMouseRelease);
+        pGrpDrawMouseEventsCreateObject, i_ptMousePress, i_ptMouseRelease);
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMouseEventsCreateObject, idxStep, i_ptMouseRelease, i_ptMouseAfterRelease);
+        pGrpDrawMouseEventsCreateObject, i_ptMouseRelease, i_ptMouseAfterRelease);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " UnsetCurrentDrawingTool",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " UnsetCurrentDrawingTool",
         /* strOperation    */ "DrawingScene.setCurrentDrawingTool(null)",
         /* pGrpParent      */ pGrpDrawMouseEventsCreateObject,
         /* szDoTestStepFct */ SLOT(doTestStepUnsetCurrentDrawingTool(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", "");
     pTestStep->setConfigValue("GraphObjType", "");
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpDrawMouseEventsCreateObject->path());
-    }
-    return pGrpDrawMouseEventsCreateObject;
-
-} // createTestGroupDrawMouseEventsCreateObject
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateGroup(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
     const QString& i_strGraphObjName,
     const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease, int i_iMovesCount,
     const QPoint& i_ptMouseAfterRelease)
@@ -2850,7 +2695,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateGroup(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", GraphObjName: " + i_strGraphObjName +
                        ", MousePress {" + qPoint2Str(i_ptMousePress) + "}" +
                        ", MouseRelease {" + qPoint2Str(i_ptMouseRelease) + "}" +
@@ -2867,7 +2711,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateGroup(
 
     ZS::Test::CTestStepGroup* pGrpDrawMouseEventsCreateObject = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Create " + i_strGraphObjName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Create " + i_strGraphObjName,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QString strFactoryGroupName = CObjFactory::c_strGroupNameStandardShapes;
@@ -2881,7 +2725,7 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateGroup(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " UnsetCurrentDrawingTool()",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " UnsetCurrentDrawingTool()",
         /* strOperation    */ "DrawingScene.setCurrentDrawingTool(null)",
         /* pGrpParent      */ pGrpDrawMouseEventsCreateObject,
         /* szDoTestStepFct */ SLOT(doTestStepUnsetCurrentDrawingTool(ZS::Test::CTestStep*)) );
@@ -2889,35 +2733,27 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupDrawMouseEventsCreateGroup(
     pTestStep->setConfigValue("GraphObjType", "");
 
     addTestStepDrawMouseEventPress(
-        pGrpDrawMouseEventsCreateObject, idxStep, i_ptMousePress);
+        pGrpDrawMouseEventsCreateObject, i_ptMousePress);
     addTestStepsDrawMouseEventsMove(
-        pGrpDrawMouseEventsCreateObject, idxStep, i_ptMousePress, i_ptMouseRelease, i_iMovesCount);
+        pGrpDrawMouseEventsCreateObject, i_ptMousePress, i_ptMouseRelease, i_iMovesCount);
     addTestStepDrawMouseEventRelease(
-        pGrpDrawMouseEventsCreateObject, idxStep, i_ptMouseRelease);
+        pGrpDrawMouseEventsCreateObject, i_ptMouseRelease);
     addTestStepDrawMouseEventsMove(
-        pGrpDrawMouseEventsCreateObject, idxStep, i_ptMouseRelease, i_ptMouseAfterRelease, 0);
+        pGrpDrawMouseEventsCreateObject, i_ptMouseRelease, i_ptMouseAfterRelease, 0);
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " GroupSelectedObjects",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " GroupSelectedObjects",
         /* strOperation    */ "DrawingScene.groupGraphObjsSelected()",
         /* pGrpParent      */ pGrpDrawMouseEventsCreateObject,
         /* szDoTestStepFct */ SLOT(doTestStepSetCurrentDrawingTool(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("FactoryGroupName", strFactoryGroupName);
     pTestStep->setConfigValue("GraphObjType", strGraphObjType);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpDrawMouseEventsCreateObject->path());
-    }
-    return pGrpDrawMouseEventsCreateObject;
-
-} // createTestGroupDrawMouseEventsCreateGroup
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveTextLabel(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
     const QString& i_strGraphObjName, const QString& i_strLabelName,
     const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease)
 //------------------------------------------------------------------------------
@@ -2925,7 +2761,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveTextLabel(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", ObjName: " + i_strGraphObjName + ", Label: " + i_strLabelName +
                        ", MousePress {" + qPoint2Str(i_ptMousePress) + "}" +
                        ", MouseRelease {" + qPoint2Str(i_ptMouseRelease) + "}";
@@ -2938,12 +2773,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveTextLabel(
 
     ZS::Test::CTestStepGroup* pGrpShowAndMoveLabel = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + i_strGraphObjName + " Text Label " + i_strLabelName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + i_strGraphObjName + " Text Label " + i_strLabelName,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + i_strGraphObjName + ".showLabel(" + i_strLabelName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + i_strGraphObjName + ".showLabel(" + i_strLabelName + ")",
         /* strOperation    */ "GraphObj.showLabel(" + i_strGraphObjName + ", " + i_strLabelName + ")",
         /* pGrpParent      */ pGrpShowAndMoveLabel,
         /* szDoTestStepFct */ SLOT(doTestStepShowLabel(ZS::Test::CTestStep*)) );
@@ -2951,20 +2786,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveTextLabel(
     pTestStep->setConfigValue("LabelName", i_strLabelName);
 
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpShowAndMoveLabel, idxStep, i_ptMousePress, i_ptMouseRelease);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpShowAndMoveLabel->path());
-    }
-    return pGrpShowAndMoveLabel;
-
-} // createTestGroupShowAndMoveTextLabel
+        pGrpShowAndMoveLabel, i_ptMousePress, i_ptMouseRelease);
+}
 
 //------------------------------------------------------------------------------
 ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveGeometryLabel(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup,
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
     const QString& i_strGraphObjName, const QString& i_strLabelName,
     const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease)
 //------------------------------------------------------------------------------
@@ -2972,7 +2799,6 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveGeometryLabel(
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup) +
                        ", ObjName: " + i_strGraphObjName +
                        ", Label: " + i_strLabelName +
                        ", MousePress {" + qPoint2Str(i_ptMousePress) + "}" +
@@ -2988,12 +2814,12 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveGeometryLabel(
 
     ZS::Test::CTestStepGroup* pGrpShowAndMoveLabel = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " " + i_strGraphObjName + " Geometry Label " + i_strLabelName,
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " " + i_strGraphObjName + " Geometry Label " + i_strLabelName,
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " " + i_strGraphObjName + ".showGeometryLabel(" + i_strLabelName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " " + i_strGraphObjName + ".showGeometryLabel(" + i_strLabelName + ")",
         /* strOperation    */ "GraphObj.showGeometryLabel(" + i_strGraphObjName + ", " + i_strLabelName + ")",
         /* pGrpParent      */ pGrpShowAndMoveLabel,
         /* szDoTestStepFct */ SLOT(doTestStepShowGeometryLabel(ZS::Test::CTestStep*)) );
@@ -3001,16 +2827,8 @@ ZS::Test::CTestStepGroup* CTest::createTestGroupShowAndMoveGeometryLabel(
     pTestStep->setConfigValue("LabelName", i_strLabelName);
 
     addTestStepsDrawMouseEventsMovePressMoveRelease(
-        pGrpShowAndMoveLabel, idxStep, i_ptMousePress, i_ptMouseRelease);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-        mthTracer.setMethodReturn(pGrpShowAndMoveLabel->path());
-    }
-    return pGrpShowAndMoveLabel;
-
-} // createTestGroupShowAndMoveGeometryLabel
+        pGrpShowAndMoveLabel, i_ptMousePress, i_ptMouseRelease);
+}
 
 /*==============================================================================
 protected: // instance methods
@@ -3018,14 +2836,12 @@ protected: // instance methods
 
 //------------------------------------------------------------------------------
 void CTest::addTestStepDrawMouseEventPress(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
-    const QPoint& i_ptMousePos)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const QPoint& i_ptMousePos)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", Step: " + QString::number(io_idxStep) +
                        ", MousePos {" + qPoint2Str(i_ptMousePos) + "}";
     }
     CMethodTracer mthTracer(
@@ -3039,7 +2855,7 @@ void CTest::addTestStepDrawMouseEventPress(
     // First move the cursor on the object so that the object is hit.
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++io_idxStep) + " MousePressEvent(" + qPoint2Str(i_ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MousePressEvent(" + qPoint2Str(i_ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(i_ptMousePos) + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
@@ -3048,14 +2864,12 @@ void CTest::addTestStepDrawMouseEventPress(
 
 //------------------------------------------------------------------------------
 void CTest::addTestStepDrawMouseEventRelease(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
-    const QPoint& i_ptMousePos)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, const QPoint& i_ptMousePos)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", Step: " + QString::number(io_idxStep) +
                        ", MousePos {" + qPoint2Str(i_ptMousePos) + "}";
     }
     CMethodTracer mthTracer(
@@ -3069,7 +2883,7 @@ void CTest::addTestStepDrawMouseEventRelease(
     // First move the cursor on the object so that the object is hit.
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++io_idxStep) + " MouseReleaseEvent(" + qPoint2Str(i_ptMousePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseReleaseEvent(" + qPoint2Str(i_ptMousePos) + ")",
         /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(i_ptMousePos) + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );
@@ -3078,14 +2892,13 @@ void CTest::addTestStepDrawMouseEventRelease(
 
 //------------------------------------------------------------------------------
 void CTest::addTestStepDrawMouseEventsMove(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
     const QPoint& i_ptMouseStart, const QPoint& i_ptMouseStop, int i_iMovesCount)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", Step: " + QString::number(io_idxStep) +
                        ", MouseStart {" + qPoint2Str(i_ptMouseStart) + "}" +
                        ", MouseStop {" + qPoint2Str(i_ptMouseStop) + "}" +
                        ", MovesCount: " + QString::number(i_iMovesCount) + "}";
@@ -3100,7 +2913,7 @@ void CTest::addTestStepDrawMouseEventsMove(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++io_idxStep) + " MouseMoveEvents(" + qPoint2Str(i_ptMouseStart) + ", " + qPoint2Str(i_ptMouseStop) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvents(" + qPoint2Str(i_ptMouseStart) + ", " + qPoint2Str(i_ptMouseStop) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(i_ptMouseStart) + ", " + qPoint2Str(i_ptMouseStop) + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -3112,14 +2925,13 @@ void CTest::addTestStepDrawMouseEventsMove(
 
 //------------------------------------------------------------------------------
 void CTest::addTestStepsDrawMouseEventsMove(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
     const QPoint& i_ptMouseStart, const QPoint& i_ptMouseStop, int i_iMovesCount)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", Step: " + QString::number(io_idxStep) +
                        ", MouseStart {" + qPoint2Str(i_ptMouseStart) + "}" +
                        ", MouseStop {" + qPoint2Str(i_ptMouseStop) + "}" +
                        ", MovesCount: " + QString::number(i_iMovesCount) + "}";
@@ -3168,7 +2980,7 @@ void CTest::addTestStepsDrawMouseEventsMove(
         }
         pTestStep = new ZS::Test::CTestStep(
             /* pTest           */ this,
-            /* strName         */ "Step " + QString::number(++io_idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
             /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
             /* pGrpParent      */ i_pTestStepGroupParent,
             /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -3191,14 +3003,13 @@ void CTest::addTestStepsDrawMouseEventsMove(
 
 //------------------------------------------------------------------------------
 void CTest::addTestStepsDrawMouseEventsMovePressMoveRelease(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxStep,
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent,
     const QPoint& i_ptMousePress, const QPoint& i_ptMouseRelease)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
         strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", Step: " + QString::number(io_idxStep) +
                        ", MousePress {" + qPoint2Str(i_ptMousePress) + "}" +
                        ", MouseRelease {" + qPoint2Str(i_ptMouseRelease) + "}";
     }
@@ -3214,7 +3025,7 @@ void CTest::addTestStepsDrawMouseEventsMovePressMoveRelease(
     QPoint ptMouseMovePos = i_ptMousePress;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++io_idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
         /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -3223,7 +3034,7 @@ void CTest::addTestStepsDrawMouseEventsMovePressMoveRelease(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++io_idxStep) + " MousePressEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MousePressEvent(" + qPoint2Str(ptMouseMovePos) + ")",
         /* strOperation    */ "DrawingView.mousePressEvent(" + qPoint2Str(ptMouseMovePos) + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepMousePressEvent(ZS::Test::CTestStep*)) );
@@ -3254,7 +3065,7 @@ void CTest::addTestStepsDrawMouseEventsMovePressMoveRelease(
         }
         pTestStep = new ZS::Test::CTestStep(
             /* pTest           */ this,
-            /* strName         */ "Step " + QString::number(++io_idxStep) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
+            /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
             /* strOperation    */ "DrawingView.mouseMoveEvent(" + qPoint2Str(ptMouseMovePos) + ")",
             /* pGrpParent      */ i_pTestStepGroupParent,
             /* szDoTestStepFct */ SLOT(doTestStepMouseMoveEvent(ZS::Test::CTestStep*)) );
@@ -3276,7 +3087,7 @@ void CTest::addTestStepsDrawMouseEventsMovePressMoveRelease(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++io_idxStep) + " MouseReleaseEvent(" + qPoint2Str(i_ptMouseRelease) + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " MouseReleaseEvent(" + qPoint2Str(i_ptMouseRelease) + ")",
         /* strOperation    */ "DrawingView.mouseReleaseEvent(" + qPoint2Str(i_ptMouseRelease) + ")",
         /* pGrpParent      */ i_pTestStepGroupParent,
         /* szDoTestStepFct */ SLOT(doTestStepMouseReleaseEvent(ZS::Test::CTestStep*)) );

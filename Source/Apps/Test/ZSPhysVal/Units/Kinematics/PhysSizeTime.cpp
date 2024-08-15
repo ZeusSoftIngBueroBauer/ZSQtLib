@@ -101,7 +101,7 @@ CPhysSizeTime::CPhysSizeTime( CUnitsTreeEntryGrpScienceField* i_pParentBranch ) 
     // and to create the chained list of Lower/Higher units).
     initialize(true);
 
-    // To allow "short" unit strings like "Time.ms" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "Time.ms" we add a shortcut to this physical size.
     i_pParentBranch->tree()->addShortcut(this, "Time");
 
     // To allow "short" unit strings like "ms" we add shortcuts to each unit.

@@ -51,13 +51,12 @@ class CTest : public Test::CTest
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinates(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -70,17 +69,17 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
 
     ZS::Test::CTestStepGroup* pGrpImageSizeAndObjectCoordinates = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Image Size and Object Coordinates",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Image Size and Object Coordinates",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Pixels Drawing",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Pixels Drawing",
         /* pTSGrpParent */ pGrpImageSizeAndObjectCoordinates );
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing100x100 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Pixels Drawing (100 * 100) px",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Pixels Drawing (100 * 100) px",
         /* pTSGrpParent */ pGrpPixelsDrawing );
     {
         CDrawingSize drawingSize;
@@ -93,13 +92,13 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
         gridSettings.setLabelsVisible(true);
         gridSettings.setLabelsFont(QFont("Terminal"));
 
-        createTestGroupPrepareScene(pGrpPixelsDrawing100x100, io_idxGroup, drawingSize, gridSettings);
-        createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(pGrpPixelsDrawing100x100, io_idxGroup);
+        createTestGroupPrepareScene(pGrpPixelsDrawing100x100, drawingSize, gridSettings);
+        createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(pGrpPixelsDrawing100x100);
     }
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing101x101 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Pixels Drawing (101 * 101) px",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Pixels Drawing (101 * 101) px",
         /* pTSGrpParent */ pGrpPixelsDrawing );
     {
         CDrawingSize drawingSize;
@@ -112,13 +111,13 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
         gridSettings.setLabelsVisible(true);
         gridSettings.setLabelsFont(QFont("Terminal"));
 
-        createTestGroupPrepareScene(pGrpPixelsDrawing101x101, io_idxGroup, drawingSize, gridSettings);
-        createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(pGrpPixelsDrawing101x101, io_idxGroup);
+        createTestGroupPrepareScene(pGrpPixelsDrawing101x101, drawingSize, gridSettings);
+        createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(pGrpPixelsDrawing101x101);
     }
 
     ZS::Test::CTestStepGroup* pGrpPixelsDrawing800x600 = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Pixels Drawing (800 * 600) px",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Pixels Drawing (800 * 600) px",
         /* pTSGrpParent */ pGrpPixelsDrawing );
     {
         CDrawingSize drawingSize;
@@ -131,23 +130,23 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
         gridSettings.setLabelsVisible(true);
         gridSettings.setLabelsFont(QFont("Terminal"));
 
-        createTestGroupPrepareScene(pGrpPixelsDrawing800x600, io_idxGroup, drawingSize, gridSettings);
-        createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600, io_idxGroup);
+        createTestGroupPrepareScene(pGrpPixelsDrawing800x600, drawingSize, gridSettings);
+        createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpPixelsDrawing800x600);
     }
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawing = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Metrics Drawing",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Metrics Drawing",
         /* pTSGrpParent */ pGrpImageSizeAndObjectCoordinates );
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " YScaleTopDown",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " YScaleTopDown",
         /* pTSGrpParent */ pGrpMetricsDrawing );
     {
         ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown100x100 = new ZS::Test::CTestStepGroup(
             /* pTest        */ this,
-            /* strName      */ "Group " + QString::number(++io_idxGroup) + " YScaleTopDown (100 * 100) mm",
+            /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " YScaleTopDown (100 * 100) mm",
             /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown );
         {
             CDrawingSize drawingSize;
@@ -164,14 +163,14 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
             gridSettings.setLabelsVisible(true);
             gridSettings.setLabelsFont(QFont("Terminal"));
 
-            createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown100x100, io_idxGroup, drawingSize, gridSettings);
-            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleTopDown100x100, io_idxGroup);
-            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(pGrpMetricsDrawingYScaleTopDown100x100, io_idxGroup);
+            createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown100x100, drawingSize, gridSettings);
+            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleTopDown100x100);
+            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(pGrpMetricsDrawingYScaleTopDown100x100);
         }
 
         ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleTopDown800x600 = new ZS::Test::CTestStepGroup(
             /* pTest        */ this,
-            /* strName      */ "Group " + QString::number(++io_idxGroup) + " YScaleTopDown (800 * 600) mm",
+            /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " YScaleTopDown (800 * 600) mm",
             /* pTSGrpParent */ pGrpMetricsDrawingYScaleTopDown );
         {
             CDrawingSize drawingSize;
@@ -188,19 +187,19 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
             gridSettings.setLabelsVisible(true);
             gridSettings.setLabelsFont(QFont("Terminal"));
 
-            createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600, io_idxGroup, drawingSize, gridSettings);
-            createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600, io_idxGroup);
+            createTestGroupPrepareScene(pGrpMetricsDrawingYScaleTopDown800x600, drawingSize, gridSettings);
+            createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleTopDown800x600);
         }
     }
 
     ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " YScaleBottomUp",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " YScaleBottomUp",
         /* pTSGrpParent */ pGrpMetricsDrawing );
     {
         ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp100x100 = new ZS::Test::CTestStepGroup(
             /* pTest        */ this,
-            /* strName      */ "Group " + QString::number(++io_idxGroup) + " YScaleBottomUp (100 * 100) mm",
+            /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " YScaleBottomUp (100 * 100) mm",
             /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp );
         {
             CDrawingSize drawingSize;
@@ -217,14 +216,14 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
             gridSettings.setLabelsVisible(true);
             gridSettings.setLabelsFont(QFont("Terminal"));
 
-            createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp100x100, io_idxGroup, drawingSize, gridSettings);
-            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleBottomUp100x100, io_idxGroup);
-            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(pGrpMetricsDrawingYScaleBottomUp100x100, io_idxGroup);
+            createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp100x100, drawingSize, gridSettings);
+            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(pGrpMetricsDrawingYScaleBottomUp100x100);
+            createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(pGrpMetricsDrawingYScaleBottomUp100x100);
         }
 
         ZS::Test::CTestStepGroup* pGrpMetricsDrawingYScaleBottomUp800x600 = new ZS::Test::CTestStepGroup(
             /* pTest        */ this,
-            /* strName      */ "Group " + QString::number(++io_idxGroup) + " YScaleBottomUp (800 * 600) mm",
+            /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " YScaleBottomUp (800 * 600) mm",
             /* pTSGrpParent */ pGrpMetricsDrawingYScaleBottomUp );
         {
             CDrawingSize drawingSize;
@@ -241,27 +240,20 @@ void CTest::createTestGroupImageSizeAndObjectCoordinates(
             gridSettings.setLabelsVisible(true);
             gridSettings.setLabelsFont(QFont("Terminal"));
 
-            createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600, io_idxGroup, drawingSize, gridSettings);
-            createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600, io_idxGroup);
+            createTestGroupPrepareScene(pGrpMetricsDrawingYScaleBottomUp800x600, drawingSize, gridSettings);
+            createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(pGrpMetricsDrawingYScaleBottomUp800x600);
         }
     }
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinates
+}
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -271,27 +263,20 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes(
 
     ZS::Test::CTestStepGroup* pGrpPhysValShapes = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " PhysValShapeTransformations",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " PhysValShapeTransformations",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(pGrpPhysValShapes, io_idxGroup);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinatesTransformPhysValShapes
+    createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(pGrpPhysValShapes);
+}
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -323,7 +308,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " PhysValRect(" + qPoint2Str(ptTLOrig) + ", " + qSize2Str(sizeOrig) + " " + unit.symbol() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " PhysValRect(" + qPoint2Str(ptTLOrig) + ", " + qSize2Str(sizeOrig) + " " + unit.symbol() + ")",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     //--------------------------------------------------------------------------
@@ -335,7 +320,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_0_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Angle(" + physValAngle.toString() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(0°)
@@ -349,7 +334,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     */
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ "setAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -412,7 +397,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetCenterAngle0(300.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* strOperation    */ "setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -466,7 +451,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetSizeAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* strOperation    */ "setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -516,7 +501,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
         /* strOperation    */ "setWidth(" + physValWidth300.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -566,7 +551,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle0(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -617,7 +602,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle0(500.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -667,7 +652,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -718,7 +703,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle0(200.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -772,7 +757,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightAngle0(200.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
         /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -822,7 +807,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle0(200.0, bYAxisTopDown ? 325.0 : 275.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -875,7 +860,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle0(400.0, bYAxisTopDown ? 375.0 : 225.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -925,7 +910,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle0(200.0, bYAxisTopDown ? 275.0 : 325.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -980,7 +965,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle0(400.0, bYAxisTopDown ? 225.0 : 375.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1033,7 +1018,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle0(300.0, bYAxisTopDown ? 275.0 : 325.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeforeBottomRightAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1087,7 +1072,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondRightBorderAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1143,7 +1128,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle0(350.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomBorderAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1198,7 +1183,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle0(500.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptTopLeftBeyondBottomRightAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1251,7 +1236,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle0(200.0, bYAxisTopDown ? 275.0 : 325.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeforeBottomLeftAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1303,7 +1288,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondLeftBorderAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1357,7 +1342,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle0(250.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomBorderAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1413,7 +1398,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle0(200.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomLeftAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1466,7 +1451,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle0(200.0, bYAxisTopDown ? 325.0 : 275.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeforeTopLeftAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1520,7 +1505,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle0(250.0, bYAxisTopDown ? 250.0 : 350.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopBorderAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1572,7 +1557,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle0(150.0, bYAxisTopDown ? 250.0 : 350.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondLeftBorderAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1631,7 +1616,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle0(200.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopLeftAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1684,7 +1669,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle0(300.0, bYAxisTopDown ? 325.0 : 275.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeforeTopRightAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1738,7 +1723,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle0(350.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopBorderAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1790,7 +1775,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle0(450.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondRightBorderAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1846,7 +1831,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle0(500.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopRightAngle0) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1877,7 +1862,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ---------------------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " removeAndDeleteAllPhysValShapes",
         /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
         /* pGrpParent      */ pGrpTransformRectAngle_0_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1894,7 +1879,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_90_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Angle(" + physValAngle.toString() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(90°)
@@ -1913,7 +1898,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     */
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ "setAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -1969,7 +1954,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetCenterAngle90 = QLineF(ptTopLeftSetCenterAngle90, ptBottomLeftSetCenterAngle90).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* strOperation    */ "setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2012,7 +1997,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetSizeAngle90 = QLineF(ptTopLeftSetSizeAngle90, ptBottomLeftSetSizeAngle90).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* strOperation    */ "setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2055,7 +2040,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthAngle90 = ptLeftCenterSetAngle90;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
         /* strOperation    */ "setWidth(" + physValWidth300.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2102,7 +2087,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle90(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2150,7 +2135,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle90(300.0, bYAxisTopDown ? 480.0 : 120.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2195,7 +2180,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle90 = ptLeftCenterSetAngle90;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2240,7 +2225,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle90 = ptLeftCenterSetAngle90;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2283,7 +2268,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightAngle90 = QLineF(ptTopLeftSetHeightAngle90, ptBottomLeftSetHeightAngle90).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
         /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2327,7 +2312,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle90(275.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2372,7 +2357,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle90(205.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2416,7 +2401,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle90(325.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2461,7 +2446,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle90(405.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2505,7 +2490,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle90(305.0, bYAxisTopDown ? 240.0 : 360.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeforeBottomRightAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2549,7 +2534,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle90(320.0, bYAxisTopDown ? 460.0 : 140.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondRightBorderAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2593,7 +2578,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle90(160.0, bYAxisTopDown ? 310.0 : 290.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomBorderAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2637,7 +2622,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle90(205.0, bYAxisTopDown ? 480.0 : 120.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomRightAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2680,7 +2665,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle90(285.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeforeBottomLeftAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2724,7 +2709,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle90(250.0, bYAxisTopDown ? 170.0 : 430.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondLeftBorderAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2768,7 +2753,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle90(250.0, bYAxisTopDown ? 240.0 : 360.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomBorderAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2812,7 +2797,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle90(205.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomLeftAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2855,7 +2840,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle90(345.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetSetBottomRightBeforeTopLeftAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2899,7 +2884,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle90(350.0, bYAxisTopDown ? 260.0 : 340.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopBorderAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2943,7 +2928,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle90(350.0, bYAxisTopDown ? 170.0 : 430.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondLeftBorderAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -2987,7 +2972,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle90(395.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopLeftAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3030,7 +3015,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle90(285.0, bYAxisTopDown ? 220.0 : 380.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeforeTopRightAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3074,7 +3059,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle90(400.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopBorderAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3118,7 +3103,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle90(220.0, bYAxisTopDown ? 430.0 : 170.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondRightBorderAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3162,7 +3147,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle90(405.0, bYAxisTopDown ? 440.0 : 160.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopRightAngle90) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3193,7 +3178,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ---------------------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " removeAndDeleteAllPhysValShapes",
         /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
         /* pGrpParent      */ pGrpTransformRectAngle_90_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3210,7 +3195,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_180_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Angle(" + physValAngle.toString() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(180°)
@@ -3225,7 +3210,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     */
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ "setAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3281,7 +3266,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetCenterAngle180 = QLineF(ptTopLeftSetCenterAngle180, ptBottomLeftSetCenterAngle180).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* strOperation    */ "setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3324,7 +3309,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetSizeAngle180 = QLineF(ptTopLeftSetSizeAngle180, ptBottomLeftSetSizeAngle180).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* strOperation    */ "setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3367,7 +3352,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthAngle180 = ptLeftCenterSetAngle180;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
         /* strOperation    */ "setWidth(" + physValWidth300.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3414,7 +3399,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle180(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3462,7 +3447,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle180(120.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3507,7 +3492,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle180 = ptLeftCenterSetAngle180;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3552,7 +3537,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle180 = ptLeftCenterSetAngle180;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3595,7 +3580,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightAngle180 = QLineF(ptTopLeftSetHeightAngle180, ptBottomLeftSetHeightAngle180).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
         /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3639,7 +3624,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle180(400.0, bYAxisTopDown ? 275.0 : 325.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3684,7 +3669,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle180(200.0, bYAxisTopDown ? 215.0 : 385.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3728,7 +3713,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle180(400.0, bYAxisTopDown ? 325.0 : 275.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3773,7 +3758,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle180(200.0, bYAxisTopDown ? 385.0 : 215.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3817,7 +3802,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle180(380.0, bYAxisTopDown ? 285.0 : 315.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeforeBottomRightAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3861,7 +3846,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle180(180.0, bYAxisTopDown ? 380.0 : 220.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondRightBorderAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3905,7 +3890,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle180(330.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomBorderAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3949,7 +3934,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle180(120.0, bYAxisTopDown ? 215.0 : 385.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomRightAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -3992,7 +3977,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle180(400.0, bYAxisTopDown ? 265.0 : 335.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeforeBottomLeftAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4036,7 +4021,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle180(440.0, bYAxisTopDown ? 250.0 : 350.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondLeftBorderAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4080,7 +4065,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle180(280.0, bYAxisTopDown ? 250.0 : 350.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomBorderAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4124,7 +4109,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle180(400.0, bYAxisTopDown ? 205.0 : 395.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomLeftAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4167,7 +4152,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle180(400.0, bYAxisTopDown ? 305.0 : 295.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetSetBottomRightBeforeTopLeftAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4211,7 +4196,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle180(320.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopBorderAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4255,7 +4240,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle180(440.0, bYAxisTopDown ? 350.0 : 250.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondLeftBorderAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4299,7 +4284,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle180(400.0, bYAxisTopDown ? 385.0 : 215.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopLeftAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4342,7 +4327,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle180(340.0, bYAxisTopDown ? 295.0 : 305.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeforeTopRightAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4386,7 +4371,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle180(320.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopBorderAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4430,7 +4415,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle180(170.0, bYAxisTopDown ? 260.0 : 340.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondRightBorderAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4474,7 +4459,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle180(110.0, bYAxisTopDown ? 395.0 : 205.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopRightAngle180) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4505,7 +4490,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ---------------------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " removeAndDeleteAllPhysValShapes",
         /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
         /* pGrpParent      */ pGrpTransformRectAngle_180_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4522,7 +4507,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_270_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Angle(" + physValAngle.toString() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(270°)
@@ -4541,7 +4526,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     */
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ "setAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4597,7 +4582,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetCenterAngle270 = QLineF(ptTopLeftSetCenterAngle270, ptBottomLeftSetCenterAngle270).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* strOperation    */ "setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4640,7 +4625,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetSizeAngle270 = QLineF(ptTopLeftSetSizeAngle270, ptBottomLeftSetSizeAngle270).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* strOperation    */ "setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4683,7 +4668,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthAngle270 = ptLeftCenterSetAngle270;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
         /* strOperation    */ "setWidth(" + physValWidth300.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4730,7 +4715,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle270(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4778,7 +4763,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle270(300.0, bYAxisTopDown ? 140.0 : 460.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4823,7 +4808,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle270 = ptLeftCenterSetAngle270;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4868,7 +4853,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle270 = ptLeftCenterSetAngle270;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4911,7 +4896,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightAngle270 = QLineF(ptTopLeftSetHeightAngle270, ptBottomLeftSetHeightAngle270).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
         /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -4955,7 +4940,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle270(325.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5000,7 +4985,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle270(385.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5044,7 +5029,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle270(275.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5089,7 +5074,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle270(215.0, bYAxisTopDown ? 200.0 : 400.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5133,7 +5118,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle270(285.0, bYAxisTopDown ? 380.0 : 220.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeforeBottomRightAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5177,7 +5162,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle270(280.0, bYAxisTopDown ? 180.0 : 420.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondRightBorderAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5221,7 +5206,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle270(400.0, bYAxisTopDown ? 290.0 : 310.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomBorderAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5265,7 +5250,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle270(405.0, bYAxisTopDown ? 160.0 : 440.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomRightAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5308,7 +5293,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle270(315.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeforeBottomLeftAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5352,7 +5337,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle270(350.0, bYAxisTopDown ? 420.0 : 180.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondLeftBorderAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5396,7 +5381,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle270(350.0, bYAxisTopDown ? 310.0 : 290.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomBorderAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5440,7 +5425,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle270(395.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomLeftAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5483,7 +5468,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle270(305.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetSetBottomRightBeforeTopLeftAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5527,7 +5512,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle270(250.0, bYAxisTopDown ? 320.0 : 280.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopBorderAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5571,7 +5556,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle270(250.0, bYAxisTopDown ? 430.0 : 170.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondLeftBorderAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5615,7 +5600,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle270(175.0, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopLeftAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5658,7 +5643,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle270(285.0, bYAxisTopDown ? 380.0 : 220.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeforeTopRightAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5702,7 +5687,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle270(220.0, bYAxisTopDown ? 280.0 : 320.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopBorderAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5746,7 +5731,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle270(360.0, bYAxisTopDown ? 170.0 : 430.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondRightBorderAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5790,7 +5775,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle270(225.0, bYAxisTopDown ? 140.0 : 460.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopRightAngle270) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5821,7 +5806,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ---------------------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " removeAndDeleteAllPhysValShapes",
         /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
         /* pGrpParent      */ pGrpTransformRectAngle_270_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5838,7 +5823,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_30_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Angle(" + physValAngle.toString() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(30.0°)
@@ -5846,7 +5831,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     */
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ "setAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5901,7 +5886,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetCenterAngle30 = QLineF(ptTopLeftSetCenterAngle30, ptBottomLeftSetCenterAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* strOperation    */ "setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5944,7 +5929,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetSizeAngle30 = QLineF(ptTopLeftSetSizeAngle30, ptBottomLeftSetSizeAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* strOperation    */ "setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -5987,7 +5972,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthAngle30 = ptLeftCenterSetAngle30;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
         /* strOperation    */ "setWidth(" + physValWidth300.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6034,7 +6019,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle30(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6083,7 +6068,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle30(473.2, bYAxisTopDown ? 400.0 : 200.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6128,7 +6113,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle30 = ptLeftCenterSetAngle30;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6174,7 +6159,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle30 = ptLeftCenterSetAngle30;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6217,7 +6202,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightAngle30 = QLineF(ptTopLeftSetHeightAngle30, ptBottomLeftSetHeightAngle30).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
         /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6261,7 +6246,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle30(200.9, bYAxisTopDown ? 271.7 : 328.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6307,7 +6292,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle30(349.1, bYAxisTopDown ? 415.0 : 185.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6351,7 +6336,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle30(225.9, bYAxisTopDown ? 228.4 : 371.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6397,7 +6382,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle30(424.1, bYAxisTopDown ? 285.1 : 315.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6441,7 +6426,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle30(311.8, bYAxisTopDown ? 276.2 : 323.8);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeforeBottomRightAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6485,7 +6470,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle30(427.9, bYAxisTopDown ? 375.7 : 224.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondRightBorderAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6529,7 +6514,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle30(294.7, bYAxisTopDown ? 405.8 : 194.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomBorderAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6573,7 +6558,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle30(424.8, bYAxisTopDown ? 487.1 : 112.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomRightAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6616,7 +6601,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle30(228.8, bYAxisTopDown ? 223.3 : 376.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeforeBottomLeftAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6660,7 +6645,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle30(153.8, bYAxisTopDown ? 273.3 : 326.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondLeftBorderAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6704,7 +6689,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle30(234.6, bYAxisTopDown ? 320.0 : 280.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomBorderAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6748,7 +6733,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle30(158.8, bYAxisTopDown ? 344.5 : 255.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomLeftAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6791,7 +6776,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle30(198.0, bYAxisTopDown ? 276.7 : 323.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetSetBottomRightBeforeTopLeftAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6835,7 +6820,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle30(297.5, bYAxisTopDown ? 240.9 : 359.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopBorderAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6879,7 +6864,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle30(185.0, bYAxisTopDown ? 175.9 : 424.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondLeftBorderAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6923,7 +6908,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle30(256.7, bYAxisTopDown ? 175.0 : 425.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopLeftAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -6966,7 +6951,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle30(290.4, bYAxisTopDown ? 330.0 : 270.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeforeTopRightAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7010,7 +6995,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle30(396.2, bYAxisTopDown ? 226.7 : 373.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopBorderAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7054,7 +7039,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle30(415.4, bYAxisTopDown ? 380.0 : 220.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondRightBorderAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7098,7 +7083,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle30(531.3, bYAxisTopDown ? 332.499 : 267.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopRightAngle30) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7129,7 +7114,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ---------------------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " removeAndDeleteAllPhysValShapes",
         /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
         /* pGrpParent      */ pGrpTransformRectAngle_30_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7146,14 +7131,14 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_120_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Angle(" + physValAngle.toString() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(120.0°)
     -------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ "setAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7208,7 +7193,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetCenterAngle120 = QLineF(ptTopLeftSetCenterAngle120, ptBottomLeftSetCenterAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* strOperation    */ "setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7251,7 +7236,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetSizeAngle120 = QLineF(ptTopLeftSetSizeAngle120, ptBottomLeftSetSizeAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* strOperation    */ "setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7294,7 +7279,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthAngle120 = ptLeftCenterSetAngle120;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
         /* strOperation    */ "setWidth(" + physValWidth300.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7341,7 +7326,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle120(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7389,7 +7374,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle120(214.4, bYAxisTopDown ? 448.3 : 151.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7434,7 +7419,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle120 = ptLeftCenterSetAngle120;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7479,7 +7464,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle120 = ptLeftCenterSetAngle120;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7522,7 +7507,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightAngle120 = QLineF(ptTopLeftSetHeightAngle120, ptBottomLeftSetHeightAngle120).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
         /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7566,7 +7551,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle120(328.3, bYAxisTopDown ? 200.9 : 399.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7611,7 +7596,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle120(173.5, bYAxisTopDown ? 342.499 : 257.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7655,7 +7640,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle120(371.7, bYAxisTopDown ? 225.9 : 374.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7700,7 +7685,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle120(334.0, bYAxisTopDown ? 435.1 : 164.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7744,7 +7729,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle120(361.5, bYAxisTopDown ? 274.7 : 325.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeforeBottomRightAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7788,7 +7773,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle120(213.499, bYAxisTopDown ? 396.7 : 203.4);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondRightBorderAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7832,7 +7817,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle120(183.4, bYAxisTopDown ? 263.499 : 336.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomBorderAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7876,7 +7861,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle120(127.9, bYAxisTopDown ? 387.6 : 212.4);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomRightAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7919,7 +7904,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle120(375.7, bYAxisTopDown ? 228.2 : 371.8);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeforeBottomLeftAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -7963,7 +7948,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle120(326.3, bYAxisTopDown ? 154.4 : 445.6);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondLeftBorderAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8007,7 +7992,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle120(286.5, bYAxisTopDown ? 223.4 : 376.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomBorderAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8051,7 +8036,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle120(273.2, bYAxisTopDown ? 169.1 : 430.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomLeftAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8094,7 +8079,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle120(331.8, bYAxisTopDown ? 202.9 : 397.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetSetBottomRightBeforeTopLeftAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8138,7 +8123,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle120(366.0, bYAxisTopDown ? 285.7 : 314.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopBorderAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8182,7 +8167,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle120(408.6, bYAxisTopDown ? 211.9 : 388.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondLeftBorderAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8226,7 +8211,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle120(425.0, bYAxisTopDown ? 256.7 : 343.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopLeftAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8269,7 +8254,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle120(301.499, bYAxisTopDown ? 255.499 : 344.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeforeTopRightAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8313,7 +8298,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle120(362.3, bYAxisTopDown ? 410.6 : 189.4);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopBorderAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8357,7 +8342,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle120(217.8, bYAxisTopDown ? 409.2 : 190.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondRightBorderAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8401,7 +8386,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle120(286.5, bYAxisTopDown ? 500.7 : 99.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopRightAngle120) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8432,7 +8417,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ---------------------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " removeAndDeleteAllPhysValShapes",
         /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
         /* pGrpParent      */ pGrpTransformRectAngle_120_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8449,14 +8434,14 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_210_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Angle(" + physValAngle.toString() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(210.0°)
     -------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ "setAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8511,7 +8496,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetCenterAngle210 = QLineF(ptTopLeftSetCenterAngle210, ptBottomLeftSetCenterAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* strOperation    */ "setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8554,7 +8539,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetSizeAngle210 = QLineF(ptTopLeftSetSizeAngle210, ptBottomLeftSetSizeAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* strOperation    */ "setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8597,7 +8582,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthAngle210 = ptLeftCenterSetAngle210;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
         /* strOperation    */ "setWidth(" + physValWidth300.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8644,7 +8629,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle210(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8692,7 +8677,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle210(136.7, bYAxisTopDown ? 205.7 : 394.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8737,7 +8722,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle210 = ptLeftCenterSetAngle210;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8782,7 +8767,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle210 = ptLeftCenterSetAngle210;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8825,7 +8810,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightAngle210 = QLineF(ptTopLeftSetHeightAngle210, ptBottomLeftSetHeightAngle210).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
         /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8869,7 +8854,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle210(399.1, bYAxisTopDown ? 328.3 : 271.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8914,7 +8899,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle210(260.0, bYAxisTopDown ? 169.2 : 430.8);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -8958,7 +8943,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle210(374.1, bYAxisTopDown ? 371.7 : 228.4);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9003,7 +8988,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle210(167.4, bYAxisTopDown ? 329.6 : 270.4);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9047,7 +9032,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle210(356.2, bYAxisTopDown ? 312.0 : 288.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeforeBottomRightAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9091,7 +9076,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle210(195.2, bYAxisTopDown ? 200.3 : 399.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondRightBorderAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9135,7 +9120,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle210(353.4, bYAxisTopDown ? 161.5 : 438.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomBorderAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9179,7 +9164,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle210(190.5, bYAxisTopDown ? 111.0 : 489.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomRightAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9222,7 +9207,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle210(395.9, bYAxisTopDown ? 333.8 : 266.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeforeBottomLeftAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9266,7 +9251,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle210(427.49, bYAxisTopDown ? 315.9 : 284.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondLeftBorderAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9310,7 +9295,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle210(376.7, bYAxisTopDown ? 286.5 : 313.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomBorderAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9354,7 +9339,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle210(433.4, bYAxisTopDown ? 268.9 : 331.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomLeftAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9397,7 +9382,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle210(383.4, bYAxisTopDown ? 355.49 : 244.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetSetBottomRightBeforeTopLeftAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9441,7 +9426,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle210(317.49, bYAxisTopDown ? 367.8 : 232.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopBorderAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9485,7 +9470,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle210(406.3, bYAxisTopDown ? 419.1 : 180.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondLeftBorderAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9529,7 +9514,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle210(339.0, bYAxisTopDown ? 432.5 : 167.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopLeftAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9572,7 +9557,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle210(309.3, bYAxisTopDown ? 338.49 : 261.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeforeTopRightAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9616,7 +9601,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle210(210.0, bYAxisTopDown ? 371.2 : 228.8);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopBorderAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9660,7 +9645,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle210(195.2, bYAxisTopDown ? 200.3 : 399.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondRightBorderAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9704,7 +9689,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle210(77.5, bYAxisTopDown ? 269.7 : 330.3);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopRightAngle210) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9735,7 +9720,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ---------------------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " removeAndDeleteAllPhysValShapes",
         /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
         /* pGrpParent      */ pGrpTransformRectAngle_210_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9752,14 +9737,14 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
 
     ZS::Test::CTestStepGroup* pGrpTransformRectAngle_300_Degree = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Angle(" + physValAngle.toString() + ")",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Angle(" + physValAngle.toString() + ")",
         /* pTSGrpParent */ pGrpTransformRect );
 
     /* setAngle(300.0°)
     -------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setAngle(" + physValAngle.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setAngle(" + physValAngle.toString() + ")",
         /* strOperation    */ "setAngle(" + physValAngle.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9814,7 +9799,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetCenterAngle300 = QLineF(ptTopLeftSetCenterAngle300, ptBottomLeftSetCenterAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* strOperation    */ "setCenter(" + qPoint2Str(ptCenter) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9857,7 +9842,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetSizeAngle300 = QLineF(ptTopLeftSetSizeAngle300, ptBottomLeftSetSizeAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* strOperation    */ "setSize(" + qSize2Str(size300x200) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9900,7 +9885,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthAngle300 = ptLeftCenterSetAngle300;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidth(" + physValWidth300.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidth(" + physValWidth300.toString() + ")",
         /* strOperation    */ "setWidth(" + physValWidth300.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9947,7 +9932,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeforeRightBorderAngle300(300.0, bYAxisTopDown ? 300.0 : 300.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeforeRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -9995,7 +9980,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveLeftCenterBeyondRightBorderAngle300(404.3, bYAxisTopDown ? 119.4 : 480.6);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingLeftCenter(BeyondRightBorder)",
         /* strOperation    */ "setWidthByMovingLeftCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10040,7 +10025,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeforeLeftBorderAngle300 = ptLeftCenterSetAngle300;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeforeLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10085,7 +10070,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetWidthMoveRightCenterBeyondLeftBorderAngle300 = ptLeftCenterSetAngle300;
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setWidthByMovingRightCenter(BeyondLeftBorder)",
         /* strOperation    */ "setWidthByMovingRightCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10128,7 +10113,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightAngle300 = QLineF(ptTopLeftSetHeightAngle300, ptBottomLeftSetHeightAngle300).center();
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeight(" + physValHeight200.toString() + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeight(" + physValHeight200.toString() + ")",
         /* strOperation    */ "setHeight(" + physValHeight200.toString() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10172,7 +10157,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeforeBottomBorderAngle300(271.7, bYAxisTopDown ? 399.1 : 200.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeforeBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10217,7 +10202,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveTopCenterBeyondBottomBorderAngle300(444.6, bYAxisTopDown ? 268.0 : 332.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingTopCenter(BeyondBottomBorder)",
         /* strOperation    */ "setHeightByMovingTopCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10261,7 +10246,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeforeTopBorderAngle300(228.4, bYAxisTopDown ? 374.1 : 225.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeforeTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10306,7 +10291,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetHeightMoveBottomCenterBeyondTopBorderAngle300(281.0, bYAxisTopDown ? 173.6 : 426.4);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setHeightByMovingBottomCenter(BeyondTopBorder)",
         /* strOperation    */ "setHeightByMovingBottomCenter(" + qPoint2Str(ptMoved) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10350,7 +10335,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeforeBottomRightAngle300(313.49, bYAxisTopDown ? 299.3 : 300.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeforeBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeforeBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeforeBottomRightAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10394,7 +10379,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondRightBorderAngle300(360.4, bYAxisTopDown ? 174.0 : 426.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondRightBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondRightBorderAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10438,7 +10423,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomBorderAngle300(434.3, bYAxisTopDown ? 295.2 : 304.8);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomBorder)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomBorderAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10482,7 +10467,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopLeftBeyondBottomRightAngle300(460.1, bYAxisTopDown ? 168.5 : 431.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopLeft(BeyondBottomRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopLeft(BeyondBottomRight)",
         /* strOperation    */ "setTopLeft(" + qPoint2Str(ptSetTopLeftBeyondBottomRightAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10525,7 +10510,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeforeBottomLeftAngle300(246.8, bYAxisTopDown ? 384.8 : 215.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeforeBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeforeBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeforeBottomLeftAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10569,7 +10554,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondLeftBorderAngle300(281.0, bYAxisTopDown ? 432.9 : 167.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondLeftBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondLeftBorderAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10613,7 +10598,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomBorderAngle300(324.0, bYAxisTopDown ? 358.49 : 241.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomBorder)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomBorderAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10657,7 +10642,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetTopRightBeyondBottomLeftAngle300(330.0, bYAxisTopDown ? 432.8 : 167.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setTopRight(BeyondBottomLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setTopRight(BeyondBottomLeft)",
         /* strOperation    */ "setTopRight(" + qPoint2Str(ptSetTopRightBeyondBottomLeftAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10700,7 +10685,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeforeTopLeftAngle300(254.0, bYAxisTopDown ? 388.9 : 211.1);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeforeTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeforeTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetSetBottomRightBeforeTopLeftAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10744,7 +10729,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopBorderAngle300(226.0, bYAxisTopDown ? 328.1 : 271.9);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopBorderAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10788,7 +10773,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondLeftBorderAngle300(193.2, bYAxisTopDown ? 385.0 : 215.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondLeftBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondLeftBorder)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondLeftBorderAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10832,7 +10817,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomRightBeyondTopLeftAngle300(166.3, bYAxisTopDown ? 338.3 : 261.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomRight(BeyondTopLeft)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomRight(BeyondTopLeft)",
         /* strOperation    */ "setBottomRight(" + qPoint2Str(ptSetBottomRightBeyondTopLeftAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10875,7 +10860,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeforeTopRightAngle300(286.0, bYAxisTopDown ? 348.8 : 251.2);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeforeTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeforeTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeforeTopRightAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10919,7 +10904,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopBorderAngle300(224.5, bYAxisTopDown ? 197.5 : 402.5);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopBorderAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -10963,7 +10948,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondRightBorderAngle300(447.7, bYAxisTopDown ? 241.3 : 358.7);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondRightBorder)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondRightBorder)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondRightBorderAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -11007,7 +10992,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     QPointF ptLeftCenterSetBottomLeftBeyondTopRightAngle300(296.7, bYAxisTopDown ? 121.2 : 478.8);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " setBottomLeft(BeyondTopRight)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " setBottomLeft(BeyondTopRight)",
         /* strOperation    */ "setBottomLeft(" + qPoint2Str(ptSetBottomLeftBeyondTopRightAngle300) + " " + unit.symbol() + ")",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
@@ -11038,32 +11023,23 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect(
     ---------------------------------*/
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " removeAndDeleteAllPhysValShapes",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " removeAndDeleteAllPhysValShapes",
         /* strOperation    */ "removeAndDeleteAllPhysValShapes()",
         /* pGrpParent      */ pGrpTransformRectAngle_300_Degree,
         /* szDoTestStepFct */ SLOT(doTestStepTransformPhysValRect(ZS::Test::CTestStep*)) );
     pTestStep->setConfigValue("removeAndDeleteAllPhysValShapes", "");
     strlstExpectedValues.clear();
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    //--------------------------------------------------------------------------
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinatesTransformPhysValRect
+}
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -11073,7 +11049,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
 
     ZS::Test::CTestStepGroup* pGrpAddLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add Lines",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     for (const QString& strKey : s_hshGraphObjsInstCounts.keys()) {
@@ -11096,7 +11072,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -11128,7 +11104,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -11160,7 +11136,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -11192,7 +11168,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -11214,23 +11190,16 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines(
     strlstExpectedValues.append("getLength: 100 px");
     strlstExpectedValues.append("rotationAngle: 270.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinatesPixelsDrawingAddLines
+}
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -11242,7 +11211,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
 
     ZS::Test::CTestStepGroup* pGrpAddLines = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " Add Lines",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " Add Lines",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     for (const QString& strKey : s_hshGraphObjsInstCounts.keys()) {
@@ -11265,7 +11234,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -11311,7 +11280,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -11356,7 +11325,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -11402,7 +11371,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)) );
@@ -11447,7 +11416,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " Add(" + strFactoryGroupName + ", " + strGraphObjName + ")",
         /* strOperation    */ "DrawingScene.addGraphObj(" + strFactoryGroupName + ", " + strGraphObjType + ")",
         /* pGrpParent      */ pGrpAddLines,
         /* szDoTestStepFct */ SLOT(doTestStepAddGraphObjLine(ZS::Test::CTestStep*)));
@@ -11482,23 +11451,16 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines(
     strlstExpectedValues.append("getLength: 60.6 mm");
     strlstExpectedValues.append("rotationAngle: 45.0 " + Math::c_strSymbolDegree);
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingAddLines
+}
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversionFunctions(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -11508,29 +11470,23 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConversion
 
     ZS::Test::CTestStepGroup* pGrpDrawingSceneConvert = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " DrawingScene.Convert",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " DrawingScene.Convert",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
-    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(pGrpDrawingSceneConvert, io_idxGroup);
-    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(pGrpDrawingSceneConvert, io_idxGroup);
-    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(pGrpDrawingSceneConvert, io_idxGroup);
-    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(pGrpDrawingSceneConvert, io_idxGroup);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
+    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(pGrpDrawingSceneConvert);
+    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(pGrpDrawingSceneConvert);
+    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(pGrpDrawingSceneConvert);
+    createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(pGrpDrawingSceneConvert);
 }
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -11542,7 +11498,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValPoint = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(Point)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(Point)",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QStringList strlstExpectedValues;
@@ -11552,12 +11508,12 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValPointPx2MM = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(px, mm)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(px, mm)",
         /* pTSGrpParent */ pGrpConvertToPhysValPoint );
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(0, 0) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Point(0, 0) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Point(0, 0) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValPointPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep*)) );
@@ -11575,7 +11531,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(100, 100) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Point(100, 100) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Point(100, 100) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValPointPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep*)) );
@@ -11593,7 +11549,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(200, 200) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Point(200, 200) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Point(200, 200) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValPointPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep*)) );
@@ -11611,7 +11567,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(350, 350) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Point(350, 350) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Point(350, 350) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValPointPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep*)) );
@@ -11632,10 +11588,8 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValPointMM2Px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(mm, px)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(mm, px)",
         /* pTSGrpParent */ pGrpConvertToPhysValPoint );
-
-    idxStep = 0;
 
     double fYPos_mm = 0.0;
     if (drawingSize.yScaleAxisOrientation() == EYScaleAxisOrientation::BottomUp) {
@@ -11644,7 +11598,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     QString strYPos = QString::number(static_cast<int>(fYPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(0, " + strYPos + ") mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Point(0, " + strYPos + ") mm, px)",
         /* strOperation    */ "DrawingScene.convert(Point(0, " + strYPos + ") mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValPointMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep*)) );
@@ -11662,7 +11616,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strYPos = QString::number(static_cast<int>(fYPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(20, " + strYPos + ") mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Point(20, " + strYPos + ") mm, px)",
         /* strOperation    */ "DrawingScene.convert(Point(20, " + strYPos + ") mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValPointMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep*)) );
@@ -11677,7 +11631,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strYPos = QString::number(static_cast<int>(fYPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(50, " + strYPos + ") mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Point(50, " + strYPos + ") mm, px)",
         /* strOperation    */ "DrawingScene.convert(Point(50, " + strYPos + ") mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValPointMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep*)) );
@@ -11695,7 +11649,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strYPos = QString::number(static_cast<int>(fYPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Point(100, " + strYPos + ") mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Point(100, " + strYPos + ") mm, px)",
         /* strOperation    */ "DrawingScene.convert(Point(100, " + strYPos + ") mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValPointMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValPoint(ZS::Test::CTestStep*)) );
@@ -11705,23 +11659,16 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.clear();
     strlstExpectedValues.append("{350, 350} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValPoint
+}
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -11731,7 +11678,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValSize = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(Size)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(Size)",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QStringList strlstExpectedValues;
@@ -11741,12 +11688,12 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValSizePx2MM = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(px, mm)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(px, mm)",
         /* pTSGrpParent */ pGrpConvertToPhysValSize );
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(0, 0) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(0, 0) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(0, 0) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11759,7 +11706,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(100, 0) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(100, 0) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(100, 0) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11772,7 +11719,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(0, 100) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(0, 100) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(0, 100) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11785,7 +11732,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(350, 0) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(350, 0) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(350, 0) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11798,7 +11745,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(0, 350) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(0, 350) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(0, 350) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11811,7 +11758,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(1, 1) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(1, 1) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(1, 1) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11824,7 +11771,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(10, 10) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(10, 10) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(10, 10) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11837,7 +11784,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(100, 100) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(100, 100) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(100, 100) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11850,7 +11797,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(350, 350) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(350, 350) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Size(350, 350) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValSizePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11866,14 +11813,12 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValSizeMM2Px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(mm, px)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(mm, px)",
         /* pTSGrpParent */ pGrpConvertToPhysValSize );
-
-    idxStep = 0;
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(0, 0) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(0, 0) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Size(0, 0) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11886,7 +11831,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(1, 1) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(1, 1) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Size(1, 1) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11899,7 +11844,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(10, 10) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(10, 10) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Size(10, 10) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11912,7 +11857,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(20, 20) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(20, 20) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Size(20, 20) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11925,7 +11870,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(50, 50) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(50, 50) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Size(50, 50) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11938,7 +11883,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(90, 90) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(90, 90) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Size(90, 90) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11951,7 +11896,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Size(100, 100) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Size(100, 100) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Size(100, 100) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValSizeMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValSize(ZS::Test::CTestStep*)) );
@@ -11961,23 +11906,16 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.clear();
     strlstExpectedValues.append("{350, 350} px");
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValSize
+}
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -11989,7 +11927,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValLine = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(Line)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(Line)",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QStringList strlstExpectedValues;
@@ -11999,12 +11937,12 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValLinePx2MM = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(px, mm)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(px, mm)",
         /* pTSGrpParent */ pGrpConvertToPhysValLine );
 
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(0, 0), P2(350, 0)) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(0, 0), P2(350, 0)) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(0, 0), P2(350, 0)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
@@ -12030,7 +11968,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(350, 0), P2(350, 350)) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(350, 0), P2(350, 350)) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(350, 0), P2(350, 350)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)) );
@@ -12058,7 +11996,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(350, 350), P2(0, 350)) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(350, 350), P2(0, 350)) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(350, 350), P2(0, 350)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
@@ -12084,7 +12022,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(0, 350), P2(0, 0)) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(0, 350), P2(0, 0)) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(0, 350), P2(0, 0)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
@@ -12112,7 +12050,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(100, 100), P2(250, 250)) px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(100, 100), P2(250, 250)) px, mm)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(100, 100), P2(250, 250)) px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValLinePx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
@@ -12143,10 +12081,8 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValLineMM2Px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(mm, px)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(mm, px)",
         /* pTSGrpParent */ pGrpConvertToPhysValLine );
-
-    idxStep = 0;
 
     double fP1YPos_mm = 0.0;
     double fP2YPos_mm = 0.0;
@@ -12158,7 +12094,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     QString strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(0, " + strP1YPos + "), P2(100, " + strP2YPos + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(0, " + strP1YPos + "), P2(100, " + strP2YPos + ")) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(0, " + strP1YPos + "), P2(100, " + strP2YPos + ")) mm, px))",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
@@ -12185,7 +12121,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(100, " + strP1YPos + "), P2(100, " + strP2YPos + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(100, " + strP1YPos + "), P2(100, " + strP2YPos + ")) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(100, " + strP1YPos + "), P2(100, " + strP2YPos + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
@@ -12217,7 +12153,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(100, " + strP1YPos + "), P2(0, " + strP2YPos + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(100, " + strP1YPos + "), P2(0, " + strP2YPos + ")) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(100, " + strP1YPos + "), P2(0, " + strP2YPos + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
@@ -12244,7 +12180,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(" + strP1YPos + ", 100), P2(0, " + strP2YPos + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(" + strP1YPos + ", 100), P2(0, " + strP2YPos + ")) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(" + strP1YPos + ", 100), P2(0, " + strP2YPos + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
@@ -12276,7 +12212,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strP2YPos = QString::number(static_cast<int>(fP2YPos_mm));
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Line(P1(28.6, " + strP1YPos + "), P2(71.4, " + strP2YPos + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Line(P1(28.6, " + strP1YPos + "), P2(71.4, " + strP2YPos + ")) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Line(P1(28.6, " + strP1YPos + "), P2(71.4, " + strP2YPos + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValLineMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValLine(ZS::Test::CTestStep*)));
@@ -12297,23 +12233,16 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
         strlstExpectedValues.append("Angle: 315.0 " + Math::c_strSymbolDegree);
     }
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValLine
+}
 
 //------------------------------------------------------------------------------
 void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect(
-    ZS::Test::CTestStepGroup* i_pTestStepGroupParent, int& io_idxGroup)
+    ZS::Test::CTestStepGroup* i_pTestStepGroupParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObj, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path()) +
-                       ", IdxGroup:" + QString::number(io_idxGroup);
+        strMthInArgs = "Parent: " + QString(i_pTestStepGroupParent == nullptr ? "nullptr" : i_pTestStepGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObj,
@@ -12329,7 +12258,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValRect = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(Rect)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(Rect)",
         /* pTSGrpParent */ i_pTestStepGroupParent );
 
     QStringList strlstExpectedValues;
@@ -12339,7 +12268,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValRectPx2MM = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(px, mm)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(px, mm)",
         /* pTSGrpParent */ pGrpConvertToPhysValRect );
 
     /*  0.0    35.0    70.0    95.0   135.0   175.0   210.0   245.0   280.0   315.0   350.0  px
@@ -12351,7 +12280,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     QSizeF size_px(100.0 * fResPxPerMM, 100.0 * fResPxPerMM);
     ZS::Test::CTestStep* pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
         /* strOperation    */ "DrawingScene.convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
@@ -12388,7 +12317,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     size_px = QSizeF(20.0 * fResPxPerMM, 40.0 * fResPxPerMM);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
         /* strOperation    */ "DrawingScene.convert(Rect(" + qPoint2Str(ptTL_px) + ", " + qSize2Str(size_px) + " px, mm)",
         /* pGrpParent      */ pGrpConvertToPhysValRectPx2MM,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)));
@@ -12421,10 +12350,8 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
 
     ZS::Test::CTestStepGroup* pGrpConvertToPhysValRectMM2Px = new ZS::Test::CTestStepGroup(
         /* pTest        */ this,
-        /* strName      */ "Group " + QString::number(++io_idxGroup) + " convert(mm, px)",
+        /* strName      */ "Group " + QString::number(ZS::Test::CTestStepGroup::testGroupCount()) + " convert(mm, px)",
         /* pTSGrpParent */ pGrpConvertToPhysValRect );
-
-    idxStep = 0;
 
     /*  0.0    35.0    70.0    95.0   135.0   175.0   210.0   245.0   280.0   315.0   350.0  px
         0.0    10.0    20.0    30.0    40.0    50.0    60.0    70.0    80.0    90.0   100.0  mm   TopDown
@@ -12435,7 +12362,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     size_mm = QSizeF(100.0, 100.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)) );
@@ -12472,7 +12399,7 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     size_mm = QSizeF(20.0, 40.0);
     pTestStep = new ZS::Test::CTestStep(
         /* pTest           */ this,
-        /* strName         */ "Step " + QString::number(++idxStep) + " convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
+        /* strName         */ "Step " + QString::number(ZS::Test::CTestStep::testStepCount()) + " convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
         /* strOperation    */ "DrawingScene.convert(Rect(" + qPoint2Str(ptTL_mm) + ", " + qSize2Str(size_mm) + ")) mm, px)",
         /* pGrpParent      */ pGrpConvertToPhysValRectMM2Px,
         /* szDoTestStepFct */ SLOT(doTestStepDrawingSceneConvertToPhysValRect(ZS::Test::CTestStep*)));
@@ -12499,11 +12426,5 @@ void CTest::createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToP
     strlstExpectedValues.append("Width: " + QString::number(size_px.width(), 'f', 0) + " px");
     strlstExpectedValues.append("Height: " + QString::number(size_px.height(), 'f', 0) + " px");
     pTestStep->setExpectedValues(strlstExpectedValues);
-
-    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
-        QString strMthOutArgs = "IdxGroup:" + QString::number(io_idxGroup);
-        mthTracer.setMethodOutArgs(strMthOutArgs);
-    }
-
-} // createTestGroupImageSizeAndObjectCoordinatesMetricsDrawingConvertToPhysValRect
+}
 

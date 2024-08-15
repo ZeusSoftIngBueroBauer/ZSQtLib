@@ -126,6 +126,8 @@ protected: // instance methods
     void createTestGroupModifyStandardShapesGroupBigPlusSign(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupModifyStandardShapesGroupPlusSigns(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupAddStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
+    void createTestGroupModifyStandardShapesGroupCheckmark(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupAddStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
     void createTestGroupModifyStandardShapesAllGroups(ZS::Test::CTestStepGroup* i_pTestStepGroupParent);
 
@@ -209,6 +211,8 @@ protected slots:
     void doTestStepMouseMoveEvent( ZS::Test::CTestStep* i_pTestStep );
     void doTestStepMouseMoveEvents( ZS::Test::CTestStep* i_pTestStep );
 protected: // auxiliary instance methods
+    void initInstCounts();
+    void initObjectCoors();
     ZS::System::SErrResultInfo readFile(const QString& i_strAbsFilePath, QStringList& o_strlstLines) const;
     QStringList resultValuesForGraphObj(const ZS::Draw::CGraphObj* i_pGraphObj, bool i_bAddLabelResultValues = false) const;
     QStringList resultValuesForGroup(

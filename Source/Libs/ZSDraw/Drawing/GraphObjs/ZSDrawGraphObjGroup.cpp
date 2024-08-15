@@ -617,7 +617,7 @@ void CGraphObjGroup::resizeToContent()
                 pGraphicsItemChildExisting->setPos(ptPosChildNew);
                 // The child was not notified about the geometry change (see above) but has to reset
                 // the scale transformation parameters of the parent.
-                pGraphObjChildExisting->initParentScaleParameters();
+                pGraphObjChildExisting->updateTransformedCoorsOnParentChanged();
                 // As on calling "setPos" the position may not have been changed, force the child
                 // to update it's original shape points in physical coordinates relative to either
                 // the top left or bottom left corner of the parents bounding rectangle:
@@ -771,11 +771,16 @@ void CGraphObjGroup::setRect( const CPhysValRect& i_physValRect )
            item's rectangle coordinates either relative to the top left corner or
            relative to the bottom right corner of the parent's bounding rectangle
            in the current unit of the drawing scene.
+
+    @param [in] i_rowVersion
+        If set to Current (default), the scaled and rotated coordinates are returned.
+        If set to Original, the unscaled and not rotated coordinates are returned.
+        The Original coordinates are used by childs to calculate the parent's scale factor.
 */
-CPhysValRect CGraphObjGroup::getRect() const
+CPhysValRect CGraphObjGroup::getRect(ERowVersion i_rowVersion) const
 //------------------------------------------------------------------------------
 {
-    return getRect(m_pDrawingScene->drawingSize().unit());
+    return getRect(m_pDrawingScene->drawingSize().unit(), i_rowVersion);
 }
 
 //------------------------------------------------------------------------------
@@ -786,10 +791,18 @@ CPhysValRect CGraphObjGroup::getRect() const
 
     @param [in] i_unit
         Unit in which the line coordinates should be returned.
+    @param [in] i_rowVersion
+        If set to Current (default), the scaled and rotated coordinates are returned.
+        If set to Original, the unscaled and not rotated coordinates are returned.
+        The Original coordinates are used by childs to calculate the parent's scale factor.
 */
-CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit) const
+CPhysValRect CGraphObjGroup::getRect(const CUnit& i_unit, ERowVersion i_rowVersion) const
 //------------------------------------------------------------------------------
 {
+#pragma message(__TODO__"Check if rowVersion is really needed")
+    if (i_rowVersion == ERowVersion::Original) {
+        return m_physValRectOrig;
+    }
     return m_physValRectScaledAndRotated;
 }
 
@@ -3282,8 +3295,12 @@ protected: // overridable slots of base class CGraphObj
 
     @param [in] i_pGraphObjParent
         Pointer to parent item whose geometry on the scene has been changed.
+    @param [in] i_bParentOfParentChanged
+        false (default), if the geometry of the parent has been changed directly.
+        true if the geometry has been changed because the parent got a new parent.
 */
-void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
 //------------------------------------------------------------------------------
 {
     if (m_iIgnoreParentGeometryChange > 0) {
@@ -3291,7 +3308,7 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphO
     }
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
+        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -3304,6 +3321,9 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphO
     bool bGeometryOnSceneChanged = false;
     if (i_pGraphObjParent->isGroup()) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
+        if (i_bParentOfParentChanged) {
+            updateTransformedCoorsOnParentChanged();
+        }
         CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
         if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
             setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
@@ -3463,24 +3483,26 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged()
         /* strAddInfo   */ "" );
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
 
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+    #pragma message(__TODO__"Comment correct?")
     // Before mapping to parent or scene, the rotation will be reset.
     // Otherwise transformed coordinates will be returned.
     // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
-    CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-    initParentScaleParameters();
+        initParentScaleParameters();
 
-    setRectOrig(m_rectScaled);
-    //QRectF rectF = getRectScaled(m_rectOrig);
-    //setRectScaled(rectF);
-    CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
-    setPhysValRectOrig(physValRect);
-    physValRect = getPhysValRectScaled(m_physValRectOrig);
-    setPhysValRectScaled(physValRect);
-    physValRect.setAngle(m_physValRotationAngle);
-    setPhysValRectScaledAndRotated(physValRect);
+        setRectOrig(m_rectScaled);
+        //QRectF rectF = getRectScaled(m_rectOrig);
+        //setRectScaled(rectF);
+        CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
+        setPhysValRectOrig(physValRect);
+        physValRect = getPhysValRectScaled(m_physValRectOrig);
+        setPhysValRectScaled(physValRect);
+        physValRect.setAngle(m_physValRotationAngle);
+        setPhysValRectScaledAndRotated(physValRect);
+    }
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged(true);
 }
 
 //------------------------------------------------------------------------------
@@ -3603,9 +3625,8 @@ void CGraphObjGroup::updateDivLinesMetrics(
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Calculates the scaled, not rotated rectangle in pixels in item
-           coordinates relative to the origin (center point) of the bounding
-           orignal bounding rectangle.
+/*! @brief Calculates the scaled, not rotated rectangle in pixels in item coordinates
+           relative to the origin (center point) of the orignal bounding rectangle.
 
     The relative distance of the center point of the scaled rectangle to the
     origin (center point) of the parent's bounding rectangle remains the same.
@@ -3710,9 +3731,9 @@ CPhysValRect CGraphObjGroup::getPhysValRectOrig(const QRectF& i_rectOrig) const
     top left or bottom left corner of the parent's bounding rectangle remains the same.
     The width and height are scaled to the scale factors of the parent group.
 
-    @param [in] i_rectOrig
-        Unscaled rectangle in the item's local coordinates system whose origin
-        is the center point of the item.
+    @param [in] i_physValRectOrig
+        Unscaled rectangle in the parent's, physical coordinates system whose origin
+        is the top left or bottom right corner of the parent's bounding rectangle.
     @return Scaled rectangle.
 */
 CPhysValRect CGraphObjGroup::getPhysValRectScaled(const CPhysValRect& i_physValRectOrig) const

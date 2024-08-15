@@ -109,7 +109,7 @@ protected: // overridables of base class QGraphicsItem
     virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent* i_pEv ) override;
 protected slots: // overridables of base class CGraphObj
     //void onGraphObjParentScenePosChanged( CGraphObj* i_pGraphObjParent ) override;
-    void onGraphObjParentGeometryOnSceneChanged( CGraphObj* i_pGraphObjParent ) override;
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     void onGraphObjParentZValueChanged( CGraphObj* i_pGraphObjParent ) override;
 protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;

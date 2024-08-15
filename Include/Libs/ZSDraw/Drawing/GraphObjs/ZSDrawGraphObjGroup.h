@@ -124,8 +124,8 @@ public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const; // for subsystem test
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
-    CPhysValRect getRect() const;
-    CPhysValRect getRect(const ZS::PhysVal::CUnit& i_unit) const;
+    CPhysValRect getRect(ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    CPhysValRect getRect(const ZS::PhysVal::CUnit& i_unit, ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
     void setWidth(double i_fWidth);
     void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     ZS::PhysVal::CPhysVal getWidth() const;
@@ -222,7 +222,7 @@ protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange( GraphicsItemChange i_change, const QVariant& i_value ) override;
 protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 public: // must overridables of base class CGraphObj
     virtual void updateTransformedCoorsOnParentChanged() override;

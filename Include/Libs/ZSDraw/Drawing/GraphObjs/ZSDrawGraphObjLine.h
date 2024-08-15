@@ -195,7 +195,7 @@ protected: // overridables of base class QGraphicsItem
     virtual QVariant itemChange(GraphicsItemChange i_change, const QVariant& i_value) override;
 protected: // overridable slots of base class CGraphObj
     //virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize) override;
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 public: // must overridables of base class CGraphObj
     virtual void updateTransformedCoorsOnParentChanged() override;
@@ -205,6 +205,11 @@ protected: // instance methods
     virtual void updateLineEndArrowHeadPolygons(const CEnumLinePoint& i_linePoint = CEnumLinePoint());
 protected: // overridables of base class CGraphObj
     //virtual void updateToolTip() override;
+protected: // auxiliary instance methods
+    QLineF getLineScaled(const QLineF& i_lineOrig) const;
+    CPhysValLine getPhysValLineOrig(const QLineF& i_lineOrig) const;
+    CPhysValLine getPhysValLineScaled(const CPhysValLine& i_physValLineOrig) const;
+    QPointF getItemPosAndLocalCoors(const CPhysValLine& i_physValLine, QLineF& o_line) const;
 protected: // auxiliary instance methods (method tracing)
     QLineF setLineOrig(const QLineF& i_line);
     QLineF QGraphicsLineItem_setLine(const QLineF& i_line);

@@ -64,7 +64,7 @@ CPhysSizeGraphDevice::CPhysSizeGraphDevice( CUnitsTreeEntryGrpScienceField* i_pP
     // Link the units to a chained list for the "findBestUnit" functionality:
     // Just one unit and therefore nothing to chain.
 
-    // To allow "short" unit strings like "GraphDevice.px" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "GraphDevice.px" we add a shortcut to this physical size.
     m_pTree->addShortcut(this, "GraphDevice");
 
     // To allow "short" unit strings like "px" we add shortcuts to each unit.

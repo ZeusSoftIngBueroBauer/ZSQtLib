@@ -76,7 +76,7 @@ CUnitsQuantitiesBytes::CUnitsQuantitiesBytes(CIdxTreeEntry* i_pParentBranch) :
     MB(m_treeEntryMegaByte),
     GB(m_treeEntryGigaByte)
 {
-    // To allow "short" unit strings like "Bytes.kB" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "Bytes.kB" we add a shortcut to this physical size.
     i_pParentBranch->tree()->addShortcut(this, "Bytes");
 
     // To allow "short" unit strings like "MB" we add shortcuts to each unit.

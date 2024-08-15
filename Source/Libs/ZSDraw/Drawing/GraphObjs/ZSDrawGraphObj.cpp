@@ -5267,7 +5267,7 @@ bool CGraphObj::labelHasDefaultValues(const QString& i_strName) const
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    #pragma message(__TODO__"Should become pure virtual")
+    #pragma message(__TODO__"Pure virtual")
     return true;
 }
 
@@ -6003,7 +6003,7 @@ bool CGraphObj::geometryLabelHasDefaultValues(const QString& i_strName) const
         throw CException(__FILE__, __LINE__, EResultObjNotInList, i_strName);
     }
 
-    #pragma message(__TODO__"Should become pure virtual")
+    #pragma message(__TODO__"Pure virtual")
     return true;
 }
 
@@ -6823,8 +6823,12 @@ void CGraphObj::onDrawingSizeChanged(const CDrawingSize& i_drawingSize)
 
     @param [in] i_pGraphObjParent
         Pointer to parent item whose geometry on the scene has been changed.
+    @param [in] i_bParentOfParentChanged
+        false (default), if the geometry of the parent has been changed directly.
+        true if the geometry has been changed because the parent got a new parent.
 */
-void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent)
+void CGraphObj::onGraphObjParentGeometryOnSceneChanged(
+    CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged)
 //------------------------------------------------------------------------------
 {
     if (m_iIgnoreParentGeometryChange > 0) {
@@ -6832,7 +6836,7 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjPar
     }
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        strMthInArgs = i_pGraphObjParent->keyInTree();
+        strMthInArgs = i_pGraphObjParent->keyInTree() + ", ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -6841,8 +6845,12 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjPar
         /* strMethod    */ "CGraphObj::onGraphObjParentGeometryOnSceneChanged",
         /* strAddInfo   */ strMthInArgs );
 
+#pragma message(__TODO__"Pure virtual")
     if (i_pGraphObjParent->isGroup()) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
+        if (i_bParentOfParentChanged) {
+            initParentScaleParameters();
+        }
         CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
         if (m_physValRectParentGroupOrig != physValRectGroupParentCurr) {
             if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
@@ -7122,7 +7130,7 @@ protected: // overridables
 /*! @brief Initializes (resets) the items scale transformation parameters within its parent.
 
     The method saves the current pyhsical rectangle of the parent group as the parent's
-    original, phyiscal coordinates. Also the graphics item position within the parent
+    original, physical coordinates. Also the graphics item position within the parent
     is stored as the original position (relative to the origin (center point) of the
     parents bounding). The group scale parameters are reset to 1.0.
 
@@ -7147,7 +7155,7 @@ void CGraphObj::initParentScaleParameters()
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     CGraphObjGroup* pGraphObjGroupParent = parentGroup();
     if (pGraphObjGroupParent != nullptr) {
-        setPhysValRectParentGroupOrig(pGraphObjGroupParent->getRect());
+        setPhysValRectParentGroupOrig(pGraphObjGroupParent->getRect(ERowVersion::Original));
     }
     else {
         setPhysValRectParentGroupOrig(CPhysValRect(*m_pDrawingScene));
@@ -7181,12 +7189,21 @@ void CGraphObj::updateTransformedCoorsOnParentChanged()
         /* strMethod    */ "CGraphObj::updateTransformedCoorsOnParentChanged",
         /* strAddInfo   */ "" );
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+
     #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+
+    // Before mapping to parent or scene, the rotation will be reset.
+    // Otherwise transformed coordinates will be returned.
+    // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
     // The childs were not notified about the geometry change (see above) but has to reset
     // the scale transformation parameters of the parent.
-    initParentScaleParameters();
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+        initParentScaleParameters();
+    }
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged(true);
 }
 
 //------------------------------------------------------------------------------
@@ -7389,19 +7406,23 @@ void CGraphObj::emit_selectedChanged(bool i_bIsSelected)
 
     The signal is only emitted if not blocked (BlockedCounter == 0).
 */
-void CGraphObj::emit_geometryOnSceneChanged()
+void CGraphObj::emit_geometryOnSceneChanged(bool i_bParentOfParentChanged)
 //------------------------------------------------------------------------------
 {
     if (m_iGeometryOnSceneChangedSignalBlockedCounter > 0) {
         return;
+    }
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "ParentOfParentChanged: " + bool2Str(i_bParentOfParentChanged);
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::emit_geometryOnSceneChanged",
-        /* strAddInfo   */ "" );
-    emit geometryOnSceneChanged(this);
+        /* strAddInfo   */ strMthInArgs );
+    emit geometryOnSceneChanged(this, i_bParentOfParentChanged);
 }
 
 ////------------------------------------------------------------------------------
@@ -7744,7 +7765,9 @@ void CGraphObj::QGraphicsItem_prepareGeometryChange()
         /* strMethod    */ "CGraphObj::QGraphicsItem_prepareGeometryChange",
         /* strAddInfo   */ "" );
 
-#pragma message(__TODO__"Pure virtual")
+    // As the prepareGeometryChange method is a protected method of QGraphicsItem
+    // this method must be reimplemented by the derived classes.
+    #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
 
     //QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
@@ -7760,7 +7783,7 @@ void CGraphObj::QGraphicsItem_prepareGeometryChange()
     @param [in] i_pos
         New position of the object in parent coordinates.
 */
-void CGraphObj::QGraphicsItem_setPos(const QPointF& i_pos)
+QPointF CGraphObj::QGraphicsItem_setPos(const QPointF& i_pos)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7774,10 +7797,16 @@ void CGraphObj::QGraphicsItem_setPos(const QPointF& i_pos)
         /* strMethod    */ "CGraphObj::QGraphicsItem_setPos",
         /* strAddInfo   */ strMthInArgs );
 
+    QPointF posPrev;
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
+        posPrev = pGraphicsItemThis->pos();
         pGraphicsItemThis->setPos(i_pos);
     }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev {" + qPoint2Str(posPrev) + "}");
+    }
+    return posPrev;
 }
 
 //------------------------------------------------------------------------------
@@ -7786,7 +7815,7 @@ void CGraphObj::QGraphicsItem_setPos(const QPointF& i_pos)
 
     @param [in] i_fFactor
 */
-void CGraphObj::QGraphicsItem_setScale(double i_fFactor)
+double CGraphObj::QGraphicsItem_setScale(double i_fFactor)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7800,10 +7829,16 @@ void CGraphObj::QGraphicsItem_setScale(double i_fFactor)
         /* strMethod    */ "CGraphObj::QGraphicsItem_setScale",
         /* strAddInfo   */ strMthInArgs );
 
+    double fFactorPrev = 1.0;
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
+        fFactorPrev = pGraphicsItemThis->scale();
         pGraphicsItemThis->setScale(i_fFactor);
     }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev: " + QString::number(fFactorPrev, 'f', 3));
+    }
+    return fFactorPrev;
 }
 
 //------------------------------------------------------------------------------
@@ -7812,7 +7847,7 @@ void CGraphObj::QGraphicsItem_setScale(double i_fFactor)
 
     @param [in] i_fAngle_degree
 */
-void CGraphObj::QGraphicsItem_setRotation(double i_fAngle_degree)
+double CGraphObj::QGraphicsItem_setRotation(double i_fAngle_degree)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
@@ -7826,20 +7861,26 @@ void CGraphObj::QGraphicsItem_setRotation(double i_fAngle_degree)
         /* strMethod    */ "CGraphObj::QGraphicsItem_setRotation",
         /* strAddInfo   */ strMthInArgs );
 
+    double fAnglePrev_degree = 0.0;
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
+        fAnglePrev_degree = pGraphicsItemThis->rotation();
         pGraphicsItemThis->setRotation(i_fAngle_degree);
     }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev: " + QString::number(fAnglePrev_degree, 'f', 3) + " " + Math::c_strSymbolDegree);
+    }
+    return fAnglePrev_degree;
 }
 
 //------------------------------------------------------------------------------
-void CGraphObj::QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent)
+QGraphicsItem* CGraphObj::QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent)
 //------------------------------------------------------------------------------
 {
     QString strMthInArgs;
     if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
-        CGraphObjGroup* pGraphObjGroup = dynamic_cast<CGraphObjGroup*>(i_pGraphicsItemParent);
-        strMthInArgs = "ParentGroup: " + QString(pGraphObjGroup == nullptr ? "null" : pGraphObjGroup->path());
+        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphicsItemParent);
+        strMthInArgs = "ParentGroup: " + QString(pGraphObjGroupParent == nullptr ? "null" : pGraphObjGroupParent->path());
     }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
@@ -7848,10 +7889,16 @@ void CGraphObj::QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent
         /* strMethod    */ "CGraphObj::QGraphicsItem_setParentItem",
         /* strAddInfo   */ strMthInArgs );
 
+    CGraphObjGroup* pGraphObjGroupParentPrev = nullptr;
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     if (pGraphicsItemThis != nullptr) {
+        pGraphObjGroupParentPrev = dynamic_cast<CGraphObjGroup*>(pGraphicsItemThis->parentItem());
         pGraphicsItemThis->setParentItem(i_pGraphicsItemParent);
     }
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev: " + QString(pGraphObjGroupParentPrev == nullptr ? "null" : pGraphObjGroupParentPrev->path()));
+    }
+    return pGraphObjGroupParentPrev;
 }
 
 /*==============================================================================

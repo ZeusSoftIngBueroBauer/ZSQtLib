@@ -606,7 +606,7 @@ bool CDiagScale::isScaleValid() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the world coordinates (phyiscal values) of the scale object.
+/*! @brief Sets the world coordinates (physical values) of the scale object.
 
     @note For the changed setting to take effect and become visible in the
           diagrams pixmap you must call the diagrams update method afterwards.
@@ -656,7 +656,7 @@ CScale CDiagScale::getScale() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the minimum value of the scale in world coordinates (phyiscal value).
+/*! @brief Sets the minimum value of the scale in world coordinates (physical value).
 
     @note For the changed setting to take effect and become visible in the
           diagrams pixmap you must call the diagrams update method afterwards.
@@ -695,7 +695,7 @@ void CDiagScale::setScaleMinVal( const CPhysVal& i_physVal )
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the minimum value of the scale in world coordinates (phyiscal value).
+/*! @brief Sets the minimum value of the scale in world coordinates (physical value).
 
     @note For the changed setting to take effect and become visible in the
           diagrams pixmap you must call the diagrams update method afterwards.
@@ -735,7 +735,7 @@ CPhysVal CDiagScale::getScaleMinVal() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the maximum value of the scale in world coordinates (phyiscal value).
+/*! @brief Sets the maximum value of the scale in world coordinates (physical value).
 
     @note For the changed setting to take effect and become visible in the
           diagrams pixmap you must call the diagrams update method afterwards.
@@ -774,7 +774,7 @@ void CDiagScale::setScaleMaxVal( const CPhysVal& i_physVal )
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the minimum value of the scale in world coordinates (phyiscal value).
+/*! @brief Sets the minimum value of the scale in world coordinates (physical value).
 
     @note For the changed setting to take effect and become visible in the
           diagrams pixmap you must call the diagrams update method afterwards.
@@ -814,7 +814,7 @@ CPhysVal CDiagScale::getScaleMaxVal() const
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the scale's range in world coordinates (phyiscal value) by
+/*! @brief Sets the scale's range in world coordinates (physical value) by
            adjusting the maximum value.
 
     The minimum value remains the same.
@@ -859,7 +859,7 @@ void CDiagScale::setScaleRangeVal( const CPhysVal& i_physVal )
 }
 
 //------------------------------------------------------------------------------
-/*! @brief Sets the scale's range in world coordinates (phyiscal value) by
+/*! @brief Sets the scale's range in world coordinates (physical value) by
            adjusting the maximum value.
 
     The minimum value remains the same.

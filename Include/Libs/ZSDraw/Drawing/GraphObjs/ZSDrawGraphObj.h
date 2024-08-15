@@ -412,8 +412,13 @@ signals:
          If a group item is rotated, resized or moved the group itself and all its children
          change their geometry on the scene. The signal is emitted for the changed group and
          also by its children to inform all connected labels and selection points that their
-         parents scene coordinates may have been changed. */
-    void geometryOnSceneChanged(CGraphObj* i_pGraphObj);
+         parents scene coordinates may have been changed.
+        @param [in] i_pGraphObjParent
+            Pointer to parent item whose geometry on the scene has been changed.
+        @param [in] i_bParentOfParentChanged
+            false (default), if the geometry of the parent has been changed directly.
+            true if the geometry has been changed because the parent got a new parent. */
+    void geometryOnSceneChanged(CGraphObj* i_pGraphObj, bool i_bParentOfParentChanged = false);
     /*!< This signal is emitted if the physical unit of the drawing scene's size has been changed
          and the geometry values of the graphical object are converted into a new unit and
          viewers need to update the value strings correspondingly. */
@@ -701,7 +706,7 @@ protected: // overridables (geometry labels)
     virtual bool addGeometryLabel(const QString& i_strName, EGraphObjType i_labelType, int i_idxPt1, int i_idxPt2 = -1);
 protected slots: // overridables
     virtual void onDrawingSizeChanged(const CDrawingSize& i_drawingSize);
-    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent);
+    virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false);
     virtual void onGraphObjParentZValueChanged(CGraphObj* i_pGraphObjParent);
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint);
     virtual void onSelectionPointAboutToBeDestroyed(CGraphObj* i_pSelectionPoint);
@@ -724,7 +729,7 @@ protected: // auxiliary instance methods (method tracing)
     void emit_editModeChanged(const CEnumEditMode& i_eMode);
     void emit_selectedChanged(bool i_bIsSelected);
     //void emit_scenePosChanged();
-    void emit_geometryOnSceneChanged();
+    void emit_geometryOnSceneChanged(bool i_bParentOfParentChanged = false);
     //void emit_geometryValuesUnitChanged();
     void emit_zValueChanged(double i_fZValue);
     void emit_drawSettingsChanged();
@@ -739,10 +744,10 @@ protected: // auxiliary instance methods (method tracing)
     double setParentGroupScaleY(double i_fScaleY);
     virtual void QGraphicsItem_prepareGeometryChange();
 protected: // overridable auxiliary instance methods (method tracing)
-    virtual void QGraphicsItem_setPos(const QPointF& i_pos);
-    virtual void QGraphicsItem_setScale(double i_fFactor);
-    virtual void QGraphicsItem_setRotation(double i_fAngle_degree);
-    virtual void QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent);
+    virtual QPointF QGraphicsItem_setPos(const QPointF& i_pos);
+    virtual double QGraphicsItem_setScale(double i_fFactor);
+    virtual double QGraphicsItem_setRotation(double i_fAngle_degree);
+    virtual QGraphicsItem* QGraphicsItem_setParentItem(QGraphicsItem* i_pGraphicsItemParent);
 public: // overridable auxiliary instance methods (method tracing)
     virtual void tracePositionInfo(
         ZS::System::CMethodTracer& i_mthTracer,

@@ -52,7 +52,7 @@ CPhysScienceFieldGeometry::CPhysScienceFieldGeometry(CIdxTreeEntry* i_pParentBra
     GraphDevice(this),
     Length(this)
 {
-    // As this phyiscal science field is not added below the root node we
+    // As this physical science field is not added below the root node we
     // need to add a shortcut so that the units can be accessed without the
     // name of the parent branch (which is "Science Fields" for this application).
     i_pParentBranch->tree()->addShortcut(this, "Geometry");

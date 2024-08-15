@@ -73,7 +73,7 @@ CPhysSizePower::CPhysSizePower( CIdxTreeEntry* i_pParentBranch ) :
     // and to create the chained list of Lower/Higher units).
     initialize(true);
 
-    // To allow "short" unit strings like "Power.mW" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "Power.mW" we add a shortcut to this physical size.
     i_pParentBranch->tree()->addShortcut(this, "Power");
 
     // To allow "short" unit strings like "dBm" we add shortcuts to each unit.

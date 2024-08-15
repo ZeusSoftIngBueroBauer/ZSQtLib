@@ -249,7 +249,7 @@ public: // instance methods
 /*! @brief Tries to find the unit group entry by the given unique name.
 
     Units are added as childs to group nodes in the index tree.
-    in case of phyiscal units the parent node is a physical size node
+    in case of physical units the parent node is a physical size node
     (group with physical units only).
     In case of ratio and quantity unit the parent is a unit group just containing
     either ratio or quantity units.

@@ -88,7 +88,7 @@ CPhysSizeResistance::CPhysSizeResistance( CUnitsTreeEntryGrpScienceField* i_pPar
     // and to create the chained list of Lower/Higher units).
     initialize(true);
 
-    // To allow "short" unit strings like "Resistance.mOhm" we add a shortcut to this phyiscal size.
+    // To allow "short" unit strings like "Resistance.mOhm" we add a shortcut to this physical size.
     i_pParentBranch->tree()->addShortcut(this, "Resistance");
 
     // To allow "short" unit strings like "Ohm" we add shortcuts to each unit.
