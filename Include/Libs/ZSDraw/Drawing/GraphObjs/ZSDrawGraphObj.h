@@ -718,7 +718,8 @@ public: // instance methods
     int setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
     virtual void initParentScaleParameters();
-    virtual void updateTransformedCoorsOnParentChanged();
+    virtual void initTransformedCoorsOnParentChanged();
+    virtual void updateTransformedCoorsOnParentGeometryChanged();
     virtual void updateTransformedCoorsOnItemPositionChanged();
 protected: // overridables
     //virtual void updateTransform();
@@ -742,6 +743,7 @@ protected: // auxiliary instance methods (method tracing)
     CPhysValRect setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect);
     double setParentGroupScaleX(double i_fScaleX);
     double setParentGroupScaleY(double i_fScaleY);
+    ZS::PhysVal::CPhysVal setParentGroupRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     virtual void QGraphicsItem_prepareGeometryChange();
 protected: // overridable auxiliary instance methods (method tracing)
     virtual QPointF QGraphicsItem_setPos(const QPointF& i_pos);
@@ -864,6 +866,11 @@ protected: // instance members
          Calculated by taking m_physValRectGroupOrig into account. */
     double m_fParentGroupScaleX;
     double m_fParentGroupScaleY;
+    /*!< Current rotation angle of the parent group initially set when adding the item to a group and
+         updated if the geometry of the parent is changed. If the item is removed from the parent group
+         the rotation angle of the parent group is added to the rotation group of this item to keep the
+         relative rotation on the screen. */
+    ZS::PhysVal::CPhysVal m_physValRotationAngleParentGroup;
     /*!< Transformations as applied by modifying (scaling, rotating, shearing) the object directly. */
     //QTransform m_transform;
     ///*!< Current scene position of the object. To keep the relative position of selection points

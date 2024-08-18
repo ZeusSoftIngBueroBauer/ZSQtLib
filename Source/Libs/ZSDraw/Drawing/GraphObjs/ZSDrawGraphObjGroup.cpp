@@ -466,7 +466,7 @@ void CGraphObjGroup::addToGroup( CGraphObj* i_pGraphObj )
                     // As on calling "setPos" the position may not have been changed, force the child
                     // to update it's original shape points in physical coordinates relative to either
                     // the top left or bottom left corner of the parents bounding rectangle.
-                    pGraphObjChildExisting->updateTransformedCoorsOnParentChanged();
+                    pGraphObjChildExisting->updateTransformedCoorsOnParentGeometryChanged();
                     pGraphObjChildExisting->setIgnoreParentGeometryChange(false);
                 }
             }
@@ -617,7 +617,7 @@ void CGraphObjGroup::resizeToContent()
                 pGraphicsItemChildExisting->setPos(ptPosChildNew);
                 // The child was not notified about the geometry change (see above) but has to reset
                 // the scale transformation parameters of the parent.
-                pGraphObjChildExisting->updateTransformedCoorsOnParentChanged();
+                pGraphObjChildExisting->updateTransformedCoorsOnParentGeometryChanged();
                 // As on calling "setPos" the position may not have been changed, force the child
                 // to update it's original shape points in physical coordinates relative to either
                 // the top left or bottom left corner of the parents bounding rectangle:
@@ -1893,11 +1893,13 @@ void CGraphObjGroup::setRotationAngle(const CPhysVal& i_physValAngle)
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
     if (m_physValRotationAngle != i_physValAngle) {
-        m_physValRotationAngle = i_physValAngle;
-        CPhysValRect physValRect = m_physValRectScaledAndRotated;
-        physValRect.setAngle(i_physValAngle);
-        setPhysValRectScaledAndRotated(physValRect);
-        QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+        {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+            m_physValRotationAngle = i_physValAngle;
+            CPhysValRect physValRect = m_physValRectScaledAndRotated;
+            physValRect.setAngle(i_physValAngle);
+            setPhysValRectScaledAndRotated(physValRect);
+            QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+        }
         emit_geometryOnSceneChanged();
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -3322,7 +3324,7 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
     if (i_pGraphObjParent->isGroup()) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
         if (i_bParentOfParentChanged) {
-            updateTransformedCoorsOnParentChanged();
+            initTransformedCoorsOnParentChanged();
         }
         CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
         if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
@@ -3330,6 +3332,9 @@ void CGraphObjGroup::onGraphObjParentGeometryOnSceneChanged(
         }
         if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
             setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
+        }
+        if (m_physValRotationAngleParentGroup != pGraphObjGroupParent->rotationAngle()) {
+            setParentGroupRotationAngle(pGraphObjGroupParent->rotationAngle());
         }
 
         // The relative distance of the center point to the top left or bottom left corner
@@ -3472,28 +3477,22 @@ public: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Overrides the pure virtual method of base class CGraphObj.
 */
-void CGraphObjGroup::updateTransformedCoorsOnParentChanged()
+void CGraphObjGroup::initTransformedCoorsOnParentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updateTransformedCoorsOnParentChanged",
+        /* strMethod    */ "initTransformedCoorsOnParentChanged",
         /* strAddInfo   */ "" );
-    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
 
-    #pragma message(__TODO__"Comment correct?")
-    // Before mapping to parent or scene, the rotation will be reset.
-    // Otherwise transformed coordinates will be returned.
-    // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
         initParentScaleParameters();
 
         setRectOrig(m_rectScaled);
-        //QRectF rectF = getRectScaled(m_rectOrig);
-        //setRectScaled(rectF);
         CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
         setPhysValRectOrig(physValRect);
         physValRect = getPhysValRectScaled(m_physValRectOrig);
@@ -3501,7 +3500,39 @@ void CGraphObjGroup::updateTransformedCoorsOnParentChanged()
         physValRect.setAngle(m_physValRotationAngle);
         setPhysValRectScaledAndRotated(physValRect);
     }
-    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged(true);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the pure virtual method of base class CGraphObj.
+*/
+void CGraphObjGroup::updateTransformedCoorsOnParentGeometryChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateTransformedCoorsOnParentGeometryChanged",
+        /* strAddInfo   */ "" );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+    #pragma message(__TODO__"Comment correct?")
+    // Before mapping to parent or scene, the rotation will be reset.
+    // Otherwise transformed coordinates will be returned.
+    // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+        setRectOrig(m_rectScaled);
+        CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
+        setPhysValRectOrig(physValRect);
+        physValRect = getPhysValRectScaled(m_physValRectOrig);
+        setPhysValRectScaled(physValRect);
+        physValRect.setAngle(m_physValRotationAngle);
+        setPhysValRectScaledAndRotated(physValRect);
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
     emit_geometryOnSceneChanged(true);
 }
 
@@ -3517,20 +3548,22 @@ void CGraphObjGroup::updateTransformedCoorsOnItemPositionChanged()
         /* strObjName   */ path(),
         /* strMethod    */ "updateTransformedCoorsOnItemPositionChanged",
         /* strAddInfo   */ "" );
-    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
 
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     // Before mapping to parent or scene, the rotation will be reset.
     // Otherwise transformed coordinates will be returned.
     // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
-    CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-    CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
-    setPhysValRectOrig(physValRect);
-    physValRect = getPhysValRectScaled(m_physValRectOrig);
-    setPhysValRectScaled(physValRect);
-    physValRect.setAngle(m_physValRotationAngle);
-    setPhysValRectScaledAndRotated(physValRect);
-    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+        CPhysValRect physValRect = getPhysValRectOrig(m_rectOrig);
+        setPhysValRectOrig(physValRect);
+        physValRect = getPhysValRectScaled(m_physValRectOrig);
+        setPhysValRectScaled(physValRect);
+        physValRect.setAngle(m_physValRotationAngle);
+        setPhysValRectScaledAndRotated(physValRect);
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged(true);
 }
 
 /*==============================================================================

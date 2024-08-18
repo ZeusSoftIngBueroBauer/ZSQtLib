@@ -2485,7 +2485,7 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(
     if (i_pGraphObjParent->isGroup()) {
         CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
         if (i_bParentOfParentChanged) {
-            updateTransformedCoorsOnParentChanged();
+            initTransformedCoorsOnParentChanged();
         }
         CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
         if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
@@ -2493,6 +2493,9 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(
         }
         if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
             setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
+        }
+        if (m_physValRotationAngleParentGroup != pGraphObjGroupParent->rotationAngle()) {
+            setParentGroupRotationAngle(pGraphObjGroupParent->rotationAngle());
         }
 
         // The relative distance of the center point to the top left or bottom left corner
@@ -2555,65 +2558,21 @@ protected: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Overrides the pure virtual method of base class CGraphObj.
 */
-void CGraphObjLine::updateTransformedCoorsOnParentChanged()
+void CGraphObjLine::initTransformedCoorsOnParentChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "updateTransformedCoorsOnParentChanged",
+        /* strMethod    */ "initTransformedCoorsOnParentChanged",
         /* strAddInfo   */ "" );
-    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
 
-    #pragma message(__TODO__"Comment correct?")
-    // Before mapping to parent or scene, the rotation will be reset.
-    // Otherwise transformed coordinates will be returned.
-    // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
         initParentScaleParameters();
 
-        #if 0
-        //QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-        //QLineF lineF = line();
-        //// Before mapping to parent or scene, the rotation will be reset.
-        //// Otherwise transformed coordinates will be returned.
-        //// And itemChange is called but should not emit the geometryOnSceneChanged signal ..
-        //CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-        //double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
-        //if (fRotationAngle_degree != 0.0) {
-        //    QGraphicsItem_setRotation(0.0);
-        //}
-        //if (parentGroup() != nullptr) {
-        //    QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
-        //    QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
-        //    pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
-        //    pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
-        //    CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
-        //    CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
-        //    CPhysValLine physValLine(physValPointP1, physValPointP2);
-        //    setPhysValLineOrig(physValLine);
-        //    setPhysValLineScaled(physValLine);
-        //    setPhysValLineScaledAndRotated(physValLine);
-        //}
-        //else {
-        //    // Please note that "mapToScene" maps the local coordinates relative to the
-        //    // top left corner of the item's bounding rectangle and there is no need to
-        //    // call "mapToBoundingRectTopLeft" beforehand.
-        //    QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
-        //    QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
-        //    CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
-        //    CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
-        //    CPhysValLine physValLine(physValPointP1, physValPointP2);
-        //    setPhysValLineOrig(physValLine);
-        //    setPhysValLineScaled(physValLine);
-        //    setPhysValLineScaledAndRotated(physValLine);
-        //}
-        //if (fRotationAngle_degree != 0.0) {
-        //    QGraphicsItem_setRotation(fRotationAngle_degree);
-        //}
-        #else
         setLineOrig(line());
         CPhysValLine physValLine = getPhysValLineOrig(m_lineOrig);
         setPhysValLineOrig(physValLine);
@@ -2621,9 +2580,36 @@ void CGraphObjLine::updateTransformedCoorsOnParentChanged()
         setPhysValLineScaled(physValLine);
         //physValLine.setAngle(m_physValRotationAngle);
         setPhysValLineScaledAndRotated(physValLine);
-        #endif
     }
-    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged(true);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Overrides the pure virtual method of base class CGraphObj.
+*/
+void CGraphObjLine::updateTransformedCoorsOnParentGeometryChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "updateTransformedCoorsOnParentGeometryChanged",
+        /* strAddInfo   */ "" );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+        setLineOrig(line());
+        CPhysValLine physValLine = getPhysValLineOrig(m_lineOrig);
+        setPhysValLineOrig(physValLine);
+        physValLine = getPhysValLineScaled(m_physValLineOrig);
+        setPhysValLineScaled(physValLine);
+        //physValLine.setAngle(m_physValRotationAngle);
+        setPhysValLineScaledAndRotated(physValLine);
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
     emit_geometryOnSceneChanged(true);
 }
 
@@ -2639,7 +2625,7 @@ void CGraphObjLine::updateTransformedCoorsOnItemPositionChanged()
         /* strObjName   */ path(),
         /* strMethod    */ "updateTransformedCoorsOnItemPositionChanged",
         /* strAddInfo   */ "" );
-    traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
 
     QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
     QLineF lineF = line();
@@ -2680,7 +2666,7 @@ void CGraphObjLine::updateTransformedCoorsOnItemPositionChanged()
         QGraphicsItem_setRotation(fRotationAngle_degree);
     }
 
-    traceThisPositionInfo(mthTracer, EMethodDir::Leave);
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
 }
 
 /*==============================================================================

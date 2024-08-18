@@ -151,6 +151,7 @@ CGraphObj::CGraphObj(
     m_physValRectParentGroupOrig(*i_pDrawingScene),
     m_fParentGroupScaleX(1.0),
     m_fParentGroupScaleY(1.0),
+    m_physValRotationAngleParentGroup(0.0, Units.Angle.Degree, 0.1),
     //m_transform(),
     //m_transformByGroup(),
     //m_ptScenePos(),
@@ -387,6 +388,7 @@ CGraphObj::~CGraphObj()
     //m_physValRectParentGroupOrig;
     m_fParentGroupScaleX = 0.0;
     m_fParentGroupScaleY = 0.0;
+    //m_physValRotationAngleParentGroup;
     //m_transform;
     //m_transformByGroup;
     //m_ptScenePos;
@@ -746,6 +748,7 @@ void CGraphObj::onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPr
         /* strObjName   */ path(),
         /* strMethod    */ "CGraphObj::onParentGroupAboutToBeChanged",
         /* strAddInfo   */ strMthInArgs );
+    traceParentGroupPositionInfo(mthTracer, EMethodDir::Enter);
 }
 
 //------------------------------------------------------------------------------
@@ -811,7 +814,8 @@ void CGraphObj::onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGrap
             i_pGraphObjGroupNew, &CGraphObj::geometryOnSceneChanged,
             this, &CGraphObj::onGraphObjParentGeometryOnSceneChanged);
     }
-    updateTransformedCoorsOnParentChanged();
+    initTransformedCoorsOnParentChanged();
+    traceParentGroupPositionInfo(mthTracer, EMethodDir::Leave);
 }
 
 /*==============================================================================
@@ -3972,8 +3976,10 @@ void CGraphObj::setRotationAngle(const CPhysVal& i_physValAngle)
 #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
     if (m_physValRotationAngle != i_physValAngle) {
-        m_physValRotationAngle = i_physValAngle;
-        QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+        {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+            m_physValRotationAngle = i_physValAngle;
+            QGraphicsItem_setRotation(m_physValRotationAngle.getVal(Units.Angle.Degree));
+        }
         emit_geometryOnSceneChanged();
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
@@ -6860,6 +6866,9 @@ void CGraphObj::onGraphObjParentGeometryOnSceneChanged(
                 setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
             }
         }
+        if (m_physValRotationAngleParentGroup != pGraphObjGroupParent->rotationAngle()) {
+            setParentGroupRotationAngle(pGraphObjGroupParent->rotationAngle());
+        }
         // If the geometry of the parent on the scene of this item changes, also the geometry
         // on the scene of this item is changed.
         emit_geometryOnSceneChanged();
@@ -7156,15 +7165,50 @@ void CGraphObj::initParentScaleParameters()
     CGraphObjGroup* pGraphObjGroupParent = parentGroup();
     if (pGraphObjGroupParent != nullptr) {
         setPhysValRectParentGroupOrig(pGraphObjGroupParent->getRect(ERowVersion::Original));
+        setParentGroupRotationAngle(pGraphObjGroupParent->rotationAngle());
     }
     else {
         setPhysValRectParentGroupOrig(CPhysValRect(*m_pDrawingScene));
+        setParentGroupRotationAngle(CPhysVal(0.0, Units.Angle.Degree, 0.1));
     }
     setPosOrig(pGraphicsItemThis->pos());
     setParentGroupScaleX(1.0);
     setParentGroupScaleY(1.0);
 
     traceParentGroupPositionInfo(mthTracer, EMethodDir::Leave);
+}
+
+//------------------------------------------------------------------------------
+/*! @brief Pure virtual method which must be overridden by derived classes to
+           initialize the physical coordinates of the item depending on the items
+           local coordinates.
+
+    This method is also called if the parent group of the item is changed.
+*/
+void CGraphObj::initTransformedCoorsOnParentChanged()
+//------------------------------------------------------------------------------
+{
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::initTransformedCoorsOnParentChanged",
+        /* strAddInfo   */ "" );
+    tracePositionInfo(mthTracer, EMethodDir::Enter);
+
+    #pragma message(__TODO__"Pure virtual")
+    throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+
+    // Before mapping to parent or scene, the rotation will be reset.
+    // Otherwise transformed coordinates will be returned.
+    // In addition itemChange will be called but should not emit the geometryOnSceneChanged signal.
+    // The childs were not notified about the geometry change (see above) but has to reset
+    // the scale transformation parameters of the parent.
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+        initParentScaleParameters();
+    }
+    tracePositionInfo(mthTracer, EMethodDir::Leave);
 }
 
 //------------------------------------------------------------------------------
@@ -7179,14 +7223,14 @@ void CGraphObj::initParentScaleParameters()
     it's physical coordinates relative to either the top left or bottom
     left corner of the parents bounding rectangle.
 */
-void CGraphObj::updateTransformedCoorsOnParentChanged()
+void CGraphObj::updateTransformedCoorsOnParentGeometryChanged()
 //------------------------------------------------------------------------------
 {
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "CGraphObj::updateTransformedCoorsOnParentChanged",
+        /* strMethod    */ "CGraphObj::updateTransformedCoorsOnParentGeometryChanged",
         /* strAddInfo   */ "" );
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
 
@@ -7200,7 +7244,6 @@ void CGraphObj::updateTransformedCoorsOnParentChanged()
     // the scale transformation parameters of the parent.
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
-        initParentScaleParameters();
     }
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
     emit_geometryOnSceneChanged(true);
@@ -7223,8 +7266,10 @@ void CGraphObj::updateTransformedCoorsOnItemPositionChanged()
         /* strMethod    */ "CGraphObj::updateTransformedCoorsOnItemPositionChanged",
         /* strAddInfo   */ "" );
     traceThisPositionInfo(mthTracer, EMethodDir::Enter);
+
     #pragma message(__TODO__"Pure virtual")
     throw CException(__FILE__, __LINE__, EResultInvalidMethodCall, "Should become pure virtual");
+
     traceThisPositionInfo(mthTracer, EMethodDir::Leave);
 }
 
@@ -7749,6 +7794,40 @@ double CGraphObj::setParentGroupScaleY(double i_fScaleY)
 }
 
 //------------------------------------------------------------------------------
+/*! @brief Internal method to trace setting the current rotation angle of the parent group.
+
+    The rotation angle is set each time the parent is rotated. If the item is removed from
+    the group, the rotation angle of the parent is added to the rotation angle of the item
+    to keep the relative rotation of the itme on the screen.
+
+    @param [in] i_physValAngle
+        The parent's rotation angle.
+
+    @return Previous rotation angle of parent.
+*/
+CPhysVal CGraphObj::setParentGroupRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle)
+//------------------------------------------------------------------------------
+{
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "New: " + i_physValAngle.toString();
+    }
+    CMethodTracer mthTracer(
+        /* pAdminObj    */ m_pTrcAdminObjItemChange,
+        /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
+        /* strObjName   */ path(),
+        /* strMethod    */ "CGraphObj::setParentGroupScaleY",
+        /* strAddInfo   */ strMthInArgs );
+
+    CPhysVal physValAnglePrev = m_physValRotationAngleParentGroup;
+    m_physValRotationAngleParentGroup = i_physValAngle;
+    if (mthTracer.areMethodCallsActive(EMethodTraceDetailLevel::ArgsNormal)) {
+        mthTracer.setMethodReturn("Prev: " + physValAnglePrev.toString());
+    }
+    return physValAnglePrev;
+}
+
+//------------------------------------------------------------------------------
 /*! @brief Internal method reimplementing the prepareGeometryChange method of
            graphics item to trace the method call.
 
@@ -7960,19 +8039,20 @@ void CGraphObj::traceParentGroupPositionInfo(
             if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
             else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
             else strRuntimeInfo = "   ";
+            strRuntimeInfo += " . ParentTransformCoors PosOrig {" + qPoint2Str(m_ptPosOrig) + " px}" +
+                ", PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
+                ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}" +
+                ", RotationAngle: " + m_physValRotationAngleParentGroup.toString();
+            i_mthTracer.trace(strRuntimeInfo);
+            if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
+            else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
+            else strRuntimeInfo = "   ";
             strRuntimeInfo += "ParentGroup: " + QString(pGraphObjGroupParent == nullptr ? "null" : pGraphObjGroupParent->path());
             if (pGraphicsItemParent == nullptr && pGraphObjGroupParent != nullptr) {
                 strRuntimeInfo += ", !! ParentGraphicsItem: null !!";
             }
             i_mthTracer.trace(strRuntimeInfo);
             if (pGraphicsItemParent != nullptr || pGraphObjGroupParent != nullptr) {
-                if (i_mthDir == EMethodDir::Enter) strRuntimeInfo = "-+ ";
-                else if (i_mthDir == EMethodDir::Leave) strRuntimeInfo = "+- ";
-                else strRuntimeInfo = "   ";
-                strRuntimeInfo += " . ParentScaleParameters PosOrig {" + qPoint2Str(m_ptPosOrig) + " px}" +
-                    ", PhysValRectOrig {" + m_physValRectParentGroupOrig.toString() + " " + m_physValRectParentGroupOrig.unit().symbol() + "}" +
-                    ", Scale {X: " + QString::number(m_fParentGroupScaleX, 'f', 3) + ", Y: " + QString::number(m_fParentGroupScaleY, 'f', 3) + "}";
-                i_mthTracer.trace(strRuntimeInfo);
                 QPointF ptPos = pGraphicsItemParent == nullptr ? QPointF() : pGraphicsItemParent->pos();
                 QPointF ptScenePos = pGraphicsItemParent == nullptr ? QPointF() : pGraphicsItemParent->scenePos();
                 QRectF rectBounding = pGraphObjGroupParent == nullptr ? QRectF() : pGraphObjGroupParent->getBoundingRect();
