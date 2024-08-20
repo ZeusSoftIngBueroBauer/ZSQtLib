@@ -198,7 +198,7 @@ protected: // overridable slots of base class CGraphObj
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 public: // must overridables of base class CGraphObj
-    virtual void initTransformedCoorsOnParentChanged() override;
+    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
     virtual void updateTransformedCoorsOnParentGeometryChanged() override;
     virtual void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // instance methods

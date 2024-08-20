@@ -390,10 +390,6 @@ void CGraphObjLine::setLine( const CPhysValLine& i_physValLine )
             setLineOrig(lineF);
             QGraphicsLineItem_setLine(lineF);
 
-            // If the item belongs to a parent group this original position is needed
-            // to calculate the new position if the parent is resized.
-            setPosOrig(ptPos);
-
             // Please note that GraphicsLineItem::setLine did not update the position of the
             // item in the parent. This has to be done "manually" afterwards.
 
@@ -2482,69 +2478,72 @@ void CGraphObjLine::onGraphObjParentGeometryOnSceneChanged(
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
     bool bGeometryOnSceneChanged = false;
-    if (i_pGraphObjParent->isGroup()) {
-        CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
-        if (i_bParentOfParentChanged) {
-            initTransformedCoorsOnParentChanged();
-        }
-        CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
-        if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
-            setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
-        }
-        if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
-            setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
-        }
-        if (m_physValRotationAngleParentGroup != pGraphObjGroupParent->rotationAngle()) {
-            setParentGroupRotationAngle(pGraphObjGroupParent->rotationAngle());
-        }
 
-        // The relative distance of the center point to the top left or bottom left corner
-        // of the parent's bounding rectangle should remain the same.
-        CPhysValLine physValLine = getPhysValLineScaled(m_physValLineOrig);
-        setPhysValLineScaled(physValLine);
-        //physValLine.setAngle(m_physValRotationAngle);
-        setPhysValLineScaledAndRotated(physValLine);
+    {   CRefCountGuard refCountGuardTracePositionInfo(&m_iTracePositionInfoBlockedCounter);
 
-        QPointF ptPosPrev = pos();
-
-        QLineF lineF;
-        QPointF ptPos = getItemPosAndLocalCoors(physValLine, lineF);
-
-        // Prepare the item for a geometry change. This function must be called before
-        // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
-        QGraphicsItem_prepareGeometryChange();
-
-        {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
-            CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-
-            // Set the line in local coordinate system.
-            // Also note that itemChange must not overwrite the current line value (refCountGuard).
-            QGraphicsLineItem_setLine(lineF);
-
-            // Please note that GraphicsLineItem::setLine did not update the position of the
-            // item in the parent. This has to be done "manually" afterwards.
-
-            // Move the object to the parent position.
-            // This has to be done after resizing the line which updates the local coordinates
-            // of the line with origin (0/0) at the lines center point.
-            // "setPos" will trigger an itemChange call which will update the position of the
-            // selection points and labels. To position the selection points and labels correctly
-            // the local coordinate system must be up-to-date.
-            // Also note that itemChange must not overwrite the current line value (refCountGuard).
-            // If the position is not changed, itemChange is not called with PositionHasChanged and
-            // the position of the arrow heads will not be updated. We got to do this here "manually".
-            if (ptPos != ptPosPrev) {
-                QGraphicsItem_setPos(ptPos);
+        if (i_pGraphObjParent->isGroup()) {
+            CGraphObjGroup* pGraphObjGroupParent = dynamic_cast<CGraphObjGroup*>(i_pGraphObjParent);
+            if (i_bParentOfParentChanged) {
+                initParentTransform();
+                updateTransformedCoorsOnParentGeometryChanged();
             }
-            else {
-                updateLineEndArrowHeadPolygons();
+            CPhysValRect physValRectGroupParentCurr = pGraphObjGroupParent->getRect(m_physValRectParentGroupOrig.unit());
+            if (m_physValRectParentGroupOrig.width().getVal() > 0.0) {
+                setParentGroupScaleX(physValRectGroupParentCurr.width().getVal() / m_physValRectParentGroupOrig.width().getVal());
             }
+            if (m_physValRectParentGroupOrig.height().getVal() > 0.0) {
+                setParentGroupScaleY(physValRectGroupParentCurr.height().getVal() / m_physValRectParentGroupOrig.height().getVal());
+            }
+
+            // The relative distance of the center point to the top left or bottom left corner
+            // of the parent's bounding rectangle should remain the same.
+            CPhysValLine physValLine = getPhysValLineScaled(m_physValLineOrig);
+            setPhysValLineScaled(physValLine);
+            //physValLine.setAngle(m_physValRotationAngle);
+            setPhysValLineScaledAndRotated(physValLine);
+
+            QPointF ptPosPrev = pos();
+
+            QLineF lineF;
+            QPointF ptPos = getItemPosAndLocalCoors(physValLine, lineF);
+
+            // Prepare the item for a geometry change. This function must be called before
+            // changing the bounding rect of an item to keep QGraphicsScene's index up to date.
+            QGraphicsItem_prepareGeometryChange();
+
+            {   CRefCountGuard refCountGuardUpdateOriginalCoors(&m_iItemChangeUpdatePhysValCoorsBlockedCounter);
+                CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
+
+                // Set the line in local coordinate system.
+                // Also note that itemChange must not overwrite the current line value (refCountGuard).
+                QGraphicsLineItem_setLine(lineF);
+
+                // Please note that GraphicsLineItem::setLine did not update the position of the
+                // item in the parent. This has to be done "manually" afterwards.
+
+                // Move the object to the parent position.
+                // This has to be done after resizing the line which updates the local coordinates
+                // of the line with origin (0/0) at the lines center point.
+                // "setPos" will trigger an itemChange call which will update the position of the
+                // selection points and labels. To position the selection points and labels correctly
+                // the local coordinate system must be up-to-date.
+                // Also note that itemChange must not overwrite the current line value (refCountGuard).
+                // If the position is not changed, itemChange is not called with PositionHasChanged and
+                // the position of the arrow heads will not be updated. We got to do this here "manually".
+                if (ptPos != ptPosPrev) {
+                    QGraphicsItem_setPos(ptPos);
+                }
+                else {
+                    updateLineEndArrowHeadPolygons();
+                }
+            }
+            // If the geometry of the parent on the scene of this item changes, also the geometry
+            // on the scene of this item is changed.
+            bGeometryOnSceneChanged = true;
         }
-        // If the geometry of the parent on the scene of this item changes, also the geometry
-        // on the scene of this item is changed.
-        bGeometryOnSceneChanged = true;
     }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
+
     // Emit signal after updated position info has been traced.
     if (bGeometryOnSceneChanged) {
         emit_geometryOnSceneChanged();
@@ -2558,20 +2557,24 @@ protected: // overridables of base class CGraphObj
 //------------------------------------------------------------------------------
 /*! @brief Overrides the pure virtual method of base class CGraphObj.
 */
-void CGraphObjLine::initTransformedCoorsOnParentChanged()
+void CGraphObjLine::updateTransformedCoorsOnParentChanged(
+    CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew)
 //------------------------------------------------------------------------------
 {
+    QString strMthInArgs;
+    if (areMethodCallsActive(m_pTrcAdminObjItemChange, EMethodTraceDetailLevel::ArgsNormal)) {
+        strMthInArgs = "PrevGroup: " + QString(i_pGraphObjGroupPrev == nullptr ? "null" : i_pGraphObjGroupPrev->path()) +
+            ", NewGroup: " + QString(i_pGraphObjGroupNew == nullptr ? "null" : i_pGraphObjGroupNew->path());
+    }
     CMethodTracer mthTracer(
         /* pAdminObj    */ m_pTrcAdminObjItemChange,
         /* iDetailLevel */ EMethodTraceDetailLevel::EnterLeave,
         /* strObjName   */ path(),
-        /* strMethod    */ "initTransformedCoorsOnParentChanged",
-        /* strAddInfo   */ "" );
+        /* strMethod    */ "updateTransformedCoorsOnParentChanged",
+        /* strAddInfo   */ strMthInArgs );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
     {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-
-        initParentScaleParameters();
 
         setLineOrig(line());
         CPhysValLine physValLine = getPhysValLineOrig(m_lineOrig);
@@ -2627,46 +2630,55 @@ void CGraphObjLine::updateTransformedCoorsOnItemPositionChanged()
         /* strAddInfo   */ "" );
     tracePositionInfo(mthTracer, EMethodDir::Enter);
 
-    QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
-    QLineF lineF = line();
-    // Before mapping to parent or scene, the rotation will be reset.
-    // Otherwise transformed coordinates will be returned.
-    // And itemChange is called but should not emit the geometryOnSceneChanged signal ..
-    CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
-    double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
-    if (fRotationAngle_degree != 0.0) {
-        QGraphicsItem_setRotation(0.0);
-    }
-    if (parentGroup() != nullptr) {
-        QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
-        QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
-        pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
-        pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
-        CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
-        CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
-        CPhysValLine physValLine(physValPointP1, physValPointP2);
-        setPhysValLineOrig(physValLine);
-        setPhysValLineScaled(physValLine);
-        setPhysValLineScaledAndRotated(physValLine);
-    }
-    else {
-        // Please note that "mapToScene" maps the local coordinates relative to the
-        // top left corner of the item's bounding rectangle and there is no need to
-        // call "mapToBoundingRectTopLeft" beforehand.
-        QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
-        QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
-        CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
-        CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
-        CPhysValLine physValLine(physValPointP1, physValPointP2);
-        setPhysValLineOrig(physValLine);
-        setPhysValLineScaled(physValLine);
-        setPhysValLineScaledAndRotated(physValLine);
-    }
-    if (fRotationAngle_degree != 0.0) {
-        QGraphicsItem_setRotation(fRotationAngle_degree);
-    }
+    // ItemChange is called but should not emit the geometryOnSceneChanged signal.
+    {   CRefCountGuard refCountGuardGeometryChangedSignal(&m_iGeometryOnSceneChangedSignalBlockedCounter);
 
+        #if 0
+        //QGraphicsItem* pGraphicsItemThis = dynamic_cast<QGraphicsItem*>(this);
+        //QLineF lineF = line();
+        //double fRotationAngle_degree = m_physValRotationAngle.getVal(Units.Angle.Degree);
+        //if (fRotationAngle_degree != 0.0) {
+        //    QGraphicsItem_setRotation(0.0);
+        //}
+        //if (parentGroup() != nullptr) {
+        //    QPointF pt1 = pGraphicsItemThis->mapToParent(lineF.p1());
+        //    QPointF pt2 = pGraphicsItemThis->mapToParent(lineF.p2());
+        //    pt1 = parentGroup()->mapToTopLeftOfBoundingRect(pt1);
+        //    pt2 = parentGroup()->mapToTopLeftOfBoundingRect(pt2);
+        //    CPhysValPoint physValPointP1 = parentGroup()->convert(pt1);
+        //    CPhysValPoint physValPointP2 = parentGroup()->convert(pt2);
+        //    CPhysValLine physValLine(physValPointP1, physValPointP2);
+        //    setPhysValLineOrig(physValLine);
+        //    setPhysValLineScaled(physValLine);
+        //    setPhysValLineScaledAndRotated(physValLine);
+        //}
+        //else {
+        //    // Please note that "mapToScene" maps the local coordinates relative to the
+        //    // top left corner of the item's bounding rectangle and there is no need to
+        //    // call "mapToBoundingRectTopLeft" beforehand.
+        //    QPointF pt1 = pGraphicsItemThis->mapToScene(lineF.p1());
+        //    QPointF pt2 = pGraphicsItemThis->mapToScene(lineF.p2());
+        //    CPhysValPoint physValPointP1 = m_pDrawingScene->convert(pt1);
+        //    CPhysValPoint physValPointP2 = m_pDrawingScene->convert(pt2);
+        //    CPhysValLine physValLine(physValPointP1, physValPointP2);
+        //    setPhysValLineOrig(physValLine);
+        //    setPhysValLineScaled(physValLine);
+        //    setPhysValLineScaledAndRotated(physValLine);
+        //}
+        //if (fRotationAngle_degree != 0.0) {
+        //    QGraphicsItem_setRotation(fRotationAngle_degree);
+        //}
+        #else
+        CPhysValLine physValLine = getPhysValLineOrig(m_lineOrig);
+        setPhysValLineOrig(physValLine);
+        physValLine = getPhysValLineScaled(m_physValLineOrig);
+        setPhysValLineScaled(physValLine);
+        //physValLine.setAngle(m_physValRotationAngle);
+        setPhysValLineScaledAndRotated(physValLine);
+        #endif
+    }
     tracePositionInfo(mthTracer, EMethodDir::Leave);
+    emit_geometryOnSceneChanged();
 }
 
 /*==============================================================================
@@ -3224,6 +3236,9 @@ void CGraphObjLine::traceThisPositionInfo(
     CMethodTracer& i_mthTracer, EMethodDir i_mthDir, ELogDetailLevel i_detailLevel) const
 //------------------------------------------------------------------------------
 {
+    if (m_iTraceBlockedCounter > 0 || m_iTracePositionInfoBlockedCounter > 0 || m_iTraceThisPositionInfoInfoBlockedCounter > 0) {
+        return;
+    }
     if (i_mthTracer.isRuntimeInfoActive(i_detailLevel)) {
         const QGraphicsItem* pGraphicsItem = dynamic_cast<const QGraphicsItem*>(this);
         if (pGraphicsItem != nullptr) {

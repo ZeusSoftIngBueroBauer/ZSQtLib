@@ -461,7 +461,6 @@ public: // instance methods
 public: // instance methods
     CDrawingScene* drawingScene() const;
     CGraphObjGroup* parentGroup() const;
-    void onParentGroupAboutToBeChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
     void onParentGroupChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
 public: // overridables
     //virtual void setParentGraphObj(CGraphObj* i_pGraphObjParent);
@@ -717,8 +716,8 @@ public: // instance methods
     int blockGeometryOnSceneChangedSignal(bool i_bBlock);
     int setIgnoreParentGeometryChange(bool i_bSet);
 public: // overridables
-    virtual void initParentScaleParameters();
-    virtual void initTransformedCoorsOnParentChanged();
+    virtual void initParentTransform();
+    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew);
     virtual void updateTransformedCoorsOnParentGeometryChanged();
     virtual void updateTransformedCoorsOnItemPositionChanged();
 protected: // overridables
@@ -739,11 +738,9 @@ protected: // auxiliary instance methods (method tracing)
     void emit_labelRenamed(const QString& i_strName, const QString& i_strNameNew);
     void emit_labelChanged(const QString& i_strName);
     void emit_geometryLabelChanged(const QString& i_strName);
-    QPointF setPosOrig(const QPointF& i_ptPos);
     CPhysValRect setPhysValRectParentGroupOrig(const CPhysValRect& i_physValRect);
     double setParentGroupScaleX(double i_fScaleX);
     double setParentGroupScaleY(double i_fScaleY);
-    ZS::PhysVal::CPhysVal setParentGroupRotationAngle(const ZS::PhysVal::CPhysVal& i_physValAngle);
     virtual void QGraphicsItem_prepareGeometryChange();
 protected: // overridable auxiliary instance methods (method tracing)
     virtual QPointF QGraphicsItem_setPos(const QPointF& i_pos);
@@ -850,13 +847,10 @@ protected: // instance members
     QVector<double> m_arfZValues;
     /*!< Rotation angle of this item. */
     ZS::PhysVal::CPhysVal m_physValRotationAngle;
-    /*!< The original, untransformed position of the item in pixels in local coordinates relative
-         to the origin of the parent (center point of the parent's bounding rectangle) or to the
-         top left corner of the scene if the item does not have a parent.
-         The original position is set at the time the item is added to the parent group.
-         When resizing the group the parent groups scale factor are applied to the original
-         untransformed position to get the new position of the item. */
-    QPointF m_ptPosOrig;
+    /*!< Current parent group of the item. Updated by the slot "onParentGroupChanged". Keeping this
+         pointer allows to access the previous parent group if the object is reparented to retrieve
+         and update (move) transformation parameters from the previous to the new parent group. */
+    CGraphObjGroup* m_pGraphObjGroupParent;
     /*!< When adding the item to a group the current group rectangle is taken over as the
          original group rectangle. If the parent group is resized the scale factor is calculated
          using the original group rectangle and current group rectangle. As long as the item
@@ -866,11 +860,6 @@ protected: // instance members
          Calculated by taking m_physValRectGroupOrig into account. */
     double m_fParentGroupScaleX;
     double m_fParentGroupScaleY;
-    /*!< Current rotation angle of the parent group initially set when adding the item to a group and
-         updated if the geometry of the parent is changed. If the item is removed from the parent group
-         the rotation angle of the parent group is added to the rotation group of this item to keep the
-         relative rotation on the screen. */
-    ZS::PhysVal::CPhysVal m_physValRotationAngleParentGroup;
     /*!< Transformations as applied by modifying (scaling, rotating, shearing) the object directly. */
     //QTransform m_transform;
     ///*!< Current scene position of the object. To keep the relative position of selection points
@@ -1000,6 +989,13 @@ protected: // instance members
          must not react on the "parentGeometryOnSceneChanged" signal if the groups rectangle is set.
          Same applies if the parent resizes itself to its content. */
     int m_iIgnoreParentGeometryChange;
+    /*!< Counters to block debug trace outputs for internal position and state infos. */
+    int m_iTraceBlockedCounter;
+    int m_iTracePositionInfoBlockedCounter;
+    int m_iTraceThisPositionInfoInfoBlockedCounter;
+    int m_iTraceParentGroupPositionInfoInfoBlockedCounter;
+    int m_iTraceGraphicsItemStatesInfoBlockedCounter;
+    int m_iTraceGraphObjStatesInfoBlockedCounter;
 protected: // instance members (method tracing)
     /*!< Method Tracing (trace admin objects have to be created in ctor of "final" class)
          by calling "createTraceAdminObjs". */

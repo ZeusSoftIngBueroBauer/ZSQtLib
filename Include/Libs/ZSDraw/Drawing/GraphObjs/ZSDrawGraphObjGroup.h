@@ -124,8 +124,8 @@ public: // overridables of base class CGraphObj
     virtual QString getScenePolygonShapePointsString() const; // for subsystem test
 public: // instance methods
     void setRect(const CPhysValRect& i_physValRect);
-    CPhysValRect getRect(ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
-    CPhysValRect getRect(const ZS::PhysVal::CUnit& i_unit, ZS::System::ERowVersion i_rowVersion = ZS::System::ERowVersion::Current) const;
+    CPhysValRect getRect() const;
+    CPhysValRect getRect(const ZS::PhysVal::CUnit& i_unit) const;
     void setWidth(double i_fWidth);
     void setWidth(const ZS::PhysVal::CPhysVal& i_physValWidth);
     ZS::PhysVal::CPhysVal getWidth() const;
@@ -182,6 +182,8 @@ public: // instance methods
     CPhysValLine mapToScene(const CPhysValLine& i_physValLine, const ZS::PhysVal::CUnit& i_unitDst) const;
     CPhysValRect mapToScene(const CPhysValRect& i_physValRect) const;
     CPhysValRect mapToScene(const CPhysValRect& i_physValRect, const ZS::PhysVal::CUnit& i_unitDst) const;
+    ZS::PhysVal::CPhysVal mapRotationAngleToScene(const ZS::PhysVal::CPhysVal& i_physValAngle);
+    ZS::PhysVal::CPhysVal mapRotationAngleTo(const ZS::PhysVal::CPhysVal& i_physValAngle, CGraphObjGroup* i_pGraphObjGroup);
 public: // must overridables of base class CGraphObj
     virtual QRectF getBoundingRect() const override;
     virtual QRectF getEffectiveBoundingRectOnScene() const override;
@@ -225,7 +227,7 @@ protected: // overridable slots of base class CGraphObj
     virtual void onGraphObjParentGeometryOnSceneChanged(CGraphObj* i_pGraphObjParent, bool i_bParentOfParentChanged = false) override;
     virtual void onSelectionPointGeometryOnSceneChanged(CGraphObj* i_pSelectionPoint) override;
 public: // must overridables of base class CGraphObj
-    virtual void initTransformedCoorsOnParentChanged() override;
+    virtual void updateTransformedCoorsOnParentChanged(CGraphObjGroup* i_pGraphObjGroupPrev, CGraphObjGroup* i_pGraphObjGroupNew) override;
     virtual void updateTransformedCoorsOnParentGeometryChanged() override;
     virtual void updateTransformedCoorsOnItemPositionChanged() override;
 protected: // auxiliary instance methods
